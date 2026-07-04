@@ -1365,7 +1365,20 @@ function getBaseValueForChange(actor, change) {
       for (const k of ["all", "attack", "spell", "skill"]) {
         foundry.utils.setProperty(actor, `flags.fabula-ultima-companion.damage_dealt_mult_${k}`, 1);
       }
-    } catch (_) { /* non-fatal: ruleset defaults to 1 on read */ }
+      // Additive incoming-damage bumps, per element/type (e.g. Invoker "Hex":
+      // target suffers +5 damage from a given element until start of caster's next
+      // turn). Seeded to 0 — the IDENTITY for ADD-mode — for the same two reasons as
+      // the ×N seeds above: (a) Foundry's ADD over an undefined value would drop, so a
+      // stacking +N flag needs a numeric base of 0 to exist first; (b) the base must
+      // reset every pass or it would compound across passes. This is what lets multiple
+      // AEs each carrying a `damage_taken_increased_<type>` +N ADD change COMPOSE (two
+      // Hexes on fire → +10) instead of overriding. Read PRE-affinity by the
+      // incoming-damage ruleset (damage-ruleset.js) so VU/RS + class + mult scale it.
+      // Supporting a NEW type only needs its name added to this list.
+      for (const t of ["air", "bolt", "earth", "fire", "ice", "light", "dark", "poison", "physical"]) {
+        foundry.utils.setProperty(actor, `flags.fabula-ultima-companion.damage_taken_increased_${t}`, 0);
+      }
+    } catch (_) { /* non-fatal: ruleset defaults to 1/0 on read */ }
   }
 
   function withGatedActorChanges(actor, callback) {

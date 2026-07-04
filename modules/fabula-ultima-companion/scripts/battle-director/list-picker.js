@@ -244,6 +244,43 @@ function ensureStyles() {
     }
     .fud-lp-card .fud-lp-cancel:hover { filter: brightness(1.05); }
 
+    /* Multi-select: per-row checkbox + selected-row highlight. Warm parchment/
+       gold palette to match the option rows, kb-focus, and cancel button — the
+       gold accent is the picker's own var(--fud-gold-2). No off-theme colours. */
+    .fud-lp-card .fud-lp-option .fud-lp-check {
+      width: 20px; height: 20px; border-radius: 5px;
+      border: 2px solid rgba(90, 62, 28, 0.5);
+      background: rgba(255, 255, 255, 0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900; line-height: 1;
+      color: transparent;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+    }
+    .fud-lp-card .fud-lp-option.is-selected .fud-lp-check {
+      background: linear-gradient(180deg, #e6c684, var(--fud-gold-2, #b7935a));
+      border-color: rgba(90, 62, 28, 0.8);
+      color: #2d1f0d;
+    }
+    /* Selected row: same gold left-bar + border emphasis as kb-focus, keeping the
+       normal parchment fill so keyboard focus still reads on top. The gold
+       checkbox is the primary "checked" signal. */
+    .fud-lp-card .fud-lp-option.is-selected {
+      border-color: rgba(90, 62, 28, 0.75);
+      box-shadow: 0 2px 0 rgba(41, 33, 24, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.8) inset, inset 3px 0 0 var(--fud-gold-2, #b7935a);
+    }
+    /* Confirm = the gold primary sibling of the (muted-brown) cancel button. */
+    .fud-lp-card .fud-lp-confirm {
+      margin-top: 8px;
+      padding: 6px 10px; border-radius: 8px;
+      border: 2px solid var(--fud-stroke, #7a6a55);
+      background: linear-gradient(180deg, #e6c684, var(--fud-gold-2, #b7935a));
+      color: var(--fud-ink, #3a3228);
+      font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase; font-size: 11px;
+      cursor: pointer; text-align: center; user-select: none;
+      box-shadow: 0 3px 0 rgba(41, 33, 24, 0.55), 0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
+    }
+    .fud-lp-card .fud-lp-confirm:hover { filter: brightness(1.05); }
+
     /* Description tooltip — body-mounted singleton, shown on dwell-hover. */
     #${TIP_ID} {
       position: fixed; max-width: 320px; max-height: 70vh; overflow: hidden;
@@ -323,6 +360,16 @@ export async function pickFromList({
   width = 360,
   tabbed = false,
   listHeight = null,
+  // ── Multi-select (opt-in) ────────────────────────────────────────────────
+  // When true the picker becomes a checkbox list with a Confirm button:
+  // clicking / Space toggles a row, Enter or Confirm resolves to an ARRAY of the
+  // checked rows' `value`s (empty array allowed), Cancel/Escape → null. Single-
+  // select (the default) is completely unchanged.
+  multiSelect = false,
+  maxSelect = 0,               // 0 = unlimited; else cap the number of checks
+  preselectAll = false,        // start with every (enabled) row checked
+  preselect = null,            // OR an array of values to start checked
+  confirmLabel = "Confirm",
 } = {}) {
   ensureStyles();
   ensureTip();
@@ -346,6 +393,8 @@ export async function pickFromList({
     const iconInner = row.imageUrl ? `<img src="${row.imageUrl}" alt="">` : (row.fallbackIcon ?? "");
     const toneClass = row.badgeTone === "free" ? " is-free" : row.badgeTone === "danger" ? " is-danger" : "";
     const badgeHTML = row.badge ? `<div class="fud-lp-badge${toneClass}">${row.badge}</div>` : `<div></div>`;
+    // In multi-select the trailing cell is a checkbox instead of the badge.
+    const trailingHTML = multiSelect ? `<div class="fud-lp-check" aria-hidden="true">✓</div>` : badgeHTML;
     const secHTML = row.secondary ? `<div class="secondary${row.secondaryNoWrap ? " is-nowrap" : ""}">${row.secondary}</div>` : "";
     const accent = row.color ? ` style="border-left: 4px solid ${row.color};"` : "";
     const tipAttr = row.tooltip ? ` data-fud-lp-tip="${encodeURIComponent(JSON.stringify(row.tooltip))}"` : "";
@@ -356,7 +405,7 @@ export async function pickFromList({
           <div class="primary">${row.primary ?? ""}</div>
           ${secHTML}
         </div>
-        ${badgeHTML}
+        ${trailingHTML}
       </div>
     `;
   };
@@ -418,6 +467,7 @@ export async function pickFromList({
       <div class="fud-lp-title">${title}</div>
       ${subtitle ? `<div class="fud-lp-subtitle">${subtitle}</div>` : ""}
       ${middleHTML}
+      ${multiSelect ? `<div class="fud-lp-confirm" data-fud-lp-action="confirm" role="button" tabindex="0">${confirmLabel}</div>` : ""}
       <div class="fud-lp-cancel" data-fud-lp-action="cancel" role="button" tabindex="0">${cancelLabel}</div>
     </div>
   `;
@@ -454,6 +504,34 @@ export async function pickFromList({
     // Navigable (non-disabled) row indices for the current context — all rows
     // when stacked, or just the active panel's rows when tabbed.
     const currentNav = () => useTabs ? pickable.filter((i) => rowSection[i] === activePanel) : pickable;
+
+    // ── Multi-select state ────────────────────────────────────────────────
+    const selected = new Set();  // flat indices currently checked (multiSelect only)
+    if (multiSelect) {
+      const wanted = preselectAll
+        ? pickable.slice()
+        : (Array.isArray(preselect) ? pickable.filter((i) => preselect.includes(flat[i].value)) : []);
+      for (const i of wanted) {
+        if (maxSelect > 0 && selected.size >= maxSelect) break;
+        selected.add(i);
+      }
+    }
+    const paintSelected = () => {
+      getOptionEls().forEach((el) => {
+        el.classList.toggle("is-selected", selected.has(Number(el.dataset.fudLpIdx)));
+      });
+    };
+    const toggleByIdx = (idx) => {
+      const row = flat[idx];
+      if (!row || row.disabled) return;
+      if (selected.has(idx)) { selected.delete(idx); }
+      else {
+        if (maxSelect > 0 && selected.size >= maxSelect) { playUiHoverSfx(); return; }  // at cap
+        selected.add(idx);
+      }
+      paintSelected();
+    };
+    const finishMulti = () => finish(flat.filter((_, i) => selected.has(i)).map((r) => r.value));
 
     function setKbFocus(pos) {
       const nav = currentNav();
@@ -509,6 +587,12 @@ export async function pickFromList({
       }
     }
 
+    // Paint the initial multi-select checkmarks. The rows are already in the DOM
+    // (root was appended before this executor ran), so paint synchronously —
+    // rAF would be throttled while the tab is backgrounded, leaving the pre-
+    // selection invisible until the next frame.
+    if (multiSelect) paintSelected();
+
     const finish = (value, cancelled = false) => {
       if (resolved) return;
       resolved = true;
@@ -531,6 +615,8 @@ export async function pickFromList({
     root.addEventListener("click", (ev) => {
       const cancelEl = ev.target?.closest?.("[data-fud-lp-action='cancel']");
       if (cancelEl) { ev.stopPropagation(); finish(null, true); return; }
+      const confirmEl = ev.target?.closest?.("[data-fud-lp-action='confirm']");
+      if (confirmEl) { ev.stopPropagation(); finishMulti(); return; }
       // Tab switch (tabbed mode): toggle active tab + panel, reset kb focus.
       const tabEl = ev.target?.closest?.("[data-fud-lp-tab]");
       if (tabEl) {
@@ -549,7 +635,8 @@ export async function pickFromList({
       const rowEl = ev.target?.closest?.("[data-fud-lp-idx]");
       if (!rowEl) return;
       ev.stopPropagation();
-      pickByIdx(Number(rowEl.dataset.fudLpIdx));
+      const idx = Number(rowEl.dataset.fudLpIdx);
+      if (multiSelect) toggleByIdx(idx); else pickByIdx(idx);
     });
 
     keyListener = (ev) => {
@@ -564,8 +651,16 @@ export async function pickFromList({
       if (ev.key === "Escape" || ev.key === "x" || ev.key === "X") { ev.preventDefault(); finish(null, true); return; }
       if (ev.key === "ArrowUp")   { ev.preventDefault(); setKbFocus(kbPos - 1); return; }
       if (ev.key === "ArrowDown") { ev.preventDefault(); setKbFocus(kbPos + 1); return; }
+      // Multi-select: Space toggles the focused row; Enter/z confirms the set.
+      if (multiSelect && (ev.key === " " || ev.key === "Spacebar")) {
+        ev.preventDefault();
+        const nav = currentNav();
+        if (kbActive && nav.length) toggleByIdx(nav[kbPos]);
+        return;
+      }
       if (ev.key === "Enter" || ev.key === "z" || ev.key === "Z") {
         ev.preventDefault();
+        if (multiSelect) { finishMulti(); return; }
         const nav = currentNav();
         if (kbActive && nav.length) pickByIdx(nav[kbPos]);
         return;
@@ -574,7 +669,7 @@ export async function pickFromList({
         const n = parseInt(ev.key, 10);
         if (Number.isFinite(n) && n >= 1 && n <= 9) {
           const nav = currentNav();
-          if (n <= nav.length) { ev.preventDefault(); pickByIdx(nav[n - 1]); }
+          if (n <= nav.length) { ev.preventDefault(); if (multiSelect) toggleByIdx(nav[n - 1]); else pickByIdx(nav[n - 1]); }
         }
       }
     };

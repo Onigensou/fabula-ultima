@@ -93,7 +93,7 @@ async function getSkillEffectsExtras() {
   return _seExtraModule;
 }
 import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
-import { computeActionProfile, projectProfileToActionResult } from "./action-profile.js";
+import { computeActionProfile, projectProfileToActionResult, resolveChosenChainRows } from "./action-profile.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
 
@@ -535,6 +535,11 @@ async function resolveAction(director, ar, opts = {}) {
   ctx.battleLogSink = battleLogSink;
 
   // 3. Fire on_activate effect (pre-damage, no damage payload).
+  //    Menu-picked invocations whose flat damage was LIFTED into the primary at
+  //    COMPUTE (ar._damageViaProfile) apply that damage via the perTargetResults loop
+  //    below — so suppress the chain's own deal_damage here to avoid double-applying.
+  //    Status/heal/MP-drain rows in the same chain still run normally.
+  ctx.suppressDealDamage = !!ar._damageViaProfile;
   try {
     const r = await SE().fireActivationEffect(skill, ctx);
     if (r?.abort) {
@@ -3819,19 +3824,74 @@ const Compute = {
         dice = { rA: c.rA, rB: c.rB };
         if (c.dieSwap) arForProfile = { ...ar, rolledA1: c.A1, rolledA2: c.A2, dieSwap: c.dieSwap };
       }
+      // Damage LIFT for menu-picked invocations: when the chosen option deals flat
+      // damage (a deal_damage row), lift its element + scaled amount onto the primary
+      // (damageType/damageBonus) so damage flows through the STANDARD perTargetResults
+      // path — applied ONCE, with the full pre-resolve + caster + target reaction set.
+      // The chain's deal_damage is then suppressed at RESOLVE (ctx.suppressDealDamage)
+      // so it doesn't double-apply. Non-damage picks (heal/hex/MP-drain) are untouched
+      // (chain-driven, hasDamage false).
+      if (preActivateMenuPicks && Object.keys(preActivateMenuPicks).length) {
+        const onAct = String(view?.fire_points?.on_activate_effect_ref ?? skill?.system?.props?.on_activate_effect_ref ?? "").trim();
+        const picks = onAct ? preActivateMenuPicks[onAct] : null;
+        if (onAct && Array.isArray(picks) && picks.length) {
+          const chosen = resolveChosenChainRows(view.effect_table, onAct, picks);
+          const dmgRow = chosen.find((r) => String(r.effect_kind ?? "").toLowerCase() === "deal_damage");
+          if (dmgRow) {
+            const casterActor = await fromUuid(attacker.actorUuid).catch(() => null);
+            const casterLvl = Number(casterActor?.system?.props?.level ?? 0) || 0;
+            const dmgResolver = buildSkillResolver({ actor: casterActor, payload: {}, skill, round: director.dCombat?.round ?? 0, vars: { CASTER_LEVEL: casterLvl } });
+            const amt = Math.max(0, Math.floor(Number(evaluateFormula(String(dmgRow.damage_amount ?? "0"), dmgResolver, 0)) || 0));
+            arForProfile = { ...arForProfile, damageType: String(dmgRow.damage_element ?? "elementless"), damageBonus: String(amt), _damageViaProfile: true };
+          }
+        }
+      }
       const profile = await computeActionProfile({
         view, ar: arForProfile, attacker, targets: allTargets, dice,
         // chainVars lets the card preview resolve a VAR_<NAME> element (the
         // pre_activate element pick) to its real type instead of "varies".
-        ctx: { round: director.dCombat?.round ?? 0, chainVars: preActivateVars },
+        // menuPicks scopes the preview to the CHOSEN open_action_menu option (the
+        // picks aren't on `ar` yet — written to the actionResult below), so the card
+        // reflects the pick. DISPLAY-ONLY (never sets hasDamage / applies damage).
+        ctx: { round: director.dCombat?.round ?? 0, chainVars: preActivateVars, menuPicks: preActivateMenuPicks },
       });
       const skillProj = projectProfileToActionResult(profile, arForProfile, allTargets);
       // Surface the check_die_swap note on the roll so the accuracy card shows it.
       if (arForProfile.dieSwap && skillProj.roll) skillProj.roll = { ...skillProj.roll, dieSwap: arForProfile.dieSwap };
+      // Menu-picked skills: show the CHOSEN option's description on the card's Effect
+      // section (which swaps status names → chips) so the card reflects the pick, not
+      // the skill's generic blurb. Falls back to the skill description when no pick.
+      let descriptionHtml = arForProfile.descriptionHtml;
+      if (preActivateMenuPicks && Object.keys(preActivateMenuPicks).length) {
+        const tbl = view?.effect_table ?? {};
+        const byLabel = new Map(Object.values(tbl).filter((r) => r?.effect_label).map((r) => [r.effect_label, r]));
+        // Interpolate ${…} scaling tokens (e.g. CHAR_LEVEL-based invocation damage/heal)
+        // against the CASTER so the card's description shows the ACTUAL value (25, not 20).
+        const casterActorForDesc = await fromUuid(attacker.actorUuid).catch(() => null);
+        const interpCtx = { reactorActor: casterActorForDesc, payload: {}, skill, dCombat: director.dCombat };
+        const interp = (s) => SE().interpolateMenuText(String(s ?? ""), interpCtx);
+        const parts = [];
+        for (const [menuLabel, picks] of Object.entries(preActivateMenuPicks)) {
+          const menuRow = byLabel.get(menuLabel);
+          if (!menuRow) continue;
+          const optRefs = String(menuRow.menu_option_refs ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+          const labelToOpt = new Map();
+          for (const oref of optRefs) {
+            const orow = byLabel.get(oref);
+            if (orow) labelToOpt.set(String(orow.menu_label ?? orow.effect_label).trim().toLowerCase(), { label: orow.menu_label ?? oref, desc: orow.menu_description ?? "" });
+          }
+          for (const pk of (Array.isArray(picks) ? picks : [])) {
+            const opt = labelToOpt.get(String(pk).trim().toLowerCase());
+            if (opt) parts.push(`<p><strong>${interp(opt.label)}.</strong> ${interp(opt.desc)}</p>`);
+          }
+        }
+        if (parts.length) descriptionHtml = parts.join("");
+      }
       director.ctx.actionResult = freezeActionResult({
         ...arForProfile,
         ...skillProj,
         targets: allTargets,
+        descriptionHtml,
         // Persist the captured pre_activate picks so RESOLVE replays them.
         preActivateVars, preActivateMenuPicks, preActivateTargets, preActivateDone: true,
       });
@@ -4520,10 +4580,25 @@ const Confirm = {
           const subjectActorUuid = target?.actorUuid;
           if (!subjectActorUuid) continue;
           const subjectTokenUuid = target?.tokenUuid ?? null;
+          // Predicted damage THIS subject is about to take from the action —
+          // the subject's own perTargetResults slot (matched by token, then
+          // actor). Threaded so a DEFENDER incoming-damage reaction can gate on
+          // INCOMING_DAMAGE > 0: a beneficial/non-damaging action that merely
+          // targets the reactor (Cleanse, Heal, buffs) or a miss predicts 0, so
+          // e.g. Ninja Log ("when you take damage") stays dormant instead of
+          // firing on every targeting and burning its once-per-conflict charge.
+          const subjectPt = (ar.perTargetResults ?? []).find(
+            (p) => (subjectTokenUuid && p?.tokenUuid === subjectTokenUuid)
+              || p?.actorUuid === subjectActorUuid,
+          );
+          const incomingDamage = subjectPt?.hit
+            ? Math.max(0, Number(subjectPt.damage ?? 0) || 0)
+            : 0;
           const payloadForTrigger = {
             sourceActorUuid: subjectActorUuid,
             subjectActorUuid,
             subjectTokenUuid,
+            incomingDamage,
             targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
             attackerActorUuid,
             attackerTokenUuid: ar.attacker?.tokenUuid ?? null,

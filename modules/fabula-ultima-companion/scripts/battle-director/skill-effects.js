@@ -4089,9 +4089,14 @@ export function describeGrant(row, ctx = {}) {
   const resource = String(row.grant_resource ?? "").trim().toLowerCase();
   const targetRef = row.target_ref ?? null;
   const casterActor = ctx.reactorActor ?? ctx.liveAttacker ?? null;
+  // CASTER_LEVEL — same caster-scoped identifier the deal_damage path injects, so
+  // heal / MP-drain formulas scale on the caster's level uniformly (here the resolver
+  // actor IS the caster, so it equals CHAR_LEVEL, but exposing CASTER_LEVEL keeps
+  // invocation authoring consistent across deal_damage + grant rows).
+  const _casterLevel = Number(casterActor?.system?.props?.level ?? 0) || 0;
   const resolver = ctx.resolver
     ?? (casterActor
-      ? buildSkillResolver({ actor: casterActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 })
+      ? buildSkillResolver({ actor: casterActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0, vars: { CASTER_LEVEL: _casterLevel } })
       : null);
   let amount = resolver != null
     ? evaluateFormula(row.grant_amount, resolver, 0)
@@ -4364,6 +4369,13 @@ function dealDamageRun(row, ctx) {
 }
 
 async function dealDamageApply(row, ctx, d) {
+  // Suppression: a menu-picked invocation's damage is LIFTED into the action's
+  // primary (perTargetResults) at COMPUTE and applied there with the full reaction
+  // set. The chain's own deal_damage would then double-apply, so RESOLVE sets
+  // ctx.suppressDealDamage to make it a no-op. Scoped to lifted skills only.
+  if (ctx?.suppressDealDamage) {
+    return { ok: true, kind: "deal_damage", suppressed: true, applied: [] };
+  }
   const element = d.isVar ? (d.resolvedElement ?? "elementless") : d.resolvedElement;
   const amountFormula = d.amountFormula;
   const targetRef = d.targetRef;
@@ -4392,6 +4404,14 @@ async function dealDamageApply(row, ctx, d) {
   // target deal_damage = one write for all its targets).
   const inheritedSink = Array.isArray(ctx.battleLogSink) ? ctx.battleLogSink : null;
   const battleLogSink = inheritedSink ?? [];
+  // CASTER_LEVEL — the ACTING creature's total level, injected so a caster-scaled
+  // formula (e.g. Invoker invocations: +5 damage at Lv20, +10 at Lv40) reads the
+  // CASTER's level even though the per-target resolver below binds `actor` to the
+  // VICTIM (for MAX_HP/CUR_HP). Threaded via the resolver's `vars` hook. Falls back
+  // to the AE applier for rider damage, then 0 (no bonus) when no caster is known.
+  const _casterLevel = Number(
+    (ctx.reactorActor ?? ctx.liveAttacker ?? applierActor)?.system?.props?.level ?? 0
+  ) || 0;
   const applied = [];
   for (const token of targetResult.tokens) {
     const actor = token.actor;
@@ -4402,6 +4422,7 @@ async function dealDamageApply(row, ctx, d) {
       payload: ctx.payload,
       skill: ctx.skill,
       round: ctx.dCombat?.round ?? 0,
+      vars: { CASTER_LEVEL: _casterLevel },
     });
     const amount = Math.floor(Number(evaluateFormula(amountFormula, resolver, 0)) || 0);
     if (amount <= 0) {
@@ -6062,7 +6083,7 @@ function parseEffectRefList(raw) {
 // is left intact (visible tell, not a silent 0). No-op on text without "${" — so
 // every existing static menu is unaffected. First user: Lucky Seven's die picker
 // ("First die (DEX): 3 → 7"). The resolver is cached on ctx across calls.
-function interpolateMenuText(str, ctx) {
+export function interpolateMenuText(str, ctx) {
   const s = str == null ? "" : String(str);
   if (!s.includes("${")) return s;
   const p = ctx?.payload ?? {};
@@ -6102,6 +6123,16 @@ function buildMenuOptions(row, ctx) {
   // menu only ever offers options that would actually fire. Used by the Tinkerer
   // Gadgets menu to show only tier-unlocked infusions (GADGET_INFUSION_TIER >= N).
   // Options with no condition_formula are unaffected (every existing menu).
+  //
+  // MENU-LEVEL override: `menu_hide_disabled` on the open_action_menu row forces
+  // EVERY disabled (gate-failed) option to be HIDDEN, regardless of its per-option
+  // `disable_ui_type`. Default (absent/false) keeps the per-option behavior below
+  // (hide by default; show greyed when disable_ui_type is "dim"/"disabled"). Use it
+  // for large gated menus where showing 10+ disabled rows is noise — e.g. the Invoker
+  // Invocation menu, where wellspring + SL gating leaves most of the 20 options
+  // unavailable at any moment.
+  const menuHideDisabled = row?.menu_hide_disabled === true
+    || String(row?.menu_hide_disabled ?? "").trim().toLowerCase() === "true";
   let _menuResolver = null;
   const optionGatePasses = (optRow) => {
     const cond = String(optRow?.condition_formula ?? "").trim();
@@ -6136,7 +6167,7 @@ function buildMenuOptions(row, ctx) {
       // Tinkerer Gadgets keeps hiding tier-locked options, while Create Phantasm
       // dims "Command an existing Phantasm" + "No Phantasm on the field" when none.
       const _uiType = String(refRow?.disable_ui_type ?? "").trim().toLowerCase();
-      if (!_gatePass && (!_uiType || _uiType === "hide")) continue;
+      if (!_gatePass && (menuHideDisabled || !_uiType || _uiType === "hide")) continue;
       // Menu-row text wins; fall back to the option row's legacy fields, then
       // to the ref label. (Empty entries in the |-list also fall through.)
       const label = interpolateMenuText((rowLabels[i] && rowLabels[i] !== "")
@@ -6170,7 +6201,7 @@ function buildMenuOptions(row, ctx) {
     for (const o of named) {
       const gatePass = optionGatePasses(o);
       const uiType = String(o?.disable_ui_type ?? "").trim().toLowerCase();
-      if (!gatePass && (!uiType || uiType === "hide")) continue;
+      if (!gatePass && (menuHideDisabled || !uiType || uiType === "hide")) continue;
       options.push({
         label: interpolateMenuText(String(o.label), ctx),
         description: o.description ? interpolateMenuText(String(o.description), ctx) : null,
@@ -6999,15 +7030,24 @@ function recordCapturedRemovals(ctx, label, names) {
 }
 
 // ── transfer_ae ──────────────────────────────────────────────────────────
-// MOVE an existing AE (matched by name = `ae_template_ref`) from a source
-// creature to a destination, PRESERVING its remaining charges / turnsRemaining /
-// directorAppliedBy stamp. Unlike apply_ae (which clones a fresh template and
-// resets the charge to the template default), transfer_ae carries the live
-// instance over — so a 2-charge mark stays a 2-charge mark on its new bearer.
+// MOVE an existing AE from a source creature to a destination, PRESERVING its
+// remaining charges / turnsRemaining / directorAppliedBy stamp. Unlike apply_ae
+// (which clones a fresh template and resets the charge to the template default),
+// transfer_ae carries the live instance over — so a 2-charge mark stays a
+// 2-charge mark on its new bearer.
+//
+// Two selection modes:
+//   • `ae_template_ref: "<Name>"` — move the one AE with that name.
+//   • `filter_tag: "<tag>"`       — move EVERY AE matching the tag (system.tags
+//                                   OR chargeKey), e.g. Symptom Shift "draw all
+//                                   the sickness away and pass it onto the enemy"
+//                                   (filter_tag "debuff"). persistent_counter
+//                                   clocks are never moved (same guard as
+//                                   remove_tagged_ae).
 //
 // Rows:
 //   { effect_kind: "transfer_ae",
-//     ae_template_ref: "Searing Brand",   // AE name to move
+//     ae_template_ref: "Searing Brand",   // OR filter_tag: "debuff"
 //     from_ref: "self",                   // source target_ref (default "self" = the reactor/bearer)
 //     target_ref: "sb_pick" }             // destination target_ref (a targeting row)
 //
@@ -7018,10 +7058,29 @@ async function applyTransferAeEffect(row, ctx) {
     return { ok: true, kind: "transfer_ae", applied: [], reason: "preview" };
   }
   const aeName = String(row.ae_template_ref ?? "").trim();
-  if (!aeName) {
-    warn(`skill-effects.transfer_ae: missing ae_template_ref on "${row.effect_label}"`);
+  // Filter mode: `filter_tag` accepts one tag, a comma-list of tags (match ANY),
+  // or `*`/`all` (every AE). Matches system.tags OR chargeKey. persistent_counter
+  // clocks are never moved (same guard as remove_tagged_ae).
+  const filterRaw = String(row.filter_tag ?? "").trim().toLowerCase();
+  const filterAll = filterRaw === "*" || filterRaw === "all";
+  const filterTags = filterAll ? [] : filterRaw.split(",").map((s) => s.trim()).filter(Boolean);
+  const useFilter = filterAll || filterTags.length > 0;
+  if (!aeName && !useFilter) {
+    warn(`skill-effects.transfer_ae: needs ae_template_ref or filter_tag on "${row.effect_label}"`);
     return { ok: false, kind: "transfer_ae", reason: "no-ae-ref" };
   }
+  const matchesFilter = (eff) => {
+    const lifetimeMode = String(eff?.flags?.[FLAG_NS]?.lifetimeMode ?? "").trim().toLowerCase();
+    if (lifetimeMode === "persistent_counter") return false;
+    if (filterAll) return true;
+    const tags = Array.isArray(eff?.system?.tags) ? eff.system.tags : [];
+    const chargeKey = String(eff?.flags?.[FLAG_NS]?.chargeKey ?? "").trim().toLowerCase();
+    return filterTags.some((t) => tags.includes(t) || (chargeKey && chargeKey === t));
+  };
+  // How many to move: ""/all = every match; N = up to N (multi-select picker).
+  const countRaw = String(row.count ?? "").trim().toLowerCase();
+  const takeAll = countRaw === "" || countRaw === "all";
+  const maxCount = takeAll ? Infinity : Math.max(1, Number(row.count) || 1);
 
   // Source bearer(s) — default "self" (the reactor whose turn started).
   const fromRef = String(row.from_ref ?? "self").trim() || "self";
@@ -7050,37 +7109,66 @@ async function applyTransferAeEffect(row, ctx) {
       log(`skill-effects.transfer_ae: source == destination (${src.name}); skipping`);
       continue;
     }
-    const eff = Array.from(src.effects).find((e) => e.name === aeName);
-    if (!eff) {
-      log(`skill-effects.transfer_ae: ${src.name} has no "${aeName}" AE to move; skipping`);
+    // Name mode → the one named AE (unchanged); filter mode → matching set.
+    const matches = useFilter
+      ? Array.from(src.effects).filter(matchesFilter)
+      : Array.from(src.effects).filter((e) => e.name === aeName);
+    if (!matches.length) {
+      log(`skill-effects.transfer_ae: ${src.name} has no ${useFilter ? "matching" : `"${aeName}"`} AE to move; skipping`);
       continue;
     }
-    // Snapshot the LIVE instance (charges, turnsRemaining, directorAppliedBy,
-    // reactionConfig all ride along). Drop _id so it can re-key on the dest.
-    const data = eff.toObject();
-    delete data._id;
-    // If the dest already bears this AE, refresh it in place with the moved
-    // (preserved-charge) data; else create. Remove from source either way.
-    const existing = Array.from(dest.effects ?? []).find((e) => e.name === aeName);
-    try {
-      await src.deleteEmbeddedDocuments("ActiveEffect", [eff.id]);
-    } catch (e) {
-      warn(`skill-effects.transfer_ae: delete from ${src.name} failed`, e);
-      continue;
-    }
-    try {
-      if (existing) await existing.update(data);
-      else await dest.createEmbeddedDocuments("ActiveEffect", [data]);
-      moved.push({
-        from: src.uuid, to: dest.uuid, name: aeName,
-        charges: data.flags?.[FLAG_NS]?.charges ?? null,
+    // Selection. Name mode moves the match directly (no picker — unchanged).
+    // Filter mode: interactive → multi-select picker (cap = maxCount; opens
+    // PRE-SELECTED when the cap covers every match, so the player just confirms);
+    // passive/auto → take all, or the first maxCount.
+    let effs = matches;
+    if (useFilter && !ctx.isPassive) {
+      const picked = await pickFromList({
+        title: String(row.menu_title ?? "Transfer effects"),
+        subtitle: row.menu_subtitle ? String(row.menu_subtitle) : `${src.name} → ${dest.name}`,
+        options: matches.map((e) => ({ primary: e.name, value: e.id, imageUrl: e.img || null })),
+        multiSelect: true,
+        maxSelect: takeAll ? 0 : maxCount,
+        preselectAll: maxCount >= matches.length,
+        confirmLabel: "Confirm",
       });
-    } catch (e) {
-      warn(`skill-effects.transfer_ae: apply to ${dest.name} failed`, e);
+      if (picked == null) {
+        log(`skill-effects.transfer_ae: ${src.name} picker cancelled; skipping`);
+        continue;
+      }
+      const pickSet = new Set(picked);
+      effs = matches.filter((e) => pickSet.has(e.id));
+    } else if (Number.isFinite(maxCount)) {
+      effs = matches.slice(0, maxCount);
+    }
+    for (const eff of effs) {
+      // Snapshot the LIVE instance (charges, turnsRemaining, directorAppliedBy,
+      // reactionConfig all ride along). Drop _id so it can re-key on the dest.
+      const data = eff.toObject();
+      delete data._id;
+      // If the dest already bears this AE, refresh it in place with the moved
+      // (preserved-charge) data; else create. Remove from source either way.
+      const existing = Array.from(dest.effects ?? []).find((e) => e.name === eff.name);
+      try {
+        await src.deleteEmbeddedDocuments("ActiveEffect", [eff.id]);
+      } catch (e) {
+        warn(`skill-effects.transfer_ae: delete from ${src.name} failed`, e);
+        continue;
+      }
+      try {
+        if (existing) await existing.update(data);
+        else await dest.createEmbeddedDocuments("ActiveEffect", [data]);
+        moved.push({
+          from: src.uuid, to: dest.uuid, name: eff.name,
+          charges: data.flags?.[FLAG_NS]?.charges ?? null,
+        });
+      } catch (e) {
+        warn(`skill-effects.transfer_ae: apply to ${dest.name} failed`, e);
+      }
     }
   }
   if (moved.length) {
-    log(`skill-effects.transfer_ae: moved "${aeName}" to ${dest.name} (${moved.length}; charges ${moved[0]?.charges ?? "—"})`);
+    log(`skill-effects.transfer_ae: moved ${moved.length} AE(s) to ${dest.name}`);
   }
   return { ok: true, kind: "transfer_ae", applied: moved };
 }

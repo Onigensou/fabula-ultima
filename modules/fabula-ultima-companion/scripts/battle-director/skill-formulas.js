@@ -373,6 +373,48 @@ export function displayElement(el) {
 //   - skill     (Item | null)   — the firing skill, for SL.
 //   - round     (number | null) — current dCombat.round; falls back to 0.
 
+// Read the Invoker wellspring availability for an element from the scene's Fabula
+// Configuration flags: `flags.fabula-ultima-companion.oniFabula.general.wellspring_<elem>`
+// (per-element boolean, set by the Scene Config UI). Prefers the active combat's scene,
+// then the active/viewed scene. UNSET → available (returns 1) so the skill works out-of-box
+// before a GM restricts the scene; only an explicit `false` (GM unchecked it) gates it.
+function wellspringAvailable(elem) {
+  try {
+    const scene = globalThis.game?.combat?.scene
+      ?? globalThis.game?.scenes?.active
+      ?? globalThis.canvas?.scene
+      ?? null;
+    const g = scene?.flags?.["fabula-ultima-companion"]?.oniFabula?.general;
+    return g?.[`wellspring_${elem}`] === false ? 0 : 1;
+  } catch { return 1; }
+}
+
+// 1 if any creature on the scene matches `needle` by SPECIES or NPC RANK, else 0.
+// Prefers the active combat's combatants (a battle), else the active/viewed scene's
+// tokens. `needle` is compared case-insensitively with underscores→spaces against both
+// `system.props.species` (elemental/undead/…) and `system.props.npc_rank` (soldier/
+// elite/champion). Backs the dynamic CREATURE_<X>_PRESENT identifier.
+function creaturePresentOnScene(needle) {
+  try {
+    const want = String(needle ?? "").replace(/_/g, " ").toLowerCase().trim();
+    if (!want) return 0;
+    const actors = [];
+    const combatants = globalThis.game?.combat?.combatants;
+    if (combatants?.size) {
+      for (const c of combatants) { if (c.actor) actors.push(c.actor); }
+    } else {
+      const scene = globalThis.game?.scenes?.active ?? globalThis.canvas?.scene ?? null;
+      for (const t of (scene?.tokens ?? [])) { if (t.actor) actors.push(t.actor); }
+    }
+    for (const a of actors) {
+      const sp = String(a?.system?.props?.species ?? "").replace(/_/g, " ").toLowerCase().trim();
+      const rk = String(a?.system?.props?.npc_rank ?? "").replace(/_/g, " ").toLowerCase().trim();
+      if (sp === want || rk === want) return 1;
+    }
+    return 0;
+  } catch { return 0; }
+}
+
 export function buildSkillResolver({ actor = null, payload = null, skill = null, round = 0, vars = null } = {}) {
   return (name) => {
     // Harness override hook — when `runDirectorSkillSimulate` was called
@@ -408,6 +450,16 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // skills that scale on the caster's overall power (Heal's
       // "Skill Enhancement Lv. 20 → 50 / Lv. 40 → 60" tiers, e.g.).
       case "CHAR_LEVEL": return Number(actor?.system?.props?.level ?? actor?.system?.level ?? 0) || 0;
+      // Invoker wellsprings — is the given element's wellspring present on the scene?
+      // 1 = available (gate passes), 0 = not. Reads the combat/active scene flag
+      // `flags.fabula-ultima-companion.oniFabula.wellsprings`; UNSET → all available
+      // (so the skill works out-of-box before a GM restricts the scene). Used by the
+      // Invocation menu's per-option condition_formula alongside the SL tier gate.
+      case "WELLSPRING_AIR_AVAILABLE":   return wellspringAvailable("air");
+      case "WELLSPRING_EARTH_AVAILABLE": return wellspringAvailable("earth");
+      case "WELLSPRING_FIRE_AVAILABLE":  return wellspringAvailable("fire");
+      case "WELLSPRING_BOLT_AVAILABLE":  return wellspringAvailable("bolt");
+      case "WELLSPRING_ICE_AVAILABLE":   return wellspringAvailable("ice");
       // Reactor resources
       // MP this actor has spent on SPELL actions so far THIS turn (Bimagus).
       // Combat-scoped, per-actor state the resolver can't derive from `actor`
@@ -420,6 +472,16 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // this: "2nd spell ≤ ½ the first"). 0 when not in that reaction context.
       case "LAST_SPELL_MP":
         return Number(payload?.lastSpellMp ?? 0) || 0;
+      // Predicted damage THIS reactor is about to take from the in-flight action,
+      // stamped on the pre-resolve `creature_targeted_by_action` payload (the
+      // subject's own perTargetResults.damage at CONFIRM). Lets a DEFENDER
+      // incoming-damage reaction gate on "am I actually being damaged?" — a
+      // beneficial/non-damaging action that merely TARGETS the reactor (Cleanse,
+      // Heal, buffs) or an attack that misses/is nullified predicts 0, so the
+      // reaction stays dormant. Matches RAW "when you take damage" (Ninja Log).
+      // 0 outside that trigger (payload doesn't carry it), so a stray gate is safe.
+      case "INCOMING_DAMAGE":
+        return Math.max(0, Number(payload?.incomingDamage ?? 0) || 0);
       case "CUR_HP": return readProp(actor, "current_hp");
       case "MAX_HP": return readProp(actor, "max_hp");
       case "CUR_MP": return readProp(actor, "current_mp");
@@ -1286,6 +1348,14 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .toLowerCase()
             .trim();
           return rank && rank === needle ? 1 : 0;
+        }
+        // Dynamic CREATURE_<X>_PRESENT — 1 if ANY creature on the scene matches <X>
+        // by SPECIES or NPC RANK, else 0. Scene-scoped (combat combatants, else active-
+        // scene tokens), NOT the resolver actor — a "is there an X anywhere on the
+        // battlefield" gate. E.g. CREATURE_ELEMENTAL_PRESENT (Elemental Harmony's heal
+        // bonus), CREATURE_CHAMPION_PRESENT. Case-insensitive; underscores → spaces.
+        if (name.startsWith("CREATURE_") && name.endsWith("_PRESENT")) {
+          return creaturePresentOnScene(name.slice("CREATURE_".length, name.length - "_PRESENT".length));
         }
         // Dynamic TARGET_SPECIES_IS_<X> — 1 when the trigger SUBJECT's species
         // (enemy template `system.props.species`, e.g. "UNDEAD") matches <X>,

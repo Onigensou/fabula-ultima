@@ -99,6 +99,20 @@ export function computeIncomingDamage(actor, {
     }
   }
 
+  // 1c) Additive per-element damage bump (Invoker "Hex" etc.) — added BEFORE affinity
+  //     so VU/RS + class + mult scale it (RAW: the +N is part of the elemental damage,
+  //     so a VU target takes double the bonus, an IM target takes +0, an AB target
+  //     absorbs it). The flag is already summed across all AEs by seedAeAccumulators +
+  //     ADD-mode changes, so this is a single lookup. Gated under !ignoreAffinity
+  //     alongside the other elemental axes (true/typeless damage ignores it).
+  if (!ignoreAffinity) {
+    const inc = _num(actor?.flags?.["fabula-ultima-companion"]?.[`damage_taken_increased_${element}`], 0);
+    if (inc > 0) {
+      v += inc;
+      breakdown.push({ source: `Vulnerable +${inc} (${element})`, amount: inc });
+    }
+  }
+
   // 2) Element affinity (+ status-forced VU). RS/VU/IM applied here; AB/NE
   //    leave the value untouched (AB heals downstream).
   const elementCode = ignoreAffinity ? "NE" : resolveAffinity(actor, element);
