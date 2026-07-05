@@ -10,6 +10,154 @@
   },
   "effects": [
     {
+      "_id": "Drm9IULS4IrA13Yd",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783212275899,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Lucky Number:</em> the value you may swap onto a die with Lucky Seven (starts at 7). Replacing a die makes the replaced value your new lucky number.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Drm9IULS4IrA13Yd",
+          "originalParentId": "dafTLBUscCDNgq8H",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.Drm9IULS4IrA13Yd"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "lucky_number",
+          "charges": 7,
+          "chargesMax": 7,
+          "directorAppliedBy": {
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": null,
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Lucky Seven Ready",
+                "effect_kind": "apply_ae",
+                "effect_label": "ls_arm",
+                "target_ref": "ls_self"
+              },
+              "1": {
+                "$deleted": false,
+                "chain_steps": "ls_consume, ls_menu",
+                "effect_kind": "chain",
+                "effect_label": "ls_root"
+              },
+              "2": {
+                "$deleted": false,
+                "charge_key": "lucky_seven",
+                "count": "1",
+                "effect_kind": "consume_charge",
+                "effect_label": "ls_consume",
+                "on_empty": "abort",
+                "target_ref": "ls_self"
+              },
+              "3": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "ls_menu",
+                "menu_option_descriptions": "New total: ${AE_CHARGES_LUCKY_NUMBER + CHECK_DIE_B + CHECK_BONUS}|New total: ${CHECK_DIE_A + AE_CHARGES_LUCKY_NUMBER + CHECK_BONUS}",
+                "menu_option_labels": "First die (${CHECK_DIE_A_ATTR}): ${CHECK_DIE_A} → ${AE_CHARGES_LUCKY_NUMBER}|Second die (${CHECK_DIE_B_ATTR}): ${CHECK_DIE_B} → ${AE_CHARGES_LUCKY_NUMBER}",
+                "menu_option_refs": "ls_die_a, ls_die_b",
+                "menu_subtitle": "Replace one die with your lucky number (${AE_CHARGES_LUCKY_NUMBER}); the replaced value becomes your new lucky number.",
+                "menu_title": "Lucky Seven"
+              },
+              "4": {
+                "$deleted": false,
+                "die_value": "",
+                "effect_kind": "set_check_die",
+                "effect_label": "ls_die_a",
+                "which_die": "A",
+                "writeback_carrier_charge": true
+              },
+              "5": {
+                "$deleted": false,
+                "die_value": "",
+                "effect_kind": "set_check_die",
+                "effect_label": "ls_die_b",
+                "which_die": "B",
+                "writeback_carrier_charge": true
+              },
+              "6": {
+                "$deleted": false,
+                "auto_confirm_when_obvious": true,
+                "candidate_source": "self",
+                "category": "",
+                "count": 1,
+                "effect_kind": "targeting",
+                "effect_label": "ls_self",
+                "exclude_self": false,
+                "iteration_mode": "together",
+                "mode": "exact",
+                "skip_when_passive": true
+              }
+            },
+            "name": "Lucky Seven",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "",
+                "reaction_effect_ref": "ls_arm",
+                "reaction_passive_mode": "force",
+                "reaction_source": "",
+                "reaction_trigger": "conflict_start"
+              },
+              "1": {
+                "$deleted": false,
+                "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0 && AE_CHARGES_LUCKY_SEVEN_READY > 0",
+                "reaction_effect_ref": "ls_root",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "name": "Lucky Number",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-lucky-number"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "WPEoRZOK1x4yTM3Q",
       "_stats": {
         "compendiumSource": null,

@@ -3716,9 +3716,6 @@
               "effect_kind": "targeting",
               "effect_label": "cf_pick",
               "exclude_self": true,
-              "menu_option_labels": "Focus an ally|Focus a Dazed / Enraged / Shaken enemy",
-              "menu_option_refs": "cf_ally, cf_enemy",
-              "menu_title": "Cognitive Focus",
               "mode": "exact",
               "skip_when_passive": false,
               "target_filter": "IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED + HAS_STATUS_SHAKEN)"
@@ -3727,12 +3724,8 @@
               "$deleted": false,
               "ae_duplicate_mode": "replace_per_caster",
               "ae_template_ref": "Cognitive Focus",
-              "candidate_source": "combat",
-              "category": "ally",
-              "count": 1,
               "effect_kind": "apply_ae",
               "effect_label": "cf_apply",
-              "mode": "exact",
               "target_ref": "cf_pick"
             },
             "2": {
