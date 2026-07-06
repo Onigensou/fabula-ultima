@@ -2411,6 +2411,12 @@
         "effects": 0
       },
       {
+        "id": "l4iakcTTuEciUMsp",
+        "name": "Adversity (gear skill)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "sLUFIsIYIAmmO0lI",
         "name": "Aenigma of Adaptation",
         "type": "equippableItem",
@@ -8702,13 +8708,25 @@
         "id": "GyArIXzGOCwQzDYY",
         "name": "Poison Lash",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
+      },
+      {
+        "id": "S5fOPmIzrVxsAv3S",
+        "name": "Poison Lash (gear skill)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "UUWalUbZ5HIZyRnQ",
         "name": "Poisoned Dagger",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
+      },
+      {
+        "id": "NAhxhYpxpcmWXMn0",
+        "name": "Poisoned Dagger (gear skill)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "TyLSU7z3YEh7zsHg",
@@ -13730,6 +13748,10 @@
           {
             "id": "wXNXt3PGpJWMzRot",
             "name": "Poisoned Dagger"
+          },
+          {
+            "id": "zUM6QfiO2ifMv7zH",
+            "name": "Poisoned Dagger (gear skill)"
           }
         ],
         "effects": 0

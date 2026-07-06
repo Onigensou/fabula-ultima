@@ -1267,7 +1267,7 @@ function weaponReactionInPlay(item, payload, casterActor) {
 // CONTAINER item's `isEquipped` (the `_skill` itself has no equip state).
 // Fail-open when the container is missing/dangling or isn't equippable gear, so
 // ordinary (non-gear-linked) skill/AE reactions are never gated.
-function containerReactionInPlay(item, casterActor) {
+function containerReactionInPlay(item, casterActor, payload) {
   const containerId = item?.system?.container;
   if (!containerId) return true;
   const container = casterActor?.items?.get?.(containerId);
@@ -1275,7 +1275,20 @@ function containerReactionInPlay(item, casterActor) {
   const itemType = String(container.system?.props?.item_type ?? "").toLowerCase();
   const GEAR = new Set(["accessory", "armor", "weapon", "shield"]);
   if (!GEAR.has(itemType)) return true;
-  return container.system?.props?.isEquipped === true;
+  if (container.system?.props?.isEquipped === true) return true;
+  // A WEAPON container that was actually USED in the triggering action counts as
+  // "in play" even when it isn't flagged isEquipped — NPC weapons are almost never
+  // marked equipped (they rely on weapon-USED gating, as the legacy on-weapon
+  // `weaponReactionInPlay` path did). Mirror that: only the acting attacker, only
+  // the matching weapon. Per-row `reaction_requires_weapon_used` still constrains
+  // WHICH rows fire; this just stops the equip flag from gating the item out.
+  if (itemType === "weapon") {
+    const usedUuid = payload?.weaponUuid ?? null;
+    const actingUuid = payload?.sourceActorUuid ?? null;
+    const reactorIsActor = !!actingUuid && casterActor?.uuid === actingUuid;
+    if (usedUuid && reactorIsActor && container.uuid === usedUuid) return true;
+  }
+  return false;
 }
 
 // Per-ROW weapon-USED gate. A reaction row may DECLARE (via the checkbox column
@@ -1449,7 +1462,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
     const rc = item.system?.props?.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
     if (!weaponReactionInPlay(item, payload, casterActor)) continue;
-    if (!containerReactionInPlay(item, casterActor)) continue;
+    if (!containerReactionInPlay(item, casterActor, payload)) continue;
     const effectTable = item.system?.props?.effect_table ?? {};
     for (const key of Object.keys(rc)) {
       const row = rc[key];
