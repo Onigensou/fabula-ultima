@@ -5667,62 +5667,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "KVCOLRQv6anedDGI",
-      "_stats": {
-        "compendiumSource": "Item.KaykXhgyX1J1mdPv",
-        "coreVersion": "12.343",
-        "createdTime": 1783148616011,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_healing_magic.png",
-      "name": "Spiritual Magic",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "yL2PQxh3R9ddt0te": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "check_bonus": "0",
-          "class": "Spiritist",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>Each time you acquire this Skill, learn one Spiritist spell (see Facet). 【⚡Offensive Spiritist Spell】 use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "10",
-          "name": "Spiritual Magic",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Other",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "KaykXhgyX1J1mdPv"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "L1vZvNSNxlYlrQhu",
       "_stats": {
         "compendiumSource": null,
@@ -6755,6 +6699,104 @@
       "type": "equippableItem"
     },
     {
+      "_id": "nyEzzbUngB4BZ8Qw",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362369402,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_asylum.png",
+      "name": "Healing Power",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "healing_power_grant",
+              "grant_amount": "SL * BOND_COUNT",
+              "grant_resource": "hp",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "ally_action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Healing Power",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_ARCANE_WEAPON",
+              "reaction_action_intent": "",
+              "reaction_action_target": "ally",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "healing_power_grant",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_completes_spell",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "B7iUxJTSvR12dwEr"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "O7KjXoyMd4zoGh5c",
       "_stats": {
         "compendiumSource": null,
@@ -7747,6 +7789,71 @@
       "type": "equippableItem"
     },
     {
+      "_id": "SuE7ERem0thYurVC",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362366968,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/presence_of_mind.png",
+      "name": "Ritual Spiritism",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may perform Rituals whose effects fall within the <strong>Spiritism</strong> discipline. Spiritism Rituals use <strong>INS + WLP</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ritual Spiritism",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "JL9xPk3EXxh16ooY"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "t9BfF2mxmREPRFuf",
       "_stats": {
         "compendiumSource": "Actor.t6E3CQ0pGxwLgXrn.Item.9RzsCJ2bfZU0pmRo",
@@ -8708,6 +8815,52 @@
       "type": "equippableItem"
     },
     {
+      "_id": "uK8MN1c3SDjR2Pgs",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362363743,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_healing_magic.png",
+      "name": "Spiritual Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "Each time you acquire this Skill, learn one Spiritist spell (see Facet). Offensive Spiritist Spells use <strong>INS + WLP</strong> for the Magic Check.",
+          "isCheck": false,
+          "level": "1",
+          "name": "Spiritual Magic",
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Other",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "WZ0LtCp3xwiAAa3x"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "v56GvN63nvIYV4iJ",
       "_stats": {
         "compendiumSource": "Item.nf32D5apuWGo1rVV",
@@ -9194,62 +9347,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "wQPUQTJDFJK8Jsm3",
-      "_stats": {
-        "compendiumSource": "Item.VwJHtWmjBjF0Pj31",
-        "coreVersion": "12.343",
-        "createdTime": 1783191947536,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_asylum.png",
-      "name": "Healing Power",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "yL2PQxh3R9ddt0te": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "check_bonus": "0",
-          "class": "Spiritist",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover an amount of Hit Points equal to <strong>【SL, multiplied by the number of Bonds you have】.</strong></p><p> This healing is separate from any healing caused by the effects of the spell.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "2",
-          "name": "Healing Power",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "VwJHtWmjBjF0Pj31"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "Wtcdd42MQHwsOsSe",
       "_stats": {
         "compendiumSource": "Item.wPC22EqyPCSc20i0",
@@ -9441,62 +9538,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "CMeM0siw1nq7rr1G"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "xt1W4okhrJZPPUlB",
-      "_stats": {
-        "compendiumSource": "Item.HSiWYkTSItEIbXig",
-        "coreVersion": "12.343",
-        "createdTime": 1783191937322,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/presence_of_mind.png",
-      "name": "Ritual Spiritism",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "yL2PQxh3R9ddt0te": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "check_bonus": "0",
-          "class": "Spiritist",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>You may perform Rituals whose effects fall within the <strong>Spiritism</strong> discipline. Spiritism Rituals use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Ritual Spiritism",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "HSiWYkTSItEIbXig"
       },
       "type": "equippableItem"
     },

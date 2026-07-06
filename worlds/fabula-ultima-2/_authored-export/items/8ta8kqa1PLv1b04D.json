@@ -68,7 +68,7 @@
       "version": "4.6.4"
     }
   },
-  "folder": "H5HE3g8k3EvxVyvM",
+  "folder": "BxnzCETeAXA07Jko",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/OvermindMaster1.png",
   "name": "Cognitive Focus",
   "ownership": {
@@ -140,7 +140,7 @@
       "max_level": "5",
       "name": "Cognitive Focus",
       "optional_params": {},
-      "passive_logic_action": "",
+      "passive_logic_action": "<p>[{\"id\":\"focus-outgoing-bonus\",\"label\":\"Cognitive Focus\",\"when\":{\"all\":[{\"actor\":{\"flagEquals\":{\"ns\":\"oni\",\"key\":\"focus.active\",\"equals\":true}}}]},\"effects\":[{\"type\":\"percent\",\"scope\":\"outgoing\",\"element\":\"all\",\"amount\":0.25}],\"options\":{\"recalcOnConfirm\":\"ifElementUnknown\"}}]</p>",
       "reaction_config_table": {
         "0": {
           "$deleted": false,

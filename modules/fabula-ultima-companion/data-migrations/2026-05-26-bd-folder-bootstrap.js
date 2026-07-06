@@ -37,11 +37,11 @@ export const description =
   "Skill) so skill-author migrations resolve their folders on any world.";
 
 export async function migrate(game, log) {
-  const { created } = await ensureBattleDirectorTree(game, log);
-  return {
-    applied: true,
-    summary: created.length
-      ? `created ${created.length} folder(s): ${created.join(", ")}`
-      : "Battle Director tree already complete (0 created)",
-  };
+  // RETIRED (2026-07-06): the Battle Director folder tree has been consolidated
+  // into "💥 Skill / Class Skill" (single source of truth) and deleted. This
+  // bootstrap is now a no-op so it never rebuilds the empty tree on a fresh /
+  // co-dev world. `ensureBattleDirectorTree` is itself a no-op now; this early
+  // return makes the retirement explicit and independent of that import.
+  log("Battle Director folder bootstrap retired — no-op (tree folded into 💥 Skill / Class Skill)");
+  return { applied: true, summary: "retired — Battle Director tree no longer bootstrapped" };
 }

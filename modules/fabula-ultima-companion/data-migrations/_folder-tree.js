@@ -92,6 +92,15 @@ export function findFolderByPath(game, segments) {
  *     game, ["Battle Director", "Guardian", "Skill"], { log });
  */
 export async function ensureFolderPath(game, segments, { sorting = "a", log } = {}) {
+  // RETIRED (2026-07-06): the "Battle Director" Item-folder tree has been folded
+  // into the legacy "💥 Skill / Class Skill" library (single source of truth) and
+  // deleted. Refuse to (re)create any BD-rooted folder so no migration or macro
+  // resurrects the tree on a fresh/co-dev world. Callers that read the returned
+  // `folder` already handle null (they warn + place at root, or skip).
+  if (segments?.[0] === BD_ROOT_NAME) {
+    log?.(`  ensureFolderPath: "${segments.join(" / ")}" refused — Battle Director tree retired`);
+    return { folder: null, created: [] };
+  }
   let parentId = null;
   let current = null;
   const created = [];
@@ -118,26 +127,10 @@ export async function ensureFolderPath(game, segments, { sorting = "a", log } = 
  * Returns `{ created }` — the list of newly-created folder paths.
  */
 export async function ensureBattleDirectorTree(game, log) {
-  const created = [];
-
-  const root = await ensureFolderPath(game, [BD_ROOT_NAME], { log });
-  created.push(...root.created);
-
-  for (const cls of BD_CORE_CLASSES) {
-    const subs = [
-      ...BD_UNIVERSAL_SUBFOLDERS,
-      ...(BD_CLASS_EXTRA_SUBFOLDERS[cls] ?? []),
-    ];
-    for (const sub of subs) {
-      const r = await ensureFolderPath(game, [BD_ROOT_NAME, cls, sub], { log });
-      created.push(...r.created);
-    }
-  }
-
-  for (const sib of BD_TOPLEVEL_SIBLINGS) {
-    const r = await ensureFolderPath(game, [BD_ROOT_NAME, sib], { log });
-    created.push(...r.created);
-  }
-
-  return { created };
+  // RETIRED (2026-07-06): the Battle Director tree was consolidated into
+  // "💥 Skill / Class Skill" and deleted. This no longer builds anything — it is
+  // kept only so the bootstrap migration import still resolves. See the
+  // `ensureFolderPath` BD-path guard above.
+  log?.("ensureBattleDirectorTree: no-op — Battle Director tree retired");
+  return { created: [] };
 }

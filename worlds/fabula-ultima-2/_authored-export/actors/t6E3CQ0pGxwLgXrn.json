@@ -717,6 +717,80 @@
       "type": "equippableItem"
     },
     {
+      "_id": "5Kt5YMTdrUfblDI4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362351026,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "recipe",
+            "fromTemplate": "VJCHYWOx1mPsMSip",
+            "itemId": "H4XNJ67N8XSVnRcj",
+            "itemName": "Elixir",
+            "pickedOldProps": {
+              "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+              "recipe_flavor": "",
+              "recipe_ip": "3",
+              "recipe_label": ""
+            },
+            "ts": 1769647435537
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
+      "name": "Elixir",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "description": "<p>Target creature recovers 50 Mind Points.</p>",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
+          "ip_cost": "3",
+          "isRelatedItem": false,
+          "item_skill_active": {
+            "nTD1ZUzaAOV9TGT8": {
+              "id": "${item.id}",
+              "name": "Elixir",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.nTD1ZUzaAOV9TGT8"
+            }
+          },
+          "item_type": "recipe",
+          "level": "1",
+          "name": "Elixir",
+          "related_item_list": {
+            "nTD1ZUzaAOV9TGT8": {
+              "id": "${item.id}",
+              "name": "Elixir",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
+              "uuid": "Item.nTD1ZUzaAOV9TGT8"
+            }
+          }
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "NlUsrJJRcIOWJVWc"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "AcMJCQfYI0ZH76h6",
       "_stats": {
         "compendiumSource": null,
@@ -907,83 +981,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "kMbhsJ2cDIFndrKy"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "bSw96nwIhn8sDO2A",
-      "_stats": {
-        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
-        "coreVersion": "12.343",
-        "createdTime": 1783148578466,
-        "duplicateSource": "Item.cneU6dfTzI13k0U2",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
-      "name": "Elixir",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 100000,
-      "system": {
-        "container": "AcMJCQfYI0ZH76h6",
-        "props": {
-          "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "0",
-          "class": "",
-          "cost": "-",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>Target creature recovers 50 Mind Points.</p>",
-          "duration": "Instantaneous",
-          "effect_table": {
-            "0": {
-              "effect_kind": "grant",
-              "effect_label": "restore",
-              "grant_amount": "50",
-              "grant_resource": "mp",
-              "target_ref": "action_targets"
-            }
-          },
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Elixir",
-          "on_activate_effect_ref": "restore",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Any",
-          "skill_tags": "potion",
-          "skill_target": "One Creature",
-          "skill_type": "Item",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "nTD1ZUzaAOV9TGT8"
       },
       "type": "equippableItem"
     },
@@ -3196,6 +3193,80 @@
       "type": "equippableItem"
     },
     {
+      "_id": "KN5J6FFhqRHsyWGF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362353032,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "recipe",
+            "fromTemplate": "VJCHYWOx1mPsMSip",
+            "itemId": "H4XNJ67N8XSVnRcj",
+            "itemName": "Elixir",
+            "pickedOldProps": {
+              "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+              "recipe_flavor": "",
+              "recipe_ip": "3",
+              "recipe_label": ""
+            },
+            "ts": 1769647435537
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
+      "name": "Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "description": "<p>Target creature recovers 50 Hit Points.</p>",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
+          "ip_cost": "3",
+          "isRelatedItem": false,
+          "item_skill_active": {
+            "jNN7WCFgjvU9wXr4": {
+              "id": "${item.id}",
+              "name": "Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.jNN7WCFgjvU9wXr4"
+            }
+          },
+          "item_type": "recipe",
+          "level": "1",
+          "name": "Remedy",
+          "related_item_list": {
+            "jNN7WCFgjvU9wXr4": {
+              "id": "${item.id}",
+              "name": "Remedy",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
+              "uuid": "Item.jNN7WCFgjvU9wXr4"
+            }
+          }
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "G2cjE5FjEIntUewf"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "KSepKK2J2itbHUUK",
       "_stats": {
         "compendiumSource": null,
@@ -4958,83 +5029,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "cSynFyjRWqRbgrZx"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "up1sbEZUSPX4kxID",
-      "_stats": {
-        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
-        "coreVersion": "12.343",
-        "createdTime": 1783148578466,
-        "duplicateSource": "Item.cneU6dfTzI13k0U2",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
-      "name": "Remedy",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 100000,
-      "system": {
-        "container": "ERZjg9YBPVLk6nsc",
-        "props": {
-          "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "0",
-          "class": "",
-          "cost": "-",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>Target creature recovers 50 Hit Points.</p>",
-          "duration": "Instantaneous",
-          "effect_table": {
-            "0": {
-              "effect_kind": "grant",
-              "effect_label": "heal",
-              "grant_amount": "50",
-              "grant_resource": "hp",
-              "target_ref": "action_targets"
-            }
-          },
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Remedy",
-          "on_activate_effect_ref": "heal",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Any",
-          "skill_tags": "potion",
-          "skill_target": "One Creature",
-          "skill_type": "Item",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "jNN7WCFgjvU9wXr4"
       },
       "type": "equippableItem"
     },

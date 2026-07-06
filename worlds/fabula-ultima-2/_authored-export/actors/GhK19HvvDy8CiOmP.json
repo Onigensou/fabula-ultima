@@ -33,61 +33,6 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Surtur/Surtur_Standard.png",
   "items": [
     {
-      "_id": "1PY2tjB7kJRZuwvC",
-      "_stats": {
-        "compendiumSource": "Item.rERGt9WNcSfYV31k",
-        "coreVersion": "12.343",
-        "createdTime": 1780815033345,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/unleash.png",
-      "name": "Agony",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0,
-        "q27qeCi9xNRCTCkw": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "check_bonus": "0",
-          "class": "Darkblade",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>After you deal damage to one or more creatures, if you have a <strong>Bond</strong> towards at least one of those creatures, you may recover <strong>【SL × 2】</strong> Hit Points and <strong>【SL × 2】</strong> Mind Points.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "level": "1",
-          "max_level": "5",
-          "name": "Agony",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>HP and MP recover</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>2</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>4</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>6</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>8</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>10</strong></p></td></tr></tbody></table>",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "rERGt9WNcSfYV31k"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "ASqUd0YCi4rYmDt2",
       "_stats": {
         "compendiumSource": "Item.IEFFYKz9pycXYl7G",
@@ -539,6 +484,262 @@
       "type": "equippableItem"
     },
     {
+      "_id": "PupeBv6G1y0Bt2rR",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362394408,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "CWIvlaRBTU4xECMI",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "CWIvlaRBTU4xECMI",
+              "originalParentId": "gNgDIXArTpdtUBpe",
+              "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.CWIvlaRBTU4xECMI"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "chargeKey": "hod_ready",
+              "charges": 1,
+              "chargesMax": 1,
+              "directorPermanent": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
+          "name": "Heart of Darkness Ready",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-heart-of-darkness-ready"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "thPrBOE031hb0t8a",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Heart of Darkness:</em> a temporary Bond of hatred.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "thPrBOE031hb0t8a",
+              "originalParentId": "gNgDIXArTpdtUBpe",
+              "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.thPrBOE031hb0t8a"
+            },
+            "fabula-ultima-companion": {
+              "bondAE": {
+                "emotions": [
+                  "hatred"
+                ]
+              },
+              "tags": [
+                "debuff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/death/skull-energy-light-purple.webp",
+          "name": "Bond of Hatred",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-bond-hatred"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/grit.png",
+      "name": "Heart of Darkness",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Darkblade",
+          "cost": "",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Once per scene upon entering <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may choose a specific creature you can see that you don't have a <strong>Bond</strong> towards. If you do, create a <strong>Bond of hatred</strong> towards that creature.</p>",
+          "details_roller": "Show",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "hod_consume, hod_pick, hod_bond",
+              "effect_kind": "chain",
+              "effect_label": "hod_use"
+            },
+            "1": {
+              "$deleted": false,
+              "charge_key": "hod_ready",
+              "count": "1",
+              "effect_kind": "consume_charge",
+              "effect_label": "hod_consume",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": false,
+              "candidate_source": "combat",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "hod_pick",
+              "exclude_self": true,
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": false,
+              "target_filter": "SOURCE_HATRED_BOND_TO_ME == 0"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_template_ref": "Bond of Hatred",
+              "bond_emotion": "hatred",
+              "effect_kind": "create_bond",
+              "effect_label": "hod_bond",
+              "target_ref": "hod_pick"
+            },
+            "4": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Heart of Darkness Ready",
+              "effect_kind": "apply_ae",
+              "effect_label": "hod_refresh",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "EGYilCNAGvl2BldF",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/grit.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Heart of Darkness",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "passive_check_bonus_formula": "",
+          "passive_damage_bonus_formula": "",
+          "post_damage_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_effect_ref": "hod_use",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_status_filter": "Crisis",
+              "reaction_trigger": "creature_status_applied"
+            },
+            "1": {
+              "$deleted": false,
+              "reaction_effect_ref": "hod_refresh",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "gNgDIXArTpdtUBpe"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "rNF1vzPq93JnBRvH",
       "_stats": {
         "compendiumSource": "Item.VKB7qLNF1XBdN7yX",
@@ -721,11 +922,11 @@
       "type": "equippableItem"
     },
     {
-      "_id": "YaBvU9GhvSQVmu3R",
+      "_id": "ZAO1MwcowH6WVp5p",
       "_stats": {
-        "compendiumSource": "Item.nkKJD5vo65EM887m",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1780815033345,
+        "createdTime": 1783362394773,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -735,33 +936,93 @@
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/grit.png",
-      "name": "Heart of Darkness",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/unleash.png",
+      "name": "Agony",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 0,
-        "q27qeCi9xNRCTCkw": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
         "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Darkblade",
           "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>Once per scene upon entering <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may choose a specific creature you can see that you don't have a <strong>Bond</strong> towards. If you do, create a <strong>Bond of hatred</strong> towards that creature.</p>",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>After you deal damage to one or more creatures, if you have a <strong>Bond</strong> towards at least one of those creatures, you may recover <strong>【SL × 2】</strong> Hit Points and <strong>【SL × 2】</strong> Mind Points.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "agony_hp,agony_mp",
+              "condition_formula": "BOND_WITH_ANY_TARGET >= 1",
+              "effect_kind": "chain",
+              "effect_label": "agony_recover"
+            },
+            "1": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "agony_hp",
+              "grant_amount": "SL * 2",
+              "grant_resource": "hp",
+              "target_ref": "agony_self"
+            },
+            "2": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "agony_mp",
+              "grant_amount": "SL * 2",
+              "grant_resource": "mp",
+              "target_ref": "agony_self"
+            },
+            "3": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "agony_self",
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            }
+          },
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
           "level": "1",
-          "max_level": "1",
-          "name": "Heart of Darkness",
+          "max_level": "5",
+          "name": "Agony",
           "optional_params": {},
+          "passive_logic_resolution": "<p>async function Agony_Main() {</p><p>const MODULE_ID = \"fabula-ultima-companion\";</p><p>const TAG = \"[PASSIVE-RES][AGONY]\";</p><p>const FLAG_KEY = \"agonyOncePerTurn\";</p><p>const p =</p><p>(typeof __PAYLOAD !== \"undefined\" &amp;&amp; __PAYLOAD) ? __PAYLOAD :</p><p>(typeof payload !== \"undefined\" &amp;&amp; payload) ? payload :</p><p>{};</p><p>const argsObj =</p><p>(typeof __ARGS !== \"undefined\" &amp;&amp; __ARGS) ? __ARGS :</p><p>(typeof args !== \"undefined\" &amp;&amp; args) ? args :</p><p>{};</p><p>const globalTargets =</p><p>(typeof __TARGETS !== \"undefined\" &amp;&amp; Array.isArray(__TARGETS)) ? __TARGETS :</p><p>(typeof targets !== \"undefined\" &amp;&amp; Array.isArray(targets)) ? targets :</p><p>[];</p><p>const chatMessage =</p><p>(typeof __CHAT_MSG !== \"undefined\" &amp;&amp; __CHAT_MSG) ? __CHAT_MSG :</p><p>null;</p><p>const ctx = (typeof context !== \"undefined\" &amp;&amp; context) ? context : {};</p><p>const log = (...a) =&gt; console.log(TAG, ...a);</p><p>const warn = (...a) =&gt; console.warn(TAG, ...a);</p><p>const str = (v, d = \"\") =&gt; {</p><p>const s = String(v ?? \"\").trim();</p><p>return s.length ? s : d;</p><p>};</p><p>const norm = (v) =&gt; str(v).replace(/\\s+/g, \" \").toLowerCase();</p><p>const asArray = (v) =&gt; Array.isArray(v) ? v : (v == null ? [] : [v]);</p><p>const uniq = (arr) =&gt; Array.from(</p><p>new Set(asArray(arr).filter(v =&gt; v != null &amp;&amp; str(v) !== \"\").map(v =&gt; str(v)))</p><p>);</p><p>const num = (v, d = 0) =&gt; {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : d;</p><p>};</p><p>const optNum = (v) =&gt; {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : null;</p><p>};</p><p>const clone = (obj, fallback = {}) =&gt; {</p><p>try {</p><p>return foundry?.utils?.deepClone</p><p>? foundry.utils.deepClone(obj ?? fallback)</p><p>: JSON.parse(JSON.stringify(obj ?? fallback));</p><p>} catch {</p><p>if (Array.isArray(obj)) return [...obj];</p><p>if (obj &amp;&amp; typeof obj === \"object\") return { ...obj };</p><p>return fallback;</p><p>}</p><p>};</p><p>function markSilent() {</p><p>p.meta = p.meta || {};</p><p>p.meta.hidePassiveCard = true;</p><p>p.meta.suppressPassiveCardUI = true;</p><p>p.meta.agonySilent = true;</p><p>}</p><p>function markVisible() {</p><p>p.meta = p.meta || {};</p><p>p.meta.hidePassiveCard = false;</p><p>p.meta.suppressPassiveCardUI = false;</p><p>p.meta.agonySilent = false;</p><p>}</p><p>function skip(reason = \"\", data = {}) {</p><p>markSilent();</p><p>if (reason) console.debug(TAG, \"skip:\", reason, data);</p><p>return ctx.skipPassive</p><p>? ctx.skipPassive(reason, { notify: false })</p><p>: { ok: false, skipped: true, reason, ...data };</p><p>}</p><p>async function resolveDoc(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref !== \"string\") return ref;</p><p>try {</p><p>return await fromUuid(ref);</p><p>} catch {</p><p>return null;</p><p>}</p><p>}</p><p>function actorFromDoc(doc) {</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Actor\" || doc.constructor?.name === \"Actor\") return doc;</p><p>if (doc.actor) return doc.actor;</p><p>if (doc.object?.actor) return doc.object.actor;</p><p>if (doc.token?.actor) return doc.token.actor;</p><p>if (doc.document?.actor) return doc.document.actor;</p><p>return null;</p><p>}</p><p>function tokenFromDoc(doc) {</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Token\") return doc.object ?? doc;</p><p>if (doc.documentName === \"TokenDocument\") return doc.object ?? doc;</p><p>if (doc.object?.documentName === \"Token\") return doc.object;</p><p>if (doc.document?.documentName === \"Token\") return doc.document.object ?? doc.document;</p><p>return null;</p><p>}</p><p>async function resolveActor(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>return actorFromDoc(doc);</p><p>}</p><p>function collectionValues(collection) {</p><p>if (!collection) return [];</p><p>if (Array.isArray(collection)) return collection;</p><p>if (collection instanceof Map) return Array.from(collection.values());</p><p>if (typeof collection.values === \"function\") return Array.from(collection.values());</p><p>if (typeof collection === \"object\") return Object.values(collection);</p><p>return [];</p><p>}</p><p>function sameActor(a, b) {</p><p>if (!a || !b) return false;</p><p>if (a.uuid &amp;&amp; b.uuid &amp;&amp; a.uuid === b.uuid) return true;</p><p>if (a.id &amp;&amp; b.id &amp;&amp; a.id === b.id) return true;</p><p>return !!norm(a.name) &amp;&amp; norm(a.name) === norm(b.name);</p><p>}</p><p>async function resolveOwnerToken(owner, phase = {}) {</p><p>const refs = uniq([</p><p>phase?.sourceTokenUuid,</p><p>phase?.attackerUuid,</p><p>phase?.sourceUuid,</p><p>phase?.subjectTokenUuid,</p><p>p?.meta?.attackerUuid,</p><p>p?.attackerUuid</p><p>]);</p><p>for (const ref of refs) {</p><p>const doc = await resolveDoc(ref);</p><p>const tok = tokenFromDoc(doc);</p><p>if (tok?.actor &amp;&amp; sameActor(tok.actor, owner)) return tok;</p><p>}</p><p>try {</p><p>const active =</p><p>owner?.getActiveTokens?.(true, true)?.[0] ??</p><p>owner?.getActiveTokens?.()?.[0] ??</p><p>null;</p><p>if (active) return active;</p><p>} catch {}</p><p>return null;</p><p>}</p><p>function getPhaseEvent() {</p><p>const key = str(</p><p>p?.meta?.passiveTriggerKey ??</p><p>p?.passiveTriggerKey ??</p><p>p?.reaction_trigger_key ??</p><p>p?.meta?.reaction_trigger_key ??</p><p>\"\"</p><p>);</p><p>const byTrigger =</p><p>p?.meta?.reaction_phase_payload_by_trigger ??</p><p>p?.reaction_phase_payload_by_trigger ??</p><p>{};</p><p>const phase =</p><p>byTrigger?.creature_deals_damage ??</p><p>(key &amp;&amp; byTrigger?.[key]) ??</p><p>p?.meta?.reaction_phase_payload ??</p><p>p?.reaction_phase_payload ??</p><p>{};</p><p>const trigger = str(</p><p>phase?.trigger ??</p><p>phase?.rawTrigger ??</p><p>key</p><p>);</p><p>return { key: trigger, phase };</p><p>}</p><p>async function resolveOwnerActor() {</p><p>let helperOwner = null;</p><p>try {</p><p>helperOwner = ctx.helpers?.getPassiveOwnerActor</p><p>? await ctx.helpers.getPassiveOwnerActor()</p><p>: null;</p><p>} catch {}</p><p>const globalPassiveActor =</p><p>(typeof __PASSIVE_ACTOR !== \"undefined\") ? __PASSIVE_ACTOR : null;</p><p>const owner =</p><p>ctx.passiveOwner ??</p><p>helperOwner ??</p><p>globalPassiveActor ??</p><p>await resolveActor(</p><p>p?.meta?.passiveOwnerActorUuid ??</p><p>p?.meta?.attackerActorUuid ??</p><p>p?.attackerActorUuid ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>null</p><p>);</p><p>return owner ?? null;</p><p>}</p><p>async function resolvePassiveItem(owner) {</p><p>let helperItem = null;</p><p>try {</p><p>helperItem = ctx.helpers?.getPassiveItem</p><p>? await ctx.helpers.getPassiveItem()</p><p>: null;</p><p>} catch {}</p><p>const globalPassiveItem =</p><p>(typeof __PASSIVE_ITEM !== \"undefined\") ? __PASSIVE_ITEM : null;</p><p>return (</p><p>ctx.passiveItem ??</p><p>helperItem ??</p><p>globalPassiveItem ??</p><p>collectionValues(owner?.items).find(i =&gt; norm(i?.name) === \"agony\") ??</p><p>null</p><p>);</p><p>}</p><p>function collectBondNames(actor) {</p><p>const P = actor?.system?.props ?? {};</p><p>const names = [];</p><p>for (let i = 1; i &lt;= 6; i++) {</p><p>names.push(P[\"bond_\" + i]);</p><p>}</p><p>names.push(</p><p>P.bond_temp,</p><p>P.temp_bond,</p><p>P.temporary_bond,</p><p>P.bond_temporary</p><p>);</p><p>return uniq(names).map(norm).filter(Boolean);</p><p>}</p><p>async function collectTargetNames(phase) {</p><p>const refs = uniq([</p><p>...asArray(phase?.targetActorUuid),</p><p>...asArray(phase?.targetActorUuids),</p><p>...asArray(phase?.targetActorUUIDs),</p><p>...asArray(phase?.targetUuid),</p><p>...asArray(phase?.targetTokenUuid),</p><p>...asArray(phase?.targetTokenUuids),</p><p>...asArray(phase?.targetUUIDs),</p><p>...asArray(phase?.targets),</p><p>...globalTargets,</p><p>...asArray(p?.originalTargetActorUUIDs),</p><p>...asArray(p?.meta?.originalTargetActorUUIDs),</p><p>...asArray(p?.originalTargetUUIDs),</p><p>...asArray(p?.meta?.originalTargetUUIDs)</p><p>]);</p><p>const names = [</p><p>...asArray(phase?.targetName),</p><p>...asArray(phase?.targetNames)</p><p>];</p><p>for (const ref of refs) {</p><p>const doc = await resolveDoc(ref);</p><p>const actor = actorFromDoc(doc);</p><p>if (actor?.name) names.push(actor.name);</p><p>if (doc?.name) names.push(doc.name);</p><p>}</p><p>return uniq(names).map(norm).filter(Boolean);</p><p>}</p><p>function sourceLooksLikeOwner(phase, owner) {</p><p>const ownerActorUuid = owner?.uuid ?? null;</p><p>const sourceActorUuid = str(</p><p>phase?.sourceActorUuid ??</p><p>phase?.attackerActorUuid ??</p><p>phase?.subjectActorUuid ??</p><p>phase?.actorUuid ??</p><p>\"\"</p><p>);</p><p>if (sourceActorUuid &amp;&amp; ownerActorUuid &amp;&amp; sourceActorUuid !== ownerActorUuid) return false;</p><p>return true;</p><p>}</p><p>function getEmitterApi() {</p><p>return (</p><p>globalThis.FUCompanion?.api?.fabulaInitiativeTurnEmitter ??</p><p>game.modules?.get(MODULE_ID)?.api?.fabulaInitiativeTurnEmitter ??</p><p>globalThis.FUCompanion?.api?.fabulaInitiative?.turnEmitter ??</p><p>game.modules?.get(MODULE_ID)?.api?.fabulaInitiative?.turnEmitter ??</p><p>null</p><p>);</p><p>}</p><p>function getFallbackTurnKey(owner) {</p><p>const combat = game.combat ?? null;</p><p>if (!combat) {</p><p>return [</p><p>\"agony-no-combat\",</p><p>canvas?.scene?.id ?? \"no-scene\",</p><p>owner?.uuid ?? \"no-owner\"</p><p>].join(\"::\");</p><p>}</p><p>const active =</p><p>combat.combatant ??</p><p>(Array.isArray(combat.turns) &amp;&amp; typeof combat.turn === \"number\" ? combat.turns[combat.turn] : null) ??</p><p>null;</p><p>return [</p><p>\"agony-fallback\",</p><p>combat.id ?? \"no-combat-id\",</p><p>\"round\", combat.round ?? 0,</p><p>\"turn\", combat.turn ?? \"no-turn\",</p><p>\"active\", active?.id ?? \"no-active\",</p><p>\"actor\", owner?.uuid ?? \"no-owner\"</p><p>].join(\"::\");</p><p>}</p><p>function getTurnKey(owner) {</p><p>const emitterApi = getEmitterApi();</p><p>try {</p><p>const emitterKey = emitterApi?.getTurnKey?.({</p><p>actor: owner,</p><p>actorUuid: owner?.uuid ?? null</p><p>});</p><p>if (emitterKey) return emitterKey;</p><p>} catch (e) {</p><p>warn(\"Emitter getTurnKey failed; using fallback.\", e);</p><p>}</p><p>return getFallbackTurnKey(owner);</p><p>}</p><p>function getEmitterSnapshot() {</p><p>const emitterApi = getEmitterApi();</p><p>try {</p><p>return emitterApi?.getState?.() ?? null;</p><p>} catch {</p><p>return null;</p><p>}</p><p>}</p><p>function preventWrapperAdvanceDamage() {</p><p>argsObj.hasDamageSection = false;</p><p>argsObj.__agonyAppliedViaAdvanceDamage = true;</p><p>argsObj.advPayload = argsObj.advPayload || {};</p><p>argsObj.advPayload.baseValue = \"0\";</p><p>argsObj.advPayload.bonus = 0;</p><p>argsObj.advPayload.reduction = 0;</p><p>argsObj.advPayload.multiplier = 100;</p><p>p.meta = p.meta || {};</p><p>p.meta.hasDamageSection = false;</p><p>p.advPayload = p.advPayload || {};</p><p>p.advPayload.baseValue = \"0\";</p><p>p.advPayload.bonus = 0;</p><p>p.advPayload.reduction = 0;</p><p>p.advPayload.multiplier = 100;</p><p>}</p><p>async function broadcastAgonyPassiveCard(owner, ownerToken, passiveItem) {</p><p>const passiveApi =</p><p>globalThis.FUCompanion?.api?.passiveCard?.broadcast ??</p><p>game.modules?.get(MODULE_ID)?.api?.passiveCard?.broadcast ??</p><p>globalThis.FUCompanion?.api?.passiveCardBroadcast ??</p><p>game.modules?.get(MODULE_ID)?.api?.passiveCardBroadcast ??</p><p>null;</p><p>if (typeof passiveApi !== \"function\") {</p><p>warn(\"Passive card API missing; healing card still applied.\");</p><p>return false;</p><p>}</p><p>try {</p><p>await passiveApi({</p><p>title: \"Agony\",</p><p>attackerUuid: ownerToken?.document?.uuid ?? ownerToken?.uuid ?? owner?.uuid ?? null,</p><p>actionContext: p,</p><p>item: passiveItem ?? null,</p><p>options: {</p><p>executionMode: \"passive_resolution\",</p><p>source: \"Agony\"</p><p>}</p><p>});</p><p>log(\"Passive card broadcasted.\");</p><p>return true;</p><p>} catch (e) {</p><p>warn(\"Passive card broadcast failed.\", e);</p><p>return false;</p><p>}</p><p>}</p><p>async function applyAgonyRecoveryViaAdvanceDamage({</p><p>resourceType,</p><p>amount,</p><p>owner,</p><p>ownerToken,</p><p>passiveItem,</p><p>phase</p><p>}) {</p><p>const ADV = game.macros.getName(\"AdvanceDamage\");</p><p>if (!ADV) throw new Error('Macro \"AdvanceDamage\" not found.');</p><p>const tokenId = ownerToken?.id ?? ownerToken?.document?.id ?? null;</p><p>if (!tokenId) throw new Error(\"Agony: owner token has no token id for AdvanceDamage.\");</p><p>const ownerTokenUuid = ownerToken?.document?.uuid ?? ownerToken?.uuid ?? owner?.uuid ?? null;</p><p>const damageBatchId = str(</p><p>p?.meta?.damageBatchId ??</p><p>p?.damageBatchId ??</p><p>argsObj?.damageBatchId ??</p><p>argsObj?.meta?.damageBatchId ??</p><p>\"\"</p><p>);</p><p>const isMP = resourceType === \"mp\";</p><p>const elementType = isMP ? \"mp\" : \"heal\";</p><p>const actionContext = clone(p, {});</p><p>actionContext.core = actionContext.core || {};</p><p>actionContext.meta = actionContext.meta || {};</p><p>actionContext.advPayload = actionContext.advPayload || {};</p><p>actionContext.core.skillName = \"Agony\";</p><p>actionContext.core.skillImg = passiveItem?.img ?? actionContext.core.skillImg ?? \"\";</p><p>actionContext.core.skillTypeRaw = \"Passive\";</p><p>actionContext.core.rawEffectHTML =</p><p>passiveItem?.system?.props?.description ??</p><p>actionContext.core.rawEffectHTML ??</p><p>\"\";</p><p>actionContext.meta.attackerName = owner?.name ?? \"Unknown\";</p><p>actionContext.meta.attackerUuid = ownerTokenUuid;</p><p>actionContext.meta.elementType = elementType;</p><p>actionContext.meta.declaresHealing = true;</p><p>actionContext.meta.hasDamageSection = true;</p><p>actionContext.meta.skillTypeRaw = \"Passive\";</p><p>actionContext.meta.listType = \"Passive\";</p><p>actionContext.meta.sourceType = \"Passive\";</p><p>actionContext.meta.baseValueStrForCard = String(amount);</p><p>actionContext.meta.hidePassiveCard = false;</p><p>actionContext.meta.suppressPassiveCardUI = false;</p><p>actionContext.advPayload.baseValue = \"+\" + amount;</p><p>actionContext.advPayload.bonus = 0;</p><p>actionContext.advPayload.reduction = 0;</p><p>actionContext.advPayload.multiplier = 100;</p><p>actionContext.advPayload.valueType = resourceType;</p><p>actionContext.advPayload.elementType = elementType;</p><p>actionContext.advPayload.weaponType = \"none_ef\";</p><p>actionContext.advPayload.targetAffinity = \"neutral\";</p><p>actionContext.advPayload.ignoreDamageReduction = true;</p><p>actionContext.advPayload.ignoreShield = true;</p><p>actionContext.advPayload.attackerName = owner?.name ?? \"Unknown\";</p><p>actionContext.advPayload.attackerUuid = ownerTokenUuid;</p><p>actionContext.advPayload.attackRange = \"Self\";</p><p>actionContext.advPayload.sourceType = \"Passive\";</p><p>const advPayload = {</p><p>damageBatchId,</p><p>targetIds: [tokenId],</p><p>baseValue: \"+\" + amount,</p><p>bonus: 0,</p><p>reduction: 0,</p><p>multiplier: 100,</p><p>valueType: resourceType,</p><p>elementType,</p><p>weaponType: \"none_ef\",</p><p>targetAffinity: \"neutral\",</p><p>ignoreDamageReduction: true,</p><p>ignoreShield: true,</p><p>attackerUuid: ownerTokenUuid,</p><p>attackerName: owner?.name ?? \"Unknown\",</p><p>attackRange: \"Self\",</p><p>sourceType: \"Passive\",</p><p>declaresHealing: true,</p><p>skillTypeRaw: \"Passive\",</p><p>skillTypeAlt: \"Passive\",</p><p>actionContext,</p><p>actionCardMsgId: chatMessage?.id ?? null,</p><p>agony: {</p><p>resourceType,</p><p>amount,</p><p>sourceTrigger: phase?.trigger ?? null</p><p>}</p><p>};</p><p>log(\"AdvanceDamage recovery begin.\", {</p><p>resourceType,</p><p>amount,</p><p>tokenId,</p><p>damageBatchId: damageBatchId || \"(none)\"</p><p>});</p><p>await ADV.execute({</p><p>__AUTO: true,</p><p>__PAYLOAD: advPayload</p><p>});</p><p>log(\"AdvanceDamage recovery done.\", {</p><p>resourceType,</p><p>amount</p><p>});</p><p>return true;</p><p>}</p><p>const alreadyGmBridge = !!(</p><p>globalThis.__AGONY_GM_BRIDGE ||</p><p>globalThis.__GLOBALS?.__AGONY_GM_BRIDGE ||</p><p>p?.meta?.__agonyGmBridge === true</p><p>);</p><p>if (!game.user?.isGM &amp;&amp; !alreadyGmBridge) {</p><p>const gmExecutor =</p><p>game.modules?.get(MODULE_ID)?.api?.GMExecutor ??</p><p>globalThis.FUCompanion?.api?.GMExecutor ??</p><p>null;</p><p>if (!gmExecutor?.executeSnippet) {</p><p>return skip(\"Agony: GMExecutor unavailable on player client.\");</p><p>}</p><p>const bridgeOwner = await resolveOwnerActor();</p><p>const bridgeActorUuid =</p><p>bridgeOwner?.uuid ??</p><p>p?.meta?.attackerActorUuid ??</p><p>p?.attackerActorUuid ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>null;</p><p>if (!bridgeActorUuid) {</p><p>return skip(\"Agony: could not find owner actor UUID for GM bridge.\");</p><p>}</p><p>const bridgedPayload = clone(p, {});</p><p>bridgedPayload.meta = bridgedPayload.meta || {};</p><p>bridgedPayload.meta.__agonyGmBridge = true;</p><p>log(\"Forwarding Agony to GMExecutor.\", {</p><p>callerUserId: game.user?.id,</p><p>bridgeActorUuid,</p><p>targetsCount: globalTargets.length</p><p>});</p><p>const scriptText =</p><p>'const context = (typeof env !== \"undefined\" &amp;&amp; env?.makeContext) ? env.makeContext(\"resolution\") : {};\\n' +</p><p>'globalThis.__AGONY_GM_BRIDGE = true;\\n' +</p><p>\"return await (\" + Agony_Main.toString() + \")();\";</p><p>const remote = await gmExecutor.executeSnippet({</p><p>mode: \"resolution\",</p><p>scriptText,</p><p>payload: bridgedPayload,</p><p>args: argsObj,</p><p>targets: globalTargets,</p><p>chatMsgId: chatMessage?.id ?? null,</p><p>actorUuid: bridgeActorUuid,</p><p>metadata: { origin: \"Agony passive_logic_resolution\" }</p><p>});</p><p>if (remote?.payload &amp;&amp; p &amp;&amp; typeof p === \"object\") {</p><p>try {</p><p>foundry.utils.mergeObject(p, remote.payload, {</p><p>insertKeys: true,</p><p>insertValues: true,</p><p>overwrite: true,</p><p>recursive: true,</p><p>inplace: true</p><p>});</p><p>} catch {}</p><p>}</p><p>if (remote?.args &amp;&amp; argsObj &amp;&amp; typeof argsObj === \"object\") {</p><p>try {</p><p>foundry.utils.mergeObject(argsObj, remote.args, {</p><p>insertKeys: true,</p><p>insertValues: true,</p><p>overwrite: true,</p><p>recursive: true,</p><p>inplace: true</p><p>});</p><p>} catch {}</p><p>}</p><p>if (!remote?.ok) {</p><p>warn(\"GM bridge failed.\", remote);</p><p>return skip(\"Agony: GM bridge failed.\");</p><p>}</p><p>return remote?.resultValue ?? remote;</p><p>}</p><p>const { key: triggerName, phase } = getPhaseEvent();</p><p>if (triggerName !== \"creature_deals_damage\") {</p><p>return skip(\"Agony: wrong trigger \" + (triggerName || \"none\") + \".\");</p><p>}</p><p>const finalValue = Math.max(0, num(</p><p>phase?.finalValue ??</p><p>phase?.displayedAmount ??</p><p>phase?.baseValue ??</p><p>phase?.amount ??</p><p>0,</p><p>0</p><p>));</p><p>if (phase?.affected === false || phase?.noEffectReason) {</p><p>return skip(\"Agony: damage event had no effect.\");</p><p>}</p><p>if (finalValue &lt;= 0) {</p><p>return skip(\"Agony: no positive damage was dealt.\");</p><p>}</p><p>const valueType = norm(phase?.valueType ?? \"hp\");</p><p>if (valueType &amp;&amp; ![\"hp\", \"health\", \"hit points\", \"hit point\"].includes(valueType)) {</p><p>return skip(\"Agony: event value type is not HP damage (\" + valueType + \").\");</p><p>}</p><p>const owner = await resolveOwnerActor();</p><p>if (!owner) return skip(\"Agony: could not resolve passive owner.\");</p><p>if (!sourceLooksLikeOwner(phase, owner)) {</p><p>return skip(\"Agony: damage source is not the passive owner.\");</p><p>}</p><p>const passiveItem = await resolvePassiveItem(owner);</p><p>if (!passiveItem) return skip(\"Agony: could not resolve Agony item.\");</p><p>const P = owner.system?.props ?? {};</p><p>const itemP = passiveItem.system?.props ?? {};</p><p>const sl = Math.max(0, Math.floor(num(</p><p>itemP.level ??</p><p>itemP.active_level ??</p><p>itemP.skill_level ??</p><p>0,</p><p>0</p><p>)));</p><p>if (sl &lt;= 0) return skip(\"Agony: SL is 0.\");</p><p>const turnKey = getTurnKey(owner);</p><p>const emitterSnapshot = getEmitterSnapshot();</p><p>const oldFlag = owner.getFlag?.(MODULE_ID, FLAG_KEY) ?? null;</p><p>if (oldFlag?.triggered === true &amp;&amp; oldFlag?.turnKey === turnKey) {</p><p>return skip(\"Agony: already triggered this Fabula/Lancer turn.\", {</p><p>turnKey,</p><p>oldFlag,</p><p>emitterSnapshot</p><p>});</p><p>}</p><p>const bondNames = collectBondNames(owner);</p><p>if (!bondNames.length) return skip(\"Agony: owner has no bond names.\");</p><p>const targetNames = await collectTargetNames(phase);</p><p>if (!targetNames.length) return skip(\"Agony: could not resolve damaged target names.\");</p><p>const matchingBondName = bondNames.find(bn =&gt; targetNames.includes(bn));</p><p>if (!matchingBondName) {</p><p>return skip(\"Agony: no damaged target matches owner bonds.\", {</p><p>bondNames,</p><p>targetNames</p><p>});</p><p>}</p><p>const recover = sl * 2;</p><p>if (recover &lt;= 0) return skip(\"Agony: recovery amount is 0.\");</p><p>const curHp = num(P.current_hp, 0);</p><p>const curMp = num(P.current_mp, 0);</p><p>const maxHp = optNum(P.max_hp);</p><p>const maxMp = optNum(P.max_mp);</p><p>const hpGainPotential = maxHp != null</p><p>? Math.max(0, Math.min(maxHp, curHp + recover) - curHp)</p><p>: recover;</p><p>const mpGainPotential = maxMp != null</p><p>? Math.max(0, Math.min(maxMp, curMp + recover) - curMp)</p><p>: recover;</p><p>if (hpGainPotential &lt;= 0 &amp;&amp; mpGainPotential &lt;= 0) {</p><p>return skip(\"Agony: owner is already full on HP and MP.\");</p><p>}</p><p>const ownerToken = await resolveOwnerToken(owner, phase);</p><p>if (!ownerToken) {</p><p>return skip(\"Agony: could not resolve owner token for AdvanceDamage.\");</p><p>}</p><p>preventWrapperAdvanceDamage();</p><p>markVisible();</p><p>p.meta = p.meta || {};</p><p>p.meta.agony = {</p><p>triggered: true,</p><p>turnKey,</p><p>emitterSnapshot,</p><p>sl,</p><p>recover,</p><p>hpGainPotential,</p><p>mpGainPotential,</p><p>matchedBond: matchingBondName,</p><p>targetNames,</p><p>appliedViaAdvanceDamage: true</p><p>};</p><p>const applied = [];</p><p>if (hpGainPotential &gt; 0) {</p><p>await applyAgonyRecoveryViaAdvanceDamage({</p><p>resourceType: \"hp\",</p><p>amount: hpGainPotential,</p><p>owner,</p><p>ownerToken,</p><p>passiveItem,</p><p>phase</p><p>});</p><p>applied.push(\"hp\");</p><p>}</p><p>if (mpGainPotential &gt; 0) {</p><p>await applyAgonyRecoveryViaAdvanceDamage({</p><p>resourceType: \"mp\",</p><p>amount: mpGainPotential,</p><p>owner,</p><p>ownerToken,</p><p>passiveItem,</p><p>phase</p><p>});</p><p>applied.push(\"mp\");</p><p>}</p><p>if (!applied.length) {</p><p>return skip(\"Agony: no recovery was applied after final check.\");</p><p>}</p><p>await owner.setFlag(MODULE_ID, FLAG_KEY, {</p><p>triggered: true,</p><p>turnKey,</p><p>combatId: game.combat?.id ?? null,</p><p>round: game.combat?.round ?? null,</p><p>turn: game.combat?.turn ?? null,</p><p>emitterSerial: emitterSnapshot?.serial ?? null,</p><p>emitterTurnSerial: emitterSnapshot?.turnSerial ?? null,</p><p>emitterRoundSerial: emitterSnapshot?.roundSerial ?? null,</p><p>emitterCombatSerial: emitterSnapshot?.combatSerial ?? null,</p><p>skill: \"Agony\",</p><p>sl,</p><p>recover,</p><p>hpGainPotential,</p><p>mpGainPotential,</p><p>applied,</p><p>matchedBond: matchingBondName,</p><p>targetNames,</p><p>at: Date.now()</p><p>});</p><p>await broadcastAgonyPassiveCard(owner, ownerToken, passiveItem);</p><p>log(\"Agony resolved.\", {</p><p>owner: owner.name,</p><p>sl,</p><p>recover,</p><p>hpGainPotential,</p><p>mpGainPotential,</p><p>applied,</p><p>matchedBond: matchingBondName,</p><p>turnKey,</p><p>emitterSnapshot</p><p>});</p><p>return {</p><p>ok: true,</p><p>skill: \"Agony\",</p><p>sl,</p><p>recover,</p><p>hpGainPotential,</p><p>mpGainPotential,</p><p>applied,</p><p>matchedBond: matchingBondName,</p><p>turnKey</p><p>};</p><p>}</p><p>return await Agony_Main();</p>",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "agony_recover",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>HP and MP recover</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>2</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>4</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>6</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>8</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>10</strong></p></td></tr></tbody></table>",
+          "skill_range": "",
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",
@@ -770,7 +1031,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "nkKJD5vo65EM887m"
+        "uniqueId": "eM7Q4WgXvjcLQaFc"
       },
       "type": "equippableItem"
     },

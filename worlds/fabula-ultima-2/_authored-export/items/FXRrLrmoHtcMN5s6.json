@@ -355,7 +355,7 @@
       "version": "4.6.4"
     }
   },
-  "folder": "OPmGhH0AVmmzKmnE",
+  "folder": "RrGa6q1F9XMvUnC4",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/phantom_rush.png",
   "name": "Invocation",
   "ownership": {
@@ -376,6 +376,7 @@
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>You may use an action and spend 5 Mind Points to perform an <strong>invocation</strong>, drawing energy from one of the <strong>wellsprings</strong> present on the scene (see <strong>Invoker's</strong> <strong>Unique Mechanic</strong>). Your <strong>【SL】</strong> in this Skill determines which invocations you have access to.</p>",
+      "details_roller": "Show",
       "duration": "",
       "effect_table": {
         "0": {
@@ -947,7 +948,9 @@
       "gadget_infusion_tier": "",
       "gadget_magitech_tier": "",
       "heroic_requirement": "",
+      "id": "FXRrLrmoHtcMN5s6",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/phantom_rush.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -972,7 +975,8 @@
       "skill_type": "Active",
       "target_eligibility": "",
       "type_damage": "",
-      "use_optional_params": false
+      "use_optional_params": false,
+      "uuid": "Item.FXRrLrmoHtcMN5s6"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

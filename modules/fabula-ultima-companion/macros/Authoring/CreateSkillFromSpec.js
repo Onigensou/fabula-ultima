@@ -349,13 +349,12 @@ return (async () => {
   };
   // Folder resolution.
   //
-  //   • `spec.class` set → resolve `Battle Director / <class> /
-  //     <spec.folder or "Skill">` via the org tree, CREATING any missing
-  //     level on demand (idempotent). Authors write
-  //     `{ class: "Arcanist", folder: "Skill" }` — no ID lookup needed, and
-  //     no need to pre-scaffold the tree. Mirrors the data-migration helper
-  //     `data-migrations/_folder-tree.js` so a fresh world never dumps a
-  //     skill at world root just because the tree wasn't built yet.
+  //   • `spec.class` set → resolve the canonical `💥 Skill / Class Skill /
+  //     <class>` library folder (Heroic Skill / Spell mapped to their legacy
+  //     sub-locations below), CREATING any missing level on demand
+  //     (idempotent). Authors write `{ class: "Arcanist", folder: "Skill" }` —
+  //     no ID lookup needed. The old `Battle Director / <class>` org tree was
+  //     retired 2026-07-06 (folded into 💥 Skill / Class Skill).
   //
   //   • `spec.class` unset → `spec.folder` is treated as a literal
   //     folder ID (back-compat with pre-tree authoring).
@@ -382,11 +381,25 @@ return (async () => {
         }
         return current;
       };
+      // RETIRED (2026-07-06) the "Battle Director" org tree; new skills now land
+      // in the canonical "💥 Skill / Class Skill" library (single source of
+      // truth). Map the sub-folder hint to the legacy tree's layout:
+      //   Heroic Skill → 💥 Skill / Heroic Skill   (flat, all classes)
+      //   Spell        → 💥 Skill / Class Skill / <class> / <class> Spell
+      //   Skill/other  → 💥 Skill / Class Skill / <class>
+      let segments;
+      if (subName === "Heroic Skill") {
+        segments = ["💥 Skill", "Heroic Skill"];
+      } else if (subName === "Spell") {
+        segments = ["💥 Skill", "Class Skill", spec.class, `${spec.class} Spell`];
+      } else {
+        segments = ["💥 Skill", "Class Skill", spec.class];
+      }
       try {
-        const leaf = await ensureFolderPath(["Battle Director", spec.class, subName]);
+        const leaf = await ensureFolderPath(segments);
         folderId = leaf?.id ?? null;
       } catch (e) {
-        warnings.push(`Battle Director / ${spec.class} / ${subName} could not be ensured (${e?.message ?? e}); item created at world root.`);
+        warnings.push(`${segments.join(" / ")} could not be ensured (${e?.message ?? e}); item created at world root.`);
       }
     } else if (spec.folder) {
       folderId = spec.folder;  // legacy: literal ID

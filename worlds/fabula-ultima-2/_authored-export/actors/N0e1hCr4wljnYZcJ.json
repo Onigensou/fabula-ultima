@@ -17,6 +17,74 @@
   "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/rogue.png",
   "items": [
     {
+      "_id": "27h0D5G0RAH3t4Id",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362379587,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/AvaricePassive1.png",
+      "name": "Pillage",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Rogue",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you use the <strong>【Soul Steal】</strong> Skill, you may target any number of creatures at the same time (you perform a single Check and compare it to the Magic Defense of each creature you are attempting to steal from).</p>",
+          "duration": "-",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Pillage",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "PoLYIlvymFFOnpTC"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "CgBbOrOSW59AdFUj",
       "_stats": {
         "compendiumSource": "Item.LBqkjOIfj4oMkplG",
@@ -73,284 +141,685 @@
       "type": "equippableItem"
     },
     {
-      "_id": "IIBL3rYvS3yfbl6k",
+      "_id": "FmbwzdDb39ZRXGCi",
       "_stats": {
-        "compendiumSource": "Item.pN90SZleopmB3PM1",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756746118171,
+        "createdTime": 1783362379282,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "2M7W2v3xzWHcEgKc",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeNotEquippedWhen(\"shield,martial_armor\", \"${level}$\")"
+            }
+          ],
+          "description": "<p><em>Dodge:</em> DEF +Level while no shield or martial armor is equipped.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "XsRLuiEp3j4D5RZy",
+              "originalParentId": "rFJiRsbiOPPImwdm",
+              "originalUuid": "Item.rFJiRsbiOPPImwdm.ActiveEffect.XsRLuiEp3j4D5RZy"
+            },
+            "fabula-ultima-companion": {
+              "crossScene": false,
+              "directorPermanent": false
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
+          "name": "Dodge",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
+      "name": "Dodge",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Rogue",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+          "duration": "-",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Dodge",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "passive_check_bonus_formula": "",
+          "passive_damage_bonus_formula": "",
+          "passive_logic_action": "",
+          "post_damage_effect_ref": "",
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "recipe": "",
+          "recipe_amount": "",
+          "recipe_resource": "",
+          "recipe_target": "",
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "3Un5X30CM2z5J1pl"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "KOvzWWTE7PzarOOB",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362379524,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "A5jhegW8boRf3ijU",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "cannot_target_uuids",
+              "mode": 2,
+              "priority": 10,
+              "value": "${casterActorUuid}$"
+            }
+          ],
+          "description": "<p><em>Vanish:</em> Cannot be targeted by enemies until start of your next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": 1
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "hshYRHMoDwlaqomt",
+              "originalParentId": "vtT64Ckf6LoQu1Lh",
+              "originalUuid": "Item.vtT64Ckf6LoQu1Lh.ActiveEffect.hshYRHMoDwlaqomt"
+            },
+            "fabula-ultima-companion": {
+              "crossScene": false,
+              "directorPermanent": false
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/ninjutsu.png",
+          "name": "Vanish",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-vanished"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/ninjutsu.png",
+      "name": "Vanish",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Rogue",
+          "cost": "1 Fabula Point",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you hit one or more creatures with an attack, you may spend <strong>1 Fabula Point.</strong> If you do, each of those creatures will be unable to perform any action that requires them to be able to see you until the start of your next turn.</p>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "chain_steps": "vanish_cost,vanish_apply_ae",
+              "effect_kind": "chain",
+              "effect_label": "vanish_apply",
+              "menu_description": "",
+              "menu_label": ""
+            },
+            "1": {
+              "consume_amount": "1",
+              "consume_resource": "fp",
+              "effect_kind": "consume_resource",
+              "effect_label": "vanish_cost",
+              "menu_description": "",
+              "menu_label": "",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Vanish",
+              "effect_kind": "apply_ae",
+              "effect_label": "vanish_apply_ae",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Vanish",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_action_intent": "",
+              "reaction_action_target": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "vanish_apply",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "",
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "Q7LRl9Vb1LcccX8R"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kYQoLPpRbQCZfpRX",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362379342,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/dream_within_a_dream.png",
-      "name": "See you later",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/fleet_of_foot.png",
+      "name": "High Speed",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
-          "check_bonus": "0",
           "class": "Rogue",
-          "cost": "1 Fabula Point",
+          "cost": "10 MP",
           "damage_bonus": "0",
-          "description": "<p>You may use an action and spend <strong>1 Fabula Point</strong> to vanish from the current scene, reappearing whenever you want during a <strong>different</strong> scene in which another Player Character is present. Describe how you escaped and miraculously got here!</p>",
-          "duration": "Instantaneous",
-          "heroic_requirement": "",
+          "description": "<p>At the start of a conflict, you may spend 10 Mind Points. If you do, <strong>choose one option</strong> and apply it before the start of the first round:</p><ul><li><p>Perform a <strong>free attack</strong> with a weapon you have equipped</p></li><li><p>Perform a <strong>【🚫Hinder】</strong> or <strong>【❗️Objective】</strong> action. You also gain a bonus equal to <strong>【SL】</strong> to all Checks you perform as part of the chosen option.</p></li></ul>",
+          "effect_table": {
+            "0": {
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "hs_self",
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            },
+            "1": {
+              "consume_amount": "10",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "hs_mp_cost",
+              "on_empty": "abort",
+              "target_ref": "hs_self"
+            },
+            "2": {
+              "allowed_types": "Attack,Hinder",
+              "check_bonus_formula": "SL",
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "hs_free_action",
+              "free_mode": true
+            },
+            "3": {
+              "chain_steps": "hs_mp_cost, hs_free_action",
+              "effect_kind": "chain",
+              "effect_label": "hs_react"
+            }
+          },
           "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
-          "max_level": "1",
-          "name": "See you later",
-          "optional_params": {},
+          "max_level": 3,
+          "name": "High Speed",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": true,
+              "reaction_effect_ref": "hs_react",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            },
+            "99": {
+              "$deleted": true,
+              "condition_formula": "CUR_MP >= 10",
+              "reaction_effect_ref": "hs_react",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            },
+            "100": {
+              "$deleted": false,
+              "reaction_effect_ref": "hs_react",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
-          "skill_target": "Self",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "FZX0P5HD6UfIIk9i"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "M7Asn4syWfVUf7a6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362379465,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderSkill3.png",
+      "name": "Soul Steal",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Rogue",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "mdef",
+          "description": "<p>You may use an action to perform a <strong>【DEX + WLP】</strong> Check against the Magic Defense of a creature you can see. If you succeed and the target is a soldier, you recover <strong>【SL】</strong> Inventory Points.</p><p>Additionally, if they are an <strong>elite</strong> or <strong>champion</strong>, the GM gives you the target's soul treasure, an item worth an amount of zenit <strong>equal to or lower than 【the target's level multiplied by 30, or by 50 if they are a Villain】</strong>. This soul treasure will appear inside your backpack; <em>a creature can be successfully stolen from with this Skill only once.</em></p><p class=\"bonus\">You gain a bonus equal to <strong>【SL】</strong> to your <strong>【DEX + WLP】</strong> Checks for this Skill.</p>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "condition_formula": "HIT_COUNT > 0",
+              "effect_kind": "grant",
+              "effect_label": "soul_steal_grant_ip",
+              "grant_amount": "SL * HIT_COUNT",
+              "grant_resource": "ip",
+              "grant_target": "self",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "self"
+            },
+            "1": {
+              "condition_formula": "HIT_COUNT > 0",
+              "effect_kind": "roll_loot_table",
+              "effect_label": "soul_steal_loot_roll",
+              "target_ref": "hit_action_targets"
+            },
+            "2": {
+              "chain_steps": "soul_steal_grant_ip,soul_steal_loot_roll",
+              "condition_formula": "HIT_COUNT > 0",
+              "effect_kind": "chain",
+              "effect_label": "soul_steal_root"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Soul Steal",
+          "on_activate_effect_ref": "soul_steal_root",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Up to (1 + 98 * HAS_SKILL_PILLAGE) creatures",
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "pN90SZleopmB3PM1"
+        "unique": true,
+        "uniqueId": "aTce11W2dmw2lKtR"
       },
       "type": "equippableItem"
     },
     {
-      "_id": "nlm2xyjdJYHhC6QH",
+      "_id": "mSlTs3Oy2Ahsmh7u",
       "_stats": {
-        "compendiumSource": "Item.MTu5qi3M3S9M0CJw",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756746114584,
+        "createdTime": 1783362379229,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Serpent%27s_Ire.png",
       "name": "Cheap Shot",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
-          "check_bonus": "0",
           "class": "Rogue",
           "cost": "",
           "damage_bonus": "0",
           "description": "<p>When you hit a creature with an attack, if the attack <strong>only</strong> targeted that creature and they are suffering from <strong>one or more status effects</strong>, you may have it deal extra damage equal to <strong>【SL + the number of status effects on the creature】.</strong></p>",
-          "duration": "",
-          "heroic_requirement": "",
+          "effect_table": {
+            "0": {
+              "damage_amount": "SL + TARGET_STATUS_COUNT",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cheap_shot_bonus",
+              "target_ref": "trigger_subject"
+            }
+          },
           "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "5",
           "name": "Cheap Shot",
-          "optional_params": {},
+          "on_activate_effect_ref": "",
+          "passive_check_bonus_formula": "",
+          "passive_damage_bonus_formula": "",
+          "passive_logic_action": "",
+          "post_damage_effect_ref": "",
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0",
+              "reaction_action_target": "enemy",
+              "reaction_effect_ref": "cheap_shot_bonus",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "recipe": "",
+          "recipe_amount": "",
+          "recipe_resource": "",
+          "recipe_target": "",
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Damage</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>【1 + status effects】</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>【2 + status effects】</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>【3 + status effects】</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>【4 + status effects】</p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p>【5 + status effects】</p></td></tr></tbody></table>",
-          "skill_range": "",
-          "skill_target": "",
+          "skill_range": "-",
+          "skill_target": "-",
           "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
+          "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "MTu5qi3M3S9M0CJw"
+        "unique": true,
+        "uniqueId": "9cHSgi4ag97uKGW7"
       },
       "type": "equippableItem"
     },
     {
-      "_id": "pQ9Q1IHW6Qpc92Hr",
+      "_id": "U3WN91ZqIDjM56mx",
       "_stats": {
-        "compendiumSource": "Item.P4dQ5Ms73YVs9gPv",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756746116075,
+        "createdTime": 1783362379406,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
-      "name": "Dodge",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/dream_within_a_dream.png",
+      "name": "See you later",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
-          "check_bonus": "0",
           "class": "Rogue",
           "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
-          "duration": "",
-          "heroic_requirement": "",
+          "description": "<p>Spend <strong>1 Fabula Point</strong> to leave the current conflict. You slip away from this scene and play resumes without you — you reappear in a later scene, as the story dictates.</p>",
+          "effect_table": {
+            "0": {
+              "chain_steps": "syl_confirm,syl_cost,syl_leave",
+              "effect_kind": "chain",
+              "effect_label": "syl_root"
+            },
+            "1": {
+              "confirm_cancel_label": "Stay",
+              "confirm_cancel_style": "default",
+              "confirm_message": "Leave the battle for 1 Fabula Point? You'll slip away from this scene and reappear in a later one.",
+              "confirm_ok_label": "See you later!",
+              "confirm_ok_style": "danger",
+              "confirm_title": "See you later?",
+              "effect_kind": "confirm",
+              "effect_label": "syl_confirm"
+            },
+            "2": {
+              "consume_amount": "1",
+              "consume_resource": "fp",
+              "effect_kind": "consume_resource",
+              "effect_label": "syl_cost",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "3": {
+              "effect_kind": "leave_combat",
+              "effect_label": "syl_leave",
+              "target_ref": "self"
+            }
+          },
           "isCheck": false,
-          "isFacet": false,
           "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "3",
-          "name": "Dodge",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Defense</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>+3</p></td></tr></tbody></table>",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "P4dQ5Ms73YVs9gPv"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "rp1qS1LrTZuVKlO8",
-      "_stats": {
-        "compendiumSource": "Item.g5jr9m9C9D5TctBx",
-        "coreVersion": "12.343",
-        "createdTime": 1756746146094,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/AvaricePassive1.png",
-      "name": "Pillage",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Rogue",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When you use the 【<strong>Soul Steal】</strong> Skill, you may target any number of creatures at the same time (you perform a single Check and compare it to the Magic Defense of each creature you are attempting to steal from).</p>",
-          "duration": "",
-          "heroic_requirement": "You must have mastered the Rogue Class, and must have acquired the Soul Steal Skill.",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": true,
-          "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
-          "name": "Pillage",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "g5jr9m9C9D5TctBx"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "Rrw1wklhQTlDdXY2",
-      "_stats": {
-        "compendiumSource": "Item.YIFa3uMq4zngcno7",
-        "coreVersion": "12.343",
-        "createdTime": 1756746126362,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/ninjutsu.png",
-      "name": "Vanish",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Rogue",
-          "cost": "1 Fabula Point",
-          "damage_bonus": "0",
-          "description": "<p>When you hit one or more creatures with an attack, you may spend <strong>1 Fabula Point.</strong> If you do, each of those creatures will be unable to perform any action that requires them to be able to see you until the start of your next turn.</p>",
-          "duration": "Instantaneous",
-          "heroic_requirement": "You must have mastered the Rogue Class.",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": true,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Vanish",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "Any",
+          "name": "See you later",
+          "on_activate_effect_ref": "syl_root",
+          "passive_check_bonus_formula": "",
+          "passive_damage_bonus_formula": "",
+          "passive_logic_action": "",
+          "post_damage_effect_ref": "",
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "recipe": "",
+          "recipe_amount": "",
+          "recipe_resource": "",
+          "recipe_target": "",
+          "skill_range": "-",
           "skill_target": "Self",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
+          "skill_type": "Active"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "YIFa3uMq4zngcno7"
+        "unique": true,
+        "uniqueId": "x7RoCErd12Udc8RZ"
       },
       "type": "equippableItem"
     },
@@ -407,158 +876,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "OM63d9oT3OOOtRdr"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "Wht9H1EqL37GGTjC",
-      "_stats": {
-        "compendiumSource": "Item.pGPOqWRyrAFLbHho",
-        "coreVersion": "12.343",
-        "createdTime": 1756746117140,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/fleet_of_foot.png",
-      "name": "High Speed",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Rogue",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>At the start of a conflict, you may spend 10 Mind Points. If you do, <strong>choose one option</strong> and apply it before the start of the first round:</p><ul><li><p>Perform a <strong>free attack</strong> with a weapon you have equipped</p></li><li><p>Perform a <strong>【🚫Hinder】</strong> or <strong>【❗️Objective】</strong> action. You also gain a bonus equal to <strong>【SL】</strong> to all Checks you perform as part of the chosen option.</p></li></ul>",
-          "duration": "",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "allowed_types": "Attack,Hinder",
-              "check_bonus_formula": "SL",
-              "damage_bonus_formula": "",
-              "effect_kind": "open_action_menu",
-              "effect_label": "hs_free_action",
-              "free_mode": true
-            },
-            "1": {
-              "$deleted": false,
-              "effect_kind": "consume_resource",
-              "effect_label": "hs_mp_cost",
-              "grant_amount": "10",
-              "grant_resource": "mp",
-              "on_empty": "abort",
-              "target_ref": "hs_self"
-            },
-            "2": {
-              "$deleted": false,
-              "auto_confirm_when_obvious": true,
-              "candidate_source": "self",
-              "category": "",
-              "count": 1,
-              "effect_kind": "targeting",
-              "effect_label": "hs_self",
-              "iteration_mode": "together",
-              "mode": "exact",
-              "skip_when_passive": true
-            },
-            "3": {
-              "$deleted": false,
-              "chain_steps": "hs_mp_cost, hs_free_action",
-              "effect_kind": "chain",
-              "effect_label": "hs_react"
-            }
-          },
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "3",
-          "name": "High Speed",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Check</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>+3</p></td></tr></tbody></table>",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "pGPOqWRyrAFLbHho"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "x2V8jQ3eTi82DI24",
-      "_stats": {
-        "compendiumSource": "Item.8aONdOoBQoSzz1wU",
-        "coreVersion": "12.343",
-        "createdTime": 1756746119466,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderSkill3.png",
-      "name": "Soul Steal",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Rogue",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>You may use an action to perform a <strong>【DEX + WLP】</strong> Check against the Magic Defense of a creature you can see. if you succeed and the target is a soldier, you recover <strong>【SL】</strong> Inventory Points.</p><p>Additionally, if they are an <strong>elite</strong> or <strong>champion</strong>, the GM gives you the target’s soul treasure, an item worth an amount of zenit <strong>equal to or lower than【the target's level multiplied by 30, or by 50 if they are a Villain】</strong>. This soul treasure will appear inside your backpack;</p><p class=\"rule\">a creature can be successfully stolen from with this Skill only once.</p><p class=\"bonus\">You gain a bonus equal to <strong>【SL】</strong> to your <strong>【DEX + WLP】</strong> Checks for this Skill.</p>",
-          "duration": "Instantaneous",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "5",
-          "name": "Soul Steal",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>IP Recovers</strong></p></td><td><p><strong>Bonus Check</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>1</p></td><td><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>2</p></td><td><p>+2</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>3</p></td><td><p>+3</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>4</p></td><td><p>+4</p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p>5</p></td><td><p>+5</p></td></tr></tbody></table>",
-          "skill_range": "Range",
-          "skill_target": "One creature",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "8aONdOoBQoSzz1wU"
       },
       "type": "equippableItem"
     }

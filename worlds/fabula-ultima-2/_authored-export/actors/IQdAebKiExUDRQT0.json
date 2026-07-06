@@ -17,63 +17,6 @@
   "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/fabula-ultima-bonus-01-necromancer.png",
   "items": [
     {
-      "_id": "8lH1BKbIA1scXPUH",
-      "_stats": {
-        "compendiumSource": "Item.14ni8QTjG5uq5whY",
-        "coreVersion": "12.343",
-        "createdTime": 1757426997946,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
-      "name": "Beyond the Realms of Death",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Necromancer",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "5",
-          "name": "Beyond the Realms of Death",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Max Grave Points</strong></p></td><td><p><strong>Max Heal on first time you hit 0 HP in a scene</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>3</p></td><td><p>4</p></td><td><p>12</p></td></tr><tr><td><p>4</p></td><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>5</p></td><td><p>6</p></td><td><p>30</p></td></tr></tbody></table><p style=\"font-size: 12px; margin-top: 4px; text-align: center\">(Heal = <em>SL × Grave Points lost</em>; values above assume you lost all Grave Points.)</p>",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "14ni8QTjG5uq5whY"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "gC4dIre6omZJ2yPl",
       "_stats": {
         "compendiumSource": "Item.G6zwbm2sfECSKpDM",
@@ -371,29 +314,98 @@
       "type": "equippableItem"
     },
     {
-      "_id": "sxXnO8GZdl8mCKz0",
+      "_id": "rW8tMlWchCAV9OCP",
       "_stats": {
-        "compendiumSource": "Item.tE8pb6Spf4UoFo55",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1777034419661,
-        "duplicateSource": "Item.G6zwbm2sfECSKpDM",
+        "createdTime": 1783362377729,
+        "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "0wrlCFZHSo5BftUk",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Grave Points:</em> Necromantic energy gathered from creatures near death, spent by Necromancer skills.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "RjuPzSEVXVHPNE22",
+              "originalParentId": "qdGOPTKJQ2YI6LUl",
+              "originalUuid": "Item.qdGOPTKJQ2YI6LUl.ActiveEffect.RjuPzSEVXVHPNE22"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "chargeKey": "grave",
+              "charges": 0,
+              "chargesMax": 3,
+              "hudResourceColor": "#8fb53a",
+              "lifetimeMode": "persistent_counter",
+              "reactionConfig": {
+                "effect_table": {},
+                "reaction_config_table": {}
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/death/skull-energy-light-purple.webp",
+          "name": "Grave Points",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-grave-points"
+          ],
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/delirium.png",
       "name": "Fear Is the Key",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
+        "container": null,
         "props": {
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
@@ -405,6 +417,49 @@
           "defense_target_type": "def",
           "description": "<p>After you cause one or more enemies to lose Hit Points, if you have acquired the <strong>Beyond the Realms of Death</strong> Skill and at least one of them is suffering from \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>\n and/or \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>, you gain <strong>1 Grave Point</strong> and recover <strong>[SL × 2]</strong> Hit Points and Mind Points.</p>\n",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "candidate_source": "self",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "fk_self",
+              "exclude_self": false,
+              "mode": "exact",
+              "skip_when_passive": true
+            },
+            "1": {
+              "$deleted": false,
+              "chain_steps": "fk_gp, fk_hp, fk_mp",
+              "effect_kind": "chain",
+              "effect_label": "fk_do"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_template_ref": "Grave Points",
+              "effect_kind": "apply_ae",
+              "effect_label": "fk_gp",
+              "target_ref": "fk_self"
+            },
+            "3": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "fk_hp",
+              "grant_amount": "SL * 2",
+              "grant_resource": "hp",
+              "target_ref": "fk_self"
+            },
+            "4": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "fk_mp",
+              "grant_amount": "SL * 2",
+              "grant_resource": "mp",
+              "target_ref": "fk_self"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -417,16 +472,18 @@
           "max_level": "3",
           "name": "Fear Is the Key",
           "optional_params": {},
-          "passive_logic_resolution": "<p>const DEBUG = true;</p><p>const TAG = \"[PL-RES][FearIsTheKey]\";</p><p>const ctx = (typeof context !== \"undefined\" &amp;&amp; context) ? context : {};</p><p>const p = (typeof __PAYLOAD !== \"undefined\" &amp;&amp; __PAYLOAD) ? __PAYLOAD : {};</p><p>const globalTargets = (typeof __TARGETS !== \"undefined\" &amp;&amp; Array.isArray(__TARGETS)) ? __TARGETS : [];</p><p>const skip = (reason = \"\") =&gt; {</p><p>if (DEBUG &amp;&amp; reason) console.log(TAG, \"SKIP:\", reason);</p><p>return ctx.skipPassive ? ctx.skipPassive(\"\", { notify: false }) : undefined;</p><p>};</p><p>const log = (...args) =&gt; {</p><p>if (DEBUG) console.log(TAG, ...args);</p><p>};</p><p>const warn = (...args) =&gt; {</p><p>if (DEBUG) console.warn(TAG, ...args);</p><p>};</p><p>const norm = (v) =&gt; String(v ?? \"\").trim().toLowerCase();</p><p>const asArray = (v) =&gt; Array.isArray(v) ? v : (v == null ? [] : [v]);</p><p>const collectionValues = (collectionLike) =&gt; {</p><p>if (!collectionLike) return [];</p><p>if (Array.isArray(collectionLike)) return collectionLike;</p><p>if (typeof collectionLike.values === \"function\") return Array.from(collectionLike.values());</p><p>return Array.from(collectionLike);</p><p>};</p><p>const toNumber = (v, fallback = 0) =&gt; {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : fallback;</p><p>};</p><p>async function resolveDoc(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref !== \"string\") return ref;</p><p>try {</p><p>return await fromUuid(ref);</p><p>} catch (err) {</p><p>warn(\"fromUuid failed\", { ref, err });</p><p>return null;</p><p>}</p><p>}</p><p>function actorFromDoc(doc) {</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Actor\" || doc.constructor?.name === \"Actor\") return doc;</p><p>if (doc.actor) return doc.actor;</p><p>if (doc.object?.actor) return doc.object.actor;</p><p>if (doc.token?.actor) return doc.token.actor;</p><p>if (doc.document?.actor) return doc.document.actor;</p><p>return null;</p><p>}</p><p>async function resolveActor(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>return actorFromDoc(doc);</p><p>}</p><p>function getActiveTokenForActor(actor) {</p><p>if (!actor) return null;</p><p>try {</p><p>return (</p><p>actor.getActiveTokens?.(true, true)?.[0] ??</p><p>actor.getActiveTokens?.()?.[0] ??</p><p>null</p><p>);</p><p>} catch {</p><p>return null;</p><p>}</p><p>}</p><p>// --------------------------------------------------</p><p>// 1) Read the trigger payload.</p><p>// This passive should only run from creature_deals_damage.</p><p>// --------------------------------------------------</p><p>const phaseRoot =</p><p>p?.meta?.reaction_phase_payload ??</p><p>p?.reaction_phase_payload ??</p><p>{};</p><p>const phaseByTrigger =</p><p>p?.meta?.reaction_phase_payload_by_trigger ??</p><p>p?.reaction_phase_payload_by_trigger ??</p><p>{};</p><p>const passiveTriggerKey =</p><p>p?.meta?.passiveTriggerKey ??</p><p>p?.passiveTriggerKey ??</p><p>p?.reaction_trigger_key ??</p><p>phaseRoot?.trigger ??</p><p>null;</p><p>const triggerPayload =</p><p>phaseByTrigger?.creature_deals_damage ??</p><p>(passiveTriggerKey &amp;&amp; phaseByTrigger?.[passiveTriggerKey]) ??</p><p>phaseRoot ??</p><p>{};</p><p>const triggerName = triggerPayload?.trigger ?? passiveTriggerKey ?? \"\";</p><p>if (triggerName !== \"creature_deals_damage\") {</p><p>return skip(`Wrong trigger: ${triggerName || \"none\"}`);</p><p>}</p><p>// --------------------------------------------------</p><p>// 2) Confirm the damage event actually caused HP loss.</p><p>// --------------------------------------------------</p><p>const hpBefore = toNumber(triggerPayload?.gmChanges?.hp?.from, NaN);</p><p>const hpAfter = toNumber(triggerPayload?.gmChanges?.hp?.to, NaN);</p><p>let dealt = 0;</p><p>if (Number.isFinite(hpBefore) &amp;&amp; Number.isFinite(hpAfter)) {</p><p>dealt = Math.max(0, hpBefore - hpAfter);</p><p>} else {</p><p>dealt = Math.max(</p><p>0,</p><p>Math.abs(toNumber(triggerPayload?.finalValue, 0)) ||</p><p>Math.abs(toNumber(triggerPayload?.displayedAmount, 0)) ||</p><p>Math.abs(toNumber(triggerPayload?.baseValue, 0))</p><p>);</p><p>}</p><p>if (triggerPayload?.affected === false || dealt &lt;= 0) {</p><p>return skip(\"Damage event did not cause HP loss.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 3) Resolve passive owner and Fear Is the Key item.</p><p>// --------------------------------------------------</p><p>const owner =</p><p>ctx.passiveOwner ??</p><p>((typeof __PASSIVE_ACTOR !== \"undefined\") ? __PASSIVE_ACTOR : null);</p><p>const fearItem =</p><p>ctx.passiveItem ??</p><p>((typeof __PASSIVE_ITEM !== \"undefined\") ? __PASSIVE_ITEM : null);</p><p>if (!owner) return skip(\"Missing passive owner actor.\");</p><p>if (!fearItem) return skip(\"Missing Fear Is the Key passive item.\");</p><p>const fearSL = Math.max(0, parseInt(fearItem.system?.props?.level ?? \"0\", 10) || 0);</p><p>if (fearSL &lt;= 0) return skip(\"Fear Is the Key SL is 0.\");</p><p>// --------------------------------------------------</p><p>// 4) Detect Beyond the Realms of Death on the same owner.</p><p>// ID first, name fallback.</p><p>// --------------------------------------------------</p><p>const BEYOND_BASE_UUID = \"Item.14ni8QTjG5uq5whY\";</p><p>const BEYOND_NAME = \"beyond the realms of death\";</p><p>function itemSourceIds(item) {</p><p>return [</p><p>item?.uuid,</p><p>item?._stats?.compendiumSource,</p><p>item?.flags?.core?.sourceId,</p><p>item?.flags?.world?.sourceId,</p><p>item?.system?.props?.baseUuid,</p><p>item?.system?.props?.sourceUuid,</p><p>item?.system?.props?.uuid</p><p>].filter(Boolean).map(String);</p><p>}</p><p>const ownerItems = collectionValues(owner.items);</p><p>const beyondSkill = ownerItems.find(item =&gt; {</p><p>const ids = itemSourceIds(item);</p><p>if (ids.includes(BEYOND_BASE_UUID)) return true;</p><p>return norm(item?.name) === BEYOND_NAME;</p><p>});</p><p>if (!beyondSkill) {</p><p>return skip(\"Owner does not have Beyond the Realms of Death.\");</p><p>}</p><p>const beyondSL = Math.max(0, parseInt(beyondSkill.system?.props?.level ?? \"0\", 10) || 0);</p><p>if (beyondSL &lt;= 0) return skip(\"Beyond the Realms of Death SL is 0.\");</p><p>const maxGrave = Math.max(1, beyondSL + 1);</p><p>// --------------------------------------------------</p><p>// 5) Resolve damaged target list from the damage event.</p><p>// --------------------------------------------------</p><p>function collectTargetRefs(src = {}) {</p><p>const refs = [];</p><p>refs.push(...asArray(src.targetUuid));</p><p>refs.push(...asArray(src.targetTokenUuid));</p><p>refs.push(...asArray(src.targetTokenUUID));</p><p>refs.push(...asArray(src.targetActorUuid));</p><p>refs.push(...asArray(src.targetActorUUID));</p><p>refs.push(...asArray(src.targets));</p><p>refs.push(...asArray(src.targetTokenUuids));</p><p>refs.push(...asArray(src.targetTokenUUIDs));</p><p>refs.push(...asArray(src.targetActorUuids));</p><p>refs.push(...asArray(src.targetActorUUIDs));</p><p>for (const id of asArray(src.targetIds)) {</p><p>const tok = canvas.tokens?.placeables?.find(t =&gt; t.id === id || t.document?.id === id);</p><p>if (tok?.document?.uuid) refs.push(tok.document.uuid);</p><p>}</p><p>return Array.from(new Set(refs.filter(Boolean).map(String)));</p><p>}</p><p>let targetRefs = collectTargetRefs(triggerPayload);</p><p>if (!targetRefs.length) {</p><p>targetRefs = collectTargetRefs(p);</p><p>}</p><p>if (!targetRefs.length &amp;&amp; globalTargets.length) {</p><p>targetRefs = globalTargets;</p><p>}</p><p>if (!targetRefs.length) {</p><p>return skip(\"No damaged target refs found in trigger payload.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 6) Check Shaken / Weak on any damaged target.</p><p>// ID first, name fallback.</p><p>// --------------------------------------------------</p><p>const SHAKEN_EFFECT_UUID = \"Item.XVOWOq9oUmEECGrU.ActiveEffect.dnzpUdhxjd6H3ktJ\";</p><p>const WEAK_EFFECT_UUID = \"Item.XVOWOq9oUmEECGrU.ActiveEffect.62gUkhQExwD9DvaI\";</p><p>const EFFECT_UUIDS = new Set([SHAKEN_EFFECT_UUID, WEAK_EFFECT_UUID]);</p><p>const EFFECT_IDS = new Set(</p><p>Array.from(EFFECT_UUIDS).map(uuid =&gt; String(uuid).split(\".\").pop())</p><p>);</p><p>const EFFECT_NAMES = new Set([\"shaken\", \"weak\"]);</p><p>function isTruthy(v) {</p><p>return v === true || v === 1 || v === \"1\" || norm(v) === \"true\" || norm(v) === \"yes\";</p><p>}</p><p>function actorHasShakenOrWeak(actor) {</p><p>if (!actor) return false;</p><p>const effects = collectionValues(actor.effects);</p><p>// ID / source UUID first.</p><p>for (const eff of effects) {</p><p>if (!eff || eff.disabled) continue;</p><p>const effId = String(eff.id ?? eff._id ?? \"\");</p><p>const effUuid = String(eff.uuid ?? \"\");</p><p>const effOrigin = String(eff.origin ?? \"\");</p><p>if (EFFECT_IDS.has(effId)) return true;</p><p>if (EFFECT_UUIDS.has(effUuid)) return true;</p><p>if (EFFECT_UUIDS.has(effOrigin)) return true;</p><p>}</p><p>// Name / status fallback.</p><p>for (const eff of effects) {</p><p>if (!eff || eff.disabled) continue;</p><p>const effName = norm(eff.name ?? eff.label ?? \"\");</p><p>if (EFFECT_NAMES.has(effName)) return true;</p><p>const statuses = Array.from(eff.statuses ?? []).map(norm);</p><p>if (statuses.some(s =&gt; EFFECT_NAMES.has(s))) return true;</p><p>}</p><p>// Last fallback for your sheet boolean mirrors, if present.</p><p>const props = actor.system?.props ?? {};</p><p>if (isTruthy(props.isShaken) || isTruthy(props.shaken)) return true;</p><p>if (isTruthy(props.isWeak) || isTruthy(props.weak)) return true;</p><p>return false;</p><p>}</p><p>const affectedTargets = [];</p><p>for (const ref of targetRefs) {</p><p>const actor = await resolveActor(ref);</p><p>if (!actor) continue;</p><p>if (actorHasShakenOrWeak(actor)) {</p><p>affectedTargets.push(actor);</p><p>}</p><p>}</p><p>if (!affectedTargets.length) {</p><p>return skip(\"No damaged target has Shaken or Weak.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 7) Apply result:</p><p>// - Owner gains 1 Grave Point, capped by Beyond SL + 1.</p><p>// - Owner recovers HP and MP equal to Fear SL * 2.</p><p>// --------------------------------------------------</p><p>const props = owner.system?.props ?? {};</p><p>const graveBefore = Math.max(0, toNumber(props.clock_grave, 0));</p><p>const graveAfter = Math.min(maxGrave, graveBefore + 1);</p><p>const recoverAmount = Math.max(0, fearSL * 2);</p><p>const hpBeforeOwner = Math.max(0, toNumber(props.current_hp, 0));</p><p>const mpBeforeOwner = Math.max(0, toNumber(props.current_mp, 0));</p><p>const maxHpRaw = toNumber(props.max_hp, NaN);</p><p>const maxMpRaw = toNumber(props.max_mp, NaN);</p><p>const maxHp = Number.isFinite(maxHpRaw) &amp;&amp; maxHpRaw &gt; 0 ? maxHpRaw : hpBeforeOwner + recoverAmount;</p><p>const maxMp = Number.isFinite(maxMpRaw) &amp;&amp; maxMpRaw &gt; 0 ? maxMpRaw : mpBeforeOwner + recoverAmount;</p><p>const hpAfterOwner = Math.min(maxHp, hpBeforeOwner + recoverAmount);</p><p>const mpAfterOwner = Math.min(maxMp, mpBeforeOwner + recoverAmount);</p><p>const hpGained = Math.max(0, hpAfterOwner - hpBeforeOwner);</p><p>const mpGained = Math.max(0, mpAfterOwner - mpBeforeOwner);</p><p>await owner.update({</p><p>\"system.props.clock_grave\": graveAfter,</p><p>\"system.props.current_hp\": hpAfterOwner,</p><p>\"system.props.current_mp\": mpAfterOwner</p><p>});</p><p>log(\"APPLIED\", {</p><p>owner: owner.name,</p><p>damagedTargetsWithShakenOrWeak: affectedTargets.map(a =&gt; a.name),</p><p>dealt,</p><p>fearSL,</p><p>beyondSL,</p><p>graveBefore,</p><p>graveAfter,</p><p>maxGrave,</p><p>recoverAmount,</p><p>hpBeforeOwner,</p><p>hpAfterOwner,</p><p>hpGained,</p><p>mpBeforeOwner,</p><p>mpAfterOwner,</p><p>mpGained</p><p>});</p><p>// --------------------------------------------------</p><p>// 8) Silent pseudo floating text feedback.</p><p>// Green = HP recovery, Blue = MP recovery.</p><p>// --------------------------------------------------</p><p>const ownerToken = getActiveTokenForActor(owner);</p><p>const casterTokenUuid = ownerToken?.document?.uuid ?? null;</p><p>if (casterTokenUuid &amp;&amp; game.ONI?.pseudo?.play &amp;&amp; (hpGained &gt; 0 || mpGained &gt; 0)) {</p><p>const scriptSource = `</p><p>const { casterToken, params } = ctx;</p><p>if (!casterToken) return;</p><p>const hpGain = Number(params.hpGain ?? 0) || 0;</p><p>const mpGain = Number(params.mpGain ?? 0) || 0;</p><p>if (hpGain &lt;= 0 &amp;&amp; mpGain &lt;= 0) return;</p><p>const duration = Number(params.duration ?? 1150) || 1150;</p><p>const rise = Number(params.rise ?? 70) || 70;</p><p>const fontSize = Number(params.fontSize ?? 30) || 30;</p><p>canvas.stage.sortableChildren = true;</p><p>const container = new PIXI.Container();</p><p>container.x = casterToken.center.x;</p><p>container.y = casterToken.center.y - ((casterToken.h ?? 100) * 0.72);</p><p>container.zIndex = 10000;</p><p>container.alpha = 1;</p><p>function makeText(text, fill, yOffset) {</p><p>const t = new PIXI.Text(text, {</p><p>fontFamily: \"Signika, sans-serif\",</p><p>fontSize,</p><p>fill,</p><p>fontWeight: \"bold\",</p><p>stroke: \"#000000\",</p><p>strokeThickness: 4,</p><p>align: \"center\",</p><p>dropShadow: true,</p><p>dropShadowColor: \"#000000\",</p><p>dropShadowBlur: 3,</p><p>dropShadowDistance: 2</p><p>});</p><p>t.anchor.set(0.5);</p><p>t.y = yOffset;</p><p>return t;</p><p>}</p><p>let y = 0;</p><p>if (hpGain &gt; 0) {</p><p>container.addChild(makeText(\"+\" + hpGain + \" HP\", \"#35ff63\", y));</p><p>y += fontSize + 6;</p><p>}</p><p>if (mpGain &gt; 0) {</p><p>container.addChild(makeText(\"+\" + mpGain + \" MP\", \"#36b7ff\", y));</p><p>}</p><p>canvas.stage.addChild(container);</p><p>canvas.stage.sortChildren();</p><p>function easeOutCubic(t) {</p><p>return 1 - Math.pow(1 - t, 3);</p><p>}</p><p>await new Promise(resolve =&gt; {</p><p>const start = performance.now();</p><p>const startY = container.y;</p><p>const tick = () =&gt; {</p><p>const raw = (performance.now() - start) / duration;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeOutCubic(t);</p><p>container.y = startY - (rise * e);</p><p>if (t &gt; 0.45) {</p><p>container.alpha = 1 - ((t - 0.45) / 0.55);</p><p>}</p><p>if (t &gt;= 1) {</p><p>canvas.app.ticker.remove(tick);</p><p>resolve();</p><p>}</p><p>};</p><p>canvas.app.ticker.add(tick);</p><p>});</p><p>canvas.stage.removeChild(container);</p><p>container.destroy({ children: true });</p><p>`;</p><p>game.ONI.pseudo.play({</p><p>scriptId: \"fearIsTheKey.recoveryFloatText\",</p><p>scriptSource,</p><p>casterTokenUuid,</p><p>targetTokenUuids: [],</p><p>params: {</p><p>hpGain: hpGained,</p><p>mpGain: mpGained,</p><p>duration: 1150,</p><p>rise: 70,</p><p>fontSize: 30</p><p>},</p><p>meta: {</p><p>source: \"Fear Is the Key\",</p><p>ownerActorUuid: owner.uuid</p><p>}</p><p>});</p><p>} else {</p><p>log(\"Pseudo floating text skipped.\", {</p><p>hasCasterToken: !!casterTokenUuid,</p><p>hasPseudoApi: !!game.ONI?.pseudo?.play,</p><p>hpGained,</p><p>mpGained</p><p>});</p><p>}</p>",
+          "passive_logic_resolution": "<p>const DEBUG = true;</p><p>const TAG = \"[PL-RES][FearIsTheKey]\";</p><p>// ============================================================================</p><p>// Fear Is the Key — Passive Logic Resolution</p><p>// Player-safe version:</p><p>// - If this script somehow runs on a non-GM client, it forwards itself to GM.</p><p>// - The authoritative actor.update happens on GM.</p><p>// - If the normal PassiveLogic-Resolution wrapper already ran this on GM,</p><p>// this bridge simply does nothing extra.</p><p>// ============================================================================</p><p>async function FearIsTheKey_Main() {</p><p>const ctx = (typeof context !== \"undefined\" &amp;&amp; context) ? context : {};</p><p>const p = (typeof __PAYLOAD !== \"undefined\" &amp;&amp; __PAYLOAD) ? __PAYLOAD : {};</p><p>const args = (typeof __ARGS !== \"undefined\" &amp;&amp; __ARGS) ? __ARGS : {};</p><p>const chatMsg = (typeof __CHAT_MSG !== \"undefined\" &amp;&amp; __CHAT_MSG) ? __CHAT_MSG : null;</p><p>const globalTargets = (typeof __TARGETS !== \"undefined\" &amp;&amp; Array.isArray(__TARGETS)) ? __TARGETS : [];</p><p>p.meta = p.meta || {};</p><p>const log = (...args) =&gt; {</p><p>if (DEBUG) console.log(TAG, ...args);</p><p>};</p><p>const warn = (...args) =&gt; {</p><p>if (DEBUG) console.warn(TAG, ...args);</p><p>};</p><p>const skip = (reason = \"\") =&gt; {</p><p>if (DEBUG &amp;&amp; reason) console.log(TAG, \"SKIP:\", reason);</p><p>p.meta.hidePassiveCard = true;</p><p>p.meta.__passiveSkipped = true;</p><p>p.meta.__passiveSkipReason = String(reason ?? \"\");</p><p>return ctx.skipPassive</p><p>? ctx.skipPassive(reason || \"\", { notify: false })</p><p>: { skipped: true, reason };</p><p>};</p><p>const norm = (v) =&gt; String(v ?? \"\").trim().toLowerCase();</p><p>const asArray = (v) =&gt; Array.isArray(v) ? v : (v == null ? [] : [v]);</p><p>const collectionValues = (collectionLike) =&gt; {</p><p>if (!collectionLike) return [];</p><p>if (Array.isArray(collectionLike)) return collectionLike;</p><p>if (typeof collectionLike.values === \"function\") return Array.from(collectionLike.values());</p><p>return Array.from(collectionLike);</p><p>};</p><p>const toNumber = (v, fallback = 0) =&gt; {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : fallback;</p><p>};</p><p>async function resolveDoc(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref !== \"string\") return ref;</p><p>try {</p><p>return await fromUuid(ref);</p><p>} catch (err) {</p><p>warn(\"fromUuid failed\", { ref, err });</p><p>return null;</p><p>}</p><p>}</p><p>function actorFromDoc(doc) {</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Actor\" || doc.constructor?.name === \"Actor\") return doc;</p><p>if (doc.actor) return doc.actor;</p><p>if (doc.object?.actor) return doc.object.actor;</p><p>if (doc.token?.actor) return doc.token.actor;</p><p>if (doc.document?.actor) return doc.document.actor;</p><p>return null;</p><p>}</p><p>async function resolveActor(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>return actorFromDoc(doc);</p><p>}</p><p>async function resolveToken(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Token\" || doc.documentName === \"TokenDocument\") {</p><p>return doc.object ?? null;</p><p>}</p><p>if (doc.document?.documentName === \"Token\") {</p><p>return doc.document.object ?? null;</p><p>}</p><p>const actor = actorFromDoc(doc);</p><p>if (actor) {</p><p>try {</p><p>return (</p><p>actor.getActiveTokens?.(true, true)?.[0] ??</p><p>actor.getActiveTokens?.()?.[0] ??</p><p>null</p><p>);</p><p>} catch {</p><p>return null;</p><p>}</p><p>}</p><p>return null;</p><p>}</p><p>function getActiveTokenForActor(actor) {</p><p>if (!actor) return null;</p><p>try {</p><p>return (</p><p>actor.getActiveTokens?.(true, true)?.[0] ??</p><p>actor.getActiveTokens?.()?.[0] ??</p><p>null</p><p>);</p><p>} catch {</p><p>return null;</p><p>}</p><p>}</p><p>// --------------------------------------------------------------------------</p><p>// 0) Permission bridge.</p><p>// If this child script is ever executed directly on a player client, forward</p><p>// this exact main function to GM so owner.update is authoritative.</p><p>// --------------------------------------------------------------------------</p><p>const alreadyGmBridge =</p><p>!!globalThis.__FITK_GM_BRIDGE ||</p><p>!!globalThis.__GLOBALS?.__FITK_GM_BRIDGE ||</p><p>p?.meta?.__fitkGmBridge === true;</p><p>if (!game.user?.isGM &amp;&amp; !alreadyGmBridge) {</p><p>const gmExecutor =</p><p>game.modules?.get(\"fabula-ultima-companion\")?.api?.GMExecutor ??</p><p>globalThis.FUCompanion?.api?.GMExecutor ??</p><p>null;</p><p>if (!gmExecutor?.executeSnippet) {</p><p>return skip(\"GMExecutor unavailable on player client.\");</p><p>}</p><p>const bridgeActorUuid =</p><p>ctx.passiveOwner?.uuid ??</p><p>((typeof __PASSIVE_ACTOR !== \"undefined\") ? __PASSIVE_ACTOR?.uuid : null) ??</p><p>p?.meta?.attackerActorUuid ??</p><p>p?.attackerActorUuid ??</p><p>p?.meta?.sourceActorUuid ??</p><p>p?.sourceActorUuid ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>null;</p><p>if (!bridgeActorUuid) {</p><p>return skip(\"Could not find owner actor UUID for GM bridge.\");</p><p>}</p><p>const bridgedPayload = foundry.utils.deepClone(p);</p><p>bridgedPayload.meta = bridgedPayload.meta || {};</p><p>bridgedPayload.meta.__fitkGmBridge = true;</p><p>log(\"Forwarding Fear Is the Key to GMExecutor.\", {</p><p>callerUserId: game.user?.id,</p><p>bridgeActorUuid,</p><p>targetsCount: globalTargets.length</p><p>});</p><p>const remote = await gmExecutor.executeSnippet({</p><p>mode: \"resolution\",</p><p>scriptText: `</p><p>const context = env.makeContext(\"resolution\");</p><p>globalThis.__FITK_GM_BRIDGE = true;</p><p>return await (${FearIsTheKey_Main.toString()})();</p><p>`.trim(),</p><p>payload: bridgedPayload,</p><p>args,</p><p>targets: globalTargets,</p><p>chatMsgId: chatMsg?.id ?? null,</p><p>actorUuid: bridgeActorUuid,</p><p>globals: {</p><p>__FITK_GM_BRIDGE: true</p><p>},</p><p>metadata: {</p><p>origin: \"Fear Is the Key self-bridge\"</p><p>}</p><p>});</p><p>if (remote?.payload) {</p><p>foundry.utils.mergeObject(p, remote.payload, {</p><p>insertKeys: true,</p><p>insertValues: true,</p><p>overwrite: true,</p><p>recursive: true,</p><p>inplace: true</p><p>});</p><p>}</p><p>if (remote?.args) {</p><p>foundry.utils.mergeObject(args, remote.args, {</p><p>insertKeys: true,</p><p>insertValues: true,</p><p>overwrite: true,</p><p>recursive: true,</p><p>inplace: true</p><p>});</p><p>}</p><p>if (!remote?.ok) {</p><p>warn(\"GM bridge failed.\", remote);</p><p>return skip(`GM bridge failed: ${remote?.error ?? \"unknown error\"}`);</p><p>}</p><p>if (remote?.payload?.meta?.__passiveSkipped) {</p><p>return skip(remote.payload.meta.__passiveSkipReason ?? \"GM-side condition failed.\");</p><p>}</p><p>log(\"GM bridge completed.\", {</p><p>resultValue: remote?.resultValue ?? null</p><p>});</p><p>return remote?.resultValue ?? { ok: true, bridged: true };</p><p>}</p><p>// --------------------------------------------------------------------------</p><p>// 1) Read the trigger payload.</p><p>// This passive should only run from creature_deals_damage.</p><p>// --------------------------------------------------------------------------</p><p>const phaseRoot =</p><p>p?.meta?.reaction_phase_payload ??</p><p>p?.reaction_phase_payload ??</p><p>{};</p><p>const phaseByTrigger =</p><p>p?.meta?.reaction_phase_payload_by_trigger ??</p><p>p?.reaction_phase_payload_by_trigger ??</p><p>{};</p><p>const passiveTriggerKey =</p><p>p?.meta?.passiveTriggerKey ??</p><p>p?.passiveTriggerKey ??</p><p>p?.reaction_trigger_key ??</p><p>phaseRoot?.trigger ??</p><p>null;</p><p>const triggerPayload =</p><p>phaseByTrigger?.creature_deals_damage ??</p><p>(passiveTriggerKey &amp;&amp; phaseByTrigger?.[passiveTriggerKey]) ??</p><p>phaseRoot ??</p><p>{};</p><p>const triggerName = triggerPayload?.trigger ?? passiveTriggerKey ?? \"\";</p><p>if (triggerName !== \"creature_deals_damage\") {</p><p>return skip(`Wrong trigger: ${triggerName || \"none\"}`);</p><p>}</p><p>// --------------------------------------------------------------------------</p><p>// 2) Confirm the damage event actually caused HP loss.</p><p>// --------------------------------------------------------------------------</p><p>const hpBefore = toNumber(triggerPayload?.gmChanges?.hp?.from, NaN);</p><p>const hpAfter = toNumber(triggerPayload?.gmChanges?.hp?.to, NaN);</p><p>let dealt = 0;</p><p>if (Number.isFinite(hpBefore) &amp;&amp; Number.isFinite(hpAfter)) {</p><p>dealt = Math.max(0, hpBefore - hpAfter);</p><p>} else {</p><p>dealt = Math.max(</p><p>0,</p><p>Math.abs(toNumber(triggerPayload?.finalValue, 0)) ||</p><p>Math.abs(toNumber(triggerPayload?.displayedAmount, 0)) ||</p><p>Math.abs(toNumber(triggerPayload?.baseValue, 0))</p><p>);</p><p>}</p><p>if (triggerPayload?.affected === false || dealt &lt;= 0) {</p><p>return skip(\"Damage event did not cause HP loss.\");</p><p>}</p><p>// --------------------------------------------------------------------------</p><p>// 3) Resolve passive owner and Fear Is the Key item.</p><p>// Works both when called through passive engine and through the self GM bridge.</p><p>// --------------------------------------------------------------------------</p><p>const owner =</p><p>ctx.passiveOwner ??</p><p>((typeof __PASSIVE_ACTOR !== \"undefined\") ? __PASSIVE_ACTOR : null) ??</p><p>await resolveActor(</p><p>p?.meta?.passiveOwnerActorUuid ??</p><p>p?.meta?.attackerActorUuid ??</p><p>p?.attackerActorUuid ??</p><p>p?.meta?.sourceActorUuid ??</p><p>p?.sourceActorUuid ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>null</p><p>);</p><p>if (!owner) return skip(\"Missing passive owner actor.\");</p><p>const ownerItems = collectionValues(owner.items);</p><p>const fearItemFromUuid =</p><p>await resolveDoc(</p><p>p?.meta?.passiveItemUuid ??</p><p>p?.passiveItemUuid ??</p><p>p?.itemUuid ??</p><p>null</p><p>);</p><p>const fearItem =</p><p>ctx.passiveItem ??</p><p>((typeof __PASSIVE_ITEM !== \"undefined\") ? __PASSIVE_ITEM : null) ??</p><p>(</p><p>actorFromDoc(fearItemFromUuid)</p><p>? null</p><p>: fearItemFromUuid</p><p>) ??</p><p>ownerItems.find(i =&gt; norm(i?.name) === \"fear is the key\");</p><p>if (!fearItem) return skip(\"Missing Fear Is the Key passive item.\");</p><p>const fearSL = Math.max(0, parseInt(fearItem.system?.props?.level ?? \"0\", 10) || 0);</p><p>if (fearSL &lt;= 0) return skip(\"Fear Is the Key SL is 0.\");</p><p>// --------------------------------------------------------------------------</p><p>// 4) Detect Beyond the Realms of Death on the same owner.</p><p>// ID first, name fallback.</p><p>// --------------------------------------------------------------------------</p><p>const BEYOND_BASE_UUID = \"Item.14ni8QTjG5uq5whY\";</p><p>const BEYOND_NAME = \"beyond the realms of death\";</p><p>function itemSourceIds(item) {</p><p>return [</p><p>item?.uuid,</p><p>item?._stats?.compendiumSource,</p><p>item?.flags?.core?.sourceId,</p><p>item?.flags?.world?.sourceId,</p><p>item?.system?.props?.baseUuid,</p><p>item?.system?.props?.sourceUuid,</p><p>item?.system?.props?.uuid</p><p>].filter(Boolean).map(String);</p><p>}</p><p>const beyondSkill = ownerItems.find(item =&gt; {</p><p>const ids = itemSourceIds(item);</p><p>if (ids.includes(BEYOND_BASE_UUID)) return true;</p><p>return norm(item?.name) === BEYOND_NAME;</p><p>});</p><p>if (!beyondSkill) {</p><p>return skip(\"Owner does not have Beyond the Realms of Death.\");</p><p>}</p><p>const beyondSL = Math.max(0, parseInt(beyondSkill.system?.props?.level ?? \"0\", 10) || 0);</p><p>if (beyondSL &lt;= 0) return skip(\"Beyond the Realms of Death SL is 0.\");</p><p>const maxGrave = Math.max(1, beyondSL + 1);</p><p>// --------------------------------------------------------------------------</p><p>// 5) Resolve damaged target list from the damage event.</p><p>// --------------------------------------------------------------------------</p><p>function collectTargetRefs(src = {}) {</p><p>const refs = [];</p><p>refs.push(...asArray(src.targetUuid));</p><p>refs.push(...asArray(src.targetTokenUuid));</p><p>refs.push(...asArray(src.targetTokenUUID));</p><p>refs.push(...asArray(src.targetActorUuid));</p><p>refs.push(...asArray(src.targetActorUUID));</p><p>refs.push(...asArray(src.targets));</p><p>refs.push(...asArray(src.targetTokenUuids));</p><p>refs.push(...asArray(src.targetTokenUUIDs));</p><p>refs.push(...asArray(src.targetActorUuids));</p><p>refs.push(...asArray(src.targetActorUUIDs));</p><p>for (const id of asArray(src.targetIds)) {</p><p>const tok = canvas.tokens?.placeables?.find(t =&gt; t.id === id || t.document?.id === id);</p><p>if (tok?.document?.uuid) refs.push(tok.document.uuid);</p><p>}</p><p>return Array.from(new Set(refs.filter(Boolean).map(String)));</p><p>}</p><p>let targetRefs = collectTargetRefs(triggerPayload);</p><p>if (!targetRefs.length) {</p><p>targetRefs = collectTargetRefs(p);</p><p>}</p><p>if (!targetRefs.length &amp;&amp; globalTargets.length) {</p><p>targetRefs = globalTargets;</p><p>}</p><p>if (!targetRefs.length) {</p><p>return skip(\"No damaged target refs found in trigger payload.\");</p><p>}</p><p>// --------------------------------------------------------------------------</p><p>// 6) Check Shaken / Weak on any damaged target.</p><p>// ID first, name fallback.</p><p>// --------------------------------------------------------------------------</p><p>const SHAKEN_EFFECT_UUID = \"Item.XVOWOq9oUmEECGrU.ActiveEffect.dnzpUdhxjd6H3ktJ\";</p><p>const WEAK_EFFECT_UUID = \"Item.XVOWOq9oUmEECGrU.ActiveEffect.62gUkhQExwD9DvaI\";</p><p>const EFFECT_UUIDS = new Set([SHAKEN_EFFECT_UUID, WEAK_EFFECT_UUID]);</p><p>const EFFECT_IDS = new Set(</p><p>Array.from(EFFECT_UUIDS).map(uuid =&gt; String(uuid).split(\".\").pop())</p><p>);</p><p>const EFFECT_NAMES = new Set([\"shaken\", \"weak\"]);</p><p>function isTruthy(v) {</p><p>return v === true || v === 1 || v === \"1\" || norm(v) === \"true\" || norm(v) === \"yes\";</p><p>}</p><p>function actorHasShakenOrWeak(actor) {</p><p>if (!actor) return false;</p><p>const effects = collectionValues(actor.effects);</p><p>// ID / source UUID first.</p><p>for (const eff of effects) {</p><p>if (!eff || eff.disabled) continue;</p><p>const effId = String(eff.id ?? eff._id ?? \"\");</p><p>const effUuid = String(eff.uuid ?? \"\");</p><p>const effOrigin = String(eff.origin ?? \"\");</p><p>if (EFFECT_IDS.has(effId)) return true;</p><p>if (EFFECT_UUIDS.has(effUuid)) return true;</p><p>if (EFFECT_UUIDS.has(effOrigin)) return true;</p><p>}</p><p>// Name / status fallback.</p><p>for (const eff of effects) {</p><p>if (!eff || eff.disabled) continue;</p><p>const effName = norm(eff.name ?? eff.label ?? \"\");</p><p>if (EFFECT_NAMES.has(effName)) return true;</p><p>const statuses = Array.from(eff.statuses ?? []).map(norm);</p><p>if (statuses.some(s =&gt; EFFECT_NAMES.has(s))) return true;</p><p>}</p><p>// Sheet mirror fallback, if present.</p><p>const props = actor.system?.props ?? {};</p><p>if (isTruthy(props.isShaken) || isTruthy(props.shaken)) return true;</p><p>if (isTruthy(props.isWeak) || isTruthy(props.weak)) return true;</p><p>return false;</p><p>}</p><p>const affectedTargets = [];</p><p>for (const ref of targetRefs) {</p><p>const actor = await resolveActor(ref);</p><p>if (!actor) continue;</p><p>if (actorHasShakenOrWeak(actor)) {</p><p>affectedTargets.push(actor);</p><p>}</p><p>}</p><p>if (!affectedTargets.length) {</p><p>return skip(\"No damaged target has Shaken or Weak.\");</p><p>}</p><p>// --------------------------------------------------------------------------</p><p>// 7) Apply result.</p><p>// This is the permission-sensitive section.</p><p>// --------------------------------------------------------------------------</p><p>const props = owner.system?.props ?? {};</p><p>const graveBefore = Math.max(0, toNumber(props.clock_grave, 0));</p><p>const graveAfter = Math.min(maxGrave, graveBefore + 1);</p><p>const graveGained = Math.max(0, graveAfter - graveBefore);</p><p>const recoverAmount = Math.max(0, fearSL * 2);</p><p>const hpBeforeOwner = Math.max(0, toNumber(props.current_hp, 0));</p><p>const mpBeforeOwner = Math.max(0, toNumber(props.current_mp, 0));</p><p>const maxHpRaw = toNumber(props.max_hp, NaN);</p><p>const maxMpRaw = toNumber(props.max_mp, NaN);</p><p>const maxHp = Number.isFinite(maxHpRaw) &amp;&amp; maxHpRaw &gt; 0 ? maxHpRaw : hpBeforeOwner + recoverAmount;</p><p>const maxMp = Number.isFinite(maxMpRaw) &amp;&amp; maxMpRaw &gt; 0 ? maxMpRaw : mpBeforeOwner + recoverAmount;</p><p>const hpAfterOwner = Math.min(maxHp, hpBeforeOwner + recoverAmount);</p><p>const mpAfterOwner = Math.min(maxMp, mpBeforeOwner + recoverAmount);</p><p>const hpGained = Math.max(0, hpAfterOwner - hpBeforeOwner);</p><p>const mpGained = Math.max(0, mpAfterOwner - mpBeforeOwner);</p><p>if (graveGained &lt;= 0 &amp;&amp; hpGained &lt;= 0 &amp;&amp; mpGained &lt;= 0) {</p><p>return skip(\"Fear Is the Key met conditions, but no resource changed.\");</p><p>}</p><p>await owner.update({</p><p>\"system.props.clock_grave\": graveAfter,</p><p>\"system.props.current_hp\": hpAfterOwner,</p><p>\"system.props.current_mp\": mpAfterOwner</p><p>});</p><p>log(\"APPLIED\", {</p><p>ranAsGM: !!game.user?.isGM,</p><p>bridged: alreadyGmBridge,</p><p>owner: owner.name,</p><p>damagedTargetsWithShakenOrWeak: affectedTargets.map(a =&gt; a.name),</p><p>dealt,</p><p>fearSL,</p><p>beyondSL,</p><p>graveBefore,</p><p>graveAfter,</p><p>graveGained,</p><p>maxGrave,</p><p>recoverAmount,</p><p>hpBeforeOwner,</p><p>hpAfterOwner,</p><p>hpGained,</p><p>mpBeforeOwner,</p><p>mpAfterOwner,</p><p>mpGained</p><p>});</p><p>// --------------------------------------------------------------------------</p><p>// 8) Silent pseudo floating text feedback.</p><p>// Green = HP recovery, Blue = MP recovery.</p><p>// --------------------------------------------------------------------------</p><p>let ownerToken = getActiveTokenForActor(owner);</p><p>if (!ownerToken) {</p><p>ownerToken =</p><p>await resolveToken(p?.meta?.attackerUuid) ??</p><p>await resolveToken(p?.attackerUuid) ??</p><p>await resolveToken(triggerPayload?.attackerUuid) ??</p><p>null;</p><p>}</p><p>const casterTokenUuid = ownerToken?.document?.uuid ?? null;</p><p>if (casterTokenUuid &amp;&amp; game.ONI?.pseudo?.play &amp;&amp; (hpGained &gt; 0 || mpGained &gt; 0)) {</p><p>const scriptSource = `</p><p>const { casterToken, params } = ctx;</p><p>if (!casterToken) return;</p><p>const hpGain = Number(params.hpGain ?? 0) || 0;</p><p>const mpGain = Number(params.mpGain ?? 0) || 0;</p><p>if (hpGain &lt;= 0 &amp;&amp; mpGain &lt;= 0) return;</p><p>const duration = Number(params.duration ?? 1150) || 1150;</p><p>const rise = Number(params.rise ?? 70) || 70;</p><p>const fontSize = Number(params.fontSize ?? 30) || 30;</p><p>canvas.stage.sortableChildren = true;</p><p>const container = new PIXI.Container();</p><p>container.x = casterToken.center.x;</p><p>container.y = casterToken.center.y - ((casterToken.h ?? 100) * 0.72);</p><p>container.zIndex = 10000;</p><p>container.alpha = 1;</p><p>function makeText(text, fill, yOffset) {</p><p>const t = new PIXI.Text(text, {</p><p>fontFamily: \"Signika, sans-serif\",</p><p>fontSize,</p><p>fill,</p><p>fontWeight: \"bold\",</p><p>stroke: \"#000000\",</p><p>strokeThickness: 4,</p><p>align: \"center\",</p><p>dropShadow: true,</p><p>dropShadowColor: \"#000000\",</p><p>dropShadowBlur: 3,</p><p>dropShadowDistance: 2</p><p>});</p><p>t.anchor.set(0.5);</p><p>t.y = yOffset;</p><p>return t;</p><p>}</p><p>let y = 0;</p><p>if (hpGain &gt; 0) {</p><p>container.addChild(makeText(\"+\" + hpGain + \" HP\", \"#35ff63\", y));</p><p>y += fontSize + 6;</p><p>}</p><p>if (mpGain &gt; 0) {</p><p>container.addChild(makeText(\"+\" + mpGain + \" MP\", \"#36b7ff\", y));</p><p>}</p><p>canvas.stage.addChild(container);</p><p>canvas.stage.sortChildren();</p><p>function easeOutCubic(t) {</p><p>return 1 - Math.pow(1 - t, 3);</p><p>}</p><p>await new Promise(resolve =&gt; {</p><p>const start = performance.now();</p><p>const startY = container.y;</p><p>const tick = () =&gt; {</p><p>const raw = (performance.now() - start) / duration;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeOutCubic(t);</p><p>container.y = startY - (rise * e);</p><p>if (t &gt; 0.45) {</p><p>container.alpha = 1 - ((t - 0.45) / 0.55);</p><p>}</p><p>if (t &gt;= 1) {</p><p>canvas.app.ticker.remove(tick);</p><p>resolve();</p><p>}</p><p>};</p><p>canvas.app.ticker.add(tick);</p><p>});</p><p>canvas.stage.removeChild(container);</p><p>container.destroy({ children: true });</p><p>`;</p><p>game.ONI.pseudo.play({</p><p>scriptId: \"fearIsTheKey.recoveryFloatText\",</p><p>scriptSource,</p><p>casterTokenUuid,</p><p>targetTokenUuids: [],</p><p>params: {</p><p>hpGain: hpGained,</p><p>mpGain: mpGained,</p><p>duration: 1150,</p><p>rise: 70,</p><p>fontSize: 30</p><p>},</p><p>meta: {</p><p>source: \"Fear Is the Key\",</p><p>ownerActorUuid: owner.uuid</p><p>}</p><p>});</p><p>} else {</p><p>log(\"Pseudo floating text skipped.\", {</p><p>hasCasterToken: !!casterTokenUuid,</p><p>hasPseudoApi: !!game.ONI?.pseudo?.play,</p><p>hpGained,</p><p>mpGained</p><p>});</p><p>}</p><p>return {</p><p>ok: true,</p><p>applied: true,</p><p>bridged: alreadyGmBridge,</p><p>owner: owner.name,</p><p>graveGained,</p><p>hpGained,</p><p>mpGained</p><p>};</p><p>}</p><p>return await FearIsTheKey_Main();</p>",
           "reaction_config_table": {
             "0": {
               "$deleted": false,
+              "condition_formula": "HAS_SKILL_BEYOND_THE_REALMS_OF_DEATH == 1 && (ANY_TARGET_HAS_SHAKEN == 1 || ANY_TARGET_HAS_WEAK == 1)",
               "reaction_damage_amount": "",
               "reaction_damage_type": "",
-              "reaction_passive_mode": "ask",
+              "reaction_effect_ref": "fk_do",
+              "reaction_passive_mode": "on",
               "reaction_passive_target": "self",
               "reaction_source": "self",
-              "reaction_trigger": "creature_deals_damage"
+              "reaction_trigger": "creature_completes_action"
             }
           },
           "rolled_atr1": "-",
@@ -443,54 +500,352 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "tE8pb6Spf4UoFo55"
+        "uniqueId": "4EFrj1IezXhe0zNT"
       },
       "type": "equippableItem"
     },
     {
-      "_id": "yd15w1RY5KWvPSsk",
+      "_id": "rwDyEFPnMBQRE9sL",
       "_stats": {
-        "compendiumSource": "Item.43HnRNN8cWeAgSmr",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1757427001910,
-        "duplicateSource": "Item.tE8pb6Spf4UoFo55",
+        "createdTime": 1783362377593,
+        "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "7Gs3jJ2pHzcKD0il",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "7Gs3jJ2pHzcKD0il",
+              "originalParentId": "qdGOPTKJQ2YI6LUl",
+              "originalUuid": "Item.qdGOPTKJQ2YI6LUl.ActiveEffect.7Gs3jJ2pHzcKD0il"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "chargeKey": "bortd_death_save",
+              "charges": 1,
+              "chargesMax": 1,
+              "lifetimeMode": "on_activation",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "candidate_source": "self",
+                    "effect_kind": "targeting",
+                    "effect_label": "bortd_self"
+                  },
+                  "1": {
+                    "chain_steps": "bortd_cap, bortd_heal, bortd_zero",
+                    "effect_kind": "chain",
+                    "effect_label": "bortd_death"
+                  },
+                  "2": {
+                    "consume_self": true,
+                    "damage_amount": "CUR_HP - 1",
+                    "damage_operation": "cap",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "bortd_cap",
+                    "grant_amount": "SL * AE_CHARGES_GRAVE_POINTS",
+                    "grant_resource": "hp",
+                    "target_ref": "bortd_self"
+                  },
+                  "3": {
+                    "charge_ae_name": "Grave Points",
+                    "charge_amount": "0",
+                    "charge_operation": "set",
+                    "effect_kind": "grant",
+                    "effect_label": "bortd_heal",
+                    "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
+                    "grant_resource": "hp",
+                    "target_ref": "self"
+                  },
+                  "4": {
+                    "charge_ae_name": "Grave Points",
+                    "charge_amount": "0",
+                    "charge_operation": "set",
+                    "effect_kind": "adjust_charges",
+                    "effect_label": "bortd_zero",
+                    "target_ref": "self"
+                  },
+                  "bortd_cap": {
+                    "consume_self": true,
+                    "damage_amount": "CUR_HP - 1",
+                    "damage_operation": "cap",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "bortd_cap"
+                  },
+                  "bortd_death": {
+                    "chain_steps": "bortd_cap, bortd_heal, bortd_zero",
+                    "effect_kind": "chain",
+                    "effect_label": "bortd_death"
+                  },
+                  "bortd_heal": {
+                    "effect_kind": "grant",
+                    "effect_label": "bortd_heal",
+                    "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
+                    "grant_resource": "hp",
+                    "target_ref": "self"
+                  },
+                  "bortd_zero": {
+                    "charge_ae_name": "Grave Points",
+                    "charge_amount": "0",
+                    "charge_operation": "set",
+                    "effect_kind": "adjust_charges",
+                    "effect_label": "bortd_zero",
+                    "target_ref": "self"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "AE_CHARGES_GRAVE_POINTS > 0",
+                    "consume_self": true,
+                    "reaction_damage_outcome": "would_reduce_to_zero",
+                    "reaction_effect_ref": "bortd_death",
+                    "reaction_passive_mode": "on",
+                    "reaction_passive_target": "self",
+                    "reaction_resource_filter": "hp",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_takes_damage"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
+          "name": "Beyond the Realms of Death",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-beyond-realms"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "RjuPzSEVXVHPNE22",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Grave Points:</em> Necromantic energy gathered from creatures near death, spent by Necromancer skills.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "RjuPzSEVXVHPNE22",
+              "originalParentId": "qdGOPTKJQ2YI6LUl",
+              "originalUuid": "Item.qdGOPTKJQ2YI6LUl.ActiveEffect.RjuPzSEVXVHPNE22"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "chargeKey": "grave",
+              "charges": 0,
+              "chargesMax": 3,
+              "hudResourceColor": "#8fb53a",
+              "lifetimeMode": "persistent_counter",
+              "reactionConfig": {
+                "effect_table": {},
+                "reaction_config_table": {}
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 0,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/death/skull-energy-light-purple.webp",
+          "name": "Grave Points",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-grave-points"
+          ],
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
-      "name": "For Whom the Bell Tolls",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
+      "name": "Beyond the Realms of Death",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
         "container": null,
         "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Necromancer",
           "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When you deal damage to a creature with a 【📕Spell】, if that spell only deals damage to that creature, you may spend <strong>1 Grave Point</strong>. If you do, <strong>Choose one option:</strong></p>\n<ul>\n  <li>If that creature is suffering from one or more status effects, the spell deals extra damage equal to <strong>[(SL × 2) + the number of status effects on that creature]</strong>;</li>\n  <li>or, if that creature is suffering from no status effects, they suffer \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n</ul>\n",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "bortd_self",
+              "exclude_self": false,
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true,
+              "target_prompt": ""
+            },
+            "1": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_initial_charges_max": "SL + 1",
+              "ae_template_ref": "Grave Points",
+              "effect_kind": "apply_ae",
+              "effect_label": "bortd_gain",
+              "target_ref": "bortd_self"
+            },
+            "2": {
+              "chain_steps": "bortd_seed_gp, bortd_seed_mark",
+              "effect_kind": "chain",
+              "effect_label": "bortd_seed"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges_max": "SL + 1",
+              "ae_template_ref": "Grave Points",
+              "effect_kind": "apply_ae",
+              "effect_label": "bortd_seed_gp",
+              "target_ref": "bortd_self"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "1",
+              "ae_initial_charges_max": "1",
+              "ae_template_ref": "Beyond the Realms of Death",
+              "effect_kind": "apply_ae",
+              "effect_label": "bortd_seed_mark",
+              "target_ref": "bortd_self"
+            }
+          },
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
           "level": "1",
-          "max_level": "3",
-          "name": "For Whom the Bell Tolls",
+          "max_level": "5",
+          "name": "Beyond the Realms of Death",
+          "on_activate_effect_ref": "",
           "optional_params": {},
+          "passive_logic_resolution": "<p>const DEBUG = true;</p><p>const TAG = \"[PL-RES][BeyondTheRealmsOfDeath]\";</p><p>const ctx = (typeof context !== \"undefined\" &amp;&amp; context) ? context : {};</p><p>const p = (typeof __PAYLOAD !== \"undefined\" &amp;&amp; __PAYLOAD) ? __PAYLOAD : {};</p><p>const globalTargets = (typeof __TARGETS !== \"undefined\" &amp;&amp; Array.isArray(__TARGETS)) ? __TARGETS : [];</p><p>p.meta = p.meta || {};</p><p>const log = (...args) =&gt; {</p><p>if (DEBUG) console.log(TAG, ...args);</p><p>};</p><p>const warn = (...args) =&gt; {</p><p>if (DEBUG) console.warn(TAG, ...args);</p><p>};</p><p>// Use this whenever the passive should NOT show a passive UI card.</p><p>const quietStop = (reason = \"\") =&gt; {</p><p>if (DEBUG &amp;&amp; reason) console.log(TAG, \"SKIP:\", reason);</p><p>// Main intended passive-system cancel helper.</p><p>if (ctx.skipPassive) {</p><p>return ctx.skipPassive(reason || \"No effect.\", { notify: false });</p><p>}</p><p>// Fallback markers, just in case this script runs in a lighter context.</p><p>p.meta.__skipPassive = true;</p><p>p.meta.__skipPassiveCard = true;</p><p>p.meta.__passiveNoEffect = true;</p><p>p.meta.__passiveSkipReason = reason || \"No effect.\";</p><p>return undefined;</p><p>};</p><p>const norm = (v) =&gt; String(v ?? \"\").trim().toLowerCase();</p><p>const asArray = (v) =&gt; Array.isArray(v) ? v : (v == null ? [] : [v]);</p><p>const toNumber = (v, fallback = 0) =&gt; {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : fallback;</p><p>};</p><p>const collectionValues = (collectionLike) =&gt; {</p><p>if (!collectionLike) return [];</p><p>if (Array.isArray(collectionLike)) return collectionLike;</p><p>if (typeof collectionLike.values === \"function\") return Array.from(collectionLike.values());</p><p>return Array.from(collectionLike);</p><p>};</p><p>async function resolveDoc(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref !== \"string\") return ref;</p><p>try {</p><p>return await fromUuid(ref);</p><p>} catch (err) {</p><p>warn(\"fromUuid failed\", { ref, err });</p><p>return null;</p><p>}</p><p>}</p><p>function actorFromDoc(doc) {</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Actor\" || doc.constructor?.name === \"Actor\") return doc;</p><p>if (doc.actor) return doc.actor;</p><p>if (doc.object?.actor) return doc.object.actor;</p><p>if (doc.token?.actor) return doc.token.actor;</p><p>if (doc.document?.actor) return doc.document.actor;</p><p>return null;</p><p>}</p><p>async function resolveActor(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>return actorFromDoc(doc);</p><p>}</p><p>async function resolveTokenDoc(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Token\" || doc.documentName === \"TokenDocument\") return doc;</p><p>if (doc.document?.documentName === \"Token\") return doc.document;</p><p>if (doc.token?.document) return doc.token.document;</p><p>return null;</p><p>}</p><p>function activeTokenUuidForActor(actor) {</p><p>try {</p><p>const tok =</p><p>actor?.getActiveTokens?.(true, true)?.[0] ??</p><p>actor?.getActiveTokens?.()?.[0] ??</p><p>null;</p><p>return tok?.document?.uuid ?? null;</p><p>} catch {</p><p>return null;</p><p>}</p><p>}</p><p>// --------------------------------------------------</p><p>// 1) Read trigger payload.</p><p>// This passive should only care about creature_takes_damage.</p><p>// --------------------------------------------------</p><p>const phaseRoot =</p><p>p?.meta?.reaction_phase_payload ??</p><p>p?.reaction_phase_payload ??</p><p>{};</p><p>const phaseByTrigger =</p><p>p?.meta?.reaction_phase_payload_by_trigger ??</p><p>p?.reaction_phase_payload_by_trigger ??</p><p>{};</p><p>const passiveTriggerKey =</p><p>p?.meta?.passiveTriggerKey ??</p><p>p?.passiveTriggerKey ??</p><p>p?.reaction_trigger_key ??</p><p>phaseRoot?.trigger ??</p><p>null;</p><p>const phase =</p><p>phaseByTrigger?.creature_takes_damage ??</p><p>(passiveTriggerKey &amp;&amp; phaseByTrigger?.[passiveTriggerKey]) ??</p><p>phaseRoot ??</p><p>{};</p><p>const triggerName = phase?.trigger ?? passiveTriggerKey ?? \"\";</p><p>if (triggerName !== \"creature_takes_damage\") {</p><p>return quietStop(`Wrong trigger: ${triggerName || \"none\"}`);</p><p>}</p><p>// --------------------------------------------------</p><p>// 2) Resolve passive owner and this skill item.</p><p>// --------------------------------------------------</p><p>const owner =</p><p>ctx.passiveOwner ??</p><p>(ctx.helpers?.getPassiveOwnerActor ? await ctx.helpers.getPassiveOwnerActor() : null) ??</p><p>((typeof __PASSIVE_ACTOR !== \"undefined\") ? __PASSIVE_ACTOR : null) ??</p><p>await resolveActor(</p><p>p?.meta?.attackerActorUuid ??</p><p>p?.attackerActorUuid ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>null</p><p>);</p><p>if (!owner) {</p><p>return quietStop(\"Could not resolve passive owner.\");</p><p>}</p><p>const passiveItem =</p><p>ctx.passiveItem ??</p><p>(ctx.helpers?.getPassiveItem ? await ctx.helpers.getPassiveItem() : null) ??</p><p>((typeof __PASSIVE_ITEM !== \"undefined\") ? __PASSIVE_ITEM : null) ??</p><p>collectionValues(owner.items).find(i =&gt; norm(i?.name) === \"beyond the realms of death\");</p><p>if (!passiveItem) {</p><p>return quietStop(\"Could not resolve Beyond the Realms of Death item.\");</p><p>}</p><p>const skillLevel = Math.max(0, parseInt(passiveItem.system?.props?.level ?? \"0\", 10) || 0);</p><p>if (skillLevel &lt;= 0) {</p><p>return quietStop(\"Beyond the Realms of Death SL is 0.\");</p><p>}</p><p>const maxGrave = Math.max(1, skillLevel + 1);</p><p>// --------------------------------------------------</p><p>// 3) Resolve damaged creature.</p><p>// For creature_takes_damage, the target side is the creature losing HP.</p><p>// --------------------------------------------------</p><p>const damagedActorUuid =</p><p>phase?.targetActorUuid ??</p><p>asArray(phase?.targetActorUuids)[0] ??</p><p>null;</p><p>const damagedTokenUuid =</p><p>phase?.targetTokenUuid ??</p><p>phase?.targetUuid ??</p><p>asArray(phase?.targetTokenUuids)[0] ??</p><p>asArray(phase?.targets)[0] ??</p><p>globalTargets[0] ??</p><p>null;</p><p>let damagedActor = null;</p><p>if (damagedActorUuid) {</p><p>damagedActor = await resolveActor(damagedActorUuid);</p><p>}</p><p>if (!damagedActor &amp;&amp; damagedTokenUuid) {</p><p>damagedActor = await resolveActor(damagedTokenUuid);</p><p>}</p><p>if (!damagedActor) {</p><p>return quietStop(\"Could not resolve damaged creature.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 4) \"Another creature\" check.</p><p>// Owner should not gain Grave Point when the owner is the damaged creature.</p><p>// --------------------------------------------------</p><p>const ownerActorUuid = owner.uuid ?? null;</p><p>const ownerTokenUuid = activeTokenUuidForActor(owner);</p><p>const damagedTokenDoc = damagedTokenUuid ? await resolveTokenDoc(damagedTokenUuid) : null;</p><p>const damagedTokenUuidResolved = damagedTokenDoc?.uuid ?? damagedTokenUuid ?? null;</p><p>if (ownerActorUuid &amp;&amp; damagedActor.uuid === ownerActorUuid) {</p><p>return quietStop(\"Damaged creature is the passive owner.\");</p><p>}</p><p>if (ownerTokenUuid &amp;&amp; damagedTokenUuidResolved &amp;&amp; ownerTokenUuid === damagedTokenUuidResolved) {</p><p>return quietStop(\"Damaged token is the passive owner's token.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 5) Confirm real HP loss.</p><p>// Shield-only damage should not count as losing Hit Points.</p><p>// --------------------------------------------------</p><p>const hpBefore = toNumber(phase?.gmChanges?.hp?.from, NaN);</p><p>const hpAfter = toNumber(phase?.gmChanges?.hp?.to, NaN);</p><p>let hpLost = 0;</p><p>if (Number.isFinite(hpBefore) &amp;&amp; Number.isFinite(hpAfter)) {</p><p>hpLost = Math.max(0, hpBefore - hpAfter);</p><p>} else {</p><p>hpLost = Math.max(</p><p>0,</p><p>Math.abs(toNumber(phase?.finalValue, 0)) ||</p><p>Math.abs(toNumber(phase?.displayedAmount, 0)) ||</p><p>Math.abs(toNumber(phase?.baseValue, 0))</p><p>);</p><p>}</p><p>if (phase?.affected === false || hpLost &lt;= 0) {</p><p>return quietStop(\"Damage event did not cause HP loss.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 6) Check Crisis Active Effect.</p><p>// ID first, name/status fallback.</p><p>// --------------------------------------------------</p><p>const CRISIS_EFFECT_UUID = \"Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr\";</p><p>const CRISIS_EFFECT_ID = CRISIS_EFFECT_UUID.split(\".\").pop();</p><p>function isTruthy(v) {</p><p>return v === true || v === 1 || v === \"1\" || norm(v) === \"true\" || norm(v) === \"yes\";</p><p>}</p><p>function actorHasCrisis(actor) {</p><p>if (!actor) return false;</p><p>const effects = collectionValues(actor.effects);</p><p>// ID/source UUID first.</p><p>for (const eff of effects) {</p><p>if (!eff || eff.disabled) continue;</p><p>const effId = String(eff.id ?? eff._id ?? \"\");</p><p>const effUuid = String(eff.uuid ?? \"\");</p><p>const effOrigin = String(eff.origin ?? \"\");</p><p>if (effId === CRISIS_EFFECT_ID) return true;</p><p>if (effUuid === CRISIS_EFFECT_UUID) return true;</p><p>if (effOrigin === CRISIS_EFFECT_UUID) return true;</p><p>}</p><p>// Name/status fallback.</p><p>for (const eff of effects) {</p><p>if (!eff || eff.disabled) continue;</p><p>const effName = norm(eff.name ?? eff.label ?? \"\");</p><p>if (effName === \"crisis\") return true;</p><p>const statuses = Array.from(eff.statuses ?? []).map(norm);</p><p>if (statuses.includes(\"crisis\")) return true;</p><p>}</p><p>// Sheet mirror fallback, if your sheet has it.</p><p>const props = actor.system?.props ?? {};</p><p>if (isTruthy(props.isCrisis) || isTruthy(props.crisis)) return true;</p><p>return false;</p><p>}</p><p>if (!actorHasCrisis(damagedActor)) {</p><p>return quietStop(`${damagedActor.name} is not in Crisis.`);</p><p>}</p><p>// --------------------------------------------------</p><p>// 7) Undead check.</p><p>// Clean rule:</p><p>// - Check actor.system.props.species</p><p>// - If species is exactly UNDEAD, cancel.</p><p>// - If missing or anything else, assume not undead.</p><p>// --------------------------------------------------</p><p>function actorIsUndead(actor) {</p><p>const species = String(actor?.system?.props?.species ?? \"\").trim().toUpperCase();</p><p>return species === \"UNDEAD\";</p><p>}</p><p>if (actorIsUndead(damagedActor)) {</p><p>return quietStop(`${damagedActor.name} is UNDEAD.`);</p><p>}</p><p>// --------------------------------------------------</p><p>// 8) Gain 1 Grave Point, capped at SL + 1.</p><p>// If no point is actually gained, cancel silently so no passive card appears.</p><p>// --------------------------------------------------</p><p>const props = owner.system?.props ?? {};</p><p>const graveBefore = Math.max(0, toNumber(props.clock_grave, 0));</p><p>const graveAfter = Math.min(maxGrave, graveBefore + 1);</p><p>const graveGained = Math.max(0, graveAfter - graveBefore);</p><p>if (graveGained &lt;= 0) {</p><p>return quietStop(`No Grave Point gained. Already at max (${graveBefore}/${maxGrave}).`);</p><p>}</p><p>await owner.update({</p><p>\"system.props.clock_grave\": graveAfter</p><p>});</p><p>log(\"APPLIED\", {</p><p>owner: owner.name,</p><p>damagedCreature: damagedActor.name,</p><p>damagedCreatureSpecies: damagedActor.system?.props?.species ?? null,</p><p>hpLost,</p><p>skillLevel,</p><p>maxGrave,</p><p>graveBefore,</p><p>graveAfter,</p><p>graveGained</p><p>});</p>",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "SUBJECT_IS_SELF == 0 && TARGET_AE_COUNT_CRISIS > 0 && TARGET_SPECIES_IS_UNDEAD == 0",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "bortd_gain",
+              "reaction_isPassive": false,
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "all",
+              "reaction_trigger": "creature_lose_resource",
+              "requires_skill": ""
+            },
+            "1": {
+              "condition_formula": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "bortd_seed",
+              "reaction_isPassive": false,
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start",
+              "requires_skill": ""
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Base Extra Damage</strong></p></td><td><p><strong>Total Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2 + number of statuses on target</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td><td><p>4 + number of statuses on target</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td><td><p>6 + number of statuses on target</p></td></tr></tbody></table>",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Max Grave Points</strong></p></td><td><p><strong>Max Heal on first time you hit 0 HP in a scene</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>3</p></td><td><p>4</p></td><td><p>12</p></td></tr><tr><td><p>4</p></td><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>5</p></td><td><p>6</p></td><td><p>30</p></td></tr></tbody></table><p style=\"font-size: 12px; margin-top: 4px; text-align: center\">(Heal = <em>SL × Grave Points lost</em>; values above assume you lost all Grave Points.)</p>",
           "skill_range": "",
           "skill_target": "",
           "skill_type": "Passive",
@@ -500,64 +855,105 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "43HnRNN8cWeAgSmr"
+        "uniqueId": "qdGOPTKJQ2YI6LUl"
       },
       "type": "equippableItem"
     },
     {
-      "_id": "YFHQR4oWFNLTYWN4",
+      "_id": "tPUSz4m5MNDTbBrV",
       "_stats": {
-        "compendiumSource": "Item.43HnRNN8cWeAgSmr",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783191893317,
-        "duplicateSource": "Item.tE8pb6Spf4UoFo55",
+        "createdTime": 1783362377678,
+        "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
       "name": "For Whom the Bell Tolls",
       "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
         "props": {
-          "check_bonus": "0",
-          "class": "Necromancer",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When you deal damage to a creature with a 【📕Spell】, if that spell only deals damage to that creature, you may spend <strong>1 Grave Point</strong>. If you do, <strong>Choose one option:</strong></p>\n<ul>\n  <li>If that creature is suffering from one or more status effects, the spell deals extra damage equal to <strong>[(SL × 2) + the number of status effects on that creature]</strong>;</li>\n  <li>or, if that creature is suffering from no status effects, they suffer \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n</ul>\n",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "fwtbt_offer",
+              "menu_option_descriptions": "Extra damage = (SL × 2) + number of statuses on the target|Inflict Shaken — disabled if the target is already Shaken",
+              "menu_option_labels": "Deal extra damage|Apply Shaken",
+              "menu_option_refs": "fwtbt_dmg_opt,fwtbt_shaken_opt",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Spend 1 Grave Point:",
+              "menu_title": "For Whom the Bell Tolls"
+            },
+            "1": {
+              "chain_steps": "fwtbt_cost, fwtbt_dmg",
+              "effect_kind": "chain",
+              "effect_label": "fwtbt_dmg_opt",
+              "menu_label": "Deal extra damage"
+            },
+            "2": {
+              "chain_steps": "fwtbt_cost, fwtbt_shaken",
+              "condition_formula": "TARGET_AE_COUNT_SHAKEN == 0",
+              "disable_ui_type": "disabled",
+              "disabled_reason": "Already Shaken",
+              "effect_kind": "chain",
+              "effect_label": "fwtbt_shaken_opt",
+              "menu_label": "Apply Shaken"
+            },
+            "3": {
+              "charge_ae_name": "Grave Points",
+              "charge_amount": "1",
+              "charge_operation": "subtract",
+              "effect_kind": "adjust_charges",
+              "effect_label": "fwtbt_cost",
+              "target_ref": "self"
+            },
+            "4": {
+              "damage_amount": "SL * 2 + TARGET_STATUS_COUNT",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "fwtbt_dmg",
+              "target_ref": "trigger_subject"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Shaken",
+              "effect_kind": "apply_ae",
+              "effect_label": "fwtbt_shaken",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "isReaction": true,
           "level": "1",
           "max_level": "3",
-          "name": "For Whom the Bell Tolls",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Base Extra Damage</strong></p></td><td><p><strong>Total Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2 + number of statuses on target</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td><td><p>4 + number of statuses on target</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td><td><p>6 + number of statuses on target</p></td></tr></tbody></table>",
-          "skill_range": "",
-          "skill_target": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_IS_SPELL == 1 && SINGLE_TARGET_ATTACK && AE_CHARGES_GRAVE_POINTS >= 1",
+              "reaction_action_target": "enemy",
+              "reaction_effect_ref": "fwtbt_offer",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "skill_information": "<p>When you deal damage to a creature with a spell, if that spell only deals damage to that creature, you may spend 1 Grave Point. If you do, choose one option: if that creature is suffering from one or more status effects, the spell deals extra damage equal to (SL × 2) + the number of status effects on that creature; or if that creature is suffering from no status effects, they suffer <strong>shaken</strong>.</p>",
           "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
+          "uniqueId": "sfB3APSyWP8Lf5LQ"
         },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
+        "templateSystemUniqueVersion": null,
         "unique": false,
-        "uniqueId": "43HnRNN8cWeAgSmr"
+        "uniqueId": "sfB3APSyWP8Lf5LQ"
       },
       "type": "equippableItem"
     }

@@ -17,62 +17,6 @@
   "img": "https://cdn.etrianodyssey.wiki/4/49/Portrait_eo2u_hexer_02.png",
   "items": [
     {
-      "_id": "DhnWQPbEhEbf32w0",
-      "_stats": {
-        "compendiumSource": "Item.wfvBxZq0qkwMMn1G",
-        "coreVersion": "12.343",
-        "createdTime": 1757760144490,
-        "duplicateSource": "Item.88RMlBlB3uXxvzOn",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/drain.png",
-      "name": "Symptom Shift",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Hexer",
-          "cost": "10 MP",
-          "damage_bonus": "0",
-          "description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
-          "duration": "Instantaneous",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Symptom Shift",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "Range",
-          "skill_target": "One creature",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "wfvBxZq0qkwMMn1G"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "EpsMR8kxHTnGrhr4",
       "_stats": {
         "compendiumSource": "Item.DO5WAMWcUFtLTxfi",
@@ -303,6 +247,93 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "wNayI5VpmV0Y3gyS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "hCYJndmNfWTRyfMI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783362362798,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/drain.png",
+      "name": "Symptom Shift",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "candidate_source": "combat",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "ss_dest",
+              "menu_subtitle": "Choose another creature you can see",
+              "menu_title": "Symptom Shift — pass the sickness to?",
+              "mode": "exact"
+            },
+            "1": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "transfer_ae",
+              "effect_label": "ss_move",
+              "filter_tag": "debuff",
+              "from_ref": "action_targets",
+              "menu_subtitle": "These status effects move to the chosen creature",
+              "menu_title": "Symptom Shift — passing these on",
+              "target_ref": "ss_dest"
+            }
+          },
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Symptom Shift",
+          "on_activate_effect_ref": "ss_move",
+          "optional_params": {},
+          "pre_activate_effect_ref": "ss_dest",
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "LsQkDSEbvQ7S0b3L"
       },
       "type": "equippableItem"
     },
