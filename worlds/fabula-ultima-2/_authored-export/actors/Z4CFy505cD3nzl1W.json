@@ -82,7 +82,7 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": 298800,
+        "startTime": null,
         "startTurn": null,
         "turns": null
       },
@@ -102,7 +102,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.b7E2tZW6LgMKxnpC",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.luXXPlt0jBkWkvyK",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },
@@ -161,10 +161,10 @@
         "fabula-ultima-companion": {
           "category": "Other",
           "directorAppliedBy": {
-            "appliedAtRound": 3,
+            "appliedAtRound": 4,
             "effectLabel": "dance_apply",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.b7E2tZW6LgMKxnpC",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.luXXPlt0jBkWkvyK",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
             "turnsRemaining": null
           },
@@ -2567,7 +2567,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eAUaGhDdy3uogln7"
       },
@@ -5398,7 +5398,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "hEOGl2wmtgjJX8jt"
       },
@@ -6128,7 +6128,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "MEdEKpPNgKTtkE7Z"
       },
@@ -8346,7 +8346,7 @@
       "critical_dice_range": 0,
       "current_hp": "106",
       "current_ip": "7",
-      "current_mp": 66,
+      "current_mp": 56,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",

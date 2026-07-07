@@ -13253,6 +13253,13 @@
         "effects": 1
       },
       {
+        "id": "xuQUKgqPJcDmnX9B",
+        "name": "BD Dummy Enemy",
+        "type": "character",
+        "items": [],
+        "effects": 1
+      },
+      {
         "id": "N5k5aBtdGBakHLGO",
         "name": "Berserker",
         "type": "character",
@@ -13427,6 +13434,10 @@
           {
             "id": "BXrs9fsYHnpaFTun",
             "name": "Status Immunity"
+          },
+          {
+            "id": "RXSHWJ6UDqT8x7OE",
+            "name": "Survivor"
           },
           {
             "id": "3PGlRQq7M3q7X9aA",
@@ -16673,6 +16684,10 @@
             "name": "Entropic Magic"
           },
           {
+            "id": "1r6HAJN2JWYt3Dj2",
+            "name": "Fugitive Experiment"
+          },
+          {
             "id": "GLE6h2EmyLBSYgRX",
             "name": "Ghostly Sheet"
           },
@@ -16833,7 +16848,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 2
+        "effects": 6
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -17723,6 +17738,10 @@
             "name": "Steel Dagger"
           },
           {
+            "id": "N9eKFmdC30lHByXQ",
+            "name": "Stubborn Scion"
+          },
+          {
             "id": "Iwt724pOxBNvcgrk",
             "name": "Thermokinesis"
           },
@@ -17735,7 +17754,7 @@
             "name": "Zero Trigger: Shattered Phantasm"
           }
         ],
-        "effects": 1
+        "effects": 3
       },
       {
         "id": "EHyFlGpLQLriK65C",

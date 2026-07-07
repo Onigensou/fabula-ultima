@@ -599,7 +599,8 @@
           "skill_type": "Other",
           "uniqueId": "8lF3aCEt5wsYxleL"
         },
-        "templateSystemUniqueVersion": null,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "8lF3aCEt5wsYxleL"
       },
@@ -804,7 +805,8 @@
           "skill_type": "Active",
           "uniqueId": "MEdEKpPNgKTtkE7Z"
         },
-        "templateSystemUniqueVersion": null,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "MEdEKpPNgKTtkE7Z"
       },
@@ -917,7 +919,8 @@
           "skill_type": "Passive",
           "uniqueId": "hEOGl2wmtgjJX8jt"
         },
-        "templateSystemUniqueVersion": null,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "hEOGl2wmtgjJX8jt"
       },
@@ -1467,7 +1470,8 @@
           "skill_type": "Active",
           "uniqueId": "eAUaGhDdy3uogln7"
         },
-        "templateSystemUniqueVersion": null,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eAUaGhDdy3uogln7"
       },

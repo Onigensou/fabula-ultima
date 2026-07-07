@@ -4138,6 +4138,121 @@
       "type": "equippableItem"
     },
     {
+      "_id": "RXSHWJ6UDqT8x7OE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783401609695,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "fVPCCx8wNyQ4jQdJ",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783401611146,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_hp",
+              "mode": 2,
+              "priority": 20,
+              "value": "5"
+            },
+            {
+              "key": "bonus_mp",
+              "mode": 2,
+              "priority": 20,
+              "value": "5"
+            },
+            {
+              "key": "max_ip",
+              "mode": 2,
+              "priority": 20,
+              "value": "2"
+            }
+          ],
+          "description": "Survivor: +5 maximum HP, +5 maximum MP, and +2 maximum IP (permanent).",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "fVPCCx8wNyQ4jQdJ",
+              "originalParentId": "RXSHWJ6UDqT8x7OE",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.RXSHWJ6UDqT8x7OE.ActiveEffect.fVPCCx8wNyQ4jQdJ"
+            },
+            "fabula-ultima-companion": {
+              "crossScene": false,
+              "directorPermanent": false
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Survivor",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "icons/svg/heal.svg",
+      "name": "Survivor",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "description": "<p>Permanently increase your maximum Hit Points and maximum Mind Points by 5.</p><p><br><strong>Choose one option:</strong></p><ul><li><p><s>Gain the ability to equip martial melee and ranged weapons, martial armor, and martial shields</s></p></li><li><p><s>Learn any one spell from the Elementalist or Spiritist lists</s></p></li><li><p><strong>Permanently increase your maximum Inventory Points by 2.</strong><br><br>\"นักผจญภัยดาดๆ ทำแต่เควสง่ายๆเก็บแต่สมุนไพรหน้าเมือง มอนตัวนึงสู้ลำบากชีวิต แต่บ้านเมืองบรึ้มระหว่างทำเควสดาดๆ\"<br></p></li></ul>",
+          "details_roller": "Show",
+          "id": "RXSHWJ6UDqT8x7OE",
+          "img": "icons/svg/heal.svg",
+          "level": "1",
+          "max_level": "1",
+          "name": "Survivor",
+          "skill_type": "Passive",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.RXSHWJ6UDqT8x7OE"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": ""
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "t778u8UkNMDq5a4E",
       "_stats": {
         "compendiumSource": "Item.GN2lmhC75LItt0Nj",
@@ -7445,11 +7560,11 @@
       "bond_temp": "",
       "bonus_defense": 7,
       "bonus_dex": 0,
-      "bonus_hp": 0,
+      "bonus_hp": 5,
       "bonus_ins": 0,
       "bonus_magic_defense": 2,
       "bonus_mig": 0,
-      "bonus_mp": 0,
+      "bonus_mp": 5,
       "bonus_wlp": 0,
       "bow_ef": "100",
       "brawling_ef": "100",
@@ -8145,9 +8260,9 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.ya38b6iI7xoO4Jur"
         }
       },
-      "max_hp": 151,
-      "max_ip": 8,
-      "max_mp": 66,
+      "max_hp": 156,
+      "max_ip": 10,
+      "max_mp": 71,
       "memories_list": {},
       "memory": "Memories",
       "mig_base": "12",
@@ -8198,6 +8313,17 @@
           "spell_description": "<p>Permanently increase your maximum Hit Points by <strong>【SL x 5】</strong>.</p>",
           "spell_target": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.KGCFXR53w9u6ispa"
+        },
+        "LMnXdh32LS4ZRCn5": {
+          "class": "Spiritist",
+          "cost": "10 x T MP",
+          "duration": "-",
+          "id": "${item.id}",
+          "name": "Heal",
+          "roll": "",
+          "spell_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+          "spell_target": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.LMnXdh32LS4ZRCn5"
         },
         "bElIg6CwtxVuDtqk": {
           "class": "Guardian",

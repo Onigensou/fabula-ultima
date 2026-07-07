@@ -10,6 +10,64 @@
   },
   "effects": [
     {
+      "_id": "j4NL8XnAvfky8WSx",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783404175587,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "Shared Fatigue pool for Keren's bodyguards (Stubborn Scion). At 10+ they cannot help. Recovers 1d6 at end of session.",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "j4NL8XnAvfky8WSx",
+          "originalParentId": "gdJZ1L1kv5mjTTMr",
+          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.j4NL8XnAvfky8WSx"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "bodyguard_fatigue",
+          "charges": 10,
+          "chargesMax": 10,
+          "crossScene": true,
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/unconscious.svg",
+      "name": "Bodyguard Fatigue",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "bodyguard-fatigue"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "TjTJmgFLiQLqoVRs",
       "_stats": {
         "compendiumSource": null,
@@ -101,6 +159,70 @@
         "tags": [
           "debuff"
         ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Xlfb2Nqkmgrb526Q",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783417434592,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "bdCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
       },
       "tint": "#ffffff",
       "transfer": false,
@@ -4920,6 +5042,146 @@
       "type": "equippableItem"
     },
     {
+      "_id": "N9eKFmdC30lHByXQ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783404177853,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "QVfJN8TvDxABGBu4",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783404179170,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "The bodyguards may halve damage you suffer (costs 1d6 Fatigue).",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "QVfJN8TvDxABGBu4",
+              "originalParentId": "N9eKFmdC30lHByXQ",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.N9eKFmdC30lHByXQ.ActiveEffect.QVfJN8TvDxABGBu4"
+            },
+            "fabula-ultima-companion": {
+              "crossScene": false,
+              "directorPermanent": false,
+              "reactionConfig": {
+                "effect_table": {
+                  "scion_cut": {
+                    "damage_amount": "0.5",
+                    "damage_operation": "multiply",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "scion_cut"
+                  },
+                  "scion_fatigue": {
+                    "charge_ae_name": "Bodyguard Fatigue",
+                    "charge_amount": "VAR_FATIGUE",
+                    "charge_max": "10",
+                    "charge_operation": "add",
+                    "effect_kind": "adjust_charges",
+                    "effect_label": "scion_fatigue",
+                    "target_ref": "self"
+                  },
+                  "scion_halve": {
+                    "chain_steps": "scion_cut,scion_roll,scion_fatigue",
+                    "effect_kind": "chain",
+                    "effect_label": "scion_halve"
+                  },
+                  "scion_roll": {
+                    "dice_count": "1",
+                    "dice_faces": "6",
+                    "effect_kind": "roll_dice",
+                    "effect_label": "scion_roll",
+                    "prompt_var": "fatigue",
+                    "roll_interactive": true,
+                    "roll_label": "Bodyguard Fatigue"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "AE_CHARGES_BODYGUARD_FATIGUE < 10 && INCOMING_DAMAGE > 0",
+                    "reaction_effect_ref": "scion_halve",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_targeted_by_action"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Stubborn Scion",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "icons/svg/statue.svg",
+      "name": "Stubborn Scion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "description": "<p>You hail from the wealthiest, most influential family in this region. On what do they</p><p>base their fortune and reputation? Are you the only heir? What is it about your family</p><p>you really can’t stand, and why did it lead you to join the other characters?</p><p>If you choose this <strong>Quirk</strong> during <strong>character creation</strong>, increase your initial savings (see</p><p><strong>Core Rulebook</strong>, page 165) by 1000 zenit.</p><p>Additionally, you are accompanied by two fiercely loyal bodyguards: give them a name</p><p>and describe their appearance. They do not have an <strong>NPC profile</strong> and never take part in</p><p><strong>Checks</strong> or conflicts, but you are inseparable and they somehow appear whenever you</p><p>need their help. They offer the following benefits:</p><ul><li><p><strong>Be careful!</strong> When you suffer damage, you may halve it.</p></li><li><p><strong>Here is the information you previously requested</strong>. During a Rest, you may ask the</p></li></ul><p><strong>Game Master</strong> one question; they will answer truthfully.</p><ul><li><p><strong>Stay down, I'll take care of this!</strong> When you create an elemental shard, you may have</p></li></ul><p>it deal extra damage equal to <em>【</em><strong>5 + half your level</strong><em>】</em>.</p><p>Whenever you make use of one of these benefits, your bodyguards suffer 1d6 Fatigue</p><p>Points; as long as they have 10 or more Fatigue Points, you cannot rely on them.</p><p>Fatigue is shared between bodyguards; it is not tracked individually.</p><p>At the end of each session (approximately four hours of play), your bodyguards recover</p><p>from 1d6 Fatigue Points (to a minimum of zero).</p>",
+          "details_roller": "Show",
+          "id": "N9eKFmdC30lHByXQ",
+          "img": "icons/svg/statue.svg",
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Stubborn Scion",
+          "skill_type": "Passive",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.N9eKFmdC30lHByXQ"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": ""
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "njhAd6kpOwOKC5rh",
       "_stats": {
         "compendiumSource": "Item.b8PD9B8tWQ60BEFG",
@@ -5330,7 +5592,8 @@
           "skill_type": "Passive",
           "uniqueId": "sfB3APSyWP8Lf5LQ"
         },
-        "templateSystemUniqueVersion": null,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "sfB3APSyWP8Lf5LQ"
       },
@@ -6395,7 +6658,7 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "91",
+      "current_hp": 80,
       "current_ip": "8",
       "current_mp": "106",
       "curse_status": 0,
@@ -7159,6 +7422,18 @@
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.LwbHBK0twVXmekz0"
         },
+        "N9eKFmdC30lHByXQ": {
+          "active_class": "",
+          "active_cost": "",
+          "active_description": "<p>You hail from the wealthiest, most influential family in this region. On what do they</p><p>base their fortune and reputation? Are you the only heir? What is it about your family</p><p>you really can’t stand, and why did it lead you to join the other characters?</p><p>If you choose this <strong>Quirk</strong> during <strong>character creation</strong>, increase your initial savings (see</p><p><strong>Core Rulebook</strong>, page 165) by 1000 zenit.</p><p>Additionally, you are accompanied by two fiercely loyal bodyguards: give them a name</p><p>and describe their appearance. They do not have an <strong>NPC profile</strong> and never take part in</p><p><strong>Checks</strong> or conflicts, but you are inseparable and they somehow appear whenever you</p><p>need their help. They offer the following benefits:</p><ul><li><p><strong>Be careful!</strong> When you suffer damage, you may halve it.</p></li><li><p><strong>Here is the information you previously requested</strong>. During a Rest, you may ask the</p></li></ul><p><strong>Game Master</strong> one question; they will answer truthfully.</p><ul><li><p><strong>Stay down, I'll take care of this!</strong> When you create an elemental shard, you may have</p></li></ul><p>it deal extra damage equal to <em>【</em><strong>5 + half your level</strong><em>】</em>.</p><p>Whenever you make use of one of these benefits, your bodyguards suffer 1d6 Fatigue</p><p>Points; as long as they have 10 or more Fatigue Points, you cannot rely on them.</p><p>Fatigue is shared between bodyguards; it is not tracked individually.</p><p>At the end of each session (approximately four hours of play), your bodyguards recover</p><p>from 1d6 Fatigue Points (to a minimum of zero).</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Stubborn Scion",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.N9eKFmdC30lHByXQ"
+        },
         "OoQjrz63C5m8OOoc": {
           "active_class": "Keren",
           "active_cost": "",
@@ -7386,6 +7661,18 @@
           "name": "Phantasmal Echo",
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.qS9e6cCTQBDQ2kK7"
+        },
+        "rIL03M727EEzLUNf": {
+          "active_class": "",
+          "active_cost": "",
+          "active_description": "",
+          "active_duration": "",
+          "active_level": 3,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "For Whom the Bell Tolls",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.rIL03M727EEzLUNf"
         },
         "uRb0w0uHfbPCcMdO": {
           "active_class": "NPC",
