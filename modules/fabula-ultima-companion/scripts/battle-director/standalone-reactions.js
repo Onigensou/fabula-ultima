@@ -215,7 +215,11 @@ export async function collectReactors(director) {
   if (!dc) return out;
   const list = Array.isArray(dc.combatants) ? dc.combatants : Object.values(dc.combatants ?? {});
   for (const dcc of list) {
-    if (!dcc || dcc.defeated) continue;
+    // Skip DOWN combatants: the `defeated` flag AND the live H<=0 signal. A KO'd
+    // creature is not offered lifecycle/observer reactions (turn_start, another
+    // creature's death, etc.). The dying subject's OWN `creature_defeated` is
+    // re-added explicitly by the defeat reactor, so its on-death still fires.
+    if (!dcc || dcc.defeated || dcc.isDefeatedLive?.()) continue;
     let actor = dcc.actorDoc ?? null;
     if (!actor && dcc.actorUuid) {
       try { actor = await fromUuid(dcc.actorUuid); } catch (_) { actor = null; }

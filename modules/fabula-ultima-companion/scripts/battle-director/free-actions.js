@@ -24,9 +24,20 @@
 // are conflict-scoped at most; on FSM stop / scene reload they reset.
 
 import { log, warn } from "./logger.js";
+import { isActorDefeated } from "./defeat-reactor.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 const _registry = new Map();  // actor.id → grant
+
+// A defeated creature (HP <= 0) takes NO free action — including chain strikes.
+// This is stronger than preventFreeAttack (which chain bypasses): a KO'd actor
+// forfeits everything. Resolves the actor from its id the same way the
+// preventFreeAttack check does. Fixes "free action still launches after the
+// actor was reduced to 0 HP mid-turn" (e.g. Bimagus after a lethal Instability).
+function actorIdIsDefeated(actorId) {
+  if (!actorId) return false;
+  try { return isActorDefeated(game?.actors?.get?.(actorId)); } catch { return false; }
+}
 
 // Free-attack prevention check. Looks up the live actor and walks its
 // appliedEffects for any AE carrying `flags.fabula-ultima-companion
@@ -64,6 +75,12 @@ export const freeActions = {
    */
   get(actorId) {
     if (!actorId) return null;
+    // Defeated (HP <= 0) actors take no free action at all — suppress BEFORE the
+    // chain bypass below (a KO'd actor doesn't get to continue a chain either).
+    if (actorIdIsDefeated(actorId)) {
+      log(`freeActions.get: ${actorId} is defeated (HP<=0) — grant suppressed`);
+      return null;
+    }
     const g = _registry.get(actorId) ?? null;
     // chain strikes (free_action with chain:true) are NOT "free attacks" — a
     // preventFreeAttack debuff must not stop a Chain N attack. Let them through.
@@ -93,6 +110,13 @@ export const freeActions = {
     if (grant == null) {
       _registry.delete(actorId);
       log(`freeActions: cleared grant for ${actorId}`);
+      return;
+    }
+    // A defeated (HP <= 0) actor can't be granted a free action — refuse at the
+    // source so no misleading affordance is surfaced (covers a grant that would
+    // arrive AFTER the actor already dropped).
+    if (actorIdIsDefeated(actorId)) {
+      log(`freeActions.set: ${actorId} is defeated (HP<=0) — grant refused`);
       return;
     }
     // chain strikes bypass preventFreeAttack (see get()).

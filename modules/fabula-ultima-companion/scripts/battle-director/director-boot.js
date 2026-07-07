@@ -15,7 +15,7 @@
 
 import { log, warn } from "./logger.js";
 import { BattleDirector } from "./director.js";
-import { STATE_HANDLERS, installGuardHpWatcher, installApplierReaperWatcher, installEnemyWipeWatcher } from "./state-handlers.js";
+import { STATE_HANDLERS, installGuardHpWatcher, installApplierReaperWatcher, installSideWipeWatcher, checkSideWipe } from "./state-handlers.js";
 import { installGrappledCoverWatcher } from "./grappled.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
@@ -511,8 +511,8 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   installGuardHpWatcher(director);
   // Same reasoning: re-install the applier-tied-AE reaper on resume.
   installApplierReaperWatcher(director);
-  // Same reasoning: re-install enemy-wipe detection on resume.
-  installEnemyWipeWatcher(director);
+  // Same reasoning: re-install side-wipe detection on resume.
+  installSideWipeWatcher(director);
   // Rewind tool: same reasoning — re-install the item-deletion tracker
   // on the resume path so the rewind history's deletedItemsLog keeps
   // getting populated post-reload.
@@ -1073,6 +1073,10 @@ Hooks.once("ready", () => {
         }
         try { bannerRefreshTurnActions(dc); } catch (_e) {}
         try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "remove", combatantId: c.id }); } catch (_e) {}
+        // A removal (leave_combat / destroy_summon / banish / defeat-removal) can
+        // empty a side with no HP event to trip the wipe watcher — re-check here so
+        // "last enemy fled" / "last enemy shattered" ends the battle (gap B).
+        try { checkSideWipe(d); } catch (e) { warn("removeCombatant: checkSideWipe threw", e); }
         saveDirectorState(d, { skipHistory: true }).catch((e) => warn("removeCombatant: saveDirectorState failed", e));
         log(`live removeCombatant: ${c.name}`);
         return { ok: true, removedId: c.id, name: c.name };
