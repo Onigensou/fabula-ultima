@@ -219,6 +219,11 @@ async function resolveTargetingRow(row, ctx) {
   //               behavior with auto_target:"auto").
   // Legacy boolean tolerated (true = skip, false = confirm).
   const _at = row.auto_target;
+  // Did the AUTHOR explicitly set auto_target on this row (vs. the absent
+  // default)? An explicit value is a deliberate UX choice that OVERRIDES a
+  // caller's _skipTargetConfirm suppression below.
+  const explicitAuto = _at !== undefined && _at !== null
+    && !(typeof _at === "string" && _at.trim() === "");
   const autoMode = _at === true ? "skip" : _at === false ? "confirm"
     : String(_at ?? "confirm").trim().toLowerCase();
   const isGM = !!game.user?.isGM;
@@ -226,9 +231,15 @@ async function resolveTargetingRow(row, ctx) {
   // ctx._skipTargetConfirm. applyEffectRow sets it for every consequence effect
   // kind (everything except `targeting` / `add_target`), so an effect lands on its
   // already-decided target (self / cover ally / action targets) without a
-  // redundant second acknowledgement post-card. This only affects the assured
-  // path; a genuine multi-candidate PICK (pool > count) still prompts below.
-  const autoTarget = ctx?._skipTargetConfirm ? true
+  // redundant second acknowledgement post-card. But that suppression governs only
+  // the DEFAULT (absent auto_target) confirm — an EXPLICIT author auto_target wins.
+  // Otherwise a reaction that delegates its PRIMARY pick into a consequence's
+  // target_ref (Cognitive Focus: cf_apply → cf_pick, auto_target:"confirm") loses
+  // its one confirm, because apply_ae sets _skipTargetConfirm before resolving the
+  // ref. This only affects the assured path; a genuine multi-candidate PICK
+  // (pool > count) still prompts below.
+  const suppress = !!ctx?._skipTargetConfirm && !explicitAuto;
+  const autoTarget = suppress ? true
     : autoMode === "skip" ? true
     : autoMode === "auto" ? isGM
     : false;   // "confirm" (and the absent default) → always locked-confirm
