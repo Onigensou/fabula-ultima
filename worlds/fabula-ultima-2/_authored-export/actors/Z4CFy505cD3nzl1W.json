@@ -65,6 +65,71 @@
       "type": "base"
     },
     {
+      "_id": "bU7ZZDCIGEOECy7m",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783431871502,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Emergency Item:</em> ready — once per conflict.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "KUfkeoHoBkKeHowc",
+          "originalParentId": "HiXFAkSm35bBGHfM",
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM.ActiveEffect.KUfkeoHoBkKeHowc"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "emergency_item",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "em_refresh",
+            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.luXXPlt0jBkWkvyK",
+            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
+      "name": "Emergency Item Ready",
+      "origin": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
+      "sort": 0,
+      "statuses": [
+        "fud-emergency-item-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "zJEKRA0eIsXI6aj1",
       "_stats": {
         "compendiumSource": null,
@@ -82,7 +147,7 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": 298800,
+        "startTime": null,
         "startTurn": null,
         "turns": null
       },
@@ -96,10 +161,10 @@
         "fabula-ultima-companion": {
           "category": "Other",
           "directorAppliedBy": {
-            "appliedAtRound": 1,
+            "appliedAtRound": 4,
             "effectLabel": "dance_apply",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.OzZIYbff6H0Drj8r.Token.WsZq2t38fRfLoxNZ",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.luXXPlt0jBkWkvyK",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
             "turnsRemaining": null
           },
@@ -1415,7 +1480,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1434,8 +1498,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "9eWyiZCnRhC89Fsn",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -1477,7 +1539,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.9eWyiZCnRhC89Fsn",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2114,7 +2175,6 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Each time you take this Skill, you learn a <strong>dance</strong> (see Facet).</p><p>On your turn during a conflict scene, if you have no martial armor equipped, you may spend 10 Mind Points to perform a <strong>dance</strong> you have learned. This doesn’t require an action, but it can only be done before or after an action, and only once per turn. If you already performed a different dance during your previous turn in this scene, the cost of the new dance is reduced to 5 Mind Points.</p><p>Some dances are instantaneous and resolve immediately, while others have effects that last until the start of your next turn.</p>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -2170,9 +2230,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "B5EA1iq4j0wYzpo5",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_step.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -2270,8 +2328,7 @@
           "skill_type": "Other",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -2420,8 +2477,6 @@
       "system": {
         "props": {
           "active_effect_config_table": {},
-          "availability_formula": "HAS_MARTIAL_ARMOR == 0",
-          "availability_reason": "No martial armor allowed",
           "check_bonus": "0",
           "class": "Dancer",
           "cost": "",
@@ -2498,11 +2553,10 @@
           "skill_target": "One ally",
           "skill_type": "Active",
           "type_damage": "",
-          "uniqueId": "eAUaGhDdy3uogln7",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eAUaGhDdy3uogln7"
       },
@@ -4192,13 +4246,10 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Choose an ally that is able to see you and has a Bond towards you: you and that ally both recover an amount of Hit Points equal to your current <strong>Dexterity</strong> die size.</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The restored amount increases by 5 Hit Points.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The restored amount increases by 10 Hit Points.</p>\n",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "pOJCpShhqHt4D7mN",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -4218,8 +4269,7 @@
           "skill_target": "One ally",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.FhdBo2hgm9Psq2SY.Item.pOJCpShhqHt4D7mN"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -5198,7 +5248,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -5216,8 +5265,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "F5TmgNnJPkCyvrrL",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -5250,7 +5297,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.F5TmgNnJPkCyvrrL",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5329,11 +5375,10 @@
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",
-          "uniqueId": "hEOGl2wmtgjJX8jt",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "hEOGl2wmtgjJX8jt"
       },
@@ -5622,20 +5667,10 @@
         "container": "S71vgGdSVCmEGWN0",
         "props": {
           "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
           "check_bonus": "0",
-          "construct_ef": "100",
           "cost": "-",
           "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
           "description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
-          "dragon_ef": "100",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -5646,70 +5681,15 @@
               "summon_count": "1"
             }
           },
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
           "isCheck": false,
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "50",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_skill_active": {
-            "7V5swu31yb3p60cH": {
-              "id": "${item.id}",
-              "name": "Decoy Doll",
-              "skill_cost": "-",
-              "skill_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.7V5swu31yb3p60cH"
-            }
-          },
-          "item_type": "consumable",
-          "mimic_ef": "100",
-          "monster_ef": "100",
           "name": "Decoy Doll",
           "on_activate_effect_ref": "decoy_summon",
           "optional_params": {},
-          "plant_ef": "100",
-          "related_item_list": {
-            "7V5swu31yb3p60cH": {
-              "id": "${item.id}",
-              "name": "Decoy Doll",
-              "related_item_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
-              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.7V5swu31yb3p60cH"
-            }
-          },
-          "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
-          "set_name": "",
           "skill_target": "Self",
           "skill_type": "Item",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
+          "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -5799,7 +5779,7 @@
       },
       "sort": 0,
       "system": {
-        "container": "y8RTnXVs4sBr69J9",
+        "container": "SopXXY9q83NQSm2x",
         "props": {
           "cost": "-",
           "description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
@@ -5977,8 +5957,6 @@
       "system": {
         "props": {
           "active_effect_config_table": {},
-          "availability_formula": "HAS_MARTIAL_ARMOR == 0",
-          "availability_reason": "No martial armor allowed",
           "check_bonus": "0",
           "class": "Dancer",
           "cost": "",
@@ -6059,11 +6037,10 @@
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
-          "uniqueId": "MEdEKpPNgKTtkE7Z",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "MEdEKpPNgKTtkE7Z"
       },
@@ -6211,6 +6188,149 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "e0jdBTIQ8BACGIph"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SopXXY9q83NQSm2x",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783431844252,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "hPNGofTLZQVvhtbf",
+            "itemName": "Skull Orb",
+            "pickedOldProps": {
+              "cost": "950",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647436473
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/but.png",
+      "name": "Skull Orb",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 10300000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>When you apply or re-apply a <strong>Status Conditions</strong> to a creature, it takes&nbsp;<strong>5&nbsp;Dark&nbsp;</strong>damage.</li></ul>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "950",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Skull Orb",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "hPNGofTLZQVvhtbf"
       },
       "type": "equippableItem"
     },
@@ -7170,7 +7290,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "custom_logic_action": "",
@@ -7191,8 +7310,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "xEHcsYyJhPaTCGcJ",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Viridescent_Hunt.webp",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -7233,7 +7350,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.xEHcsYyJhPaTCGcJ",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -7481,20 +7597,10 @@
         "container": "6ThyGpmcPzrBBGji",
         "props": {
           "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
           "check_bonus": "0",
-          "construct_ef": "100",
           "cost": "-",
           "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
           "description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
-          "dragon_ef": "100",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -7525,289 +7631,20 @@
               "target_ref": "action_targets"
             }
           },
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
           "isCheck": false,
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "75",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "3",
-          "item_rarity": "Uncommon",
-          "item_skill_active": {
-            "aCxWu8uKNvquNuvH": {
-              "id": "${item.id}",
-              "name": "Spicy Cocktail",
-              "skill_cost": "-",
-              "skill_description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.aCxWu8uKNvquNuvH"
-            },
-            "ePP80aH48MygxCsV": {
-              "id": "${item.id}",
-              "name": "Spicy Cocktail",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p>Deal<strong> 20 </strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span><strong> </strong>to all enemy, 50% chance to inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a></span></p></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.ePP80aH48MygxCsV"
-            },
-            "vIUyR6zmNBjQ4Rlw": {
-              "id": "${item.id}",
-              "name": "Spicy Cocktail",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p>Deal<strong> 20 </strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span><strong> </strong>to all enemy, 50% chance to inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a></span></p></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.vIUyR6zmNBjQ4Rlw"
-            }
-          },
-          "item_type": "consumable",
-          "mimic_ef": "100",
-          "monster_ef": "100",
           "name": "Spicy Cocktail",
           "on_activate_effect_ref": "spicy_activate",
           "optional_params": {},
-          "plant_ef": "100",
-          "related_item_list": {
-            "aCxWu8uKNvquNuvH": {
-              "id": "${item.id}",
-              "name": "Spicy Cocktail",
-              "related_item_description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
-              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.aCxWu8uKNvquNuvH"
-            },
-            "ePP80aH48MygxCsV": {
-              "id": "${item.id}",
-              "name": "Spicy Cocktail",
-              "related_item_description": "<ul><li><p>Deal<strong> 20 </strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span><strong> </strong>to all enemy, 50% chance to inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a></span></p></li></ul>",
-              "uuid": "Item.ePP80aH48MygxCsV"
-            },
-            "vIUyR6zmNBjQ4Rlw": {
-              "id": "${item.id}",
-              "name": "Spicy Cocktail",
-              "related_item_description": "<ul><li><p>Deal<strong> 20 </strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span><strong> </strong>to all enemy, 50% chance to inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a></span></p></li></ul>",
-              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.vIUyR6zmNBjQ4Rlw"
-            }
-          },
-          "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
-          "set_name": "",
           "skill_target": "Each enemy you can see",
           "skill_type": "Item",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
+          "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "HnPrZDaSrXTKvkWv"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "y8RTnXVs4sBr69J9",
-      "_stats": {
-        "compendiumSource": "Item.tGgGFGEavGVjJVAz",
-        "coreVersion": "12.343",
-        "createdTime": 1783148656957,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "core": {
-          "sourceId": "Item.tGgGFGEavGVjJVAz"
-        },
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "accessory",
-            "fromTemplate": "r0yZpLPAK9VXhM2p",
-            "itemId": "hPNGofTLZQVvhtbf",
-            "itemName": "Skull Orb",
-            "pickedOldProps": {
-              "cost": "950",
-              "def_bonus": "",
-              "defense": "0",
-              "defense_include_dex": false,
-              "initiative": "0",
-              "magic_defense": "0",
-              "magic_defense_include_ins": false,
-              "mdef_bonus": ""
-            },
-            "ts": 1769647436473
-          }
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Mega-Ether_from_Final_Fantasy_XIV_icon.webp",
-      "name": "Skull Orb",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 10300000,
-      "system": {
-        "container": "hPNGofTLZQVvhtbf",
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "cost": "-",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
-          "dragon_ef": "100",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "damage_amount": "5",
-              "damage_element": "dark",
-              "effect_kind": "deal_damage",
-              "effect_label": "skullorb_dmg",
-              "target_ref": "trigger_subject"
-            }
-          },
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "ingredient_taste": "",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isCheck": false,
-          "isEquipped": false,
-          "isIngredient": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "950",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_skill_passive": {
-            "quQU5EZb9TSIxJYp": {
-              "id": "${item.id}",
-              "name": "Skull Orb",
-              "skill_cost": "-",
-              "skill_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.quQU5EZb9TSIxJYp"
-            }
-          },
-          "item_type": "accessory",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Love Potion",
-          "on_activate_effect_ref": "",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reaction_config_table": {
-            "0": {
-              "$deleted": false,
-              "condition_formula": "CAUSE_IS_SELF == 1",
-              "reaction_effect_ref": "skullorb_dmg",
-              "reaction_passive_mode": "force",
-              "reaction_source": "enemy",
-              "reaction_trigger": "creature_status_applied"
-            }
-          },
-          "recipe_dish_uuid": "",
-          "recipe_kind": "",
-          "refine_count": "0",
-          "refine_level": "0",
-          "related_item_list": {
-            "quQU5EZb9TSIxJYp": {
-              "id": "${item.id}",
-              "name": "Skull Orb",
-              "related_item_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
-              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.quQU5EZb9TSIxJYp"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "skill_description": "<p><em>Skull Orb:</em> when you apply a Status Condition to an enemy, it takes 5 Dark damage.</p>",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "tGgGFGEavGVjJVAz"
       },
       "type": "equippableItem"
     }
@@ -9476,7 +9313,7 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.zTGWIKiogBtbpJ07"
         }
       },
-      "skill_class_filter": "Dancer",
+      "skill_class_filter": "Rogue",
       "skill_hideEffect": false,
       "skill_type_filter": "All",
       "slow_status": 0,

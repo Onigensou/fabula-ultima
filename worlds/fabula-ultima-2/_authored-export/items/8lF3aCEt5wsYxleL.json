@@ -106,6 +106,7 @@
       },
       "level": "1",
       "max_level": "10",
+      "name": "Dance",
       "reaction_config_table": {
         "0": {
           "reaction_effect_ref": "dance_apply",
@@ -129,10 +130,10 @@
         }
       },
       "skill_target": "",
-      "skill_type": "Other",
-      "uniqueId": "8lF3aCEt5wsYxleL"
+      "skill_type": "Other"
     },
-    "templateSystemUniqueVersion": null,
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
     "unique": false,
     "uniqueId": "8lF3aCEt5wsYxleL"
   },

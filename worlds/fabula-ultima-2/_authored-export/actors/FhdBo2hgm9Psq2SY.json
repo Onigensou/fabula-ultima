@@ -573,6 +573,7 @@
           },
           "level": "1",
           "max_level": "10",
+          "name": "Dance",
           "reaction_config_table": {
             "0": {
               "reaction_effect_ref": "dance_apply",
@@ -596,10 +597,10 @@
             }
           },
           "skill_target": "",
-          "skill_type": "Other",
-          "uniqueId": "8lF3aCEt5wsYxleL"
+          "skill_type": "Other"
         },
-        "templateSystemUniqueVersion": null,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "8lF3aCEt5wsYxleL"
       },
@@ -740,8 +741,6 @@
       "sort": 0,
       "system": {
         "props": {
-          "availability_formula": "HAS_MARTIAL_ARMOR == 0",
-          "availability_reason": "No martial armor allowed",
           "cost": "",
           "description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
           "duration": "instantaneous",
@@ -797,14 +796,15 @@
           },
           "level": "1",
           "max_level": "1",
+          "name": "Lion Dance",
           "on_activate_effect_ref": "d_root",
           "reaction_config_table": {},
           "skill_tags": "dance",
           "skill_target": "Self",
-          "skill_type": "Active",
-          "uniqueId": "MEdEKpPNgKTtkE7Z"
+          "skill_type": "Active"
         },
-        "templateSystemUniqueVersion": null,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "MEdEKpPNgKTtkE7Z"
       },
@@ -904,6 +904,7 @@
           "isReaction": true,
           "level": "1",
           "max_level": "1",
+          "name": "Quick-change",
           "reaction_config_table": {
             "0": {
               "condition_formula": "SKILL_HAS_TAG_DANCE == 1",
@@ -914,10 +915,10 @@
             }
           },
           "skill_target": "",
-          "skill_type": "Passive",
-          "uniqueId": "hEOGl2wmtgjJX8jt"
+          "skill_type": "Passive"
         },
-        "templateSystemUniqueVersion": null,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "hEOGl2wmtgjJX8jt"
       },
@@ -1403,8 +1404,6 @@
       "sort": 0,
       "system": {
         "props": {
-          "availability_formula": "HAS_MARTIAL_ARMOR == 0",
-          "availability_reason": "No martial armor allowed",
           "cost": "",
           "description": "<p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p>\n",
           "duration": "Instantaneous",
@@ -1456,14 +1455,15 @@
           },
           "level": "1",
           "max_level": "1",
+          "name": "Ouroboros Dance",
           "on_activate_effect_ref": "d_root",
           "reaction_config_table": {},
           "skill_tags": "dance",
           "skill_target": "One ally",
-          "skill_type": "Active",
-          "uniqueId": "eAUaGhDdy3uogln7"
+          "skill_type": "Active"
         },
-        "templateSystemUniqueVersion": null,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eAUaGhDdy3uogln7"
       },

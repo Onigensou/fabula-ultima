@@ -196,6 +196,8 @@
           "name": "Looting Bow",
           "optional_params": {},
           "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",

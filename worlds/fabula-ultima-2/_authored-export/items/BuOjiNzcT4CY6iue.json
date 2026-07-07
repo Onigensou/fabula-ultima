@@ -98,6 +98,14 @@
       "item_quantity": "1",
       "item_rarity": "Common",
       "item_skill_active": {
+        "FgLDNOvQyYbNqlV8": {
+          "id": "${item.id}",
+          "name": "Apple Juice",
+          "skill_cost": "-",
+          "skill_description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
+          "skill_maxLevel": "",
+          "uuid": "Item.FgLDNOvQyYbNqlV8"
+        },
         "z2lOxgJnd99PP35v": {
           "id": "${item.id}",
           "name": "Apple Juice",
@@ -113,9 +121,16 @@
       "name": "Apple Juice",
       "optional_params": {},
       "plant_ef": "100",
+      "reaction_config_table": {},
       "refine_count": "0",
       "refine_level": "0",
       "related_item_list": {
+        "FgLDNOvQyYbNqlV8": {
+          "id": "${item.id}",
+          "name": "Apple Juice",
+          "related_item_description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
+          "uuid": "Item.FgLDNOvQyYbNqlV8"
+        },
         "z2lOxgJnd99PP35v": {
           "id": "${item.id}",
           "name": "Apple Juice",
@@ -130,7 +145,7 @@
       "skill_target": "One Ally",
       "soldier_ef": "100",
       "spirit_ef": "100",
-      "type_damage": "",
+      "type_damage": "Physical",
       "undead_ef": "100",
       "vehicle_ef": "100",
       "weapon_range": "Melee"

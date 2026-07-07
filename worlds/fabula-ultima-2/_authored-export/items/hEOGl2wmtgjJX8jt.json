@@ -36,6 +36,7 @@
       "isReaction": true,
       "level": "1",
       "max_level": "1",
+      "name": "Quick-change",
       "reaction_config_table": {
         "0": {
           "condition_formula": "SKILL_HAS_TAG_DANCE == 1",
@@ -46,10 +47,10 @@
         }
       },
       "skill_target": "",
-      "skill_type": "Passive",
-      "uniqueId": "hEOGl2wmtgjJX8jt"
+      "skill_type": "Passive"
     },
-    "templateSystemUniqueVersion": null,
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
     "unique": false,
     "uniqueId": "hEOGl2wmtgjJX8jt"
   },

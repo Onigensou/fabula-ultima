@@ -133,8 +133,6 @@
   "sort": 0,
   "system": {
     "props": {
-      "availability_formula": "HAS_MARTIAL_ARMOR == 0",
-      "availability_reason": "No martial armor allowed",
       "cost": "",
       "description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
       "duration": "instantaneous",
@@ -190,14 +188,15 @@
       },
       "level": "1",
       "max_level": "1",
+      "name": "Lion Dance",
       "on_activate_effect_ref": "d_root",
       "reaction_config_table": {},
       "skill_tags": "dance",
       "skill_target": "Self",
-      "skill_type": "Active",
-      "uniqueId": "MEdEKpPNgKTtkE7Z"
+      "skill_type": "Active"
     },
-    "templateSystemUniqueVersion": null,
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
     "unique": false,
     "uniqueId": "MEdEKpPNgKTtkE7Z"
   },

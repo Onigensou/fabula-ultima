@@ -10,6 +10,79 @@
   },
   "effects": [
     {
+      "_id": "669MaxYKvSKvboIv",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783431944233,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "propheticPoint01",
+          "originalParentId": "Lmzs6VllFRo44jZq",
+          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "prophecy",
+          "charges": 1,
+          "chargesMax": 99,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "pds_gain",
+            "lifetimeMode": "persistent_counter",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.aXPg2fe414jgjEKL",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+            "turnsRemaining": null
+          },
+          "directorPermanent": false,
+          "hudResourceColor": "#a06bff",
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+      "name": "Prophecy Point",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+      "sort": 0,
+      "statuses": [
+        "fud-prophecy-point"
+      ],
+      "system": {
+        "tags": [
+          "resource",
+          "points"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "Drm9IULS4IrA13Yd",
       "_stats": {
         "compendiumSource": null,
@@ -151,6 +224,232 @@
       "sort": 0,
       "statuses": [
         "fud-lucky-number"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "mroj0dVdoSDfOEge",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783431944233,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "Fugitive Experiment Instability Points. At 10+ you are reduced to 0 HP and must Surrender, then lose all Instability. Lose 1d6 at end of session.",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "mroj0dVdoSDfOEge",
+          "originalParentId": "dafTLBUscCDNgq8H",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.mroj0dVdoSDfOEge"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "instability",
+          "charges": 0,
+          "chargesMax": 10,
+          "crossScene": true,
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {
+              "ins_death": {
+                "chain_steps": "ins_zero,ins_notify,ins_reset",
+                "effect_kind": "chain",
+                "effect_label": "ins_death"
+              },
+              "ins_notify": {
+                "effect_kind": "notify",
+                "effect_label": "ins_notify",
+                "notify_abort": false,
+                "notify_message": "Instability reached 10+! Hina is reduced to 0 HP and must Surrender (then loses all Instability).",
+                "notify_type": "warning"
+              },
+              "ins_reset": {
+                "charge_ae_name": "Instability",
+                "charge_amount": "0",
+                "charge_operation": "set",
+                "effect_kind": "adjust_charges",
+                "effect_label": "ins_reset",
+                "target_ref": "self"
+              },
+              "ins_zero": {
+                "effect_kind": "grant",
+                "effect_label": "ins_zero",
+                "grant_amount": "-CUR_HP",
+                "grant_resource": "hp",
+                "target_ref": "self"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "AE_CHARGES_INSTABILITY >= 10",
+                "reaction_effect_ref": "ins_death",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_completes_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/lightning.svg",
+      "name": "Instability",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "instability"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "OKmmBOUZ2FMItYOD",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783431944233,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "TQINaXFTRwWZBJvx",
+          "originalParentId": "EGYilCNAGvl2BldF",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.TQINaXFTRwWZBJvx"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "hod_ready",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "hod_refresh",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.aXPg2fe414jgjEKL",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
+      "name": "Heart of Darkness Ready",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
+      "sort": 0,
+      "statuses": [
+        "fud-heart-of-darkness-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "qxhjBS66EtRl1SPu",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783431944233,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Lucky Seven Ready:</em> Lucky Seven is available this scene. Spent when used; refreshes each conflict.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "DIJbLrv3X5vkOVnj",
+          "originalParentId": "v56GvN63nvIYV4iJ",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ.ActiveEffect.DIJbLrv3X5vkOVnj"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "lucky_seven",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "ls_arm",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.aXPg2fe414jgjEKL",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
+            "turnsRemaining": 2
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/control/buff-flight-wings-runes-purple.webp",
+      "name": "Lucky Seven Ready",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
+      "sort": 0,
+      "statuses": [
+        "fud-lucky-seven-ready"
       ],
       "system": {},
       "tint": "#ffffff",
@@ -443,6 +742,105 @@
       "type": "equippableItem"
     },
     {
+      "_id": "1r6HAJN2JWYt3Dj2",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783431873118,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "icons/svg/lightning.svg",
+      "name": "Fugitive Experiment",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "cost": "",
+          "description": "<p><span class=\"fontstyle0\">When a rule or ability requires you to spend </span><span class=\"fontstyle2\">100 or fewer </span><span class=\"fontstyle0\">Hit Points, Mind Points, or<br>Inventory Points, you may suffer </span><span class=\"fontstyle2\">1d8 Instability Points </span><span class=\"fontstyle0\">to ignore that cost.</span></p><p><span class=\"fontstyle0\">At the end of each session, you lose </span><span class=\"fontstyle2\">1d6 Instability Points </span><span class=\"fontstyle0\">(to a minimum of zero).</span></p><p><span class=\"fontstyle0\">If your </span><span class=\"fontstyle2\">Instability Points </span><span class=\"fontstyle0\">ever reach </span><span class=\"fontstyle2\">10 or more</span><span class=\"fontstyle0\">, you are immediately reduced to 0 Hit<br>Points and must </span><span class=\"fontstyle2\">Surrender</span><span class=\"fontstyle0\">.</span></p><p><span class=\"fontstyle0\">The consequences of this Surrender should be closely tied<br>to you losing control of your abilities. Then, you lose all </span><span class=\"fontstyle2\">Instability Points</span> </p>",
+          "effect_table": {
+            "fug_add": {
+              "charge_ae_name": "Instability",
+              "charge_amount": "VAR_INSROLL",
+              "charge_max": "10",
+              "charge_operation": "add",
+              "effect_kind": "adjust_charges",
+              "effect_label": "fug_add",
+              "target_ref": "self"
+            },
+            "fug_react": {
+              "chain_steps": "fug_waive_hp,fug_waive_mp,fug_waive_ip,fug_roll,fug_add",
+              "effect_kind": "chain",
+              "effect_label": "fug_react"
+            },
+            "fug_roll": {
+              "dice_count": "1",
+              "dice_faces": "8",
+              "effect_kind": "roll_dice",
+              "effect_label": "fug_roll",
+              "prompt_var": "insroll",
+              "roll_interactive": true,
+              "roll_label": "Instability"
+            },
+            "fug_waive_hp": {
+              "cost_amount": "MAX_HP",
+              "cost_operation": "subtract",
+              "cost_resource": "hp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "fug_waive_hp"
+            },
+            "fug_waive_ip": {
+              "cost_amount": "MAX_IP",
+              "cost_operation": "subtract",
+              "cost_resource": "ip",
+              "effect_kind": "adjust_cost",
+              "effect_label": "fug_waive_ip"
+            },
+            "fug_waive_mp": {
+              "cost_amount": "MAX_MP",
+              "cost_operation": "subtract",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "fug_waive_mp"
+            }
+          },
+          "isCheck": false,
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Fugitive Experiment",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_COST_TOTAL > 0 && ACTION_COST_TOTAL <= 100",
+              "reaction_effect_ref": "fug_react",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
+          "skill_range": "Self",
+          "skill_target": "",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": ""
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "20QAZWYIlUg4Uj6B",
       "_stats": {
         "compendiumSource": null,
@@ -548,6 +946,14 @@
               "skill_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
               "skill_maxLevel": "",
               "uuid": "Item.TveSIs4RtZLvTtY0"
+            },
+            "wxQj3appp4uqcW8O": {
+              "id": "${item.id}",
+              "name": "Love Potion",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wxQj3appp4uqcW8O"
             }
           },
           "item_type": "consumable",
@@ -562,6 +968,12 @@
               "name": "Love Potion",
               "related_item_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
               "uuid": "Item.TveSIs4RtZLvTtY0"
+            },
+            "wxQj3appp4uqcW8O": {
+              "id": "${item.id}",
+              "name": "Love Potion",
+              "related_item_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wxQj3appp4uqcW8O"
             }
           },
           "reptilian_ef": "100",
@@ -12241,6 +12653,18 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.RRTO6uRQtUQ2o4Er"
         },
+        "SuE7ERem0thYurVC": {
+          "active_class": "Spiritist",
+          "active_cost": "",
+          "active_description": "<p>You may perform Rituals whose effects fall within the <strong>Spiritism</strong> discipline. Spiritism Rituals use <strong>INS + WLP</strong> for the Magic Check.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Ritual Spiritism",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.SuE7ERem0thYurVC"
+        },
         "TW4MHSzMcFgOQA4o": {
           "active_class": "Darkblade",
           "active_cost": "",
@@ -12445,6 +12869,18 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.mOBCOhyiCr6Zj7C7"
         },
+        "nyEzzbUngB4BZ8Qw": {
+          "active_class": "Spiritist",
+          "active_cost": "",
+          "active_description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Healing Power",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.nyEzzbUngB4BZ8Qw"
+        },
         "oe3OP8VmjHJpWJ41": {
           "active_class": "Hina",
           "active_cost": "6 Zero Power",
@@ -12480,6 +12916,18 @@
           "name": "Cleanse",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.rOdq8hhYJpSutkre"
+        },
+        "uK8MN1c3SDjR2Pgs": {
+          "active_class": "Spiritist",
+          "active_cost": "",
+          "active_description": "Each time you acquire this Skill, learn one Spiritist spell (see Facet). Offensive Spiritist Spells use <strong>INS + WLP</strong> for the Magic Check.",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Spiritual Magic",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.uK8MN1c3SDjR2Pgs"
         },
         "uQzDNlmdv9XmIycs": {
           "active_class": "NPC",
