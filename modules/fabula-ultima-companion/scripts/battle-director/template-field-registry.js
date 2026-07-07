@@ -43,8 +43,13 @@ const PROMPT_NUMBER_VIS = `equalText(sameRow("effect_kind",''), "prompt_number")
 // prompt_element — interactive damage-type picker (Meteor Shower). Stores the
 // chosen element string under prompt_var, read later as VAR_<NAME>.
 const PROMPT_ELEMENT_VIS = `equalText(sameRow("effect_kind",''), "prompt_element")`;
-// prompt_var is shared by prompt_number (amount) and prompt_element (element).
-const PROMPT_VAR_VIS = `or(equalText(sameRow("effect_kind",''), "prompt_number"), equalText(sameRow("effect_kind",''), "prompt_element"))`;
+// roll_dice — auto-roll NdX and stash the total in VAR_<prompt_var>. The
+// auto-rolling counterpart to prompt_number; feeds adjust_charges / adjust_damage
+// / grant amounts a real die result (Fatigue 1d6, Instability 1d8).
+const ROLL_DICE_VIS = `equalText(sameRow("effect_kind",''), "roll_dice")`;
+// prompt_var is shared by prompt_number (amount), prompt_element (element), and
+// roll_dice (rolled total).
+const PROMPT_VAR_VIS = `or(equalText(sameRow("effect_kind",''), "prompt_number"), equalText(sameRow("effect_kind",''), "prompt_element"), equalText(sameRow("effect_kind",''), "roll_dice"))`;
 // confirm — N-button decision dialog (gate or branch).
 const CONFIRM_VIS = `equalText(sameRow("effect_kind",''), "confirm")`;
 // Shared free-action GRANT fields (bonuses / cost) — used by BOTH the legacy
@@ -314,6 +319,13 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   textCol("prompt_max_ref", "Prompt Max Ref", { tooltip: "prompt_number: target ref whose actor the min/max/default formulas read (e.g. \"tether_giver\" so max = the giver's Burn). Blank = the caster.", vis: PROMPT_NUMBER_VIS }),
   textCol("prompt_default", "Prompt Default", { tooltip: "prompt_number: the input's starting value (number or formula). Blank = max.", vis: PROMPT_NUMBER_VIS }),
   textCol("prompt_step", "Prompt Step", { tooltip: "prompt_number: increment between selectable options (number or formula). Default 1. e.g. Min 10 + Step 10 → the picker offers 10, 20, 30 … up to Prompt Max.", vis: PROMPT_NUMBER_VIS }),
+
+  // roll_dice config — auto-roll NdX into VAR_<prompt_var> (rolled through the
+  // shared ONI.Dice.roll primitive). Fatigue = roll_dice 1d6 → adjust_charges.
+  textCol("dice_count", "Dice Count", { tooltip: "roll_dice: number of dice to roll (number or formula). Default 1.", vis: ROLL_DICE_VIS }),
+  textCol("dice_faces", "Dice Faces", { tooltip: "roll_dice: die size — 6 → d6, 8 → d8 (number or formula). Default 6. The summed total is stored under Prompt Var, read later as VAR_<NAME>.", vis: ROLL_DICE_VIS }),
+  checkboxCol("roll_interactive", "Roll: Interactive", { tooltip: "roll_dice: when ON, the roll is routed to the reactor's OWNER as a Request Check-style click-to-roll panel (player manually rolls). OFF (default) = silent auto-roll. Falls back to auto in headless / harness contexts.", vis: ROLL_DICE_VIS }),
+  textCol("roll_label", "Roll: Label", { tooltip: "roll_dice (interactive): caption shown on the cost-roll panel (e.g. \"Bodyguard Fatigue\"). Blank = the skill name.", vis: ROLL_DICE_VIS }),
 
   // confirm — N-button decision dialog. GATE mode (no Button Refs) = OK/Cancel;
   // BRANCH mode (Button Refs set) = one button per ref + Cancel (branch buttons

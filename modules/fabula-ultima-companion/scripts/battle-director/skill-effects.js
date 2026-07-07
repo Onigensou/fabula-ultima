@@ -22,7 +22,7 @@ import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestorePar
 import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
-import { findAndConsume, findOnActor as findChargeAEsOnActor } from "./skill-charges.js";
+import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { readPropNum, resolveAffinity } from "./snapshot.js";
 import { computeIncomingDamage } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
@@ -175,6 +175,17 @@ export async function sweepTransientAEsAtSceneEnd() {
 //     const ae = actor.effects?.get?.(id);
 //     if (ae) await ae.delete();
 //   }
+// Injectable decision hook for "ask"-mode incoming damage reductions in
+// resolveDamageReactions. Live play leaves this null → a GM-side confirm dialog.
+// The harness (and a future owner-routing layer) set it to drive the yes/no
+// without UI. Signature: async ({ target, ae, row, effectRow, damage, curHp })
+// => boolean. Set it via the SAME (non-cache-busted) module import the engine
+// uses, or the singleton won't match.
+let _damageReactionAskDecider = null;
+export function setDamageReactionAskDecider(fn) {
+  _damageReactionAskDecider = (typeof fn === "function") ? fn : null;
+}
+
 export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null } = {}) {
   const result = { newHp: Math.max(0, curHp - rawDamage), dealtDamage: Math.max(0, rawDamage), consumedAeIds: [], fired: [], followUp: [] };
   if (!target || rawDamage <= 0) return result;
@@ -213,6 +224,14 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
       const src = tRow.reaction_source ?? "self";
       if (src !== "self" && src !== "all" && src !== "") continue;
 
+      // Firing mode. Blank / force / on → AUTO-apply (Mercy, Beyond, Ninja Log —
+      // engine-mandatory or always-on reducers; unchanged). "off" → skip. "ask"
+      // → the reduction is the defender's CHOICE (gated below, just before it
+      // applies) so a "you MAY halve it" reaction (Stubborn Scion) doesn't fire —
+      // and doesn't pay its cost — unless the player opts in.
+      const dmgReactMode = String(tRow.reaction_passive_mode ?? "").trim().toLowerCase();
+      if (dmgReactMode === "off") continue;
+
       // Optional condition_formula gate, evaluated against the victim. Lets a
       // once-per-conflict reducer (Ninja Log) refuse to re-fire while its
       // wearer-side spent-marker is up ("HAS_STATUS_NINJA_LOG_SPENT == 0").
@@ -249,6 +268,40 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
       if (String(effRow.effect_kind ?? "").toLowerCase() !== "adjust_damage") continue;
       const { op, amountFormula, stage } = readAdjustRow(effRow);
       if (stage !== "incoming" || !DAMAGE_OPS.has(op)) continue;
+
+      // "ask" mode: the defender opts in BEFORE the hit lands (true optional
+      // pre-mitigation). Decline → the whole row is skipped (no reduction, no
+      // follow-up cost). The injected decider drives the harness / a future
+      // owner-route; otherwise a GM-side confirm. Headless with no decider =
+      // decline (safe default for an OPTIONAL reaction).
+      if (dmgReactMode === "ask") {
+        let accept = false;
+        try {
+          if (_damageReactionAskDecider) {
+            accept = !!(await _damageReactionAskDecider({ target, ae, row: tRow, effectRow: effRow, damage: dmg, curHp }));
+          } else if (typeof Dialog !== "undefined" && typeof document !== "undefined") {
+            accept = await new Promise((resolve) => {
+              new Dialog({
+                title: ae.name || "Reaction",
+                content: `<p><b>${target.name}</b> is about to take <b>${dmg}</b> damage.</p><p>Use <b>${ae.name}</b>?</p>`,
+                buttons: {
+                  yes: { label: "Yes", callback: () => resolve(true) },
+                  no:  { label: "No",  callback: () => resolve(false) },
+                },
+                default: "no",
+                close: () => resolve(false),
+              }).render(true);
+            });
+          }
+        } catch (e) {
+          warn(`resolveDamageReactions: ask-mode prompt threw on "${ae.name}"`, e);
+          accept = false;
+        }
+        if (!accept) {
+          log(`damage-reaction: ${target.name} declined "${ae.name}" (ask mode)`);
+          continue;
+        }
+      }
 
       let amount = 0;
       try {
@@ -2616,10 +2669,21 @@ async function applyAdjustChargesEffect(row, ctx) {
     let next = Math.max(0, Math.floor(applyDamageOp(current, op, amount)));
     if (capN != null) next = Math.min(next, capN);
     try {
-      if (next <= 0) {
+      // A "persistent counter" AE (a clock / points pool — Grave, Adoration,
+      // Fatigue, Instability — marked lifetimeMode "persistent_counter") treats 0
+      // as a valid resting state and is CLAMPED to 0 instead of deleted, matching
+      // skill-charges consume()/set(). Ordinary charge-AEs (gates / stacks) still
+      // delete at 0 so the next refresh re-grants a fresh one.
+      const primary = matches[0];
+      const keepPool = matches.some((e) => isPersistentCounter(e));
+      if (next <= 0 && !keepPool) {
         await actor.deleteEmbeddedDocuments("ActiveEffect", matches.map((e) => e.id).filter(Boolean));
       } else {
-        await matches[0].update({ [`flags.${FLAG_NS}.charges`]: next });
+        const upd = { [`flags.${FLAG_NS}.charges`]: Math.max(0, next) };
+        // Keep the visible statuscounter badge in sync with the pool (author
+        // opted in via statuscounter.visible === true; hidden charge-AEs untouched).
+        if (primary.flags?.statuscounter?.visible === true) upd["flags.statuscounter.value"] = Math.max(0, next);
+        await primary.update(upd);
         if (matches.length > 1) {
           await actor.deleteEmbeddedDocuments("ActiveEffect", matches.slice(1).map((e) => e.id).filter(Boolean));
         }
@@ -2729,6 +2793,101 @@ async function applyPromptNumberEffect(row, ctx) {
   ctx.payload._chainVars[varName] = value;
   log(`skill-effects.prompt_number: ${varName} = ${value} (range ${minV}..${maxOption} step ${stepV})`);
   return { ok: true, kind: "prompt_number", value };
+}
+
+// ── roll_dice ──────────────────────────────────────────────────────────────
+//
+// Roll <dice_count> dice of size <dice_faces> and stash the summed total as a
+// chain-local variable under `prompt_var`, read later via the VAR_<NAME> formula
+// identifier — the auto-rolling counterpart to prompt_number (no dialog). Rolls
+// through the shared ONI.Dice.roll primitive (check-requester/cr-api.js) so
+// every random roll in the system goes through ONE code path; falls back to a
+// local Roll if the Check Requester base hasn't installed yet.
+//
+// Fields:
+//   dice_count  — number of dice (number or formula). Default 1.
+//   dice_faces  — die size, e.g. 6 → d6 (number or formula). Default 6.
+//   prompt_var  — variable name to store the total under (shared with prompt_*).
+//
+// Idempotent: a value already captured under the same var in this payload is
+// reused (COMPUTE→RESOLVE replays don't re-roll). Harness: inject via
+// ctx.harnessNumbers[prompt_var] to force a deterministic total.
+async function applyRollDiceEffect(row, ctx) {
+  const varName = String(row.prompt_var ?? "").trim().toLowerCase();
+  if (!varName) {
+    warn(`skill-effects.roll_dice: missing prompt_var on "${row.effect_label}"`);
+    return { ok: false, kind: "roll_dice", reason: "no-var" };
+  }
+  if (!ctx.payload) ctx.payload = {};
+  if (!ctx.payload._chainVars) ctx.payload._chainVars = {};
+  const already = ctx.payload._chainVars[varName];
+  if (already != null && Number.isFinite(Number(already))) {
+    log(`skill-effects.roll_dice: ${varName} already captured = ${already}; skipping roll`);
+    return { ok: true, kind: "roll_dice", value: Number(already) };
+  }
+  const injected = ctx?.harnessNumbers?.[varName];
+  if (injected != null && Number.isFinite(Number(injected))) {
+    const v = Math.floor(Number(injected));
+    ctx.payload._chainVars[varName] = v;
+    log(`skill-effects.roll_dice: ${varName} = ${v} (harness-injected)`);
+    return { ok: true, kind: "roll_dice", value: v };
+  }
+  const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+  const resolver = buildSkillResolver({ actor: ctx.reactorActor ?? null, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+  const count = Math.max(1, Math.min(100, Math.floor(Number(evaluateFormula(String(row.dice_count ?? "1"), resolver, 1)) || 1)));
+  const faces = Math.max(1, Math.min(1000, Math.floor(Number(evaluateFormula(String(row.dice_faces ?? "6"), resolver, 6)) || 6)));
+
+  // Interactive mode — route the roll to the reactor's OWNER via the Check
+  // Requester's cost-roll UI (player clicks to roll, Request Check-style). Only
+  // in live play on the GM client with a DOM; the harness (harnessNumbers set)
+  // and headless paths fall through to the silent auto-roll below.
+  const interactive = row.roll_interactive === true || String(row.roll_interactive ?? "").trim().toLowerCase() === "true";
+  const canInteractive = interactive
+    && ctx.harnessNumbers == null
+    && !globalThis.__FU_SUPPRESS_INTERACTIVE_ROLL
+    && typeof document !== "undefined"
+    && !!globalThis.game?.user?.isGM
+    && typeof globalThis.ONI?.CheckRequester?.rollCost === "function";
+  if (canInteractive) {
+    const actorUuid = ctx.reactorActor?.uuid ?? null;
+    if (actorUuid) {
+      try {
+        const r = await globalThis.ONI.CheckRequester.rollCost({
+          actorUuid, faces, count,
+          label: String(row.roll_label ?? "").trim() || (ctx.skill?.name ?? "Cost"),
+          title: ctx.skill?.name ?? "Cost Roll",
+        });
+        const t = Math.floor(Number(r?.total) || 0);
+        ctx.payload._chainVars[varName] = t;
+        log(`skill-effects.roll_dice: ${varName} = ${t} (interactive ${count}d${faces})`);
+        return { ok: true, kind: "roll_dice", value: t, rolls: Array.isArray(r?.rolls) ? r.rolls : [] };
+      } catch (e) {
+        warn(`skill-effects.roll_dice: interactive roll failed — falling back to auto`, e);
+      }
+    }
+  }
+
+  let total = 0;
+  let rolls = [];
+  try {
+    const roller = globalThis.ONI?.Dice?.roll;
+    if (typeof roller === "function") {
+      const r = await roller(count, faces);
+      total = Math.floor(Number(r?.total) || 0);
+      rolls = Array.isArray(r?.rolls) ? r.rolls : [];
+    } else {
+      const roll = new Roll(`${count}d${faces}`);
+      await roll.evaluate();
+      total = Math.floor(Number(roll.total) || 0);
+      rolls = (roll.dice?.[0]?.results ?? []).map((x) => Number(x.result) || 0);
+    }
+  } catch (e) {
+    warn(`skill-effects.roll_dice: roll failed for "${row.effect_label}"`, e);
+    return { ok: false, kind: "roll_dice", reason: "roll-failed" };
+  }
+  ctx.payload._chainVars[varName] = total;
+  log(`skill-effects.roll_dice: ${varName} = ${total} (${count}d${faces} → [${rolls.join(", ")}])`);
+  return { ok: true, kind: "roll_dice", value: total, rolls };
 }
 
 // ── prompt_element ─────────────────────────────────────────────────────────
@@ -3328,6 +3487,7 @@ const EFFECT_KIND_DISPATCH = {
   trigger_status:      triggerStatusRun,     // UNIFIED (see triggerStatusRun) — fire a status's tick N×
   prompt_number:       applyPromptNumberEffect,
   prompt_element:      applyPromptElementEffect,
+  roll_dice:           applyRollDiceEffect,
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
   transfer_ae:         applyTransferAeEffect,
   summon:              applySummonEffect,
@@ -6292,6 +6452,59 @@ function resolveEnemyPlayerUserIds(casterActor, casterToken = null) {
   return Array.from(userIds);
 }
 
+// Route an open_action_menu prompt to the correct client and return the RAW pick.
+// The SINGLE place that owns pick routing (was duplicated across the single-pick
+// loop + the multi-select branch):
+//   1. menu_responder:"enemy" (opt-in via allowEnemyResponder) — broadcast to the
+//      VICTIM side; loudest wins; no enemy online/answers → GM-local fallback. On a
+//      win, ctx.remotePrompt is set so this action's FOLLOW-ON picks go to the winner.
+//   2. ctx.remotePrompt — the single reaction-owner (a player's own reaction).
+//   3. GM-local pickFromList (NPC casts, GM-owned reactions).
+// Returns whatever the picker resolves: single-select → the chosen option's `value`
+// (a number) or null; multi-select (listArgs.multiSelect) → an array of values or
+// null. Caller maps values back to its own option list. `row` supplies
+// menu_responder + effect_label (logging); the same `listArgs` renders identically
+// local or remote (remote-pick relays multiSelect/maxSelect).
+async function promptMenuList(listArgs, ctx, row, { allowEnemyResponder = false } = {}) {
+  const responder = String(row.menu_responder ?? "").trim().toLowerCase();
+  if (allowEnemyResponder && responder === "enemy" && !ctx?.remotePrompt) {
+    const director = ctx.director
+      ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
+      ?? null;
+    const channel = director?.intentChannel ?? null;
+    const enemyUserIds = resolveEnemyPlayerUserIds(ctx.reactorActor, ctx.reactorToken);
+    if (channel && enemyUserIds.length) {
+      const { remotePickAny, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+      log(`open_action_menu: routing "${row.effect_label}" to ${enemyUserIds.length} enemy player(s) — loudest wins`);
+      const res = await remotePickAny({
+        channel, targetUserIds: enemyUserIds, combatId: director?.combatId ?? null,
+        kind: REMOTE_PICK_KINDS.LIST, onTimeoutValue: null, spec: listArgs,
+      });
+      let picked = res?.value ?? null;
+      // Route this action's follow-on picks to the SAME player who answered.
+      if (picked != null && res?.winnerUserId) {
+        ctx.remotePrompt = { channel, targetUserId: res.winnerUserId, combatId: director?.combatId ?? null };
+      }
+      if (picked == null) {
+        log(`open_action_menu: no enemy answered "${row.effect_label}" — GM-local fallback`);
+        picked = await pickFromList(listArgs);
+      }
+      return picked;
+    }
+    // No online enemy player owns a target → GM picks on their behalf.
+    return await pickFromList(listArgs);
+  }
+  if (ctx?.remotePrompt?.channel && ctx.remotePrompt.targetUserId) {
+    const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+    return await remotePick({
+      channel: ctx.remotePrompt.channel, targetUserId: ctx.remotePrompt.targetUserId,
+      combatId: ctx.remotePrompt.combatId ?? null, kind: REMOTE_PICK_KINDS.LIST,
+      onTimeoutValue: null, spec: listArgs,
+    });
+  }
+  return await pickFromList(listArgs);
+}
+
 async function selectMenuPicks(row, ctx, options) {
   // Replay captured picks — the pre_activate window recorded these BEFORE the
   // card was built; RESOLVE replays them so the menu applies without re-
@@ -6320,6 +6533,55 @@ async function selectMenuPicks(row, ctx, options) {
     if (Number.isFinite(n) && n >= 1) pickCount = Math.floor(n);
   }
   pickCount = Math.max(1, Math.min(pickCount, options.length));
+
+  // ── Multi-pick → ONE multi-select picker (checkboxes), not N menus ────────
+  // When a menu asks for MORE THAN ONE option (Warning Shot + Perfect Aim →
+  // menu_pick_count "1 + HAS_SKILL_PERFECT_AIM" = 2; Meteor Shower = 2), present a
+  // single checkbox picker ("choose up to N" + Confirm) instead of N consecutive
+  // single-select menus. Only for genuinely INTERACTIVE picks — a queued
+  // harness/replay context, a passive auto-pick (skip_when_passive), or an
+  // enemy-responder broadcast still use the per-pick loop below. Routes to the
+  // reaction owner (ctx.remotePrompt) when set, else GM-local. Picks are distinct
+  // by construction (checkboxes); order is menu order. pickCount==1 is untouched,
+  // and the capture-mode preview goes through here too (RESOLVE replays the labels),
+  // so preview + resolve still pick identically.
+  const _hasPickQueue =
+    (Array.isArray(ctx?.harnessPicks) && ctx.harnessPicks.length > (ctx._harnessPicksCursor ?? 0)) ||
+    (Array.isArray(ctx?.menuPicks)   && ctx.menuPicks.length   > (ctx._harnessPicksCursor ?? 0));
+  const _passiveSkip = ctx.isPassive && row.skip_when_passive === true;
+  const _enemyResponder = String(row.menu_responder ?? "").trim().toLowerCase() === "enemy";
+  if (pickCount > 1 && !_hasPickQueue && !_passiveSkip && !_enemyResponder) {
+    const baseSubtitle = row.menu_subtitle ? interpolateMenuText(String(row.menu_subtitle), ctx) : null;
+    const listArgs = {
+      title: interpolateMenuText(String(row.menu_title ?? "Choose an option"), ctx),
+      subtitle: `${baseSubtitle ? baseSubtitle + " — " : ""}choose up to ${pickCount}`,
+      options: menuOptionsToRows(options),
+      multiSelect: true,
+      maxSelect: pickCount,
+      confirmLabel: "Confirm",
+      zIndex: 97,
+    };
+    // Enemy-responder is excluded above (_enemyResponder guard) — this menu is always
+    // the reactor's OWN pick → owner-remote or GM-local via the shared router.
+    const picked = await promptMenuList(listArgs, ctx, row, { allowEnemyResponder: false });
+    if (picked == null) return { chosenIndices: [], cancelled: true };
+    // multiSelect resolves to an array of chosen `value`s (= local option indices,
+    // since menuOptionsToRows sets value=i). Filter to enabled + distinct, cap at N.
+    const arr = Array.isArray(picked) ? picked : [picked];
+    const seen = new Set();
+    const chosen = [];
+    for (const v of arr) {
+      const i = Number(v);
+      if (!Number.isInteger(i) || i < 0 || i >= options.length) continue;
+      if (options[i].disabled || seen.has(i)) continue;
+      seen.add(i); chosen.push(i);
+      if (chosen.length >= pickCount) break;
+    }
+    // Confirming zero selections reads as "no effect chosen" → cancel (matches the
+    // per-pick loop's first-pick-cancel; for Warning Shot the damage-nullify step
+    // already ran earlier in the chain, exactly as before).
+    return { chosenIndices: chosen, cancelled: chosen.length === 0 };
+  }
 
   const chosenIndices = [];
   const remainingIdx = options.map((_, i) => i);
@@ -6365,66 +6627,15 @@ async function selectMenuPicks(row, ctx, options) {
         ? `${baseSubtitle ? baseSubtitle + " — " : ""}choose ${pickCount} (${pick + 1}/${pickCount})`
         : baseSubtitle;
       const remOptions = remainingIdx.map((i) => options[i]);
-      const listArgs = {
+      // Single-select pick over the REMAINING options, routed by the shared helper
+      // (enemy-responder → owner-remote → GM-local). Returns a value = index into
+      // remOptions, mapped back to the full list via remainingIdx below.
+      const pickedLocal = await promptMenuList({
         title: interpolateMenuText(String(row.menu_title ?? "Choose an option"), ctx),
         subtitle,
         options: menuOptionsToRows(remOptions),
         zIndex: 97,  // above the action card (95) during RESOLVE
-      };
-      // Pick routing, in priority order:
-      //   1. menu_responder:"enemy" — the VICTIM side chooses (Cruel Ultimatum).
-      //      Broadcast to every enemy player; the first to answer wins
-      //      ("loudest wins"). No enemy online / no answer → GM resolves locally
-      //      so the action never stalls.
-      //   2. ctx.remotePrompt — single reaction-owner routing (player's reaction).
-      //   3. Local — render on the GM (NPC casts, GM-owned reactions).
-      let pickedLocal;
-      const responder = String(row.menu_responder ?? "").trim().toLowerCase();
-      if (responder === "enemy" && !ctx?.remotePrompt) {
-        const director = ctx.director
-          ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
-          ?? null;
-        const channel = director?.intentChannel ?? null;
-        const enemyUserIds = resolveEnemyPlayerUserIds(ctx.reactorActor, ctx.reactorToken);
-        if (channel && enemyUserIds.length) {
-          const { remotePickAny, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
-          log(`open_action_menu: routing "${row.effect_label}" to ${enemyUserIds.length} enemy player(s) — loudest wins`);
-          const res = await remotePickAny({
-            channel,
-            targetUserIds: enemyUserIds,
-            combatId: director?.combatId ?? null,
-            kind: REMOTE_PICK_KINDS.LIST,
-            onTimeoutValue: null,
-            spec: listArgs,
-          });
-          pickedLocal = res?.value ?? null;
-          // Route this action's FOLLOW-ON picks (e.g. branch A's "which enemy
-          // takes 300") to the SAME player who answered — set ctx.remotePrompt so
-          // the dispatched option's targeting/menu rows render on their client.
-          if (pickedLocal != null && res?.winnerUserId) {
-            ctx.remotePrompt = { channel, targetUserId: res.winnerUserId, combatId: director?.combatId ?? null };
-          }
-          if (pickedLocal == null) {
-            log(`open_action_menu: no enemy answered "${row.effect_label}" — GM-local fallback`);
-            pickedLocal = await pickFromList(listArgs);
-          }
-        } else {
-          // No online enemy player owns a target → GM picks on their behalf.
-          pickedLocal = await pickFromList(listArgs);
-        }
-      } else if (ctx?.remotePrompt?.channel && ctx.remotePrompt.targetUserId) {
-        const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
-        pickedLocal = await remotePick({
-          channel: ctx.remotePrompt.channel,
-          targetUserId: ctx.remotePrompt.targetUserId,
-          combatId: ctx.remotePrompt.combatId ?? null,
-          kind: REMOTE_PICK_KINDS.LIST,
-          onTimeoutValue: null,
-          spec: listArgs,
-        });
-      } else {
-        pickedLocal = await pickFromList(listArgs);
-      }
+      }, ctx, row, { allowEnemyResponder: true });
       if (pickedLocal == null) {
         if (pick === 0) return { chosenIndices: [], cancelled: true };
         // Capture mode (pre_activate wizard): a multi-pick menu steps BACK one
@@ -6546,6 +6757,7 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
   }
   const menuRows = [];
   const numberRows = [];   // prompt_number amount pickers reachable from candidate.ref
+  const rollRows = [];     // INTERACTIVE roll_dice cost rolls reachable from candidate.ref
   let damageNullified = false;   // chain zeroes outgoing damage (Warning Shot)
   const seen = new Set();
   (function walk(label) {
@@ -6560,6 +6772,8 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
       menuRows.push(r);
     } else if (kind === "prompt_number") {
       numberRows.push(r);
+    } else if (kind === "roll_dice" && (r.roll_interactive === true || String(r.roll_interactive ?? "").trim().toLowerCase() === "true")) {
+      rollRows.push(r);
     } else if (kind === "adjust_damage") {
       const op = String(r.damage_operation ?? "").trim().toLowerCase();
       const stage = String(r.damage_stage ?? "outgoing").trim().toLowerCase();
@@ -6585,6 +6799,19 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
     const picked = ctx.payload?._chainVars?.[vk];
     if (picked != null) numberChips.push({ kind: "keyword", keyword: "overcharge", label: `+${picked} MP → +${Math.floor(Number(picked) / 2)} damage` });
   }
+  // Run any INTERACTIVE roll_dice cost rolls at apply-click too — the player
+  // rolls when they COMMIT to the reaction (Request Check-style). The rolled
+  // total stashes onto ctx.payload._chainVars (VAR_<NAME>), is persisted to
+  // payloadAtFire below, and the RESOLVE chain's roll_dice short-circuits to
+  // that captured value (so the downstream adjust_charges runs NON-BLOCKING —
+  // firing the roll at RESOLVE stalled the chain, so the cost never landed).
+  const rollChips = [];
+  for (const rollRow of rollRows) {
+    await applyRollDiceEffect(rollRow, ctx);
+    const rk = String(rollRow.prompt_var ?? "").trim().toLowerCase();
+    const rolled = ctx.payload?._chainVars?.[rk];
+    if (rolled != null) rollChips.push({ kind: "keyword", keyword: "cost", label: `${String(rollRow.roll_label ?? "Cost").trim() || "Cost"}: ${rolled}` });
+  }
   // Persist captured chain-vars onto the candidate's payloadAtFire so the
   // RESOLVE-time cost/damage fold reads them (makeChainContext may hand us a
   // distinct payload object; payloadAtFire may also have been null).
@@ -6597,10 +6824,10 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
 
   // Nothing interactive to resolve — still report damageNullified so the card can
   // strike the damage panel for a no-menu "deal no damage" reaction.
-  if (!menuRows.length && !numberRows.length) return { ok: true, cancelled: false, hasMenu: false, picks: [], effects: [], damageNullified };
+  if (!menuRows.length && !numberRows.length && !rollRows.length) return { ok: true, cancelled: false, hasMenu: false, picks: [], effects: [], damageNullified };
 
   const chosenLabels = [];
-  const effects = [...numberChips];
+  const effects = [...numberChips, ...rollChips];
   for (const menuRow of menuRows) {
     const { options, optionRows } = buildMenuOptions(menuRow, ctx);
     if (!options.length) continue;
