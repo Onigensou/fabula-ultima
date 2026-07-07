@@ -219,6 +219,7 @@ return (async () => {
     "grant", "apply_ae", "consume_charge", "redirect_target", "chain",
     "add_damage", "modify_damage_taken", "open_action_menu",
     "consume_resource", "targeting", "remove_tagged_ae", "substitute_cost",
+    "adjust_charges", "adjust_damage", "roll_dice",
   ]);
   const KNOWN_SOURCE_VALUES = new Set(["self", "ally", "enemy", "neutral", "all", ""]);
   const KNOWN_RESOURCES = new Set(["hp", "mp", "ip", "zero_power", "zenit", "enmity"]);

@@ -280,11 +280,26 @@
   };
 
   // ── Dice & math ───────────────────────────────────────────────────────────
-  const rollDie = async (faces) => {
-    const f    = Math.max(4, Math.min(20, safeInt(faces, 8)));
-    const roll = new Roll(`1d${f}`);
+  // Generic dice roller — the shared primitive for "roll N dice of any size".
+  // Installed on the ONI global so BOTH the Check Requester (below) and the
+  // Battle Director effect engine (the `roll_dice` effect_kind in
+  // battle-director/skill-effects.js) roll through ONE code path. Returns every
+  // individual face plus the summed total.
+  ONI.Dice ??= {};
+  ONI.Dice.roll = async (count, faces) => {
+    const c = Math.max(1, Math.min(100, safeInt(count, 1)));
+    const f = Math.max(1, Math.min(1000, safeInt(faces, 6)));
+    const roll = new Roll(`${c}d${f}`);
     await roll.evaluate();
-    return safeInt(roll.total, 1);
+    const rolls = (roll.dice?.[0]?.results ?? []).map(r => safeInt(r.result, 1));
+    return { count: c, faces: f, rolls, total: safeInt(roll.total, c) };
+  };
+
+  // Attribute-check die: clamps to the d4–d20 band, then delegates the actual
+  // roll to the generic ONI.Dice.roll primitive above.
+  const rollDie = async (faces) => {
+    const f = Math.max(4, Math.min(20, safeInt(faces, 8)));
+    return (await ONI.Dice.roll(1, f)).total;
   };
 
   const computeCheck = (rollA, rollB, modParts, dl, singleDie = false) => {
@@ -1973,6 +1988,139 @@
   }
 
   // =========================================================================
+  // Interactive COST ROLL — self-contained single/N-die roll routed to an
+  // actor's OWNER (Fatigue / Instability-style reaction costs). Reuses the
+  // check-panel CSS + animateDie + ONI.Dice.roll, but is NOT an attribute
+  // check (no DL / pass-fail / Invokes). The GM rolls authoritatively; the
+  // owner clicks to reveal + animate; the value returns to the caller. Uses a
+  // "COSTROLL_" socket prefix so the CR_ check handler ignores these.
+  // =========================================================================
+  const COSTROLL_OPEN  = "COSTROLL_OPEN";
+  const COSTROLL_ROLL  = "COSTROLL_ROLL";
+  const COSTROLL_CLOSE = "COSTROLL_CLOSE";
+  const _costSessions = new Map(); // sessionId -> { resolve, value, actorUuid, timer }
+  let _costBackdrop = null;
+
+  function buildCostOverlayHtml(d) {
+    const isVideo = /\.(webm|mp4|ogg)(\?|$)/i.test(d.tokenImg ?? "");
+    const media = isVideo
+      ? `<video src="${esc(d.tokenImg)}" autoplay loop muted playsinline></video>`
+      : `<img src="${esc(d.tokenImg)}" alt="" onerror="this.src='icons/svg/mystery-man.svg'">`;
+    const dieLabel = `${d.count > 1 ? d.count : ""}d${d.faces}`;
+    return `
+      <div class="oni-cr-panel" data-crc="${d.sessionId}" style="width:200px">
+        <div class="oni-cr-title">${esc(d.title ?? "Cost Roll")}</div>
+        <div class="oni-cr-portrait">${media}</div>
+        <div class="oni-cr-actor-name" title="${esc(d.actorName)}">${esc(d.actorName)}</div>
+        ${d.label ? `<div class="oni-cr-mod-row"><div class="oni-cr-mod-entry">${esc(d.label)}</div></div>` : ""}
+        <div class="oni-cr-roll-row" data-zone="roll">
+          <button class="oni-cr-roll-btn" data-crc-roll="${d.sessionId}">🎲 Roll ${dieLabel}</button>
+        </div>
+        <div class="oni-cr-die-row" data-zone="dice" style="display:none">
+          <div class="oni-cr-die-chip" data-chip="A"><span class="oni-cr-die-num">—</span></div>
+        </div>
+        <div class="oni-cr-waiting" data-zone="waiting" style="display:none">Waiting for player…</div>
+      </div>`;
+  }
+
+  function closeCostOverlay() {
+    if (_costBackdrop) { try { _costBackdrop.remove(); } catch (_) {} _costBackdrop = null; }
+  }
+
+  // Owner reveal → tell the GM (or resolve locally if THIS client is the GM,
+  // since socket.emit does not loop back to the sender).
+  function finalizeCostRoll(sessionId) {
+    if (game.user?.isGM) {
+      const s = _costSessions.get(sessionId);
+      if (s) { if (s.timer) clearTimeout(s.timer); s.resolve(s.value); }
+    } else {
+      game.socket.emit(SOCKET_CH, { type: COSTROLL_ROLL, payload: { sessionId } });
+    }
+  }
+
+  function openCostOverlay(d) {
+    ensureStyles();
+    closeCostOverlay();
+    const bd = document.createElement("div");
+    bd.className = "oni-cr-backdrop";
+    // The cost roll fires DURING an action card's RESOLVE, and the action card
+    // sits at z-index 2147483646 (action-card.js). The shared .oni-cr-backdrop
+    // z-index (100010) would render this panel BEHIND the card — invisible +
+    // unclickable, so it would silently time out. Force it to the top.
+    bd.style.zIndex = "2147483647";
+    bd.dataset.crc = d.sessionId;
+    bd.innerHTML = buildCostOverlayHtml(d);
+    document.body.appendChild(bd);
+    _costBackdrop = bd;
+
+    const isOwner = canOwnerAct(d.actorUuid);
+    const btn = bd.querySelector(`[data-crc-roll="${CSS.escape(d.sessionId)}"]`);
+    const rollRow = bd.querySelector('[data-zone="roll"]');
+    const waiting = bd.querySelector('[data-zone="waiting"]');
+    if (!isOwner) {
+      if (rollRow) rollRow.style.display = "none";
+      if (waiting) waiting.style.display = "";
+      return;
+    }
+    if (!btn) return;
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      const panel = bd.querySelector(`[data-crc="${CSS.escape(d.sessionId)}"]`);
+      const dice = panel?.querySelector('[data-zone="dice"]');
+      if (rollRow) rollRow.style.display = "none";
+      if (dice) dice.style.display = "";
+      await animateDie(panel, "A", d.value, d.faces, { intense: false }).catch(() => {});
+      finalizeCostRoll(d.sessionId);
+    });
+  }
+
+  // Public: GM-only entry. Returns { total, rolls, count, faces }.
+  async function rollCost({ actorUuid, faces = 6, count = 1, label = "", title = "Cost Roll", timeoutMs = 90000 } = {}) {
+    if (!game.user?.isGM) throw new Error(`${TAG} rollCost must run on the GM client.`);
+    const actor = await resolveActor(actorUuid);
+    const rolled = await ONI.Dice.roll(count, faces);
+    if (!actor) return rolled;
+    const sessionId = foundry.utils.randomID();
+    const overlayData = {
+      sessionId, actorUuid, actorName: actor.name, tokenImg: getTokenImg(actor),
+      faces: rolled.faces, count: rolled.count, label, title, value: rolled.total,
+    };
+    let _resolve;
+    const done = new Promise(res => { _resolve = res; });
+    const timer = setTimeout(() => _resolve(rolled), Math.max(3000, safeInt(timeoutMs, 90000)));
+    _costSessions.set(sessionId, { resolve: _resolve, value: rolled, actorUuid, timer });
+
+    game.socket.emit(SOCKET_CH, { type: COSTROLL_OPEN, payload: overlayData });
+    openCostOverlay(overlayData);
+
+    const result = await done;
+    const s = _costSessions.get(sessionId);
+    if (s?.timer) clearTimeout(s.timer);
+    _costSessions.delete(sessionId);
+    game.socket.emit(SOCKET_CH, { type: COSTROLL_CLOSE, payload: { sessionId } });
+    closeCostOverlay();
+    return result ?? rolled;
+  }
+
+  function setupCostSocket() {
+    if (window["__ONI_COSTROLL_SOCKET__"]) return;
+    window["__ONI_COSTROLL_SOCKET__"] = true;
+    game.socket.on(SOCKET_CH, async (msg) => {
+      if (!msg?.type?.startsWith?.("COSTROLL_")) return;
+      if (msg.type === COSTROLL_OPEN) {
+        if (game.user?.isGM) return; // GM already opened it locally in rollCost
+        openCostOverlay(msg.payload ?? {});
+      } else if (msg.type === COSTROLL_ROLL) {
+        if (!game.user?.isGM) return;
+        const s = _costSessions.get(msg.payload?.sessionId);
+        if (s) { if (s.timer) clearTimeout(s.timer); s.resolve(s.value); }
+      } else if (msg.type === COSTROLL_CLOSE) {
+        closeCostOverlay();
+      }
+    });
+  }
+
+  // =========================================================================
   // Public API
   // =========================================================================
   async function request(actorsInput, options = {}) {
@@ -2000,10 +2148,11 @@
   // =========================================================================
   // Boot
   // =========================================================================
-  ONI.CheckRequester = { request, requestOne };
+  ONI.CheckRequester = { request, requestOne, rollCost };
 
   Hooks.once("ready", () => {
     setupSocket();
+    setupCostSocket();
     console.debug(TAG, "Ready. ONI.CheckRequester available.");
   });
 })();

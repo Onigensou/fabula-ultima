@@ -492,6 +492,34 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // 0 outside that trigger (payload doesn't carry it), so a stray gate is safe.
       case "INCOMING_DAMAGE":
         return Math.max(0, Number(payload?.incomingDamage ?? 0) || 0);
+      // Native resource cost of the in-flight action, stamped on the pre-resolve
+      // `creature_performs_action` payload (ar.costSerialized at CONFIRM). Lets a
+      // performer-side cost reaction gate on "am I paying a cost, and how much?" —
+      // Fugitive Experiment ("suffer 1d8 Instability to ignore a ≤100 HP/MP/IP cost").
+      // 0 outside that trigger (payload doesn't carry it), so a stray gate is safe.
+      case "ACTION_COST_HP": return Math.max(0, Number(payload?.costHp ?? 0) || 0);
+      case "ACTION_COST_MP": return Math.max(0, Number(payload?.costMp ?? 0) || 0);
+      case "ACTION_COST_IP": return Math.max(0, Number(payload?.costIp ?? 0) || 0);
+      case "ACTION_COST_TOTAL":
+        return Math.max(0,
+          (Number(payload?.costHp ?? 0) || 0)
+          + (Number(payload?.costMp ?? 0) || 0)
+          + (Number(payload?.costIp ?? 0) || 0));
+      // EFFECTIVE cost = base folded with adjust_cost overrides (overcharge /
+      // discount / waive) via computeEffectiveCost — the amount actually PAID.
+      // Stamped on the payload (`effectiveCost*`) wherever the override is known
+      // (RESOLVE / card-mutation contexts); falls back to the base cost when no
+      // override has been computed yet (e.g. the card-build performer scan), so a
+      // gate reading this is always safe. Use these (not ACTION_COST_*) when a gate
+      // must respect Cataclysm-style overcharge.
+      case "ACTION_EFFECTIVE_COST_HP": return Math.max(0, Number(payload?.effectiveCostHp ?? payload?.costHp ?? 0) || 0);
+      case "ACTION_EFFECTIVE_COST_MP": return Math.max(0, Number(payload?.effectiveCostMp ?? payload?.costMp ?? 0) || 0);
+      case "ACTION_EFFECTIVE_COST_IP": return Math.max(0, Number(payload?.effectiveCostIp ?? payload?.costIp ?? 0) || 0);
+      case "ACTION_EFFECTIVE_COST_TOTAL":
+        return Math.max(0,
+          (Number(payload?.effectiveCostHp ?? payload?.costHp ?? 0) || 0)
+          + (Number(payload?.effectiveCostMp ?? payload?.costMp ?? 0) || 0)
+          + (Number(payload?.effectiveCostIp ?? payload?.costIp ?? 0) || 0));
       case "CUR_HP": return readProp(actor, "current_hp");
       case "MAX_HP": return readProp(actor, "max_hp");
       case "CUR_MP": return readProp(actor, "current_mp");

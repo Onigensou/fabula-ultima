@@ -3795,8 +3795,14 @@ function buildReactionPills(prePassives) {
           <span class="fud-bf-reaction-status">Active</span>
         </div>`;
     }
+    // Only THIRD-PARTY ask pills (reactor ≠ action-taker: a monster/ally
+    // reacting) gate the action-taker's Confirm. The owner's OWN performer/self
+    // ask pills stay applicable but must NOT lock their Confirm — flagged here so
+    // the pending-counter paths (assemble/commit/cascade/resolve/restore) can
+    // count only the gating ones. See [[director-player-driven-input]].
+    const gatingAttr = isThirdParty ? ` data-fud-reaction-gating="1"` : "";
     return `
-      <div class="fud-bf-reaction-pill is-ask ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${ownerAttr} data-fud-reaction-pending="1"${tipAttrs}>
+      <div class="fud-bf-reaction-pill is-ask ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${ownerAttr}${gatingAttr} data-fud-reaction-pending="1"${tipAttrs}>
         ${iconHtml}
         ${nameBlock}
         <div class="fud-bf-reaction-actions">
@@ -4185,9 +4191,16 @@ function assembleActionCardRoot({ card, prePassives, rootId }) {
   const list = Array.isArray(prePassives) ? prePassives : [];
   const askPassives = list.filter((p) => p?.mode === "ask" && p?.available !== false);
   const reactionRowHtml = list.length ? buildReactionPillRow(list) : "";
+  // `initialPending` (ALL actionable ask pills) arms the GM's REACTION_CHOICE
+  // listener loop so the owner can apply their OWN reactions too — keep it total.
+  // The Confirm LOCK, however, only counts THIRD-PARTY ask pills (reactor is
+  // another creature): a monster/ally reaction blocks the owner's Confirm, but
+  // the owner's own reactions never do. Both must stay in sync with the
+  // per-pill data-fud-reaction-gating flag the counter paths read.
   const initialPending = askPassives.length;
+  const initialGating = askPassives.filter((p) => !!p?.reactorActorUuid).length;
   const innerHTML = `
-    <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${initialPending > 0 ? ` data-fud-reactions-pending="${initialPending}"` : ""}>
+    <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${initialGating > 0 ? ` data-fud-reactions-pending="${initialGating}"` : ""}>
       <div class="fud-bf-header">
         <div class="fud-bf-portrait-slot left">${card.portraits?.left ?? ""}</div>
         <div class="fud-bf-title-row">
@@ -4422,8 +4435,10 @@ export async function postActionCard({ director, kind, payload }) {
     }
   }
   // Assemble the card via the shared template (single source with the player-side
-  // mirror render). `initialPending` (count of actionable ask pills) gates Confirm
-  // / auto-resolve later in this function.
+  // mirror render). `initialPending` (count of ALL actionable ask pills) arms the
+  // REACTION_CHOICE listener loop below so the owner can apply their own reactions;
+  // the Confirm LOCK itself is driven by the third-party-only counter baked into
+  // the card's data-fud-reactions-pending attribute (see assembleActionCardRoot).
   const { root, initialPending } = assembleActionCardRoot({ card, prePassives, rootId: ROOT_ID });
   document.body.appendChild(root);
   requestAnimationFrame(() => root.classList.add("is-visible"));
@@ -4647,8 +4662,11 @@ export async function postActionCard({ director, kind, payload }) {
       if (actions) {
         actions.outerHTML = `<span class="fud-bf-reaction-status">${decision === "apply" ? "Applied" : "Skipped"}</span>`;
       }
+      // Only third-party (gating) pills move the Confirm-lock counter; the
+      // owner's own reactions never gated it, so resolving one leaves it as-is.
+      const gates = pillEl.dataset.fudReactionGating === "1";
       const current = Number(cardEl?.dataset?.fudReactionsPending ?? 0);
-      const next = Math.max(0, current - 1);
+      const next = gates ? Math.max(0, current - 1) : current;
       if (cardEl) {
         if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
         else delete cardEl.dataset.fudReactionsPending;
@@ -4697,14 +4715,17 @@ export async function postActionCard({ director, kind, payload }) {
       const pills = list ? Array.from(list.querySelectorAll(".fud-bf-reaction-pill")) : [];
       const fresh = pills.slice(-cands.length);
 
-      // Re-lock Confirm for each freshly-injected ACTIONABLE (ask) pill. A
-      // cascade / targeted-injection pill can appear AFTER the player already
-      // cleared the initial pending count (e.g. a redirect/shield brought a new
-      // creature in, exposing its "when targeted" reaction) — without bumping the
-      // card's data-fud-reactions-pending counter the Confirm button would stay
-      // clickable while the new reaction still awaits a decision. Mirrors
-      // initialPending (= count of ask pills); commitPillDecisionDom decrements it.
-      const freshPending = fresh.filter((el) => el?.dataset?.fudReactionPending === "1").length;
+      // Re-lock Confirm for each freshly-injected ACTIONABLE, THIRD-PARTY (ask)
+      // pill. A cascade / targeted-injection pill can appear AFTER the player
+      // already cleared the initial pending count (e.g. a redirect/shield brought
+      // a new creature in, exposing its "when targeted" reaction) — without
+      // bumping the card's data-fud-reactions-pending counter the Confirm button
+      // would stay clickable while the new reaction still awaits a decision.
+      // Mirrors initialGating (third-party ask pills only — the owner's own
+      // cascade reactions never gate); commitPillDecisionDom decrements it.
+      const freshPending = fresh.filter(
+        (el) => el?.dataset?.fudReactionPending === "1" && el?.dataset?.fudReactionGating === "1"
+      ).length;
       if (freshPending > 0 && card) {
         const current = Number(card.dataset.fudReactionsPending ?? 0);
         card.dataset.fudReactionsPending = String(current + freshPending);
@@ -6566,9 +6587,14 @@ function resolveReactionPillDom(pillEl, cardEl, decision, { pendingCount = null 
     actions.outerHTML = `<span class="fud-bf-reaction-status">${decision === "apply" ? "Applied" : "Skipped"}</span>`;
   }
   if (cardEl) {
+    // Explicit pendingCount (authoritative GM broadcast) wins verbatim. Otherwise
+    // (local optimistic skip) only a third-party gating pill moves the counter —
+    // the owner's own reactions never contributed to the Confirm lock.
+    const cur = Number(cardEl.dataset.fudReactionsPending ?? 0);
+    const gates = pillEl.dataset.fudReactionGating === "1";
     const next = pendingCount != null
       ? Math.max(0, Number(pendingCount))
-      : Math.max(0, Number(cardEl.dataset.fudReactionsPending ?? 0) - 1);
+      : (gates ? Math.max(0, cur - 1) : cur);
     if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
     else delete cardEl.dataset.fudReactionsPending;
   }
@@ -6595,7 +6621,9 @@ function restoreReactionPillButtons(pillEl, cardEl) {
       `<div class="fud-btn fud-btn-reaction fud-btn-reaction-skip" data-fud-reaction-action="skip" role="button" tabindex="0">Skip</div>` +
       `</div>`;
   }
-  if (cardEl) {
+  if (cardEl && pillEl.dataset.fudReactionGating === "1") {
+    // Symmetric with the optimistic-skip decrement: only third-party gating pills
+    // ever moved the Confirm-lock counter, so only they re-bump it on rollback.
     const cur = Number(cardEl.dataset.fudReactionsPending ?? 0);
     cardEl.dataset.fudReactionsPending = String(cur + 1);
   }

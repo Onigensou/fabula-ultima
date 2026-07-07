@@ -36,7 +36,7 @@ export function readCharges(effect) {
 // instant it empties. It opts out via the existing `lifetimeMode` field —
 // no new flag. Every other charge AE (once-per-X "ready" gates, active
 // cooldowns) still deletes at 0 so the next refresh re-grants a fresh one.
-function isPersistentCounter(effect) {
+export function isPersistentCounter(effect) {
   const f = effect?.flags?.[FLAG_NS] ?? {};
   const mode = f.lifetimeMode ?? f.directorAppliedBy?.lifetimeMode ?? "";
   return String(mode).toLowerCase() === "persistent_counter";

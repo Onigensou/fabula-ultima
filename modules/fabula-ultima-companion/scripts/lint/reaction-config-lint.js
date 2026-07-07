@@ -182,7 +182,7 @@
     "remove_tagged_ae", "transfer_ae", "substitute_cost", "summon", "destroy_summon",
     "set_resource", "roll_loot_table", "deal_damage", "equip_swap", "add_target",
     "encyclopedia_record", "notify", "confirm", "leave_combat", "negate_action",
-    "free_action", "adjust_charges", "prompt_number", "prompt_element", "save_check",
+    "free_action", "adjust_charges", "prompt_number", "prompt_element", "roll_dice", "save_check",
     "take_turn_next", "modify_turns", "create_bond", "change_damage_element",
     "apply_action_keyword", "check_die_swap",
     "adjust_damage", "adjust_accuracy", "adjust_defense", "adjust_grant", "adjust_cost",

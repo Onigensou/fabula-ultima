@@ -243,6 +243,44 @@ function serializeCostMap(costMap) {
   return out;
 }
 
+// ── Effective action cost — the SINGLE calc point ─────────────────────────
+// The one place a printed/base cost (`costSerialized`) combines with `adjust_cost`
+// overrides (`costOverride`) into the amount actually paid. The RESOLVE debit AND
+// every ACTION_EFFECTIVE_COST_* reader route through this, so they can never drift.
+//
+// FU's fixed operation order — and the reason the result is INDEPENDENT of the
+// order reactions were applied / clicked: accumulate every override raw, then
+// evaluate in canonical order — base + ALL additive deltas FIRST, then × ALL
+// multiplicative factors — then clamp ONCE at the end.
+//   ⚠ NEVER clamp per-application. A per-step clamp reintroduces order-dependence:
+//     base 10, overcharge +30, waive −MAX →
+//       waive-then-overcharge: max(0,10−MAX)=0 → +30 → 30   (overcharge survives!)
+//       accumulate-then-clamp: max(0, 10+30−MAX) = 0        (order-free, correct)
+//   ⚠ `waive` (Fugitive) is expressed as an additive delta ≥ the pool max, so the
+//     single 0-clamp zeroes the final cost regardless of any composed overcharge.
+//
+// Only resources present in `base` are adjusted — a reaction can raise/lower an
+// EXISTING cost, not conjure a cost on a resource the action doesn't charge (so a
+// waive's inert −MAX on an uncharged resource is a no-op). `override` shape:
+//   { <res>: <additiveSum>, _mult?: { <res>: <productFactor> }, _parts?: [...] }
+// `_mult` is reserved for future multiplicative cost ops; today cost is additive
+// only, so the multiplicative branch is a no-op and this is behaviour-identical to
+// the previous inline debit math.
+function computeEffectiveCost(base, override) {
+  const out = {};
+  const b = base || {};
+  const mult = override?._mult || null;
+  for (const [res, v0] of Object.entries(b)) {
+    let v = Number(v0) || 0;
+    if (override) v += Number(override[res]) || 0;         // additive FIRST (raw sum)
+    if (mult && Number.isFinite(Number(mult[res]))) {
+      v = Math.floor(v * Number(mult[res]));               // multiplicative SECOND (FU rounds down)
+    }
+    out[res] = Math.max(0, v);                             // clamp ONCE
+  }
+  return out;
+}
+
 // Resolve a Skill action. Pulled out as a top-level helper so the
 // Item action can fire a linked skill via the same path (D.5 closure).
 //
@@ -329,18 +367,12 @@ async function resolveAction(director, ar, opts = {}) {
 
   // 1. Debit cost (unless an outer flow paid out-of-band).
   if (!skipCost) {
-    const costMap = new Map(Object.entries(ar.costSerialized ?? {}));
-    // adjust_cost discount (Hypercognition) for NATIVE-cost spells (top-level
-    // `cost` prop → costSerialized). In-chain consume_resource costs are discounted
-    // in skill-effects.consumeResourceApply; this branch covers Detonate/Numen-style
-    // native MP. Signed per-resource delta, clamped >= 0.
-    const _co = ar.costOverride;
-    if (_co) {
-      for (const [res, delta] of Object.entries(_co)) {
-        if (res === "_parts" || !Number(delta) || !costMap.has(res)) continue;
-        costMap.set(res, Math.max(0, (Number(costMap.get(res)) || 0) + Number(delta)));
-      }
-    }
+    // Effective cost = base (costSerialized) folded with adjust_cost overrides
+    // (Hypercognition discount, Cataclysm overcharge, Fugitive waive) via the
+    // single canonical calc — additive-then-multiplicative, clamped once. Covers
+    // NATIVE-cost spells (top-level `cost` prop → costSerialized); in-chain
+    // consume_resource costs are discounted separately in skill-effects.
+    const costMap = new Map(Object.entries(computeEffectiveCost(ar.costSerialized, ar.costOverride)));
     // Item CREATION always costs at least 1 IP — no discount (adjust_cost / Maid Cap /
     // Deep Pockets) may drop a real IP cost below 1. Parity with buildReducedIpCost's
     // own floor, applied here so the RESOLVE debit honors it too.
@@ -861,6 +893,16 @@ async function resolveAction(director, ar, opts = {}) {
           const resolved = await fromUuid(cand.reactorActorUuid);
           if (resolved) fireActor = resolved;
           if (cand.payloadAtFire) firePayload = cand.payloadAtFire;
+        }
+        // Round-trip apply-click captures (roll_dice / prompt_number) for
+        // performer/self reactions too (no reactorActorUuid, so firePayload stayed
+        // payloadForPassives) — merge the captured chain-vars so a value the player
+        // rolled at apply-click (Fugitive's 1d8) isn't re-rolled at RESOLVE.
+        if (cand?.payloadAtFire?._chainVars && firePayload !== cand.payloadAtFire) {
+          firePayload = {
+            ...firePayload,
+            _chainVars: { ...(firePayload?._chainVars ?? {}), ...cand.payloadAtFire._chainVars },
+          };
         }
         await firePreAcceptedCandidate({
           director, casterActor: fireActor, candidate: cand, payload: firePayload,
@@ -4383,11 +4425,7 @@ const Confirm = {
           const actingSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
           performSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
         } catch (_) { /* noop */ }
-        const cands = await findPassiveCandidates({
-          casterActor: attackerActor,
-          trigger: "creature_performs_action",
-          includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
-          payload: {
+        const performPayload = {
             sourceActorUuid: ar.attackerActorRef,
             subjectActorUuid: ar.attackerActorRef,
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
@@ -4399,6 +4437,13 @@ const Confirm = {
             // can't distinguish spell-vs-skill (both stamp ar.kind "Skill"), so
             // ACTION_IS_SPELL reads this for the precise gate (Hypercognition).
             actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+            // Native resource cost of this action (ar.costSerialized, set at CONFIRM).
+            // A performer-side cost reaction gates on ACTION_COST_TOTAL / _HP/_MP/_IP
+            // (Fugitive Experiment: "suffer 1d8 Instability to ignore a ≤100 cost").
+            // Zero for free actions — so the gate stays dormant.
+            costHp: Number(ar.costSerialized?.hp ?? 0) || 0,
+            costMp: Number(ar.costSerialized?.mp ?? 0) || 0,
+            costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
             // Acting skill's tags (SKILL_HAS_TAG_<X> reads payload.skillTags).
             skillTags: performSkillTags,
             // Did this action roll a Check (accuracy/magic check)? An "offensive
@@ -4436,11 +4481,19 @@ const Confirm = {
             skillUuid: ar.skillUuid ?? null,
             // ATTACK_IS_RANGED gate reads this.
             weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
-          },
-          includeUnavailable: true,
+        };
+        const cands = await findPassiveCandidates({
+          casterActor: attackerActor,
+          trigger: "creature_performs_action",
+          includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
+          payload: performPayload,
         }) ?? [];
         for (const cand of cands) {
           if (cand.kind === "passive" && cand.mode === "off") continue;
+          // Capture-time payload → used at RESOLVE (round-trips apply-click rolls via
+          // _chainVars) AND at the card-mutation phase (adjust_cost reads ACTION_COST_*
+          // off it). Mirrors the creature_targeted_by_action scan's payloadAtFire.
+          cand.payloadAtFire = performPayload;
           if (cand.usesAddTarget) {
             // add_target makes sense on an Attack (Barrage) OR a single-target
             // HEALING item (Potion Rain — spread a created potion to allies).
