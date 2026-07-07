@@ -182,7 +182,7 @@ function pickBaseNPC() {
 
 // ─── BD class-skill discovery ───────────────────────────────────────────
 
-// Walk an item's Folder parents → ["Battle Director", "<Class>", "<Leaf>"].
+// Walk an item's Folder parents → e.g. ["💥 Skill", "Class Skill", "<Class>"].
 function folderPathNames(item) {
   const out = [];
   let f = item?.folder;
@@ -190,36 +190,35 @@ function folderPathNames(item) {
   return out;
 }
 
-const SKILL_LEAVES = new Set(["Skill", "Heroic Skill", "Spell"]);
-
-// All implemented BD skill Items for a class, scanned from the world Item
-// folders `Battle Director / <Class> / {Skill|Heroic Skill|Spell}`. ONLY the
-// BD-folder masters — never the CSB `💥 Skill` legacy copies — so a generated
-// actor always gets the canonical (current) version of each skill. Deduped by
-// name (a stray duplicate master in the BD tree would otherwise grant twice).
+// All implemented skill Items for a class, from the consolidated library folder
+// `💥 Skill / Class Skill / <Class>` (regular skills + spells sit flat in the
+// class folder; the old `Battle Director / <Class> / {leaf}` tree was retired).
+// Scoped to that folder so we get the canonical masters — never the CSB
+// embedded-template copies. Deduped by name (a stray duplicate master would
+// otherwise grant twice).
 function collectClassSkillItems(cls) {
   const matches = (game.items?.contents ?? []).filter((i) => {
     const p = folderPathNames(i);
-    return p[0] === "Battle Director" && p[1] === cls && SKILL_LEAVES.has(p[2]);
+    return p.length >= 2 && p[p.length - 2] === "Class Skill" && p[p.length - 1] === cls;
   });
   const byName = new Map();
   for (const i of matches) if (!byName.has(i.name)) byName.set(i.name, i);
   return [...byName.values()];
 }
 
-// Hybrid (cross-class) heroics live in the class-less hub folder
-// `Battle Director / Hybrid Heroic Skill` (e.g. Double Arrow = Commander/
-// Sharpshooter, Hoplite = Commander/Guardian). They carry NO class field —
-// only a `heroic_requirement` naming the eligible classes ("…among Commander
-// and Sharpshooter."). Match the generated actor's class against that text so
-// the dummy also gets the hybrid heroics it qualifies for. Deduped by name.
+// Heroic skills now live flat in `💥 Skill / Heroic Skill`, each tagged with a
+// `class` prop (its primary class) and a `heroic_requirement` naming the eligible
+// classes (e.g. Double Arrow → "…among Commander and Sharpshooter."). Grant a
+// generated actor the heroics of its OWN class plus any cross-class ("hybrid")
+// heroics it qualifies for by requirement text. (Was: the class-less
+// `Battle Director / Hybrid Heroic Skill` hub.) Deduped by name.
 function collectHybridHeroicsForClass(cls) {
   if (!cls) return [];
   const re = new RegExp(`\\b${String(cls).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
   const matches = (game.items?.contents ?? []).filter((i) => {
     const p = folderPathNames(i);
-    if (!(p[0] === "Battle Director" && p[1] === "Hybrid Heroic Skill")) return false;
-    return re.test(String(i.system?.props?.heroic_requirement ?? ""));
+    if (p[p.length - 1] !== "Heroic Skill") return false;
+    return i.system?.props?.class === cls || re.test(String(i.system?.props?.heroic_requirement ?? ""));
   });
   const byName = new Map();
   for (const i of matches) if (!byName.has(i.name)) byName.set(i.name, i);
@@ -310,14 +309,14 @@ function collectBasicEquipment() {
   });
 }
 
-// Classes that actually have implemented BD skill Items (excludes the
-// class-less "Hybrid Heroic Skill" hub).
+// Classes that actually have implemented skill Items — a folder under
+// `💥 Skill / Class Skill / <Class>` holding at least one skill.
 function implementedClasses() {
   const set = new Set();
   for (const i of (game.items?.contents ?? [])) {
     const p = folderPathNames(i);
-    if (p[0] === "Battle Director" && p[1] && p[1] !== "Hybrid Heroic Skill" && SKILL_LEAVES.has(p[2])) {
-      set.add(p[1]);
+    if (p.length >= 2 && p[p.length - 2] === "Class Skill" && p[p.length - 1]) {
+      set.add(p[p.length - 1]);
     }
   }
   return [...set].sort();
@@ -555,7 +554,12 @@ function addableItems() {
   const out = [];
   for (const i of (game.items?.contents ?? [])) {
     const p = folderPathNames(i);
-    if (p[0] === "Battle Director" && SKILL_LEAVES.has(p[p.length - 1])) out.push({ value: i.id, label: `🎓 ${p[1] ?? "?"} · ${i.name}`, type: "skill" });
+    const isClassSkill = p.length >= 2 && p[p.length - 2] === "Class Skill";
+    const isHeroic = p[p.length - 1] === "Heroic Skill";
+    if (isClassSkill || isHeroic) {
+      const cls = isClassSkill ? p[p.length - 1] : (i.system?.props?.class ?? "Heroic");
+      out.push({ value: i.id, label: `🎓 ${cls} · ${i.name}`, type: "skill" });
+    }
     else if (p.includes("Basic Weapon")) out.push({ value: i.id, label: `⚔️ ${i.name}`, type: "weapon" });
     else if (p.includes("Basic Shield")) out.push({ value: i.id, label: `🛡️ ${i.name}`, type: "shield" });
     else if (i.system?.props?.item_type === "consumable" && p.some((s) => /consumable/i.test(s))) out.push({ value: i.id, label: `⚗️ ${i.name}`, type: "consumable" });

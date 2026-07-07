@@ -1613,3 +1613,31 @@ export function readLiveResources(actor) {
     return null;
   }
 }
+
+// Capture a lightweight, serializable snapshot of a creature's reaction-relevant
+// state — its active statuses/AEs (name + charges) — BEFORE it can leave battle.
+// Threaded onto a queued post-resolve trigger's payload (as `subjectSnapshot`) so
+// TARGET_* formula reads still resolve after a lethal KO deletes the token (e.g.
+// Chomp stealing a slain target's Burn: the enemy is removed on schedule, then
+// the post-resolve steal reads the burn count from here). GENERAL, not
+// status-specific — it records every non-disabled AE, so any
+// TARGET_AE_CHARGES_* / TARGET_AE_COUNT_* read (Burn, Poison, Grappled, …)
+// survives the subject's removal. Extend the shape with resources/attributes as
+// more TARGET_* identifiers need post-removal reads.
+export function captureSubjectSnapshot(actor) {
+  if (!actor) return null;
+  try {
+    const effects = actor.effects?.contents ?? Array.from(actor.effects ?? []);
+    return {
+      effects: effects
+        .filter((e) => !e.disabled)
+        .map((e) => ({
+          name: String(e?.name ?? "").trim(),
+          charges: Number(e?.flags?.[FLAG_NS]?.charges ?? 0) || 0,
+        })),
+    };
+  } catch (e) {
+    warn("captureSubjectSnapshot failed", e);
+    return null;
+  }
+}

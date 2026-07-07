@@ -12,7 +12,7 @@ import { log, warn, err } from "./logger.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, resolvePrimaryAttackWeapon } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, resolvePrimaryAttackWeapon, captureSubjectSnapshot } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -583,6 +583,12 @@ async function resolveAction(director, ar, opts = {}) {
   // spillover deals the dealt amount to other enemies). For a single-target
   // skill this is exactly the one hit's value. Loss only (heals don't count).
   let totalDamageDealt = 0;
+  // Pre-damage per-target status snapshots (keyed by tokenUuid), captured in the
+  // damage loop BEFORE the HP write so the queued post-resolve
+  // creature_deals_damage reaction can read a slain target's statuses. `hits`/`r`
+  // are deep-frozen (freezeActionResult), so this MUST be a side Map — never a
+  // property assigned onto `r`.
+  const _subjectSnapshots = new Map();
   if (isDamagingAction && hits.length) {
     // Multi-pass label (Attack two-weapon / virtual): "(pass 2/2)".
     const passLabel = (ar.totalPasses ?? 1) > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
@@ -618,6 +624,14 @@ async function resolveAction(director, ar, opts = {}) {
       try {
         const targetActor = await fromUuid(r.actorUuid).catch(() => null);
         if (!targetActor) { warn("Skill resolve: target actor not found", r.actorUuid); continue; }
+
+        // Snapshot the target's status/AE state NOW — before applyDamageToTarget
+        // writes HP and a lethal hit removes the token — so the queued
+        // post-resolve `creature_deals_damage` reaction can still read it after
+        // the enemy is gone (e.g. Chomp stealing a slain target's Burn). Keyed by
+        // tokenUuid in the side Map above because `r` is deep-frozen. Read into
+        // the trigger payload below. See captureSubjectSnapshot in snapshot.js.
+        _subjectSnapshots.set(r.tokenUuid, captureSubjectSnapshot(targetActor));
 
         // Vismagus self-heal suppression — if the caster paid HP for the
         // spell via Vismagus, they do NOT recover HP from this spell
@@ -905,6 +919,10 @@ async function resolveAction(director, ar, opts = {}) {
             hitTargetTokenUuids: struckTokenUuids,
             subjectTokenUuid: r.tokenUuid,
             subjectActorUuid: r.actorUuid,
+            // Pre-damage status/AE snapshot of THIS target, captured before the
+            // HP write. Lets TARGET_AE_* reads in this post-resolve reaction
+            // resolve even when a lethal hit already removed the target's token.
+            subjectSnapshot: _subjectSnapshots.get(r.tokenUuid) ?? null,
             actionIntent: ar.actionIntent,
             // Acting skill/weapon name for `reaction_source_skill` self-scoping.
             sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,

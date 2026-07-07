@@ -1318,9 +1318,17 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .toLowerCase()
             .trim();
           const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
-          if (!subjectUuid) return 0;
-          const subject = _resolveActorByUuidSync(subjectUuid);
-          if (!subject) return 0;
+          const subject = subjectUuid ? _resolveActorByUuidSync(subjectUuid) : null;
+          if (!subject) {
+            // Subject removed (e.g. a lethal KO deleted the token). Fall back to
+            // the pre-damage snapshot on the trigger payload. See
+            // captureSubjectSnapshot in snapshot.js.
+            const snap = payload?.subjectSnapshot;
+            if (!snap?.effects) return 0;
+            return snap.effects
+              .filter((e) => String(e?.name ?? "").trim().toLowerCase() === needle)
+              .reduce((sum, e) => sum + (Number(e?.charges ?? 0) || 0), 0);
+          }
           const effects = subject?.effects?.contents ?? Array.from(subject?.effects ?? []);
           return effects
             .filter((e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle)
@@ -1341,9 +1349,14 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .toLowerCase()
             .trim();
           const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
-          if (!subjectUuid) return 0;
-          const subject = _resolveActorByUuidSync(subjectUuid);
-          if (!subject) return 0;
+          const subject = subjectUuid ? _resolveActorByUuidSync(subjectUuid) : null;
+          if (!subject) {
+            // Subject removed — fall back to the pre-damage payload snapshot
+            // (presence count). See captureSubjectSnapshot in snapshot.js.
+            const snap = payload?.subjectSnapshot;
+            if (!snap?.effects) return 0;
+            return snap.effects.filter((e) => String(e?.name ?? "").trim().toLowerCase() === needle).length;
+          }
           const effects = subject?.effects?.contents ?? Array.from(subject?.effects ?? []);
           return effects.filter(
             (e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle
