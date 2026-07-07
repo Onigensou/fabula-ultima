@@ -1,0 +1,44 @@
+{
+  "_id": "hCjFqMk8dQ0hLALZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1771010549704,
+    "duplicateSource": "RollTable.oIdlLAgL2CDmemCw",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "jXNQkkwQJtCLmqd8",
+  "formula": "1d1",
+  "img": "https://assets.forge-vtt.com/5faea46cf17c50c47382d836/Crysta%20dis.png",
+  "name": "Vastwind Field (Cave) - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "otezxIsSv58o21gr",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Crysta",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

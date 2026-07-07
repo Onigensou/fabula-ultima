@@ -1,0 +1,45 @@
+{
+  "_id": "S46aDzzbD7EtghoA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767841450923,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "zCj82a9RbmCZPvkD",
+  "formula": "1d1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+  "name": "Eisendrache Highroad - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "Gv2hW2kBXEAH8m9I",
+      "documentCollection": "Actor",
+      "documentId": "o1jFZwDZxSAFSSWA",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Bandit",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 300000
+}

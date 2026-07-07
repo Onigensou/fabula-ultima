@@ -1,0 +1,225 @@
+{
+  "_id": "fxXT0ZlnFlDYwfgv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769663495364,
+    "duplicateSource": "RollTable.oDiuDJRoayGJwr1L",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "dfZOIscssH4Tgqd3",
+  "formula": "1d13",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Vastwind Field - Consumable",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "0yt8SPA5rk3RIcxI",
+      "documentCollection": "Item",
+      "documentId": "535RjElIC0JJRvm6",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gathering_Tile.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Terrain Generator: Terrarium",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "E1PqZTLVNmKs9IhA",
+      "documentCollection": "Item",
+      "documentId": "zmWvwyaGbwhC8NZV",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Lipovitan-Z",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "E7oF2S28K3hFGbM2",
+      "documentCollection": "Item",
+      "documentId": "pcVQKM3teguaitRy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Coupon.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Hako Coupon",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "eJ9mRZ442iUOwCo7",
+      "documentCollection": "Item",
+      "documentId": "C1sbMzuHM6lA5u8q",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Elixir",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "FPbpQv6RUv45uqHj",
+      "documentCollection": "Item",
+      "documentId": "mw4wizzYTBtqsW8s",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Hi-Potion_Icon_HD.webp",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Poison",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Ga8RjJp3bqdUPEKf",
+      "documentCollection": "Item",
+      "documentId": "lBseodHWvi4UfGnw",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Apple.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Apple",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "guEKIXgXkUpoIsYI",
+      "documentCollection": "Item",
+      "documentId": "GSggw21CziniktM7",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Healing_Tile.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Terrain Generator: Saferoom",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "iFQhXRuIZ4VfrIPZ",
+      "documentCollection": "Item",
+      "documentId": "2flmzfFbo1y8MCq5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Pepetein",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "IYW1Wmeg2FVoONYV",
+      "documentCollection": "Item",
+      "documentId": "y61V2VLRAwlVDgcM",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Blue Bovine",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "mxqkniVjrnUhJ5xS",
+      "documentCollection": "Item",
+      "documentId": "ZO0vkyhHeR2pR4QH",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Annoyntment_Icon_HD.webp",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Tonic",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rEbA14YrLlULafd8",
+      "documentCollection": "Item",
+      "documentId": "kMbhsJ2cDIFndrKy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion4.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Mega-Elixir",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "wEsLHsDScIOyusCY",
+      "documentCollection": "Item",
+      "documentId": "LIkvHKcRlhLRuRyt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Remedy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Ythze39tl1GMHq82",
+      "documentCollection": "Item",
+      "documentId": "aITJntRz2m10Rgeo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Café au Lait",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 150000
+}

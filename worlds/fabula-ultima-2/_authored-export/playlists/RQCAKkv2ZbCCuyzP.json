@@ -1,0 +1,223 @@
+{
+  "_id": "RQCAKkv2ZbCCuyzP",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1734574487261,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "channel": "music",
+  "description": "",
+  "fade": null,
+  "flags": {
+    "monks-sound-enhancements": {
+      "hide-playlist": false
+    }
+  },
+  "folder": "sK5ygcug2LQ6JXfi",
+  "mode": 0,
+  "name": "Ambience",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "seed": 62,
+  "sort": 100000,
+  "sorting": "a",
+  "sounds": [
+    {
+      "_id": "7KNWRkZSiyEIKhtm",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "City",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/City.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.03
+    },
+    {
+      "_id": "C0hI2I09YgRrsVvO",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Night",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Night.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "dNeghiupfRdIhGLw",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "River",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/River.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "e2A4e7o05Bxr3ECY",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Drips",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Drips.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "hbjMzPymYsALXbxj",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Se Softwind Loop",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/SE_Softwind_loop.wav",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.03
+    },
+    {
+      "_id": "Izs2ykIrWPWJZ1e1",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Storm2",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Storm2.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.35
+    },
+    {
+      "_id": "nST0sVMcSmUG01PB",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Wind",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Wind.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "PE9rJeX4Rb50R5z5",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Storm1",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Storm1.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.35
+    },
+    {
+      "_id": "PXkipuLhR9rWhX1M",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Se Hardwind Long",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/SE_Hardwind_long.wav",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.35
+    },
+    {
+      "_id": "vAyRzvVeR4BA1QTi",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Darkness",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Darkness.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "vYmy05nr5oJoINRD",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Sea",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Sea.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "YLiZ5o5WM4N45u6M",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Quake",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Quake.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    }
+  ]
+}

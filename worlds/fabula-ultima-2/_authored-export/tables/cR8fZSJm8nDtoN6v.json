@@ -1,0 +1,135 @@
+{
+  "_id": "cR8fZSJm8nDtoN6v",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1748648794844,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "1d7",
+  "img": "icons/svg/d20-grey.svg",
+  "name": "Bloody Chivalry",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "bbKo9nKWFmT0xzDY",
+      "documentCollection": "Item",
+      "documentId": "XxEaCUNVxCoinBLw",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Blood%20Helm.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Blood Helm",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "CBzEhIQTh0fGapMl",
+      "documentCollection": "Item",
+      "documentId": "GNJQXuz1eU0rGePN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Pince-nez.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Pince-nez",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Ci7YXXquuDa4WRJt",
+      "documentCollection": "Item",
+      "documentId": "zFmDu6fZmQLx5oQC",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/suit.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Butler Uniform",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "MvXZBIdt8JtqeLoC",
+      "documentCollection": "Item",
+      "documentId": "cxdX5YSm5TvPFlkP",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/DALL%C2%B7E%202024-11-04%2018.26.05%20-%20Create%20an%20anime-style%2C%20cel-shaded%20icon%20of%20a%20Bloodied%20Red%20Shield%20on%20a%20white%20background.%20The%20shield%20should%20have%20a%20bold%2C%20slightly%20menacing%20design%20with%20a%20.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Blood Shield",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "NU0ZiYjk8LIK3ogT",
+      "documentCollection": "Item",
+      "documentId": "dMc6zPtiuBgAjvTA",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Blood%20Mail.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Blood Mail",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PMBjcrGXdpYCaI6L",
+      "documentCollection": "Item",
+      "documentId": "qkf352ZJd1Xlj1XY",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/hand.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Butler Gloves",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uPtE6WmuNdOZYAKQ",
+      "documentCollection": "Item",
+      "documentId": "kALWkUzVhaUPCQuG",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Blood%20Shield.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Blood Sword",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

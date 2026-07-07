@@ -1,0 +1,63 @@
+{
+  "_id": "G4diQE48Ii39D3xF",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1748006067054,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "channel": "music",
+  "description": "",
+  "fade": null,
+  "flags": {
+    "monks-sound-enhancements": {
+      "hide-playlist": false
+    }
+  },
+  "folder": "otziXYde7WVivcBZ",
+  "mode": 0,
+  "name": "PC ulti",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "seed": 743,
+  "sort": 0,
+  "sorting": "a",
+  "sounds": [
+    {
+      "_id": "I9cGTGmy9m66LqIN",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Revealing",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Arknights%20EP%20-%20Revealing.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.52
+    },
+    {
+      "_id": "oJVFq64HybcO1DYr",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Somniomancer",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Somniomancer%20(Null%20Set).mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.52
+    }
+  ]
+}

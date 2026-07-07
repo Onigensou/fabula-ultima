@@ -130,6 +130,110 @@
       "type": "equippableItem"
     },
     {
+      "_id": "N198AFn9hW3pBzJa",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398701147,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "SjLPRxbCfnPBgxaX",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Double Arrow:</em> attack twice with a lone bow (two-weapon fighting; HR as 0).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "SjLPRxbCfnPBgxaX",
+              "originalParentId": "yBIG5gXrwvGr8kiN",
+              "originalUuid": "Item.yBIG5gXrwvGr8kiN.ActiveEffect.SjLPRxbCfnPBgxaX"
+            },
+            "fabula-ultima-companion": {
+              "twoWeaponGrant": {
+                "category": "bow",
+                "soloWeapon": true
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/weapons/ranged/bow-recurve-yellow.webp",
+          "name": "Double Arrow",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "icons/weapons/ranged/bow-recurve-yellow.webp",
+      "name": "Double Arrow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "cost": "",
+          "description": "<p>When you perform the <strong>Attack</strong> action with a ranged weapon that belongs to the <strong>bow</strong> Category, if you have <strong>no other weapon equipped</strong>, you may perform <strong>two separate attacks</strong> instead of one (against the same target or against different targets).</p><p>If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll (HR)</strong> of each Accuracy Check as 0 when determining damage dealt by it.</p><p><em>This Heroic Skill does not stack with a custom weapon's quick customization.</em></p>",
+          "heroic_requirement": "You must have mastered one or more Classes among Commander and Sharpshooter.",
+          "isCheck": false,
+          "isHeroic": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Double Arrow",
+          "on_activate_effect_ref": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "yBIG5gXrwvGr8kiN"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "qhNwFCjSSMd0UpUw",
       "_stats": {
         "compendiumSource": "Item.ckL5UZGRslPt1cZa",
@@ -187,62 +291,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "SK9Veg0YeAaUEdsy",
-      "_stats": {
-        "compendiumSource": "Item.g121BQspB6TKcCf9",
-        "coreVersion": "12.343",
-        "createdTime": 1756968808616,
-        "duplicateSource": "Item.VrcTeLvyBfnLtRZM",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/bite_mastery.png",
-      "name": "Double Arrow",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Sharpshooter",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When you perform the 【⚔️Attack】 action with a <strong>ranged</strong> weapon that belongs to the <strong>bow</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Twin Arrows with a quick bow doesn’t allow more than two attacks, in short).</p>\n",
-          "duration": "",
-          "heroic_requirement": "you must have mastered one or more Classes among Commander and Sharpshooter.",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": true,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Double Arrow",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "g121BQspB6TKcCf9"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "tPtT9d23WitBs5Qb",
       "_stats": {
         "compendiumSource": "Item.f7LAMimGFhqpUUWX",
@@ -296,134 +344,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "f7LAMimGFhqpUUWX"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "UVCa93DfH5xnQ8GO",
-      "_stats": {
-        "compendiumSource": "Item.P3iAf8dGAQLg8tLS",
-        "coreVersion": "12.343",
-        "createdTime": 1756968969188,
-        "duplicateSource": "Item.jYKFnEb09ArDvBjb",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "effects": [
-        {
-          "_id": "lS0LxHPikWAToPrQ",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1780593573468,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "bonus_defense",
-              "mode": 2,
-              "priority": 20,
-              "value": "aeSlotEquippedWhen(\"main:weapon&off:shield\", \"1\")"
-            },
-            {
-              "key": "weapon1_damage",
-              "mode": 2,
-              "priority": 20,
-              "value": "aeSlotEquippedWhen(\"main:weapon&off:shield\", \"5\")"
-            }
-          ],
-          "description": "<p><em>Hoplite:</em> Wielding weapon + shield: +1 Defense, +5 main-hand damage.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "lS0LxHPikWAToPrQ",
-              "originalParentId": "UVCa93DfH5xnQ8GO",
-              "originalUuid": "Actor.3KulR3t3i0HpcCid.Item.UVCa93DfH5xnQ8GO.ActiveEffect.lS0LxHPikWAToPrQ"
-            },
-            "fabula-ultima-companion": {
-              "category": "buff"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/chivalry.png",
-          "name": "Hoplite",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": [
-              "buff"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/chivalry.png",
-      "name": "Hoplite",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Guardian",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>As long as you have a <strong>weapon</strong> equipped in your <strong>main hand</strong> slot and a <strong>shield</strong> equipped in your <strong>off-hand</strong> slot, your attacks with that weapon deal <strong>5 extra damage</strong> and you gain a <strong>+1 bonus to Defense</strong>.</p><p><em>This Skill cannot be combined with custom weapons with the defence boost customization, nor with the Dual Shieldbearer Skill.</em></p>",
-          "duration": "",
-          "heroic_requirement": "You must have mastered one or more Classes among Commander and Guardian.",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": true,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Hoplite",
-          "on_activate_effect_ref": "",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "-",
-          "skill_target": "-",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "P3iAf8dGAQLg8tLS"
       },
       "type": "equippableItem"
     },
@@ -649,6 +569,122 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "7YFY3XwQ0HQSWvMr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ZEsMVS7q1VRhOi4v",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398701147,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "RtcA0tWMGekdpnmg",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeSlotEquippedWhen(\"main:weapon&off:shield\", \"1\")"
+            },
+            {
+              "key": "weapon1_damage",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeSlotEquippedWhen(\"main:weapon&off:shield\", \"5\")"
+            }
+          ],
+          "description": "<p><em>Hoplite:</em> Wielding weapon + shield: +1 Defense, +5 main-hand damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "RtcA0tWMGekdpnmg",
+              "originalParentId": "pvKt1FytqaqCkR0d",
+              "originalUuid": "Item.pvKt1FytqaqCkR0d.ActiveEffect.RtcA0tWMGekdpnmg"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/equipment/shield/heater-steel-gray.webp",
+          "name": "Hoplite",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "icons/equipment/shield/heater-steel-gray.webp",
+      "name": "Hoplite",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "cost": "",
+          "description": "<p>As long as you have a <strong>weapon</strong> equipped in your <strong>main hand</strong> slot and a <strong>shield</strong> equipped in your <strong>off-hand</strong> slot, your attacks with that weapon deal <strong>5 extra damage</strong> and you gain a <strong>+1 bonus to Defense</strong>.</p><p><em>This Skill cannot be combined with custom weapons with the defence boost customization, nor with the Dual Shieldbearer Skill.</em></p>",
+          "heroic_requirement": "You must have mastered one or more Classes among Commander and Guardian.",
+          "isCheck": false,
+          "isHeroic": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hoplite",
+          "on_activate_effect_ref": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "pvKt1FytqaqCkR0d"
       },
       "type": "equippableItem"
     }

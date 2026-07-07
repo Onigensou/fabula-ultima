@@ -1,0 +1,156 @@
+{
+  "_id": "kDjxoeSbJMMkqtFd",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774098036133,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "IxpkbdLoQodYFW6Y",
+  "formula": "1d9",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+  "name": "Bandits Hideout - Zenit",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "0kHCRHg3xHt3D4b5",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "250 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "B57MNlwVlLssi2Sj",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "10 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Kdvz7KsqwKSdfkqG",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "1000 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "NCgUtJSHFIXuTEYM",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "150 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "OXHfXAnFcfVMPixG",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "400 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "PXzSxDVzYqLd3eSD",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "1500 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "XDtqWeJdVezdCm0y",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "300 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "y8ckrG8qgIGJdyJK",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "800 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "YO5XMqyg8yNZ5KA2",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "500 zenit",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

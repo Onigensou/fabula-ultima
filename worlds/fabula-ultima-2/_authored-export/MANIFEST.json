@@ -117,12 +117,6 @@
         "parent": "yvRW0RqT5kwSxKFl"
       },
       {
-        "id": "nBgMJjj9e2MWTtA0",
-        "name": "Arcana",
-        "type": "Item",
-        "parent": "CnDaX71yy0qoKVQb"
-      },
-      {
         "id": "1FOcwV6lQYuv1PRt",
         "name": "Arcane",
         "type": "Item",
@@ -139,12 +133,6 @@
         "name": "Arcane",
         "type": "Item",
         "parent": "UmLsjl22ZsyVMcwY"
-      },
-      {
-        "id": "CnDaX71yy0qoKVQb",
-        "name": "Arcanist",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "z7NLbCmTWrDRsqk6",
@@ -213,12 +201,6 @@
         "parent": "rYSNf0xNfyNEMjmy"
       },
       {
-        "id": "341jxGTHbioINnUl",
-        "name": "Battle Director",
-        "type": "Item",
-        "parent": null
-      },
-      {
         "id": "XdeoNL0LadN04zhI",
         "name": "Battle End",
         "type": "Macro",
@@ -259,12 +241,6 @@
         "name": "Blackma's PC",
         "type": "Actor",
         "parent": "eZWKkXNgeaFs6HSS"
-      },
-      {
-        "id": "nAaM8w9pKx5bbRqT",
-        "name": "Blanche",
-        "type": "Item",
-        "parent": "8VOe3tvHPz0c6uSz"
       },
       {
         "id": "StlstAqDh6NoAddL",
@@ -369,12 +345,6 @@
         "parent": "Vg0nGevL0N3Wqh0D"
       },
       {
-        "id": "Uq2abyVBAmPgo3hZ",
-        "name": "Chimerist",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "aTaylB4Xgk03yr9M",
         "name": "Chimerist",
         "type": "Item",
@@ -429,22 +399,16 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "Zrv5DRCx5PzFvLUj",
+        "id": "dOORkhkyBMlVUPzS",
         "name": "Common",
         "type": "Item",
-        "parent": "341jxGTHbioINnUl"
+        "parent": "VVjpCERIXMrOJna7"
       },
       {
         "id": "NmTMvWbnUbnXBMpx",
         "name": "Companion",
         "type": "Actor",
         "parent": null
-      },
-      {
-        "id": "sbNvADt5kP73Z27P",
-        "name": "Consumable",
-        "type": "Item",
-        "parent": "UievuZH12UFiRSJT"
       },
       {
         "id": "o9WySAlpwzaM9KDB",
@@ -543,34 +507,16 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "Ontn7wV9ON5Z8gME",
-        "name": "Dancer",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "Sib3z5oIZYXxnVQJ",
         "name": "Dances",
         "type": "Item",
         "parent": "IZgBc6z6Iyz2ccos"
       },
       {
-        "id": "VcMxlJcB5QjESAu4",
-        "name": "Dances",
-        "type": "Item",
-        "parent": "Ontn7wV9ON5Z8gME"
-      },
-      {
         "id": "ecsWCKqCXnSE0HO7",
         "name": "Darkblade",
         "type": "Item",
         "parent": "VVjpCERIXMrOJna7"
-      },
-      {
-        "id": "iyYArFWUv3WCIRcT",
-        "name": "Darkblade",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "bHc3vfH5W0rLeZ4g",
@@ -663,12 +609,6 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "ElTyIhuIlanlMbpM",
-        "name": "Elementalist",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "gx1Q3p8LBCYYEzQv",
         "name": "Elementalist Spell",
         "type": "Item",
@@ -741,12 +681,6 @@
         "parent": "3knBQp3gYXhOxj8G"
       },
       {
-        "id": "h2HJjjofm9NBfrkP",
-        "name": "Entropist",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "tX9WPMEGfOLF9j97",
         "name": "Entropist",
         "type": "Item",
@@ -763,12 +697,6 @@
         "name": "Esper",
         "type": "Item",
         "parent": "VVjpCERIXMrOJna7"
-      },
-      {
-        "id": "KLwsJ8eSUwELI8kl",
-        "name": "Esper",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "rZZR58YG96UBjS8x",
@@ -933,12 +861,6 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "o9GnW8SK6lk2qkIs",
-        "name": "Fury",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "vxeYSW9rmOJe2jfu",
         "name": "Gacha System",
         "type": "Macro",
@@ -967,12 +889,6 @@
         "name": "Green's PC",
         "type": "Actor",
         "parent": "eZWKkXNgeaFs6HSS"
-      },
-      {
-        "id": "ikOHfTW8DPtgKukH",
-        "name": "Guardian",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "r8ESgYQR9Oc0iK7D",
@@ -1005,108 +921,6 @@
         "parent": "w7jZN8CMjtlWQtyW"
       },
       {
-        "id": "ByOSYADHEZSalkeV",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "h2HJjjofm9NBfrkP"
-      },
-      {
-        "id": "FNxNUXgmo05r1phz",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "iyYArFWUv3WCIRcT"
-      },
-      {
-        "id": "FYT7IwW0r6ZXyIYI",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "bcFZfVMXFP4C8igm"
-      },
-      {
-        "id": "HEOkiQVr6cpvbXxl",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "ikOHfTW8DPtgKukH"
-      },
-      {
-        "id": "LqnORj30bPKLhOjx",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "Uq2abyVBAmPgo3hZ"
-      },
-      {
-        "id": "RuxIvY13hoQst1Me",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "ElTyIhuIlanlMbpM"
-      },
-      {
-        "id": "fBX5QnYyeybOjaiQ",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "yYjFmBgcT0W72vD4"
-      },
-      {
-        "id": "gKT2RFXVAyJIjwHP",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "J75uMISwqiHirntJ"
-      },
-      {
-        "id": "golGEMNl9SyavrN8",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "CnDaX71yy0qoKVQb"
-      },
-      {
-        "id": "i3IyOp8itaxFj5nY",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "auzREntgpd3mEwx8"
-      },
-      {
-        "id": "kmQEAefGfUhoR22y",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "tvsMACVMG37LCttW"
-      },
-      {
-        "id": "mVinrvsuv1H5JOqw",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "DsZlUV4hiYWZbaZv"
-      },
-      {
-        "id": "mkXggdR0cazhlWtY",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "w8fzwQIgXEgGQJRq"
-      },
-      {
-        "id": "nFM91gXyIfSnUUTP",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "0ATfYecuobCVkO7R"
-      },
-      {
-        "id": "qiazOhJEAhYqTcEc",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "plnUKJqojjJ1NRxy"
-      },
-      {
-        "id": "uo9wts0pZqpxaSPy",
-        "name": "Heroic Skill",
-        "type": "Item",
-        "parent": "o9GnW8SK6lk2qkIs"
-      },
-      {
-        "id": "F7DacseQNZwn9FkF",
-        "name": "Hexer",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "QfTUK4kRvO3ww1hK",
         "name": "Hexer",
         "type": "Item",
@@ -1117,12 +931,6 @@
         "name": "Hexer Spell",
         "type": "Item",
         "parent": "QfTUK4kRvO3ww1hK"
-      },
-      {
-        "id": "8anr3gpVpToGKG6G",
-        "name": "Hina",
-        "type": "Item",
-        "parent": "8VOe3tvHPz0c6uSz"
       },
       {
         "id": "HUGG8dxt2Wu7Zi8r",
@@ -1143,22 +951,10 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "dwzaQarGIGnKc3j4",
-        "name": "Hybrid Heroic Skill",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "VvYASbMLPz6BYMCE",
         "name": "Ice Cavern",
         "type": "Macro",
         "parent": "3knBQp3gYXhOxj8G"
-      },
-      {
-        "id": "eiXq1JXrryypIVED",
-        "name": "Illusionist",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "rpPOSjJwHOJs3mb4",
@@ -1191,12 +987,6 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "yHtzZ6G9pzixlkhO",
-        "name": "Invoker",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "NZzmXPcBYP9HDPXd",
         "name": "Item",
         "type": "JournalEntry",
@@ -1219,12 +1009,6 @@
         "name": "Item Transfer",
         "type": "Macro",
         "parent": "Vg0nGevL0N3Wqh0D"
-      },
-      {
-        "id": "UievuZH12UFiRSJT",
-        "name": "Items",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "4ZnFueiJf526eQFt",
@@ -1261,12 +1045,6 @@
         "name": "Kanno's PC",
         "type": "Actor",
         "parent": "eZWKkXNgeaFs6HSS"
-      },
-      {
-        "id": "VylzttcwE2eLJNhT",
-        "name": "Keren",
-        "type": "Item",
-        "parent": "8VOe3tvHPz0c6uSz"
       },
       {
         "id": "tp52625NWIbnzyLu",
@@ -1335,12 +1113,6 @@
         "parent": "rHTlsgSS40PL5ZXd"
       },
       {
-        "id": "bcFZfVMXFP4C8igm",
-        "name": "Loremaster",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "t3HW4Pmy2CieCGHW",
         "name": "Loremaster",
         "type": "Item",
@@ -1399,12 +1171,6 @@
         "name": "Master Thief",
         "type": "Item",
         "parent": "5KFkUixjqI5c6PpK"
-      },
-      {
-        "id": "WKp4Zi6ImmRWNjWi",
-        "name": "Matador",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "pRgb4VluJKFbbA0a",
@@ -1489,12 +1255,6 @@
         "name": "Mutant",
         "type": "Item",
         "parent": "VVjpCERIXMrOJna7"
-      },
-      {
-        "id": "DsZlUV4hiYWZbaZv",
-        "name": "Necromancer",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "o96A4KbgobOXBh9e",
@@ -1617,12 +1377,6 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "yYjFmBgcT0W72vD4",
-        "name": "Orator",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "Zsb2yoayhdKZd3IA",
         "name": "Overworld",
         "type": "RollTable",
@@ -1639,12 +1393,6 @@
         "name": "Party Manager",
         "type": "Macro",
         "parent": "Vg0nGevL0N3Wqh0D"
-      },
-      {
-        "id": "Lmz3zk1ikDBWqyf1",
-        "name": "Pass",
-        "type": "Item",
-        "parent": "WKp4Zi6ImmRWNjWi"
       },
       {
         "id": "YA2JFqxM2mPd9JBp",
@@ -1839,12 +1587,6 @@
         "parent": "eZWKkXNgeaFs6HSS"
       },
       {
-        "id": "0ATfYecuobCVkO7R",
-        "name": "Rogue",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "7rPEwaqj7lNVylpF",
         "name": "Rogue",
         "type": "Item",
@@ -1905,12 +1647,6 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "tvsMACVMG37LCttW",
-        "name": "Sharpshooter",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "JkuUv7T8PCSZgcEO",
         "name": "Shield",
         "type": "Item",
@@ -1933,132 +1669,6 @@
         "name": "Silryantish PC",
         "type": "Actor",
         "parent": "eZWKkXNgeaFs6HSS"
-      },
-      {
-        "id": "43nZ7emlJwEzKbKs",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "DsZlUV4hiYWZbaZv"
-      },
-      {
-        "id": "48mIiEzH4lkVf0Xf",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "ikOHfTW8DPtgKukH"
-      },
-      {
-        "id": "4nfTLrlahxy3xTs8",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "tvsMACVMG37LCttW"
-      },
-      {
-        "id": "5X4bDv5r72tZqEXw",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "CnDaX71yy0qoKVQb"
-      },
-      {
-        "id": "7XPRzEprVTXCugxm",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "WKp4Zi6ImmRWNjWi"
-      },
-      {
-        "id": "9yHgUSUtJMnAQu6A",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "J75uMISwqiHirntJ"
-      },
-      {
-        "id": "FIHoW0EB0vU7gMAa",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "eiXq1JXrryypIVED"
-      },
-      {
-        "id": "GrXCu6oUXmMBW9yS",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "w8fzwQIgXEgGQJRq"
-      },
-      {
-        "id": "H5HE3g8k3EvxVyvM",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "KLwsJ8eSUwELI8kl"
-      },
-      {
-        "id": "H83kUcvIWorYKyr8",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "iyYArFWUv3WCIRcT"
-      },
-      {
-        "id": "OPmGhH0AVmmzKmnE",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "yHtzZ6G9pzixlkhO"
-      },
-      {
-        "id": "QKYuqIfT1r6tKBX0",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "yYjFmBgcT0W72vD4"
-      },
-      {
-        "id": "R7r4YaPVG9VGe9lS",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "0ATfYecuobCVkO7R"
-      },
-      {
-        "id": "UcGBewcyVRmxYuhC",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "Uq2abyVBAmPgo3hZ"
-      },
-      {
-        "id": "e6GDaiA7PEUCFB48",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "auzREntgpd3mEwx8"
-      },
-      {
-        "id": "lsScfLuWEfUwx8Ah",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "bcFZfVMXFP4C8igm"
-      },
-      {
-        "id": "npIYKE1SxCU3chCP",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "o9GnW8SK6lk2qkIs"
-      },
-      {
-        "id": "o6V4aoJe2GDaGxlW",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "h2HJjjofm9NBfrkP"
-      },
-      {
-        "id": "uXLyEGDLqxK2laMF",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "ElTyIhuIlanlMbpM"
-      },
-      {
-        "id": "uuZLsSJMEIBKmGxw",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "Ontn7wV9ON5Z8gME"
-      },
-      {
-        "id": "vE96q7FVLmhb7wDD",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "plnUKJqojjJ1NRxy"
       },
       {
         "id": "TJcEBsc1P3i3w31w",
@@ -2109,34 +1719,10 @@
         "parent": "UmLsjl22ZsyVMcwY"
       },
       {
-        "id": "C5LAJaVZ1tj2Lxxn",
-        "name": "Spell",
-        "type": "Item",
-        "parent": "h2HJjjofm9NBfrkP"
-      },
-      {
-        "id": "DZFp68E33EGGH2ZO",
-        "name": "Spell",
-        "type": "Item",
-        "parent": "ElTyIhuIlanlMbpM"
-      },
-      {
         "id": "Ta27JAFtAPKOOZb8",
         "name": "Spell",
         "type": "Item",
         "parent": "dDUDRyua0YhbSGGC"
-      },
-      {
-        "id": "gqx98ag10NwXWzfG",
-        "name": "Spell",
-        "type": "Item",
-        "parent": "F7DacseQNZwn9FkF"
-      },
-      {
-        "id": "w7ey5G3zPC78EXos",
-        "name": "Spell",
-        "type": "Item",
-        "parent": "w8fzwQIgXEgGQJRq"
       },
       {
         "id": "nNKbXiI5DqqWmDy0",
@@ -2149,12 +1735,6 @@
         "name": "Spiritist",
         "type": "Item",
         "parent": "VVjpCERIXMrOJna7"
-      },
-      {
-        "id": "w8fzwQIgXEgGQJRq",
-        "name": "Spiritist",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "yM3fFwZeUWnk2S35",
@@ -2397,12 +1977,6 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "plnUKJqojjJ1NRxy",
-        "name": "Tinkerer",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "SpOeLnDXVqot9DX9",
         "name": "Tinkerer Gadgets",
         "type": "Item",
@@ -2547,12 +2121,6 @@
         "parent": "3knBQp3gYXhOxj8G"
       },
       {
-        "id": "auzREntgpd3mEwx8",
-        "name": "Wayfarer",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "xVf09WErwuUjr7rE",
         "name": "Wayfarer",
         "type": "Item",
@@ -2569,12 +2137,6 @@
         "name": "Weapon Module",
         "type": "Item",
         "parent": "Ez9xgSX6RMOw2a8b"
-      },
-      {
-        "id": "J75uMISwqiHirntJ",
-        "name": "Weaponmaster",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "diBQChLQ9jkhmnXX",
@@ -2605,18 +2167,6 @@
         "name": "Wonderous Gachapon",
         "type": "RollTable",
         "parent": null
-      },
-      {
-        "id": "yNfRMksYc4OGtRL7",
-        "name": "Zarg",
-        "type": "Item",
-        "parent": "8VOe3tvHPz0c6uSz"
-      },
-      {
-        "id": "8VOe3tvHPz0c6uSz",
-        "name": "Zero Power",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "HxH8pRIAy3tVzGFP",
@@ -2705,22 +2255,10 @@
         "effects": 0
       },
       {
-        "id": "pVs2sPd5o0XMbdah",
-        "name": "Absorb MP",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "LLmPfmG5yRVzmD2x",
         "name": "Abyss",
         "type": "equippableItem",
         "effects": 0
-      },
-      {
-        "id": "iFhrsC0cnyChDhgw",
-        "name": "Acceleration",
-        "type": "equippableItem",
-        "effects": 1
       },
       {
         "id": "jlPwgwAQkOBCNg6K",
@@ -2867,14 +2405,14 @@
         "effects": 1
       },
       {
-        "id": "Uml73l4MKy1gSJYU",
-        "name": "Adversity",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
         "id": "W8cC2u8sBR5DSRWg",
         "name": "Adversity",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "l4iakcTTuEciUMsp",
+        "name": "Adversity (gear skill)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -2904,12 +2442,6 @@
       },
       {
         "id": "eM7Q4WgXvjcLQaFc",
-        "name": "Agony",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "rERGt9WNcSfYV31k",
         "name": "Agony",
         "type": "equippableItem",
         "effects": 0
@@ -3305,12 +2837,6 @@
         "effects": 1
       },
       {
-        "id": "bsGfl8xTLZm7dFu2",
-        "name": "Aura",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "ZtNcznuWB5roECru",
         "name": "Aura Hammer",
         "type": "equippableItem",
@@ -3360,12 +2886,6 @@
       },
       {
         "id": "BQiqsqB47TV7hhQ2",
-        "name": "Awaken",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "TJh8AoeGbtF2M10s",
         "name": "Awaken",
         "type": "equippableItem",
         "effects": 0
@@ -3485,12 +3005,6 @@
         "effects": 0
       },
       {
-        "id": "wVVluaGNDUiNVLUw",
-        "name": "Barrage",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
         "id": "yh4vm3wru6nAkkaN",
         "name": "Barrage",
         "type": "equippableItem",
@@ -3499,12 +3013,6 @@
       {
         "id": "OwS0VtxeZlqWA0ji",
         "name": "Barrel Bomb",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "6FgU7QfIlkTHZRYi",
-        "name": "Barrier",
         "type": "equippableItem",
         "effects": 0
       },
@@ -3647,12 +3155,6 @@
         "effects": 1
       },
       {
-        "id": "14ni8QTjG5uq5whY",
-        "name": "Beyond the Realms of Death",
-        "type": "equippableItem",
-        "effects": 2
-      },
-      {
         "id": "qdGOPTKJQ2YI6LUl",
         "name": "Beyond the Realms of Death",
         "type": "equippableItem",
@@ -3684,12 +3186,6 @@
       },
       {
         "id": "HjNImvzXOvZw1mGF",
-        "name": "Bimagus",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "ooo1vmilBi2YWAiH",
         "name": "Bimagus",
         "type": "equippableItem",
         "effects": 0
@@ -3953,12 +3449,6 @@
         "effects": 1
       },
       {
-        "id": "YyX9SztNfi0nxWJV",
-        "name": "Bodyguard",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "5XAuMMbDPlLzhJLw",
         "name": "Bolt",
         "type": "equippableItem",
@@ -3999,12 +3489,6 @@
         "name": "Brainwave Discharge",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "N2IgLImJ07QLdBVT",
-        "name": "Brainwave Discharge",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "X9qkNvXgrWuhPh0n",
@@ -4095,12 +3579,6 @@
         "name": "Buff",
         "type": "activeEffectContainer",
         "effects": 6
-      },
-      {
-        "id": "VrcTeLvyBfnLtRZM",
-        "name": "Bullet Break",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "g1Sq9oZngBkRUW0f",
@@ -4217,12 +3695,6 @@
         "effects": 0
       },
       {
-        "id": "PGGgozrKWNrtGZLH",
-        "name": "Capote",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "Ro1ZgoiWtBFyMQS7",
         "name": "Capote",
         "type": "equippableItem",
@@ -4237,12 +3709,6 @@
       {
         "id": "vRWqziomvuxZXBCr",
         "name": "Card Vanguard",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "8Vn4CZdcyrkTJKm3",
-        "name": "Castigo",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4278,12 +3744,6 @@
       },
       {
         "id": "NYvqgjv6TTE5fbR8",
-        "name": "Cataclysm",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "UCGtDYsRkyH4IqBs",
         "name": "Cataclysm",
         "type": "equippableItem",
         "effects": 0
@@ -4367,12 +3827,6 @@
         "effects": 0
       },
       {
-        "id": "MTu5qi3M3S9M0CJw",
-        "name": "Cheap Shot",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "ezacj5Vj3FQXlcbW",
         "name": "Chef's Knife",
         "type": "equippableItem",
@@ -4433,12 +3887,6 @@
         "effects": 0
       },
       {
-        "id": "u2lw7vPFH9QikB7X",
-        "name": "Cleanse",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "oisg7B7Nu3qpdW8Q",
         "name": "Cleaving Strike",
         "type": "equippableItem",
@@ -4455,12 +3903,6 @@
         "name": "Clockwork Heart",
         "type": "equippableItem",
         "effects": 0
-      },
-      {
-        "id": "0Up4BNAxtoUC23jq",
-        "name": "Cognitive Focus",
-        "type": "equippableItem",
-        "effects": 1
       },
       {
         "id": "8ta8kqa1PLv1b04D",
@@ -4547,12 +3989,6 @@
         "effects": 0
       },
       {
-        "id": "ZRTMm0aLWKq2UHeR",
-        "name": "Consume",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "x75KjOuq1UE1KGFM",
         "name": "Contagion",
         "type": "equippableItem",
@@ -4595,12 +4031,6 @@
         "effects": 1
       },
       {
-        "id": "kS8rEaApk4J1WvjU",
-        "name": "Counter Pass",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "IEFFYKz9pycXYl7G",
         "name": "Counterattack",
         "type": "equippableItem",
@@ -4631,12 +4061,6 @@
         "effects": 0
       },
       {
-        "id": "n72OGOx8TLGF1i9u",
-        "name": "Create Phantasm: Dread",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "OsIQ6VBzU7XklPUQ",
         "name": "Create Phantasm: Mockery",
         "type": "equippableItem",
@@ -4645,18 +4069,6 @@
       {
         "id": "9yYY5TBMMVlHo28q",
         "name": "Create Phantasm: Numen",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "j9ve2lwzoHiOo6bM",
-        "name": "Create Phantasm: Numen",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "CJRJAE0NG7Kyk48Y",
-        "name": "Create Phantasm: Strike",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4699,12 +4111,6 @@
       {
         "id": "yG7ujzMR25OgfqcL",
         "name": "Crossbow",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "10o5oABWBrGVHV7G",
-        "name": "Crossfire",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4823,12 +4229,6 @@
         "effects": 1
       },
       {
-        "id": "txUds8BUb5KqMhvZ",
-        "name": "Dance",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "DP1wXzT66WXAe4sO",
         "name": "Dance of the Marionette",
         "type": "equippableItem",
@@ -4851,12 +4251,6 @@
         "name": "Dark",
         "type": "equippableItem",
         "effects": 0
-      },
-      {
-        "id": "KZmKUTuRvlvw6svp",
-        "name": "Dark Blood",
-        "type": "equippableItem",
-        "effects": 1
       },
       {
         "id": "loJVZKaVMt8VxzCI",
@@ -4955,12 +4349,6 @@
         "effects": 1
       },
       {
-        "id": "5h2gvjbvw26dQSU4",
-        "name": "Deep Pockets",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "4OH9H2YYxr9KhhBx",
         "name": "Defense Matrix",
         "type": "equippableItem",
@@ -4968,12 +4356,6 @@
       },
       {
         "id": "cuogI34amIfQE3D5",
-        "name": "Defensive Mastery",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
-        "id": "fJshVRdauYDSTAop",
         "name": "Defensive Mastery",
         "type": "equippableItem",
         "effects": 1
@@ -5015,12 +4397,6 @@
         "effects": 0
       },
       {
-        "id": "StNZ1ldqagBVx41h",
-        "name": "Descabello",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "XQoyMbTmHnGMUYIn",
         "name": "Desert Dahlia",
         "type": "equippableItem",
@@ -5041,12 +4417,6 @@
       {
         "id": "gQNqXMnOYBQrQfoB",
         "name": "Deteriorate",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "k7gaSnhF7IynAnfG",
-        "name": "Detonate Phantasm",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5075,12 +4445,6 @@
         "effects": 0
       },
       {
-        "id": "OoVNUOIssIfwPo7H",
-        "name": "Dispel",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "Ydbba6k0hFjWZvJv",
         "name": "Dispel",
         "type": "equippableItem",
@@ -5089,12 +4453,6 @@
       {
         "id": "CnueY54QHD80cmph",
         "name": "Diver Goggle",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
-        "id": "BmgIHS4DdDAT1rUc",
-        "name": "Divination",
         "type": "equippableItem",
         "effects": 1
       },
@@ -5109,12 +4467,6 @@
         "name": "Dodge",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "P4dQ5Ms73YVs9gPv",
-        "name": "Dodge",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "yHZ9soDXTvalWPGx",
@@ -5143,12 +4495,6 @@
       {
         "id": "eCzSEIagUBh1JoRJ",
         "name": "Dorsal Fin",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "g121BQspB6TKcCf9",
-        "name": "Double Arrow",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5225,12 +4571,6 @@
         "effects": 0
       },
       {
-        "id": "fIMx7fleEq7LKXNE",
-        "name": "Drain Spirit",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "szPLoqRb8JELX4X7",
         "name": "Drain Spirit",
         "type": "equippableItem",
@@ -5247,12 +4587,6 @@
         "name": "Dual Shieldbearer",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "TwiggXCPpT07L0OR",
-        "name": "Dual Shieldbearer",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "LBqkjOIfj4oMkplG",
@@ -5357,12 +4691,6 @@
         "effects": 0
       },
       {
-        "id": "d3MLcotE69Z9TUWh",
-        "name": "Elegance Showmanship",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "0rMQTKpK0gplQht9",
         "name": "Elegant Edge",
         "type": "equippableItem",
@@ -5381,20 +4709,8 @@
         "effects": 0
       },
       {
-        "id": "XsODbvZry66Fs6xS",
-        "name": "Elemental Harmony",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "YEjcdTSeCrkWI9jl",
         "name": "Elemental Harmony",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "i7XP3i8a8GM70yCF",
-        "name": "Elemental Magic",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5495,22 +4811,10 @@
         "effects": 5
       },
       {
-        "id": "oyoBGiPAlNfKoQc9",
-        "name": "Elemental Shroud",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "1VwuTz4dN0o230fN",
         "name": "Elemental Ward",
         "type": "equippableItem",
         "effects": 0
-      },
-      {
-        "id": "97wep1as6JfhC3M3",
-        "name": "Elemental Weapon",
-        "type": "equippableItem",
-        "effects": 5
       },
       {
         "id": "HhAK0qzO2jmsk0RX",
@@ -5583,12 +4887,6 @@
         "name": "Emergency Item",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "psUl41nZsOWgzA0R",
-        "name": "Emergency Item",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "97LJZutdwvYxoo8c",
@@ -5675,12 +4973,6 @@
         "effects": 0
       },
       {
-        "id": "l4UCgMvrMT3emrYT",
-        "name": "Enrage",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "dahPrVDP4uG44PIp",
         "name": "Entangle",
         "type": "equippableItem",
@@ -5688,12 +4980,6 @@
       },
       {
         "id": "CMeM0siw1nq7rr1G",
-        "name": "Entropic Magic",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "IzAH4YAoK4vPt9MP",
         "name": "Entropic Magic",
         "type": "equippableItem",
         "effects": 0
@@ -5849,12 +5135,6 @@
         "effects": 0
       },
       {
-        "id": "b8BGWwomp8rSkuxz",
-        "name": "Fancy Footwork",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "qAW9i3EkrRUTNE0o",
         "name": "Fast Ritual",
         "type": "equippableItem",
@@ -5877,12 +5157,6 @@
         "name": "Fear Is the Key",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "tE8pb6Spf4UoFo55",
-        "name": "Fear Is the Key",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "iQwhZxs3JmvrWwym",
@@ -6053,12 +5327,6 @@
         "effects": 0
       },
       {
-        "id": "43HnRNN8cWeAgSmr",
-        "name": "For Whom the Bell Tolls",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "sfB3APSyWP8Lf5LQ",
         "name": "For Whom the Bell Tolls",
         "type": "equippableItem",
@@ -6084,12 +5352,6 @@
       },
       {
         "id": "9lA0CTakvrMenahO",
-        "name": "Fortress",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
-        "id": "dMvcBdU80jaNnOYT",
         "name": "Fortress",
         "type": "equippableItem",
         "effects": 1
@@ -6216,12 +5478,6 @@
       },
       {
         "id": "1w2LjUOVhlbLR8nn",
-        "name": "Gadgets",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "BRvcE5bjsMDqFo5d",
         "name": "Gadgets",
         "type": "equippableItem",
         "effects": 0
@@ -6413,12 +5669,6 @@
         "effects": 0
       },
       {
-        "id": "YxXwy2Giyln0kuLT",
-        "name": "Glacies",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "IYIFDBNpDiCiPeMl",
         "name": "Glacies Alta",
         "type": "equippableItem",
@@ -6589,12 +5839,6 @@
       {
         "id": "c2QrSCzvCzpXCgvz",
         "name": "Gourmet Cutter",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "65vqojNWT7Ptxq0E",
-        "name": "Grace Under Pressure",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6827,12 +6071,6 @@
         "effects": 0
       },
       {
-        "id": "4VbPDK7tmZyKjDMQ",
-        "name": "Hallucination",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "6GNiLg0KWdxdHEhv",
         "name": "Hallucination",
         "type": "equippableItem",
@@ -6899,12 +6137,6 @@
         "effects": 1
       },
       {
-        "id": "VdzUY6OaTy7vncGT",
-        "name": "Hawkeye",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
         "id": "vpWwubxgo2XBnjEE",
         "name": "Headhunter",
         "type": "equippableItem",
@@ -6929,19 +6161,7 @@
         "effects": 0
       },
       {
-        "id": "wPC22EqyPCSc20i0",
-        "name": "Heal",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "B7iUxJTSvR12dwEr",
-        "name": "Healing Power",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "VwJHtWmjBjF0Pj31",
         "name": "Healing Power",
         "type": "equippableItem",
         "effects": 0
@@ -6966,12 +6186,6 @@
       },
       {
         "id": "gNgDIXArTpdtUBpe",
-        "name": "Heart of Darkness",
-        "type": "equippableItem",
-        "effects": 2
-      },
-      {
-        "id": "nkKJD5vo65EM887m",
         "name": "Heart of Darkness",
         "type": "equippableItem",
         "effects": 2
@@ -7062,12 +6276,6 @@
       },
       {
         "id": "FZX0P5HD6UfIIk9i",
-        "name": "High Speed",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "pGPOqWRyrAFLbHho",
         "name": "High Speed",
         "type": "equippableItem",
         "effects": 0
@@ -7199,12 +6407,6 @@
         "effects": 0
       },
       {
-        "id": "P3iAf8dGAQLg8tLS",
-        "name": "Hoplite",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "pvKt1FytqaqCkR0d",
         "name": "Hoplite",
         "type": "equippableItem",
@@ -7295,12 +6497,6 @@
         "effects": 0
       },
       {
-        "id": "iSDT72qWfpPtIczE",
-        "name": "Hypercognition",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "vXhqoRfPO5RK6Mdd",
         "name": "Hypercognition",
         "type": "equippableItem",
@@ -7356,12 +6552,6 @@
       },
       {
         "id": "VMu0aaKdIoi6qRi2",
-        "name": "Iceberg",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "ahyRJYDdxMKqhWSm",
         "name": "Iceberg",
         "type": "equippableItem",
         "effects": 0
@@ -7445,12 +6635,6 @@
         "effects": 0
       },
       {
-        "id": "ivCSQcT8cuj07ELa",
-        "name": "Illusionist Magic",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "AHOzihuBWo2jpBSF",
         "name": "Illusory Field",
         "type": "equippableItem",
@@ -7459,12 +6643,6 @@
       {
         "id": "iJy8pfQaJHPKhCjU",
         "name": "Illusory Field",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "8g79dzk64n7b0kIb",
-        "name": "Illusory Shield",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7549,12 +6727,6 @@
       {
         "id": "cSynFyjRWqRbgrZx",
         "name": "Invisibility Cloak",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "9MkxxTnQjRcFQ2IN",
-        "name": "Invocation",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7907,12 +7079,6 @@
         "effects": 0
       },
       {
-        "id": "FIDKz9DL4LkPMTlF",
-        "name": "Life Transference",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "jp5JDPhrhjBsFbYf",
         "name": "Life Transference",
         "type": "equippableItem",
@@ -7971,12 +7137,6 @@
         "name": "Lion Dance",
         "type": "equippableItem",
         "effects": 2
-      },
-      {
-        "id": "gBgCB84iaNLxy59e",
-        "name": "Lion Dance",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "GNQXRnV6t7CR9hZ5",
@@ -8117,12 +7277,6 @@
         "effects": 1
       },
       {
-        "id": "nf32D5apuWGo1rVV",
-        "name": "Lucky Seven",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
         "id": "46B3KzP5CbqDm9Ql",
         "name": "Lullaby Bell",
         "type": "equippableItem",
@@ -8142,12 +7296,6 @@
       },
       {
         "id": "34ez7vLQAJh30jS3",
-        "name": "Lux",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "RG7FHDxcvVg14FXb",
         "name": "Lux",
         "type": "equippableItem",
         "effects": 0
@@ -8251,12 +7399,6 @@
       {
         "id": "XHGBM5xt57tAvOpT",
         "name": "Magic Tent",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "O5uVGKRfZCS4ufTp",
-        "name": "Magical Artillery",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8523,12 +7665,6 @@
         "name": "Mercy",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "1MKAmY4pPdhkLSRt",
-        "name": "Mercy",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "NYZZNYBAwPhpNOzH",
@@ -8993,12 +8129,6 @@
         "effects": 0
       },
       {
-        "id": "RxIy2d516YrLuzpS",
-        "name": "Muleta",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
         "id": "ToXarLKT0G2ggon1",
         "name": "Mulligan",
         "type": "equippableItem",
@@ -9179,12 +8309,6 @@
         "effects": 2
       },
       {
-        "id": "zbulFnM318NgBgh5",
-        "name": "Nocebo Weapon",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
         "id": "MJ2unYavTE00DxO0",
         "name": "None",
         "type": "equippableItem",
@@ -9287,12 +8411,6 @@
         "effects": 0
       },
       {
-        "id": "NOvNmDvnFaasddUT",
-        "name": "Ouroboros Dance",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "eAUaGhDdy3uogln7",
         "name": "Ouroboros Dance",
         "type": "equippableItem",
@@ -9306,12 +8424,6 @@
       },
       {
         "id": "Uo4iOf0EFG1z8AU2",
-        "name": "Painful Lesson",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "kMH1iSlYIZyXl8hV",
         "name": "Painful Lesson",
         "type": "equippableItem",
         "effects": 0
@@ -9331,12 +8443,6 @@
       {
         "id": "yYJz9VTZDGQzyVmJ",
         "name": "Panties",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "Rrs0Rt6X9ji6JZZh",
-        "name": "Pases",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9372,12 +8478,6 @@
       },
       {
         "id": "YiQpn6s2FCSKUOmo",
-        "name": "Perfect Aim",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "uSfpUFshad2WnIiR",
         "name": "Perfect Aim",
         "type": "equippableItem",
         "effects": 0
@@ -9426,12 +8526,6 @@
       },
       {
         "id": "JWzdHF8l1m2ZcdQw",
-        "name": "Phantasmal Echo",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "YDzMWktTnD9J9Jun",
         "name": "Phantasmal Echo",
         "type": "equippableItem",
         "effects": 0
@@ -9498,12 +8592,6 @@
       },
       {
         "id": "PoLYIlvymFFOnpTC",
-        "name": "Pillage",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "g5jr9m9C9D5TctBx",
         "name": "Pillage",
         "type": "equippableItem",
         "effects": 0
@@ -9620,13 +8708,25 @@
         "id": "GyArIXzGOCwQzDYY",
         "name": "Poison Lash",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
+      },
+      {
+        "id": "S5fOPmIzrVxsAv3S",
+        "name": "Poison Lash (gear skill)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "UUWalUbZ5HIZyRnQ",
         "name": "Poisoned Dagger",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
+      },
+      {
+        "id": "NAhxhYpxpcmWXMn0",
+        "name": "Poisoned Dagger (gear skill)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "TyLSU7z3YEh7zsHg",
@@ -9737,12 +8837,6 @@
         "effects": 0
       },
       {
-        "id": "UhJH8T9TEmsJnQVc",
-        "name": "Potion Rain",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "X3X8cA6oxZJsKoyO",
         "name": "Power Chord",
         "type": "equippableItem",
@@ -9759,12 +8853,6 @@
         "name": "Powerful Shot",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "xadEkXuGnTkY6Fh3",
-        "name": "Powerful Shot",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "TPxgsBNWQ3vA3fgu",
@@ -9839,12 +8927,6 @@
         "effects": 0
       },
       {
-        "id": "gTXdzJjV4Lmwfm7i",
-        "name": "Protect",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
         "id": "vrCJoVQmhvdVrWxQ",
         "name": "Protective Strike",
         "type": "equippableItem",
@@ -9887,12 +8969,6 @@
         "effects": 1
       },
       {
-        "id": "tW8QuBva77z4HwZY",
-        "name": "Psychic Gifts",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "0EMGmBnc6NCBkanc",
         "name": "Psychic Shield",
         "type": "equippableItem",
@@ -9903,12 +8979,6 @@
         "name": "Psychokinesis",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "b8PD9B8tWQ60BEFG",
-        "name": "Psychokinesis",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "j8Vtb5gX5FZXF8WH",
@@ -10013,12 +9083,6 @@
         "effects": 0
       },
       {
-        "id": "xXfHHzbpU7zXPqsS",
-        "name": "Quick-change",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "cfSbM3uCD5RH9yGn",
         "name": "Quickdraw",
         "type": "equippableItem",
@@ -10043,19 +9107,7 @@
         "effects": 2
       },
       {
-        "id": "VJDH632HyYqH8WAS",
-        "name": "Rampart",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "Q2T7Zz0lECrQ4win",
-        "name": "Ranged Weapon Mastery",
-        "type": "equippableItem",
-        "effects": 1
-      },
-      {
-        "id": "bRbJl1AxELZ0TLLo",
         "name": "Ranged Weapon Mastery",
         "type": "equippableItem",
         "effects": 1
@@ -10179,12 +9231,6 @@
         "name": "Reinforce",
         "type": "equippableItem",
         "effects": 4
-      },
-      {
-        "id": "FQ2xeNEvGBCLvBUw",
-        "name": "Reinforce",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "cYOZcQnY6kEt0yYp",
@@ -10433,12 +9479,6 @@
         "effects": 0
       },
       {
-        "id": "6HdBHEPiRoPMMydJ",
-        "name": "Ritual Entropism",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "tbtry6egID5MOcxv",
         "name": "Ritual Entropism",
         "type": "equippableItem",
@@ -10453,12 +9493,6 @@
       {
         "id": "tIAPvYFFIMtpmh9k",
         "name": "Ritual Seal",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "HSiWYkTSItEIbXig",
-        "name": "Ritual Spiritism",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10743,18 +9777,6 @@
         "name": "Secret Formula",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "vHU5RXkhcOoFrXtm",
-        "name": "Secret Formula",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "pN90SZleopmB3PM1",
-        "name": "See you later",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "x7RoCErd12Udc8RZ",
@@ -11201,12 +10223,6 @@
         "effects": 0
       },
       {
-        "id": "8aONdOoBQoSzz1wU",
-        "name": "Soul Steal",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "aTce11W2dmw2lKtR",
         "name": "Soul Steal",
         "type": "equippableItem",
@@ -11223,12 +10239,6 @@
         "name": "Soul Weapon",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "l0lXo9SUmtxG11ld",
-        "name": "Soul Weapon",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "uVzENlp8IxhPNE75",
@@ -11363,12 +10373,6 @@
         "effects": 0
       },
       {
-        "id": "KaykXhgyX1J1mdPv",
-        "name": "Spiritual Magic",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "WZ0LtCp3xwiAAa3x",
         "name": "Spiritual Magic",
         "type": "equippableItem",
@@ -11453,12 +10457,6 @@
         "effects": 1
       },
       {
-        "id": "CA8Ilu2bkIkYhfgY",
-        "name": "Status Immunity",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "5rmKFhigrbXO5Pcl",
         "name": "Steady Knuckle",
         "type": "equippableItem",
@@ -11509,12 +10507,6 @@
       {
         "id": "vKxAyYVlL6604wsj",
         "name": "Stolen Time",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "2Ncb8FEV4lynlsHH",
-        "name": "Stop",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11617,12 +10609,6 @@
       {
         "id": "5v2MXO8qLQ26MCyk",
         "name": "Superior Infusion",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "9aOTCoRiI7e0FB04",
-        "name": "Support Magic",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11831,12 +10817,6 @@
         "effects": 0
       },
       {
-        "id": "wfvBxZq0qkwMMn1G",
-        "name": "Symptom Shift",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "swaahzQH8Q5Q3Zoi",
         "name": "Synergize",
         "type": "equippableItem",
@@ -11856,12 +10836,6 @@
       },
       {
         "id": "nqfB7DhbpF9HHRwm",
-        "name": "Tafallera",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "tElX5Ko3X5wpTCfI",
         "name": "Tafallera",
         "type": "equippableItem",
         "effects": 0
@@ -12029,12 +11003,6 @@
         "effects": 1
       },
       {
-        "id": "39Y43bBRXTeu4SNo",
-        "name": "Thermokinesis",
-        "type": "equippableItem",
-        "effects": 2
-      },
-      {
         "id": "Qzsa8k7cOe3Hnvt9",
         "name": "Thief Boot",
         "type": "equippableItem",
@@ -12063,12 +11031,6 @@
         "name": "Thread the Horns",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "DMglYkZ4stxssLQw",
-        "name": "Thread the Horns",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "D71aZv6yXgETGeIB",
@@ -12168,12 +11130,6 @@
       },
       {
         "id": "1zeoqLsOYb9n85rM",
-        "name": "Torpor",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "uKzI3fE3D8B8KI1v",
         "name": "Torpor",
         "type": "equippableItem",
         "effects": 0
@@ -12407,12 +11363,6 @@
         "effects": 1
       },
       {
-        "id": "tJEkJxu440vwNy0X",
-        "name": "Unbreakable",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "3HjwalzP8A5208qr",
         "name": "Unerring Focus",
         "type": "equippableItem",
@@ -12489,12 +11439,6 @@
         "name": "Vanish",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "YIFa3uMq4zngcno7",
-        "name": "Vanish",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "maKF4xySIfDpHB3g",
@@ -12581,12 +11525,6 @@
         "effects": 0
       },
       {
-        "id": "GN2lmhC75LItt0Nj",
-        "name": "Verónica",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "hfk1ejq51YWoQ2jb",
         "name": "Verónica",
         "type": "equippableItem",
@@ -12613,12 +11551,6 @@
       {
         "id": "7nnfGXhexQFubQnZ",
         "name": "Visionary",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "02dhMRTz6VhzYQC1",
-        "name": "Vismagus",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12690,12 +11622,6 @@
       },
       {
         "id": "7opUr817pDyJZsJt",
-        "name": "Warning Shot",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "A68h8dHO8F75awX4",
         "name": "Warning Shot",
         "type": "equippableItem",
         "effects": 0
@@ -12941,12 +11867,6 @@
         "effects": 0
       },
       {
-        "id": "MAbK9uWWMKKFiVvL",
-        "name": "Zero Power: A Million Possibility",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "WjrBIzz4zJvO4C4k",
         "name": "Zero Power: A Million Possibility",
         "type": "equippableItem",
@@ -12971,19 +11891,7 @@
         "effects": 0
       },
       {
-        "id": "EtGyLWPHbqzQu4iC",
-        "name": "Zero Power: Give me tips or 5stars",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "dKbnZH1Vw1a9WPUf",
-        "name": "Zero Power: Last Den of Cinders",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "uaXoWE8h1OYLJCRH",
         "name": "Zero Power: Last Den of Cinders",
         "type": "equippableItem",
         "effects": 0
@@ -12993,12 +11901,6 @@
         "name": "Zero Power: Love Serenade",
         "type": "equippableItem",
         "effects": 2
-      },
-      {
-        "id": "NPmGcRRbc5IBeprB",
-        "name": "Zero Power: Meteor Shower",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "hTb8c9ZREooiKs9k",
@@ -13037,25 +11939,7 @@
         "effects": 0
       },
       {
-        "id": "cdsIDKSvSbnXzp7n",
-        "name": "Zero Trigger: Foresight",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "6TwEYePbTyuH0fFg",
-        "name": "Zero Trigger: Motivation",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "nMkcYQIOYWFKigMv",
-        "name": "Zero Trigger: Motivation",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "qcrYlGDps1OzZ1Zk",
         "name": "Zero Trigger: Motivation",
         "type": "equippableItem",
         "effects": 0
@@ -13063,12 +11947,6 @@
       {
         "id": "JjSTIYwTgVE0FgmU",
         "name": "Zero Trigger: Shattered Phantasm",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "dkCavl0YcUWMPkRj",
-        "name": "Zero Trigger: Strategy",
         "type": "equippableItem",
         "effects": 0
       },
@@ -13899,7 +12777,7 @@
             "name": "Dagger"
           },
           {
-            "id": "xxFZQLbXvNOci5az",
+            "id": "cPZ3kwj06ykb48zR",
             "name": "Dodge"
           },
           {
@@ -13907,7 +12785,7 @@
             "name": "Fast Hand"
           },
           {
-            "id": "TqPnCHodRs3U9hNA",
+            "id": "3d0aWCHI0Jz6irwr",
             "name": "Hinder"
           },
           {
@@ -13943,7 +12821,7 @@
             "name": "Dagger"
           },
           {
-            "id": "xxFZQLbXvNOci5az",
+            "id": "u9Opr8xbhegJpjz4",
             "name": "Dodge"
           },
           {
@@ -13951,7 +12829,7 @@
             "name": "Fast Hand"
           },
           {
-            "id": "TqPnCHodRs3U9hNA",
+            "id": "poLLc4NTw5jNuHGK",
             "name": "Hinder"
           },
           {
@@ -13983,7 +12861,7 @@
             "name": "Bow"
           },
           {
-            "id": "rvjX8HPLHWhq08dg",
+            "id": "VqfQk1IMEIUxoQs1",
             "name": "Dodge"
           },
           {
@@ -14493,11 +13371,7 @@
             "name": "Grace Under Pressure"
           },
           {
-            "id": "59DvOVZHpS5rVLjl",
-            "name": "Heal"
-          },
-          {
-            "id": "mu1lQYmXO6pYVif5",
+            "id": "LMnXdh32LS4ZRCn5",
             "name": "Heal"
           },
           {
@@ -14589,7 +13463,7 @@
             "name": "Zero Power: Give me tips or 5stars"
           },
           {
-            "id": "eGpAVtP9SFw4QJy3",
+            "id": "4E8q3p2h4iMJNTU5",
             "name": "Zero Trigger: Motivation"
           }
         ],
@@ -14880,6 +13754,10 @@
           {
             "id": "wXNXt3PGpJWMzRot",
             "name": "Poisoned Dagger"
+          },
+          {
+            "id": "zUM6QfiO2ifMv7zH",
+            "name": "Poisoned Dagger (gear skill)"
           }
         ],
         "effects": 0
@@ -14962,7 +13840,7 @@
         "type": "character",
         "items": [
           {
-            "id": "urVd4ZrXPrFBBCf4",
+            "id": "iF4czh92T3YQXTbW",
             "name": "Absorb MP"
           },
           {
@@ -14974,15 +13852,15 @@
             "name": "Arc Dynamo"
           },
           {
-            "id": "oY0gCOboWlz03Yfg",
+            "id": "6ozrslmENzkvu5qW",
             "name": "Aura"
           },
           {
-            "id": "lT9prRz3hTKdoX0g",
+            "id": "uWycoBBYIIiQqyW2",
             "name": "Awaken"
           },
           {
-            "id": "DkP7mPWoRs8AKh9B",
+            "id": "fhDfFfNtUY4a0FW0",
             "name": "Barrier"
           },
           {
@@ -14990,11 +13868,11 @@
             "name": "Blazing Impact"
           },
           {
-            "id": "rNs3H2fVivP4Zz5t",
+            "id": "yMFnI4ONm70eXtfy",
             "name": "Cleanse"
           },
           {
-            "id": "wTlJICM7YAdElHM4",
+            "id": "aX8BnuXBadIoCEsL",
             "name": "Fortress"
           },
           {
@@ -15002,23 +13880,23 @@
             "name": "Fulgur"
           },
           {
-            "id": "4BpgaQgMFYUTLmEr",
+            "id": "MSQcMMWIfhgSPPCf",
             "name": "Heal"
           },
           {
-            "id": "sJkKvpqVq0aYTWMJ",
+            "id": "ES279YdcjK38by8x",
             "name": "Healing Power"
           },
           {
-            "id": "S3zuyrw7ohMQsGkK",
+            "id": "ddH0NjpBGM1Kzh8s",
             "name": "Mercy"
           },
           {
-            "id": "teTn57oNr6ma9SGl",
+            "id": "BQqmoInzgyRsYEyO",
             "name": "Protect"
           },
           {
-            "id": "o5X4AerzC4QDmSxb",
+            "id": "918MwyTMCAa0TNV8",
             "name": "Ritual Spiritism"
           },
           {
@@ -15038,7 +13916,7 @@
             "name": "Sample Skill"
           },
           {
-            "id": "wxHClhdQpK6RbXU0",
+            "id": "kbhNSAHJ1NHqzQEI",
             "name": "Spiritual Magic"
           },
           {
@@ -15050,7 +13928,7 @@
             "name": "Thunderbolt"
           },
           {
-            "id": "Hw2zpb7qyXlybJr5",
+            "id": "La0ZbQODC7RRDf1S",
             "name": "Vismagus"
           }
         ],
@@ -15066,7 +13944,7 @@
             "name": "Chimeric Mastery"
           },
           {
-            "id": "HlGyHPAPLJrYLwvl",
+            "id": "sCgRRKzhB08VepKC",
             "name": "Consume"
           },
           {
@@ -15114,7 +13992,7 @@
             "name": "Aero Hex"
           },
           {
-            "id": "EJvq0pPsMA1fW3AY",
+            "id": "M6XjKdXda8ryMqhk",
             "name": "Dance"
           },
           {
@@ -15154,7 +14032,7 @@
             "name": "Inner Wellspring"
           },
           {
-            "id": "aNHQr0A9EeyAz1EB",
+            "id": "Mea8Fn4zK5KbbHbi",
             "name": "Invocation"
           },
           {
@@ -15234,11 +14112,11 @@
             "name": "Crushing Chariot"
           },
           {
-            "id": "SK9Veg0YeAaUEdsy",
+            "id": "N198AFn9hW3pBzJa",
             "name": "Double Arrow"
           },
           {
-            "id": "UVCa93DfH5xnQ8GO",
+            "id": "ZEsMVS7q1VRhOi4v",
             "name": "Hoplite"
           },
           {
@@ -15504,7 +14382,7 @@
             "name": "Bat Dance"
           },
           {
-            "id": "HMwZRQNM7pzUCqDt",
+            "id": "dgsPiN7B7eLxwWjV",
             "name": "Dance"
           },
           {
@@ -15532,7 +14410,7 @@
             "name": "Kraken Dance"
           },
           {
-            "id": "a5KJfzzHcS6GoPC1",
+            "id": "g24Ry8gkE59pNrtP",
             "name": "Lion Dance"
           },
           {
@@ -15548,7 +14426,7 @@
             "name": "Nightmare Dance"
           },
           {
-            "id": "u4TltXqxdREA3VjH",
+            "id": "uLsbNu7EhDOFG5QH",
             "name": "Ouroboros Dance"
           },
           {
@@ -15564,7 +14442,7 @@
             "name": "Phoenix Dance"
           },
           {
-            "id": "0E3Otd28RMnq2zOj",
+            "id": "H3kKr9PdvyAGNAUr",
             "name": "Quick-change"
           },
           {
@@ -15604,11 +14482,11 @@
         "type": "character",
         "items": [
           {
-            "id": "HtK2RqJvbMrSdKhW",
+            "id": "ZdNpDhv2akh2EGte",
             "name": "Adversity"
           },
           {
-            "id": "KT2pFj6l4TT8582f",
+            "id": "KxAXlEoUGC7CXN0T",
             "name": "Agony"
           },
           {
@@ -15616,11 +14494,11 @@
             "name": "Black & White"
           },
           {
-            "id": "CD3gtG09z1tZ8lB6",
+            "id": "UqodGzTBdxCx38mn",
             "name": "Dark Blood"
           },
           {
-            "id": "X7mOnWxTCgYS8kmu",
+            "id": "bw0qDFhDQzHFStDD",
             "name": "Heart of Darkness"
           },
           {
@@ -15628,7 +14506,7 @@
             "name": "Heartbreaker"
           },
           {
-            "id": "GXiESa3wcGt0Gw6v",
+            "id": "VY8GfpHdQPhQ1yCp",
             "name": "Painful Lesson"
           },
           {
@@ -15696,7 +14574,7 @@
             "name": "Dead Branch"
           },
           {
-            "id": "OB9H6LpJArQP8e5N",
+            "id": "ah2fzhk6PBxDmiPH",
             "name": "Dispel"
           },
           {
@@ -15774,23 +14652,23 @@
         "type": "character",
         "items": [
           {
-            "id": "mtKeGtEZtqWiSVVq",
+            "id": "xMpxFAvrltEsfrmR",
             "name": "Bimagus"
           },
           {
-            "id": "eREIonr4t14ICHtH",
+            "id": "95cmZOWEHmhiYJGt",
             "name": "Cataclysm"
           },
           {
-            "id": "S0t8e5Y92nWAOouu",
+            "id": "EoIJ2PnYdbBH0zXW",
             "name": "Elemental Magic"
           },
           {
-            "id": "Hgl4BrCfOlJrz1X9",
+            "id": "ozlNIV9fI7RldoCb",
             "name": "Elemental Shroud"
           },
           {
-            "id": "AaditRsDfvGU2Zgb",
+            "id": "YuXMHYjgIKqOk2EG",
             "name": "Elemental Weapon"
           },
           {
@@ -15806,11 +14684,11 @@
             "name": "Fulgur"
           },
           {
-            "id": "FEuZDJHOW6F9lFzW",
+            "id": "aGLWy5Vl18FzViUF",
             "name": "Glacies"
           },
           {
-            "id": "dn94Lhmt1vl7dXx9",
+            "id": "G29uRz40rPLDpihk",
             "name": "Iceberg"
           },
           {
@@ -15822,7 +14700,7 @@
             "name": "Magic Guard"
           },
           {
-            "id": "akcnrMIkyEPQqGzy",
+            "id": "syrnpNHdPQfzAp0W",
             "name": "Magical Artillery"
           },
           {
@@ -15937,11 +14815,11 @@
         "type": "character",
         "items": [
           {
-            "id": "SDCLiYyx6rxHI3pS",
+            "id": "NadJpbEsWsOAHJsq",
             "name": "Absorb MP"
           },
           {
-            "id": "6yOqeOtGtPahkMt7",
+            "id": "5VyoCDxfCYn5J7cF",
             "name": "Acceleration"
           },
           {
@@ -15949,7 +14827,7 @@
             "name": "Anomaly"
           },
           {
-            "id": "2NdwolNTNSmDEoeO",
+            "id": "RVX9NWVaxsWXNKyL",
             "name": "Bimagus"
           },
           {
@@ -15965,15 +14843,15 @@
             "name": "Dark Weapon"
           },
           {
-            "id": "JWKVgPemgcuC66nN",
+            "id": "oaYNORajoY7GRfJm",
             "name": "Dispel"
           },
           {
-            "id": "cnVxxVN7au9ZBpSQ",
+            "id": "JTxCYytUu0DilhnC",
             "name": "Divination"
           },
           {
-            "id": "FUOQh5DekoS49Y1T",
+            "id": "WoZlCHqcPNXjeRyZ",
             "name": "Drain Spirit"
           },
           {
@@ -15981,7 +14859,7 @@
             "name": "Drain Vigor"
           },
           {
-            "id": "9HWuiwuZNcD9ghkR",
+            "id": "tw719z4nQpfiZ97n",
             "name": "Entropic Magic"
           },
           {
@@ -15993,7 +14871,7 @@
             "name": "Gamble"
           },
           {
-            "id": "hadpzctVFubNf69B",
+            "id": "y6DWYCfOwPnCdZ8j",
             "name": "Lucky Seven"
           },
           {
@@ -16013,7 +14891,7 @@
             "name": "Powerful Spell"
           },
           {
-            "id": "82U1RActm06OxFgj",
+            "id": "it8PPtRMYJ28m8zV",
             "name": "Ritual Entropism"
           },
           {
@@ -16021,7 +14899,7 @@
             "name": "Stolen Time"
           },
           {
-            "id": "5aR2w6OMCMZgpOBJ",
+            "id": "wzOZsWDlco2ny8XP",
             "name": "Stop"
           },
           {
@@ -16041,7 +14919,7 @@
             "name": "Atmokinesis"
           },
           {
-            "id": "t6M1qwGtNm5TG39u",
+            "id": "Pw50kMaQmNokZSRH",
             "name": "Brainwave Discharge"
           },
           {
@@ -16049,7 +14927,7 @@
             "name": "Clairvoyance"
           },
           {
-            "id": "fMjKeC1qdvOyb9gU",
+            "id": "gHdCvEoFsYkm7Pxc",
             "name": "Cognitive Focus"
           },
           {
@@ -16057,11 +14935,11 @@
             "name": "Gravitokinesis"
           },
           {
-            "id": "ZZHrWYaJTA69Tblm",
+            "id": "aqeMh65BTJXSDbPp",
             "name": "Hypercognition"
           },
           {
-            "id": "PxvJlPxdibCh6irm",
+            "id": "hmCaI4KkGbzyJCBz",
             "name": "Life Transference"
           },
           {
@@ -16081,7 +14959,7 @@
             "name": "Psychic Field"
           },
           {
-            "id": "olW2zXPPViVXtsDk",
+            "id": "x1kDmCw0ZkBCnNG8",
             "name": "Psychic Gifts"
           },
           {
@@ -16089,7 +14967,7 @@
             "name": "Psychic Shield"
           },
           {
-            "id": "6HCTXzDOYrn549Pa",
+            "id": "4c4fokZVWl6WDWhv",
             "name": "Psychokinesis"
           },
           {
@@ -16097,7 +14975,7 @@
             "name": "Reassuring Presence"
           },
           {
-            "id": "O61p6lhDXWyXhTmG",
+            "id": "gpSHoDwjyiTFzb2A",
             "name": "Thermokinesis"
           }
         ],
@@ -16177,11 +15055,11 @@
             "name": "Elemental Shard"
           },
           {
-            "id": "AcMJCQfYI0ZH76h6",
+            "id": "5Kt5YMTdrUfblDI4",
             "name": "Elixir"
           },
           {
-            "id": "bSw96nwIhn8sDO2A",
+            "id": "AcMJCQfYI0ZH76h6",
             "name": "Elixir"
           },
           {
@@ -16249,7 +15127,7 @@
             "name": "Remedy"
           },
           {
-            "id": "up1sbEZUSPX4kxID",
+            "id": "KN5J6FFhqRHsyWGF",
             "name": "Remedy"
           },
           {
@@ -16317,11 +15195,11 @@
         "type": "character",
         "items": [
           {
-            "id": "eU2uH3EmRb1pugng",
+            "id": "VhIs6WNgquccHHX2",
             "name": "Absorb MP"
           },
           {
-            "id": "TLrbuG13WxjgSGxf",
+            "id": "B7twT8yYZiwgGSeN",
             "name": "Beyond the Realms of Death"
           },
           {
@@ -16329,7 +15207,7 @@
             "name": "Bind and Summon (variant)"
           },
           {
-            "id": "O21DtG0HL1iu988q",
+            "id": "Df4UgwLxDVkdTWBZ",
             "name": "Drain Spirit"
           },
           {
@@ -16337,15 +15215,15 @@
             "name": "Drain Vigor"
           },
           {
-            "id": "PGXOJbr05YgptTdw",
+            "id": "bA0K8fc8NhfRcEa8",
             "name": "Entropic Magic"
           },
           {
-            "id": "RRhT8RGXbB5dZAJ7",
+            "id": "e0pEfQlOPr5qb17R",
             "name": "Fear Is the Key"
           },
           {
-            "id": "35fINWpugG54JYBE",
+            "id": "emyHugCKXutu5CxN",
             "name": "For Whom the Bell Tolls"
           },
           {
@@ -17068,7 +15946,7 @@
             "name": "Flail Smash"
           },
           {
-            "id": "RIOT9GEhsrcWndPJ",
+            "id": "iTZE8oAELCG5dxsw",
             "name": "Protect"
           },
           {
@@ -17193,7 +16071,7 @@
             "name": "(Empty)"
           },
           {
-            "id": "exgCOBlP7WOmbbuK",
+            "id": "fmoUwtD8zuzKpDqA",
             "name": "Dodge"
           },
           {
@@ -17268,35 +16146,35 @@
         "type": "character",
         "items": [
           {
-            "id": "rzUI8j9Qq6efqF5f",
+            "id": "kRIzjzZNJZ3tZnOn",
             "name": "Bodyguard"
           },
           {
-            "id": "YAmEyQvAiGJCzVB0",
+            "id": "7zh7GtlFShqcKVM2",
             "name": "Defensive Mastery"
           },
           {
-            "id": "kbdqL7e1O0knrfYp",
+            "id": "QDJ3HMqlgMQqmnOR",
             "name": "Dual Shieldbearer"
           },
           {
-            "id": "jp2qxUQskWomlJF1",
+            "id": "u1JizdRIZYIJ2vbZ",
             "name": "Fortress"
           },
           {
-            "id": "dLPCIIiQdO7KbzYQ",
+            "id": "aEFwqAQ3dHuPgphW",
             "name": "Hoplite"
           },
           {
-            "id": "ceJlsHHvaTa0foQZ",
+            "id": "fkYW0vvluWzHKkJr",
             "name": "Protect"
           },
           {
-            "id": "T7Xq7T1MIO9dq7hi",
+            "id": "4CIpL9IX1SR0j5ys",
             "name": "Rampart"
           },
           {
-            "id": "IBBjlu70adJ22zjO",
+            "id": "6STA15lVKf0Xxnsg",
             "name": "Unbreakable"
           }
         ],
@@ -17427,7 +16305,7 @@
             "name": "Hako Coupon"
           },
           {
-            "id": "IkmKEw6srd1gQ79p",
+            "id": "7IBdWHGWsYr1ImY4",
             "name": "Heal"
           },
           {
@@ -17653,7 +16531,7 @@
             "name": "Shadow Mask"
           },
           {
-            "id": "DhnWQPbEhEbf32w0",
+            "id": "hCYJndmNfWTRyfMI",
             "name": "Symptom Shift"
           },
           {
@@ -17837,7 +16715,7 @@
             "name": "Heal"
           },
           {
-            "id": "wQPUQTJDFJK8Jsm3",
+            "id": "nyEzzbUngB4BZ8Qw",
             "name": "Healing Power"
           },
           {
@@ -17905,7 +16783,7 @@
             "name": "Ritual Entropism"
           },
           {
-            "id": "xt1W4okhrJZPPUlB",
+            "id": "SuE7ERem0thYurVC",
             "name": "Ritual Spiritism"
           },
           {
@@ -17925,7 +16803,7 @@
             "name": "Shield of Rejuvenation"
           },
           {
-            "id": "KVCOLRQv6anedDGI",
+            "id": "uK8MN1c3SDjR2Pgs",
             "name": "Spiritual Magic"
           },
           {
@@ -17961,7 +16839,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 1
+        "effects": 2
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -18267,7 +17145,7 @@
         "type": "character",
         "items": [
           {
-            "id": "rLC5iund3SQOo1e8",
+            "id": "XK5soDqYXdWH5hfw",
             "name": "Create Phantasm: Dread"
           },
           {
@@ -18275,15 +17153,15 @@
             "name": "Create Phantasm: Mockery"
           },
           {
-            "id": "Bf7Byi1jgUI8An8V",
+            "id": "5yMi0UckYk1iZhOv",
             "name": "Create Phantasm: Numen"
           },
           {
-            "id": "46fCo5iu7NwsIjNN",
+            "id": "BbbVFEfBKHdnGIHy",
             "name": "Create Phantasm: Strike"
           },
           {
-            "id": "JiO6GqyH0GSyP4GJ",
+            "id": "HdLfn0DYJbyK7R6z",
             "name": "Detonate Phantasm"
           },
           {
@@ -18291,11 +17169,11 @@
             "name": "Essence Sacrifice"
           },
           {
-            "id": "HuFg03GeErzQ0ldi",
+            "id": "CG5Spcpw4TA88SB6",
             "name": "Illusionist Magic"
           },
           {
-            "id": "qIbPWqh6b7jz1J5j",
+            "id": "0uyxLhsliHcsJgQJ",
             "name": "Illusory Shield"
           },
           {
@@ -18307,11 +17185,11 @@
             "name": "Multi Shatter"
           },
           {
-            "id": "k8da2BsIXo4XWsWk",
+            "id": "ay4pMD3oFnxP8J8s",
             "name": "Nocebo Weapon"
           },
           {
-            "id": "vqkHK8ZeWCqDMmi9",
+            "id": "jaWduz3myPhVo9za",
             "name": "Phantasmal Echo"
           },
           {
@@ -18469,7 +17347,7 @@
             "name": "Electro Hex"
           },
           {
-            "id": "sPTX2h7JM3JAO8l6",
+            "id": "fZSuVWWcfSQDWfKy",
             "name": "Elemental Harmony"
           },
           {
@@ -18493,7 +17371,7 @@
             "name": "Inner Wellspring"
           },
           {
-            "id": "eKI1ozDDSSH3c4s7",
+            "id": "SD49WSWBAzxphiaC",
             "name": "Invocation"
           },
           {
@@ -18787,7 +17665,7 @@
             "name": "Fear Is the Key"
           },
           {
-            "id": "fjThxMdxufSrumbB",
+            "id": "rIL03M727EEzLUNf",
             "name": "For Whom the Bell Tolls"
           },
           {
@@ -18891,7 +17769,7 @@
             "name": "Counterattack"
           },
           {
-            "id": "cqM9MwnjWk55dy8d",
+            "id": "jqsOBcpQDotly4Ny",
             "name": "Elemental Magic"
           },
           {
@@ -18919,7 +17797,7 @@
             "name": "Elemental Shard - Ice"
           },
           {
-            "id": "r1qIqCf1HYDCuj58",
+            "id": "o6Wv93JmrRvWd3ya",
             "name": "Elemental Shroud"
           },
           {
@@ -18927,7 +17805,7 @@
             "name": "Flare"
           },
           {
-            "id": "o2vuSVK65CwME25X",
+            "id": "aXKsu9REw2IiTyoZ",
             "name": "Iceberg"
           },
           {
@@ -19326,11 +18204,11 @@
         "type": "character",
         "items": [
           {
-            "id": "eBpWzu7eWsafA0NW",
+            "id": "HewqVDpjUconBOQh",
             "name": "Capote"
           },
           {
-            "id": "DkKW7LjQe88WITHn",
+            "id": "WsTQiVjNZnNUAaJS",
             "name": "Castigo"
           },
           {
@@ -19338,7 +18216,7 @@
             "name": "Corrida Finale"
           },
           {
-            "id": "Ky89PGNaIbRAtc9d",
+            "id": "cC6YlrjGnXLTWwuh",
             "name": "Counter Pass"
           },
           {
@@ -19346,11 +18224,11 @@
             "name": "Crowd Favorite"
           },
           {
-            "id": "YxyhuNJl0BCW41Ef",
+            "id": "qmpBr6Vi6SlYXcG4",
             "name": "Descabello"
           },
           {
-            "id": "H82OVbXsJJeTvgdy",
+            "id": "APO7aI05mrg61M1e",
             "name": "Elegance Showmanship"
           },
           {
@@ -19358,7 +18236,7 @@
             "name": "Faena"
           },
           {
-            "id": "uXUcvugBHJ5ZIYPl",
+            "id": "DQKwfxjPvV422hVj",
             "name": "Fancy Footwork"
           },
           {
@@ -19366,11 +18244,11 @@
             "name": "Festivities"
           },
           {
-            "id": "9OyQy6j4aTiQpC2Z",
+            "id": "CVsidr8waV5G05IU",
             "name": "Grace Under Pressure"
           },
           {
-            "id": "y7Ix9pafoBkRFzcn",
+            "id": "if9raWE0fUl7Xs4h",
             "name": "Muleta"
           },
           {
@@ -19378,15 +18256,15 @@
             "name": "Ole!"
           },
           {
-            "id": "VNVL6x9PxdwGk5ry",
+            "id": "1gOeajlBR8i8UifH",
             "name": "Pases"
           },
           {
-            "id": "rO4nJwWvipkJl8tJ",
+            "id": "xY0aw9Tnx9ONcSqR",
             "name": "Tafallera"
           },
           {
-            "id": "AxOUw3ZnkwUOJPnR",
+            "id": "aMJXoOaMRTahdwx8",
             "name": "Thread the Horns"
           },
           {
@@ -19394,7 +18272,7 @@
             "name": "Triumphal Salute"
           },
           {
-            "id": "96SYupARpbn0ruG7",
+            "id": "TW1zRKl79fcUmpH2",
             "name": "Verónica"
           }
         ],
@@ -19518,11 +18396,11 @@
             "name": "Counterattack"
           },
           {
-            "id": "NrQwNfM2u19Mn1T5",
+            "id": "F3egv53B1qeCVbAX",
             "name": "Elemental Magic"
           },
           {
-            "id": "amOyaLMlrBMnom24",
+            "id": "qNCk5pzVwlrk6l7b",
             "name": "Elemental Weapon"
           },
           {
@@ -19653,7 +18531,7 @@
         "type": "character",
         "items": [
           {
-            "id": "8lH1BKbIA1scXPUH",
+            "id": "rwDyEFPnMBQRE9sL",
             "name": "Beyond the Realms of Death"
           },
           {
@@ -19665,15 +18543,11 @@
             "name": "Children of the Grave"
           },
           {
-            "id": "sxXnO8GZdl8mCKz0",
+            "id": "rW8tMlWchCAV9OCP",
             "name": "Fear Is the Key"
           },
           {
-            "id": "yd15w1RY5KWvPSsk",
-            "name": "For Whom the Bell Tolls"
-          },
-          {
-            "id": "YFHQR4oWFNLTYWN4",
+            "id": "tPUSz4m5MNDTbBrV",
             "name": "For Whom the Bell Tolls"
           },
           {
@@ -19723,7 +18597,7 @@
         "type": "character",
         "items": [
           {
-            "id": "oyKiZ4mHcgOuU6He",
+            "id": "R8ebA89bJ0zACb3e",
             "name": "Elemental Shroud"
           },
           {
@@ -19731,7 +18605,7 @@
             "name": "Fulgur"
           },
           {
-            "id": "f6mmUfrw1G9dL3HK",
+            "id": "TPbZrTZXUp3rWsGl",
             "name": "Glacies"
           },
           {
@@ -20220,11 +19094,11 @@
             "name": "Counterattack"
           },
           {
-            "id": "B55Ml3shszpEjXdN",
+            "id": "ZxXEiNhi5SyoIiim",
             "name": "Elemental Magic"
           },
           {
-            "id": "BykvbWEwsx8NeGWA",
+            "id": "4iCEAysWNgX1QNWm",
             "name": "Elemental Weapon"
           },
           {
@@ -20559,11 +19433,11 @@
             "name": "Blade Adept"
           },
           {
-            "id": "nlm2xyjdJYHhC6QH",
+            "id": "mSlTs3Oy2Ahsmh7u",
             "name": "Cheap Shot"
           },
           {
-            "id": "pQ9Q1IHW6Qpc92Hr",
+            "id": "FmbwzdDb39ZRXGCi",
             "name": "Dodge"
           },
           {
@@ -20571,23 +19445,23 @@
             "name": "Duel Master"
           },
           {
-            "id": "Wht9H1EqL37GGTjC",
+            "id": "kYQoLPpRbQCZfpRX",
             "name": "High Speed"
           },
           {
-            "id": "rp1qS1LrTZuVKlO8",
+            "id": "27h0D5G0RAH3t4Id",
             "name": "Pillage"
           },
           {
-            "id": "IIBL3rYvS3yfbl6k",
+            "id": "U3WN91ZqIDjM56mx",
             "name": "See you later"
           },
           {
-            "id": "x2V8jQ3eTi82DI24",
+            "id": "M7Asn4syWfVUf7a6",
             "name": "Soul Steal"
           },
           {
-            "id": "Rrw1wklhQTlDdXY2",
+            "id": "KOvzWWTE7PzarOOB",
             "name": "Vanish"
           }
         ],
@@ -20599,23 +19473,19 @@
         "type": "character",
         "items": [
           {
-            "id": "pvKB32Zd5UOpWSI2",
+            "id": "P98zB8uIntBh8Drk",
             "name": "Cataclysm"
           },
           {
-            "id": "Hj9CviuBJyg7jB30",
+            "id": "EWIux9kAEHLu74R2",
             "name": "Elemental Magic"
           },
           {
-            "id": "VdvLlgPZAZDekgKi",
-            "name": "Elemental Magic"
-          },
-          {
-            "id": "FZmAZfNmuEUQdY4k",
+            "id": "IcKXfmVQ8wsO0umm",
             "name": "Elemental Shroud"
           },
           {
-            "id": "rGlyJg4IVY5rBQ40",
+            "id": "IXJKBzdF99u2Uts4",
             "name": "Elemental Weapon"
           },
           {
@@ -20627,7 +19497,7 @@
             "name": "Fulgur"
           },
           {
-            "id": "UGDXnRio7QNDg0Dr",
+            "id": "ApdLDvMvZf1Dnapu",
             "name": "Glacies"
           },
           {
@@ -20635,7 +19505,7 @@
             "name": "Hypno Pendulum"
           },
           {
-            "id": "y6fpovpZsd7e0KXs",
+            "id": "wdWcqt6ciHgNMiRI",
             "name": "Iceberg"
           },
           {
@@ -20651,7 +19521,7 @@
             "name": "Mage Seal"
           },
           {
-            "id": "pFFuDIJqZDJ0jK88",
+            "id": "lJIXYDuFxvMcqLiS",
             "name": "Magical Artillery"
           },
           {
@@ -20808,19 +19678,19 @@
             "name": "Arcane Mark"
           },
           {
-            "id": "hSpQyyNc9mtml5A5",
+            "id": "NPiCSRdtaxtzAcoR",
             "name": "Barrage"
           },
           {
-            "id": "yJHZivP5YSeuVZ9P",
+            "id": "WnBNYjpkwnNlzy2b",
             "name": "Bullet Break"
           },
           {
-            "id": "DznGzs8BzQLXgZmt",
+            "id": "TbcigG4zOqAFE4Vn",
             "name": "Crossfire"
           },
           {
-            "id": "e6MpBORaCwGXZzCS",
+            "id": "bO6fxaVsCqxzrsfO",
             "name": "Double Arrow"
           },
           {
@@ -20828,19 +19698,19 @@
             "name": "Duel Master"
           },
           {
-            "id": "7abL5AKOr5itnDYY",
+            "id": "wWcBwhwBYnDmBMvY",
             "name": "Hawkeye"
           },
           {
-            "id": "gU4BTJpINdUlYhrm",
+            "id": "NSxHKev4qHTsDXs8",
             "name": "Perfect Aim"
           },
           {
-            "id": "gpwqciEJdML1Foil",
+            "id": "sFh6g7DY0oyFHvfo",
             "name": "Powerful Shot"
           },
           {
-            "id": "8UTBw9a2X0ToHFeW",
+            "id": "rIzPtV1g0rKO1IBi",
             "name": "Ranged Weapon Mastery"
           },
           {
@@ -20848,7 +19718,7 @@
             "name": "Swirling Swarm"
           },
           {
-            "id": "0w538ru3Vo0ZfKGQ",
+            "id": "iVXVHAnBEEzcrOcB",
             "name": "Warning Shot"
           },
           {
@@ -21040,19 +19910,19 @@
         "type": "character",
         "items": [
           {
-            "id": "sYE89hMqNV0KddsW",
+            "id": "B84lIjvW90il1oPS",
             "name": "Aura"
           },
           {
-            "id": "4giDGrkzjGuhec0X",
+            "id": "GhnKODBkO5lmf8Rj",
             "name": "Awaken"
           },
           {
-            "id": "TU1UZt2SkfLLbSmP",
+            "id": "PNmiQ7LtzzUrC5ka",
             "name": "Barrier"
           },
           {
-            "id": "98sjfhHOqou4s2uY",
+            "id": "kTtOSMlEQUvylPxP",
             "name": "Bimagus"
           },
           {
@@ -21060,11 +19930,11 @@
             "name": "Black & White"
           },
           {
-            "id": "Ys1uG5F3cqm63P9D",
+            "id": "YqYKqd3LEQ2oXePo",
             "name": "Cleanse"
           },
           {
-            "id": "FIM8Rl0IzhK5duQH",
+            "id": "xDrg3byBEjXXmCsh",
             "name": "Enrage"
           },
           {
@@ -21072,19 +19942,15 @@
             "name": "Fast Ritual"
           },
           {
-            "id": "hOnoNpy8gvoNFgiz",
+            "id": "yoGSwsYOslOX52sH",
             "name": "Hallucination"
           },
           {
-            "id": "KoREjydjQy7iynJX",
+            "id": "4k1AglX8Pf31SXVv",
             "name": "Heal"
           },
           {
-            "id": "qOBKrgCbxGDlau4X",
-            "name": "Heal"
-          },
-          {
-            "id": "xtfSykX9pmKROojq",
+            "id": "Hqze4uRwBr2ios6r",
             "name": "Healing Power"
           },
           {
@@ -21092,11 +19958,11 @@
             "name": "Hope"
           },
           {
-            "id": "RC9L1kW0lqF4dyse",
+            "id": "mv6mmuOhy9INeKdR",
             "name": "Lux"
           },
           {
-            "id": "BvF0sJ3XStzFUtCL",
+            "id": "kbnDyVCyNsbpZSpg",
             "name": "Mercy"
           },
           {
@@ -21104,31 +19970,31 @@
             "name": "Powerful Spell"
           },
           {
-            "id": "nmoFIW75MkSagRQ5",
+            "id": "QPX6ZW1lTX1BaOIP",
             "name": "Reinforce"
           },
           {
-            "id": "VQVc5Z3BIqO3HsaO",
+            "id": "HNvOVKopP7ojQr30",
             "name": "Ritual Spiritism"
           },
           {
-            "id": "wvhPaiHsh5JkwhUe",
+            "id": "DAt1eRUkvo0MlQcM",
             "name": "Soul Weapon"
           },
           {
-            "id": "rTYPwD6a62Y8fOV8",
+            "id": "5Vqv8u9V7visZ7OO",
             "name": "Spiritual Magic"
           },
           {
-            "id": "3avalTCqlFX5pg7e",
+            "id": "uFF0quc2Mhr3xmRw",
             "name": "Support Magic"
           },
           {
-            "id": "qpO6qszey6EnUfJA",
+            "id": "KTdpCaxIsKjYPJ0Y",
             "name": "Torpor"
           },
           {
-            "id": "NNSdzHwvIiBS9CxI",
+            "id": "ddsgq7AVx0Krt69K",
             "name": "Vismagus"
           }
         ],
@@ -21435,7 +20301,7 @@
             "name": "Adrenaline"
           },
           {
-            "id": "1PY2tjB7kJRZuwvC",
+            "id": "ZAO1MwcowH6WVp5p",
             "name": "Agony"
           },
           {
@@ -21455,7 +20321,7 @@
             "name": "Counterattack"
           },
           {
-            "id": "YaBvU9GhvSQVmu3R",
+            "id": "PupeBv6G1y0Bt2rR",
             "name": "Heart of Darkness"
           },
           {
@@ -21845,15 +20711,15 @@
             "name": "Basic Infusion"
           },
           {
-            "id": "duvYk9yWI9mni9Ef",
+            "id": "XR4RD3tvYfLr6dkN",
             "name": "Deep Pockets"
           },
           {
-            "id": "sKHATH7mdk6oPPif",
+            "id": "Ee3k0GrSVZaK8Ofr",
             "name": "Emergency Item"
           },
           {
-            "id": "nF28ix0bFIba8o3G",
+            "id": "s4Lb3ckdWW4Sx572",
             "name": "Gadgets"
           },
           {
@@ -21869,15 +20735,11 @@
             "name": "Magitech Override"
           },
           {
-            "id": "TsYf1np2OrFZ0yLJ",
+            "id": "oBKS4NmV6k0fv7S9",
             "name": "Potion Rain"
           },
           {
-            "id": "x8QMxTtjTkeEAWnc",
-            "name": "Potion Rain"
-          },
-          {
-            "id": "JE4lKc7P7VwOiVPf",
+            "id": "LluXCDdz8P0uGTeE",
             "name": "Secret Formula"
           },
           {
@@ -21980,11 +20842,11 @@
             "name": "Decoy Doll"
           },
           {
-            "id": "vsP9A1vbIbYxSQst",
+            "id": "QWlcrId3bmnRmtQL",
             "name": "Elemental Magic"
           },
           {
-            "id": "8dCdaesG5otL2BgR",
+            "id": "jY2rUW1S8k7VEeUH",
             "name": "Elemental Weapon"
           },
           {
@@ -21992,11 +20854,11 @@
             "name": "Faithful Companion"
           },
           {
-            "id": "9ro7wnE2sgifVAC5",
+            "id": "WhQkZuDMEraweEcP",
             "name": "Glacies"
           },
           {
-            "id": "l9NMP8AKqj72msQB",
+            "id": "Nw2G6JCTKOgsZDi8",
             "name": "Iceberg"
           },
           {
@@ -22164,7 +21026,7 @@
             "name": "Resourceful"
           },
           {
-            "id": "UDZCCxA0SQPvKj8S",
+            "id": "IQ4vpDdC3FcS62YA",
             "name": "Status Immunity"
           },
           {
@@ -22426,7 +21288,7 @@
             "name": "Alchemist Vial"
           },
           {
-            "id": "pM7IziuZMSRuUMFL",
+            "id": "hOv7AXBfJYnz0iub",
             "name": "Barrage"
           },
           {
@@ -22454,7 +21316,7 @@
             "name": "Cat Ears (Passive)"
           },
           {
-            "id": "k7CNhaKwcWuBCDSr",
+            "id": "JbFsdpWdRActLGRB",
             "name": "Crossfire"
           },
           {
@@ -22574,7 +21436,7 @@
             "name": "Portable Cauldron"
           },
           {
-            "id": "waoyUxLFPL2PrcDp",
+            "id": "Z68sRUIkr5hGOKkn",
             "name": "Ranged Weapon Mastery"
           },
           {
@@ -22634,7 +21496,7 @@
             "name": "Turbo Remedy"
           },
           {
-            "id": "iy8Ir8ozuZcMYkwf",
+            "id": "6ckEG84U2tNWV2Ii",
             "name": "Warning Shot"
           },
           {
@@ -22899,6 +21761,400 @@
         "type": "character",
         "items": [],
         "effects": 1
+      }
+    ],
+    "tables": [
+      {
+        "id": "EncLgNNVpyYXgduL",
+        "name": "3 Star",
+        "results": 28
+      },
+      {
+        "id": "oI62OUmrfNFLBuok",
+        "name": "4 Star",
+        "results": 21
+      },
+      {
+        "id": "jlDJQx6WUtsw7npK",
+        "name": "Bandits Hideout - Accessory",
+        "results": 11
+      },
+      {
+        "id": "UKUdnJ43VjD7yITi",
+        "name": "Bandits Hideout - Armor",
+        "results": 11
+      },
+      {
+        "id": "NJJRzwx5vkQ6cGK0",
+        "name": "Bandits Hideout - Clock Event",
+        "results": 0
+      },
+      {
+        "id": "5XUe06fGWEn90St1",
+        "name": "Bandits Hideout - Consumable",
+        "results": 13
+      },
+      {
+        "id": "vSKKGryKcP7EMMxp",
+        "name": "Bandits Hideout - Encounter",
+        "results": 25
+      },
+      {
+        "id": "ELzPI2DIrn0jp6ll",
+        "name": "Bandits Hideout - Enemies",
+        "results": 17
+      },
+      {
+        "id": "Fm67XJ1xWzN46FEu",
+        "name": "Bandits Hideout - Hazard",
+        "results": 0
+      },
+      {
+        "id": "scss9vwAOPcEarWf",
+        "name": "Bandits Hideout - Item",
+        "results": 8
+      },
+      {
+        "id": "8iDaBXzYwP3N4FJN",
+        "name": "Bandits Hideout - Skill Check",
+        "results": 0
+      },
+      {
+        "id": "xcvyadSZsEqYvjJA",
+        "name": "Bandits Hideout - Treasure",
+        "results": 17
+      },
+      {
+        "id": "lts7pA0Id97apfQf",
+        "name": "Bandits Hideout - Weapon",
+        "results": 20
+      },
+      {
+        "id": "kDjxoeSbJMMkqtFd",
+        "name": "Bandits Hideout - Zenit",
+        "results": 9
+      },
+      {
+        "id": "cR8fZSJm8nDtoN6v",
+        "name": "Bloody Chivalry",
+        "results": 7
+      },
+      {
+        "id": "AKAvnyzLpm8JTm4h",
+        "name": "Eisendrache Arena - Encounter",
+        "results": 0
+      },
+      {
+        "id": "B4Kz5WIXRbf1CwRG",
+        "name": "Eisendrache Arena - Enemies",
+        "results": 6
+      },
+      {
+        "id": "4a7zHxWJgzlB8YZk",
+        "name": "Eisendrache Burning - Encounter",
+        "results": 0
+      },
+      {
+        "id": "TjiTEPcFQ4esnpCr",
+        "name": "Eisendrache Burning - Enemies",
+        "results": 4
+      },
+      {
+        "id": "SnpuZA1fqyPLoZ2B",
+        "name": "Eisendrache Highroad - Encounter",
+        "results": 1
+      },
+      {
+        "id": "S46aDzzbD7EtghoA",
+        "name": "Eisendrache Highroad - Enemies",
+        "results": 1
+      },
+      {
+        "id": "Cif65dOA8pczlg6f",
+        "name": "Milky Holstein",
+        "results": 8
+      },
+      {
+        "id": "5vK0Z321GuAYlywn",
+        "name": "Monster of Frankensteiner",
+        "results": 6
+      },
+      {
+        "id": "ZE2BWLTbKDOb2IZG",
+        "name": "Oathsworn Paladin",
+        "results": 3
+      },
+      {
+        "id": "YrnoWmGa1FLR2PV0",
+        "name": "Overworld - Accessory",
+        "results": 0
+      },
+      {
+        "id": "jkYuxg6tBglIvdW3",
+        "name": "Overworld - Armor",
+        "results": 0
+      },
+      {
+        "id": "nsLSrK3386goLEzL",
+        "name": "Overworld - Clock Event",
+        "results": 0
+      },
+      {
+        "id": "sNlSMqnyPBMyASFc",
+        "name": "Overworld - Consumable",
+        "results": 0
+      },
+      {
+        "id": "kKNShiXNnENSFQYB",
+        "name": "Overworld - Encounter",
+        "results": 6
+      },
+      {
+        "id": "k5xhZHOZYIOnJ9z9",
+        "name": "Overworld - Enemies",
+        "results": 11
+      },
+      {
+        "id": "O9MmuLub0R7sz3y5",
+        "name": "Overworld - Hazard",
+        "results": 0
+      },
+      {
+        "id": "tn2h5aYfaVnBwa5s",
+        "name": "Overworld - Item",
+        "results": 8
+      },
+      {
+        "id": "SbI3OauDeVAadbk9",
+        "name": "Overworld - Skill Check",
+        "results": 0
+      },
+      {
+        "id": "BzyG1dOrjCiVZmWM",
+        "name": "Overworld - Treasure",
+        "results": 24
+      },
+      {
+        "id": "QFE01KhiyPXx37NE",
+        "name": "Overworld - Weapon",
+        "results": 0
+      },
+      {
+        "id": "JApuQALPoS1QIFoV",
+        "name": "Overworld - Zenit",
+        "results": 8
+      },
+      {
+        "id": "IGZhlzseqySC5xUd",
+        "name": "Street Fighters",
+        "results": 7
+      },
+      {
+        "id": "CRGj5HutohiPQnl1",
+        "name": "The Wyrmwood - Accessory",
+        "results": 7
+      },
+      {
+        "id": "eXxNIQ3UcglIdF7F",
+        "name": "The Wyrmwood - Armor",
+        "results": 7
+      },
+      {
+        "id": "CthUDDkpmJYgTTiq",
+        "name": "The Wyrmwood - Clock Event",
+        "results": 0
+      },
+      {
+        "id": "r1RCffEXmNdKe9lu",
+        "name": "The Wyrmwood - Consumable",
+        "results": 11
+      },
+      {
+        "id": "dVTBvuqiiIbsydxt",
+        "name": "The Wyrmwood - Encounter",
+        "results": 22
+      },
+      {
+        "id": "EggrsY05k3rIY9iS",
+        "name": "The Wyrmwood - Enemies",
+        "results": 12
+      },
+      {
+        "id": "Y8CVycHKYKQYOf7v",
+        "name": "The Wyrmwood - Hazard",
+        "results": 0
+      },
+      {
+        "id": "6P0CB87nx5yZZQa2",
+        "name": "The Wyrmwood - Item",
+        "results": 8
+      },
+      {
+        "id": "0mvIad0w47sOkFhO",
+        "name": "The Wyrmwood - Skill Check",
+        "results": 0
+      },
+      {
+        "id": "hS4XNu1vLtWbPSne",
+        "name": "The Wyrmwood - Treasure",
+        "results": 8
+      },
+      {
+        "id": "8zdktLBCbkf2u8RM",
+        "name": "The Wyrmwood - Weapon",
+        "results": 12
+      },
+      {
+        "id": "5zFaLHS36v9rL0OG",
+        "name": "The Wyrmwood - Zenit",
+        "results": 11
+      },
+      {
+        "id": "nTcCBVqpj1EYIZHY",
+        "name": "Tidal Predator",
+        "results": 6
+      },
+      {
+        "id": "oDiuDJRoayGJwr1L",
+        "name": "Vastwind Field - Accessory",
+        "results": 13
+      },
+      {
+        "id": "TP1f76y3t190U1DS",
+        "name": "Vastwind Field - Armor",
+        "results": 12
+      },
+      {
+        "id": "TU2vaiwo1QznVV6t",
+        "name": "Vastwind Field - Clock Event",
+        "results": 0
+      },
+      {
+        "id": "fxXT0ZlnFlDYwfgv",
+        "name": "Vastwind Field - Consumable",
+        "results": 13
+      },
+      {
+        "id": "AHmXAyuOHWb1ag6g",
+        "name": "Vastwind Field - Encounter",
+        "results": 28
+      },
+      {
+        "id": "oUPHzpKAMVPEqg2V",
+        "name": "Vastwind Field - Enemies",
+        "results": 20
+      },
+      {
+        "id": "SiZgIo4rq88ZSwmf",
+        "name": "Vastwind Field - Hazard",
+        "results": 0
+      },
+      {
+        "id": "O9EPpdHKFh9Y4QZu",
+        "name": "Vastwind Field - Item",
+        "results": 8
+      },
+      {
+        "id": "T3CTtc5xAVFetjln",
+        "name": "Vastwind Field - Skill Check",
+        "results": 0
+      },
+      {
+        "id": "dRN7ElUZH86RVl4e",
+        "name": "Vastwind Field - Treasure",
+        "results": 10
+      },
+      {
+        "id": "zmFWPkL08OPmxnry",
+        "name": "Vastwind Field - Weapon",
+        "results": 15
+      },
+      {
+        "id": "oaQ7YbBK9rExOYwH",
+        "name": "Vastwind Field - Zenit",
+        "results": 8
+      },
+      {
+        "id": "hCjFqMk8dQ0hLALZ",
+        "name": "Vastwind Field (Cave) - Encounter",
+        "results": 1
+      },
+      {
+        "id": "L1w8IX58F6whkxly",
+        "name": "Vastwind Field (Cave) - Enemies",
+        "results": 1
+      },
+      {
+        "id": "oIdlLAgL2CDmemCw",
+        "name": "Vastwind Field (Lower Road) - Encounter",
+        "results": 20
+      }
+    ],
+    "playlists": [
+      {
+        "id": "sTXW6iij7V6k3nMP",
+        "name": "⚙ Soundboard: GM",
+        "sounds": 35
+      },
+      {
+        "id": "RQCAKkv2ZbCCuyzP",
+        "name": "Ambience",
+        "sounds": 12
+      },
+      {
+        "id": "3BfhvkcEt6LLgH1y",
+        "name": "ambient",
+        "sounds": 3
+      },
+      {
+        "id": "svNYH06gTruxYMC9",
+        "name": "battle",
+        "sounds": 5
+      },
+      {
+        "id": "9A8xMdPSazuyUHmB",
+        "name": "BQ_BGM_1",
+        "sounds": 15
+      },
+      {
+        "id": "POV9fioQ0Kkj7hKC",
+        "name": "Generic Playlist",
+        "sounds": 61
+      },
+      {
+        "id": "2IOBBlG7FfsPz0fA",
+        "name": "green",
+        "sounds": 6
+      },
+      {
+        "id": "f0EMwowQRAuXvoNp",
+        "name": "Northland Hunters 01 BGM",
+        "sounds": 15
+      },
+      {
+        "id": "G4diQE48Ii39D3xF",
+        "name": "PC ulti",
+        "sounds": 2
+      },
+      {
+        "id": "6bxEyBWWa9oYUQPr",
+        "name": "Scene",
+        "sounds": 10
+      },
+      {
+        "id": "pfNO17vplycHndhW",
+        "name": "Temp",
+        "sounds": 1
+      },
+      {
+        "id": "VrpdABUTSoREMDR5",
+        "name": "The Legend of Dragonslayer",
+        "sounds": 19
+      },
+      {
+        "id": "nXC5wp5sOxn42vJl",
+        "name": "The Winterlands Witch Trial",
+        "sounds": 28
       }
     ]
   }

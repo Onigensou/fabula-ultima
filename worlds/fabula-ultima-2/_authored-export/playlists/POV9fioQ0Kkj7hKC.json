@@ -1,0 +1,859 @@
+{
+  "_id": "POV9fioQ0Kkj7hKC",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1700029218963,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "channel": "music",
+  "description": "",
+  "fade": null,
+  "flags": {},
+  "folder": "sK5ygcug2LQ6JXfi",
+  "mode": -1,
+  "name": "Generic Playlist",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "seed": 373,
+  "sort": 200000,
+  "sorting": "a",
+  "sounds": [
+    {
+      "_id": "0qgkhWPrHt6oCgqI",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Camp Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Camp_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.06
+    },
+    {
+      "_id": "2MwNX9vJFEL3qoxw",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Thicker Than A Knife's Blade",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Thicker_than_a_Knife%27s_Blade.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.06
+    },
+    {
+      "_id": "3c7KkWm0nrMsrBXG",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Dungeon Blitz Theme A",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Dungeon_Blitz_Theme_A.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "4NfL21LeL1gxAMTK",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "OmniousA",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/OmniousA.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.06
+    },
+    {
+      "_id": "6zl5Nss8r71ygpiK",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "The Autumnland Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/The_Autumnland%20Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "7pwLCNFuxIHkLS5a",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Fabula Boss Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Fabula_Boss_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "8I3vRdCOvfh0vOqd",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Dim Light",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Dim_Light.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "8NCPvfEBrf9pLMup",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Adversity",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Adversity.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "a1l9nF5WW1ckzRx0",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Sinister Plot",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Sinister_Plot.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "A2Ev8qbWsHfFKXFE",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Sacrifice",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Sacrifice.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "BQoOa7Ki98EldAIB",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Selfless Moment",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Selfless%20Moment.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "BRdiTesv5j1lMqAN",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Things Getting Bad",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Things%20getting%20bad.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "Bs2HqIKxd88nEu5L",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Meanwhile",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Meanwhile.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.06
+    },
+    {
+      "_id": "DGIOVgbUjzsumvaT",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Visitor Title Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/Visitor%20from%20Beyond/Visitor_Title.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "DjVz1XTwYPFqcWnJ",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "The Summerland Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/The_Summerland_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "dseA0eMsc8dCiRDa",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "The Springland Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/The_Springland%20Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.03
+    },
+    {
+      "_id": "dyqm2JHGyEIus48u",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Suspenseful Moment",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Suspenseful_Moment.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "EbcWIgK7X3Dm0kHA",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Battle With Villian",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Battle_with_Villian.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "EGJr8B0Ly5W1Qidi",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Past Events",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Past%20Events.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "Er250931cABsVbwb",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Somethings Not Right...",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Somethings_not_right....mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "fErLf2oMYBz0TBEg",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Relieved",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Relieved.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "Fh37Q2QFqeNpocs9",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Reminisce",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Reminisce.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "fHzF7yTPfS31DtL8",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Inn A",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Inn_A.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.35
+    },
+    {
+      "_id": "FhzJm9aNFuVykyuU",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Unfufilled Wish",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Unfufilled_Wish.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "FSdHcuKu2fGtbgU3",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Mischievous",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Mischievious_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "FZBGBwpo6VzNAYQe",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Ixdrasil Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Ixdrasil_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "gdPeU98BmKYkt5qq",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Fabula Battle Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Fabula_Battle_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "H5HvB9hY6yB7pryW",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Fabula Battle Theme B",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Fabula_Battle_Theme_B.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "HFa5ajYNoOHWLbxp",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Villian_Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Villian_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "IdCj5u9XkUR63Abw",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Sadness",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Sadness.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "IJk5Z3ymtdQx1MAz",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "core": {
+          "sourceId": "Playlist.nXC5wp5sOxn42vJl.PlaylistSound.Kc2Ph1nCmSEUsnMX"
+        }
+      },
+      "name": "White Haired Man",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/White_Hair_Man.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "jBD4mTDwtPly2V30",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Witch's Temptation",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Witch%27s_Temptation.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.3
+    },
+    {
+      "_id": "jbYOpNW8Y7FXYJVD",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Whisper",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Whisper.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.03
+    },
+    {
+      "_id": "jKTxVdvLV0Ss7x2V",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Victory Jingle",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Victory_Jingle.mp3",
+      "repeat": false,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "JmsUR78EQ2SuJjAg",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Lighthearted Mood",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Lighthearted%20Mood.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "jVj0k1Glk0fc2JkK",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Oh My God",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/OH%20MY%20GOD.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "jz78noSOcJ1wA1q4",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Heroic",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Return_of_the_Hero.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "Kmm4a4X8y1oQBY7s",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Omen",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Omen.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "L2DKtWHEFwLpWfH3",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Riddle",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Riddle.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "lDoak7f9S9aOjLQJ",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Forever Lost",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Forever_Lost.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "MOTOW9tUMblwXz9y",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Heaven Distress",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Heaven_Distress.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "nCgQLdp2Vi6J7Am0",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Tragic Loss",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Tragic%20Loss.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "npKhehNDuBVwo2Fn",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Sound of Night",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Sound_of_Night.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "OKzFtxpPmyAjx3tY",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Dungeon Theme B",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Dungeon_Theme_B.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.06
+    },
+    {
+      "_id": "pdcSRKGTXG4ro8aa",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Fishing Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Fishing_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "PDvyUfpXwRJGergL",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Ambush",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Ambush.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.35
+    },
+    {
+      "_id": "ponpFaAomuQ5uHpc",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "All out attack",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/All-out%20Attack%20theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "QCEVRMjgO0wONiu8",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Beneath The Empire Standard",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Beneath_the_Empire_Standard.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "QdD23mZ3CuhgHdv3",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Gacha Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Gacha_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "sqZagngKJEFKGoBh",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Piece Of Eternity",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Piece_of_Eternity.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "UJ4ZqAaVDRNkCvqW",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Doubt",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Doubt.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "UJL8420MMcC2CDO2",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Alert Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Alert_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "UmU7aoqvgOyiOv9x",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Tranquility",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Tranquility.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "UQss5aJbU32eGNn3",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "SuspenseA",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/SuspenseA.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "vnmHgNbYSb9FVC9P",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Reflective Moment",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Reflective%20Moment.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "XgeZmN0enp9su7oV",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Airship Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Airship_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.06
+    },
+    {
+      "_id": "XPe9JLdY0DSKJwv5",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "The Winterland Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/The_Winterland%20Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "XQ1shDMKG0ZXXNGk",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "DangerA",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/DangerA.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "YdSFW4CJeL2n2bDy",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Unsettled",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Unsettled.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "YnDpO64JmYGYHtN8",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Victory Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Victory_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "Z5qpSSyIKYBm79HZ",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Goofy Moments",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Goofy%20Moments.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    }
+  ]
+}

@@ -717,6 +717,78 @@
       "type": "equippableItem"
     },
     {
+      "_id": "5Kt5YMTdrUfblDI4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398959052,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "recipe",
+            "fromTemplate": "VJCHYWOx1mPsMSip",
+            "itemId": "H4XNJ67N8XSVnRcj",
+            "itemName": "Elixir",
+            "pickedOldProps": {
+              "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+              "recipe_flavor": "",
+              "recipe_ip": "3",
+              "recipe_label": ""
+            },
+            "ts": 1769647435537
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
+      "name": "Elixir",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "description": "<p>Target creature recovers 50 Mind Points.</p>",
+          "ip_cost": "3",
+          "isRelatedItem": false,
+          "item_skill_active": {
+            "nTD1ZUzaAOV9TGT8": {
+              "id": "${item.id}",
+              "name": "Elixir",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.nTD1ZUzaAOV9TGT8"
+            }
+          },
+          "item_type": "recipe",
+          "name": "Elixir",
+          "related_item_list": {
+            "nTD1ZUzaAOV9TGT8": {
+              "id": "${item.id}",
+              "name": "Elixir",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
+              "uuid": "Item.nTD1ZUzaAOV9TGT8"
+            }
+          }
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "NlUsrJJRcIOWJVWc"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "AcMJCQfYI0ZH76h6",
       "_stats": {
         "compendiumSource": null,
@@ -907,83 +979,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "kMbhsJ2cDIFndrKy"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "bSw96nwIhn8sDO2A",
-      "_stats": {
-        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
-        "coreVersion": "12.343",
-        "createdTime": 1783148578466,
-        "duplicateSource": "Item.cneU6dfTzI13k0U2",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
-      "name": "Elixir",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 100000,
-      "system": {
-        "container": "AcMJCQfYI0ZH76h6",
-        "props": {
-          "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "0",
-          "class": "",
-          "cost": "-",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>Target creature recovers 50 Mind Points.</p>",
-          "duration": "Instantaneous",
-          "effect_table": {
-            "0": {
-              "effect_kind": "grant",
-              "effect_label": "restore",
-              "grant_amount": "50",
-              "grant_resource": "mp",
-              "target_ref": "action_targets"
-            }
-          },
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Elixir",
-          "on_activate_effect_ref": "restore",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Any",
-          "skill_tags": "potion",
-          "skill_target": "One Creature",
-          "skill_type": "Item",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "nTD1ZUzaAOV9TGT8"
       },
       "type": "equippableItem"
     },
@@ -2418,7 +2413,6 @@
           "beast_ef": "100",
           "category": "Dagger",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -2437,8 +2431,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "Iu4LG8jvhKjhn9uU",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1224.gif",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -2569,7 +2561,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.Iu4LG8jvhKjhn9uU",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2635,7 +2626,6 @@
           "beast_ef": "100",
           "category": "Flail",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "10",
@@ -2655,8 +2645,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "YZIW3yUn3JoEyjZA",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -2677,6 +2665,14 @@
           "item_quantity": 1,
           "item_rarity": "Uncommon",
           "item_skill_passive": {
+            "MGaEsHxCdiE9FlIa": {
+              "id": "${item.id}",
+              "name": "The Tormentor (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.MGaEsHxCdiE9FlIa"
+            },
             "YUYi5J6GgRHVbEtd": {
               "id": "${item.id}",
               "name": "The Tormentor (Passive)",
@@ -2698,6 +2694,12 @@
           "refine_count": "0",
           "refine_level": "0",
           "related_item_list": {
+            "MGaEsHxCdiE9FlIa": {
+              "id": "${item.id}",
+              "name": "The Tormentor (Passive)",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.MGaEsHxCdiE9FlIa"
+            },
             "YUYi5J6GgRHVbEtd": {
               "id": "${item.id}",
               "name": "The Tormentor (Passive)",
@@ -2715,7 +2717,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.YZIW3yUn3JoEyjZA",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2766,6 +2767,15 @@
           "demon_ef": "100",
           "description": "<ul><li><p>Target creature gain <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span>, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 10 instead.</p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "effect_kind": "set_resource",
+              "effect_label": "golemstone_shield",
+              "grant_amount": "10",
+              "grant_resource": "shield",
+              "target_ref": "action_targets"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -2792,12 +2802,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Common",
+          "item_skill_active": {
+            "HBZ3kC5M0froQyCl": {
+              "id": "${item.id}",
+              "name": "Golem Soulstone",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+              "skill_maxLevel": "",
+              "uuid": "Item.HBZ3kC5M0froQyCl"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Golem Soulstone",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "HBZ3kC5M0froQyCl": {
+              "id": "${item.id}",
+              "name": "Golem Soulstone",
+              "related_item_description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+              "uuid": "Item.HBZ3kC5M0froQyCl"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -3192,6 +3220,78 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "2dTUIP5vUweRF9ir"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "KN5J6FFhqRHsyWGF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398959052,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "recipe",
+            "fromTemplate": "VJCHYWOx1mPsMSip",
+            "itemId": "H4XNJ67N8XSVnRcj",
+            "itemName": "Elixir",
+            "pickedOldProps": {
+              "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+              "recipe_flavor": "",
+              "recipe_ip": "3",
+              "recipe_label": ""
+            },
+            "ts": 1769647435537
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
+      "name": "Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "description": "<p>Target creature recovers 50 Hit Points.</p>",
+          "ip_cost": "3",
+          "isRelatedItem": false,
+          "item_skill_active": {
+            "jNN7WCFgjvU9wXr4": {
+              "id": "${item.id}",
+              "name": "Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.jNN7WCFgjvU9wXr4"
+            }
+          },
+          "item_type": "recipe",
+          "name": "Remedy",
+          "related_item_list": {
+            "jNN7WCFgjvU9wXr4": {
+              "id": "${item.id}",
+              "name": "Remedy",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
+              "uuid": "Item.jNN7WCFgjvU9wXr4"
+            }
+          }
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "G2cjE5FjEIntUewf"
       },
       "type": "equippableItem"
     },
@@ -4251,7 +4351,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "8",
@@ -4270,8 +4369,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "qr1ElGHgIp9933XQ",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -4303,7 +4400,6 @@
           "spirit_ef": "100",
           "type_damage": "Fire",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.qr1ElGHgIp9933XQ",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -4962,83 +5058,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "up1sbEZUSPX4kxID",
-      "_stats": {
-        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
-        "coreVersion": "12.343",
-        "createdTime": 1783148578466,
-        "duplicateSource": "Item.cneU6dfTzI13k0U2",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
-      "name": "Remedy",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 100000,
-      "system": {
-        "container": "ERZjg9YBPVLk6nsc",
-        "props": {
-          "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "0",
-          "class": "",
-          "cost": "-",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>Target creature recovers 50 Hit Points.</p>",
-          "duration": "Instantaneous",
-          "effect_table": {
-            "0": {
-              "effect_kind": "grant",
-              "effect_label": "heal",
-              "grant_amount": "50",
-              "grant_resource": "hp",
-              "target_ref": "action_targets"
-            }
-          },
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Remedy",
-          "on_activate_effect_ref": "heal",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Any",
-          "skill_tags": "potion",
-          "skill_target": "One Creature",
-          "skill_type": "Item",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "jNN7WCFgjvU9wXr4"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "vJWs8recTv3mtfVG",
       "_stats": {
         "compendiumSource": "Item.4qXalxoKZVy8h2wD",
@@ -5181,6 +5200,14 @@
           "demon_ef": "100",
           "description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "ae_template_ref": "Swift",
+              "effect_kind": "apply_ae",
+              "effect_label": "cafeaulait_swift",
+              "target_ref": "self"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -5207,12 +5234,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Common",
+          "item_skill_active": {
+            "VNg8JKR5sUjqgdNb": {
+              "id": "${item.id}",
+              "name": "Café au Lait",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Item.VNg8JKR5sUjqgdNb"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Café au Lait",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "VNg8JKR5sUjqgdNb": {
+              "id": "${item.id}",
+              "name": "Café au Lait",
+              "related_item_description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+              "uuid": "Item.VNg8JKR5sUjqgdNb"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -5421,7 +5466,6 @@
           "beast_ef": "100",
           "category": "Brawling",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "3",
@@ -5440,8 +5484,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "wCSJTNqVjW9ZweJk",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1813.gif",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -5481,7 +5523,6 @@
           "spirit_ef": "100",
           "type_damage": "Fire",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.wCSJTNqVjW9ZweJk",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5547,7 +5588,6 @@
           "beast_ef": "100",
           "category": "Heavy",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "12",
@@ -5565,8 +5605,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "xCskLjO3pJWiKp5f",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Axe/Icon-Viking_Axe.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -5644,7 +5682,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.xCskLjO3pJWiKp5f",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5724,7 +5761,6 @@
           "beast_ef": "100",
           "category": "Dagger",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "damage_bonus": "4",
@@ -5742,8 +5778,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "vifu2MB7Q9daEa8I",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1231.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -5777,7 +5811,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.vifu2MB7Q9daEa8I",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5821,7 +5854,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -5840,8 +5872,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "ZbLoXQrkbqZIJkzr",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1916.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -5897,7 +5927,6 @@
           "spirit_ef": "100",
           "type_damage": "Bolt",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ZbLoXQrkbqZIJkzr",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },

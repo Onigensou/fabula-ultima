@@ -1,0 +1,191 @@
+{
+  "_id": "6bxEyBWWa9oYUQPr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747695986972,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "channel": "music",
+  "description": "",
+  "fade": null,
+  "flags": {
+    "monks-sound-enhancements": {
+      "hide-playlist": false
+    }
+  },
+  "folder": "otziXYde7WVivcBZ",
+  "mode": 0,
+  "name": "Scene",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "seed": 815,
+  "sort": 0,
+  "sorting": "a",
+  "sounds": [
+    {
+      "_id": "3F95T6PHdcJ4k4EN",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "elevator",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Elevator%20Music.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "6fC1Yw2Z3zVsKVkL",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "casino2",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Limbus%20Company%20OST%20-%20Casino%20Story%20Theme%202.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.52
+    },
+    {
+      "_id": "8n2YFpdbJKGJSPGp",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Omnious feelings",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/lancer/16%20%E5%A8%81%E5%9C%A7.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.52
+    },
+    {
+      "_id": "cY1uGotUw6yBD0Ul",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "tipsy",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Arknights%20EP%20-%20%5BTipsy%5D.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "GOEaCPlb2hEVX6Xd",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Casino3",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Casino%20Jazz%20Film%20Noir.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.3
+    },
+    {
+      "_id": "inmFbDnvULWwtb8X",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "morning cafe jazz",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Morning%20Caf%C3%A9%20Jazz.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.59
+    },
+    {
+      "_id": "J4MFuYhrkyqXkEFL",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Casion5",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Casino%20Jazz%20Film%20Noir.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0
+    },
+    {
+      "_id": "QCjuRsJprMb4pkoj",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "casino1",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Limbus%20Company%20OST%20-%20Casino%20Story%20Theme%201.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "SkBGMQxP5Jg92oJF",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "lower deck",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Limbus%20Company%20OST%20-%20Dungeon%20Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "VltXs65kDefthv5r",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Omen",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/lancer/15%20%E8%A3%8F.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.52
+    }
+  ]
+}

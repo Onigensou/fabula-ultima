@@ -241,6 +241,120 @@
       "type": "equippableItem"
     },
     {
+      "_id": "IQ4vpDdC3FcS62YA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398751507,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "tYPqRVsTENAr9lLC",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "condition_paralyzed",
+              "mode": 5,
+              "priority": null,
+              "value": "IM"
+            }
+          ],
+          "description": "<p><em>Status Immunity:</em> you are immune to Paralyzed.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "kdHRrGkThEJu7isd",
+              "originalParentId": "BXrs9fsYHnpaFTun",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.BXrs9fsYHnpaFTun.ActiveEffect.kdHRrGkThEJu7isd"
+            },
+            "fabula-ultima-companion": {
+              "crossScene": false,
+              "directorPermanent": false
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/NWTrans3.png",
+          "name": "Status Immunity",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/NWTrans3.png",
+      "name": "Status Immunity",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "class": "Wayfarer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You become completely <strong>immune</strong> to a single status effect of your choice (selected when you learn this Skill).</p><p><em>Engine note: per-actor status-immunity infrastructure pending — apply the immunity at the table for now.</em></p>",
+          "effect_table": {},
+          "isCheck": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": 1,
+          "name": "Status Immunity",
+          "on_activate_effect_ref": "",
+          "passive_logic_action": "",
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "AwsFia1QQRoedLw4"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "PpTMiE4oSJ7XlBHI",
       "_stats": {
         "compendiumSource": "Item.T0HplvOxcpR0NdWX",
@@ -350,62 +464,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "zgb1ZKLnw50WNjlG"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "UDZCCxA0SQPvKj8S",
-      "_stats": {
-        "compendiumSource": "Item.CA8Ilu2bkIkYhfgY",
-        "coreVersion": "12.343",
-        "createdTime": 1756863987789,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/NWTrans3.png",
-      "name": "Status Immunity",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Wayfarer",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>You become completely immune to a single status effect of your choice.</p>",
-          "duration": "",
-          "heroic_requirement": "You must have mastered the Wayfarer Class.",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": true,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Status Immunity",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "CA8Ilu2bkIkYhfgY"
       },
       "type": "equippableItem"
     },

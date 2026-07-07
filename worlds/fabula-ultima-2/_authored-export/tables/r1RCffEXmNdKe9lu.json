@@ -1,0 +1,195 @@
+{
+  "_id": "r1RCffEXmNdKe9lu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780401258880,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "DAg9RfuNcR9huljS",
+  "formula": "1d11",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "The Wyrmwood - Consumable",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "BMsUUdQMu2UICj5X",
+      "documentCollection": "Item",
+      "documentId": "y61V2VLRAwlVDgcM",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Blue Bovine",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "CrFaNR1r5tI7jQ8m",
+      "documentCollection": "Item",
+      "documentId": "2flmzfFbo1y8MCq5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Pepetein",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "DkEohmrupxlev1Ax",
+      "documentCollection": "Item",
+      "documentId": "6ThyGpmcPzrBBGji",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Spicy%20Cocktail.gif",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Spicy Cocktail",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "fh8hn74qAx04SEZH",
+      "documentCollection": "Item",
+      "documentId": "QXgHt7VEXEaVdPz1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Phoenix_Down_Icon.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Phoenix Feather",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "LAiq8RaTmZAuuGYB",
+      "documentCollection": "Item",
+      "documentId": "mw4wizzYTBtqsW8s",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Hi-Potion_Icon_HD.webp",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Poison",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pWN9ApcqP0pnvCfx",
+      "documentCollection": "Item",
+      "documentId": "ky7HMdQIZBJxlPqx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Super Tonic",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "QkzfXpXkexztxvyb",
+      "documentCollection": "Item",
+      "documentId": "S71vgGdSVCmEGWN0",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Decoy Doll",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "r4iL7XUXK68Mu0QR",
+      "documentCollection": "Item",
+      "documentId": "9vM7Xu5q3cj7EFQt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Mega-Remedy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "SUzhrVJB85R0NijJ",
+      "documentCollection": "Item",
+      "documentId": "1cajyF04dx07aGEU",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/604.gif",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Dead Branch",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vNR1fG0fZeVKrI3g",
+      "documentCollection": "Item",
+      "documentId": "aITJntRz2m10Rgeo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Café au Lait",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "WsFLWD9010U61OXD",
+      "documentCollection": "Item",
+      "documentId": "kMbhsJ2cDIFndrKy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion4.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Mega-Elixir",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

@@ -1,0 +1,255 @@
+{
+  "_id": "zmFWPkL08OPmxnry",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769663270659,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "dfZOIscssH4Tgqd3",
+  "formula": "1d15",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+  "name": "Vastwind Field - Weapon",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "0tCVoNLoqPqg6E5u",
+      "documentCollection": "Item",
+      "documentId": "l0j9cRoBPtneGfq5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Chakram",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "3vlk6gvnoVpItQzx",
+      "documentCollection": "Item",
+      "documentId": "9mEeAoPKlrCCQjRN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1250.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Jur",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "EJtENUaGo6nDnK9i",
+      "documentCollection": "Item",
+      "documentId": "VXGW0EAulcUnmnZd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Serpent Spear",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "fOho9HcqP9rotqCf",
+      "documentCollection": "Item",
+      "documentId": "b7gh6ycR9ZTuUQvi",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Greatbow",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "KbhN6ZbNuiSZvFfx",
+      "documentCollection": "Item",
+      "documentId": "OU1X4XjGESbzPdL3",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Quick Blade",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "lPCx5X0LhEE1y8b2",
+      "documentCollection": "Item",
+      "documentId": "IMy8ZXzsoq4K1Lho",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Falling Rain",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pFu5YkcPWjHiPWDJ",
+      "documentCollection": "Item",
+      "documentId": "7Qc6YoHblezkuamj",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Therion Ripper",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pkn0S6C566M2os53",
+      "documentCollection": "Item",
+      "documentId": "8hbHp5fFQW7p4C1B",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Silver Talon",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "suJNJMQlx8xtocsy",
+      "documentCollection": "Item",
+      "documentId": "1wIUPlab2ewtnYe1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Derringer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "t4XICmL3DSXraeXg",
+      "documentCollection": "Item",
+      "documentId": "Gq580iatobmK0cOd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Ladle",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vKKYBFvgRYZpmOO6",
+      "documentCollection": "Item",
+      "documentId": "ZoEpwNM5DHM6d439",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Belly of the Beast",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "yIvM71DQMNFE6FVy",
+      "documentCollection": "Item",
+      "documentId": "qP4euiobFGi27XuO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Main Gauche",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "yJrjnLBcFUHHyWjm",
+      "documentCollection": "Item",
+      "documentId": "tqx7YuLnGXgF2hWi",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Hammer/Icon-Frying_Pan.webp",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Frying Pan",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "YuO8MLZg5OA0Ee0p",
+      "documentCollection": "Item",
+      "documentId": "ds50UcXx4ADSNhBb",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Hunting Bow",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Z1Wl7TZx7Rs7fI3e",
+      "documentCollection": "Item",
+      "documentId": "4w5iF1uTOYFHV2O3",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Alchemusket",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 112500
+}

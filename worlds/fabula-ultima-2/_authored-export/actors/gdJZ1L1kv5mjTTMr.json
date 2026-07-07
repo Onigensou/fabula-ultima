@@ -3016,7 +3016,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -3097,9 +3096,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "fFHKCwDndsOmUg0q",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -3173,8 +3170,7 @@
           "skill_type": "Passive",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3240,185 +3236,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "fjThxMdxufSrumbB",
-      "_stats": {
-        "compendiumSource": "Item.43HnRNN8cWeAgSmr",
-        "coreVersion": "12.343",
-        "createdTime": 1783148628740,
-        "duplicateSource": "Item.tE8pb6Spf4UoFo55",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
-      "name": "For Whom the Bell Tolls",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "check_bonus": "0",
-          "class": "Necromancer",
-          "cost": "",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>When you deal damage to a creature with a 【📕Spell】, if that spell only deals damage to that creature, you may spend <strong>1 Grave Point</strong>. If you do, <strong>Choose one option:</strong></p>\n<ul>\n  <li>If that creature is suffering from one or more status effects, the spell deals extra damage equal to <strong>[(SL × 2) + the number of status effects on that creature]</strong>;</li>\n  <li>or, if that creature is suffering from no status effects, they suffer \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n</ul>\n",
-          "details_roller": "Show",
-          "duration": "",
-          "effect_table": {
-            "0": {
-              "allowed_types": "",
-              "check_bonus_formula": "",
-              "consume_self": false,
-              "damage_bonus_formula": "",
-              "effect_kind": "open_action_menu",
-              "effect_label": "fwtbt_offer",
-              "free_hr_as_zero": false,
-              "free_mode": false,
-              "free_of_cost": false,
-              "from_resource": "",
-              "max_mp_cost": "",
-              "menu_label": "",
-              "menu_option_colors": "",
-              "menu_option_descriptions": "Extra damage = (SL × 2) + number of statuses on the target|Inflict Shaken — disabled if the target is already Shaken",
-              "menu_option_icons": "",
-              "menu_option_labels": "Deal extra damage|Apply Shaken",
-              "menu_option_refs": "fwtbt_dmg_opt,fwtbt_shaken_opt",
-              "menu_pick_count": "1",
-              "menu_subtitle": "Spend 1 Grave Point:",
-              "menu_title": "For Whom the Bell Tolls",
-              "target_ref": "",
-              "to_resource": ""
-            },
-            "1": {
-              "chain_steps": "fwtbt_cost, fwtbt_dmg",
-              "consume_self": false,
-              "effect_kind": "chain",
-              "effect_label": "fwtbt_dmg_opt",
-              "from_resource": "",
-              "menu_label": "Deal extra damage",
-              "to_resource": ""
-            },
-            "2": {
-              "chain_steps": "fwtbt_cost, fwtbt_shaken",
-              "condition_formula": "TARGET_AE_COUNT_SHAKEN == 0",
-              "consume_self": false,
-              "disable_ui_type": "disabled",
-              "disabled_reason": "Already Shaken",
-              "effect_kind": "chain",
-              "effect_label": "fwtbt_shaken_opt",
-              "from_resource": "",
-              "menu_label": "Apply Shaken",
-              "to_resource": ""
-            },
-            "3": {
-              "charge_ae_name": "Grave Points",
-              "charge_amount": "1",
-              "charge_max": "",
-              "charge_operation": "subtract",
-              "consume_self": false,
-              "effect_kind": "adjust_charges",
-              "effect_label": "fwtbt_cost",
-              "from_resource": "",
-              "menu_label": "",
-              "target_ref": "self",
-              "to_resource": ""
-            },
-            "4": {
-              "consume_self": false,
-              "damage_amount": "SL * 2 + TARGET_STATUS_COUNT",
-              "damage_operation": "add",
-              "damage_stage": "outgoing",
-              "effect_kind": "adjust_damage",
-              "effect_label": "fwtbt_dmg",
-              "from_resource": "",
-              "menu_label": "",
-              "target_ref": "trigger_subject",
-              "to_resource": ""
-            },
-            "5": {
-              "ae_duplicate_mode": "replace_same_status",
-              "ae_family": "",
-              "ae_initial_charges": "",
-              "ae_initial_charges_max": "",
-              "ae_template_ref": "Shaken",
-              "consume_self": false,
-              "effect_kind": "apply_ae",
-              "effect_label": "fwtbt_shaken",
-              "from_resource": "",
-              "menu_label": "",
-              "target_ref": "trigger_subject",
-              "to_resource": ""
-            }
-          },
-          "gadget_alchemy_tier": "",
-          "gadget_infusion_tier": "",
-          "gadget_magitech_tier": "",
-          "heroic_requirement": "",
-          "id": "fjThxMdxufSrumbB",
-          "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": true,
-          "isZeroPower": false,
-          "level": "3",
-          "max_level": "3",
-          "name": "For Whom the Bell Tolls",
-          "on_activate_effect_ref": "",
-          "optional_params": {},
-          "pre_activate_effect_ref": "",
-          "reaction_config_table": {
-            "0": {
-              "condition_formula": "ACTION_IS_SPELL == 1 && SINGLE_TARGET_ATTACK && AE_CHARGES_GRAVE_POINTS >= 1",
-              "reaction_action_kind": "",
-              "reaction_action_target": "enemy",
-              "reaction_cause_filter": "",
-              "reaction_effect_ref": "fwtbt_offer",
-              "reaction_max_per_round": "",
-              "reaction_origin_filter": "",
-              "reaction_passive_mode": "ask",
-              "reaction_requires_weapon_used": false,
-              "reaction_resource_filter": "",
-              "reaction_responder": "",
-              "reaction_source": "self",
-              "reaction_source_skill": "",
-              "reaction_status_filter": "",
-              "reaction_trigger": "creature_will_deal_damage",
-              "requires_skill": ""
-            }
-          },
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<p>When you deal damage to a creature with a spell, if that spell only deals damage to that creature, you may spend 1 Grave Point. If you do, choose one option: if that creature is suffering from one or more status effects, the spell deals extra damage equal to (SL × 2) + the number of status effects on that creature; or if that creature is suffering from no status effects, they suffer <strong>shaken</strong>.</p>",
-          "skill_range": "",
-          "skill_tags": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "target_eligibility": "",
-          "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fjThxMdxufSrumbB"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "43HnRNN8cWeAgSmr"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "fWSnV0BKWLOPGZnq",
       "_stats": {
         "compendiumSource": "Item.Yt8dPWkIZtissH3m",
@@ -3453,7 +3270,6 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a></span></span> When you cause one or more enemies to lose Hit Points</li></ul><p><strong>Choose yourself </strong>or an<strong> ally</strong> who is your <strong>focus</strong>: if the chosen creature is in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, they recover an amount of <strong>Hit Points</strong> equal to <strong>[5 + (the number of filled sections in your Brainwave Clock, multiplied by 5)]</strong>.</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -3498,9 +3314,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "fWSnV0BKWLOPGZnq",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/MastermindSkill2.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -3548,8 +3362,7 @@
           "skill_type": "Active",
           "target_eligibility": "",
           "type_damage": "heal",
-          "use_optional_params": false,
-          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fWSnV0BKWLOPGZnq"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -4779,7 +4592,6 @@
           "beast_ef": "100",
           "category": "Dagger",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -4797,8 +4609,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "3PPbTNuD6rPBkICm",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1139.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -4832,7 +4642,6 @@
           "spirit_ef": "100",
           "type_damage": "Dark",
           "undead_ef": "100",
-          "uuid": "Item.3PPbTNuD6rPBkICm",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5421,6 +5230,104 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "JWzdHF8l1m2ZcdQw"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rIL03M727EEzLUNf",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398851350,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
+      "name": "For Whom the Bell Tolls",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "fwtbt_offer",
+              "menu_option_descriptions": "Extra damage = (SL × 2) + number of statuses on the target|Inflict Shaken — disabled if the target is already Shaken",
+              "menu_option_labels": "Deal extra damage|Apply Shaken",
+              "menu_option_refs": "fwtbt_dmg_opt,fwtbt_shaken_opt",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Spend 1 Grave Point:",
+              "menu_title": "For Whom the Bell Tolls"
+            },
+            "1": {
+              "chain_steps": "fwtbt_cost, fwtbt_dmg",
+              "effect_kind": "chain",
+              "effect_label": "fwtbt_dmg_opt",
+              "menu_label": "Deal extra damage"
+            },
+            "2": {
+              "chain_steps": "fwtbt_cost, fwtbt_shaken",
+              "condition_formula": "TARGET_AE_COUNT_SHAKEN == 0",
+              "disable_ui_type": "disabled",
+              "disabled_reason": "Already Shaken",
+              "effect_kind": "chain",
+              "effect_label": "fwtbt_shaken_opt",
+              "menu_label": "Apply Shaken"
+            },
+            "3": {
+              "charge_ae_name": "Grave Points",
+              "charge_amount": "1",
+              "charge_operation": "subtract",
+              "effect_kind": "adjust_charges",
+              "effect_label": "fwtbt_cost",
+              "target_ref": "self"
+            },
+            "4": {
+              "damage_amount": "SL * 2 + TARGET_STATUS_COUNT",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "fwtbt_dmg",
+              "target_ref": "trigger_subject"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Shaken",
+              "effect_kind": "apply_ae",
+              "effect_label": "fwtbt_shaken",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "isReaction": true,
+          "level": "3",
+          "max_level": "3",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_IS_SPELL == 1 && SINGLE_TARGET_ATTACK && AE_CHARGES_GRAVE_POINTS >= 1",
+              "reaction_action_target": "enemy",
+              "reaction_effect_ref": "fwtbt_offer",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "skill_information": "<p>When you deal damage to a creature with a spell, if that spell only deals damage to that creature, you may spend 1 Grave Point. If you do, choose one option: if that creature is suffering from one or more status effects, the spell deals extra damage equal to (SL × 2) + the number of status effects on that creature; or if that creature is suffering from no status effects, they suffer <strong>shaken</strong>.</p>",
+          "skill_type": "Passive",
+          "uniqueId": "sfB3APSyWP8Lf5LQ"
+        },
+        "templateSystemUniqueVersion": null,
+        "unique": false,
+        "uniqueId": "sfB3APSyWP8Lf5LQ"
       },
       "type": "equippableItem"
     },

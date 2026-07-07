@@ -1,0 +1,28 @@
+{
+  "_id": "AKAvnyzLpm8JTm4h",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767936797173,
+    "duplicateSource": "RollTable.SnpuZA1fqyPLoZ2B",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "NhYXwCvjexXHkrRm",
+  "formula": "1d0",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Eidrachian%20Knights/EidrachianKnight_Standard.png",
+  "name": "Eisendrache Arena - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "sort": 100000
+}

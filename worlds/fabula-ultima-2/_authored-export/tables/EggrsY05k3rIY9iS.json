@@ -1,0 +1,210 @@
+{
+  "_id": "EggrsY05k3rIY9iS",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780401258660,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "hx7YRkgeDiYN91MO",
+  "formula": "1d12",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "The Wyrmwood - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "0FEuGHHGRzwrAhDF",
+      "documentCollection": "Actor",
+      "documentId": "7FB6x9kD38cX5SGB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Centaurus_Standard.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Centuaros",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "2GQDYohWaJ0x1uG3",
+      "documentCollection": "Actor",
+      "documentId": "KygETN50UthluNPl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/WanderingFlame_Standard.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "⭐️ Wandering Flame",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "7UMB7hnAcXUQjatF",
+      "documentCollection": "Actor",
+      "documentId": "zODzgQipiH3nsimr",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Inferex_Standard.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Inferex",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "FnomrqJ0Ygdx2WoK",
+      "documentCollection": "Actor",
+      "documentId": "WJvUVRpKl2vcXnmX",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Centimare.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Centimare",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "FwGOod2YzW7uuC7z",
+      "documentCollection": "Actor",
+      "documentId": "6b49UGpZQSWh3LAI",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Pyrefly_Standard.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Pyrefly",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "gWYlr0gaWglGwnC7",
+      "documentCollection": "Actor",
+      "documentId": "RJECgM6oVt4UI4ds",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dryad_Standard.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Dryad",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "JQFNWa6446Pccb6s",
+      "documentCollection": "Actor",
+      "documentId": "Q2SuQSgrAC2dZR2Y",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/FireSlime_Standard.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Fire Slime",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "jziDQ0ov6mYhflAj",
+      "documentCollection": "Actor",
+      "documentId": "gN89zV1htUeZWel0",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Salamander_Standard.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Salamander",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ROAe3NBJ2UCWUM2x",
+      "documentCollection": "Actor",
+      "documentId": "xkjSsQ63gzlsBIJW",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BurningHand_Standard.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Burning Hand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "sD1ZA5Ycp5XFeT63",
+      "documentCollection": "Actor",
+      "documentId": "STmBv9N66tZxSNCx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Hellhound_Standard.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Hellhound",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "sxqlm9OKkqKMlaG5",
+      "documentCollection": "Actor",
+      "documentId": "ZbCSKnZdB2cKlW9H",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Marigold_Standard.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Marigold",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "u2YQLGSsqa0v53aE",
+      "documentCollection": "Actor",
+      "documentId": "5m6jyFCVzfBSzJvN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Creeps_Standard.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Creeps",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

@@ -1,0 +1,45 @@
+{
+  "_id": "L1w8IX58F6whkxly",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1771010551658,
+    "duplicateSource": "RollTable.oUPHzpKAMVPEqg2V",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "sXEPJiHMdTlyDoCv",
+  "formula": "1d1",
+  "img": "https://assets.forge-vtt.com/5faea46cf17c50c47382d836/Crysta%20dis.png",
+  "name": "Vastwind Field (Cave) - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "xOCkI5a54LzPZsFH",
+      "documentCollection": "Actor",
+      "documentId": "ZPPCxB0eOJPulEHv",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/5faea46cf17c50c47382d836/Crysta%20dis.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Crysta",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 300000
+}

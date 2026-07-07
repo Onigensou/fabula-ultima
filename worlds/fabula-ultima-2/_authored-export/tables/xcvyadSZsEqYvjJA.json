@@ -1,0 +1,285 @@
+{
+  "_id": "xcvyadSZsEqYvjJA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774098036196,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "IxpkbdLoQodYFW6Y",
+  "formula": "1d17",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
+  "name": "Bandits Hideout - Treasure",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "5BRbMYkh9WRqSjLX",
+      "documentCollection": "Item",
+      "documentId": "dhGCKitpetFxtw3o",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Apple%20o%20Archer.gif",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Apple o' Archer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "bCdByJxuVXL3Ww1Z",
+      "documentCollection": "Item",
+      "documentId": "UgwDZq3PayHxEzxQ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Sword/Icon-Astraea_Aurora.webp",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Sword of Exile",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "bP2qjFcO9mgyMM0w",
+      "documentCollection": "Item",
+      "documentId": "zPWgRgkYSgm9Elib",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rope.gif",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Sadistic Whip",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "D0CV5WKu1rDKpLLj",
+      "documentCollection": "Item",
+      "documentId": "gNwJ6XWgQvUFO4AT",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Heartseeker",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "iAqsANZdBKdlhXAF",
+      "documentCollection": "Item",
+      "documentId": "0vF825X8e5EqfBx8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Hive Dart",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "K6IivbUfAo858O3v",
+      "documentCollection": "Item",
+      "documentId": "VSsGppucRLw8Ti6A",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Spear/Icon-Dreadreaper%2527s_Scythe.webp",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Soul Gorger",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "kIJ2kpipDi05BKJH",
+      "documentCollection": "Item",
+      "documentId": "Ujk1ocZwtp6B5kuy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bra.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Bikini Armor",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "lyRYMI6js9m6OLDp",
+      "documentCollection": "Item",
+      "documentId": "k54mfPECg0wjCn7U",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Hitman Briefcase",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "M4S7wi2qfK4IciZF",
+      "documentCollection": "Item",
+      "documentId": "hZYczwkEFHoKULAL",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/5-Star%20Exchange%20Ticket.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "5-Star Exchange Ticket",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PKY3vyfiksFJGPUe",
+      "documentCollection": "Item",
+      "documentId": "j8Vtb5gX5FZXF8WH",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/brom.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Psyskeleton",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PvyLR8inwg3kZNwM",
+      "documentCollection": "Item",
+      "documentId": "W5nXmJFH3rBBTxr4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Titanic Shield",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pZZyhnpsu1Rx7Urk",
+      "documentCollection": "Item",
+      "documentId": "Y3nGFoZt0oei2nWL",
+      "drawn": false,
+      "flags": {},
+      "img": "https://legeclo.wikiru.jp/attach2/696D67_426F64795F41726D6F725F5353525F34332E706E67.png",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Golden Shroud",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "qbUww1xb1D1NyM4c",
+      "documentCollection": "Item",
+      "documentId": "kBVCZiHd3Y8Fd7VH",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/2000.gif",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Arc Wand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "RezfMS9hpJqVGKcp",
+      "documentCollection": "Item",
+      "documentId": "if8EoIKc5nPJHntf",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suit.gif",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Hitman Suit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vJTINcpM5ryq69ux",
+      "documentCollection": "Item",
+      "documentId": "W8cC2u8sBR5DSRWg",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Adversity",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "YDU7qiFRG31ZqxJw",
+      "documentCollection": "Item",
+      "documentId": "VxfFnc7dSUX9FiTV",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dreae.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Adamantorso",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Z2YrgX30nvp1v8J1",
+      "documentCollection": "Item",
+      "documentId": "YzPsmejc4nMjH4fX",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Ice Fang",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

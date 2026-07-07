@@ -1,0 +1,90 @@
+{
+  "_id": "TjiTEPcFQ4esnpCr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767940592904,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "zCj82a9RbmCZPvkD",
+  "formula": "1d4",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Eidrachian%20Knights/EidrachianKnight_Standard.png",
+  "name": "Eisendrache Burning - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "B72BKxSyoTv49dWi",
+      "documentCollection": "Actor",
+      "documentId": "Z5wQ9DMPMktJfvxM",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Balewing.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Banestrix",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Em67DpdcME9iuCIn",
+      "documentCollection": "Actor",
+      "documentId": "Tm04BQuJAmAIWnHq",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Lurkara.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Voidog",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "fkooCKyLN5VRfiOu",
+      "documentCollection": "Actor",
+      "documentId": "sr56xgKsKlkgdBXt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Looker_Standard.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Looker",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ONraQ6zKFJR7Y5gw",
+      "documentCollection": "Actor",
+      "documentId": "P1uCkpNnxLRBNqZr",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Fafnir_Lightning.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "⭐️ Fafnir",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 200000
+}

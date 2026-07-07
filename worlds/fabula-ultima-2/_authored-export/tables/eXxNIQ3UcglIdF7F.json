@@ -1,0 +1,135 @@
+{
+  "_id": "eXxNIQ3UcglIdF7F",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780401258843,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "DAg9RfuNcR9huljS",
+  "formula": "1d7",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dreae.png",
+  "name": "The Wyrmwood - Armor",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "jSC2qWjjZ6h4gOnw",
+      "documentCollection": "Item",
+      "documentId": "ALjvA9L7HbOEbuCS",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/armor.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Automaton Suit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "jZYkWtvo4QSjgiiX",
+      "documentCollection": "Item",
+      "documentId": "SJSmfMW8C8gzwsuT",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/equipment/chest/robe-layered-blue.webp",
+      "range": [
+        5,
+        5
+      ],
+      "text": "The Selfless",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "mmL4cYNETJs6KlGC",
+      "documentCollection": "Item",
+      "documentId": "S1Wdikp3QcyfRvCs",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Valkyrie Wings",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "SQQnmP4s3qFMQD5F",
+      "documentCollection": "Item",
+      "documentId": "dD85U7jxv0LviO8u",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/herosui.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Crystal Plate",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "tLXN4SPTRfEhc9x3",
+      "documentCollection": "Item",
+      "documentId": "nJxmusiX9jL2riul",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mant.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Meditation Robe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "v3TQ8fR54uZxPSqC",
+      "documentCollection": "Item",
+      "documentId": "jnhWaWPLwZcPQ883",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mant.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Mana Robe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "zf06HGD200Qa0HRq",
+      "documentCollection": "Item",
+      "documentId": "JJoFipvJxSFs9Bk1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Engineer Jacket",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

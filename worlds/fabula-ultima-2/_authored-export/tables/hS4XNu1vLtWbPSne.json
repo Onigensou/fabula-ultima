@@ -1,0 +1,150 @@
+{
+  "_id": "hS4XNu1vLtWbPSne",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780401259097,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "DAg9RfuNcR9huljS",
+  "formula": "1d8",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
+  "name": "The Wyrmwood - Treasure",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "0gXw2o13ZQUbBc4w",
+      "documentCollection": "Item",
+      "documentId": "vifu2MB7Q9daEa8I",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1231.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Hornet",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "7yjr7tLoVK2j3SKS",
+      "documentCollection": "Item",
+      "documentId": "LVLxu1HPQNbpB0Hx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Dark Orbit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "bTURHmUbx8zPOd3j",
+      "documentCollection": "Item",
+      "documentId": "Ujk1ocZwtp6B5kuy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bra.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Bikini Armor",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "cr0IblkZ4v4hcvcw",
+      "documentCollection": "Item",
+      "documentId": "Rnfh1rjtjSQyRUem",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1724.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Frozen Envy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "m14vNYid7yt2sAc1",
+      "documentCollection": "Item",
+      "documentId": "xktj2JJX7QZ5z6jA",
+      "drawn": true,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "The Tormentor",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "m4BwZMvhD20fZdxQ",
+      "documentCollection": "Item",
+      "documentId": "9BKhWjQctWsHbrie",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Winter Kolossus",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "OCS5z71c2RmccBRm",
+      "documentCollection": "Item",
+      "documentId": "8mXI5OJRvKbBpmsm",
+      "drawn": true,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1626.gif",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Arch Ice Wand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "WCNznoPU2YxD67XO",
+      "documentCollection": "Item",
+      "documentId": "1AlaqnS5xWU1oa5p",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1648.gif",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Desperatus",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

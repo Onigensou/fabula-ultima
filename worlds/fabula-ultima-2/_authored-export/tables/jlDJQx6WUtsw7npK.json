@@ -1,0 +1,195 @@
+{
+  "_id": "jlDJQx6WUtsw7npK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774098035941,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "IxpkbdLoQodYFW6Y",
+  "formula": "1d11",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
+  "name": "Bandits Hideout - Accessory",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "15JirGZ9jzcrvBiS",
+      "documentCollection": "Item",
+      "documentId": "q3AX5ylHljeAnmKj",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/rorb.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Warrior Seal",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "79E3hGujcX4uJl1P",
+      "documentCollection": "Item",
+      "documentId": "999BdRk7rsWKxGJr",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/commodities/tech/detonator-radio.webp",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Enchanted Delayed Blast Remote",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "7gvZNw4DEtzVyI2n",
+      "documentCollection": "Item",
+      "documentId": "nt0aSfqujhxInx6y",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2603.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Hypno Pendulum",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "8niW7LjrBWm0c7n8",
+      "documentCollection": "Item",
+      "documentId": "l8YYSZ2qCmBp5aqR",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/magic/control/energy-stream-link-spiral-teal.webp",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Energy Siphon",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "a24xupeoeTwXB4rV",
+      "documentCollection": "Item",
+      "documentId": "BGEFG325IQFbh6Tm",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Beret.gif",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Beret",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "cXNqWS18F8bQmDfJ",
+      "documentCollection": "Item",
+      "documentId": "Hurc7SbzCtjIAaC3",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Copycat.gif",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Copycat",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "nE4SwKOJ048pJq4k",
+      "documentCollection": "Item",
+      "documentId": "fXTiW1mHRFBGSGR8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dice.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Gambler's Dice",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pjtlwL24BWXacF0H",
+      "documentCollection": "Item",
+      "documentId": "hPNGofTLZQVvhtbf",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/but.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Skull Orb",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rtY30Ie3VUYO7YpX",
+      "documentCollection": "Item",
+      "documentId": "bAVllOIPeXIF8hex",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/helm.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Gas Mask",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "SheSdx6bpA8x8LNX",
+      "documentCollection": "Item",
+      "documentId": "cSynFyjRWqRbgrZx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Invisibility Cloak",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "tF6ur1Ucs9TPyrT4",
+      "documentCollection": "Item",
+      "documentId": "cal32g6JM4BHo0fE",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Binocular.gif",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Binoculars",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

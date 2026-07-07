@@ -1,0 +1,142 @@
+{
+  "_id": "oaQ7YbBK9rExOYwH",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769663521970,
+    "duplicateSource": "RollTable.fxXT0ZlnFlDYwfgv",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "dfZOIscssH4Tgqd3",
+  "formula": "1d8",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+  "name": "Vastwind Field - Zenit",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "2gKGoNpu27jcRnS9",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "750 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "4jlMQXjSvTk6aIH1",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "150 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "CcKSuYZCcmECOX0y",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "800 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "dhGTk6JHFLwdjZXf",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "1200 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "GSTyMh032egyyhGV",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "400 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Og85dRBVKOufYcc3",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "500 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "RZvUDakCwsid2pC8",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "300 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "z1lR8nFhN3PQiYbY",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "1000 zenit",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 106250
+}

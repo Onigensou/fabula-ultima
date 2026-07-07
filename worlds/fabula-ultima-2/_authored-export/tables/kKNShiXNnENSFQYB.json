@@ -1,0 +1,114 @@
+{
+  "_id": "kKNShiXNnENSFQYB",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1769848583288,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "CT0bTXVgLi9mbiQr",
+  "formula": "1d6",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Overworld - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "AIGvwDJaFpMVth0z",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Slime, Wolf, Life Gorger",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "cEV2VCPvka3GbU3o",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Slime, Wolf, Mana Gorger",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "iTS4Wh46jDQ0gtCb",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Wolf, Boa, Wolf",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "LjHgTSlLFFw4WFGC",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Slime, Wolf, Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "MglzyZWxu5hlOSqS",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Bandit, Wolf, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "z9eKPB8VO0EnZ2uU",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Wolf, Wolf, Wolf",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

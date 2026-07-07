@@ -360,7 +360,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -379,8 +378,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "wkNlrgImrWe33oy9",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Chain_Robe.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -405,6 +402,14 @@
               "skill_description": "<p>You cause an ally to temporary phase out of existence, One ally other than you gains <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span> until the start of their next turn.</p>",
               "skill_maxLevel": 1,
               "uuid": "Item.t2HuioQg8uJz87NP"
+            },
+            "utumNuWYo9Hzwxqx": {
+              "id": "${item.id}",
+              "name": "Blink",
+              "skill_cost": "20 MP",
+              "skill_description": "<p>You cause an ally to temporary phase out of existence, One ally other than you gains <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span> until the start of their next turn.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.srAH3OHOoK0tvFih.Item.utumNuWYo9Hzwxqx"
             }
           },
           "item_type": "armor",
@@ -421,6 +426,12 @@
               "name": "Blink",
               "related_item_description": "<p>You cause an ally to temporary phase out of existence, One ally other than you gains <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span> until the start of their next turn.</p>",
               "uuid": "Item.t2HuioQg8uJz87NP"
+            },
+            "utumNuWYo9Hzwxqx": {
+              "id": "${item.id}",
+              "name": "Blink",
+              "related_item_description": "<p>You cause an ally to temporary phase out of existence, One ally other than you gains <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span> until the start of their next turn.</p>",
+              "uuid": "Actor.srAH3OHOoK0tvFih.Item.utumNuWYo9Hzwxqx"
             }
           },
           "reptilian_ef": "100",
@@ -431,7 +442,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.wkNlrgImrWe33oy9",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -511,7 +521,6 @@
           "beast_ef": "100",
           "category": "Flail",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "damage_bonus": "20",
@@ -529,8 +538,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "3cnqLWqSdV8YxBSH",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rope.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -564,7 +571,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.srAH3OHOoK0tvFih.Item.3cnqLWqSdV8YxBSH",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -642,6 +648,14 @@
           "item_quantity": 1,
           "item_rarity": "Common",
           "item_skill_passive": {
+            "GyEGnl58wJhwSwex": {
+              "id": "${item.id}",
+              "name": "Morrigan (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.srAH3OHOoK0tvFih.Item.GyEGnl58wJhwSwex"
+            },
             "ziGuceXkDrtTMBp9": {
               "id": "${item.id}",
               "name": "Morrigan (Passive)",
@@ -658,6 +672,12 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
+            "GyEGnl58wJhwSwex": {
+              "id": "${item.id}",
+              "name": "Morrigan (Passive)",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "uuid": "Actor.srAH3OHOoK0tvFih.Item.GyEGnl58wJhwSwex"
+            },
             "ziGuceXkDrtTMBp9": {
               "id": "${item.id}",
               "name": "Morrigan (Passive)",
@@ -680,6 +700,85 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "jqykkhAB5m9durso"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "7IBdWHGWsYr1ImY4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398939447,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
+      "name": "Heal",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "10 x T MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "heal_hp",
+              "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Heal",
+          "on_activate_effect_ref": "heal_hp",
+          "optional_params": {},
+          "passive_logic_action": "",
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "",
+          "skill_type": "Spell",
+          "type_damage": "healing",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "7ApZzLcwZfDZz0nE"
       },
       "type": "equippableItem"
     },
@@ -715,7 +814,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -733,8 +831,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "5k5hVdG6evBzruNM",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -767,7 +863,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.5k5hVdG6evBzruNM",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -810,7 +905,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -828,8 +922,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "wWrePzzYfpE3bEVV",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -862,7 +954,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.wWrePzzYfpE3bEVV",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1121,7 +1212,6 @@
           "beast_ef": "100",
           "category": "Sword",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "damage_bonus": "10",
@@ -1139,8 +1229,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "Y8J71qhXnk5hJbKb",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Gladius_icon.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -1174,7 +1262,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.Y8J71qhXnk5hJbKb",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1257,7 +1344,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "12",
@@ -1276,8 +1362,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "bsG2aZEMX2Glb3pI",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -1296,6 +1380,14 @@
           "item_quantity": 1,
           "item_rarity": "Uncommon",
           "item_skill_passive": {
+            "W9dHR4OQZIWNi3X8": {
+              "id": "${item.id}",
+              "name": "Dragontrap Bow (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.srAH3OHOoK0tvFih.Item.W9dHR4OQZIWNi3X8"
+            },
             "emTXtdbsz6owxFeI": {
               "id": "${item.id}",
               "name": "Dragontrap Bow (Passive)",
@@ -1314,6 +1406,12 @@
           "refine_count": "0",
           "refine_level": "0",
           "related_item_list": {
+            "W9dHR4OQZIWNi3X8": {
+              "id": "${item.id}",
+              "name": "Dragontrap Bow (Passive)",
+              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "uuid": "Actor.srAH3OHOoK0tvFih.Item.W9dHR4OQZIWNi3X8"
+            },
             "emTXtdbsz6owxFeI": {
               "id": "${item.id}",
               "name": "Dragontrap Bow (Passive)",
@@ -1331,7 +1429,6 @@
           "spirit_ef": "100",
           "type_damage": "Earth",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.bsG2aZEMX2Glb3pI",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -1374,7 +1471,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1382,6 +1478,15 @@
           "demon_ef": "100",
           "description": "<ul><li><p>Revive one <strong>KO </strong>allies and restore their HP to their <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>score.</p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "effect_kind": "set_resource",
+              "effect_label": "phoenix_revive",
+              "grant_amount": "MAX_HP / 2",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -1393,8 +1498,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "exVAwWwaIvNcyuwc",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Phoenix_Down_Icon.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -1411,12 +1514,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "3",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "wzcDK3lCWXGYqok6": {
+              "id": "${item.id}",
+              "name": "Phoenix Feather",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Item.wzcDK3lCWXGYqok6"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Phoenix Feather",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "wzcDK3lCWXGYqok6": {
+              "id": "${item.id}",
+              "name": "Phoenix Feather",
+              "related_item_description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
+              "uuid": "Item.wzcDK3lCWXGYqok6"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -1425,7 +1546,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.srAH3OHOoK0tvFih.Item.exVAwWwaIvNcyuwc",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1491,7 +1611,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1509,8 +1628,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "GlBKvz5lDwGextqo",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion4.png",
           "insect_ef": "100",
           "ip_cost": "6",
           "isEquipped": false,
@@ -1573,7 +1690,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.srAH3OHOoK0tvFih.Item.GlBKvz5lDwGextqo",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1971,7 +2087,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1989,8 +2104,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "G8fBxPWSabEzD5V6",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2023,7 +2136,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.G8fBxPWSabEzD5V6",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2031,59 +2143,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "G8fBxPWSabEzD5V6"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "IkmKEw6srd1gQ79p",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783189041906,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
-      "name": "Heal",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "wKogg4SVIY63cqLh",
-        "props": {
-          "cost": "10 x T MP",
-          "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "effect_kind": "grant",
-              "effect_label": "heal_hp",
-              "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
-              "grant_resource": "hp",
-              "target_ref": "action_targets"
-            }
-          },
-          "isCheck": false,
-          "isOffensiveSpell": false,
-          "name": "Heal",
-          "on_activate_effect_ref": "heal_hp",
-          "skill_target": "Up to three creatures",
-          "skill_type": "Spell",
-          "type_damage": ""
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "oHXhszjXVKD0opBr"
       },
       "type": "equippableItem"
     },
@@ -2161,7 +2220,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2179,8 +2237,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "6f3U2Cz826kB5ZIp",
-          "img": "icons/equipment/neck/amulet-carved-stone-spiral-blue.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2213,7 +2269,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.6f3U2Cz826kB5ZIp",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2298,7 +2353,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2317,8 +2371,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "fXTiW1mHRFBGSGR8",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dice.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2351,7 +2403,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.fXTiW1mHRFBGSGR8",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2436,7 +2487,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2455,8 +2505,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "Hurc7SbzCtjIAaC3",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Copycat.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2489,7 +2537,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.Hurc7SbzCtjIAaC3",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2555,7 +2602,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2573,8 +2619,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "LVwLI7slKbPofiP4",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
           "insect_ef": "100",
           "ip_cost": "6",
           "isEquipped": false,
@@ -2637,7 +2681,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.srAH3OHOoK0tvFih.Item.LVwLI7slKbPofiP4",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2680,7 +2723,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2699,8 +2741,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "nsTz9KPaJHWBOVoR",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/8a55d0840792a95596fa37808f93e478.jpg",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2731,7 +2771,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.srAH3OHOoK0tvFih.Item.nsTz9KPaJHWBOVoR",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2991,7 +3030,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3010,8 +3048,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "vH6Q88n3beOHjxKq",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2122.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3044,7 +3080,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.vH6Q88n3beOHjxKq",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3378,7 +3413,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3396,8 +3430,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "3QBrbZe41Yx2UAWD",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Darksteel_Heavy_Armor.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3430,7 +3462,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.3QBrbZe41Yx2UAWD",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3515,7 +3546,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3534,8 +3564,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "rp6c8fADXzWLAt68",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2795.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3568,7 +3596,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.rp6c8fADXzWLAt68",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3741,7 +3768,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "15",
@@ -3759,8 +3785,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "rGzyWaaZtXCmUjxn",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Ars%20Goetia.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3794,7 +3818,6 @@
           "spirit_ef": "100",
           "type_damage": "Dark",
           "undead_ef": "100",
-          "uuid": "Actor.srAH3OHOoK0tvFih.Item.rGzyWaaZtXCmUjxn",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -3963,7 +3986,6 @@
           "beast_ef": "100",
           "category": "Brawling",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "damage_bonus": "15",
@@ -3981,8 +4003,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "TFlkSWMWp59Nqh9h",
-          "img": "icons/magic/fire/flame-burning-fist-strike.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -4016,7 +4036,6 @@
           "spirit_ef": "100",
           "type_damage": "Fire",
           "undead_ef": "100",
-          "uuid": "Actor.srAH3OHOoK0tvFih.Item.TFlkSWMWp59Nqh9h",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4292,13 +4311,10 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You cause an ally to temporary phase out of existence, One ally other than you gains <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span> until the start of their next turn.</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "pObEiwIlaCZJBTiG",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/fey_illumination2.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -4320,8 +4336,7 @@
           "skill_target": "One ally",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Item.pObEiwIlaCZJBTiG"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -4603,7 +4618,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "10",
@@ -4622,8 +4636,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "xJdDdjPYgccjyK7Y",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Wine_and_Song.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -4657,7 +4669,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.xJdDdjPYgccjyK7Y",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },

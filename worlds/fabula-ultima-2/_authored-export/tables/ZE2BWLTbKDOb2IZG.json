@@ -1,0 +1,75 @@
+{
+  "_id": "ZE2BWLTbKDOb2IZG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783187951676,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "",
+  "img": "icons/svg/d20-grey.svg",
+  "name": "Oathsworn Paladin",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "PyMpUxUfBt1v0wdF",
+      "documentCollection": "Item",
+      "documentId": "zKJP8tR2S8Gg1rRZ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1137.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Save the Queen",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "q2LR0rCF6CBgs6Dk",
+      "documentCollection": "Item",
+      "documentId": "arnuPVqayNC3fcXE",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2137.gif",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Royal Shield",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uFJmSMRjrKh7lubz",
+      "documentCollection": "Item",
+      "documentId": "oQuaoYmMq9vsbgUf",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2368.gif",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Paladin Armor",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

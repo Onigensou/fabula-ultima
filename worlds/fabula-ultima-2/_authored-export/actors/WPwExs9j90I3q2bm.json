@@ -485,6 +485,186 @@
       "type": "equippableItem"
     },
     {
+      "_id": "6ckEG84U2tNWV2Ii",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398748935,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/bloodletter.png",
+      "name": "Warning Shot",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Sharpshooter",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you hit one or more targets with a <strong>ranged attack</strong> that would deal damage, you may have the attack deal no damage. If you do, choose one option: inflict <strong>shaken</strong> on each target hit by the attack; or inflict <strong>slow</strong> on each target hit by the attack; or each target hit by the attack loses <strong>【SL】× 10</strong> Mind Points. Describe your maneuver!</p>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "chain_steps": "ws_nullify,ws_menu",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "warning_shot",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "1": {
+              "consume_self": false,
+              "damage_amount": "0",
+              "damage_operation": "multiply",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "ws_nullify",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
+            },
+            "2": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "ws_menu",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "",
+              "menu_option_refs": "ws_shaken,ws_slow,ws_mp",
+              "menu_pick_count": "1 + HAS_SKILL_PERFECT_AIM",
+              "menu_subtitle": "The attack deals no damage — choose an effect.",
+              "menu_title": "Warning Shot",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Shaken",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "ws_shaken",
+              "from_resource": "",
+              "menu_description": "Each target hit by the attack becomes Shaken.",
+              "menu_label": "Inflict Shaken",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Slow",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "ws_slow",
+              "from_resource": "",
+              "menu_description": "Each target hit by the attack becomes Slow.",
+              "menu_label": "Inflict Slow",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
+            },
+            "5": {
+              "consume_amount": "SL * 10",
+              "consume_resource": "mp",
+              "consume_self": false,
+              "effect_kind": "consume_resource",
+              "effect_label": "ws_mp",
+              "from_resource": "",
+              "grant_amount": "",
+              "grant_resource": "",
+              "menu_description": "Each target hit loses SL × 10 Mind Points.",
+              "menu_label": "Drain Mind Points",
+              "on_empty": "skip",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "4",
+          "max_level": "4",
+          "name": "Warning Shot",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ATTACK_IS_RANGED == 1",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "warning_shot",
+              "reaction_origin_filter": "",
+              "reaction_passive_mode": "ask",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_will_deal_damage",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "target_eligibility": "",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "7opUr817pDyJZsJt"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "6g07KKouYoXpiY3b",
       "_stats": {
         "compendiumSource": "Item.HmA1EX3UupBePME4",
@@ -1051,6 +1231,156 @@
       "type": "equippableItem"
     },
     {
+      "_id": "hOv7AXBfJYnz0iub",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398748935,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/barrage.png",
+      "name": "Barrage",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Sharpshooter",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to have the attack target one additional creature. Loose a hail of shots!</p>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "chain_steps": "barrage_add,barrage_cost",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "barrage_do",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "1": {
+              "consume_self": false,
+              "effect_kind": "add_target",
+              "effect_label": "barrage_add",
+              "from_resource": "",
+              "menu_description": "Spend 10 MP to target one additional creature.",
+              "menu_label": "Barrage",
+              "target_ref": "barrage_pick",
+              "to_resource": ""
+            },
+            "2": {
+              "consume_amount": "10",
+              "consume_resource": "mp",
+              "consume_self": false,
+              "effect_kind": "consume_resource",
+              "effect_label": "barrage_cost",
+              "from_resource": "",
+              "grant_amount": "",
+              "grant_resource": "",
+              "menu_label": "",
+              "on_empty": "abort",
+              "target_ref": "self",
+              "to_resource": ""
+            },
+            "3": {
+              "allow_empty": false,
+              "auto_confirm_when_obvious": false,
+              "auto_target": true,
+              "candidate_source": "combat",
+              "category": "enemy",
+              "consume_self": false,
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "barrage_pick",
+              "exclude": "",
+              "exclude_action_targets": true,
+              "exclude_self": false,
+              "from_resource": "",
+              "iteration_mode": "together",
+              "menu_label": "",
+              "mode": "exact",
+              "skip_when_passive": false,
+              "target_filter": "",
+              "target_prompt": "",
+              "to_resource": ""
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Barrage",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ATTACK_IS_RANGED == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "Attack",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_effect_ref": "barrage_do",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_performs_action",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "target_eligibility": "",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "yh4vm3wru6nAkkaN"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "HSmdcSdXiUFdW8BQ",
       "_stats": {
         "compendiumSource": "Item.JvssvWr6WN0dN5HJ",
@@ -1128,59 +1458,132 @@
       "type": "equippableItem"
     },
     {
-      "_id": "iy8Ir8ozuZcMYkwf",
+      "_id": "JbFsdpWdRActLGRB",
       "_stats": {
-        "compendiumSource": "Item.A68h8dHO8F75awX4",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756027933684,
+        "createdTime": 1783398748935,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/bloodletter.png",
-      "name": "Warning Shot",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill1.png",
+      "name": "Crossfire",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "t41knaXNbgCEygM5": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Sharpshooter",
-          "cost": "",
+          "cost": "Special",
           "damage_bonus": "0",
-          "description": "<p>When you hit one or more targets with a <strong>ranged attack</strong> that would deal damage, you may have the attack deal <strong>no damage</strong>. If you do, choose one option: inflict <em>shaken</em> on each target hit by the attack; or inflict <em>slow</em> on each target hit by the attack; or each target hit by the attack loses <strong>【SL】× 10 Mind Points</strong>. Describe your maneuver!</p>",
-          "duration": "Instantaneous",
+          "defense_target_type": "def",
+          "description": "<p>After a creature you can see performs a <strong>ranged attack</strong>, you may spend an amount of <strong>Mind Points</strong> equal to the total Result of their Accuracy Check in order to have the attack <strong>fail automatically</strong> against all targets.</p><p>You can only use this Skill if you have a ranged weapon equipped, and it has no effect if the Accuracy Check was a critical success.</p>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "chain_steps": "crossfire_block,crossfire_cost",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "crossfire_do",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "1": {
+              "accuracy_amount": "0",
+              "accuracy_operation": "set",
+              "consume_self": false,
+              "effect_kind": "adjust_accuracy",
+              "effect_label": "crossfire_block",
+              "from_resource": "",
+              "menu_description": "Spend MP equal to the attacker's Accuracy Result to make the attack fail against all targets.",
+              "menu_label": "Crossfire",
+              "to_resource": ""
+            },
+            "2": {
+              "consume_amount": "ATTACK_CHECK_RESULT",
+              "consume_resource": "mp",
+              "consume_self": false,
+              "effect_kind": "consume_resource",
+              "effect_label": "crossfire_cost",
+              "from_resource": "",
+              "grant_amount": "",
+              "grant_resource": "",
+              "menu_label": "",
+              "on_empty": "abort",
+              "target_ref": "self",
+              "to_resource": ""
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
-          "isOffensiveSpell": true,
-          "level": "4",
-          "max_level": "4",
-          "name": "Warning Shot",
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Crossfire",
+          "on_activate_effect_ref": "",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT",
+              "reaction_action_intent": "harmful",
+              "reaction_action_kind": "Attack",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "crossfire_do",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "all",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_targeted_by_action",
+              "requires_skill": ""
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
           "skill_range": "",
-          "skill_target": "Target Creatures",
-          "skill_type": "Active",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "target_eligibility": "",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "A68h8dHO8F75awX4"
+        "uniqueId": "7ypQRfO8hlmuZQXT"
       },
       "type": "equippableItem"
     },
@@ -1228,96 +1631,6 @@
         "templateSystemUniqueVersion": 1853581118,
         "unique": false,
         "uniqueId": "v1yNcrBsksMO1nPU"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "k7CNhaKwcWuBCDSr",
-      "_stats": {
-        "compendiumSource": "Item.10o5oABWBrGVHV7G",
-        "coreVersion": "12.343",
-        "createdTime": 1756027969945,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill1.png",
-      "name": "Crossfire",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "t41knaXNbgCEygM5": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Sharpshooter",
-          "cost": "X MP",
-          "damage_bonus": "0",
-          "description": "<p>After a creature you can see performs a <strong>ranged attack</strong>, you may spend an amount of <strong>Mind Points</strong> equal to the total Result of their Accuracy Check in order to have the attack <strong>fail automatically</strong> against all targets. You can only use this Skill if you have a <strong>ranged weapon</strong> equipped, and it has no effect if the Accuracy Check was a critical success.</p>",
-          "duration": "Instantanoeus",
-          "effect_table": {
-            "0": {
-              "chain_steps": "crossfire_block,crossfire_cost",
-              "effect_kind": "chain",
-              "effect_label": "crossfire_do"
-            },
-            "1": {
-              "accuracy_amount": "0",
-              "accuracy_operation": "set",
-              "effect_kind": "adjust_accuracy",
-              "effect_label": "crossfire_block",
-              "menu_description": "Spend MP equal to the attacker's Accuracy Result to make the attack fail against all targets.",
-              "menu_label": "Crossfire"
-            },
-            "2": {
-              "consume_amount": "ATTACK_CHECK_RESULT",
-              "consume_resource": "mp",
-              "effect_kind": "consume_resource",
-              "effect_label": "crossfire_cost",
-              "on_empty": "abort",
-              "target_ref": "self"
-            }
-          },
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isReaction": true,
-          "level": "1",
-          "max_level": "1",
-          "name": "Crossfire",
-          "optional_params": {},
-          "reaction_config_table": {
-            "0": {
-              "condition_formula": "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT",
-              "reaction_action_intent": "harmful",
-              "reaction_action_kind": "Attack",
-              "reaction_effect_ref": "crossfire_do",
-              "reaction_passive_mode": "ask",
-              "reaction_source": "all",
-              "reaction_trigger": "creature_targeted_by_action"
-            }
-          },
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_target": "One Creature performing Range Attack",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "10o5oABWBrGVHV7G"
       },
       "type": "equippableItem"
     },
@@ -1390,11 +1703,8 @@
       "system": {
         "container": "MW9Qma1EzFN4gnNY",
         "props": {
-          "action_command": "",
-          "check_mode": "",
           "cost": "",
           "description": "<p>Equipped passive: +2 to Study Checks.</p>",
-          "details_roller": "",
           "effect_table": {
             "0": {
               "check_buff_action": "any",
@@ -1403,8 +1713,6 @@
               "effect_label": "catears_any_buff"
             }
           },
-          "id": "QjuNoo0rGl9iUWiO",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
           "isCheck": false,
           "isReaction": false,
           "max_level": "1",
@@ -1413,8 +1721,7 @@
           "rolled_atr1": "INS",
           "rolled_atr2": "INS",
           "skill_target": "",
-          "skill_type": "Passive",
-          "uuid": "Item.QjuNoo0rGl9iUWiO"
+          "skill_type": "Passive"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1624,104 +1931,6 @@
         "template": "xdZPhVF8AnmwQEPM",
         "templateSystemUniqueVersion": 3725551061,
         "unique": false
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "pM7IziuZMSRuUMFL",
-      "_stats": {
-        "compendiumSource": "Item.wVVluaGNDUiNVLUw",
-        "coreVersion": "12.343",
-        "createdTime": 1756027972249,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/barrage.png",
-      "name": "Barrage",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "t41knaXNbgCEygM5": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Sharpshooter",
-          "cost": "10 MP",
-          "damage_bonus": "0",
-          "description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to choose one option: the attack gains <em>multi (2)</em>; or you increase the attack's <em>multi</em> property by one, up to a maximum of <em>multi (3)</em>.</p>",
-          "duration": "Instantaneous",
-          "effect_table": {
-            "0": {
-              "chain_steps": "barrage_add,barrage_cost",
-              "effect_kind": "chain",
-              "effect_label": "barrage_do"
-            },
-            "1": {
-              "effect_kind": "add_target",
-              "effect_label": "barrage_add",
-              "menu_description": "Spend 10 MP to target one additional creature.",
-              "menu_label": "Barrage",
-              "target_ref": "barrage_pick"
-            },
-            "2": {
-              "consume_amount": "10",
-              "consume_resource": "mp",
-              "effect_kind": "consume_resource",
-              "effect_label": "barrage_cost",
-              "on_empty": "abort",
-              "target_ref": "self"
-            },
-            "3": {
-              "auto_confirm_when_obvious": false,
-              "candidate_source": "combat",
-              "category": "enemy",
-              "count": 1,
-              "effect_kind": "targeting",
-              "effect_label": "barrage_pick",
-              "exclude_action_targets": true,
-              "mode": "exact",
-              "skip_when_passive": false
-            }
-          },
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isReaction": true,
-          "level": "1",
-          "max_level": "1",
-          "name": "Barrage",
-          "optional_params": {},
-          "reaction_config_table": {
-            "0": {
-              "condition_formula": "ATTACK_IS_RANGED == 1",
-              "reaction_effect_ref": "barrage_do",
-              "reaction_passive_mode": "ask",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_performs_action"
-            }
-          },
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_target": "Self",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "wVVluaGNDUiNVLUw"
       },
       "type": "equippableItem"
     },
@@ -2440,124 +2649,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "waoyUxLFPL2PrcDp",
-      "_stats": {
-        "compendiumSource": "Item.bRbJl1AxELZ0TLLo",
-        "coreVersion": "12.343",
-        "createdTime": 1754136791208,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "effects": [
-        {
-          "_id": "UwJOW7DPw9XCGPsZ",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.6.4"
-          },
-          "changes": [
-            {
-              "key": "check_mod_ranged",
-              "mode": 2,
-              "priority": 1,
-              "value": "${level}$"
-            }
-          ],
-          "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>ranged</strong> weapons.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "UwJOW7DPw9XCGPsZ",
-              "originalParentId": "bRbJl1AxELZ0TLLo",
-              "originalUuid": "Item.bRbJl1AxELZ0TLLo.ActiveEffect.UwJOW7DPw9XCGPsZ"
-            },
-            "statuscounter": {
-              "config": {
-                "durationType": 0,
-                "modifyDuration": false,
-                "multiplyEffect": false,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/skills/ranged/target-bullseye-arrow-glowing.webp",
-          "name": "Ranged Weapon Mastery",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": [
-              "Class Skill",
-              "Passive",
-              "Sharpshooter"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "icons/skills/ranged/target-bullseye-arrow-glowing.webp",
-      "name": "Ranged Weapon Mastery",
-      "ownership": {
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "t41knaXNbgCEygM5": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Sharpshooter",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>ranged</strong> weapons.</p>",
-          "duration": "",
-          "isCheck": false,
-          "isHeroic": false,
-          "level": "4",
-          "max_level": "4",
-          "name": "Ranged Weapon Mastery",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": true,
-        "uniqueId": "bRbJl1AxELZ0TLLo"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "Wo6RiAPdvhwpTMEQ",
       "_stats": {
         "compendiumSource": "Item.JgAHGewfef49F7tx",
@@ -2825,6 +2916,133 @@
         "templateSystemUniqueVersion": 2814471460,
         "unique": false,
         "uniqueId": "BIbreDnYgqPYJy6s"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Z68sRUIkr5hGOKkn",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398748935,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "15Gew6Jyr5T4Zi6u",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "check_mod_ranged",
+              "mode": 2,
+              "priority": 1,
+              "value": "${level}$"
+            }
+          ],
+          "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>ranged</strong> weapons.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "UwJOW7DPw9XCGPsZ",
+              "originalParentId": "bRbJl1AxELZ0TLLo",
+              "originalUuid": "Item.bRbJl1AxELZ0TLLo.ActiveEffect.UwJOW7DPw9XCGPsZ"
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/skills/ranged/target-bullseye-arrow-glowing.webp",
+          "name": "Ranged Weapon Mastery",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "Class Skill",
+              "Passive",
+              "Sharpshooter"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "icons/skills/ranged/target-bullseye-arrow-glowing.webp",
+      "name": "Ranged Weapon Mastery",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Sharpshooter",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>ranged</strong> weapons.</p>",
+          "duration": "-",
+          "effect_table": {},
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "4",
+          "max_level": "4",
+          "name": "Ranged Weapon Mastery",
+          "on_activate_effect_ref": "",
+          "passive_logic_action": "",
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "Q2T7Zz0lECrQ4win"
       },
       "type": "equippableItem"
     },

@@ -655,6 +655,28 @@
           "defense_target_type": "def",
           "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 15】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "drain_recover",
+              "grant_amount": "ceil(MP_DEALT / 2)",
+              "grant_resource": "mp",
+              "target_ref": "ds_self"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "ds_self",
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": true,
@@ -682,7 +704,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "fIMx7fleEq7LKXNE"
+        "uniqueId": "szPLoqRb8JELX4X7"
       },
       "type": "equippableItem"
     },

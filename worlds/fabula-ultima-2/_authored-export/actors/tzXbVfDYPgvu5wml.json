@@ -391,6 +391,14 @@
           "demon_ef": "100",
           "description": "<ul><li>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span> on the target&nbsp;<strong>Humanoid</strong> which last until the end of this round. Have no effect on Champion-Rank creature</li><li>When use outside of <strong>conflict, </strong>the effect last until the end of the <strong>scene </strong>instead</li></ul>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "ae_template_ref": "Charmed",
+              "effect_kind": "apply_ae",
+              "effect_label": "lovepotion_charm",
+              "target_ref": "action_targets"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -418,12 +426,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_active": {
+            "TveSIs4RtZLvTtY0": {
+              "id": "${item.id}",
+              "name": "Love Potion",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Item.TveSIs4RtZLvTtY0"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Love Potion",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "TveSIs4RtZLvTtY0": {
+              "id": "${item.id}",
+              "name": "Love Potion",
+              "related_item_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+              "uuid": "Item.TveSIs4RtZLvTtY0"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -690,6 +716,99 @@
           "defense_target_type": "def",
           "description": "<p>When you cast an <strong>instantaneous</strong> spell, if you have an <strong>arcane</strong> weapon equipped, <strong>you may increase the spell's total MP cost</strong> by up to <strong>【SL × 10】</strong> Mind Points. If you do so and the spell deals damage to one or more creatures, it will deal 5 extra damage to each creature for every 10 Mind Points by which you increased its total MP cost.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "cat_prompt, cat_mp, cat_dmg",
+              "effect_kind": "chain",
+              "effect_label": "cat_root",
+              "menu_option_descriptions": "Spend 10 MP for +5 damage to each creature|Spend 20 MP for +10 damage to each creature|Spend 30 MP for +15 damage to each creature",
+              "menu_option_labels": "+10 MP → +5 damage|+20 MP → +10 damage|+30 MP → +15 damage",
+              "menu_option_refs": "cat_10, cat_20, cat_30",
+              "menu_subtitle": "Increase the spell's MP cost for extra damage",
+              "menu_title": "Cataclysm — Overcharge"
+            },
+            "1": {
+              "$deleted": false,
+              "chain_steps": "cat_10_mp, cat_10_dmg",
+              "condition_formula": "SL >= 1 && CUR_MP >= ACTION_MP_COST + 10",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "prompt_number",
+              "effect_label": "cat_prompt",
+              "prompt_label": "Overcharge: increase MP cost (+5 damage per 10 MP)",
+              "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor((CUR_MP - ACTION_MP_COST)/10)*10 )",
+              "prompt_min": "10",
+              "prompt_step": "10",
+              "prompt_var": "overcharge"
+            },
+            "2": {
+              "$deleted": false,
+              "cost_amount": "VAR_OVERCHARGE",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_mp"
+            },
+            "3": {
+              "$deleted": false,
+              "damage_amount": "VAR_OVERCHARGE / 2",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_dmg"
+            },
+            "4": {
+              "$deleted": false,
+              "chain_steps": "cat_20_mp, cat_20_dmg",
+              "condition_formula": "SL >= 2 && CUR_MP >= ACTION_MP_COST + 20",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "chain",
+              "effect_label": "cat_20"
+            },
+            "5": {
+              "$deleted": false,
+              "cost_amount": "20",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_20_mp"
+            },
+            "6": {
+              "$deleted": false,
+              "damage_amount": "10",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_20_dmg"
+            },
+            "7": {
+              "$deleted": false,
+              "chain_steps": "cat_30_mp, cat_30_dmg",
+              "condition_formula": "SL >= 3 && CUR_MP >= ACTION_MP_COST + 30",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "chain",
+              "effect_label": "cat_30"
+            },
+            "8": {
+              "$deleted": false,
+              "cost_amount": "30",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_30_mp"
+            },
+            "9": {
+              "$deleted": false,
+              "damage_amount": "15",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_30_dmg"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
@@ -700,7 +819,16 @@
           "max_level": "3",
           "name": "Cataclysm",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_MP_COST + 10",
+              "reaction_effect_ref": "cat_root",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -2667,6 +2795,16 @@
           "defense_target_type": "def",
           "description": "<p>Once per turn during a conflict, if you have an <strong>arcane</strong> weapon equipped, you may use an action and spend <strong>20 to 50 Mind Points</strong> to perform the <strong>【📕Spell】</strong> action for free <strong>twice</strong>, casting two spells without needing to pay their MP costs. If you do, the two spells must have a combined total MP cost equal to or lower than <strong>【20 + the amount of MP you spent to use this Skill】</strong>, and the second spell must have a total MP cost that is equal to or lower than half the total MP cost of the first spell.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "action_ref": "Spell",
+              "effect_kind": "free_action",
+              "effect_label": "bim_free",
+              "free_of_cost": true,
+              "max_mp_cost": "min(70 - MP_SPENT_THIS_TURN, floor(MP_SPENT_THIS_TURN / 2))"
+            }
+          },
           "heroic_requirement": "you must have mastered two or more Classes among Elementalist, Entropist, and Spiritist, and your character must be level 30 or higher.",
           "ignore_hr": false,
           "isCheck": false,
@@ -2679,7 +2817,17 @@
           "max_level": 1,
           "name": "Bimagus",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && MP_SPENT_THIS_TURN > 0",
+              "reaction_effect_ref": "bim_free",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_end"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -3226,6 +3374,15 @@
           "demon_ef": "100",
           "description": "<ul><li><p>Target creature recovers <strong>20</strong> MP</p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "grapejuice_restore",
+              "grant_amount": "20",
+              "grant_resource": "mp",
+              "target_ref": "action_targets"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -3254,14 +3411,6 @@
           "item_quantity": "50",
           "item_rarity": "Common",
           "item_skill_active": {
-            "9FXaNplA7UfZ5y98": {
-              "id": "${item.id}",
-              "name": "Grape Juice",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p>Target creature <strong>recovers 20 MP</strong></p></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.9FXaNplA7UfZ5y98"
-            },
             "lbsUVF4g4J4Q6pYl": {
               "id": "${item.id}",
               "name": "Grape Juice",
@@ -3278,12 +3427,6 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
-            "9FXaNplA7UfZ5y98": {
-              "id": "${item.id}",
-              "name": "Grape Juice",
-              "related_item_description": "<ul><li><p>Target creature <strong>recovers 20 MP</strong></p></li></ul>",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.9FXaNplA7UfZ5y98"
-            },
             "lbsUVF4g4J4Q6pYl": {
               "id": "${item.id}",
               "name": "Grape Juice",
@@ -5089,6 +5232,348 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "EOyCR73IYKxJoEOo",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783400321672,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Fire"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Fire damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "S119a4YHctInL77I",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.S119a4YHctInL77I"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Fire)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-fire"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "muDyovHul6ejdu5y",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783400321672,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Earth"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Earth damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "mdblqbxkXqK2NP7x",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.mdblqbxkXqK2NP7x"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Earth)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-earth"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "Oy315DsqQA68qMyD",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783400321672,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Air"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Air damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "BW8q9RVaXE2rw2gY",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.BW8q9RVaXE2rw2gY"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Air)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-air"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "Wje14nw1VddEOvBt",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783400321672,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Ice"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Ice damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Dj7JaA6k08sH0vGE",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.Dj7JaA6k08sH0vGE"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Ice)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-ice"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "ZYauLSSt8HdtmBmO",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783400321672,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Bolt"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Bolt damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "4AlszqrfZgHsO8aw",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.4AlszqrfZgHsO8aw"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Bolt)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-bolt"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -5522,7 +6007,16 @@
           "defense_target_type": "def",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "heal_hp",
+              "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,

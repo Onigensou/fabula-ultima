@@ -1,0 +1,135 @@
+{
+  "_id": "IGZhlzseqySC5xUd",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1748648969813,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "1d7",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Fist/Icon-Metal_Knuckles.webp",
+  "name": "Street Fighters",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "CQSbnuI4c4L9YXBY",
+      "documentCollection": "Item",
+      "documentId": "Yn6en8A515u0Gd4c",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Hot%20Pants.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Hot Pants",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "iKkvuCoRBZctu5rw",
+      "documentCollection": "Item",
+      "documentId": "ZZG5sHvIc3GH26w7",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Maid%20Headdress.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Maid cap",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "JEguXzwxbPTfB2Wa",
+      "documentCollection": "Item",
+      "documentId": "kxQV423bl0N1VUUc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Tanktop.gif",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Sports Bra",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pzITvJ9LNm19hFDG",
+      "documentCollection": "Item",
+      "documentId": "I8wXcpGE6TGCM87B",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Maid Uniform",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rsrMEnJKNpEn6nMO",
+      "documentCollection": "Item",
+      "documentId": "QuzY0QG9S1RfjuUF",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Champion Gloves",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vc7ku7OBOB1JDgC6",
+      "documentCollection": "Item",
+      "documentId": "8IUc1Fb4toLru5kk",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Boot.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Street Boots",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vFxiAX71873Ckq9j",
+      "documentCollection": "Item",
+      "documentId": "2qY1KhC6cpihpdZY",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Silver%20Knife.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Silver Knives",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

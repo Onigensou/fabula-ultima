@@ -151,7 +151,6 @@
           "damage_bonus": "40",
           "defense_target_type": "mdef",
           "description": "<p>Deal <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to a target, inflicts<span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Vnd1QB9lYQMYvIDF\" data-id=\"Vnd1QB9lYQMYvIDF\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Oil</span></strong></a></span></p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -163,9 +162,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "5GOsf7rPolHWnDsX",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -205,13 +202,88 @@
           "skill_target": "One Creature",
           "skill_type": "Spell",
           "type_damage": "Fire",
-          "use_optional_params": false,
-          "uuid": "Actor.RJECgM6oVt4UI4ds.Item.5GOsf7rPolHWnDsX"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "mJuSEmMc3A0HrqNO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ah2fzhk6PBxDmiPH",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398738086,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/HealerRollAction/surecast.png",
+      "name": "Dispel",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You release a wave of negative energy and cleanse all magic from a creature. If the target is affected by one or more spells with a <strong>duration</strong> of Scene, they are no longer affected by any of those spells instead</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "count": "1",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "dispel_cleanse",
+              "filter_tag": "dispellable",
+              "menu_subtitle": "Choose one dispellable effect to remove",
+              "menu_title": "Dispel — Remove an Effect",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dispel",
+          "on_activate_effect_ref": "dispel_cleanse",
+          "optional_params": {},
+          "pre_activate_effect_ref": "dispel_cleanse",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "Ydbba6k0hFjWZvJv"
       },
       "type": "equippableItem"
     },
@@ -243,7 +315,6 @@
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_preload_urls": "modules/boss-loot-assets-free/artwork/05-spell/homebrew/cast/Spell_Cast_2_Fire_1_ORANGE_1200x1200.webm",
           "animation_script": "<p>// =============================================================================</p><p>// T3 - webm-on-target. Parametric via a CFG object.</p><p>// Plays a JB2A/boss-loot webm centered on the target (or the caster's point for</p><p>// on-death effects), with optional white-silhouette pre-flash of the target and</p><p>// fade in/out. doneHook fires at cfg.doneAtMs after the webm starts.</p><p>//   cfg.anchor: \"target\" | \"caster\"</p><p>//   cfg.url:    webm path</p><p>//   cfg.sizeFrac: sprite width as a fraction of screen height</p><p>//   cfg.preTintWhite / cfg.preTintMs: flash the target white first</p><p>//   cfg.fadeInMs / cfg.fadeOutMs / cfg.doneAtMs / cfg.maxMs</p><p>// =============================================================================</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"name\":\"Enkindle\",\"key\":\"dryad_enkindle\",\"url\":\"modules/boss-loot-assets-free/artwork/05-spell/homebrew/cast/Spell_Cast_2_Fire_1_ORANGE_1200x1200.webm\",\"anchor\":\"target\",\"fadeInMs\":0,\"fadeOutMs\":260,\"sizeFrac\":0.55,\"doneAtMs\":360,\"maxMs\":1900,\"endPadMs\":100,\"totalTimeoutMs\":9000,\"sfx\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_HitFire.ogg\",\"sfxVol\":0.6};</p><p>const TAG      = \"[ONI][Anim][WebmTgt][\" + CFG.name + \"]\";</p><p>const ANIM_KEY = \"oni.gen.webmtgt.\" + CFG.key;</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = \"oni.anim.\" + ANIM_KEY + \".\" + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>function onceHook(name, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(name, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(name, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(name, h);</p><p>  });</p><p>}</p><p>function emitLocal(name, data) { try { Hooks.callAll(name, data); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>const caster = ctx.casterToken;</p><p>const targetTokens = ctx.targetTokens || [];</p><p>const cfg = ctx.params.cfg;</p><p></p><p>const stage = canvas.stage;</p><p>stage.sortableChildren = true;</p><p>const ticker = canvas.app.ticker;</p><p>const W = canvas.app.renderer.screen.width;</p><p>const H = canvas.app.renderer.screen.height;</p><p>const WT = stage.worldTransform.clone();</p><p>const ZOOM = Math.abs(stage.scale?.x || 1) || 1;</p><p>const wLen = (px) =&gt; px / ZOOM;</p><p>const hPx  = (frac) =&gt; wLen(frac * H);</p><p>const waitMs = (ms) =&gt; new Promise(r =&gt; setTimeout(r, Number(ms) || 0));</p><p></p><p>const spawned = [];</p><p>function destroyObj(o) { try { if (o &amp;&amp; !o._destroyed) { if (o.parent) o.parent.removeChild(o); o.destroy({ children: true }); } } catch (_) {} }</p><p>function cleanupAll() { for (const o of spawned.splice(0)) destroyObj(o); }</p><p>let doneFired = false;</p><p>function fireDone(res) { if (doneFired) return; doneFired = true; try { Hooks.callAll(ctx.params.doneHook, res || { ok: true }); } catch (_) {} }</p><p></p><p>const easeOutCubic = (t) =&gt; 1 - Math.pow(1 - t, 3);</p><p>function tween(fn, dur, ease) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    const t0 = performance.now();</p><p>    const step = () =&gt; { const raw = dur&gt;0?Math.min(1,(performance.now()-t0)/dur):1; try{fn(ease?ease(raw):raw,raw);}catch(_){} if(raw&gt;=1){ticker.remove(step);resolve();} };</p><p>    ticker.add(step);</p><p>  });</p><p>}</p><p>function meshOf(tok) { return tok ? tok.mesh : null; }</p><p>function makeSprite(tok) {</p><p>  const m = meshOf(tok);</p><p>  const sp = new PIXI.Sprite(m?.texture ?? PIXI.Texture.WHITE);</p><p>  sp.anchor.set(0.5, 0.5);</p><p>  sp.width = Math.abs(m?.width ?? (tok?.w ?? 100));</p><p>  sp.height = Math.abs(m?.height ?? (tok?.h ?? 100));</p><p>  sp.angle = m?.angle ?? 0;</p><p>  return sp;</p><p>}</p><p>function makeHider(tok) {</p><p>  const m = meshOf(tok); let on = false, tR = true, mR = true;</p><p>  const guard = () =&gt; { if (!tok) return; tok.renderable = false; if (m) m.renderable = false; };</p><p>  return {</p><p>    start() { if (!tok || on) return; on = true; tR = tok.renderable ?? true; mR = m?.renderable ?? true; ticker.add(guard); },</p><p>    restore() { if (!tok || !on) return; ticker.remove(guard); tok.renderable = tR; if (m) m.renderable = mR; try { tok.renderFlags.set({ refreshVisibility: true, refreshMesh: true, refreshState: true }); } catch (_) {} on = false; },</p><p>  };</p><p>}</p><p>async function loadVideo(url) {</p><p>  const vid = document.createElement(\"video\");</p><p>  try { vid.crossOrigin = \"anonymous\"; } catch (_) {}</p><p>  vid.src = url; vid.muted = true; vid.loop = !!cfg.loop; vid.playsInline = true; vid.preload = \"auto\";</p><p>  await new Promise((res) =&gt; { let done=false; const go=()=&gt;{if(done)return;done=true;res();}; vid.addEventListener(\"loadeddata\",go,{once:true}); vid.addEventListener(\"error\",go,{once:true}); setTimeout(go,1500); });</p><p>  return vid;</p><p>}</p><p></p><p>try {</p><p>  const anchorTok = (cfg.anchor === \"caster\") ? caster : (targetTokens[0] || caster);</p><p>  const pt = anchorTok ? { x: anchorTok.center.x, y: anchorTok.center.y }</p><p>                       : { x: WT.applyInverse(new PIXI.Point(0.6*W,0.5*H)).x, y: WT.applyInverse(new PIXI.Point(0.6*W,0.5*H)).y };</p><p></p><p>  // optional white-silhouette pre-flash of the target</p><p>  let tgtHide = null, whiteFx = null, maskSpr = null;</p><p>  if (cfg.preTintWhite &amp;&amp; anchorTok) {</p><p>    tgtHide = makeHider(anchorTok); tgtHide.start();</p><p>    maskSpr = makeSprite(anchorTok); maskSpr.x = pt.x; maskSpr.y = pt.y; maskSpr.zIndex = 8600;</p><p>    stage.addChild(maskSpr); spawned.push(maskSpr);</p><p>    const bw = Math.abs(meshOf(anchorTok)?.width ?? anchorTok.w) * 1.1;</p><p>    const bh = Math.abs(meshOf(anchorTok)?.height ?? anchorTok.h) * 1.1;</p><p>    whiteFx = new PIXI.Graphics();</p><p>    whiteFx.beginFill(0xffffff, 1).drawRect(pt.x - bw/2, pt.y - bh/2, bw, bh).endFill();</p><p>    whiteFx.mask = maskSpr; whiteFx.zIndex = 8601; whiteFx.alpha = 0;</p><p>    stage.addChild(whiteFx); spawned.push(whiteFx);</p><p>    await tween((p) =&gt; { whiteFx.alpha = p; }, cfg.preTintMs || 200, easeOutCubic);</p><p>  }</p><p></p><p>  // the webm</p><p>  const vid = await loadVideo(cfg.url);</p><p>  const tex = PIXI.Texture.from(vid);</p><p>  const nativeW = tex.width || tex.orig?.width || 400;</p><p>  const spr = new PIXI.Sprite(tex);</p><p>  spr.anchor.set(0.5, 0.5);</p><p>  spr.x = pt.x; spr.y = pt.y; spr.zIndex = 9000;</p><p>  spr.scale.set(hPx(cfg.sizeFrac) / nativeW);</p><p>  spr.blendMode = (cfg.blendAdd ? PIXI.BLEND_MODES.ADD : PIXI.BLEND_MODES.NORMAL);</p><p>  spr.alpha = cfg.fadeInMs &gt; 0 ? 0 : 1;</p><p>  stage.addChild(spr); spawned.push(spr);</p><p>  try { vid.currentTime = 0; await vid.play(); } catch (_) {}</p><p>  if (cfg.sfx) { try { const au = new Audio(cfg.sfx); au.volume = (cfg.sfxVol == null ? 0.6 : cfg.sfxVol); au.play().catch(()=&gt;{}); } catch (_) {} }</p><p>  if (cfg.fadeInMs &gt; 0) tween((p) =&gt; { spr.alpha = p; }, cfg.fadeInMs, easeOutCubic);</p><p></p><p>  // fire damage gate partway through</p><p>  await waitMs(cfg.doneAtMs || 300);</p><p>  fireDone({ ok: true });</p><p></p><p>  // hold until webm ends (or maxMs), then fade + restore</p><p>  const remain = Math.max(0, (cfg.maxMs || 1600) - (cfg.doneAtMs || 300));</p><p>  await new Promise((res) =&gt; { let done=false; const go=()=&gt;{if(done)return;done=true;res();}; if(!cfg.loop) vid.addEventListener(\"ended\",go,{once:true}); setTimeout(go, remain); });</p><p></p><p>  await tween((p) =&gt; { spr.alpha = (spr.alpha) * (1 - p); if (whiteFx) whiteFx.alpha = whiteFx.alpha * (1 - p); }, cfg.fadeOutMs || 240, easeOutCubic);</p><p>  destroyObj(spr);</p><p>  try { vid.pause(); vid.removeAttribute(\"src\"); vid.load(); } catch (_) {}</p><p>  if (tgtHide) tgtHide.restore();</p><p>  await waitMs(cfg.endPadMs || 100);</p><p>  cleanupAll();</p><p>} catch (err) {</p><p>  console.error(\"[ONI][Pseudo][WebmTgt]\", err);</p><p>  fireDone({ ok: false, error: String(err &amp;&amp; err.message || err) });</p><p>} finally {</p><p>  cleanupAll();</p><p>}</p><p>`;</p><p></p><p>try {</p><p>  emitLocal(\"oni:animationStart\", { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 10000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, cfg: CFG },</p><p>    meta: { source: CFG.name },</p><p>  });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, \"pseudo non-OK / timeout\", result);</p><p>} catch (err) {</p><p>  console.error(TAG, \"orchestration crashed\", err);</p><p>} finally {</p><p>  emitLocal(\"oni:animationEnd\", { type: ANIM_KEY, timestamp: Date.now() });</p><p>}</p><p></p><p>})();</p><p></p>",
           "check_bonus": "0",
           "class": "NPC",
@@ -251,7 +322,6 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p><strong>Double </strong>the amount of <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>stack on a target, then it takes <strong>【5 x the amount of Burn Stack】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span>&nbsp;damage</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -280,9 +350,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "O3Lmde4h5SIS34cr",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -312,92 +380,12 @@
           "skill_target": "One Creature",
           "skill_type": "Spell",
           "type_damage": "Fire",
-          "use_optional_params": false,
-          "uuid": "Actor.RJECgM6oVt4UI4ds.Item.O3Lmde4h5SIS34cr"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "mJuSEmMc3A0HrqNO"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "OB9H6LpJArQP8e5N",
-      "_stats": {
-        "compendiumSource": "Item.OoVNUOIssIfwPo7H",
-        "coreVersion": "12.343",
-        "createdTime": 1780106030416,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/HealerRollAction/surecast.png",
-      "name": "Dispel",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "check_bonus": "0",
-          "class": "Entropist",
-          "cost": "10 MP",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>You release a wave of negative energy and cleanse all magic from a creature. If the target is affected by one or more spells with a <strong>duration</strong> of Scene, they are no longer affected by any of those spells instead</p>",
-          "details_roller": "Show",
-          "duration": "Instantaneous",
-          "effect_table": {
-            "0": {
-              "effect_kind": "remove_tagged_ae",
-              "effect_label": "dispel_remove",
-              "filter_tag": "dispellable",
-              "target_ref": "action_targets"
-            }
-          },
-          "heroic_requirement": "",
-          "id": "OB9H6LpJArQP8e5N",
-          "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/HealerRollAction/surecast.png",
-          "isCheck": false,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "isZeroPower": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Dispel",
-          "on_activate_effect_ref": "dispel_remove",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Range",
-          "skill_target": "One creature",
-          "skill_type": "Spell",
-          "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.RJECgM6oVt4UI4ds.Item.OB9H6LpJArQP8e5N"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "OoVNUOIssIfwPo7H"
       },
       "type": "equippableItem"
     },
@@ -456,7 +444,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -475,8 +462,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "NNTvabK5vy807Mvt",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2612.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -509,7 +494,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.NNTvabK5vy807Mvt",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -552,7 +536,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -571,8 +554,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "zF6faTFO5nlTBVt8",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Sunsettia.webp",
           "ingredient_taste": "sour",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -612,7 +593,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.zF6faTFO5nlTBVt8",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -678,7 +658,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -696,8 +675,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "SUYqRKHBGXUhiOL1",
-          "img": "icons/svg/item-bag.svg",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -730,7 +707,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.SUYqRKHBGXUhiOL1",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -819,7 +795,6 @@
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_preload_urls": "modules/JB2A_DnD5e/Library/Generic/Cast/CastFire01_01_Regular_Orange_600x600.webm",
           "animation_script": "<p>// =============================================================================</p><p>// Ignis Finis (bespoke, shared Dryad + Marigold). Parametric via a CFG object.</p><p>// Dim the scene -&gt; fire particles gather at the target -&gt; orange shimmer pulse</p><p>// -&gt; CastFire01 webm plays large at the target with a screenshake. doneHook</p><p>// fires when the webm's flame peaks; then the dim fades out.</p><p>// =============================================================================</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"fireColor\":16742944,\"dimAlpha\":0.55,\"dimMs\":400,\"undimMs\":500,\"gatherRadius\":0.22,\"gatherCount\":26,\"gatherSize\":0.03,\"gatherMs\":620,\"gatherStagger\":6,\"shimmerAlpha\":0.22,\"shimmerMs\":700,\"castSize\":1.55,\"castMaxMs\":2400,\"doneAtMs\":500,\"shakeMs\":620,\"shakePx\":10,\"fadeMs\":340,\"totalTimeoutMs\":14000,\"name\":\"Ignis Finis\",\"sfxCast\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Scorch.ogg\",\"sfxCastVol\":0.6,\"sfxExplosion\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Amalthea_Explosion.ogg\",\"sfxExplosionVol\":0.6,\"key\":\"dryad_ignisfinis\"};</p><p>const TAG      = \"[ONI][Anim][IgnisFinis][\" + CFG.name + \"]\";</p><p>const ANIM_KEY = \"oni.gen.ignisfinis.\" + CFG.key;</p><p>const CAST_URL = \"modules/JB2A_DnD5e/Library/Generic/Cast/CastFire01_01_Regular_Orange_600x600.webm\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = \"oni.anim.\" + ANIM_KEY + \".\" + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>function onceHook(name, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(name, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(name, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(name, h);</p><p>  });</p><p>}</p><p>function emitLocal(name, data) { try { Hooks.callAll(name, data); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>const caster = ctx.casterToken;</p><p>const targetTokens = ctx.targetTokens || [];</p><p>const cfg = ctx.params.cfg;</p><p>const A = ctx.params.assets;</p><p></p><p>const stage = canvas.stage;</p><p>stage.sortableChildren = true;</p><p>const ticker = canvas.app.ticker;</p><p>const W = canvas.app.renderer.screen.width;</p><p>const H = canvas.app.renderer.screen.height;</p><p>const WT = stage.worldTransform.clone();</p><p>const ZOOM = Math.abs(stage.scale?.x || 1) || 1;</p><p>const S2W = (fx, fy) =&gt; WT.applyInverse(new PIXI.Point(fx * W, fy * H));</p><p>const wLen = (px) =&gt; px / ZOOM;</p><p>const hPx  = (frac) =&gt; wLen(frac * H);</p><p>const waitMs = (ms) =&gt; new Promise(r =&gt; setTimeout(r, Number(ms) || 0));</p><p></p><p>const spawned = [];</p><p>function destroyObj(o) { try { if (o &amp;&amp; !o._destroyed) { if (o.parent) o.parent.removeChild(o); o.destroy({ children: true }); } } catch (_) {} }</p><p>function cleanupAll() { for (const o of spawned.splice(0)) destroyObj(o); }</p><p>let doneFired = false;</p><p>function fireDone(res) { if (doneFired) return; doneFired = true; try { Hooks.callAll(ctx.params.doneHook, res || { ok: true }); } catch (_) {} }</p><p></p><p>const easeOutCubic = (t) =&gt; 1 - Math.pow(1 - t, 3);</p><p>const easeInCubic  = (t) =&gt; t * t * t;</p><p>function tween(fn, dur, ease) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    const t0 = performance.now();</p><p>    const step = () =&gt; { const raw = dur&gt;0?Math.min(1,(performance.now()-t0)/dur):1; try{fn(ease?ease(raw):raw,raw);}catch(_){} if(raw&gt;=1){ticker.remove(step);resolve();} };</p><p>    ticker.add(step);</p><p>  });</p><p>}</p><p>function dotTexture(hex) {</p><p>  const s = 64; const cv = document.createElement(\"canvas\"); cv.width = cv.height = s;</p><p>  const g = cv.getContext(\"2d\");</p><p>  const col = \"#\" + (hex &gt;&gt;&gt; 0).toString(16).padStart(6, \"0\").slice(-6);</p><p>  const grd = g.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);</p><p>  grd.addColorStop(0, \"#ffffff\"); grd.addColorStop(0.4, col); grd.addColorStop(1, \"rgba(0,0,0,0)\");</p><p>  g.fillStyle = grd; g.beginPath(); g.arc(s/2, s/2, s/2, 0, Math.PI*2); g.fill();</p><p>  return PIXI.Texture.from(cv);</p><p>}</p><p>function fullRect(color, alpha, z, blend) {</p><p>  const a = S2W(-0.1,-0.1), b = S2W(1.1,1.1);</p><p>  const g = new PIXI.Graphics();</p><p>  g.beginFill(color, 1).drawRect(a.x, a.y, b.x-a.x, b.y-a.y).endFill();</p><p>  g.alpha = alpha; g.zIndex = z; if (blend) g.blendMode = PIXI.BLEND_MODES.ADD;</p><p>  return g;</p><p>}</p><p>function screenShake(ms, px) {</p><p>  try {</p><p>    const view = canvas.app.view;</p><p>    if (!document.getElementById(\"oni-shake-kf\")) {</p><p>      const st = document.createElement(\"style\"); st.id = \"oni-shake-kf\";</p><p>      st.textContent = \"@keyframes oniShake{0%,100%{transform:translate(0,0)}15%{transform:translate(-\" + px + \"px,\" + px + \"px)}30%{transform:translate(\" + px + \"px,-\" + px + \"px)}45%{transform:translate(-\" + px + \"px,-\" + px + \"px)}60%{transform:translate(\" + px + \"px,\" + px + \"px)}75%{transform:translate(-\" + px + \"px,0)}} .oni-shaking{animation:oniShake 0.42s linear}\";</p><p>      document.head.appendChild(st);</p><p>    }</p><p>    view.classList.remove(\"oni-shaking\"); void view.offsetWidth; view.classList.add(\"oni-shaking\");</p><p>    setTimeout(() =&gt; { try { view.classList.remove(\"oni-shaking\"); } catch(_){} }, ms);</p><p>  } catch (_) {}</p><p>}</p><p>async function loadVideo(url) {</p><p>  const vid = document.createElement(\"video\");</p><p>  try { vid.crossOrigin = \"anonymous\"; } catch (_) {}</p><p>  vid.src = url; vid.muted = true; vid.loop = false; vid.playsInline = true; vid.preload = \"auto\";</p><p>  await new Promise((res) =&gt; { let done=false; const go=()=&gt;{if(done)return;done=true;res();}; vid.addEventListener(\"loadeddata\",go,{once:true}); vid.addEventListener(\"error\",go,{once:true}); setTimeout(go,1500); });</p><p>  return vid;</p><p>}</p><p>function playSfx(url, vol) {</p><p>  if (!url) return;</p><p>  try { const a = new Audio(url); a.volume = (vol == null ? 0.6 : vol); a.play().catch(() =&gt; {}); } catch (_) {}</p><p>}</p><p></p><p>try {</p><p>  const who = targetTokens[0] || caster;</p><p>  const pt = who ? { x: who.center.x, y: who.center.y } : { x: S2W(0.6,0.5).x, y: S2W(0.6,0.5).y };</p><p>  const dotTex = dotTexture(cfg.fireColor);</p><p></p><p>  // 1) dim the scene</p><p>  playSfx(cfg.sfxCast, cfg.sfxCastVol);   // initial cast</p><p>  const dim = fullRect(0x000000, 0, 7000, false);</p><p>  stage.addChild(dim); spawned.push(dim);</p><p>  await tween((p) =&gt; { dim.alpha = cfg.dimAlpha * p; }, cfg.dimMs, easeOutCubic);</p><p></p><p>  // 2) fire particles gather at the target</p><p>  const gatherR = hPx(cfg.gatherRadius);</p><p>  const gathers = [];</p><p>  for (let i = 0; i &lt; cfg.gatherCount; i++) {</p><p>    const ang = Math.random()*Math.PI*2, r = gatherR*(0.7+Math.random()*0.5);</p><p>    const sp = new PIXI.Sprite(dotTex);</p><p>    sp.anchor.set(0.5); sp.zIndex = 7200; sp.blendMode = PIXI.BLEND_MODES.ADD; sp.tint = cfg.fireColor;</p><p>    const sz = hPx(cfg.gatherSize)*(0.6+Math.random()*0.8); sp.width = sp.height = sz;</p><p>    sp.x = pt.x + Math.cos(ang)*r; sp.y = pt.y + Math.sin(ang)*r; sp.alpha = 0;</p><p>    stage.addChild(sp); spawned.push(sp); gathers.push({ sp, ox: sp.x, oy: sp.y });</p><p>  }</p><p>  const gatherAnim = Promise.all(gathers.map(({sp,ox,oy},i) =&gt; (async () =&gt; {</p><p>    await waitMs(i * (cfg.gatherStagger||6));</p><p>    await tween((p) =&gt; { sp.x = ox + (pt.x-ox)*p; sp.y = oy + (pt.y-oy)*p; sp.alpha = Math.sin(p*Math.PI); sp.scale.set(1 - 0.3*p); }, cfg.gatherMs, easeInCubic);</p><p>    destroyObj(sp);</p><p>  })()));</p><p></p><p>  // 3) orange shimmer pulse over the scene</p><p>  const shim = fullRect(cfg.fireColor, 0, 7100, true);</p><p>  stage.addChild(shim); spawned.push(shim);</p><p>  tween((p) =&gt; { shim.alpha = Math.sin(p*Math.PI) * cfg.shimmerAlpha; }, cfg.shimmerMs, null).then(() =&gt; destroyObj(shim));</p><p></p><p>  await Promise.race([gatherAnim, waitMs(cfg.gatherMs + 120)]);</p><p></p><p>  // 4) CastFire webm large at the target + screenshake</p><p>  const vid = await loadVideo(A.cast);</p><p>  const tex = PIXI.Texture.from(vid);</p><p>  const nativeW = tex.width || tex.orig?.width || 600;</p><p>  const spr = new PIXI.Sprite(tex);</p><p>  spr.anchor.set(0.5, 0.5); spr.x = pt.x; spr.y = pt.y; spr.zIndex = 8000;</p><p>  spr.scale.set(hPx(cfg.castSize) / nativeW);</p><p>  spr.blendMode = PIXI.BLEND_MODES.ADD;</p><p>  stage.addChild(spr); spawned.push(spr);</p><p>  try { vid.currentTime = 0; await vid.play(); } catch (_) {}</p><p>  screenShake(cfg.shakeMs, cfg.shakePx);</p><p>  playSfx(cfg.sfxExplosion, cfg.sfxExplosionVol);   // ending explosion</p><p></p><p>  await waitMs(cfg.doneAtMs);</p><p>  fireDone({ ok: true });</p><p></p><p>  await new Promise((res) =&gt; { let done=false; const go=()=&gt;{if(done)return;done=true;res();}; vid.addEventListener(\"ended\",go,{once:true}); setTimeout(go, cfg.castMaxMs); });</p><p>  await tween((p) =&gt; { spr.alpha = 1 - p; }, cfg.fadeMs, easeOutCubic);</p><p>  destroyObj(spr);</p><p>  try { vid.pause(); vid.removeAttribute(\"src\"); vid.load(); } catch (_) {}</p><p></p><p>  // 5) undim</p><p>  await tween((p) =&gt; { dim.alpha = cfg.dimAlpha * (1 - p); }, cfg.undimMs, easeOutCubic);</p><p>  cleanupAll();</p><p>} catch (err) {</p><p>  console.error(\"[ONI][Pseudo][IgnisFinis]\", err);</p><p>  fireDone({ ok: false, error: String(err &amp;&amp; err.message || err) });</p><p>} finally {</p><p>  cleanupAll();</p><p>}</p><p>`;</p><p></p><p>try {</p><p>  emitLocal(\"oni:animationStart\", { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 14000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, cfg: CFG, assets: { cast: CAST_URL } },</p><p>    meta: { source: CFG.name },</p><p>  });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, \"pseudo non-OK / timeout\", result);</p><p>} catch (err) {</p><p>  console.error(TAG, \"orchestration crashed\", err);</p><p>} finally {</p><p>  emitLocal(\"oni:animationEnd\", { type: ANIM_KEY, timestamp: Date.now() });</p><p>}</p><p></p><p>})();</p><p></p>",
           "check_bonus": "3",
           "class": "Elementalist",
@@ -827,7 +802,6 @@
           "damage_bonus": "43",
           "defense_target_type": "def",
           "description": "<p>You conjure up a great Firestorm, Each target hit by this spell suffers <strong>【HR + 43】</strong>fire damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a></span></span></p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -840,9 +814,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "YClTOeSsVFm0ngyO",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/fire_iii.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -873,8 +845,7 @@
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
           "type_damage": "fire",
-          "use_optional_params": false,
-          "uuid": "Actor.RJECgM6oVt4UI4ds.Item.YClTOeSsVFm0ngyO"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -938,7 +909,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -957,8 +927,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "1cajyF04dx07aGEU",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/604.gif",
           "insect_ef": "100",
           "ip_cost": "5",
           "isEquipped": false,
@@ -991,7 +959,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.1cajyF04dx07aGEU",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },

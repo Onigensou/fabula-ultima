@@ -1,0 +1,24 @@
+{
+  "_id": "O9MmuLub0R7sz3y5",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769848583432,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {},
+  "folder": "60KXtxb5Gr60RonS",
+  "formula": "1d1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
+  "name": "Overworld - Hazard",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "sort": 0
+}

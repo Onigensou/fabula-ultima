@@ -1,0 +1,330 @@
+{
+  "_id": "oUPHzpKAMVPEqg2V",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769396371032,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "sXEPJiHMdTlyDoCv",
+  "formula": "1d20",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Sylph_Standard.png",
+  "name": "Vastwind Field - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "1Oyre4JbGOn1z8lU",
+      "documentCollection": "Actor",
+      "documentId": "WQ65541HPjKLpgkP",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Prickle%20Boar_Standard.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Prickle Boar",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "5O5WQIstdMhHajiI",
+      "documentCollection": "Actor",
+      "documentId": "zRuXyepUutM2LY9H",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Geo%20Eater.png",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Geo Gorger",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "b666KOnMSPQwVI7U",
+      "documentCollection": "Actor",
+      "documentId": "XsSf4Z1eAcOanCfv",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Rauber/Rauber_Standard.png",
+      "range": [
+        20,
+        20
+      ],
+      "text": "⭐️ Rauben",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "dbDXbkpn1RWoUSBC",
+      "documentCollection": "Actor",
+      "documentId": "HHKTGkNGiAoaD9WO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Slime_Standard.png",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Slime",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "eHgJuDtNmuYehL1E",
+      "documentCollection": "Actor",
+      "documentId": "rEiJKRO4QNlQOI1e",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Earthen_Hand_Standard.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Earth Hand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "HN4Hxu2yfyQ6qQnw",
+      "documentCollection": "Actor",
+      "documentId": "xIazSHoeLF49ztn1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rock%20Golem_Standard.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Rock Golem",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "mybgrlLn0K25JcNR",
+      "documentCollection": "Actor",
+      "documentId": "o1jFZwDZxSAFSSWA",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Bandit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "nifJ7fp5Lnqv7SWO",
+      "documentCollection": "Actor",
+      "documentId": "mU99xGCQXkbRW1Hx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Sylph_Standard.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Sylph",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "OTJUVwy2DdULdWm1",
+      "documentCollection": "Actor",
+      "documentId": "tTJZNr5XUHVwXGsr",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Valor_Standard.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Valor",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PcnKUabxkjJQpJTY",
+      "documentCollection": "Actor",
+      "documentId": "nyHr1MwzRKcGUdyW",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Life%20Eater.png",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Life Gorger",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PWWblKhcLS4RWkqO",
+      "documentCollection": "Actor",
+      "documentId": "Lw66ZLMHRvJKedpj",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Boa_Standard.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Boa",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "speTcgxCfhc7DrRA",
+      "documentCollection": "Actor",
+      "documentId": "VceM9tFpaVT9Z9fT",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "⭐️ Gryphon",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "TQA1coh4XxHyZTBb",
+      "documentCollection": "Actor",
+      "documentId": "PgNX7yW5nxq2emWX",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Eater.png",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Mana Gorger",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "UDex3qKOrL7r0CnN",
+      "documentCollection": "Actor",
+      "documentId": "PUk8MzjcNsqU1jEZ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ape_Standard.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Ape",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "UFKFVEsaCXlB4BAY",
+      "documentCollection": "Actor",
+      "documentId": "3aVL8cE2n0lPIk03",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wind_Orb.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Wind Orb",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "UgfiNpGj50mqf7mQ",
+      "documentCollection": "Actor",
+      "documentId": "ryC7CqN2kYKrZfpB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aeroslime_Standard.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Wind Slime",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uwBOEnb3ZrHva2Pt",
+      "documentCollection": "Actor",
+      "documentId": "9yadoDh5EhIWpevl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Aero Gorger",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "WPFH779YpTVKVLi5",
+      "documentCollection": "Actor",
+      "documentId": "LnlydRl7Ed7agd1g",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kalina/Kalina_Standard.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "⭐️ Masked Girl",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "wQObbot5Jl43fJh6",
+      "documentCollection": "Actor",
+      "documentId": "KZ7jQ3mXrfqu42yO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wolf_Standard.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Wolf",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Xy4bXmqnKsV0d2xE",
+      "documentCollection": "Actor",
+      "documentId": "bSQw4jzBGsfBUdmc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Momonga_Standard.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Pakopon",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 300000
+}

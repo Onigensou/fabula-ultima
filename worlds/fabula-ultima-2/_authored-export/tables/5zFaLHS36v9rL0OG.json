@@ -1,0 +1,184 @@
+{
+  "_id": "5zFaLHS36v9rL0OG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780401259025,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "DAg9RfuNcR9huljS",
+  "formula": "1d11",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+  "name": "The Wyrmwood - Zenit",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "4pJxRGu4wxehXIO2",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "699",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "DaxjBjWvjmBrY20N",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "10",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "fh7QHrSZPTwNPijJ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "199",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "gx9J41Yqs4JYJCqE",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "799",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "iiPm9hBizD0pk9i8",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "299",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "pd0ZdDiJScJwiSLJ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "399",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "rICGAXYQns1xeGwl",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "1999",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "rIf2HLQqAmG8mfYD",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "300 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "YahD5Hhasq6fHIfk",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "1599",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "yahEuflVi8Iy9GAx",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "450",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "za8ZzYCkMMC1VJVr",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "499",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

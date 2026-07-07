@@ -1,0 +1,225 @@
+{
+  "_id": "oDiuDJRoayGJwr1L",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769663395055,
+    "duplicateSource": "RollTable.TP1f76y3t190U1DS",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "dfZOIscssH4Tgqd3",
+  "formula": "1d13",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
+  "name": "Vastwind Field - Accessory",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "2nqvH4nFlAzXujx2",
+      "documentCollection": "Item",
+      "documentId": "Ytxldp3noIMrdmic",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/pill.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Spicy Powder",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "6pYgCZgdSgD4Onjn",
+      "documentCollection": "Item",
+      "documentId": "4ZT937s6xT8yWX3R",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Air Pendant",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Cbztr1h6lex8iLBB",
+      "documentCollection": "Item",
+      "documentId": "hPNGofTLZQVvhtbf",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/but.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Skull Orb",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "EhEhaz46FmvTl5X7",
+      "documentCollection": "Item",
+      "documentId": "20X49BCE92aGljkm",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Medkit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "eKxIBb59VmdpIewO",
+      "documentCollection": "Item",
+      "documentId": "PEujSuuwyAkzwOAl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/prin.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Teddy Bear",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "EWYK90I4PEv6cSDz",
+      "documentCollection": "Item",
+      "documentId": "4nci4od0SV6KHykc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Revealing Lens",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "iYJmk2UxfEccxy1P",
+      "documentCollection": "Item",
+      "documentId": "GTVdZrNCbZGjjaR5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Log.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Ninja Log",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "k395oBDHidqLSYNx",
+      "documentCollection": "Item",
+      "documentId": "6KJ8orZCmaVj7nf2",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/med.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Smart Stimulator",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "kDSx4CS87Y1zgnsS",
+      "documentCollection": "Item",
+      "documentId": "BXCY3beJ2HouEdSX",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Lens of Insight",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "OBNc3obK7wigDHOn",
+      "documentCollection": "Item",
+      "documentId": "gqPDij6m93S4Dwov",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Seance Beads",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "QcNnbBUoTmQhAjdS",
+      "documentCollection": "Item",
+      "documentId": "uQtyl33m5hL8JxJ3",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/oval-charm.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Omamori",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "s8olOYXYp6gPjD55",
+      "documentCollection": "Item",
+      "documentId": "gfLIJIDBqkgfzI1R",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/tea.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Watering Can",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "SfsNdb9EwU17RVCw",
+      "documentCollection": "Item",
+      "documentId": "w3F9qNKARIR52Eew",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Jester%20Hat.gif",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Jester Hat",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 100000
+}

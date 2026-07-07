@@ -1,0 +1,210 @@
+{
+  "_id": "8zdktLBCbkf2u8RM",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780401258988,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "DAg9RfuNcR9huljS",
+  "formula": "1d12",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+  "name": "The Wyrmwood - Weapon",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "0etHjoqkV7tnN3zD",
+      "documentCollection": "Item",
+      "documentId": "vpWwubxgo2XBnjEE",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Headhunter",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "82puV0P3NHTAQZAC",
+      "documentCollection": "Item",
+      "documentId": "11VnQe3QurUQkROc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Narwhalhorn",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "aWA2ycEO4m4ChIaS",
+      "documentCollection": "Item",
+      "documentId": "OU1X4XjGESbzPdL3",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Quick Blade",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "cKn0lrYOCOxD5M3u",
+      "documentCollection": "Item",
+      "documentId": "vconOKEgyBDkfYQQ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "RNGenerator",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ig530OcR6t2jTKIB",
+      "documentCollection": "Item",
+      "documentId": "B7jIEZ45Uh5VEc5p",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Azotophore",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "o3E6VKwmoT7tduhV",
+      "documentCollection": "Item",
+      "documentId": "gmqiLVM5ymdrjxLd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/ThunderBow.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Thunder Bow",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "RD3AWKEQRYgz9kEn",
+      "documentCollection": "Item",
+      "documentId": "hOxLqJKUjg2wqjSu",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Frozen Grasp",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "SKY6rodjxc786e92",
+      "documentCollection": "Item",
+      "documentId": "tjtUM8dO3pfKbkdN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Butterfly Dream",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "UfKwdnsV5CkVcELi",
+      "documentCollection": "Item",
+      "documentId": "itrDT76gWwWLTLDa",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Blue Pinwheel",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uKnH6jMWh35ryI6h",
+      "documentCollection": "Item",
+      "documentId": "YzPsmejc4nMjH4fX",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Ys/Axle_Breaker.webp",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Ice Fang",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "UmKnVkDsdetC3i1E",
+      "documentCollection": "Item",
+      "documentId": "FRwmrAhwe8xSLEXZ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Rods/Icon-Ice_Rod.webp",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Glacial Staff",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Ya5YqRxgpSxCKbt8",
+      "documentCollection": "Item",
+      "documentId": "D32pUz6M6e1smWrB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Dragontrap Bow",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

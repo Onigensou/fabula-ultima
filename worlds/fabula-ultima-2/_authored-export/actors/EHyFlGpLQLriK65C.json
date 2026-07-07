@@ -349,6 +349,72 @@
       "type": "equippableItem"
     },
     {
+      "_id": "aXKsu9REw2IiTyoZ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398712876,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans6.png",
+      "name": "Iceberg",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "20 MP",
+          "damage_bonus": "25",
+          "defense_target_type": "def",
+          "description": "<p>A pillar of ice magic envelops your foe, suddenly dropping their body temperature to a critical level. The target suffers <strong>【HR + 25】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage. </p><p>Damage dealt by this spell ignores Resistances.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Iceberg",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
+          "type_damage": "Ice",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "VMu0aaKdIoi6qRi2"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "bzCRdAWbFufjwsgq",
       "_stats": {
         "compendiumSource": "Item.1fnaiAu6HCHl75Cm",
@@ -419,7 +485,7 @@
               "skill_cost": "-",
               "skill_description": "<p>Deal 10 <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(139, 94, 60) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to the target</p>",
               "skill_maxLevel": 1,
-              "uuid": ""
+              "uuid": "Actor.EHyFlGpLQLriK65C.Item.GEBKbmjvIH5Awn2A"
             },
             "JckA4cbgIaE8Dh8u": {
               "id": "${item.id}",
@@ -427,7 +493,7 @@
               "skill_cost": "-",
               "skill_description": "<p>Deal 10 <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to the target</p>",
               "skill_maxLevel": 1,
-              "uuid": ""
+              "uuid": "Actor.EHyFlGpLQLriK65C.Item.JckA4cbgIaE8Dh8u"
             },
             "OcDIibXUzAuk05HD": {
               "id": "${item.id}",
@@ -435,7 +501,7 @@
               "skill_cost": "-",
               "skill_description": "<p>Deal 10 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(72, 199, 116) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to the target</p>",
               "skill_maxLevel": 1,
-              "uuid": ""
+              "uuid": "Actor.EHyFlGpLQLriK65C.Item.OcDIibXUzAuk05HD"
             },
             "mjSgHoB0RrLrqcOV": {
               "id": "${item.id}",
@@ -443,7 +509,7 @@
               "skill_cost": "-",
               "skill_description": "<p>Deal 10 <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(155, 89, 182) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span>damage to the target</p>",
               "skill_maxLevel": 1,
-              "uuid": ""
+              "uuid": "Actor.EHyFlGpLQLriK65C.Item.mjSgHoB0RrLrqcOV"
             },
             "ow5AO3MlbFAqaPIx": {
               "id": "${item.id}",
@@ -451,7 +517,7 @@
               "skill_cost": "-",
               "skill_description": "<p>Deal 10 <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(90, 179, 212) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to the target</p>",
               "skill_maxLevel": 1,
-              "uuid": ""
+              "uuid": "Actor.EHyFlGpLQLriK65C.Item.ow5AO3MlbFAqaPIx"
             }
           },
           "item_type": "consumable",
@@ -465,31 +531,31 @@
               "id": "${item.id}",
               "name": "Elemental Shard - Earth",
               "related_item_description": "<p>Deal 10 <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(139, 94, 60) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to the target</p>",
-              "uuid": ""
+              "uuid": "Actor.EHyFlGpLQLriK65C.Item.GEBKbmjvIH5Awn2A"
             },
             "JckA4cbgIaE8Dh8u": {
               "id": "${item.id}",
               "name": "Elemental Shard - Fire",
               "related_item_description": "<p>Deal 10 <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to the target</p>",
-              "uuid": ""
+              "uuid": "Actor.EHyFlGpLQLriK65C.Item.JckA4cbgIaE8Dh8u"
             },
             "OcDIibXUzAuk05HD": {
               "id": "${item.id}",
               "name": "Elemental Shard - Air",
               "related_item_description": "<p>Deal 10 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(72, 199, 116) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to the target</p>",
-              "uuid": ""
+              "uuid": "Actor.EHyFlGpLQLriK65C.Item.OcDIibXUzAuk05HD"
             },
             "mjSgHoB0RrLrqcOV": {
               "id": "${item.id}",
               "name": "Elemental Shard - Bolt",
               "related_item_description": "<p>Deal 10 <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(155, 89, 182) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span>damage to the target</p>",
-              "uuid": ""
+              "uuid": "Actor.EHyFlGpLQLriK65C.Item.mjSgHoB0RrLrqcOV"
             },
             "ow5AO3MlbFAqaPIx": {
               "id": "${item.id}",
               "name": "Elemental Shard - Ice",
               "related_item_description": "<p>Deal 10 <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(90, 179, 212) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to the target</p>",
-              "uuid": ""
+              "uuid": "Actor.EHyFlGpLQLriK65C.Item.ow5AO3MlbFAqaPIx"
             }
           },
           "reptilian_ef": "100",
@@ -508,68 +574,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "1fnaiAu6HCHl75Cm"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "cqM9MwnjWk55dy8d",
-      "_stats": {
-        "compendiumSource": "Item.i7XP3i8a8GM70yCF",
-        "coreVersion": "12.343",
-        "createdTime": 1761657123627,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enhanced_sharpcast_II.png",
-      "name": "Elemental Magic",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "check_bonus": "0",
-          "class": "Elementalist",
-          "cost": "",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>Each time you acquire this Skill, learn one Elementalist spell <em>(see Facet)</em>. </p><p><strong>【⚡Offensive Elementalist spells】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "7",
-          "max_level": "10",
-          "name": "Elemental Magic",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Other",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "i7XP3i8a8GM70yCF"
       },
       "type": "equippableItem"
     },
@@ -1061,6 +1065,68 @@
       "type": "equippableItem"
     },
     {
+      "_id": "jqsOBcpQDotly4Ny",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398712876,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enhanced_sharpcast_II.png",
+      "name": "Elemental Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Each time you acquire this Skill, learn one Elementalist spell <em>(see Facet)</em>. </p><p><strong>【⚡Offensive Elementalist spells】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "7",
+          "max_level": "10",
+          "name": "Elemental Magic",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "oqJkRZfgQD6frXjZ"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "mjSgHoB0RrLrqcOV",
       "_stats": {
         "compendiumSource": "Item.cO11WSulhgWvJ1eB",
@@ -1377,64 +1443,471 @@
       "type": "equippableItem"
     },
     {
-      "_id": "o2vuSVK65CwME25X",
+      "_id": "o6Wv93JmrRvWd3ya",
       "_stats": {
-        "compendiumSource": "Item.ahyRJYDdxMKqhWSm",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1761658305802,
+        "createdTime": 1783398712876,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "59y1KOVICharAnZO",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "59y1KOVICharAnZO",
+              "originalParentId": "UF9js71VGFE9jB93",
+              "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.59y1KOVICharAnZO"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/fire/barrier-wall-flame-ring-yellow.webp",
+          "name": "Elemental Shroud (Fire)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-shroud-fire"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "e0N8wokGcstyoZDw",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_2",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "e0N8wokGcstyoZDw",
+              "originalParentId": "UF9js71VGFE9jB93",
+              "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.e0N8wokGcstyoZDw"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/air/wind-vortex-swirl-blue.webp",
+          "name": "Elemental Shroud (Air)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-shroud-air"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "FmqepRBudo13YUdZ",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_7",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "FmqepRBudo13YUdZ",
+              "originalParentId": "UF9js71VGFE9jB93",
+              "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.FmqepRBudo13YUdZ"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/water/barrier-ice-crystal-wall-jagged-blue.webp",
+          "name": "Elemental Shroud (Ice)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-shroud-ice"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "n4UwdPgPGde4aHbe",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_5",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "n4UwdPgPGde4aHbe",
+              "originalParentId": "UF9js71VGFE9jB93",
+              "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.n4UwdPgPGde4aHbe"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/earth/barrier-stone-explosion-debris.webp",
+          "name": "Elemental Shroud (Earth)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-shroud-earth"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "OCqoOMT9jSKApPXR",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "OCqoOMT9jSKApPXR",
+              "originalParentId": "UF9js71VGFE9jB93",
+              "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.OCqoOMT9jSKApPXR"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Shroud (Bolt)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-shroud-bolt"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans6.png",
-      "name": "Iceberg",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EM.png",
+      "name": "Elemental Shroud",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
         "props": {
           "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Elementalist",
-          "cost": "20 MP",
-          "damage_bonus": "25",
+          "cost": "5 x T MP",
+          "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>A pillar of ice magic envelops your foe, suddenly dropping their body temperature to a critical level. The target suffers <strong>【HR + 25】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage. </p><p>Damage dealt by this spell ignores Resistances.</p>",
-          "duration": "Instantaneous",
+          "description": "<p>You weave magical energy and protect the targets from the fury of the elements. Choose a damage type: <strong>air, bolt, earth, fire or ice</strong>. Until this spell ends, each target gains Resistance against the chosen damage type.</p>",
+          "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "open_action_menu",
+              "effect_label": "shroud_pick",
+              "menu_option_labels": "Air | Bolt | Earth | Fire | Ice",
+              "menu_option_refs": "shroud_air, shroud_bolt, shroud_earth, shroud_fire, shroud_ice",
+              "menu_subtitle": "Targets gain Resistance to the chosen damage type.",
+              "menu_title": "Elemental Shroud: choose an element"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
+              "ae_template_ref": "Elemental Shroud (Air)",
+              "effect_kind": "apply_ae",
+              "effect_label": "shroud_air",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
+              "ae_template_ref": "Elemental Shroud (Bolt)",
+              "effect_kind": "apply_ae",
+              "effect_label": "shroud_bolt",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
+              "ae_template_ref": "Elemental Shroud (Earth)",
+              "effect_kind": "apply_ae",
+              "effect_label": "shroud_earth",
+              "target_ref": "action_targets"
+            },
+            "4": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
+              "ae_template_ref": "Elemental Shroud (Fire)",
+              "effect_kind": "apply_ae",
+              "effect_label": "shroud_fire",
+              "target_ref": "action_targets"
+            },
+            "5": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
+              "ae_template_ref": "Elemental Shroud (Ice)",
+              "effect_kind": "apply_ae",
+              "effect_label": "shroud_ice",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
-          "isCheck": true,
+          "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
-          "isOffensiveSpell": true,
+          "isOffensiveSpell": false,
           "isReaction": false,
           "level": "1",
           "max_level": "1",
-          "name": "Iceberg",
+          "name": "Elemental Shroud",
+          "on_activate_effect_ref": "shroud_pick",
           "optional_params": {},
-          "rolled_atr1": "INS",
-          "rolled_atr2": "WLP",
+          "pre_activate_effect_ref": "shroud_pick",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
-          "skill_target": "One creature",
+          "skill_target": "Up to three creatures",
           "skill_type": "Spell",
-          "type_damage": "Ice",
+          "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "ahyRJYDdxMKqhWSm"
+        "uniqueId": "UF9js71VGFE9jB93"
       },
       "type": "equippableItem"
     },
@@ -1630,68 +2103,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "dVH1jCnm8Jz4FaN7"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "r1qIqCf1HYDCuj58",
-      "_stats": {
-        "compendiumSource": "Item.oyoBGiPAlNfKoQc9",
-        "coreVersion": "12.343",
-        "createdTime": 1761662865515,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EM.png",
-      "name": "Elemental Shroud",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "check_bonus": "0",
-          "class": "Elementalist",
-          "cost": "5 x T MP",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>You weave magical energy and protect the targets from the fury of the elements. Choose a damage type: <strong>air, bolt, earth, fire or ice</strong>. Until this spell ends, each target gains Resistance against the chosen damage type.</p>",
-          "duration": "Scene",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Elemental Shroud",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Range",
-          "skill_target": "Up to three creatures",
-          "skill_type": "Spell",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "oyoBGiPAlNfKoQc9"
       },
       "type": "equippableItem"
     },
@@ -1931,6 +2342,18 @@
           "max_level": "1",
           "name": "Counterattack",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_action_intent": "harmful",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_hit_by_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",

@@ -1,0 +1,88 @@
+{
+  "_id": "l4iakcTTuEciUMsp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783371726654,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+  "name": "Adversity (gear skill)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "W8cC2u8sBR5DSRWg",
+    "props": {
+      "cost": "",
+      "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "accuracy_amount": "min(STATUS_COUNT, 3)",
+          "accuracy_operation": "add",
+          "effect_kind": "adjust_accuracy",
+          "effect_label": "adv_acc"
+        },
+        "1": {
+          "$deleted": false,
+          "damage_amount": "min(STATUS_COUNT * 2, 6)",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "adv_dmg",
+          "target_ref": ""
+        }
+      },
+      "isCheck": false,
+      "name": "Adversity (gear skill)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "STATUS_COUNT > 0",
+          "reaction_action_kind": "Attack,Spell,Skill",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "adv_acc",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "1": {
+          "$deleted": false,
+          "condition_formula": "STATUS_COUNT > 0 && DAMAGE_IS_HP == 1",
+          "reaction_action_kind": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "adv_dmg",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "l4iakcTTuEciUMsp"
+  },
+  "type": "equippableItem"
+}

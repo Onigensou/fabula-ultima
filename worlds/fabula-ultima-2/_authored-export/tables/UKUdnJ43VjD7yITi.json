@@ -1,0 +1,195 @@
+{
+  "_id": "UKUdnJ43VjD7yITi",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774098035973,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "IxpkbdLoQodYFW6Y",
+  "formula": "1d11",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dreae.png",
+  "name": "Bandits Hideout - Armor",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "8BFqnMi8r9yyZ3YK",
+      "documentCollection": "Item",
+      "documentId": "t2M0fUNaGR8BAbkD",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Rogue's Jacket",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "9wXCU6auPAaGfZ6Q",
+      "documentCollection": "Item",
+      "documentId": "QdejcwwLYiKfOLRr",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Misdirector",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "av4FKg29AawLphOh",
+      "documentCollection": "Item",
+      "documentId": "g0S7SNOw5EJcJd1T",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Slimy Jacket",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "bOdOMFRHhpQjwVBR",
+      "documentCollection": "Item",
+      "documentId": "96gMkuCexILXHXyI",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Hekat Shield",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "crgr5g54FlpYKjcv",
+      "documentCollection": "Item",
+      "documentId": "dkGbT1Lk1TcOf77N",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Black Tunic",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "IqgQkEID8G6o5NpU",
+      "documentCollection": "Item",
+      "documentId": "MMW1CZcffq2u75Jm",
+      "drawn": false,
+      "flags": {},
+      "img": "https://images.squarespace-cdn.com/content/v1/59dd390818b27dab9dabcf0f/1545076324399-F6C6J2B1XLWM7IG17LUB/Riot+Shield+2+Front.jpg?format=750w",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Riot Shield",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "M0XDIih5HKH2uFOE",
+      "documentCollection": "Item",
+      "documentId": "ziZodOuSnnNiI9hu",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Desperado Coat",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "RNCTQcMOTeiV9xxJ",
+      "documentCollection": "Item",
+      "documentId": "zEpzJ7U6oo5MTayK",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Adamantower",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "tat3Me9MR0eu2ciz",
+      "documentCollection": "Item",
+      "documentId": "ANpvrkYYhdlEjgHl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Fox Garb",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "X0DdpEbZVld5R8Yi",
+      "documentCollection": "Item",
+      "documentId": "I7CVFOekhZ33p3tS",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Kevlar Vest",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xPPUvUqm3QFH0HNS",
+      "documentCollection": "Item",
+      "documentId": "k5KXiyHZ62TgxNLC",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Plate Manica",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

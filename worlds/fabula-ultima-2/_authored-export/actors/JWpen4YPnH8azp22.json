@@ -223,121 +223,158 @@
       "type": "equippableItem"
     },
     {
-      "_id": "2NdwolNTNSmDEoeO",
+      "_id": "5VyoCDxfCYn5J7cF",
       "_stats": {
-        "compendiumSource": "Item.ooo1vmilBi2YWAiH",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756968731321,
-        "duplicateSource": "Item.IhVYx6OZYAUtd9s7",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/dualcast.png",
-      "name": "Bimagus",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "0",
-          "class": "Elementalist",
-          "cost": "",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>Once per turn during a conflict, if you have an arcane weapon equipped, you may use an action and spend <strong>20 to 50 Mind Points</strong> to perform the 【📕Spell】 action for free twice, casting two spells without needing to pay their MP costs. If you do, the two spells must have a combined total MP cost equal to or lower than <strong>【20 + the amount of MP you spent to use this Skill】</strong>, and the second spell must have a total MP cost that is equal to or lower than half the total MP cost of the first spell.</p>\n",
-          "duration": "",
-          "heroic_requirement": "you must have mastered two or more Classes among Elementalist, Entropist, and Spiritist, and your character must be level 30 or higher.",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": true,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Bimagus",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "ooo1vmilBi2YWAiH"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "5aR2w6OMCMZgpOBJ",
-      "_stats": {
-        "compendiumSource": "Item.2Ncb8FEV4lynlsHH",
-        "coreVersion": "12.343",
-        "createdTime": 1756715851971,
+        "createdTime": 1783398729834,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "gumRfidu7rfmWlmR",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Acceleration:</em> at the end of each of your turns you may take one extra Attack or Spell. Ends after two extra actions.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": 999999,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "gumRfidu7rfmWlmR",
+              "originalParentId": "iFhrsC0cnyChDhgw",
+              "originalUuid": "Item.iFhrsC0cnyChDhgw.ActiveEffect.gumRfidu7rfmWlmR"
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "acceleration",
+              "charges": 2,
+              "chargesMax": 2,
+              "lifetimeMode": "on_activation",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "$deleted": false,
+                    "action_ref": "Attack,Spell",
+                    "effect_kind": "free_action",
+                    "effect_label": "accel_freeact",
+                    "max_mp_cost": "10"
+                  }
+                },
+                "name": "Acceleration",
+                "reaction_config_table": {
+                  "0": {
+                    "$deleted": false,
+                    "reaction_effect_ref": "accel_freeact",
+                    "reaction_passive_mode": "ask",
+                    "reaction_passive_target": "self",
+                    "reaction_source": "self",
+                    "reaction_trigger": "turn_end"
+                  }
+                }
+              }
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/astrodyne.png",
+          "name": "Acceleration",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-acceleration"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DWTrans5.png",
-      "name": "Stop",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/astrodyne.png",
+      "name": "Acceleration",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
-          "active_effect_config_table": {},
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "gumRfidu7rfmWlmR",
+              "active_effect_percent": "100",
+              "active_effect_target": "ally",
+              "active_effect_trigger": "on_attack"
+            }
+          },
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
+          "animation_script": "<p>// ONI — Clockwork Blades (polished: X-only sidestep, no Y drift)</p><p>(async () => {</p><p>  const TAG = \"[ONI][FX]\";</p><p>  // --- Assets ---</p><p>  const SFX_MOVE   = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Beginspell.mp3\";</p><p>  const FX_TARGET  = \"modules/boss-loot-assets-free/artwork/07-steampunk/clock/Clockwork_Blades_1_1200x1200.webm\";</p><p>  const SFX_TARGET = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Haste.ogg\";</p><p>  // --- Checks ---</p><p>  if (!game.modules.get(\"sequencer\")?.active) {</p><p>    ui.notifications.error(`${TAG} Sequencer module is not active.`);</p><p>    return;</p><p>  }</p><p>  const caster = canvas.tokens.controlled?.[0];</p><p>  if (!caster) {</p><p>    ui.notifications.warn(`${TAG} Please SELECT exactly 1 token (the caster).`);</p><p>    return;</p><p>  }</p><p>  const targets = Array.from(game.user.targets ?? []);</p><p>  if (targets.length !== 1) {</p><p>    ui.notifications.warn(`${TAG} Please TARGET exactly 1 token.`);</p><p>    return;</p><p>  }</p><p>  const target = targets[0];</p><p>  // --- X-only movement using DOCUMENT coords (top-left) ---</p><p>  const original = { x: caster.document.x, y: caster.document.y };</p><p>  const disp = caster.document.disposition;</p><p>  const squares = 0.35; // tweak distance here</p><p>  const offsetPx = canvas.grid.size * squares;</p><p>  // Hostile (-1) => move RIGHT, else => move LEFT</p><p>  const dx = (disp === -1) ? +offsetPx : -offsetPx;</p><p>  // IMPORTANT: Y stays EXACTLY original.y (no touching Y)</p><p>  const destOut  = { x: original.x + dx, y: original.y };</p><p>  const destBack = { x: original.x,      y: original.y };</p><p>  // ✅ animation start hook</p><p>  Hooks.callAll(\"oni:animationStart\", { tag: \"ClockworkBlades\", tokenId: caster.id });</p><p>  const seq = new Sequence()</p><p>    // Movement sound</p><p>    .sound()</p><p>      .file(SFX_MOVE)</p><p>      .volume(0.9)</p><p>    // Move out (X-only destination)</p><p>    .animation()</p><p>      .on(caster)</p><p>      .moveTowards(destOut)</p><p>      .duration(350)</p><p>      .waitUntilFinished()</p><p>    // wait 0.5s</p><p>    .wait(500)</p><p>    // Target SFX + FX</p><p>    .sound()</p><p>      .file(SFX_TARGET)</p><p>      .volume(0.9)</p><p>    .effect()</p><p>      .file(FX_TARGET)</p><p>      .atLocation(target)</p><p>      .scaleToObject(2.15)</p><p>      .anchor({ x: 0.5, y: 0.5 })</p><p>      .opacity(1.0)</p><p>      .belowTokens(false)</p><p>      .waitUntilFinished()</p><p>    // wait 0.5s</p><p>    .wait(500)</p><p>    // Move back (exact original)</p><p>    .animation()</p><p>      .on(caster)</p><p>      .moveTowards(destBack)</p><p>      .duration(350)</p><p>      .waitUntilFinished();</p><p>  await seq.play();</p><p>  // Hard guarantee: snap back exactly (still does not change Y beyond original)</p><p>  if (caster.document.x !== original.x || caster.document.y !== original.y) {</p><p>    await caster.document.update({ x: original.x, y: original.y });</p><p>  }</p><p>  // ✅ animation end hook</p><p>  Hooks.callAll(\"oni:animationEnd\", { tag: \"ClockworkBlades\", tokenId: caster.id });</p><p>})();</p>",
           "check_bonus": "0",
           "class": "Entropist",
-          "cost": "10 MP",
-          "damage_bonus": "0",
+          "cost": "20 MP",
+          "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn <em>(to a minimum of 0 actions).</em></p>",
-          "duration": "Instantaneous",
+          "description": "<div class=\"oni-tooltip\"><p>At the end of each of their turns, the target may <strong>choose one option:</strong></p><ul><li><p>Perform a <strong>free attack</strong> with a weapon they have equipped</p></li><li><p>Perform the【📕Spell】 action for free, casting a spell with a total MP cost equal to or lower than 10 <em>(paying its MP cost).</em></p></li></ul><p>After the same creature benefits from this effect a second time, this spell ends.</p></div>",
+          "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Acceleration",
+              "effect_kind": "apply_ae",
+              "effect_label": "accel_apply",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
-          "isOffensiveSpell": true,
+          "isOffensiveSpell": false,
           "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Stop",
+          "name": "Acceleration",
+          "on_activate_effect_ref": "accel_apply",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
-          "skill_animation_mode": "default",
+          "skill_animation_mode": "custom",
           "skill_information": "",
           "skill_range": "Range",
           "skill_target": "One creature",
@@ -348,175 +385,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "2Ncb8FEV4lynlsHH"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "6yOqeOtGtPahkMt7",
-      "_stats": {
-        "compendiumSource": "Item.iFhrsC0cnyChDhgw",
-        "coreVersion": "12.343",
-        "createdTime": 1756715813518,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/astrodyne.png",
-      "name": "Acceleration",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Entropist",
-          "cost": "20 MP",
-          "damage_bonus": "0",
-          "description": "<p>You bend the fabric of time. Until this spell ends, the target gains the ability to perform a single additional action during each of their turns. Once the target has performed a total of two additional actions granted by this spell, this spell ends.</p>",
-          "duration": "Scene",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Acceleration",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "Range",
-          "skill_target": "One creature",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "iFhrsC0cnyChDhgw"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "82U1RActm06OxFgj",
-      "_stats": {
-        "compendiumSource": "Item.6HdBHEPiRoPMMydJ",
-        "coreVersion": "12.343",
-        "createdTime": 1756715806844,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/sole_survivor.png",
-      "name": "Ritual Entropism",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Entropist",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>You may perform Rituals whose effects fall within the <strong>Entropism</strong> discipline. </p><p>Entropism Rituals use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Ritual Entropism",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "6HdBHEPiRoPMMydJ"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "9HWuiwuZNcD9ghkR",
-      "_stats": {
-        "compendiumSource": "Item.IzAH4YAoK4vPt9MP",
-        "coreVersion": "12.343",
-        "createdTime": 1756715803224,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
-      "name": "Entropic Magic",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Entropist",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>Each time you acquire this Skill, learn one <strong>Entropist</strong> spell (see Facet).</p><p><strong>【⚡Offensive Entropist Spell】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "10",
-          "name": "Entropic Magic",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Other",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "IzAH4YAoK4vPt9MP"
+        "uniqueId": "jlPwgwAQkOBCNg6K"
       },
       "type": "equippableItem"
     },
@@ -577,62 +446,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "cnVxxVN7au9ZBpSQ",
-      "_stats": {
-        "compendiumSource": "Item.BmgIHS4DdDAT1rUc",
-        "coreVersion": "12.343",
-        "createdTime": 1756715818037,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/divination.png",
-      "name": "Divination",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Entropist",
-          "cost": "10 MP",
-          "damage_bonus": "0",
-          "description": "<p>You glimpse briefly into the future. Until this spell ends, after a creature you can see performs a Check, if it was not a <strong>fumble</strong> nor a <strong>critical success</strong>, you may force that creature to reroll both dice. Once you have forced <strong>two</strong> rerolls this way, this spell ends.</p>",
-          "duration": "Scene",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Divination",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "Range",
-          "skill_target": "Self",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "BmgIHS4DdDAT1rUc"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "dcqsbUcu3OJadx4m",
       "_stats": {
         "compendiumSource": "Item.LO3uQwPwNqQcYY56",
@@ -685,84 +498,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "LO3uQwPwNqQcYY56"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "FUOQh5DekoS49Y1T",
-      "_stats": {
-        "compendiumSource": "Item.fIMx7fleEq7LKXNE",
-        "coreVersion": "12.343",
-        "createdTime": 1756715819261,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "icons/magic/death/hand-undead-skeleton-fire-pink.webp",
-      "name": "Drain Spirit",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Entropist",
-          "cost": "5 MP",
-          "damage_bonus": "15",
-          "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 15】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
-          "duration": "Instantaneous",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "effect_kind": "grant",
-              "effect_label": "drain_recover",
-              "grant_amount": "ceil(MP_DEALT / 2)",
-              "grant_resource": "mp",
-              "target_ref": "ds_self"
-            },
-            "1": {
-              "$deleted": false,
-              "auto_confirm_when_obvious": true,
-              "candidate_source": "self",
-              "category": "",
-              "count": 1,
-              "effect_kind": "targeting",
-              "effect_label": "ds_self",
-              "iteration_mode": "together",
-              "mode": "exact",
-              "skip_when_passive": true
-            }
-          },
-          "heroic_requirement": "",
-          "isCheck": true,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": true,
-          "level": "1",
-          "max_level": "1",
-          "name": "Drain Spirit",
-          "optional_params": {},
-          "rolled_atr1": "INS",
-          "rolled_atr2": "WLP",
-          "skill_range": "Range",
-          "skill_target": "One creature",
-          "skill_type": "Active",
-          "type_damage": "Dark",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "fIMx7fleEq7LKXNE"
       },
       "type": "equippableItem"
     },
@@ -851,6 +586,7 @@
           "check_bonus": "0",
           "class": "Entropist",
           "cost": "20 MP",
+          "custom_logic_action": "<p>// ============================================================================</p><p>// Custom Logic - Action : Omega</p><p>// Bonus damage = + ceil(targetLevel / 2)</p><p>// Target level path: targetToken.actor.system.props.level</p><p>// ============================================================================</p><p>(async () =&gt; {</p><p>const TAG = \"[CL-ACTION][OMEGA][+HALF-TARGET-LVL]\";</p><p>const p = globalThis.__PAYLOAD;</p><p>if (!p) return console.warn(TAG, \"Missing __PAYLOAD\");</p><p>// Get first target (Omega is \"One creature\")</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>const firstTargetUuid = targetUuids[0];</p><p>if (!firstTargetUuid) return console.warn(TAG, \"No target UUID found. Bonus not applied.\");</p><p>// Resolve target doc -&gt; token/actor</p><p>const targetDoc = await fromUuid(firstTargetUuid);</p><p>const targetToken = targetDoc?.object ?? targetDoc; // TokenDocument -&gt; Token if available</p><p>const targetActor = targetDoc?.actor ?? targetDoc; // Token -&gt; Actor, or Actor directly</p><p>// Read level (prefer token actor, fallback to actor)</p><p>const lvlRaw =</p><p>targetToken?.actor?.system?.props?.level ??</p><p>targetActor?.system?.props?.level ??</p><p>0;</p><p>const level = Math.max(0, parseInt(String(lvlRaw), 10) || 0);</p><p>// Half, always round up</p><p>const bonus = Math.ceil(level / 2);</p><p>// Apply as bonus damage in advPayload</p><p>p.advPayload = p.advPayload || {};</p><p>const before = Number(p.advPayload.bonus ?? 0) || 0;</p><p>p.advPayload.bonus = before + bonus;</p><p>console.log(TAG, \"APPLIED\", {</p><p>target: targetActor?.name,</p><p>level,</p><p>bonusAdded: bonus,</p><p>bonusBefore: before,</p><p>bonusAfter: p.advPayload.bonus</p><p>});</p><p>})();</p><p></p>",
           "damage_bonus": "0",
           "description": "<p>You invoke doom on your foe, turning strength into frailty. The target loses an amount of Hit Points equal to <strong>【20 + half the target's level】.</strong></p>",
           "duration": "Instantaneous",
@@ -875,119 +611,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Lqeal1fztIoE6edN"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "hadpzctVFubNf69B",
-      "_stats": {
-        "compendiumSource": "Item.nf32D5apuWGo1rVV",
-        "coreVersion": "12.343",
-        "createdTime": 1756715804942,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "effects": [
-        {
-          "_id": "xPwQP3egSjwSQLT9",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1782499998452,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "<p><em>Lucky Seven Ready:</em> Lucky Seven is available this scene. Spent when used; refreshes each conflict.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "xPwQP3egSjwSQLT9",
-              "originalParentId": "hadpzctVFubNf69B",
-              "originalUuid": "Actor.JWpen4YPnH8azp22.Item.hadpzctVFubNf69B.ActiveEffect.xPwQP3egSjwSQLT9"
-            },
-            "fabula-ultima-companion": {
-              "chargeKey": "lucky_seven",
-              "charges": 1,
-              "chargesMax": 1
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/magic/control/buff-flight-wings-runes-purple.webp",
-          "name": "Lucky Seven Ready",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "fud-lucky-seven-ready"
-          ],
-          "system": {},
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Harpy/Draw.webp",
-      "name": "Lucky Seven",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Entropist",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>You have a <strong>lucky number</strong>; at the beginning of each session, that number is <strong>7</strong>. Once per scene after you perform a Check, you may replace the value shown on one of the dice you rolled with your lucky number <em>(even if this would give an impossible Result, such as a value of 7 on a d6)</em>. If you do, the replaced value becomes your <strong>new</strong> lucky number</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Lucky Seven",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "nf32D5apuWGo1rVV"
       },
       "type": "equippableItem"
     },
@@ -1160,6 +783,71 @@
       "type": "equippableItem"
     },
     {
+      "_id": "it8PPtRMYJ28m8zV",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398729834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/sole_survivor.png",
+      "name": "Ritual Entropism",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>You may perform Rituals whose effects fall within the <strong>Entropism</strong> discipline. </p><p>Entropism Rituals use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ritual Entropism",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "tbtry6egID5MOcxv"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "jmn2PRTg96i3uaH7",
       "_stats": {
         "compendiumSource": "Item.TPxgsBNWQ3vA3fgu",
@@ -1216,58 +904,167 @@
       "type": "equippableItem"
     },
     {
-      "_id": "JWKVgPemgcuC66nN",
+      "_id": "JTxCYytUu0DilhnC",
       "_stats": {
-        "compendiumSource": "Item.OoVNUOIssIfwPo7H",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756715816829,
+        "createdTime": 1783398729834,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "6lWZxCMcLkmOuVML",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Divination:</em> after a creature performs a non-critical, non-fumble Check, you may force it to reroll both dice. Ends after two rerolls.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": 999999,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "6lWZxCMcLkmOuVML",
+              "originalParentId": "BmgIHS4DdDAT1rUc",
+              "originalUuid": "Item.BmgIHS4DdDAT1rUc.ActiveEffect.6lWZxCMcLkmOuVML"
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "divination",
+              "charges": 2,
+              "chargesMax": 2,
+              "lifetimeMode": "on_activation",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "$deleted": false,
+                    "effect_kind": "check_reroll",
+                    "effect_label": "div_reroll"
+                  }
+                },
+                "name": "Divination",
+                "reaction_config_table": {
+                  "0": {
+                    "$deleted": false,
+                    "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0",
+                    "reaction_effect_ref": "div_reroll",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "all",
+                    "reaction_trigger": "creature_performs_action"
+                  }
+                }
+              }
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/divination.png",
+          "name": "Divination",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-divination"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/HealerRollAction/surecast.png",
-      "name": "Dispel",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/divination.png",
+      "name": "Divination",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "6lWZxCMcLkmOuVML",
+              "active_effect_percent": "100",
+              "active_effect_target": "any",
+              "active_effect_trigger": "on_attack"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>// ONI — Divination (with timing hooks)</p><p>(async () =&gt; {</p><p>const TAG = \"[ONI][FX]\";</p><p>const FX_BURST = \"modules/JB2A_DnD5e/Library/Generic/Particles/ParticleBurstStar01_01_Regular_BluePurple_600x600.webm\";</p><p>const FX_CIRCLE = \"modules/JB2A_DnD5e/Library/Generic/Cast/CastShapeCircleSingle01_01_Regular_Blue_600x600.webm\";</p><p>const SFX_START_1 = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Up3.ogg\";</p><p>const SFX_START_2 = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Starlight.ogg\";</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>ui.notifications.error(`${TAG} Sequencer module is not active.`);</p><p>return;</p><p>}</p><p>const targets = Array.from(game.user.targets ?? []);</p><p>if (targets.length !== 1) {</p><p>ui.notifications.warn(`${TAG} Please target exactly 1 token.`);</p><p>return;</p><p>}</p><p>const token = targets[0];</p><p>const center = token.center;</p><p>const squaresUp = 0.9;</p><p>const yUpPx = canvas.grid.size * squaresUp;</p><p>const locAbove = { x: center.x, y: center.y - yUpPx };</p><p>const locOn = { x: center.x, y: center.y };</p><p>// ✅ Tell the handler “animation started”</p><p>Hooks.callAll(\"oni:animationStart\", { tag: \"Divination\", tokenId: token.id });</p><p>const seq = new Sequence()</p><p>.sound().file(SFX_START_1).volume(0.8)</p><p>.effect().file(FX_BURST).atLocation(locAbove).scaleToObject(1.3).anchor({ x: 0.5, y: 0.5 }).opacity(1.0).belowTokens(false)</p><p>.wait(1500)</p><p>.sound().file(SFX_START_2).volume(0.8)</p><p>.effect().file(FX_CIRCLE).atLocation(locOn).scaleToObject(1.8).anchor({ x: 0.5, y: 0.5 }).opacity(0.5).belowTokens(false);</p><p>// IMPORTANT: await play so we can emit “end” at the true end</p><p>await seq.play();</p><p>// ✅ Tell the handler “animation ended”</p><p>Hooks.callAll(\"oni:animationEnd\", { tag: \"Divination\", tokenId: token.id });</p><p>})();</p><p></p>",
           "check_bonus": "0",
           "class": "Entropist",
           "cost": "10 MP",
-          "damage_bonus": "0",
-          "description": "<p>You release a wave of negative energy and cleanse all magic from a creature. If the target is affected by one or more spells with a <strong>duration</strong> of Scene, they are no longer affected by any of those spells instead</p>",
-          "duration": "Instantaneous",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>You glimpse briefly into the future. Until this spell ends, after a creature you can see performs a Check, if it was not a <strong>fumble</strong> nor a <strong>critical success</strong>, you may force that creature to reroll both dice. Once you have forced <strong>two</strong> rerolls this way, this spell ends.</p>",
+          "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Divination",
+              "effect_kind": "apply_ae",
+              "effect_label": "div_apply",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Dispel",
+          "name": "Divination",
+          "on_activate_effect_ref": "div_apply",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
           "skill_range": "Range",
-          "skill_target": "One creature",
-          "skill_type": "Active",
+          "skill_target": "Self",
+          "skill_type": "Spell",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "OoVNUOIssIfwPo7H"
+        "uniqueId": "eTagzbuJWVfudChW"
       },
       "type": "equippableItem"
     },
@@ -1385,11 +1182,11 @@
       "type": "equippableItem"
     },
     {
-      "_id": "SDCLiYyx6rxHI3pS",
+      "_id": "NadJpbEsWsOAHJsq",
       "_stats": {
-        "compendiumSource": "Item.pVs2sPd5o0XMbdah",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756715801936,
+        "createdTime": 1783398729834,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1399,45 +1196,304 @@
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/ElPass8.png",
       "name": "Absorb MP",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
           "check_bonus": "0",
           "class": "Entropist",
-          "cost": "",
-          "damage_bonus": "0",
+          "cost": "-",
+          "custom_logic_action": "",
+          "custom_logic_resolution": "",
+          "damage_bonus": "2",
+          "defense_target_type": "def",
           "description": "<p>After you suffer damage, you may immediately recover <strong>【SL × 2】</strong> Mind Points.</p>",
-          "duration": "",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "absorb_mp_recover",
+              "grant_amount": "SL * 2",
+              "grant_resource": "mp",
+              "target_ref": "amp_self"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "amp_self",
+              "exclude_self": false,
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            }
+          },
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "5",
           "name": "Absorb MP",
           "optional_params": {},
+          "passive_logic_action": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "absorb_mp_recover",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_lose_resource"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>MP Gain</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>2 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>4 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>6 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>8 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>10 MP</strong></p></td></tr></tbody></table>",
-          "skill_range": "",
-          "skill_target": "",
+          "skill_range": "Any",
+          "skill_target": "Self",
           "skill_type": "Passive",
+          "type_damage": "MP",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "kOZ5DZYLKd3FxaAz"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "oaYNORajoY7GRfJm",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398729834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/HealerRollAction/surecast.png",
+      "name": "Dispel",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You release a wave of negative energy and cleanse all magic from a creature. If the target is affected by one or more spells with a <strong>duration</strong> of Scene, they are no longer affected by any of those spells instead</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "count": "1",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "dispel_cleanse",
+              "filter_tag": "dispellable",
+              "menu_subtitle": "Choose one dispellable effect to remove",
+              "menu_title": "Dispel — Remove an Effect",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dispel",
+          "on_activate_effect_ref": "dispel_cleanse",
+          "optional_params": {},
+          "pre_activate_effect_ref": "dispel_cleanse",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "pVs2sPd5o0XMbdah"
+        "uniqueId": "Ydbba6k0hFjWZvJv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RVX9NWVaxsWXNKyL",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398729834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/dualcast.png",
+      "name": "Bimagus",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Once per turn during a conflict, if you have an <strong>arcane</strong> weapon equipped, you may use an action and spend <strong>20 to 50 Mind Points</strong> to perform the <strong>【📕Spell】</strong> action for free <strong>twice</strong>, casting two spells without needing to pay their MP costs. If you do, the two spells must have a combined total MP cost equal to or lower than <strong>【20 + the amount of MP you spent to use this Skill】</strong>, and the second spell must have a total MP cost that is equal to or lower than half the total MP cost of the first spell.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "action_ref": "Spell",
+              "effect_kind": "free_action",
+              "effect_label": "bim_free",
+              "free_of_cost": true,
+              "max_mp_cost": "min(70 - MP_SPENT_THIS_TURN, floor(MP_SPENT_THIS_TURN / 2))"
+            }
+          },
+          "isCheck": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": 1,
+          "name": "Bimagus",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && MP_SPENT_THIS_TURN > 0",
+              "reaction_effect_ref": "bim_free",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_end"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "HjNImvzXOvZw1mGF"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "tw719z4nQpfiZ97n",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398729834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
+      "name": "Entropic Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Each time you acquire this Skill, learn one <strong>Entropist</strong> spell (see Facet).</p><p><strong>【⚡Offensive Entropist Spell】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "10",
+          "name": "Entropic Magic",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "CMeM0siw1nq7rr1G"
       },
       "type": "equippableItem"
     },
@@ -1550,6 +1606,361 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "vlUneeNRfgFVzK2E"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WoZlCHqcPNXjeRyZ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398729834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "icons/magic/death/hand-undead-skeleton-fire-pink.webp",
+      "name": "Drain Spirit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "5 MP",
+          "custom_logic_action": "",
+          "custom_logic_resolution": "",
+          "damage_bonus": "15",
+          "defense_target_type": "mdef",
+          "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 20】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "drain_recover",
+              "grant_amount": "MP_DEALT / 2",
+              "grant_resource": "mp",
+              "target_ref": "ds_self"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "ds_self",
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Drain Spirit",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
+          "type_damage": "MP",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "szPLoqRb8JELX4X7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "wzOZsWDlco2ny8XP",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398729834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "RaiGU66GPunSQO7j",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "activation",
+              "mode": 3,
+              "priority": 1,
+              "value": "1"
+            }
+          ],
+          "description": "<p>Performing 1 fewer action next turn</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "RaiGU66GPunSQO7j",
+              "originalParentId": "2Ncb8FEV4lynlsHH",
+              "originalUuid": "Item.2Ncb8FEV4lynlsHH.ActiveEffect.RaiGU66GPunSQO7j"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DWTrans5.png",
+          "name": "Stop",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DWTrans5.png",
+      "name": "Stop",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "RaiGU66GPunSQO7j",
+              "active_effect_percent": "100",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>// ============================================================================</p><p>// Stop - Sequencer (Pipeline Version + PSEUDO step forward / step back)</p><p>// - Pseudo handles movement only (visual clone, no real token movement)</p><p>// - Sequencer handles ALL VFX + SFX</p><p>// - CHANGE: Caster VFX is centered on the PSEUDO clone position (not the real token)</p><p>// ============================================================================</p><p>(async () =&gt; {</p><p>const TAG = \"[ONI][Anim][Stop]\";</p><p>try {</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>ui.notifications.error(\"Sequencer module is not active.\");</p><p>return;</p><p>}</p><p>// Minimal ONI.emit helper</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!ONI.emit) {</p><p>ONI.emit = function (eventName, payload = {}, options = {}) {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, payload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload });</p><p>};</p><p>}</p><p>// -----------------------------</p><p>// TUNING KNOBS</p><p>// -----------------------------</p><p>const MOVE_DURATION = 350; // ms (caster step forward/back)</p><p>const STEP_SQUARES = 0.35; // how far to step (in grid squares)</p><p>const POST_CAST_WAIT = 2000; // ms</p><p>const EST_CAST_VFX_MS = 900;</p><p>const EST_TARGET_VFX_MS = 1800;</p><p>const EXTRA_BUFFER_MS = 250;</p><p>const HOLD_FORWARD_MS =</p><p>EST_CAST_VFX_MS + POST_CAST_WAIT + EST_TARGET_VFX_MS + EXTRA_BUFFER_MS;</p><p>// -----------------------------</p><p>// Assets</p><p>// -----------------------------</p><p>const FX_CASTER =</p><p>\"modules/JB2A_DnD5e/Library/Generic/Cast/CastShapeSquare01_01_Regular_Blue_600x600.webm\";</p><p>const FX_TARGET =</p><p>\"modules/JB2A_DnD5e/Library/Generic/Energy/IcosahedronRoll_01_Regular_Blue_600x600.webm\";</p><p>const SFX_BEGIN =</p><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Beginspell.mp3\";</p><p>const SFX_POISON =</p><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Condition_Poison.ogg\";</p><p>// -----------------------------</p><p>// Payload resolve</p><p>// -----------------------------</p><p>const payload = globalThis.__PAYLOAD ?? {};</p><p>const isUuid = (v) =&gt; typeof v === \"string\" &amp;&amp; v.includes(\".\");</p><p>async function resolveToken(ref) {</p><p>if (!ref) return null;</p><p>if (ref?.document &amp;&amp; ref?.object) return ref;</p><p>if (ref?.id &amp;&amp; canvas.tokens?.get(ref.id)) return canvas.tokens.get(ref.id);</p><p>if (isUuid(ref)) {</p><p>const doc = await fromUuid(ref);</p><p>if (!doc) return null;</p><p>if (doc.object) return doc.object;</p><p>if (doc.document?.object) return doc.document.object;</p><p>return null;</p><p>}</p><p>if (typeof ref === \"string\") return canvas.tokens.get(ref) ?? null;</p><p>return null;</p><p>}</p><p>function pickTargetsFromPayload(p) {</p><p>if (Array.isArray(p.targetTokenIds) &amp;&amp; p.targetTokenIds.length) return p.targetTokenIds;</p><p>if (Array.isArray(p.targets) &amp;&amp; p.targets.length) {</p><p>const out = [];</p><p>for (const t of p.targets) {</p><p>if (typeof t === \"string\") out.push(t);</p><p>else if (t?.tokenId) out.push(t.tokenId);</p><p>else if (t?.tokenUuid) out.push(t.tokenUuid);</p><p>}</p><p>return out.filter(Boolean);</p><p>}</p><p>if (Array.isArray(p.rows)) {</p><p>const out = [];</p><p>for (const r of p.rows) {</p><p>if (r?.targetTokenId) out.push(r.targetTokenId);</p><p>if (r?.targetTokenUuid) out.push(r.targetTokenUuid);</p><p>}</p><p>if (out.length) return out;</p><p>}</p><p>return [];</p><p>}</p><p>const sourceRef =</p><p>payload.sourceTokenUuid ??</p><p>payload.sourceTokenId ??</p><p>payload.casterTokenUuid ??</p><p>payload.casterTokenId ??</p><p>payload.attackerTokenUuid ??</p><p>payload.attackerTokenId ??</p><p>null;</p><p>const targetRefs = pickTargetsFromPayload(payload);</p><p>const fallbackSource = canvas.tokens.controlled?.[0] ?? null;</p><p>const fallbackTargets = Array.from(game.user.targets ?? []);</p><p>const sourceToken = (await resolveToken(sourceRef)) ?? fallbackSource;</p><p>const targets = [];</p><p>for (const r of targetRefs) {</p><p>const tok = await resolveToken(r);</p><p>if (tok) targets.push(tok);</p><p>}</p><p>if (!targets.length &amp;&amp; fallbackTargets.length) targets.push(...fallbackTargets);</p><p>if (!sourceToken) {</p><p>ui.notifications.warn(\"Stop: No caster token (payload missing and nothing selected).\");</p><p>return;</p><p>}</p><p>if (!targets.length) {</p><p>ui.notifications.warn(\"Stop: No targets (payload missing and nothing targeted).\");</p><p>return;</p><p>}</p><p>const targetToken = targets[0];</p><p>// -----------------------------</p><p>// Disposition -&gt; step direction</p><p>// -----------------------------</p><p>const casterDisposition =</p><p>sourceToken?.actor?.document?.disposition ?? sourceToken?.document?.disposition ?? 0;</p><p>const casterMoveRight = casterDisposition === -1;</p><p>const offsetPx = (canvas.grid.size ?? 100) * STEP_SQUARES;</p><p>const dx = casterMoveRight ? +offsetPx : -offsetPx;</p><p>// -----------------------------</p><p>// Emit START</p><p>// -----------------------------</p><p>ONI.emit(</p><p>\"oni:animationStart\",</p><p>{</p><p>type: \"stop\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: [targetToken.id],</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now(),</p><p>},</p><p>{ local: true, world: false }</p><p>);</p><p>// -----------------------------</p><p>// PSEUDO availability</p><p>// -----------------------------</p><p>const hasPseudo = !!game.ONI?.pseudo?.play;</p><p>// Used to tighten animationEnd timing</p><p>const pseudoDoneKey = `oni.stop.pseudoDone.${Date.now()}.${foundry.utils.randomID()}`;</p><p>globalThis[pseudoDoneKey] = false;</p><p>// NEW: live position key for the pseudo clone center (canvas coords)</p><p>const pseudoPosKey = `oni.stop.pseudoPos.${Date.now()}.${foundry.utils.randomID()}`;</p><p>globalThis[pseudoPosKey] = null;</p><p>const waitForPseudoDone = async (timeoutMs = 12000) =&gt; {</p><p>const start = performance.now();</p><p>while (!globalThis[pseudoDoneKey]) {</p><p>if (performance.now() - start &gt; timeoutMs) break;</p><p>await new Promise((r) =&gt; setTimeout(r, 25));</p><p>}</p><p>};</p><p>// Helper to read the pseudo clone position (fallback to token center)</p><p>const getCasterVfxLocation = () =&gt; {</p><p>const p = globalThis[pseudoPosKey];</p><p>if (p &amp;&amp; Number.isFinite(p.x) &amp;&amp; Number.isFinite(p.y)) return { x: p.x, y: p.y };</p><p>return { x: sourceToken.center.x, y: sourceToken.center.y };</p><p>};</p><p>// -----------------------------</p><p>// 1) Pseudo session: move out -&gt; HOLD -&gt; move back</p><p>// -----------------------------</p><p>if (hasPseudo) {</p><p>const pseudoScriptSource = `</p><p>const { casterToken, params } = ctx;</p><p>if (!casterToken) throw new Error(\"StopPseudo: casterToken missing\");</p><p>const dx = Number(params.dx ?? 0);</p><p>const dur = Number(params.dur ?? 300);</p><p>const hold = Number(params.hold ?? 0);</p><p>const doneKey = String(params.doneKey ?? \"\");</p><p>const posKey = String(params.posKey ?? \"\");</p><p>function easeInOutCubic(t) {</p><p>return t &lt; 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;</p><p>}</p><p>function writePos(obj) {</p><p>if (!posKey) return;</p><p>globalThis[posKey] = { x: obj.x, y: obj.y };</p><p>}</p><p>function animate(obj, fromX, fromY, toX, toY, durMs) {</p><p>return new Promise(resolve =&gt; {</p><p>const startTime = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - startTime) / durMs;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeInOutCubic(t);</p><p>obj.x = fromX + (toX - fromX) * e;</p><p>obj.y = fromY + (toY - fromY) * e;</p><p>writePos(obj);</p><p>if (t &gt;= 1) { ticker.remove(update); resolve(); }</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>async function createClone(token) {</p><p>const baseObj = token.mesh ?? token.icon;</p><p>const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5);</p><p>sprite.x = token.center.x;</p><p>sprite.y = token.center.y;</p><p>if (baseObj) { sprite.width = baseObj.width; sprite.height = baseObj.height; }</p><p>sprite.zIndex = 5000;</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>writePos(sprite); // initial position publish</p><p>return sprite;</p><p>}</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>let sprite;</p><p>try {</p><p>sprite = await createClone(casterToken);</p><p>// Hide real token visuals (local only) for the WHOLE session</p><p>if (baseMesh) baseMesh.visible = false;</p><p>casterToken.visible = false;</p><p>const startX = sprite.x;</p><p>const startY = sprite.y;</p><p>const outX = startX + dx;</p><p>const outY = startY;</p><p>// Move out</p><p>await animate(sprite, startX, startY, outX, outY, dur);</p><p>// Hold while Sequencer VFX/SFX plays</p><p>if (hold &gt; 0) {</p><p>// keep publishing position during hold (in case other code reads it later)</p><p>writePos(sprite);</p><p>await wait(hold);</p><p>writePos(sprite);</p><p>}</p><p>// Move back</p><p>await animate(sprite, outX, outY, startX, startY, dur);</p><p>} finally {</p><p>if (sprite) {</p><p>writePos(sprite); // final publish</p><p>canvas.stage.removeChild(sprite);</p><p>sprite.destroy(); // IMPORTANT: no \"true\"</p><p>}</p><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>casterToken.visible = originalTokenVisible;</p><p>// Signal completion back to macro (local flag)</p><p>if (doneKey) globalThis[doneKey] = true;</p><p>}</p><p>`;</p><p>game.ONI.pseudo.play({</p><p>scriptId: \"stop.pseudoSession\",</p><p>scriptSource: pseudoScriptSource,</p><p>casterTokenUuid: sourceToken.document.uuid,</p><p>targetTokenUuids: [targetToken.document.uuid],</p><p>params: {</p><p>dx,</p><p>dur: MOVE_DURATION,</p><p>hold: HOLD_FORWARD_MS,</p><p>doneKey: pseudoDoneKey,</p><p>posKey: pseudoPosKey, // &lt;-- NEW</p><p>},</p><p>meta: { source: \"Stop\" },</p><p>});</p><p>} else {</p><p>// Fallback: real token movement (only if pseudo missing)</p><p>const original = { x: sourceToken.document.x, y: sourceToken.document.y };</p><p>await sourceToken.document.update({ x: original.x + dx, y: original.y });</p><p>// approximate “pos” for caster VFX (token center)</p><p>globalThis[pseudoPosKey] = { x: sourceToken.center.x, y: sourceToken.center.y };</p><p>globalThis[pseudoDoneKey] = true;</p><p>}</p><p>// -----------------------------</p><p>// 2) Sequencer timeline (VFX + SFX only)</p><p>// Start after the step-out finishes (+ tiny buffer)</p><p>// -----------------------------</p><p>await new Promise((r) =&gt; setTimeout(r, MOVE_DURATION + 30));</p><p>// IMPORTANT: cast VFX centered on the pseudo clone position</p><p>const casterVfxLoc = getCasterVfxLocation();</p><p>const casterSeq = new Sequence()</p><p>.sound()</p><p>.file(SFX_BEGIN)</p><p>.volume(0.9)</p><p>.effect()</p><p>.file(FX_CASTER)</p><p>.atLocation(casterVfxLoc) // &lt;-- CHANGED: not sourceToken</p><p>.scaleToObject(1.5);</p><p>await casterSeq.play();</p><p>// Wait 2000ms (your requirement)</p><p>await new Promise((r) =&gt; setTimeout(r, POST_CAST_WAIT));</p><p>// Target icosahedron + poison sound, then WAIT UNTIL FINISHED</p><p>const targetSeq = new Sequence();</p><p>targetSeq.sound().file(SFX_POISON).volume(0.9);</p><p>targetSeq</p><p>.effect()</p><p>.file(FX_TARGET)</p><p>.atLocation(targetToken)</p><p>.scaleToObject(1.5)</p><p>.waitUntilFinished();</p><p>await targetSeq.play();</p><p>// -----------------------------</p><p>// Tighter animationEnd:</p><p>// wait for pseudo move-back to actually finish</p><p>// -----------------------------</p><p>if (hasPseudo) {</p><p>await waitForPseudoDone(12000);</p><p>} else {</p><p>// Fallback: return real token</p><p>const original = { x: sourceToken.document.x - dx, y: sourceToken.document.y };</p><p>await sourceToken.document.update({ x: original.x, y: original.y });</p><p>}</p><p>// Cleanup</p><p>try { delete globalThis[pseudoDoneKey]; } catch (_) {}</p><p>try { delete globalThis[pseudoPosKey]; } catch (_) {}</p><p>// -----------------------------</p><p>// Emit END (tight)</p><p>// -----------------------------</p><p>ONI.emit(</p><p>\"oni:animationEnd\",</p><p>{</p><p>type: \"stop\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: [targetToken.id],</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now(),</p><p>},</p><p>{ local: true, world: false }</p><p>);</p><p>console.log(TAG, \"END\");</p><p>} catch (err) {</p><p>console.error(`${TAG} Animation crashed:`, err);</p><p>try {</p><p>globalThis.ONI?.emit?.(</p><p>\"oni:animationEnd\",</p><p>{ type: \"stop\", error: true, timestamp: Date.now() },</p><p>{ local: true }</p><p>);</p><p>} catch (_) {}</p><p>}</p><p>})();</p><p></p>",
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "10 MP",
+          "custom_logic_resolution": "<p>// ─────────────────────────────────────────────────────────────</p><p>// Stop — Custom Logic: Resolution</p><p>// Foundry V12 / Fabula Ultima Companion / Lancer Initiative</p><p>//</p><p>// Spell effect handled here:</p><p>// - If Stop HITS the target: target performs 1 fewer activation</p><p>//   on their next available turn/activation, minimum 0.</p><p>// - If Stop MISSES: do nothing.</p><p>// - Player-safe: if this script is ever run by a non-GM client,</p><p>//   it forwards the actual combatant mutation to GMExecutor.</p><p>//</p><p>// Behavior:</p><p>// - If the hit target still has activations.value &gt; 0 this round,</p><p>//   reduce activations.value by 1 immediately.</p><p>// - If the hit target has activations.value &lt;= 0,</p><p>//   store a pending Stop flag and consume 1 activation as soon as</p><p>//   they gain a future activation, usually next round.</p><p>//</p><p>// Important:</p><p>// - Do NOT add @local-ui-only.</p><p>// - This script is meant for Custom Logic - Resolution.</p><p>// ─────────────────────────────────────────────────────────────</p><p>async function __runStopAuthorityCore__() {</p><p>  const TAG = \"[CL-RES][Stop]\";</p><p>  const MODULE_ID = \"fabula-ultima-companion\";</p><p>  const LI = \"lancer-initiative\";</p><p>  const FLAG_KEY = \"stopPendingActivationLoss\";</p><p>  const GLOBAL_KEY = \"__ONI_STOP_ACTIVATION_MANAGER__\";</p><p>  const VERSION = 1;</p><p>  const CLEANUP_DELAY_MS = 120;</p><p>  // Allow multiple different Stop casts to stack as multiple pending losses.</p><p>  // Same action card is still deduped so double-client execution does not double-apply.</p><p>  const ALLOW_STACKING_FROM_DIFFERENT_ACTIONS = true;</p><p>  const p =</p><p>    (typeof __PAYLOAD !== \"undefined\" &amp;&amp; __PAYLOAD)</p><p>      ? __PAYLOAD</p><p>      : (typeof payload !== \"undefined\" ? payload : null);</p><p>  const args =</p><p>    (typeof __ARGS !== \"undefined\" &amp;&amp; __ARGS)</p><p>      ? __ARGS</p><p>      : (typeof window !== \"undefined\" ? window.__ARGS : {});</p><p>  const rawTargets =</p><p>    (typeof __TARGETS !== \"undefined\" &amp;&amp; Array.isArray(__TARGETS))</p><p>      ? __TARGETS</p><p>      : [];</p><p>  if (!p) {</p><p>    console.warn(TAG, \"Missing payload.\");</p><p>    return { ok: false, reason: \"missing-payload\" };</p><p>  }</p><p>  p.meta = p.meta || {};</p><p>  const wait = (ms) =&gt; new Promise(resolve =&gt; setTimeout(resolve, ms));</p><p>  function hasOwn(obj, key) {</p><p>    return Object.prototype.hasOwnProperty.call(obj ?? {}, key);</p><p>  }</p><p>  function collectionValues(collection) {</p><p>    if (!collection) return [];</p><p>    if (Array.isArray(collection)) return collection;</p><p>    if (collection instanceof Map) return Array.from(collection.values());</p><p>    if (typeof collection.values === \"function\") return Array.from(collection.values());</p><p>    if (Array.isArray(collection.contents)) return collection.contents;</p><p>    if (typeof collection === \"object\") return Object.values(collection);</p><p>    return [];</p><p>  }</p><p>  function dedupeStrings(list) {</p><p>    return Array.from(new Set(</p><p>      (Array.isArray(list) ? list : [])</p><p>        .filter(Boolean)</p><p>        .map(v =&gt; String(v).trim())</p><p>        .filter(Boolean)</p><p>    ));</p><p>  }</p><p>  function numberish(value, fallback = 0) {</p><p>    const n = Number(value);</p><p>    return Number.isFinite(n) ? n : fallback;</p><p>  }</p><p>  function readLiNumber(combatant, path, fallback = 0) {</p><p>    try {</p><p>      return numberish(combatant?.getFlag?.(LI, path), fallback);</p><p>    } catch (_) {</p><p>      return fallback;</p><p>    }</p><p>  }</p><p>  async function setLiNumber(combatant, path, value) {</p><p>    return combatant?.setFlag?.(LI, path, Math.max(0, Number(value) || 0));</p><p>  }</p><p>  function emitTurnBarRefresh(reason = \"stop\") {</p><p>    try {</p><p>      globalThis.__ONI_FABULA_INITIATIVE__?.refresh?.(reason);</p><p>    } catch (_) {}</p><p>    try {</p><p>      game.socket?.emit?.(`module.${MODULE_ID}`, {</p><p>        scope: \"fabula-initiative\",</p><p>        type: \"REFRESH\",</p><p>        reason</p><p>      });</p><p>    } catch (_) {}</p><p>  }</p><p>  function getActionCardId() {</p><p>    return String(</p><p>      p?.meta?.actionCardId ??</p><p>      p?.actionCardId ??</p><p>      p?.meta?.sourceActionCardId ??</p><p>      p?.sourceActionCardId ??</p><p>      p?.meta?.actionId ??</p><p>      p?.actionId ??</p><p>      `STOP-NO-CARD-${Date.now()}`</p><p>    ).trim();</p><p>  }</p><p>  function getTargetUuids() {</p><p>    return dedupeStrings([</p><p>      ...rawTargets,</p><p>      ...(</p><p>        Array.isArray(p?.originalTargetUUIDs) &amp;&amp; p.originalTargetUUIDs.length</p><p>          ? p.originalTargetUUIDs</p><p>          : []</p><p>      ),</p><p>      ...(</p><p>        Array.isArray(p?.meta?.originalTargetUUIDs) &amp;&amp; p.meta.originalTargetUUIDs.length</p><p>          ? p.meta.originalTargetUUIDs</p><p>          : []</p><p>      ),</p><p>      ...(</p><p>        Array.isArray(args?.originalTargetUUIDs) &amp;&amp; args.originalTargetUUIDs.length</p><p>          ? args.originalTargetUUIDs</p><p>          : []</p><p>      ),</p><p>      ...(</p><p>        Array.isArray(args?.targets) &amp;&amp; args.targets.length</p><p>          ? args.targets</p><p>          : []</p><p>      ),</p><p>      ...(</p><p>        Array.isArray(p?.targets) &amp;&amp; p.targets.length</p><p>          ? p.targets</p><p>          : []</p><p>      )</p><p>    ]);</p><p>  }</p><p>  async function resolveActorAndToken(uuidOrDoc) {</p><p>    if (!uuidOrDoc) return { actor: null, tokenDoc: null, doc: null };</p><p>    let doc = uuidOrDoc;</p><p>    if (typeof uuidOrDoc === \"string\") {</p><p>      try {</p><p>        doc = await fromUuid(uuidOrDoc);</p><p>      } catch (err) {</p><p>        console.warn(TAG, \"fromUuid failed.\", {</p><p>          uuidOrDoc,</p><p>          error: String(err?.message ?? err)</p><p>        });</p><p>        return { actor: null, tokenDoc: null, doc: null };</p><p>      }</p><p>    }</p><p>    if (!doc) return { actor: null, tokenDoc: null, doc: null };</p><p>    const documentName = doc.documentName ?? doc.constructor?.name ?? \"\";</p><p>    if (documentName === \"Token\" || documentName === \"TokenDocument\") {</p><p>      return {</p><p>        actor: doc.actor ?? doc.object?.actor ?? null,</p><p>        tokenDoc: doc.documentName === \"Token\" ? doc : (doc.document ?? doc),</p><p>        doc</p><p>      };</p><p>    }</p><p>    if (documentName === \"Actor\") {</p><p>      const activeToken =</p><p>        doc.getActiveTokens?.(true, true)?.[0] ??</p><p>        doc.getActiveTokens?.()?.[0] ??</p><p>        null;</p><p>      return {</p><p>        actor: doc,</p><p>        tokenDoc: activeToken?.document ?? null,</p><p>        doc</p><p>      };</p><p>    }</p><p>    const actor =</p><p>      doc.actor ??</p><p>      doc.object?.actor ??</p><p>      doc.token?.actor ??</p><p>      doc.parent?.actor ??</p><p>      doc.document?.actor ??</p><p>      null;</p><p>    const tokenDoc =</p><p>      doc.documentName === \"Token\"</p><p>        ? doc</p><p>        : doc.document?.documentName === \"Token\"</p><p>          ? doc.document</p><p>          : doc.token?.documentName === \"Token\"</p><p>            ? doc.token</p><p>            : doc.token?.document?.documentName === \"Token\"</p><p>              ? doc.token.document</p><p>              : null;</p><p>    return { actor, tokenDoc, doc };</p><p>  }</p><p>  function findCombatantForActorOrToken(combat, actor, tokenDoc) {</p><p>    if (!combat) return null;</p><p>    const combatants = collectionValues(combat.combatants);</p><p>    const actorId = actor?.id ?? null;</p><p>    const actorUuid = actor?.uuid ?? null;</p><p>    const tokenId = tokenDoc?.id ?? null;</p><p>    const tokenUuid = tokenDoc?.uuid ?? null;</p><p>    if (tokenId || tokenUuid) {</p><p>      const byToken = combatants.find(c =&gt; {</p><p>        const cTokenUuid = c.token?.uuid ?? c.tokenUuid ?? null;</p><p>        return (</p><p>          (tokenId &amp;&amp; (c.tokenId === tokenId || c.token?.id === tokenId)) ||</p><p>          (tokenUuid &amp;&amp; cTokenUuid === tokenUuid)</p><p>        );</p><p>      });</p><p>      if (byToken) return byToken;</p><p>    }</p><p>    if (actorId || actorUuid) {</p><p>      const byActor = combatants.find(c =&gt; {</p><p>        const cActor =</p><p>          c.actor ??</p><p>          (c.actorId ? game.actors?.get?.(c.actorId) : null);</p><p>        return (</p><p>          (actorId &amp;&amp; (c.actorId === actorId || cActor?.id === actorId)) ||</p><p>          (actorUuid &amp;&amp; cActor?.uuid === actorUuid)</p><p>        );</p><p>      });</p><p>      if (byActor) return byActor;</p><p>    }</p><p>    return null;</p><p>  }</p><p>  function getCombatForCombatant(combatant) {</p><p>    if (!combatant) return game.combat ?? null;</p><p>    const parent = combatant.parent ?? null;</p><p>    if (parent?.documentName === \"Combat\" || parent?.constructor?.name === \"Combat\") {</p><p>      return parent;</p><p>    }</p><p>    for (const combat of collectionValues(game.combats)) {</p><p>      if (combat?.combatants?.get?.(combatant.id)) return combat;</p><p>      if (collectionValues(combat?.combatants).some(c =&gt; c?.id === combatant.id)) return combat;</p><p>    }</p><p>    return game.combat ?? null;</p><p>  }</p><p>  function getSnapshotRowForTarget(targetUuid, targetActor, tokenDoc) {</p><p>    const rows = Array.isArray(p?.meta?.defenseSnapshot?.perTarget)</p><p>      ? p.meta.defenseSnapshot.perTarget</p><p>      : [];</p><p>    const targetUuidStr = String(targetUuid ?? \"\");</p><p>    const actorUuid = String(targetActor?.uuid ?? \"\");</p><p>    const tokenUuid = String(tokenDoc?.uuid ?? \"\");</p><p>    return rows.find(row =&gt; {</p><p>      const candidates = [</p><p>        row?.uuid,</p><p>        row?.targetUuid,</p><p>        row?.tokenUuid,</p><p>        row?.actorUuid,</p><p>        row?.id</p><p>      ].filter(Boolean).map(String);</p><p>      return (</p><p>        candidates.includes(targetUuidStr) ||</p><p>        (actorUuid &amp;&amp; candidates.includes(actorUuid)) ||</p><p>        (tokenUuid &amp;&amp; candidates.includes(tokenUuid))</p><p>      );</p><p>    }) ?? null;</p><p>  }</p><p>  function readDefenseLikeFromProps(props, preferMagic = true) {</p><p>    const p2 = props ?? {};</p><p>    const hard = preferMagic</p><p>      ? [\"magic_defense\", \"current_mdef\", \"mdef\", \"m_defense\", \"magicDefense\"]</p><p>      : [\"defense\", \"current_def\", \"def\"];</p><p>    for (const key of hard) {</p><p>      const n = numberish(p2[key], NaN);</p><p>      if (Number.isFinite(n)) return n;</p><p>    }</p><p>    const isBanned = (key) =&gt; /(^|_)mod($|_)/i.test(key);</p><p>    const rePhys = /(^|_)(current_)?(def|guard|armor)($|_)/i;</p><p>    const reMag = /(^|_)(current_)?(m(def|agic.*def)|magic.*resist|spirit)($|_)/i;</p><p>    const rx = preferMagic ? reMag : rePhys;</p><p>    for (const [key, value] of Object.entries(p2)) {</p><p>      if (isBanned(key)) continue;</p><p>      const n = numberish(value, NaN);</p><p>      if (!Number.isFinite(n)) continue;</p><p>      if (rx.test(key)) return n;</p><p>    }</p><p>    return 0;</p><p>  }</p><p>  function getDefenseForHitCheck(targetUuid, targetActor, tokenDoc) {</p><p>    const preferMagic = true; // Stop is a Spell, so compare against Magic Defense.</p><p>    const row = getSnapshotRowForTarget(targetUuid, targetActor, tokenDoc);</p><p>    const snapshotDefense = numberish(</p><p>      row?.mdef ??</p><p>      row?.magicDefense ??</p><p>      row?.magic_defense ??</p><p>      row?.defenseUsed ??</p><p>      row?.defense,</p><p>      NaN</p><p>    );</p><p>    if (Number.isFinite(snapshotDefense)) return snapshotDefense;</p><p>    const props = targetActor?.system?.props ?? targetActor?.system ?? {};</p><p>    return readDefenseLikeFromProps(props, preferMagic);</p><p>  }</p><p>  function buildHitCheckContext() {</p><p>    const accTotal = Number(</p><p>      p?.accuracy?.total ??</p><p>      args?.accuracyTotal ??</p><p>      args?.accTotal ??</p><p>      NaN</p><p>    );</p><p>    const hasAccuracy =</p><p>      (typeof args?.hasAccuracy === \"boolean\")</p><p>        ? args.hasAccuracy</p><p>        : !!p?.accuracy;</p><p>    const explicitForceMiss = !!(</p><p>      args?.forceMiss === true ||</p><p>      args?.advPayload?.forceMiss === true ||</p><p>      args?.advPayload?.isFumble === true ||</p><p>      p?.accuracy?.forceMiss === true ||</p><p>      p?.accuracy?.isFumble === true ||</p><p>      p?.meta?.forceMiss === true</p><p>    );</p><p>    const explicitAutoHit = !!(</p><p>      !explicitForceMiss &amp;&amp;</p><p>      (</p><p>        args?.autoHit === true ||</p><p>        args?.advPayload?.autoHit === true ||</p><p>        args?.advPayload?.isCrit === true ||</p><p>        p?.advPayload?.autoHit === true ||</p><p>        p?.advPayload?.isCrit === true ||</p><p>        p?.accuracy?.isCrit === true ||</p><p>        p?.meta?.autoHit === true</p><p>      )</p><p>    );</p><p>    return {</p><p>      accTotal,</p><p>      hasAccuracy,</p><p>      explicitForceMiss,</p><p>      explicitAutoHit</p><p>    };</p><p>  }</p><p>  function isHitTarget(targetUuid, targetActor, tokenDoc) {</p><p>    const hitCtx = buildHitCheckContext();</p><p>    if (hitCtx.explicitForceMiss) {</p><p>      return {</p><p>        hit: false,</p><p>        reason: \"force-miss-or-fumble\",</p><p>        ...hitCtx,</p><p>        defenseUsed: null</p><p>      };</p><p>    }</p><p>    if (!hitCtx.hasAccuracy) {</p><p>      return {</p><p>        hit: true,</p><p>        reason: \"no-accuracy-treated-as-hit\",</p><p>        ...hitCtx,</p><p>        defenseUsed: null</p><p>      };</p><p>    }</p><p>    if (hitCtx.explicitAutoHit) {</p><p>      return {</p><p>        hit: true,</p><p>        reason: \"auto-hit\",</p><p>        ...hitCtx,</p><p>        defenseUsed: null</p><p>      };</p><p>    }</p><p>    const defenseUsed = getDefenseForHitCheck(targetUuid, targetActor, tokenDoc);</p><p>    if (!Number.isFinite(hitCtx.accTotal)) {</p><p>      return {</p><p>        hit: false,</p><p>        reason: \"missing-accuracy-total\",</p><p>        ...hitCtx,</p><p>        defenseUsed</p><p>      };</p><p>    }</p><p>    return {</p><p>      hit: hitCtx.accTotal &gt;= defenseUsed,</p><p>      reason: hitCtx.accTotal &gt;= defenseUsed ? \"accuracy-meets-defense\" : \"accuracy-below-defense\",</p><p>      ...hitCtx,</p><p>      defenseUsed</p><p>    };</p><p>  }</p><p>  function buildStopFlagData({</p><p>    existing = {},</p><p>    combat,</p><p>    combatant,</p><p>    targetActor,</p><p>    tokenDoc,</p><p>    pendingLoss,</p><p>    actionCardId,</p><p>    source = \"Stop\",</p><p>    active = true,</p><p>    consumed = false</p><p>  } = {}) {</p><p>    const previousActionIds = Array.isArray(existing?.actionCardIds)</p><p>      ? existing.actionCardIds</p><p>      : [];</p><p>    const actionCardIds = Array.from(new Set([</p><p>      ...previousActionIds,</p><p>      actionCardId</p><p>    ].filter(Boolean).map(String)));</p><p>    return {</p><p>      active,</p><p>      consumed,</p><p>      source,</p><p>      combatId: combat?.id ?? null,</p><p>      combatantId: combatant?.id ?? null,</p><p>      actorUuid: targetActor?.uuid ?? null,</p><p>      tokenUuid: tokenDoc?.uuid ?? null,</p><p>      appliedRound: Number(existing?.appliedRound ?? combat?.round ?? 0) || 0,</p><p>      lastTouchedRound: Number(combat?.round ?? 0) || 0,</p><p>      pendingLoss: Math.max(0, Number(pendingLoss) || 0),</p><p>      actionId: p?.meta?.actionId ?? p?.actionId ?? null,</p><p>      actionCardId: actionCardId || null,</p><p>      actionCardIds,</p><p>      appliedAt: Number(existing?.appliedAt ?? Date.now()) || Date.now(),</p><p>      updatedAt: Date.now(),</p><p>      appliedByUserId: existing?.appliedByUserId ?? game.userId ?? null,</p><p>      authorityUserId: game.userId ?? null,</p><p>      authorityUserIsGM: !!game.user?.isGM</p><p>    };</p><p>  }</p><p>  async function tryConsumePendingStop(combat, combatant, reason = \"pending-check\") {</p><p>    if (!combat || !combatant) return { ok: false, reason: \"missing-combat-or-combatant\" };</p><p>    const data = combatant.getFlag?.(MODULE_ID, FLAG_KEY);</p><p>    if (!data?.active) return { ok: true, skipped: true, reason: \"no-active-pending-stop\" };</p><p>    if (data.combatId &amp;&amp; data.combatId !== combat.id) {</p><p>      return { ok: true, skipped: true, reason: \"different-combat\" };</p><p>    }</p><p>    const pendingLoss = Math.max(0, Number(data.pendingLoss ?? 1) || 0);</p><p>    if (pendingLoss &lt;= 0) {</p><p>      await combatant.unsetFlag(MODULE_ID, FLAG_KEY);</p><p>      return { ok: true, cleaned: true, reason: \"empty-pending-loss\" };</p><p>    }</p><p>    const currentValue = readLiNumber(combatant, \"activations.value\", 0);</p><p>    if (currentValue &lt;= 0) {</p><p>      return {</p><p>        ok: true,</p><p>        pending: true,</p><p>        reason: \"no-activation-available-yet\",</p><p>        pendingLoss,</p><p>        currentValue</p><p>      };</p><p>    }</p><p>    const lossNow = Math.min(currentValue, pendingLoss);</p><p>    const nextValue = Math.max(0, currentValue - lossNow);</p><p>    const remainingLoss = Math.max(0, pendingLoss - lossNow);</p><p>    await setLiNumber(combatant, \"activations.value\", nextValue);</p><p>    if (remainingLoss &gt; 0) {</p><p>      const nextFlag = {</p><p>        ...data,</p><p>        active: true,</p><p>        consumed: false,</p><p>        pendingLoss: remainingLoss,</p><p>        lastTouchedRound: Number(combat.round ?? 0) || 0,</p><p>        updatedAt: Date.now()</p><p>      };</p><p>      await combatant.setFlag(MODULE_ID, FLAG_KEY, nextFlag);</p><p>    } else {</p><p>      const nextFlag = {</p><p>        ...data,</p><p>        active: false,</p><p>        consumed: true,</p><p>        pendingLoss: 0,</p><p>        consumedRound: Number(combat.round ?? 0) || 0,</p><p>        consumedAt: Date.now(),</p><p>        updatedAt: Date.now()</p><p>      };</p><p>      // Keep a small ledger flag until round cleanup, so same action card cannot double-apply.</p><p>      await combatant.setFlag(MODULE_ID, FLAG_KEY, nextFlag);</p><p>    }</p><p>    emitTurnBarRefresh(`stop-consume:${reason}`);</p><p>    console.log(TAG, \"Consumed pending Stop activation loss.\", {</p><p>      reason,</p><p>      target: combatant.name,</p><p>      combatId: combat.id,</p><p>      round: combat.round,</p><p>      value: `${currentValue} -&gt; ${nextValue}`,</p><p>      lossNow,</p><p>      remainingLoss</p><p>    });</p><p>    return {</p><p>      ok: true,</p><p>      consumed: true,</p><p>      lossNow,</p><p>      remainingLoss,</p><p>      valueBefore: currentValue,</p><p>      valueAfter: nextValue</p><p>    };</p><p>  }</p><p>  async function applyStopToCombatant(combat, combatant, targetActor, tokenDoc) {</p><p>    if (!combat || !combatant) {</p><p>      return { ok: false, reason: \"missing-combat-or-combatant\" };</p><p>    }</p><p>    const actionCardId = getActionCardId();</p><p>    const existing = combatant.getFlag?.(MODULE_ID, FLAG_KEY) ?? {};</p><p>    const existingActionIds = Array.isArray(existing?.actionCardIds)</p><p>      ? existing.actionCardIds.map(String)</p><p>      : [];</p><p>    if (actionCardId &amp;&amp; existingActionIds.includes(String(actionCardId))) {</p><p>      console.log(TAG, \"Stop already applied for this action card. Skipping duplicate.\", {</p><p>        target: combatant.name,</p><p>        actionCardId</p><p>      });</p><p>      return {</p><p>        ok: true,</p><p>        skipped: true,</p><p>        reason: \"duplicate-action-card\",</p><p>        combatantId: combatant.id</p><p>      };</p><p>    }</p><p>    if (</p><p>      existing?.active &amp;&amp;</p><p>      !ALLOW_STACKING_FROM_DIFFERENT_ACTIONS</p><p>    ) {</p><p>      console.log(TAG, \"Stop already pending on this target. Stacking disabled; skipping.\", {</p><p>        target: combatant.name,</p><p>        existing</p><p>      });</p><p>      return {</p><p>        ok: true,</p><p>        skipped: true,</p><p>        reason: \"already-pending-stacking-disabled\",</p><p>        combatantId: combatant.id</p><p>      };</p><p>    }</p><p>    const oldValue = readLiNumber(combatant, \"activations.value\", 0);</p><p>    // If the target still has an activation available, remove it immediately.</p><p>    if (oldValue &gt; 0) {</p><p>      const nextValue = Math.max(0, oldValue - 1);</p><p>      await setLiNumber(combatant, \"activations.value\", nextValue);</p><p>      const flagData = buildStopFlagData({</p><p>        existing,</p><p>        combat,</p><p>        combatant,</p><p>        targetActor,</p><p>        tokenDoc,</p><p>        pendingLoss: 0,</p><p>        actionCardId,</p><p>        active: false,</p><p>        consumed: true</p><p>      });</p><p>      flagData.consumedRound = Number(combat.round ?? 0) || 0;</p><p>      flagData.consumedAt = Date.now();</p><p>      flagData.immediate = true;</p><p>      await combatant.setFlag(MODULE_ID, FLAG_KEY, flagData);</p><p>      emitTurnBarRefresh(\"stop-immediate\");</p><p>      console.log(TAG, \"Stop HIT: removed 1 available activation immediately.\", {</p><p>        target: combatant.name,</p><p>        round: combat.round,</p><p>        value: `${oldValue} -&gt; ${nextValue}`</p><p>      });</p><p>      return {</p><p>        ok: true,</p><p>        applied: true,</p><p>        mode: \"immediate\",</p><p>        combatantId: combatant.id,</p><p>        valueBefore: oldValue,</p><p>        valueAfter: nextValue</p><p>      };</p><p>    }</p><p>    // Otherwise, store a pending loss for the next time they gain an activation.</p><p>    const oldPending = existing?.active</p><p>      ? Math.max(0, Number(existing.pendingLoss ?? 1) || 1)</p><p>      : 0;</p><p>    const nextPending = oldPending + 1;</p><p>    const flagData = buildStopFlagData({</p><p>      existing,</p><p>      combat,</p><p>      combatant,</p><p>      targetActor,</p><p>      tokenDoc,</p><p>      pendingLoss: nextPending,</p><p>      actionCardId,</p><p>      active: true,</p><p>      consumed: false</p><p>    });</p><p>    await combatant.setFlag(MODULE_ID, FLAG_KEY, flagData);</p><p>    console.log(TAG, \"Stop HIT: target has no available activation now, stored pending activation loss.\", {</p><p>      target: combatant.name,</p><p>      round: combat.round,</p><p>      oldPending,</p><p>      nextPending</p><p>    });</p><p>    return {</p><p>      ok: true,</p><p>      applied: true,</p><p>      mode: \"pending\",</p><p>      combatantId: combatant.id,</p><p>      pendingLoss: nextPending</p><p>    };</p><p>  }</p><p>  async function applyAllPendingStops(combat, reason = \"bulk-pending-check\") {</p><p>    if (!combat) return { ok: false, reason: \"missing-combat\" };</p><p>    let checked = 0;</p><p>    let consumed = 0;</p><p>    for (const combatant of collectionValues(combat.combatants)) {</p><p>      const data = combatant.getFlag?.(MODULE_ID, FLAG_KEY);</p><p>      if (!data?.active) continue;</p><p>      checked++;</p><p>      const result = await tryConsumePendingStop(combat, combatant, reason);</p><p>      if (result?.consumed) consumed++;</p><p>    }</p><p>    return { ok: true, checked, consumed };</p><p>  }</p><p>  async function cleanupOldStopLedgers(combat, reason = \"cleanup\") {</p><p>    if (!combat) return { ok: false, reason: \"missing-combat\" };</p><p>    let cleaned = 0;</p><p>    const currentRound = Number(combat.round ?? 0) || 0;</p><p>    for (const combatant of collectionValues(combat.combatants)) {</p><p>      const data = combatant.getFlag?.(MODULE_ID, FLAG_KEY);</p><p>      if (!data) continue;</p><p>      if (data.active) continue;</p><p>      const touchedRound = Number(data.lastTouchedRound ?? data.consumedRound ?? data.appliedRound ?? 0) || 0;</p><p>      // Keep same-round ledger to dedupe duplicate clients.</p><p>      // Clean it once the combat moves beyond that round.</p><p>      if (currentRound &gt; touchedRound) {</p><p>        await combatant.unsetFlag(MODULE_ID, FLAG_KEY);</p><p>        cleaned++;</p><p>      }</p><p>    }</p><p>    if (cleaned &gt; 0) {</p><p>      console.log(TAG, \"Cleaned old Stop ledgers.\", {</p><p>        reason,</p><p>        combatId: combat.id,</p><p>        round: currentRound,</p><p>        cleaned</p><p>      });</p><p>    }</p><p>    return { ok: true, cleaned };</p><p>  }</p><p>  function installStopHooksOnce() {</p><p>    const old = globalThis[GLOBAL_KEY];</p><p>    if (old?.installed &amp;&amp; old.version === VERSION) return old;</p><p>    if (old?.hookIds?.length) {</p><p>      for (const [hookName, hookId] of old.hookIds) {</p><p>        try {</p><p>          Hooks.off(hookName, hookId);</p><p>        } catch (_) {}</p><p>      }</p><p>    }</p><p>    const state = {</p><p>      installed: true,</p><p>      version: VERSION,</p><p>      hookIds: []</p><p>    };</p><p>    const hUpdateCombat = Hooks.on(\"updateCombat\", async (combat, changed) =&gt; {</p><p>      if (!combat) return;</p><p>      if (hasOwn(changed, \"round\")) {</p><p>        await wait(CLEANUP_DELAY_MS);</p><p>        await applyAllPendingStops(combat, \"round-change\");</p><p>        await cleanupOldStopLedgers(combat, \"round-change\");</p><p>      }</p><p>      if (changed?.started === false || changed?.active === false) {</p><p>        for (const combatant of collectionValues(combat.combatants)) {</p><p>          const data = combatant.getFlag?.(MODULE_ID, FLAG_KEY);</p><p>          if (!data) continue;</p><p>          try {</p><p>            await combatant.unsetFlag(MODULE_ID, FLAG_KEY);</p><p>          } catch (_) {}</p><p>        }</p><p>      }</p><p>    });</p><p>    const hCombatRound = Hooks.on(\"combatRound\", async (combat) =&gt; {</p><p>      await wait(CLEANUP_DELAY_MS);</p><p>      await applyAllPendingStops(combat, \"combatRound-hook\");</p><p>      await cleanupOldStopLedgers(combat, \"combatRound-hook\");</p><p>    });</p><p>    const hFabulaRoundChanged = Hooks.on(\"oni.fabulaInitiative.roundChanged\", async (event) =&gt; {</p><p>      const combat =</p><p>        game.combats?.get?.(event?.combatId) ??</p><p>        game.combat ??</p><p>        null;</p><p>      await wait(CLEANUP_DELAY_MS);</p><p>      await applyAllPendingStops(combat, \"fabula-roundChanged\");</p><p>      await cleanupOldStopLedgers(combat, \"fabula-roundChanged\");</p><p>    });</p><p>    const hUpdateCombatant = Hooks.on(\"updateCombatant\", async (combatant, changed) =&gt; {</p><p>      if (!combatant) return;</p><p>      const data = combatant.getFlag?.(MODULE_ID, FLAG_KEY);</p><p>      if (!data?.active) return;</p><p>      // When activations.value changes from a later reset/grant, try to consume pending Stop.</p><p>      const changedFlags = changed?.flags?.[LI]?.activations ?? changed?.flags?.[LI] ?? null;</p><p>      const mayHaveActivationChange =</p><p>        !!changedFlags ||</p><p>        JSON.stringify(changed ?? {}).includes(\"activations\");</p><p>      if (!mayHaveActivationChange) return;</p><p>      await wait(CLEANUP_DELAY_MS);</p><p>      const combat = getCombatForCombatant(combatant);</p><p>      await tryConsumePendingStop(combat, combatant, \"updateCombatant\");</p><p>    });</p><p>    const hDeleteCombat = Hooks.on(\"deleteCombat\", async (combat) =&gt; {</p><p>      if (!combat) return;</p><p>      for (const combatant of collectionValues(combat.combatants)) {</p><p>        const data = combatant.getFlag?.(MODULE_ID, FLAG_KEY);</p><p>        if (!data) continue;</p><p>        try {</p><p>          await combatant.unsetFlag(MODULE_ID, FLAG_KEY);</p><p>        } catch (_) {}</p><p>      }</p><p>    });</p><p>    state.hookIds.push(</p><p>      [\"updateCombat\", hUpdateCombat],</p><p>      [\"combatRound\", hCombatRound],</p><p>      [\"oni.fabulaInitiative.roundChanged\", hFabulaRoundChanged],</p><p>      [\"updateCombatant\", hUpdateCombatant],</p><p>      [\"deleteCombat\", hDeleteCombat]</p><p>    );</p><p>    globalThis[GLOBAL_KEY] = state;</p><p>    console.log(TAG, \"Installed Stop activation hooks.\");</p><p>    return state;</p><p>  }</p><p>  // ─────────────────────────────────────────────────────────────</p><p>  // Main execution</p><p>  // ─────────────────────────────────────────────────────────────</p><p>  installStopHooksOnce();</p><p>  const combat = game.combat ?? null;</p><p>  if (!combat || !combat.started) {</p><p>    console.warn(TAG, \"No active started combat. Stop activation penalty skipped.\");</p><p>    return { ok: false, reason: \"no-active-started-combat\" };</p><p>  }</p><p>  const targetUuids = getTargetUuids();</p><p>  if (!targetUuids.length) {</p><p>    console.warn(TAG, \"No saved targets found. Stop activation penalty skipped.\");</p><p>    return { ok: false, reason: \"no-targets\" };</p><p>  }</p><p>  const results = [];</p><p>  for (const targetUuid of targetUuids) {</p><p>    const { actor: targetActor, tokenDoc } = await resolveActorAndToken(targetUuid);</p><p>    if (!targetActor) {</p><p>      console.warn(TAG, \"Could not resolve target actor.\", { targetUuid });</p><p>      results.push({</p><p>        targetUuid,</p><p>        ok: false,</p><p>        reason: \"target-actor-not-found\"</p><p>      });</p><p>      continue;</p><p>    }</p><p>    const hitInfo = isHitTarget(targetUuid, targetActor, tokenDoc);</p><p>    console.log(TAG, \"Stop hit check.\", {</p><p>      target: targetActor.name,</p><p>      targetUuid,</p><p>      hit: hitInfo.hit,</p><p>      reason: hitInfo.reason,</p><p>      accTotal: hitInfo.accTotal,</p><p>      defenseUsed: hitInfo.defenseUsed,</p><p>      hasAccuracy: hitInfo.hasAccuracy,</p><p>      explicitForceMiss: hitInfo.explicitForceMiss,</p><p>      explicitAutoHit: hitInfo.explicitAutoHit</p><p>    });</p><p>    if (!hitInfo.hit) {</p><p>      results.push({</p><p>        targetUuid,</p><p>        targetName: targetActor.name,</p><p>        ok: true,</p><p>        skipped: true,</p><p>        reason: \"miss\",</p><p>        hitInfo</p><p>      });</p><p>      continue;</p><p>    }</p><p>    const combatant = findCombatantForActorOrToken(combat, targetActor, tokenDoc);</p><p>    if (!combatant) {</p><p>      console.warn(TAG, \"Could not find target combatant in current combat.\", {</p><p>        target: targetActor.name,</p><p>        targetUuid,</p><p>        actorUuid: targetActor.uuid,</p><p>        tokenUuid: tokenDoc?.uuid ?? null</p><p>      });</p><p>      results.push({</p><p>        targetUuid,</p><p>        targetName: targetActor.name,</p><p>        ok: false,</p><p>        reason: \"target-combatant-not-found\"</p><p>      });</p><p>      continue;</p><p>    }</p><p>    const result = await applyStopToCombatant(combat, combatant, targetActor, tokenDoc);</p><p>    results.push({</p><p>      targetUuid,</p><p>      targetName: targetActor.name,</p><p>      hitInfo,</p><p>      ...result</p><p>    });</p><p>  }</p><p>  const appliedCount = results.filter(r =&gt; r?.applied).length;</p><p>  const missCount = results.filter(r =&gt; r?.reason === \"miss\").length;</p><p>  console.log(TAG, \"Stop resolution complete.\", {</p><p>    appliedCount,</p><p>    missCount,</p><p>    results</p><p>  });</p><p>  return {</p><p>    ok: true,</p><p>    appliedCount,</p><p>    missCount,</p><p>    results</p><p>  };</p><p>}</p><p>// ─────────────────────────────────────────────────────────────</p><p>// Permission assurance / GM authority bridge</p><p>// ─────────────────────────────────────────────────────────────</p><p>const TAG = \"[CL-RES][Stop][Authority]\";</p><p>const MODULE_ID = \"fabula-ultima-companion\";</p><p>const PAYLOAD =</p><p>  (typeof __PAYLOAD !== \"undefined\" &amp;&amp; __PAYLOAD)</p><p>    ? __PAYLOAD</p><p>    : (typeof payload !== \"undefined\" ? payload : null);</p><p>const ARGS =</p><p>  (typeof __ARGS !== \"undefined\" &amp;&amp; __ARGS)</p><p>    ? __ARGS</p><p>    : (typeof args !== \"undefined\" &amp;&amp; args ? args : {});</p><p>const TARGETS =</p><p>  (typeof __TARGETS !== \"undefined\" &amp;&amp; Array.isArray(__TARGETS))</p><p>    ? __TARGETS</p><p>    : (typeof targets !== \"undefined\" &amp;&amp; Array.isArray(targets) ? targets : []);</p><p>const CHAT_MSG =</p><p>  (typeof __CHAT_MSG !== \"undefined\" &amp;&amp; __CHAT_MSG)</p><p>    ? __CHAT_MSG</p><p>    : null;</p><p>if (!PAYLOAD) {</p><p>  console.warn(TAG, \"Missing payload before authority check.\");</p><p>  return { ok: false, reason: \"missing-payload\" };</p><p>}</p><p>PAYLOAD.meta = PAYLOAD.meta || {};</p><p>function mergeInPlace(target, source, { arrayKeys = [] } = {}) {</p><p>  if (!source || typeof source !== \"object\") return target;</p><p>  try {</p><p>    foundry.utils.mergeObject(target, source, {</p><p>      insertKeys: true,</p><p>      insertValues: true,</p><p>      overwrite: true,</p><p>      recursive: true,</p><p>      inplace: true</p><p>    });</p><p>  } catch (e) {</p><p>    console.warn(TAG, \"mergeObject failed; falling back to Object.assign.\", e);</p><p>    Object.assign(target, source);</p><p>  }</p><p>  for (const key of arrayKeys) {</p><p>    if (Array.isArray(source?.[key])) {</p><p>      target[key] = foundry.utils.deepClone(source[key]);</p><p>    }</p><p>  }</p><p>  return target;</p><p>}</p><p>const attackerUuid =</p><p>  PAYLOAD?.meta?.attackerUuid ??</p><p>  PAYLOAD?.attackerActorUuid ??</p><p>  PAYLOAD?.attackerUuid ??</p><p>  ARGS?.attackerUuid ??</p><p>  null;</p><p>if (!game.user?.isGM) {</p><p>  const gmExecutor =</p><p>    game.modules?.get(MODULE_ID)?.api?.GMExecutor ??</p><p>    globalThis.FUCompanion?.api?.GMExecutor ??</p><p>    null;</p><p>  if (!gmExecutor?.executeSnippet) {</p><p>    const msg = \"Stop requires GMExecutor when used by a player client, but GMExecutor is not available.\";</p><p>    console.warn(TAG, msg);</p><p>    ui.notifications?.warn?.(msg);</p><p>    if (ARGS) {</p><p>      ARGS.__abortConfirm = true;</p><p>      ARGS.__abortReason = msg;</p><p>    }</p><p>    PAYLOAD.meta.__abortResolution = true;</p><p>    PAYLOAD.meta.__abortResolutionReason = msg;</p><p>    return { ok: false, reason: \"gm-executor-missing\" };</p><p>  }</p><p>  console.log(TAG, \"Non-GM client detected. Forwarding Stop activation mutation to GMExecutor.\", {</p><p>    user: game.user?.name,</p><p>    attackerUuid,</p><p>    targetsCount: TARGETS.length,</p><p>    chatMsgId: CHAT_MSG?.id ?? null</p><p>  });</p><p>  const authorityScript = `</p><p>const context = env.makeContext(\"resolution\");</p><p>const __runStopAuthorityCore__ = ${__runStopAuthorityCore__.toString()};</p><p>return await __runStopAuthorityCore__();</p><p>  `.trim();</p><p>  const remote = await gmExecutor.executeSnippet({</p><p>    mode: \"resolution\",</p><p>    scriptText: authorityScript,</p><p>    payload: PAYLOAD,</p><p>    args: ARGS,</p><p>    targets: TARGETS,</p><p>    chatMsgId: CHAT_MSG?.id ?? null,</p><p>    actorUuid: attackerUuid,</p><p>    metadata: {</p><p>      origin: \"Stop Custom Logic Resolution\",</p><p>      purpose: \"reduce-target-next-activation\",</p><p>      permissionBridge: true</p><p>    }</p><p>  });</p><p>  console.log(TAG, \"GMExecutor returned.\", {</p><p>    ok: !!remote?.ok,</p><p>    error: remote?.error ?? null,</p><p>    hasPayload: !!remote?.payload,</p><p>    hasArgs: !!remote?.args,</p><p>    resultValue: remote?.resultValue ?? null</p><p>  });</p><p>  if (remote?.payload) {</p><p>    mergeInPlace(PAYLOAD, remote.payload, {</p><p>      arrayKeys: [\"targets\", \"originalTargetUUIDs\", \"originalTargetActorUUIDs\"]</p><p>    });</p><p>  }</p><p>  if (remote?.args) {</p><p>    mergeInPlace(ARGS, remote.args);</p><p>  }</p><p>  if (!remote?.ok) {</p><p>    const msg = String(remote?.error ?? \"Stop GM execution failed.\");</p><p>    console.warn(TAG, msg, remote);</p><p>    if (ARGS) {</p><p>      ARGS.__abortConfirm = true;</p><p>      ARGS.__abortReason = msg;</p><p>    }</p><p>    PAYLOAD.meta.__abortResolution = true;</p><p>    PAYLOAD.meta.__abortResolutionReason = msg;</p><p>    return {</p><p>      ok: false,</p><p>      via: \"gm-executor\",</p><p>      reason: \"gm-executor-failed\",</p><p>      error: msg,</p><p>      stack: String(remote?.stack ?? \"\")</p><p>    };</p><p>  }</p><p>  return {</p><p>    ok: true,</p><p>    via: \"gm-executor\",</p><p>    result: remote?.resultValue ?? null</p><p>  };</p><p>}</p><p>// GM client / GMExecutor authority path.</p><p>return await __runStopAuthorityCore__();</p>",
+          "damage_bonus": "",
+          "defense_target_type": "mdef",
+          "description": "<p>You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn <em>(to a minimum of 0 actions).</em></p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Stop",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "Xf6q7cCeuczSTfXp"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "y6DWYCfOwPnCdZ8j",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398729834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "c8hLZfBF5NC0Xnpe",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Lucky Seven Ready:</em> Lucky Seven is available this scene. Spent when used; refreshes each conflict.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "c8hLZfBF5NC0Xnpe",
+              "originalParentId": "B0rR4DCijW1zC3SY",
+              "originalUuid": "Item.B0rR4DCijW1zC3SY.ActiveEffect.c8hLZfBF5NC0Xnpe"
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "lucky_seven",
+              "charges": 1,
+              "chargesMax": 1
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/control/buff-flight-wings-runes-purple.webp",
+          "name": "Lucky Seven Ready",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-lucky-seven-ready"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Harpy/Draw.webp",
+      "name": "Lucky Seven",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You have a <strong>lucky number</strong>; at the beginning of each session, that number is <strong>7</strong>. </p><p>Once per scene after you perform a Check, you may replace the value shown on one of the dice you rolled with your lucky number <em>(even if this would give an impossible Result, such as a value of 7 on a d6)</em>. </p><p>If you do, the replaced value becomes your <strong>new</strong> lucky number</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Lucky Seven",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "B0rR4DCijW1zC3SY"
       },
       "type": "equippableItem"
     }

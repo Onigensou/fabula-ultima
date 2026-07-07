@@ -543,6 +543,99 @@
       "type": "equippableItem"
     },
     {
+      "_id": "poLLc4NTw5jNuHGK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398888677,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "coreAction": "hinder"
+        }
+      },
+      "folder": null,
+      "img": "icons/svg/net.svg",
+      "name": "Hinder",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "cost": "",
+          "description": "<p>Make an attribute Check against a creature. On a success, it suffers a status of your choice (Dazed, Shaken, Slow, or Weak).</p>",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "status_value",
+              "effect_kind": "open_action_menu",
+              "effect_label": "hinder_menu",
+              "menu_option_colors": "#9b59b6|#5a6a85|#8b5e3c|#c44a2a",
+              "menu_option_descriptions": "Lowers Insight|Lowers Willpower|Lowers Dexterity|Lowers Might",
+              "menu_option_icons": "icons/svg/daze.svg|icons/svg/terror.svg|icons/svg/clockwork.svg|icons/svg/degen.svg",
+              "menu_option_labels": "Dazed|Shaken|Slow|Weak",
+              "menu_option_refs": "hinder_dazed,hinder_shaken,hinder_slow,hinder_weak",
+              "menu_pick_count": 1,
+              "menu_subtitle": "Choose a status to inflict.",
+              "menu_title": "Hinder",
+              "target_ref": "action_targets"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Dazed",
+              "effect_kind": "apply_ae",
+              "effect_label": "hinder_dazed",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Shaken",
+              "effect_kind": "apply_ae",
+              "effect_label": "hinder_shaken",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Slow",
+              "effect_kind": "apply_ae",
+              "effect_label": "hinder_slow",
+              "target_ref": "action_targets"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Weak",
+              "effect_kind": "apply_ae",
+              "effect_label": "hinder_weak",
+              "target_ref": "action_targets"
+            }
+          },
+          "isCheck": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hinder",
+          "on_activate_effect_ref": "hinder_menu",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "skill_target": "One Enemy",
+          "skill_type": "Active"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "FjwC9WmxPnKYDT3C"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "QzpMOHzIwpvsnYxy",
       "_stats": {
         "compendiumSource": "Item.hyeTHYWrH4Vfey3j",
@@ -612,18 +705,18 @@
       "type": "equippableItem"
     },
     {
-      "_id": "TqPnCHodRs3U9hNA",
+      "_id": "u9Opr8xbhegJpjz4",
       "_stats": {
-        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": null,
+        "createdTime": 1783398888677,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "effects": [
         {
-          "_id": "E97n76146OBcbAPs",
+          "_id": "2M7W2v3xzWHcEgKc",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
@@ -632,53 +725,35 @@
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
-          "description": "<p>Decrease 【<strong>DEX】 </strong>by one stage</p>",
+          "changes": [
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeNotEquippedWhen(\"shield,martial_armor\", \"${level}$\")"
+            }
+          ],
+          "description": "<p><em>Dodge:</em> DEF +Level while no shield or martial armor is equipped.</p>",
           "disabled": false,
           "duration": {
             "combat": null,
-            "rounds": 3,
+            "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
           "flags": {
-            "core": {
-              "overlay": false
-            },
             "custom-system-builder": {
               "isFromTemplate": false,
-              "isPredefined": true,
-              "originalId": "h3M2iAUzB26A4zNo",
-              "originalParentId": "XVOWOq9oUmEECGrU",
-              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.h3M2iAUzB26A4zNo"
+              "originalId": "XsRLuiEp3j4D5RZy",
+              "originalParentId": "rFJiRsbiOPPImwdm",
+              "originalUuid": "Item.rFJiRsbiOPPImwdm.ActiveEffect.XsRLuiEp3j4D5RZy"
             },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "ce-slow",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "effectmacro": {
-              "onCreate": {
-                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
-              },
-              "onDelete": {
-                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
-              },
-              "onDisable": {
-                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
-              },
-              "onEnable": {
-                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
-              },
-              "onToggle": {
-                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
-              }
+            "fabula-ultima-companion": {
+              "crossScene": false,
+              "directorPermanent": false
             },
             "statuscounter": {
               "config": {
@@ -689,31 +764,29 @@
               "visible": false
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEF%20DOWN.png",
-          "name": "Slow",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
+          "name": "Dodge",
           "origin": null,
           "sort": 0,
-          "statuses": [
-            "hhqoSNhWfVD4KR7g"
-          ],
+          "statuses": [],
           "system": {
             "tags": [
-              "debuff"
+              "buff"
             ]
           },
           "tint": "#ffffff",
-          "transfer": false,
+          "transfer": true,
           "type": "base"
         }
       ],
       "flags": {
         "custom-system-builder": {
-          "version": "4.8.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/cactguard.png",
-      "name": "Hinder",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
+      "name": "Dodge",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 0
@@ -721,56 +794,48 @@
       "sort": 0,
       "system": {
         "props": {
-          "active_effect_config_table": {
-            "0": {
-              "$deleted": false,
-              "active_effect_application": "add",
-              "active_effect_apply_mode": "opposed_check",
-              "active_effect_dice_1": "dex",
-              "active_effect_dice_2": "ins",
-              "active_effect_dl": "10",
-              "active_effect_id": "E97n76146OBcbAPs",
-              "active_effect_percent": "0",
-              "active_effect_target": "enemy",
-              "active_effect_trigger": "on_attack"
-            }
-          },
+          "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
           "check_bonus": "0",
-          "class": "NPC",
-          "cost": "-",
+          "class": "Rogue",
+          "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>Roll an <strong>【DEX】+【INS】Opposed Check </strong>against the target, on a success, Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></p>",
-          "duration": "instantaneous",
+          "description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+          "duration": "-",
+          "effect_table": {},
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
-          "max_level": "1",
-          "name": "Hinder",
+          "max_level": "3",
+          "name": "Dodge",
+          "on_activate_effect_ref": "",
           "optional_params": {},
+          "passive_logic_action": "",
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
-          "skill_range": "Melee",
-          "skill_target": "One Creature",
-          "skill_type": "Active",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "UKzHkmIJcjXZ4GFR"
+        "unique": true,
+        "uniqueId": "3Un5X30CM2z5J1pl"
       },
       "type": "equippableItem"
     },
@@ -917,68 +982,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "iFdNNGp4OVZVMEcB"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "xxFZQLbXvNOci5az",
-      "_stats": {
-        "compendiumSource": "Item.P4dQ5Ms73YVs9gPv",
-        "coreVersion": "12.343",
-        "createdTime": null,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
-      "name": "Dodge",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": "2OOIXOLXnRUGq9n0",
-        "props": {
-          "active_effect_config_table": {},
-          "check_bonus": "0",
-          "class": "Rogue",
-          "cost": "",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "3",
-          "name": "Dodge",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_mode": "default",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Defense</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>+3</p></td></tr></tbody></table>",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "yHZ9soDXTvalWPGx"
       },
       "type": "equippableItem"
     }

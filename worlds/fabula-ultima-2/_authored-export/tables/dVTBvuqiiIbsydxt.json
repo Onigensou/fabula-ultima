@@ -1,0 +1,338 @@
+{
+  "_id": "dVTBvuqiiIbsydxt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780401258617,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "zmeucMpq8Q0wkkSn",
+  "formula": "1d22",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "The Wyrmwood - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "4aK8vjUaGLUJQaU8",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Centuaros, Inferex",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "6EkH8Cw44n3LA3CJ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Burning Hand, Hellhound",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "arjLKEkuPuKn5rR7",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Fire Slime, Inferex, Fire Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "aZxFej5lo4JRq0Xz",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Pyrefly, Salamander, Dryad",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "bn0Ed2amIpyf42mt",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Centuaros, Hellhound, Salamander",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "BSd8yI8VBtP1l3nY",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Pyrefly, Marigold, Dryad",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "BxCXNxduH5PrtPE3",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Fire Slime, Centuaros, Fire Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "C9WH56CscypA8urT",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Hellhound, Salamander, Marigold",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "eCL2ARCOjp00Uyh4",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Pyrefly, Inferex, Pyrefly",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "gBN5PENaPHF3VT16",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Salamander, Hellhound, Dryad",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ixAOknFmZdfYlBLb",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Burning Hand, Fire Slime, Salamander",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "kZ0BBrtyUvQrRDjp",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Salamander, Dryad, Salamander",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "LxYmVeMMblKEW1sR",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Dryad, Pyrefly, Dryad",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "mtr5UfsKJOvjQCpV",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        22,
+        22
+      ],
+      "text": "Centuaros, Dryad, Marigold",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "nacp6u2roea8K7s8",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Hellhound, Fire Slime, Salamander",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "o2ZBIvxptVhzeSCs",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Pyrefly, Pyrefly, Pyrefly",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "rhjcozcEAVlNG0Nc",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Salamander, Hellhound",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "tdTkkffn80Cf56Kl",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Fire Slime, Fire Slime, Fire Slime, Fire Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "WwHnIJVD02uZU9Kq",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        21,
+        21
+      ],
+      "text": "Inferex, Inferex",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "wxbv70RAo26nu3TI",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Fire Slime, Inferex, Dryad",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "XA8Lprwbl5qyqbGn",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Burning Hand, Salamander",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "xoCECHIf4cDKqPpO",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Salamander, Marigold, Salamander",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

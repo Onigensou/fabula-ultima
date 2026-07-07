@@ -1,0 +1,225 @@
+{
+  "_id": "5XUe06fGWEn90St1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774098036006,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "IxpkbdLoQodYFW6Y",
+  "formula": "1d13",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Bandits Hideout - Consumable",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "6SlFYaOEqhE2lCKa",
+      "documentCollection": "Item",
+      "documentId": "ky7HMdQIZBJxlPqx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Super Tonic",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "a3n1sVFyW29ok5sg",
+      "documentCollection": "Item",
+      "documentId": "wRMiCt8CBlaBSpjE",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Polymorph Potion: Scaldra",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "AG9QpuWBnebwucQ2",
+      "documentCollection": "Item",
+      "documentId": "2dTUIP5vUweRF9ir",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Adrenaline Potion",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "fqPS9YZ2E2i1WaMV",
+      "documentCollection": "Item",
+      "documentId": "S71vgGdSVCmEGWN0",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Decoy Doll",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "hM8UdypTNgoZyj06",
+      "documentCollection": "Item",
+      "documentId": "22zoFt3zhXjelhsX",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Mega-Ether_from_Final_Fantasy_XIV_icon.webp",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Love Potion",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Ot1vm2Aa2qQOiBH5",
+      "documentCollection": "Item",
+      "documentId": "9vM7Xu5q3cj7EFQt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Mega-Remedy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "qvEXSBteyYFuSTAw",
+      "documentCollection": "Item",
+      "documentId": "8O0vKuJVZoIlUWRB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Polymorph Potion: Bandit Berserker",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "RleWR5wVxJiwE5fg",
+      "documentCollection": "Item",
+      "documentId": "aITJntRz2m10Rgeo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Café au Lait",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rpId26pyjhpaZ6Ga",
+      "documentCollection": "Item",
+      "documentId": "5mjgdSB5A2eQKuuq",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Liquid Luck",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "sH1k9V40wlnrXgc5",
+      "documentCollection": "Item",
+      "documentId": "TIeKQs0l9tWaNO0y",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Liquid Hope",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vORZp2XLW0wGx5Xd",
+      "documentCollection": "Item",
+      "documentId": "QXgHt7VEXEaVdPz1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Phoenix_Down_Icon.webp",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Phoenix Feather",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xtVZ7uzQpewWbv3d",
+      "documentCollection": "Item",
+      "documentId": "y61V2VLRAwlVDgcM",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Blue Bovine",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "zdQca9upmFiGdUwm",
+      "documentCollection": "Item",
+      "documentId": "Bx3MdQfxzwneDjfJ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/12360.gif",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Zombie Potion",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

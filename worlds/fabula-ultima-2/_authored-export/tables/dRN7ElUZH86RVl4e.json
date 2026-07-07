@@ -1,0 +1,180 @@
+{
+  "_id": "dRN7ElUZH86RVl4e",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769670352865,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "dfZOIscssH4Tgqd3",
+  "formula": "1d10",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
+  "name": "Vastwind Field - Treasure",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "6HicbCPpI71AG2Be",
+      "documentCollection": "Item",
+      "documentId": "UgwDZq3PayHxEzxQ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Sword/Icon-Astraea_Aurora.webp",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Sword of Exile",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "8is7wL756aG5hEp2",
+      "documentCollection": "Item",
+      "documentId": "SzqIrFxP8JxjsmIK",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Behemoth Horn",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "BbFZuzxnc4JZoKwD",
+      "documentCollection": "Item",
+      "documentId": "Ujk1ocZwtp6B5kuy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bra.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Bikini Armor",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "dNWcyYWIcQqk8NZt",
+      "documentCollection": "Item",
+      "documentId": "yMLrVvxbSK3VK8ol",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Devil%20Tail.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Imp's Tail",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "EP37WTBV9imZy9Wi",
+      "documentCollection": "Item",
+      "documentId": "L7YujoBx3UvUt5LF",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "God Hand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "KqqhZCMDriDBGIBe",
+      "documentCollection": "Item",
+      "documentId": "p1FECXYvpDdf5R5O",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Kagura%27s_Verity.webp",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Banshee Wail",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "mpIhaIbVsJ95d5dl",
+      "documentCollection": "Item",
+      "documentId": "5F5MJOjDM4zVk1cw",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Soul of Pillage",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "QqmKHQRQbSZXtfYE",
+      "documentCollection": "Item",
+      "documentId": "6pUwTZO1peHgSBya",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Elegy_for_the_End.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Lunar Bow",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "qSwtYsd4Is751Ock",
+      "documentCollection": "Item",
+      "documentId": "4OH9H2YYxr9KhhBx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scan.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Defense Matrix",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "TpqXJo6ulrWd6KRg",
+      "documentCollection": "Item",
+      "documentId": "VfrNGC2AkQOY4zKf",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/equipment/chest/robe-layered-white.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Rune Bearer",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

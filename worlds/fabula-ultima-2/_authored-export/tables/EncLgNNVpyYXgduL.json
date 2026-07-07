@@ -1,0 +1,450 @@
+{
+  "_id": "EncLgNNVpyYXgduL",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1748538056635,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "1d29",
+  "img": "icons/svg/d20-grey.svg",
+  "name": "3 Star",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "0yAwH8aFI5iu4aT3",
+      "documentCollection": "Item",
+      "documentId": "pJGT7NB0fQhri3Ji",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral.png",
+      "range": [
+        29,
+        29
+      ],
+      "text": "Golem Fragment",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "2fM7JWugMZgzLTaV",
+      "documentCollection": "Item",
+      "documentId": "zmWvwyaGbwhC8NZV",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        27,
+        27
+      ],
+      "text": "Lipovitan-Z",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "3ToR5BywhwVc5nuF",
+      "documentCollection": "Item",
+      "documentId": "UiSlNZmem32fro7z",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/swords/sword-guard-blue.webp",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Bronze Sword",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "6CD4ZBd1u1SVTpGo",
+      "documentCollection": "Item",
+      "documentId": "ZXaslUkB4sJRWJn3",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/daggers/dagger-black.webp",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Steel Dagger",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "aGplD7WJOeG7fCkb",
+      "documentCollection": "Item",
+      "documentId": "23dQXPmLWKFjpwNt",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/staves/staff-ornate-orb-steel-red.webp",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Staff",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "AIthrMh0uLmfaMFl",
+      "documentCollection": "Item",
+      "documentId": "lFA8OUnVPaXP54FJ",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/hammers/hammer-double-bronze.webp",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Iron Hammer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Dxkn8MKwGkw0AwXo",
+      "documentCollection": "Item",
+      "documentId": "RmpXclOKyB3JyeNO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        21,
+        21
+      ],
+      "text": "Revolver",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "eRCBv6mIfk4jWUR6",
+      "documentCollection": "Item",
+      "documentId": "yG7ujzMR25OgfqcL",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/crossbows/crossbow-purple.webp",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Crossbow",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "EUKATG29uETFusNo",
+      "documentCollection": "Item",
+      "documentId": "b9Xv1EnFJFiD0bS9",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/guns/gun-pistol-flintlock.webp",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Pistol",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "EywE1sMbtjMC3xyi",
+      "documentCollection": "Item",
+      "documentId": "HSqGOczwuAfiN0Od",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        23,
+        23
+      ],
+      "text": "Meteor Star",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "g8juwVmYN66ccsun",
+      "documentCollection": "Item",
+      "documentId": "X9SaWakWp1Tl8xPA",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/sundries/books/book-embossed-gold-green.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Tome",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "gfkqt8cWvF2otfp8",
+      "documentCollection": "Item",
+      "documentId": "L3owxXiLOWanhiQf",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Longsword",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "hrwKxZpWObEbN2gX",
+      "documentCollection": "Item",
+      "documentId": "f2INoUT0zpIucUrn",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        22,
+        22
+      ],
+      "text": "Zweihander",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "J6oC1U0IRCyzxrhE",
+      "documentCollection": "Item",
+      "documentId": "1p00ZSQnl4RwuxnI",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/axes/axe-double-black.webp",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Waraxe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "jniQnUrCGhDaX7za",
+      "documentCollection": "Item",
+      "documentId": "y61V2VLRAwlVDgcM",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        25,
+        25
+      ],
+      "text": "Blue Bovine",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "m5TNyEchGN7CYje7",
+      "documentCollection": "Item",
+      "documentId": "2flmzfFbo1y8MCq5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        28,
+        28
+      ],
+      "text": "Pepetein",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "MqwnEb6OQCBu9CCu",
+      "documentCollection": "Item",
+      "documentId": "IeFD9JN0BkcUuOw7",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/fist/claw-leather-black.webp",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Iron Knuckle",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "nQx56ePq3KDhRC7k",
+      "documentCollection": "Item",
+      "documentId": "EBh802k6FWm0Lb8o",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/swords/sword-katana.webp",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Katana",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "nv4v9BqvrHwSYnFj",
+      "documentCollection": "Item",
+      "documentId": "T20cmOrPpY8wNqgw",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/misc/whip-red-yellow.webp",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Chain Whip",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "OtRhHdHDYZdk6Ld4",
+      "documentCollection": "Item",
+      "documentId": "aITJntRz2m10Rgeo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "range": [
+        26,
+        26
+      ],
+      "text": "Café au Lait",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "qBYOJY48Y4VTjU8p",
+      "documentCollection": "Item",
+      "documentId": "tJiWXfzVWVwf6WKJ",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/thrown/shuriken-blue.webp",
+      "range": [
+        24,
+        24
+      ],
+      "text": "Shuriken",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "sfTGQmF3LqbLXKwL",
+      "documentCollection": "Item",
+      "documentId": "NVVELKuF4tOR7qcf",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/swords/sword-hilt-steel-green.webp",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Rapier",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "T2u8opV6Ek2t0T8R",
+      "documentCollection": "Item",
+      "documentId": "e0jdBTIQ8BACGIph",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/bows/shortbow-recurve-red.webp",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Shortbow",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uBs7JxOyOEq6Qono",
+      "documentCollection": "Item",
+      "documentId": "brLS5rRjAwIpnL8z",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/polearms/halberd-crescent-small-spiked.webp",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Heavy Spear",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uSNdTYEwoKwUHXPP",
+      "documentCollection": "Item",
+      "documentId": "QcnUOdXfoPx8s60p",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/axes/axe-battle-black.webp",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Broadaxe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "V9L17AT75DetB3qc",
+      "documentCollection": "Item",
+      "documentId": "0DvCABhRapTc4nFR",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/swords/greatsword-guard-gold-worn.webp",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Greatsword",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "X9Hj2vFcrccNX4tC",
+      "documentCollection": "Item",
+      "documentId": "1ebDiGGj6CbtftRI",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Nekode",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "z5VGjDhCcmZfI3Sn",
+      "documentCollection": "Item",
+      "documentId": "lwiRyGVkk7Y9NruJ",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/weapons/polearms/glaive-simple.webp",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Light Spear",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 100000
+}

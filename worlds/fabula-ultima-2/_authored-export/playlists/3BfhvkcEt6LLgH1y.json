@@ -1,0 +1,79 @@
+{
+  "_id": "3BfhvkcEt6LLgH1y",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747696078707,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "channel": "environment",
+  "description": "",
+  "fade": null,
+  "flags": {
+    "monks-sound-enhancements": {
+      "hide-playlist": false
+    }
+  },
+  "folder": "otziXYde7WVivcBZ",
+  "mode": 0,
+  "name": "ambient",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "seed": 870,
+  "sort": 0,
+  "sorting": "a",
+  "sounds": [
+    {
+      "_id": "e76K3qNZNHxCj9yH",
+      "channel": "environment",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "sea_wave",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Sea%20Waves%20-%20Sound%20Effect.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.59
+    },
+    {
+      "_id": "eOCLXaRSStdoOGoz",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Restuarant",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Restaurant%20Ambience%20_%20Sound%20Effect%20(Copyright%20Free).mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.59
+    },
+    {
+      "_id": "T7Yl06kCk8Thvkeh",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Engine room",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/86%20Spaceship%20Engine%20Room%20Ambience.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 1
+    }
+  ]
+}

@@ -1,0 +1,335 @@
+{
+  "_id": "VrpdABUTSoREMDR5",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1765673862201,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "channel": "music",
+  "description": "",
+  "fade": null,
+  "flags": {
+    "monks-sound-enhancements": {
+      "hide-playlist": false
+    }
+  },
+  "folder": "sK5ygcug2LQ6JXfi",
+  "mode": -1,
+  "name": "The Legend of Dragonslayer",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "seed": 124,
+  "sort": 0,
+  "sorting": "a",
+  "sounds": [
+    {
+      "_id": "3iyVwTQ7wOmOzsmr",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Valley_of_the_Dragon",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Valley_of_the_Dragon.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "4HnaHIwbub49z10X",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "HARD_DRIVE",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/HARD_DRIVE.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.35
+    },
+    {
+      "_id": "91qaTZDGY1rU5wUR",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Vastwind_Field",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Vastwind_Field.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "BR2cnoyk48unTodY",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Eisendrache_Castle",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Eisendrache_Castle.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "bRwF4cRomUEDiGFF",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "DRG_Gacha",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/DRG_Gacha.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "G7YMGjDtEfqDEV0I",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "DRG_Title",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Dragonslayer_Title.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.03
+    },
+    {
+      "_id": "IXTUKB7kXjMWUEZd",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Ancient_Path",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Ancient_Path.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.3
+    },
+    {
+      "_id": "l6vviXPgQkuOdLkt",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Eisendrache_City",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Eisendrache_City.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "mhjFx9J1oegXYHdt",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "The_Wyrmwood",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/The_Wyrmwood.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "mQZsYO0giqEz2YD2",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Ancient_Path",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Ancient_Path.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "oKpkOR6xSBQW1VQ4",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "DRG_Victory",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/DRG_Victory.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "qBJH1ti0uQtMFcfE",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "DRG_Boss",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/DRG_Boss.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "qlN5Y7GJRVbEo64h",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "DRG_Battle",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/DRG_Battle.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "QrCUX9Y3ws62QVkD",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Love_Serenade",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Love_Serenade.mp3",
+      "repeat": false,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "qzLaKIEvT5jg0nfd",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "DRG_Colloseum",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/DRG_ColloseumBattle.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.3
+    },
+    {
+      "_id": "SJqg1HmWud4pY2NP",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Draconic Battle",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Draconic_Battle.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "vyVuGM4efiSspcNy",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Wagon_Ride",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Wagon_Ride.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.3
+    },
+    {
+      "_id": "XWrEwaBTIwJqtuNb",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Ruhig_Village",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Ruhig_Village.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.06
+    },
+    {
+      "_id": "Y4miqa6kvPgagSnU",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "DRG_WorldMap",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/DRG_WorldMap.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    }
+  ]
+}

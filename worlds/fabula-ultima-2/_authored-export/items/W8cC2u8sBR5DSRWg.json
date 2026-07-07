@@ -67,7 +67,6 @@
       "beast_ef": "100",
       "category": "Brawling",
       "celestial_ef": "100",
-      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "5",
@@ -75,24 +74,6 @@
       "demon_ef": "100",
       "description": "<ul>\n<li>This weapon deals&nbsp;<strong>5&nbsp;</strong>bonus damage for&nbsp;<strong>each&nbsp;</strong>enemy in the scene</li>\n</ul>",
       "dragon_ef": "100",
-      "effect_table": {
-        "0": {
-          "$deleted": false,
-          "accuracy_amount": "min(STATUS_COUNT, 3)",
-          "accuracy_operation": "add",
-          "effect_kind": "adjust_accuracy",
-          "effect_label": "adv_acc"
-        },
-        "1": {
-          "$deleted": false,
-          "damage_amount": "min(STATUS_COUNT * 2, 6)",
-          "damage_operation": "add",
-          "damage_stage": "outgoing",
-          "effect_kind": "adjust_damage",
-          "effect_label": "adv_dmg",
-          "target_ref": ""
-        }
-      },
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",
@@ -103,15 +84,12 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "id": "W8cC2u8sBR5DSRWg",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
       "isKey": false,
       "isMartial": false,
       "isModule": false,
-      "isReaction": true,
       "isRelatedItem": false,
       "isSet": false,
       "isUnique": false,
@@ -122,44 +100,32 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Rare",
+      "item_skill_passive": {
+        "l4iakcTTuEciUMsp": {
+          "id": "${item.id}",
+          "name": "Adversity (gear skill)",
+          "skill_cost": "",
+          "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "skill_maxLevel": "",
+          "uuid": "Item.l4iakcTTuEciUMsp"
+        }
+      },
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
       "name": "Adversity",
       "optional_params": {},
-      "passive_check_bonus_formula": "",
-      "passive_damage_bonus_formula": "",
       "plant_ef": "100",
-      "reaction_config_table": {
-        "0": {
-          "$deleted": false,
-          "condition_formula": "STATUS_COUNT > 0",
-          "reaction_action_kind": "Attack,Spell,Skill",
-          "reaction_damage_amount": "",
-          "reaction_damage_type": "",
-          "reaction_effect_ref": "adv_acc",
-          "reaction_passive_mode": "on",
-          "reaction_passive_target": "self",
-          "reaction_source": "self",
-          "reaction_source_skill": "",
-          "reaction_trigger": "creature_performs_action"
-        },
-        "1": {
-          "$deleted": false,
-          "condition_formula": "STATUS_COUNT > 0 && DAMAGE_IS_HP == 1",
-          "reaction_action_kind": "",
-          "reaction_damage_amount": "",
-          "reaction_damage_type": "",
-          "reaction_effect_ref": "adv_dmg",
-          "reaction_passive_mode": "on",
-          "reaction_passive_target": "self",
-          "reaction_source": "self",
-          "reaction_source_skill": "",
-          "reaction_trigger": "creature_will_deal_damage"
-        }
-      },
       "refine_count": "0",
       "refine_level": "0",
+      "related_item_list": {
+        "l4iakcTTuEciUMsp": {
+          "id": "${item.id}",
+          "name": "Adversity (gear skill)",
+          "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "uuid": "Item.l4iakcTTuEciUMsp"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "MIG",
@@ -169,7 +135,6 @@
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
-      "uuid": "Item.W8cC2u8sBR5DSRWg",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },

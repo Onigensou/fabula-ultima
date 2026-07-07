@@ -243,6 +243,84 @@
       "type": "equippableItem"
     },
     {
+      "_id": "ApdLDvMvZf1Dnapu",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398764678,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/AishaS9.png",
+      "name": "Glacies",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "10 x T MP",
+          "damage_bonus": "15",
+          "defense_target_type": "def",
+          "description": "<p>You coat your foes under a thick layer of frost. Each target hit by this spell suffers <strong>【HR + 15】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Slow",
+              "condition_formula": "CRIT == 1",
+              "effect_kind": "apply_ae",
+              "effect_label": "glacies_opportunity",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Glacies",
+          "on_activate_effect_ref": "glacies_opportunity",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
+          "type_damage": "Ice",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "5FJroVCi4rjKmXQO"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "BDcLXTjqoFTyuQ5L",
       "_stats": {
         "compendiumSource": "Item.6fN45LX3i4bmqIFY",
@@ -454,11 +532,11 @@
       "type": "equippableItem"
     },
     {
-      "_id": "FZmAZfNmuEUQdY4k",
+      "_id": "EWIux9kAEHLu74R2",
       "_stats": {
-        "compendiumSource": "Item.oyoBGiPAlNfKoQc9",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148680576,
+        "createdTime": 1783398764678,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -468,12 +546,12 @@
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EM.png",
-      "name": "Elemental Shroud",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enhanced_sharpcast_II.png",
+      "name": "Elemental Magic",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
@@ -481,36 +559,37 @@
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Elementalist",
-          "cost": "5 x T MP",
+          "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>You weave magical energy and protect the targets from the fury of the elements. Choose a damage type: <strong>air, bolt, earth, fire or ice</strong>. Until this spell ends, each target gains Resistance against the chosen damage type.</p>",
-          "duration": "Scene",
+          "description": "<p>Each time you acquire this Skill, learn one Elementalist spell <em>(see Facet)</em>. </p><p><strong>【⚡Offensive Elementalist spells】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "duration": "",
           "heroic_requirement": "",
           "isCheck": false,
-          "isFacet": true,
+          "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
           "level": "1",
-          "max_level": "1",
-          "name": "Elemental Shroud",
+          "max_level": "10",
+          "name": "Elemental Magic",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
-          "skill_range": "Range",
-          "skill_target": "Up to three creatures",
-          "skill_type": "Spell",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "oyoBGiPAlNfKoQc9"
+        "uniqueId": "oqJkRZfgQD6frXjZ"
       },
       "type": "equippableItem"
     },
@@ -576,63 +655,975 @@
       "type": "equippableItem"
     },
     {
-      "_id": "Hj9CviuBJyg7jB30",
+      "_id": "IcKXfmVQ8wsO0umm",
       "_stats": {
-        "compendiumSource": "Item.i7XP3i8a8GM70yCF",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148680576,
+        "createdTime": 1783398764678,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "59y1KOVICharAnZO",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "59y1KOVICharAnZO",
+              "originalParentId": "UF9js71VGFE9jB93",
+              "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.59y1KOVICharAnZO"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/fire/barrier-wall-flame-ring-yellow.webp",
+          "name": "Elemental Shroud (Fire)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-shroud-fire"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "e0N8wokGcstyoZDw",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_2",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "e0N8wokGcstyoZDw",
+              "originalParentId": "UF9js71VGFE9jB93",
+              "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.e0N8wokGcstyoZDw"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/air/wind-vortex-swirl-blue.webp",
+          "name": "Elemental Shroud (Air)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-shroud-air"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "FmqepRBudo13YUdZ",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_7",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "FmqepRBudo13YUdZ",
+              "originalParentId": "UF9js71VGFE9jB93",
+              "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.FmqepRBudo13YUdZ"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/water/barrier-ice-crystal-wall-jagged-blue.webp",
+          "name": "Elemental Shroud (Ice)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-shroud-ice"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "n4UwdPgPGde4aHbe",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_5",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "n4UwdPgPGde4aHbe",
+              "originalParentId": "UF9js71VGFE9jB93",
+              "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.n4UwdPgPGde4aHbe"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/earth/barrier-stone-explosion-debris.webp",
+          "name": "Elemental Shroud (Earth)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-shroud-earth"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "OCqoOMT9jSKApPXR",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "OCqoOMT9jSKApPXR",
+              "originalParentId": "UF9js71VGFE9jB93",
+              "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.OCqoOMT9jSKApPXR"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Shroud (Bolt)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-shroud-bolt"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enhanced_sharpcast_II.png",
-      "name": "Elemental Magic",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EM.png",
+      "name": "Elemental Shroud",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
         "props": {
           "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Elementalist",
-          "cost": "",
-          "damage_bonus": "0",
+          "cost": "5 x T MP",
+          "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>Each time you acquire this Skill, learn one Elementalist spell <em>(see Facet)</em>. </p><p><strong>【⚡Offensive Elementalist spells】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
-          "duration": "",
+          "description": "<p>You weave magical energy and protect the targets from the fury of the elements. Choose a damage type: <strong>air, bolt, earth, fire or ice</strong>. Until this spell ends, each target gains Resistance against the chosen damage type.</p>",
+          "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "open_action_menu",
+              "effect_label": "shroud_pick",
+              "menu_option_labels": "Air | Bolt | Earth | Fire | Ice",
+              "menu_option_refs": "shroud_air, shroud_bolt, shroud_earth, shroud_fire, shroud_ice",
+              "menu_subtitle": "Targets gain Resistance to the chosen damage type.",
+              "menu_title": "Elemental Shroud: choose an element"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
+              "ae_template_ref": "Elemental Shroud (Air)",
+              "effect_kind": "apply_ae",
+              "effect_label": "shroud_air",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
+              "ae_template_ref": "Elemental Shroud (Bolt)",
+              "effect_kind": "apply_ae",
+              "effect_label": "shroud_bolt",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
+              "ae_template_ref": "Elemental Shroud (Earth)",
+              "effect_kind": "apply_ae",
+              "effect_label": "shroud_earth",
+              "target_ref": "action_targets"
+            },
+            "4": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
+              "ae_template_ref": "Elemental Shroud (Fire)",
+              "effect_kind": "apply_ae",
+              "effect_label": "shroud_fire",
+              "target_ref": "action_targets"
+            },
+            "5": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
+              "ae_template_ref": "Elemental Shroud (Ice)",
+              "effect_kind": "apply_ae",
+              "effect_label": "shroud_ice",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
-          "isFacet": false,
+          "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
           "level": "1",
-          "max_level": "10",
-          "name": "Elemental Magic",
+          "max_level": "1",
+          "name": "Elemental Shroud",
+          "on_activate_effect_ref": "shroud_pick",
           "optional_params": {},
+          "pre_activate_effect_ref": "shroud_pick",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Other",
+          "skill_range": "Range",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "i7XP3i8a8GM70yCF"
+        "uniqueId": "UF9js71VGFE9jB93"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "IXJKBzdF99u2Uts4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398764678,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "9bHjqNn1lRnoiN9E",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Fire"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Fire damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "S119a4YHctInL77I",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.S119a4YHctInL77I"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Fire)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-fire"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "f2Z4rqY2cfe4D4Yo",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Bolt"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Bolt damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "4AlszqrfZgHsO8aw",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.4AlszqrfZgHsO8aw"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Bolt)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-bolt"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "inV1B7J8Dl45Pnxp",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Air"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Air damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "BW8q9RVaXE2rw2gY",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.BW8q9RVaXE2rw2gY"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Air)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-air"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "kgPsq7Ak107ZPsnl",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Ice"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Ice damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Dj7JaA6k08sH0vGE",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.Dj7JaA6k08sH0vGE"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Ice)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-ice"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "VJkTBgNjMWE8H6H4",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Earth"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Earth damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "mdblqbxkXqK2NP7x",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.mdblqbxkXqK2NP7x"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Earth)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-earth"
+          ],
+          "system": {
+            "tags": [
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+      "name": "Elemental Weapon",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "10 MP",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>You imbue a weapon with elemental energy. Choose a damage type: <strong>air, bolt, earth, fire, or ice.</strong> Until this spell ends, all damage dealt by the weapon becomes of the chosen damage type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p><p> This spell can only be cast on a weapon equipped by a willing creature</p>",
+          "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "open_action_menu",
+              "effect_label": "ew_menu",
+              "menu_option_labels": "Air|Bolt|Earth|Fire|Ice",
+              "menu_option_refs": "ew_air, ew_bolt, ew_earth, ew_fire, ew_ice",
+              "menu_subtitle": "Choose a damage type to imbue the weapon with.",
+              "menu_title": "Elemental Weapon"
+            },
+            "1": {
+              "$deleted": false,
+              "chain_steps": "ew_ae_air, ew_free",
+              "effect_kind": "chain",
+              "effect_label": "ew_air"
+            },
+            "2": {
+              "$deleted": false,
+              "chain_steps": "ew_ae_bolt, ew_free",
+              "effect_kind": "chain",
+              "effect_label": "ew_bolt"
+            },
+            "3": {
+              "$deleted": false,
+              "chain_steps": "ew_ae_earth, ew_free",
+              "effect_kind": "chain",
+              "effect_label": "ew_earth"
+            },
+            "4": {
+              "$deleted": false,
+              "chain_steps": "ew_ae_fire, ew_free",
+              "effect_kind": "chain",
+              "effect_label": "ew_fire"
+            },
+            "5": {
+              "$deleted": false,
+              "chain_steps": "ew_ae_ice, ew_free",
+              "effect_kind": "chain",
+              "effect_label": "ew_ice"
+            },
+            "6": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-weapon",
+              "ae_template_ref": "Elemental Weapon (Air)",
+              "effect_kind": "apply_ae",
+              "effect_label": "ew_ae_air",
+              "target_ref": "action_targets"
+            },
+            "7": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-weapon",
+              "ae_template_ref": "Elemental Weapon (Bolt)",
+              "effect_kind": "apply_ae",
+              "effect_label": "ew_ae_bolt",
+              "target_ref": "action_targets"
+            },
+            "8": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-weapon",
+              "ae_template_ref": "Elemental Weapon (Earth)",
+              "effect_kind": "apply_ae",
+              "effect_label": "ew_ae_earth",
+              "target_ref": "action_targets"
+            },
+            "9": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-weapon",
+              "ae_template_ref": "Elemental Weapon (Fire)",
+              "effect_kind": "apply_ae",
+              "effect_label": "ew_ae_fire",
+              "target_ref": "action_targets"
+            },
+            "10": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-weapon",
+              "ae_template_ref": "Elemental Weapon (Ice)",
+              "effect_kind": "apply_ae",
+              "effect_label": "ew_ae_ice",
+              "target_ref": "action_targets"
+            },
+            "11": {
+              "$deleted": false,
+              "allowed_types": "Attack",
+              "condition_formula": "ACTION_TARGETS_SELF == 1",
+              "effect_kind": "open_action_menu",
+              "effect_label": "ew_free",
+              "free_mode": true
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Elemental Weapon",
+          "on_activate_effect_ref": "ew_menu",
+          "optional_params": {},
+          "pre_activate_effect_ref": "ew_menu",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Weapon",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "HhAK0qzO2jmsk0RX"
       },
       "type": "equippableItem"
     },
@@ -721,6 +1712,133 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "xkeIviw9s7Ri1Vm4"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "lJIXYDuFxvMcqLiS",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398764678,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "tkVZovM7vBPTmufF",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "check_mod_magic",
+              "mode": 2,
+              "priority": 1,
+              "value": "${hasWeapon(\"arcane\") ? level * 2 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "tkVZovM7vBPTmufF",
+              "originalParentId": "QBLyfikwHBnhhcGf",
+              "originalUuid": "Item.QBLyfikwHBnhhcGf.ActiveEffect.tkVZovM7vBPTmufF"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enochian.png",
+          "name": "Magical Artillery",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enochian.png",
+      "name": "Magical Artillery",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>When you cast an <strong>【⚡Offensive Spell】</strong>, if you have an <strong>arcane</strong> weapon equipped, you gain a bonus to your Magic Check equal to <strong>【SL × 2】</strong></p>",
+          "duration": "",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Magical Artillery",
+          "optional_params": {},
+          "passive_logic_action": "",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "QBLyfikwHBnhhcGf"
       },
       "type": "equippableItem"
     },
@@ -908,11 +2026,11 @@
       "type": "equippableItem"
     },
     {
-      "_id": "pFFuDIJqZDJ0jK88",
+      "_id": "P98zB8uIntBh8Drk",
       "_stats": {
-        "compendiumSource": "Item.O5uVGKRfZCS4ufTp",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148680576,
+        "createdTime": 1783398764678,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -922,73 +2040,12 @@
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enochian.png",
-      "name": "Magical Artillery",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "check_bonus": "0",
-          "class": "Elementalist",
-          "cost": "",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>When you cast an <strong>【⚡Offensive Spell】</strong>, if you have an <strong>arcane</strong> weapon equipped, you gain a bonus to your Magic Check equal to <strong>【SL × 2】</strong></p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "3",
-          "name": "Magical Artillery",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "O5uVGKRfZCS4ufTp"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "pvKB32Zd5UOpWSI2",
-      "_stats": {
-        "compendiumSource": "Item.UCGtDYsRkyH4IqBs",
-        "coreVersion": "12.343",
-        "createdTime": 1783148680576,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/paradox.png",
       "name": "Cataclysm",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
@@ -1001,6 +2058,99 @@
           "defense_target_type": "def",
           "description": "<p>When you cast an <strong>instantaneous</strong> spell, if you have an <strong>arcane</strong> weapon equipped, <strong>you may increase the spell's total MP cost</strong> by up to <strong>【SL × 10】</strong> Mind Points. If you do so and the spell deals damage to one or more creatures, it will deal 5 extra damage to each creature for every 10 Mind Points by which you increased its total MP cost.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "cat_prompt, cat_mp, cat_dmg",
+              "effect_kind": "chain",
+              "effect_label": "cat_root",
+              "menu_option_descriptions": "Spend 10 MP for +5 damage to each creature|Spend 20 MP for +10 damage to each creature|Spend 30 MP for +15 damage to each creature",
+              "menu_option_labels": "+10 MP → +5 damage|+20 MP → +10 damage|+30 MP → +15 damage",
+              "menu_option_refs": "cat_10, cat_20, cat_30",
+              "menu_subtitle": "Increase the spell's MP cost for extra damage",
+              "menu_title": "Cataclysm — Overcharge"
+            },
+            "1": {
+              "$deleted": false,
+              "chain_steps": "cat_10_mp, cat_10_dmg",
+              "condition_formula": "SL >= 1 && CUR_MP >= ACTION_MP_COST + 10",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "prompt_number",
+              "effect_label": "cat_prompt",
+              "prompt_label": "Overcharge: increase MP cost (+5 damage per 10 MP)",
+              "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor((CUR_MP - ACTION_MP_COST)/10)*10 )",
+              "prompt_min": "10",
+              "prompt_step": "10",
+              "prompt_var": "overcharge"
+            },
+            "2": {
+              "$deleted": false,
+              "cost_amount": "VAR_OVERCHARGE",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_mp"
+            },
+            "3": {
+              "$deleted": false,
+              "damage_amount": "VAR_OVERCHARGE / 2",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_dmg"
+            },
+            "4": {
+              "$deleted": false,
+              "chain_steps": "cat_20_mp, cat_20_dmg",
+              "condition_formula": "SL >= 2 && CUR_MP >= ACTION_MP_COST + 20",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "chain",
+              "effect_label": "cat_20"
+            },
+            "5": {
+              "$deleted": false,
+              "cost_amount": "20",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_20_mp"
+            },
+            "6": {
+              "$deleted": false,
+              "damage_amount": "10",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_20_dmg"
+            },
+            "7": {
+              "$deleted": false,
+              "chain_steps": "cat_30_mp, cat_30_dmg",
+              "condition_formula": "SL >= 3 && CUR_MP >= ACTION_MP_COST + 30",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "chain",
+              "effect_label": "cat_30"
+            },
+            "8": {
+              "$deleted": false,
+              "cost_amount": "30",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_30_mp"
+            },
+            "9": {
+              "$deleted": false,
+              "damage_amount": "15",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_30_dmg"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
@@ -1011,6 +2161,16 @@
           "max_level": "3",
           "name": "Cataclysm",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_MP_COST + 10",
+              "reaction_effect_ref": "cat_root",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -1025,7 +2185,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "UCGtDYsRkyH4IqBs"
+        "uniqueId": "7oG8YvRYQBQAU025"
       },
       "type": "equippableItem"
     },
@@ -1087,67 +2247,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "oB6zQngnzWyl3VLx"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "rGlyJg4IVY5rBQ40",
-      "_stats": {
-        "compendiumSource": "Item.97wep1as6JfhC3M3",
-        "coreVersion": "12.343",
-        "createdTime": 1783148680576,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
-      "name": "Elemental Weapon",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "check_bonus": "0",
-          "class": "Elementalist",
-          "cost": "10 MP",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>You imbue a weapon with elemental energy. Choose a damage type: <strong>air, bolt, earth, fire, or ice.</strong> Until this spell ends, all damage dealt by the weapon becomes of the chosen damage type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p><p> This spell can only be cast on a weapon equipped by a willing creature</p>",
-          "duration": "Scene",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Elemental Weapon",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Range",
-          "skill_target": "One Weapon",
-          "skill_type": "Spell",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "97wep1as6JfhC3M3"
       },
       "type": "equippableItem"
     },
@@ -1242,11 +2341,11 @@
       "type": "equippableItem"
     },
     {
-      "_id": "UGDXnRio7QNDg0Dr",
+      "_id": "wdWcqt6ciHgNMiRI",
       "_stats": {
-        "compendiumSource": "Item.YxXwy2Giyln0kuLT",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148680576,
+        "createdTime": 1783398764678,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1256,41 +2355,46 @@
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/AishaS9.png",
-      "name": "Glacies",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans6.png",
+      "name": "Iceberg",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
         "props": {
           "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Elementalist",
-          "cost": "10 x T MP",
-          "damage_bonus": "15",
+          "cost": "20 MP",
+          "damage_bonus": "25",
           "defense_target_type": "def",
-          "description": "<p>You coat your foes under a thick layer of frost. Each target hit by this spell suffers <strong>【HR + 15】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></p>",
+          "description": "<p>A pillar of ice magic envelops your foe, suddenly dropping their body temperature to a critical level. The target suffers <strong>【HR + 25】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage. </p><p>Damage dealt by this spell ignores Resistances.</p>",
           "duration": "Instantaneous",
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": true,
           "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Glacies",
+          "name": "Iceberg",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
-          "skill_target": "Up to three creatures",
+          "skill_target": "One creature",
           "skill_type": "Spell",
           "type_damage": "Ice",
           "use_optional_params": false
@@ -1298,68 +2402,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "YxXwy2Giyln0kuLT"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "VdvLlgPZAZDekgKi",
-      "_stats": {
-        "compendiumSource": "Item.i7XP3i8a8GM70yCF",
-        "coreVersion": "12.343",
-        "createdTime": 1783148680576,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enhanced_sharpcast_II.png",
-      "name": "Elemental Magic",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "check_bonus": "0",
-          "class": "Elementalist",
-          "cost": "",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>Each time you acquire this Skill, learn one Elementalist spell <em>(see Facet)</em>. </p><p><strong>【⚡Offensive Elementalist spells】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "10",
-          "name": "Elemental Magic",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Other",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "i7XP3i8a8GM70yCF"
+        "uniqueId": "VMu0aaKdIoi6qRi2"
       },
       "type": "equippableItem"
     },
@@ -1508,67 +2551,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "EJ8qEpVDNMA0I1fi"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "y6fpovpZsd7e0KXs",
-      "_stats": {
-        "compendiumSource": "Item.ahyRJYDdxMKqhWSm",
-        "coreVersion": "12.343",
-        "createdTime": 1783148680576,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans6.png",
-      "name": "Iceberg",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "check_bonus": "0",
-          "class": "Elementalist",
-          "cost": "20 MP",
-          "damage_bonus": "25",
-          "defense_target_type": "def",
-          "description": "<p>A pillar of ice magic envelops your foe, suddenly dropping their body temperature to a critical level. The target suffers <strong>【HR + 25】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage. </p><p>Damage dealt by this spell ignores Resistances.</p>",
-          "duration": "Instantaneous",
-          "heroic_requirement": "",
-          "isCheck": true,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": true,
-          "isReaction": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Iceberg",
-          "optional_params": {},
-          "rolled_atr1": "INS",
-          "rolled_atr2": "WLP",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Range",
-          "skill_target": "One creature",
-          "skill_type": "Spell",
-          "type_damage": "Ice",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "ahyRJYDdxMKqhWSm"
       },
       "type": "equippableItem"
     }

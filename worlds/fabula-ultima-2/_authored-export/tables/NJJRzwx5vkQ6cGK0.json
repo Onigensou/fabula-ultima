@@ -1,0 +1,24 @@
+{
+  "_id": "NJJRzwx5vkQ6cGK0",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774098035870,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {},
+  "folder": "0TdKzSMtdQ6MKmrI",
+  "formula": "1d1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/exclaim.png",
+  "name": "Bandits Hideout - Clock Event",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "sort": 0
+}

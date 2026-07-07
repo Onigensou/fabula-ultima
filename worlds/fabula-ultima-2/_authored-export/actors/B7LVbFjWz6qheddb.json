@@ -444,6 +444,18 @@
           "max_level": "1",
           "name": "Counterattack",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_action_intent": "harmful",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_hit_by_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_target": "",

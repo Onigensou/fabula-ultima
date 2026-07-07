@@ -1,0 +1,120 @@
+{
+  "_id": "5vK0Z321GuAYlywn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1751896788285,
+    "duplicateSource": "RollTable.nTcCBVqpj1EYIZHY",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "1d6",
+  "img": "icons/svg/d20-grey.svg",
+  "name": "Monster of Frankensteiner",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "0tUXFiljV3fQfIDb",
+      "documentCollection": "Item",
+      "documentId": "nvsyVWdA6cevPiIL",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Twig.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Lightning Rod",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "5vYbrnm87d8rO3NK",
+      "documentCollection": "Item",
+      "documentId": "1RLyAV6Hx7n1PmBb",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suit.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Stitched-Up Jacket",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "edJoEIEqROgkBRcI",
+      "documentCollection": "Item",
+      "documentId": "aPVUpJ1KwspTpUTV",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/SilverBolt.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Silver Bolt",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "GVNOErN0ZgbGn9eY",
+      "documentCollection": "Item",
+      "documentId": "Qzsa8k7cOe3Hnvt9",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Boot.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Thief Boot",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "yOaVvYjN42n2kT7A",
+      "documentCollection": "Item",
+      "documentId": "XUMYmQYoS0onLkkF",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Thief%20Cloths.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Thief Clothes",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Zl9vCHCvPFHb027r",
+      "documentCollection": "Item",
+      "documentId": "etf0rw7s8rlcuXdd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Dagger.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Thief Dagger",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

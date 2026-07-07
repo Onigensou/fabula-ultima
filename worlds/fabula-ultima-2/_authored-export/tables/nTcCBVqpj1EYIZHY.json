@@ -1,0 +1,120 @@
+{
+  "_id": "nTcCBVqpj1EYIZHY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1751896665390,
+    "duplicateSource": "RollTable.cR8fZSJm8nDtoN6v",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "1d6",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Solitude_Blade_%2528Sp.%2529_icon.webp",
+  "name": "Tidal Predator",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "azogwv0njeOBXYo8",
+      "documentCollection": "Item",
+      "documentId": "QZszZdnsM2k8i9FR",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Lord%20Cloth.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Merchant Robe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "JcKRPzXKY3NMsrZ6",
+      "documentCollection": "Item",
+      "documentId": "eCzSEIagUBh1JoRJ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Shark_Costume.png",
+      "range": [
+        9,
+        10
+      ],
+      "text": "Dorsal Fin",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "sGpHEw9WTFDZE3g0",
+      "documentCollection": "Item",
+      "documentId": "atJFfZ7TPLnxFbfq",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Shark_Hat2.png",
+      "range": [
+        7,
+        8
+      ],
+      "text": "Shark Hoodie",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "whbhbSpHi314zldR",
+      "documentCollection": "Item",
+      "documentId": "zI5VtjavzBGg6AbY",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Selachian Fang",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xNmUljRBJsE7y7tJ",
+      "documentCollection": "Item",
+      "documentId": "His63KQSRmc72YE8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GoldenMace.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Golden Mace",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ZlcYLTYJUTXhxohU",
+      "documentCollection": "Item",
+      "documentId": "7VndzEXMV5F56Cpg",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pushcart.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Merchant Cart",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

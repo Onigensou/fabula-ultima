@@ -1,0 +1,24 @@
+{
+  "_id": "CthUDDkpmJYgTTiq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780401258733,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {},
+  "folder": "x6cJsxdbrGK0jW6S",
+  "formula": "1d1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/exclaim.png",
+  "name": "The Wyrmwood - Clock Event",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "sort": 0
+}

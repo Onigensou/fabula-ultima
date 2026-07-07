@@ -68,7 +68,7 @@
       "version": "4.6.4"
     }
   },
-  "folder": "H5HE3g8k3EvxVyvM",
+  "folder": "BxnzCETeAXA07Jko",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/OvermindMaster1.png",
   "name": "Cognitive Focus",
   "ownership": {
@@ -100,9 +100,6 @@
           "effect_kind": "targeting",
           "effect_label": "cf_pick",
           "exclude_self": true,
-          "menu_option_labels": "Focus an ally|Focus a Dazed / Enraged / Shaken enemy",
-          "menu_option_refs": "cf_ally, cf_enemy",
-          "menu_title": "Cognitive Focus",
           "mode": "exact",
           "skip_when_passive": false,
           "target_filter": "IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED + HAS_STATUS_SHAKEN)"
@@ -111,12 +108,8 @@
           "$deleted": false,
           "ae_duplicate_mode": "replace_per_caster",
           "ae_template_ref": "Cognitive Focus",
-          "candidate_source": "combat",
-          "category": "ally",
-          "count": 1,
           "effect_kind": "apply_ae",
           "effect_label": "cf_apply",
-          "mode": "exact",
           "target_ref": "cf_pick"
         },
         "2": {
@@ -147,7 +140,7 @@
       "max_level": "5",
       "name": "Cognitive Focus",
       "optional_params": {},
-      "passive_logic_action": "",
+      "passive_logic_action": "<p>[{\"id\":\"focus-outgoing-bonus\",\"label\":\"Cognitive Focus\",\"when\":{\"all\":[{\"actor\":{\"flagEquals\":{\"ns\":\"oni\",\"key\":\"focus.active\",\"equals\":true}}}]},\"effects\":[{\"type\":\"percent\",\"scope\":\"outgoing\",\"element\":\"all\",\"amount\":0.25}],\"options\":{\"recalcOnConfirm\":\"ifElementUnknown\"}}]</p>",
       "reaction_config_table": {
         "0": {
           "$deleted": false,

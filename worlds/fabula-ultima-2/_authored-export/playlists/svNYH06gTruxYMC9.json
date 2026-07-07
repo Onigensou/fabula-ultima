@@ -1,0 +1,111 @@
+{
+  "_id": "svNYH06gTruxYMC9",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747698295834,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "channel": "music",
+  "description": "",
+  "fade": null,
+  "flags": {
+    "monks-sound-enhancements": {
+      "hide-playlist": false
+    }
+  },
+  "folder": "otziXYde7WVivcBZ",
+  "mode": 0,
+  "name": "battle",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "seed": 160,
+  "sort": 0,
+  "sorting": "a",
+  "sounds": [
+    {
+      "_id": "7dLHsA3eHtW2Owiy",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "battleA3",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Limbus%20Company%20OST%20-%20Canto%20II%20Battle%20Theme%20A2.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.35
+    },
+    {
+      "_id": "8oUptMmRjaJS6VkW",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "battle A2",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Limbus%20Company%20OST%20-%20Canto%20II%20Battle%20Theme%20A2.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "FmsdOUBYcZnFTMNU",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "battle A1",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Limbus%20Company%20OST%20-%20Canto%20III%20Battle%20Theme%20A1.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.3
+    },
+    {
+      "_id": "lcDfioa9z3QfTARS",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Case_closed",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/88.mp3",
+      "repeat": false,
+      "sort": 0,
+      "volume": 0.52
+    },
+    {
+      "_id": "VaC5xs5JPHT5gkPG",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "battle B1",
+      "path": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/Limbus%20Company%20OST%20-%20Canto%20II%20Battle%20Theme%20B1.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.35
+    }
+  ]
+}

@@ -1,0 +1,390 @@
+{
+  "_id": "BzyG1dOrjCiVZmWM",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1769848583738,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "wekTc2cyzuBiU4Up",
+  "formula": "1d24",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
+  "name": "Overworld - Treasure",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "188c3HELJmSIy4GE",
+      "documentCollection": "Item",
+      "documentId": "ya3L6SDkXVKOtrye",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/suit.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Lab Coat",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "2Ig0Khe1cisKYW71",
+      "documentCollection": "Item",
+      "documentId": "tjtUM8dO3pfKbkdN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        23,
+        23
+      ],
+      "text": "Butterfly Dream",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "2PBuGzPzMyZ9ZBTL",
+      "documentCollection": "Item",
+      "documentId": "7ZXppIX7woYU0V8B",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/borb.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Mage Seal",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "3MKtmqvzgI6bGoKU",
+      "documentCollection": "Item",
+      "documentId": "QvUsAoeaebjrKAHi",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Amethyst Pendant",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "6AKvCPzoAGdr7tbp",
+      "documentCollection": "Item",
+      "documentId": "20X49BCE92aGljkm",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Medkit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "7GVuHQbMhbu1V6om",
+      "documentCollection": "Item",
+      "documentId": "6HRY5TyV1hF2Edgh",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Carbon Bow",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "8mIvCwZE1Z6EvNvg",
+      "documentCollection": "Item",
+      "documentId": "QdHwJFHyx9UA2ODu",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Dozer Glove",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "AjPQbPlOfPL9Zf5a",
+      "documentCollection": "Item",
+      "documentId": "zaSYG85NlqVvUAiX",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rod.gif",
+      "range": [
+        13,
+        13
+      ],
+      "text": "White Mage Staff",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ApCHJaHeqUuecRGV",
+      "documentCollection": "Item",
+      "documentId": "40mxu0MfpsS2EOi8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rod.gif",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Caduceus",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "bP2Ht4tUe03TZQbF",
+      "documentCollection": "Item",
+      "documentId": "LQONNyAU5jTsz7m3",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1564.gif",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Icha Icha Paradise",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "bWB9z7wC4EFhJea6",
+      "documentCollection": "Item",
+      "documentId": "48SlaL7ni6ozRo8E",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2443.gif",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Combat Boots",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "F1NjMtEgQuBGWNBI",
+      "documentCollection": "Item",
+      "documentId": "NrUzUjHLW2Id3PJC",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1980.gif",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Morning Star",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "i0VoUqlF3s1SAgdE",
+      "documentCollection": "Item",
+      "documentId": "1VwuTz4dN0o230fN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Elemental Ward",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "J59dXIlF5ylMi365",
+      "documentCollection": "Item",
+      "documentId": "sCrX0Xv40KCLXzGs",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Storm Fist",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "NM1vHlqilxt7UkvC",
+      "documentCollection": "Item",
+      "documentId": "XWOin8GVog4Zeytc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        24,
+        24
+      ],
+      "text": "Pocket Sand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "U1UawdJEkipvm4y4",
+      "documentCollection": "Item",
+      "documentId": "mmHnOv9fk8S2oXR9",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "range": [
+        21,
+        21
+      ],
+      "text": "Giant Fork",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ujH4UXTNYHLIo1Vy",
+      "documentCollection": "Item",
+      "documentId": "4rhCRAfxh2XSlzrg",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        22,
+        22
+      ],
+      "text": "Flesh Eater",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vACZi7Ubw6M8dfHq",
+      "documentCollection": "Item",
+      "documentId": "1432ZQUHr4ZjqUbF",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Bear Paw",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "wOkwBaDvSNW5Z1Xp",
+      "documentCollection": "Item",
+      "documentId": "G8fBxPWSabEzD5V6",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Fairy Tunic",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xtn1Uz9hTBWOfWNg",
+      "documentCollection": "Item",
+      "documentId": "fIOWY27OKlJS8HHX",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Apprentice Mage Robe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ykyXMltQH5ZGPyKN",
+      "documentCollection": "Item",
+      "documentId": "q3AX5ylHljeAnmKj",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/rorb.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Warrior Seal",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ZAbm6Kr2aanIniE1",
+      "documentCollection": "Item",
+      "documentId": "9aAx6ZemtdxpTxUr",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rope.gif",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Salamander",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ZP6MUPNHLFqCjubt",
+      "documentCollection": "Item",
+      "documentId": "cesTpxcSXKfS0qwj",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rod.gif",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Ferula",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "zYcIILbFI0OhuUut",
+      "documentCollection": "Item",
+      "documentId": "tqx7YuLnGXgF2hWi",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Hammer/Icon-Frying_Pan.webp",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Frying Pan",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

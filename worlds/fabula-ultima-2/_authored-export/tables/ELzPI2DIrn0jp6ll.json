@@ -1,0 +1,285 @@
+{
+  "_id": "ELzPI2DIrn0jp6ll",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774098035803,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "ACbjEa7skiKy2L4p",
+  "formula": "1d17",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Bandits Hideout - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "146Qv9qNxfMQSVkN",
+      "documentCollection": "Actor",
+      "documentId": "st3oQSM4TadXLqoZ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/ZombieBandit_Standard.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Bandit Zombie",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "1Z24ibwkJD4vT4VL",
+      "documentCollection": "Actor",
+      "documentId": "qkogIO0dEtQ466Wo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/EliteBandit_Standard.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Elite Bandit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "3LfNdCg2nkStxraK",
+      "documentCollection": "Actor",
+      "documentId": "hwfRiQQSsYK4CdhJ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GoblinBandit_Standard.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Goblin Bandit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "AnuK0ic2PgM7LheU",
+      "documentCollection": "Actor",
+      "documentId": "XFBIZY3EKMHgBQCx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditArcher_Standard.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Bandit Archer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "bEocg5c1k1xdnT3l",
+      "documentCollection": "Actor",
+      "documentId": "vFM6BS58y9mPb7oU",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditScorpion_Standard.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Bandit Scorpion",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "f7UvuItOWprhlIeL",
+      "documentCollection": "Actor",
+      "documentId": "cPdnhK7AEVQG5ohd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jill/Jill_Standard.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "⭐️ Jill",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "iniIsfEC0BAmbFdn",
+      "documentCollection": "Actor",
+      "documentId": "LdevXmJ3bnv0M10v",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditShroom_Standard.png",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Bandit Shroom",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "KzByfgDvVBzOtiER",
+      "documentCollection": "Actor",
+      "documentId": "MhEHMx4BGuLoETa8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Love/Love_Standard.png",
+      "range": [
+        16,
+        16
+      ],
+      "text": "⭐️ Love",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Lve8XMdqGLnSseSo",
+      "documentCollection": "Actor",
+      "documentId": "Ax1nVCBhZOG0ZzHx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditBerserker_Standard.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Bandit Berserker",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "MDLlOQD07puaPOut",
+      "documentCollection": "Actor",
+      "documentId": "kIvWhnszRhsHafWu",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditRoo_Standard.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Bandit Roo",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "MEhe6dej6kebxCyD",
+      "documentCollection": "Actor",
+      "documentId": "bvc69GcUFSRhy6W4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditGolem_Standard.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Bandit Golem",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "mGR6RJnsOe91csFQ",
+      "documentCollection": "Actor",
+      "documentId": "Hu6dRUuxvBLrrdmV",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditWolf_Standard.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Bandit Wolf",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "mNsx1jTXTi0TysBY",
+      "documentCollection": "Actor",
+      "documentId": "o1jFZwDZxSAFSSWA",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Bandit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "mnz4xhPB5C7uuQ75",
+      "documentCollection": "Actor",
+      "documentId": "8nncIhGQAEJ0ABjl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jack/Jack_Standard.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "⭐️ Jack",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rcSlLDUxJ1iMVDSN",
+      "documentCollection": "Actor",
+      "documentId": "ndwgiiXLxsr6lqE0",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditMage_Standard.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Bandit Mage",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "tBonIQTVrW4Xr0nc",
+      "documentCollection": "Actor",
+      "documentId": "XsSf4Z1eAcOanCfv",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Rauber/Rauber_Standard.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "⭐️ Rauben",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "UKYF7Wjt7BbDm6vB",
+      "documentCollection": "Actor",
+      "documentId": "Ax1nVCBhZOG0ZzHx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditBerserker_Standard.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Bandit Berserker",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

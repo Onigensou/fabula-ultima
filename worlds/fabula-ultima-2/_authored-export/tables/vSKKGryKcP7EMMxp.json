@@ -1,0 +1,380 @@
+{
+  "_id": "vSKKGryKcP7EMMxp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774098035768,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "vO8VvrIw13i7CdMM",
+  "formula": "1d29",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Bandits Hideout - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "2esPKYux12qDSm1F",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        22,
+        22
+      ],
+      "text": "Elite Bandit, Bandit Roo, Elite Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "2glAnHFniah0kZ7v",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        24,
+        24
+      ],
+      "text": "Bandit Wolf, Bandit Wolf, Bandit Wolf",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "34Ffmdhscmc1OhJD",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Bandit Wolf, Bandit Shroom, Bandit Scorpion",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "6zhwwQhBjzrKMTJP",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Bandit Scorpion, Bandit Zombie, Bandit Wolf",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "6zx0NvSDbCZ4jF5E",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        25,
+        25
+      ],
+      "text": "Bandit Zombie, Bandit Zombie, Bandit Zombie",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "eQgnvpkKZ9ldRiXf",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Bandit Archer, Bandit Golem, Bandit Archer",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "FdbigrTU4NgwGdKn",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Bandit, Goblin Bandit, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "GqL6BIBEW88EJg8j",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Bandit Berserker, Bandit Berserker",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "gs6XIePXGt7ri7b4",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Bandit Archer, Bandit Berserker, Bandit Mage",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "gsg6Qylq42RoUj1X",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        21,
+        21
+      ],
+      "text": "Goblin Bandit, Bandit Shroom, Bandit Wolf",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Hju0hpuGLia0ARIv",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Bandit, Elite Bandit, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "I0L88OvF9s4ZMrkJ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Goblin Bandit, Goblin Bandit, Goblin Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ibh4rnomxMpS7js4",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Elite Bandit, Bandit Archer, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "J2fY7JbylEpgPxih",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Bandit, Bandit Shroom, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "N1nbu49fpaq8LY0W",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Bandit Scorpion, Bandit Roo, Bandit Shroom",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ochnqJjKHM2jimrb",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Bandit, Bandit Archer, Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "octIrNARQyu1puUv",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Bandit Zombie, Bandit Mage, Bandit Zombie",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Posz5ATvSC7HElVs",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Bandit Archer, Bandit Berserker, Bandit Archer",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "sEmLF0TZtRmnEpvs",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Bandit Zombie, Bandit Zombie, Bandit Zombie",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "TkxaQuGvhKnUAmDQ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        23,
+        23
+      ],
+      "text": "Bandit Shroom, Bandit Scorpion",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "YOFXNaorgBHH21Q1",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Bandit Roo, Bandit Golem, Elite Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "YsHYxG7M7CwJ2kBh",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Bandit Archer, Bandit Berserker, Elite Bandit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ysygKhO6RZfZmqk1",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Bandit Roo, Bandit Roo, Bandit Roo",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "zukzBzV06rMk2M2l",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Bandit Archer, Bandit Wolf, Bandit Archer",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ZW906C0ctRW4C0dX",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Bandit Mage, Bandit Golem, Bandit Mage",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

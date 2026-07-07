@@ -1,0 +1,142 @@
+{
+  "_id": "O9EPpdHKFh9Y4QZu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769663557613,
+    "duplicateSource": "RollTable.oaQ7YbBK9rExOYwH",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "dfZOIscssH4Tgqd3",
+  "formula": "1d15",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+  "name": "Vastwind Field - Item",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "1cK7YGRNfod1FoRG",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        11,
+        13
+      ],
+      "text": "Moderate amount of Supply! (+3 IP)",
+      "type": "text",
+      "weight": 3
+    },
+    {
+      "_id": "jhchaGmHTnm8gXEM",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "A large amount of Supply (+5 IP)",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "LbEGqwvwwjnAYwNo",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        4,
+        5
+      ],
+      "text": "A lot of Supply!(+4 IP)",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "oMjRz2dMSHDewyeu",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Mountains of Supply! (Refill all IP to full)",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "tNHpUJzII16VPNTo",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        1,
+        3
+      ],
+      "text": "A bit of Supply (+2 IP)",
+      "type": "text",
+      "weight": 3
+    },
+    {
+      "_id": "u4yutwVKiqs7aEcM",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        8,
+        10
+      ],
+      "text": "Small amount of Supply... (+1 IP)",
+      "type": "text",
+      "weight": 3
+    },
+    {
+      "_id": "uEqHAg7J0dzP0gYy",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/prin.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Junk",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "zIhxbuUPiOjPZsJn",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/doom.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "It's Empty (...just like your soul)",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 125000
+}

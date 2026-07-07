@@ -13,7 +13,7 @@
       "version": "4.8.5"
     }
   },
-  "folder": "H5HE3g8k3EvxVyvM",
+  "folder": "BxnzCETeAXA07Jko",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperSkill7.png",
   "name": "Hypercognition",
   "ownership": {
@@ -32,7 +32,7 @@
           "effect_label": "hc_discount"
         }
       },
-      "passive_logic_action": "",
+      "passive_logic_action": "<p>[{\"id\":\"hyper-crit-ramp\",\"label\":\"Hypercognition\",\"when\":{\"all\":[{\"actor\":{\"flagCompare\":{\"ns\":\"oni\",\"key\":\"focus.stacks\",\"op\":\">=\",\"value\":3}}}]},\"effects\":[{\"type\":\"critMult\",\"amount\":1.5},{\"type\":\"flat\",\"scope\":\"outgoing\",\"element\":\"ice\",\"amount\":250}]}]</p>",
       "reaction_config_table": {
         "0": {
           "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1 && ACTION_IS_SPELL == 1",

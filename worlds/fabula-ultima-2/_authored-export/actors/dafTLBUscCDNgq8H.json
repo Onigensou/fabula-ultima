@@ -10,6 +10,154 @@
   },
   "effects": [
     {
+      "_id": "Drm9IULS4IrA13Yd",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398848430,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Lucky Number:</em> the value you may swap onto a die with Lucky Seven (starts at 7). Replacing a die makes the replaced value your new lucky number.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Drm9IULS4IrA13Yd",
+          "originalParentId": "dafTLBUscCDNgq8H",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.Drm9IULS4IrA13Yd"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "lucky_number",
+          "charges": 7,
+          "chargesMax": 7,
+          "directorAppliedBy": {
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": null,
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Lucky Seven Ready",
+                "effect_kind": "apply_ae",
+                "effect_label": "ls_arm",
+                "target_ref": "ls_self"
+              },
+              "1": {
+                "$deleted": false,
+                "chain_steps": "ls_consume, ls_menu",
+                "effect_kind": "chain",
+                "effect_label": "ls_root"
+              },
+              "2": {
+                "$deleted": false,
+                "charge_key": "lucky_seven",
+                "count": "1",
+                "effect_kind": "consume_charge",
+                "effect_label": "ls_consume",
+                "on_empty": "abort",
+                "target_ref": "ls_self"
+              },
+              "3": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "ls_menu",
+                "menu_option_descriptions": "New total: ${AE_CHARGES_LUCKY_NUMBER + CHECK_DIE_B + CHECK_BONUS}|New total: ${CHECK_DIE_A + AE_CHARGES_LUCKY_NUMBER + CHECK_BONUS}",
+                "menu_option_labels": "First die (${CHECK_DIE_A_ATTR}): ${CHECK_DIE_A} → ${AE_CHARGES_LUCKY_NUMBER}|Second die (${CHECK_DIE_B_ATTR}): ${CHECK_DIE_B} → ${AE_CHARGES_LUCKY_NUMBER}",
+                "menu_option_refs": "ls_die_a, ls_die_b",
+                "menu_subtitle": "Replace one die with your lucky number (${AE_CHARGES_LUCKY_NUMBER}); the replaced value becomes your new lucky number.",
+                "menu_title": "Lucky Seven"
+              },
+              "4": {
+                "$deleted": false,
+                "die_value": "",
+                "effect_kind": "set_check_die",
+                "effect_label": "ls_die_a",
+                "which_die": "A",
+                "writeback_carrier_charge": true
+              },
+              "5": {
+                "$deleted": false,
+                "die_value": "",
+                "effect_kind": "set_check_die",
+                "effect_label": "ls_die_b",
+                "which_die": "B",
+                "writeback_carrier_charge": true
+              },
+              "6": {
+                "$deleted": false,
+                "auto_confirm_when_obvious": true,
+                "candidate_source": "self",
+                "category": "",
+                "count": 1,
+                "effect_kind": "targeting",
+                "effect_label": "ls_self",
+                "exclude_self": false,
+                "iteration_mode": "together",
+                "mode": "exact",
+                "skip_when_passive": true
+              }
+            },
+            "name": "Lucky Seven",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "",
+                "reaction_effect_ref": "ls_arm",
+                "reaction_passive_mode": "force",
+                "reaction_source": "",
+                "reaction_trigger": "conflict_start"
+              },
+              "1": {
+                "$deleted": false,
+                "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0 && AE_CHARGES_LUCKY_SEVEN_READY > 0",
+                "reaction_effect_ref": "ls_root",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "name": "Lucky Number",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-lucky-number"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "WPEoRZOK1x4yTM3Q",
       "_stats": {
         "compendiumSource": null,
@@ -357,6 +505,14 @@
           "demon_ef": "100",
           "description": "<ul><li>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span> on the target&nbsp;<strong>Humanoid</strong> which last until the end of this round. Have no effect on Champion-Rank creature</li><li>When use outside of <strong>conflict, </strong>the effect last until the end of the <strong>scene </strong>instead</li></ul>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "ae_template_ref": "Charmed",
+              "effect_kind": "apply_ae",
+              "effect_label": "lovepotion_charm",
+              "target_ref": "action_targets"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -385,13 +541,13 @@
           "item_quantity": 1,
           "item_rarity": "Uncommon",
           "item_skill_active": {
-            "wxQj3appp4uqcW8O": {
+            "TveSIs4RtZLvTtY0": {
               "id": "${item.id}",
               "name": "Love Potion",
               "skill_cost": "-",
               "skill_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
               "skill_maxLevel": "",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wxQj3appp4uqcW8O"
+              "uuid": "Item.TveSIs4RtZLvTtY0"
             }
           },
           "item_type": "consumable",
@@ -401,11 +557,11 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
-            "wxQj3appp4uqcW8O": {
+            "TveSIs4RtZLvTtY0": {
               "id": "${item.id}",
               "name": "Love Potion",
               "related_item_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wxQj3appp4uqcW8O"
+              "uuid": "Item.TveSIs4RtZLvTtY0"
             }
           },
           "reptilian_ef": "100",
@@ -986,7 +1142,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -1005,8 +1160,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "5S2EaoKlYMGW2WMw",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -1038,7 +1191,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.5S2EaoKlYMGW2WMw",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1373,16 +1525,13 @@
           "damage_bonus": "35",
           "defense_target_type": "def",
           "description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
           "gadget_alchemy_tier": "",
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "g74cJxJ4guXSyVlJ",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -1407,8 +1556,7 @@
           "skill_type": "Spell",
           "target_eligibility": "",
           "type_damage": "ice",
-          "use_optional_params": false,
-          "uuid": "Item.g74cJxJ4guXSyVlJ"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1472,7 +1620,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1491,8 +1638,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "sHMfimeSyKQcj8bM",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2126.gif",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -1532,7 +1677,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.sHMfimeSyKQcj8bM",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2059,16 +2203,13 @@
           "damage_bonus": "35",
           "defense_target_type": "def",
           "description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
           "gadget_alchemy_tier": "",
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "mOhAyd6CoAqe7YP5",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -2093,8 +2234,7 @@
           "skill_type": "Spell",
           "target_eligibility": "",
           "type_damage": "ice",
-          "use_optional_params": false,
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.mOhAyd6CoAqe7YP5"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3270,7 +3410,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -3289,8 +3428,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "k8ZtjB1OJJ1AFYkU",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1626.gif",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -3311,6 +3448,14 @@
           "item_quantity": 1,
           "item_rarity": "Rare",
           "item_skill_active": {
+            "C3K6l9Rih0rhVrrE": {
+              "id": "${item.id}",
+              "name": "Glacies Finis",
+              "skill_cost": "30 x T MP",
+              "skill_description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.C3K6l9Rih0rhVrrE"
+            },
             "mOhAyd6CoAqe7YP5": {
               "id": "${item.id}",
               "name": "Glacies Finis",
@@ -3332,6 +3477,12 @@
           "refine_count": "0",
           "refine_level": "0",
           "related_item_list": {
+            "C3K6l9Rih0rhVrrE": {
+              "id": "${item.id}",
+              "name": "Glacies Finis",
+              "related_item_description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.C3K6l9Rih0rhVrrE"
+            },
             "mOhAyd6CoAqe7YP5": {
               "id": "${item.id}",
               "name": "Glacies Finis",
@@ -3349,7 +3500,6 @@
           "spirit_ef": "100",
           "type_damage": "Ice",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.k8ZtjB1OJJ1AFYkU",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -3960,7 +4110,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3979,8 +4128,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "PsBBWgj9RkzEIKtF",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2640.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -4013,7 +4160,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.PsBBWgj9RkzEIKtF",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4077,20 +4223,10 @@
         "container": "S71vgGdSVCmEGWN0",
         "props": {
           "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
           "check_bonus": "0",
-          "construct_ef": "100",
           "cost": "-",
           "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
           "description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
-          "dragon_ef": "100",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -4101,86 +4237,15 @@
               "summon_count": "1"
             }
           },
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
           "isCheck": false,
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "50",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 2,
-          "item_rarity": "Common",
-          "item_skill_active": {
-            "KnKIXdPq6wjaFnCK": {
-              "id": "${item.id}",
-              "name": "Decoy Doll",
-              "skill_cost": "-",
-              "skill_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Item.KnKIXdPq6wjaFnCK"
-            },
-            "vliuwtKw7PKGGKcU": {
-              "id": "${item.id}",
-              "name": "Decoy Doll",
-              "skill_cost": "-",
-              "skill_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.vliuwtKw7PKGGKcU"
-            }
-          },
-          "item_type": "consumable",
-          "mimic_ef": "100",
-          "monster_ef": "100",
           "name": "Decoy Doll",
           "on_activate_effect_ref": "decoy_summon",
           "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "related_item_list": {
-            "KnKIXdPq6wjaFnCK": {
-              "id": "${item.id}",
-              "name": "Decoy Doll",
-              "related_item_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
-              "uuid": "Item.KnKIXdPq6wjaFnCK"
-            },
-            "vliuwtKw7PKGGKcU": {
-              "id": "${item.id}",
-              "name": "Decoy Doll",
-              "related_item_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.vliuwtKw7PKGGKcU"
-            }
-          },
-          "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
-          "set_name": "",
           "skill_target": "Self",
           "skill_type": "Item",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
+          "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -4905,7 +4970,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -4933,8 +4997,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "irzhS1BV9TsO7xlb",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/533.png",
           "insect_ef": "100",
           "ip_cost": "1",
           "isEquipped": false,
@@ -5012,7 +5074,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.irzhS1BV9TsO7xlb",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5515,62 +5576,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "loJVZKaVMt8VxzCI"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "KVCOLRQv6anedDGI",
-      "_stats": {
-        "compendiumSource": "Item.KaykXhgyX1J1mdPv",
-        "coreVersion": "12.343",
-        "createdTime": 1783148616011,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_healing_magic.png",
-      "name": "Spiritual Magic",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "yL2PQxh3R9ddt0te": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "check_bonus": "0",
-          "class": "Spiritist",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>Each time you acquire this Skill, learn one Spiritist spell (see Facet). 【⚡Offensive Spiritist Spell】 use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "10",
-          "name": "Spiritual Magic",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Other",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "KaykXhgyX1J1mdPv"
       },
       "type": "equippableItem"
     },
@@ -6607,6 +6612,104 @@
       "type": "equippableItem"
     },
     {
+      "_id": "nyEzzbUngB4BZ8Qw",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398784281,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_asylum.png",
+      "name": "Healing Power",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "healing_power_grant",
+              "grant_amount": "SL * BOND_COUNT",
+              "grant_resource": "hp",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "ally_action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Healing Power",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_ARCANE_WEAPON",
+              "reaction_action_intent": "",
+              "reaction_action_target": "ally",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "healing_power_grant",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_completes_spell",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "B7iUxJTSvR12dwEr"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "O7KjXoyMd4zoGh5c",
       "_stats": {
         "compendiumSource": null,
@@ -7599,6 +7702,71 @@
       "type": "equippableItem"
     },
     {
+      "_id": "SuE7ERem0thYurVC",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398784281,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/presence_of_mind.png",
+      "name": "Ritual Spiritism",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may perform Rituals whose effects fall within the <strong>Spiritism</strong> discipline. Spiritism Rituals use <strong>INS + WLP</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ritual Spiritism",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "JL9xPk3EXxh16ooY"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "t9BfF2mxmREPRFuf",
       "_stats": {
         "compendiumSource": "Actor.t6E3CQ0pGxwLgXrn.Item.9RzsCJ2bfZU0pmRo",
@@ -8476,11 +8644,9 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
-          "defense_target_type": "mdef",
           "demiHuman_ef": "100",
           "demon_ef": "100",
           "description": "<ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Glacies Finis </strong>】</p>\n        <hr class=\"\">\n    </li>\n</ul>\n<details>\n    <summary><strong>⚡ Glacies Finis</strong></summary>\n    <p><strong>Cost:</strong> 30 x T MP</p>\n    <p><strong>Target:</strong> Up to three creatures</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p><strong>Check:【INS】</strong> + <strong>【WLP】</strong></p>\n    <p>You cause a glacial avalanche. Each target hit by this spell suffers 【HR + 35】ice damage. Opportunity: Each target hit by this spell suffers Fatigue.</p>\n</details>",
@@ -8495,8 +8661,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "8mXI5OJRvKbBpmsm",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1626.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -8514,6 +8678,14 @@
           "item_quantity": 1,
           "item_rarity": "Rare",
           "item_skill_active": {
+            "7vAXk1MSNgYfTjQx": {
+              "id": "${item.id}",
+              "name": "Glacies Finis",
+              "skill_cost": "30 x T MP",
+              "skill_description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.7vAXk1MSNgYfTjQx"
+            },
             "g74cJxJ4guXSyVlJ": {
               "id": "${item.id}",
               "name": "Glacies Finis",
@@ -8532,6 +8704,12 @@
           "refine_count": "0",
           "refine_level": "0",
           "related_item_list": {
+            "7vAXk1MSNgYfTjQx": {
+              "id": "${item.id}",
+              "name": "Glacies Finis",
+              "related_item_description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.7vAXk1MSNgYfTjQx"
+            },
             "g74cJxJ4guXSyVlJ": {
               "id": "${item.id}",
               "name": "Glacies Finis",
@@ -8548,7 +8726,6 @@
           "spirit_ef": "100",
           "type_damage": "Ice",
           "undead_ef": "100",
-          "uuid": "Item.8mXI5OJRvKbBpmsm",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -8556,6 +8733,52 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "8mXI5OJRvKbBpmsm"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uK8MN1c3SDjR2Pgs",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398784281,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_healing_magic.png",
+      "name": "Spiritual Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "Each time you acquire this Skill, learn one Spiritist spell (see Facet). Offensive Spiritist Spells use <strong>INS + WLP</strong> for the Magic Check.",
+          "isCheck": false,
+          "level": "1",
+          "name": "Spiritual Magic",
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Other",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "WZ0LtCp3xwiAAa3x"
       },
       "type": "equippableItem"
     },
@@ -8652,16 +8875,13 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You have a <strong>lucky number</strong>; at the beginning of each session, that number is <strong>7</strong>. </p><p>Once per scene after you perform a Check, you may replace the value shown on one of the dice you rolled with your lucky number <em>(even if this would give an impossible Result, such as a value of 7 on a d6)</em>. </p><p>If you do, the replaced value becomes your <strong>new</strong> lucky number</p>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {},
           "gadget_alchemy_tier": "",
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "v56GvN63nvIYV4iJ",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Harpy/Draw.webp",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -8686,8 +8906,7 @@
           "skill_type": "Passive",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -9046,62 +9265,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "wQPUQTJDFJK8Jsm3",
-      "_stats": {
-        "compendiumSource": "Item.VwJHtWmjBjF0Pj31",
-        "coreVersion": "12.343",
-        "createdTime": 1783191947536,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_asylum.png",
-      "name": "Healing Power",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "yL2PQxh3R9ddt0te": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "check_bonus": "0",
-          "class": "Spiritist",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover an amount of Hit Points equal to <strong>【SL, multiplied by the number of Bonds you have】.</strong></p><p> This healing is separate from any healing caused by the effects of the spell.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "2",
-          "name": "Healing Power",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "VwJHtWmjBjF0Pj31"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "Wtcdd42MQHwsOsSe",
       "_stats": {
         "compendiumSource": "Item.wPC22EqyPCSc20i0",
@@ -9293,62 +9456,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "CMeM0siw1nq7rr1G"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "xt1W4okhrJZPPUlB",
-      "_stats": {
-        "compendiumSource": "Item.HSiWYkTSItEIbXig",
-        "coreVersion": "12.343",
-        "createdTime": 1783191937322,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/presence_of_mind.png",
-      "name": "Ritual Spiritism",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "yL2PQxh3R9ddt0te": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "check_bonus": "0",
-          "class": "Spiritist",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>You may perform Rituals whose effects fall within the <strong>Spiritism</strong> discipline. Spiritism Rituals use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Ritual Spiritism",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "HSiWYkTSItEIbXig"
       },
       "type": "equippableItem"
     },

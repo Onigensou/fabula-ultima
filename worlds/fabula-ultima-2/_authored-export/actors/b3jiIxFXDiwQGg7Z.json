@@ -242,58 +242,148 @@
       "type": "equippableItem"
     },
     {
-      "_id": "duvYk9yWI9mni9Ef",
+      "_id": "Ee3k0GrSVZaK8Ofr",
       "_stats": {
-        "compendiumSource": "Item.5h2gvjbvw26dQSU4",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756857330305,
+        "createdTime": 1783398780056,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "nnWAoBsrDZGLvdOK",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Emergency Item:</em> ready — once per conflict.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "nnWAoBsrDZGLvdOK",
+              "originalParentId": "lmVVp510JjCT0H0c",
+              "originalUuid": "Item.lmVVp510JjCT0H0c.ActiveEffect.nnWAoBsrDZGLvdOK"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "chargeKey": "emergency_item",
+              "charges": 1,
+              "chargesMax": 1,
+              "directorPermanent": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
+          "name": "Emergency Item Ready",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-emergency-item-ready"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderPassive1.png",
-      "name": "Deep Pockets",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
+      "name": "Emergency Item",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
-          "check_bonus": "0",
           "class": "Tinkerer",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When you spend Inventory Points, you spend 1 less Inventory Point <em>(to a minimum of 1).</em></p>",
-          "duration": "",
-          "heroic_requirement": "You must have mastered the Tinkerer Class.",
+          "cost": "-",
+          "description": "<p>Once per conflict, when you enter <strong>Crisis</strong>, you may immediately perform a free <strong>Inventory (Item) action</strong>.</p>",
+          "effect_table": {
+            "0": {
+              "chain_steps": "em_consume,em_free",
+              "effect_kind": "chain",
+              "effect_label": "em_use"
+            },
+            "1": {
+              "charge_key": "emergency_item",
+              "count": "1",
+              "effect_kind": "consume_charge",
+              "effect_label": "em_consume",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "2": {
+              "action_ref": "item",
+              "effect_kind": "free_action",
+              "effect_label": "em_free"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Emergency Item Ready",
+              "effect_kind": "apply_ae",
+              "effect_label": "em_refresh",
+              "target_ref": "self"
+            }
+          },
           "isCheck": false,
-          "isFacet": false,
-          "isHeroic": true,
-          "isOffensiveSpell": false,
+          "isHeroic": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
-          "name": "Deep Pockets",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
+          "name": "Emergency Item",
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "em_use",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_status_filter": "Crisis",
+              "reaction_trigger": "creature_status_applied"
+            },
+            "1": {
+              "reaction_effect_ref": "em_refresh",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "5h2gvjbvw26dQSU4"
+        "unique": true,
+        "uniqueId": "lmVVp510JjCT0H0c"
       },
       "type": "equippableItem"
     },
@@ -350,62 +440,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "sfBakCzBiMuJCi03"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "JE4lKc7P7VwOiVPf",
-      "_stats": {
-        "compendiumSource": "Item.vHU5RXkhcOoFrXtm",
-        "coreVersion": "12.343",
-        "createdTime": 1756856547330,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/careful_synthesis_iii.png",
-      "name": "Secret Formula",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Tinkerer",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When you create a <strong>potion</strong> or <strong>magisphere</strong> whose effects restore HP and/or MP, each restored amount is increased by <strong>【SL × 5】.</strong></p><p> When you create an <strong>elemental shard, potion</strong> or <strong>magisphere</strong> that deals damage, that item deals <strong>【SL】</strong> extra damage.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "5",
-          "name": "Secret Formula",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "vHU5RXkhcOoFrXtm"
       },
       "type": "equippableItem"
     },
@@ -467,11 +501,137 @@
       "type": "equippableItem"
     },
     {
-      "_id": "nF28ix0bFIba8o3G",
+      "_id": "LluXCDdz8P0uGTeE",
       "_stats": {
-        "compendiumSource": "Item.BRvcE5bjsMDqFo5d",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756856544149,
+        "createdTime": 1783398780056,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "jWqolKUUmjhkqhhg",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_item",
+              "mode": 2,
+              "priority": 20,
+              "value": "4"
+            },
+            {
+              "key": "item_restore_mod",
+              "mode": 2,
+              "priority": 20,
+              "value": "20"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "jWqolKUUmjhkqhhg",
+              "originalParentId": "n6K5lij1haM9QRsm",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.n6K5lij1haM9QRsm.ActiveEffect.jWqolKUUmjhkqhhg"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/careful_synthesis_iii.png",
+          "name": "Secret Formula",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/careful_synthesis_iii.png",
+      "name": "Secret Formula",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you create a <strong>potion</strong> or <strong>magisphere</strong> whose effects restore HP and/or MP, each restored amount is increased by <strong>【SL × 5】.</strong></p><p> When you create an <strong>elemental shard, potion</strong> or <strong>magisphere</strong> that deals damage, that item deals <strong>【SL】</strong> extra damage.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Secret Formula",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "tHqRjIhed3rEwo3q"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "oBKS4NmV6k0fv7S9",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398780056,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -481,44 +641,98 @@
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
-      "name": "Gadgets",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/prognosis.png",
+      "name": "Potion Rain",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
+          "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Tinkerer",
           "cost": "",
           "damage_bonus": "0",
-          "description": "<p>When you first acquire this Skill, choose a gadget type: <strong>alchemy, infusions </strong>or <strong>magitech</strong> (see Facet). You gain its <strong>basic benefits</strong>.</p><p>Whenever you take this Skill again, <strong>choose one option:</strong></p><ul><li><p>You gain the <strong>basic benefits</strong> of a new gadget type</p></li><li><p>You gain the <strong>advanced benefits</strong> of a gadget type whose basic benefits you already obtained</p></li><li><p>You gain the <strong>superior benefits</strong> of a gadget type whose advanced benefits you already obtained.</p></li></ul>",
+          "defense_target_type": "def",
+          "description": "<p>When you create a <strong>potion</strong> that restores a <strong>single</strong> creature's HP and/or MP, you may have it affect up to <strong>【SL】</strong> additional creatures. If you do, the potion only restores half the normal amount of HP and MP to each creature.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "chain_steps": "pr_add,pr_halve",
+              "effect_kind": "chain",
+              "effect_label": "pr_do"
+            },
+            "1": {
+              "effect_kind": "add_target",
+              "effect_label": "pr_add",
+              "menu_description": "Spread the potion to up to 2 allies — each creature heals half.",
+              "menu_label": "Potion Rain",
+              "target_ref": "pr_pick"
+            },
+            "2": {
+              "effect_kind": "adjust_grant",
+              "effect_label": "pr_halve",
+              "grant_amount": "0.5",
+              "grant_operation": "multiply",
+              "grant_round": "up",
+              "scale_factor": "0.5",
+              "scale_round": "up"
+            },
+            "3": {
+              "auto_confirm_when_obvious": false,
+              "candidate_source": "combat",
+              "category": "ally",
+              "count": 2,
+              "effect_kind": "targeting",
+              "effect_label": "pr_pick",
+              "exclude_action_targets": true,
+              "mode": "up_to",
+              "skip_when_passive": false
+            }
+          },
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
-          "max_level": "5",
-          "name": "Gadgets",
+          "max_level": "2",
+          "name": "Potion Rain",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_action_kind": "Item",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "",
+              "reaction_isPassive": false,
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Target</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr></tbody></table>",
           "skill_range": "",
           "skill_target": "",
-          "skill_type": "Other",
+          "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "BRvcE5bjsMDqFo5d"
+        "uniqueId": "4sTRuDSN47Q0T4Wj"
       },
       "type": "equippableItem"
     },
@@ -694,58 +908,280 @@
       "type": "equippableItem"
     },
     {
-      "_id": "sKHATH7mdk6oPPif",
+      "_id": "s4Lb3ckdWW4Sx572",
       "_stats": {
-        "compendiumSource": "Item.psUl41nZsOWgzA0R",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756856541894,
+        "createdTime": 1783398780056,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
-      "name": "Emergency Item",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
+      "name": "Gadgets",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Tinkerer",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>Once per conflict scene, if you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may perform an additional action on your turn. This action <strong>must</strong> be the <strong>Inventory</strong> action.</p>",
-          "duration": "",
+          "cost": "2 IP",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>You can produce <strong>infusions</strong> and other gadgets on the fly.</p><p><strong>Infusions.</strong> When you successfully <strong>hit one or more targets with an attack</strong>, you may spend <strong>2 Inventory Points</strong> to produce a special infusion and apply its effect to that attack. If the attack had the <em>multi</em> property, the effect applies to <strong>each</strong> target. You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the attack.</p><ul><li><strong>Cryo / Pyro / Volt:</strong> deal 5 extra damage; the attack's damage becomes <strong>ice / fire / bolt</strong>.</li><li><strong>Cyclone / Exorcism / Seismic / Shadow:</strong> deal 5 extra damage; the attack's damage becomes <strong>air / light / earth / dark</strong>.</li><li><strong>Venom:</strong> deal 5 extra damage; the attack's damage becomes <strong>poison</strong>; each creature hit suffers <strong>poisoned</strong>.</li><li><strong>Vampire:</strong> heal HP equal to <strong>half the damage dealt</strong>. <em>Single-target attacks only.</em></li></ul>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "inf_offer",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "max_mp_cost": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "+5; becomes Ice|+5; becomes Fire|+5; becomes Bolt|+5; becomes Air|+5; becomes Light|+5; becomes Earth|+5; becomes Dark|+5; becomes Poison + Poisoned|Single-target: heal 50% of damage dealt",
+              "menu_option_icons": "",
+              "menu_option_labels": "Cryo|Pyro|Volt|Cyclone|Exorcism|Seismic|Shadow|Venom|Vampire",
+              "menu_option_refs": "inf_cryo,inf_pyro,inf_volt,inf_cyclone,inf_exorcism,inf_seismic,inf_shadow,inf_venom,inf_vampire",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Spend 2 IP — the attack's damage changes",
+              "menu_title": "Produce an Infusion",
+              "target_ref": ""
+            },
+            "1": {
+              "chain_steps": "inf_pay,inf_el_ice,inf_plus5",
+              "condition_formula": "GADGET_INFUSION_TIER >= 1",
+              "effect_kind": "chain",
+              "effect_label": "inf_cryo",
+              "menu_label": "Cryo"
+            },
+            "2": {
+              "chain_steps": "inf_pay,inf_el_fire,inf_plus5",
+              "condition_formula": "GADGET_INFUSION_TIER >= 1",
+              "effect_kind": "chain",
+              "effect_label": "inf_pyro",
+              "menu_label": "Pyro"
+            },
+            "3": {
+              "chain_steps": "inf_pay,inf_el_bolt,inf_plus5",
+              "condition_formula": "GADGET_INFUSION_TIER >= 1",
+              "effect_kind": "chain",
+              "effect_label": "inf_volt",
+              "menu_label": "Volt"
+            },
+            "4": {
+              "chain_steps": "inf_pay,inf_el_air,inf_plus5",
+              "condition_formula": "GADGET_INFUSION_TIER >= 2",
+              "effect_kind": "chain",
+              "effect_label": "inf_cyclone",
+              "menu_label": "Cyclone"
+            },
+            "5": {
+              "chain_steps": "inf_pay,inf_el_light,inf_plus5",
+              "condition_formula": "GADGET_INFUSION_TIER >= 2",
+              "effect_kind": "chain",
+              "effect_label": "inf_exorcism",
+              "menu_label": "Exorcism"
+            },
+            "6": {
+              "chain_steps": "inf_pay,inf_el_earth,inf_plus5",
+              "condition_formula": "GADGET_INFUSION_TIER >= 2",
+              "effect_kind": "chain",
+              "effect_label": "inf_seismic",
+              "menu_label": "Seismic"
+            },
+            "7": {
+              "chain_steps": "inf_pay,inf_el_dark,inf_plus5",
+              "condition_formula": "GADGET_INFUSION_TIER >= 2",
+              "effect_kind": "chain",
+              "effect_label": "inf_shadow",
+              "menu_label": "Shadow"
+            },
+            "8": {
+              "chain_steps": "inf_pay,inf_el_poison,inf_plus5,inf_poison",
+              "condition_formula": "GADGET_INFUSION_TIER >= 3",
+              "effect_kind": "chain",
+              "effect_label": "inf_venom",
+              "menu_label": "Venom"
+            },
+            "9": {
+              "consume_amount": "2",
+              "consume_resource": "ip",
+              "effect_kind": "consume_resource",
+              "effect_label": "inf_pay",
+              "grant_amount": "",
+              "grant_resource": "",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "10": {
+              "damage_amount": "5",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "inf_plus5"
+            },
+            "11": {
+              "change_element": "ice",
+              "effect_kind": "change_damage_element",
+              "effect_label": "inf_el_ice"
+            },
+            "12": {
+              "change_element": "fire",
+              "effect_kind": "change_damage_element",
+              "effect_label": "inf_el_fire"
+            },
+            "13": {
+              "change_element": "bolt",
+              "effect_kind": "change_damage_element",
+              "effect_label": "inf_el_bolt"
+            },
+            "14": {
+              "change_element": "air",
+              "effect_kind": "change_damage_element",
+              "effect_label": "inf_el_air"
+            },
+            "15": {
+              "change_element": "light",
+              "effect_kind": "change_damage_element",
+              "effect_label": "inf_el_light"
+            },
+            "16": {
+              "change_element": "earth",
+              "effect_kind": "change_damage_element",
+              "effect_label": "inf_el_earth"
+            },
+            "17": {
+              "change_element": "dark",
+              "effect_kind": "change_damage_element",
+              "effect_label": "inf_el_dark"
+            },
+            "18": {
+              "change_element": "poison",
+              "effect_kind": "change_damage_element",
+              "effect_label": "inf_el_poison"
+            },
+            "19": {
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Poisoned",
+              "effect_kind": "apply_ae",
+              "effect_label": "inf_poison",
+              "target_ref": "hit_action_targets"
+            },
+            "20": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "gadget_active_root",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "max_mp_cost": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "Mix a potion|Build a magitech device",
+              "menu_option_icons": "",
+              "menu_option_labels": "Alchemy|Magitech",
+              "menu_option_refs": "stub_alchemy,stub_magitech",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Choose a gadget branch",
+              "menu_title": "Use a Gadget",
+              "target_ref": ""
+            },
+            "21": {
+              "condition_formula": "GADGET_ALCHEMY_TIER >= 1",
+              "effect_kind": "notify",
+              "effect_label": "stub_alchemy",
+              "menu_label": "Alchemy",
+              "notify_abort": true,
+              "notify_message": "Alchemy gadgets (potion-mixing) are not yet implemented.",
+              "notify_type": "info"
+            },
+            "22": {
+              "condition_formula": "GADGET_MAGITECH_TIER >= 1",
+              "effect_kind": "notify",
+              "effect_label": "stub_magitech",
+              "menu_label": "Magitech",
+              "notify_abort": true,
+              "notify_message": "Magitech gadgets are not yet implemented.",
+              "notify_type": "info"
+            },
+            "23": {
+              "chain_steps": "inf_pay,inf_drain",
+              "condition_formula": "GADGET_INFUSION_TIER >= 3 && HIT_COUNT == 1",
+              "effect_kind": "chain",
+              "effect_label": "inf_vampire",
+              "menu_label": "Vampire"
+            },
+            "24": {
+              "action_keyword": "pierce",
+              "condition_formula": "",
+              "effect_kind": "apply_action_keyword",
+              "effect_label": "inf_drain"
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Emergency Item",
+          "name": "Gadgets",
+          "on_activate_effect_ref": "gadget_active_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_action_kind": "Attack",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "inf_offer",
+              "reaction_passive_mode": "ask",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_will_deal_damage",
+              "requires_skill": ""
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "Special",
+          "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "psUl41nZsOWgzA0R"
+        "unique": true,
+        "uniqueId": "1w2LjUOVhlbLR8nn"
       },
       "type": "equippableItem"
     },
@@ -807,63 +1243,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "TsYf1np2OrFZ0yLJ",
-      "_stats": {
-        "compendiumSource": "Item.UhJH8T9TEmsJnQVc",
-        "coreVersion": "12.343",
-        "createdTime": 1769883496088,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/prognosis.png",
-      "name": "Potion Rain",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "iLeUVmwqnze8ulOI": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "check_bonus": "0",
-          "class": "Tinkerer",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When you create a <strong>potion</strong> that restores a <strong>single</strong> creature's HP and/or MP, you may have it affect up to <strong>【SL】</strong> additional creatures. If you do, the potion only restores half the normal amount of HP and MP to each creature.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "2",
-          "name": "Potion Rain",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Target</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr></tbody></table>",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "UhJH8T9TEmsJnQVc"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "veOR5qFmqdJUUDFe",
       "_stats": {
         "compendiumSource": "Item.7nnfGXhexQFubQnZ",
@@ -920,59 +1299,119 @@
       "type": "equippableItem"
     },
     {
-      "_id": "x8QMxTtjTkeEAWnc",
+      "_id": "XR4RD3tvYfLr6dkN",
       "_stats": {
-        "compendiumSource": "Item.UhJH8T9TEmsJnQVc",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1756856545658,
+        "createdTime": 1783398780056,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "7VFs0yFvUb21WMQn",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "ip_reduction_value",
+              "mode": 2,
+              "priority": 20,
+              "value": "1"
+            }
+          ],
+          "description": "<p><em>Deep Pockets:</em> spend 1 less Inventory Point (minimum 1).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "WLWFfxV0AePMiIQB",
+              "originalParentId": "04XUHlRJhyvJIaGb",
+              "originalUuid": "Item.04XUHlRJhyvJIaGb.ActiveEffect.WLWFfxV0AePMiIQB"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderPassive1.png",
+          "name": "Deep Pockets",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/prognosis.png",
-      "name": "Potion Rain",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderPassive1.png",
+      "name": "Deep Pockets",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
-          "check_bonus": "0",
           "class": "Tinkerer",
           "cost": "",
           "damage_bonus": "0",
-          "description": "<p>When you create a <strong>potion</strong> that restores a <strong>single</strong> creature's HP and/or MP, you may have it affect up to <strong>【SL】</strong> additional creatures. If you do, the potion only restores half the normal amount of HP and MP to each creature.</p>",
-          "duration": "",
-          "heroic_requirement": "",
+          "description": "<p>When you spend Inventory Points, you spend <strong>1 less Inventory Point</strong> (to a minimum of 1).</p>",
+          "effect_table": {},
           "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
-          "max_level": "2",
-          "name": "Potion Rain",
-          "optional_params": {},
+          "max_level": 1,
+          "name": "Deep Pockets",
+          "on_activate_effect_ref": "",
+          "passive_logic_action": "",
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Target</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr></tbody></table>",
-          "skill_range": "",
-          "skill_target": "",
+          "skill_range": "-",
+          "skill_target": "-",
           "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
+          "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "UhJH8T9TEmsJnQVc"
+        "unique": true,
+        "uniqueId": "04XUHlRJhyvJIaGb"
       },
       "type": "equippableItem"
     }

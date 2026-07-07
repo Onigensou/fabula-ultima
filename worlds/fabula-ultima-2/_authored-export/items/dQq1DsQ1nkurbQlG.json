@@ -1,10 +1,10 @@
 {
   "_id": "dQq1DsQ1nkurbQlG",
   "_stats": {
-    "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+    "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1781468011444,
-    "duplicateSource": "Item.cneU6dfTzI13k0U2",
+    "createdTime": 1783361901467,
+    "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
@@ -13,7 +13,7 @@
       "version": "4.8.4"
     }
   },
-  "folder": "sbNvADt5kP73Z27P",
+  "folder": "o9WySAlpwzaM9KDB",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
   "name": "Elemental Shard",
   "ownership": {

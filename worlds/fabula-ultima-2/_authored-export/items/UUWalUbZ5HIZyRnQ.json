@@ -8,72 +8,6 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
-  "effects": [
-    {
-      "_id": "u9azxXcATNKCI6dl",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1775143151614,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p>Taking <strong>Poison </strong>damage when performing an <strong>action</strong></p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": 3,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "core": {
-          "overlay": false
-        },
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "TI6txApoPwgYLHXQ",
-          "originalParentId": "XVOWOq9oUmEECGrU",
-          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.TI6txApoPwgYLHXQ"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-envenomed",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Poison.png",
-      "name": "Envenomed",
-      "origin": null,
-      "sort": 0,
-      "statuses": [
-        "StnYeDADYo2xX99O"
-      ],
-      "system": {
-        "tags": []
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    }
-  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
@@ -132,7 +66,6 @@
       "beast_ef": "100",
       "category": "Dagger",
       "celestial_ef": "100",
-      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "4",
@@ -140,15 +73,6 @@
       "demon_ef": "100",
       "description": "<p>On hit, 15% chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
       "dragon_ef": "100",
-      "effect_table": {
-        "0": {
-          "ae_duplicate_mode": "replace",
-          "ae_template_ref": "Envenomed",
-          "effect_kind": "apply_ae",
-          "effect_label": "onhit_envenomed_p50",
-          "target_ref": "trigger_subject"
-        }
-      },
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",
@@ -159,8 +83,6 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "id": "UUWalUbZ5HIZyRnQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13039.gif",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
@@ -177,31 +99,32 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Uncommon",
+      "item_skill_passive": {
+        "NAhxhYpxpcmWXMn0": {
+          "id": "${item.id}",
+          "name": "Poisoned Dagger (gear skill)",
+          "skill_cost": "",
+          "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "skill_maxLevel": "",
+          "uuid": "Item.NAhxhYpxpcmWXMn0"
+        }
+      },
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
       "name": "Poisoned Dagger",
       "optional_params": {},
       "plant_ef": "100",
-      "reaction_config_table": {
-        "0": {
-          "condition_formula": "chance(50)",
-          "reaction_action_intent": "",
-          "reaction_action_target": "",
-          "reaction_damage_amount": "",
-          "reaction_damage_source": "",
-          "reaction_damage_type": "",
-          "reaction_effect_ref": "onhit_envenomed_p50",
-          "reaction_ownership": "",
-          "reaction_passive_mode": "on",
-          "reaction_source": "self",
-          "reaction_subject_kind": "",
-          "reaction_trigger": "creature_deals_damage",
-          "requires_skill": ""
-        }
-      },
       "refine_count": "0",
       "refine_level": "0",
+      "related_item_list": {
+        "NAhxhYpxpcmWXMn0": {
+          "id": "${item.id}",
+          "name": "Poisoned Dagger (gear skill)",
+          "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "uuid": "Item.NAhxhYpxpcmWXMn0"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "INS",
@@ -211,7 +134,6 @@
       "spirit_ef": "100",
       "type_damage": "Poison",
       "undead_ef": "100",
-      "uuid": "Item.UUWalUbZ5HIZyRnQ",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },

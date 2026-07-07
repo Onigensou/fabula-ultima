@@ -1,0 +1,43 @@
+{
+  "_id": "pfNO17vplycHndhW",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1744863673944,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "channel": "music",
+  "description": "",
+  "fade": null,
+  "flags": {},
+  "folder": null,
+  "mode": 0,
+  "name": "Temp",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "seed": 450,
+  "sort": 0,
+  "sorting": "a",
+  "sounds": [
+    {
+      "_id": "AIbOXbdxy7JMaVOB",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Jacarico Summon",
+      "path": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Sound/05opo2.mp3",
+      "repeat": false,
+      "sort": 0,
+      "volume": 0.72
+    }
+  ]
+}

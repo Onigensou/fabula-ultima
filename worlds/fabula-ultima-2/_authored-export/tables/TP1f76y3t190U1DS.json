@@ -1,0 +1,210 @@
+{
+  "_id": "TP1f76y3t190U1DS",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769663378321,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "dfZOIscssH4Tgqd3",
+  "formula": "1d12",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dreae.png",
+  "name": "Vastwind Field - Armor",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "1iIl5wCmqalkntV4",
+      "documentCollection": "Item",
+      "documentId": "jyFW3rkXRbgD84RP",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Shadow Tunic",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "8sazFeJyP32GndYi",
+      "documentCollection": "Item",
+      "documentId": "79TTBHuBvD7ysgZQ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/brom.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Ardent Yoroi",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "BBmZpZnus80ky7Us",
+      "documentCollection": "Item",
+      "documentId": "fIOWY27OKlJS8HHX",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Apprentice Mage Robe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "em7NXRLThy1nBjRc",
+      "documentCollection": "Item",
+      "documentId": "fySvxC4T3Gwta6Ze",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/brom.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Granny Vest",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "esrYm8UNyeUHqTU7",
+      "documentCollection": "Item",
+      "documentId": "ANpvrkYYhdlEjgHl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Fox Garb",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "GMJViBYyRvBm2SyO",
+      "documentCollection": "Item",
+      "documentId": "F5TmgNnJPkCyvrrL",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Apothecary Robes",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "kuM2uEVlOKTxQdEx",
+      "documentCollection": "Item",
+      "documentId": "JJoFipvJxSFs9Bk1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Engineer Jacket",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "sIMAi0s2HTvZsNAk",
+      "documentCollection": "Item",
+      "documentId": "ZTyfhNr10Pa42pAB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Biocloak",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Un5cxQBmmFZd52dh",
+      "documentCollection": "Item",
+      "documentId": "t2M0fUNaGR8BAbkD",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Rogue's Jacket",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "wwfOi7TSoVRfOKfy",
+      "documentCollection": "Item",
+      "documentId": "ziZodOuSnnNiI9hu",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Desperado Coat",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xeGwssUWhUejrDgV",
+      "documentCollection": "Item",
+      "documentId": "dD85U7jxv0LviO8u",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/herosui.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Crystal Plate",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ZUE9hyXa1OUKUucJ",
+      "documentCollection": "Item",
+      "documentId": "Ki373XheqcmzPYfM",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Bandit Jacket",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 200000
+}

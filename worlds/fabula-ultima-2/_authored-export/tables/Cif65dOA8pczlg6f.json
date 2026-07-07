@@ -1,0 +1,150 @@
+{
+  "_id": "Cif65dOA8pczlg6f",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1752405257251,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "1d8",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/MinotaurAxe.png",
+  "name": "Milky Holstein",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "aOqlCaQtJRx8H7HS",
+      "documentCollection": "Item",
+      "documentId": "fQHMX9fj319zUzBo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/CowHeadband.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Cow Headband",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "GBK1ilYbR6xyQHY7",
+      "documentCollection": "Item",
+      "documentId": "c3UnjwSqKlkK9xKa",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2330.gif",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Bunnysuit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Id5pS8qDaMcdkLNe",
+      "documentCollection": "Item",
+      "documentId": "SVGScNYCwihUiCwt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/CowPrintBikini.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Cow Print Bikini",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "IvimzDUriHhtlAI5",
+      "documentCollection": "Item",
+      "documentId": "Dht0Ta8s63d3qTXo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bunny%20Band.gif",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Bunny Band",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "sId7Tl1TxJAixeNT",
+      "documentCollection": "Item",
+      "documentId": "7YiTpUTatrTKFyjO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Cow%20Tail.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Cow Tail",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "UE5WKpzm3b7Keo73",
+      "documentCollection": "Item",
+      "documentId": "YNtiW1MEga31ENWa",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/white-apricorn.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Bunny Tail",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uz9ZtBxIpPXG5a4W",
+      "documentCollection": "Item",
+      "documentId": "0AlyI2roR4BT5RAv",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Eiyuu%20Senki/154%253F%253F%253F%253F%253F%253F.webp",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Lucky Mallet",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "y5jB1r34orrqYKNP",
+      "documentCollection": "Item",
+      "documentId": "seumBxHYbWkD4puo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/MinotaurAxe.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Minotaurus Axe",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

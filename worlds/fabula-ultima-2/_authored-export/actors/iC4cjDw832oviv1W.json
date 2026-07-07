@@ -17,6 +17,145 @@
   "img": "https://i.ytimg.com/vi/GxPBj_-b-xQ/maxresdefault.jpg",
   "items": [
     {
+      "_id": "4c4fokZVWl6WDWhv",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398880625,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "8G422weLCw652WPq",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "can_target_flying_with",
+              "mode": 5,
+              "priority": 20,
+              "value": "arcane,sword"
+            }
+          ],
+          "description": "<p><em>Psychokinesis:</em> melee attacks with arcane or sword weapons may target Flying creatures.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "8G422weLCw652WPq",
+              "originalParentId": "BErxmNwM0p3aWlIF",
+              "originalUuid": "Item.BErxmNwM0p3aWlIF.ActiveEffect.8G422weLCw652WPq"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/LunaticPsykerPassive4.png",
+          "name": "Psychokinesis",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/LunaticPsykerPassive4.png",
+      "name": "Psychokinesis",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "consume_self": false,
+              "effect_kind": "check_die_swap",
+              "effect_label": "pk_swap",
+              "from_resource": "",
+              "menu_label": "",
+              "swap_mode": "ask",
+              "swap_to_attribute": "WLP",
+              "to_resource": ""
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Psychokinesis",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "BErxmNwM0p3aWlIF"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "67VuTkaTGzBiPQsF",
       "_stats": {
         "compendiumSource": "Item.WL7R5LSNwXsBmeFp",
@@ -70,62 +209,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "WL7R5LSNwXsBmeFp"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "6HCTXzDOYrn549Pa",
-      "_stats": {
-        "compendiumSource": "Item.b8PD9B8tWQ60BEFG",
-        "coreVersion": "12.343",
-        "createdTime": 1757033533205,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/LunaticPsykerPassive4.png",
-      "name": "Psychokinesis",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Esper",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>When you perform an <strong>Accuracy Check</strong>, you may replace one of the <strong>Attribute</strong> dice with <strong>Willpower</strong> (such as <strong>[DEX + WLP]</strong> for a shortbow). Additionally, your <strong>melee</strong> attacks with weapons belonging to the <strong>arcane</strong> or <strong>sword</strong> Categories may target <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span> creatures.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Psychokinesis",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "b8PD9B8tWQ60BEFG"
       },
       "type": "equippableItem"
     },
@@ -372,6 +455,62 @@
       "type": "equippableItem"
     },
     {
+      "_id": "aqeMh65BTJXSDbPp",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398880625,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperSkill7.png",
+      "name": "Hypercognition",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "effect_table": {
+            "0": {
+              "cost_amount": "-(SL + SL * FOCUS_IS_ONLY_TARGET)",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "hc_discount"
+            }
+          },
+          "level": "1",
+          "name": "Hypercognition",
+          "passive_logic_action": "<p>[{\"id\":\"hyper-crit-ramp\",\"label\":\"Hypercognition\",\"when\":{\"all\":[{\"actor\":{\"flagCompare\":{\"ns\":\"oni\",\"key\":\"focus.stacks\",\"op\":\">=\",\"value\":3}}}]},\"effects\":[{\"type\":\"critMult\",\"amount\":1.5},{\"type\":\"flat\",\"scope\":\"outgoing\",\"element\":\"ice\",\"amount\":250}]}]</p>",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1 && ACTION_IS_SPELL == 1",
+              "reaction_action_kind": "Attack,Spell,Skill",
+              "reaction_effect_ref": "hc_discount",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "vXhqoRfPO5RK6Mdd"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "bIyYFPh5r06x3eNu",
       "_stats": {
         "compendiumSource": "Item.VNXjteLZfbvTPgzO",
@@ -428,49 +567,188 @@
       "type": "equippableItem"
     },
     {
-      "_id": "fMjKeC1qdvOyb9gU",
+      "_id": "gHdCvEoFsYkm7Pxc",
       "_stats": {
-        "compendiumSource": "Item.0Up4BNAxtoUC23jq",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1757033528135,
+        "createdTime": 1783398880625,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "p183EV24fVGbiPRo",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Cognitive Focus:</em> You are the focus of the creature that applied this.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "u9T5z4naBYQrVOgf",
+              "originalParentId": "0Up4BNAxtoUC23jq",
+              "originalUuid": "Item.0Up4BNAxtoUC23jq.ActiveEffect.u9T5z4naBYQrVOgf"
+            },
+            "fabula-ultima-companion": {
+              "tags": []
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/OvermindMaster1.png",
+          "name": "Cognitive Focus",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-focus"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/OvermindMaster1.png",
       "name": "Cognitive Focus",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
         "container": null,
         "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Esper",
           "cost": "",
-          "damage_bonus": "0",
+          "custom_logic_action": "",
+          "custom_logic_resolution": "<p>const DEBUG = true;</p><p>const TAG = \"[CL-RES][CognitiveFocus]\";</p><p>const ICON_URL = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/OvermindMaster1.png\";</p><p>const STATUS_ID = \"oni-cognitive-focus\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>if (DEBUG) console.warn(TAG, \"Missing __PAYLOAD\");</p><p>return;</p><p>}</p><p>const attackerDoc = await fromUuid(p?.meta?.attackerUuid ?? p?.attackerUuid ?? \"\");</p><p>const casterActor = attackerDoc?.actor ?? attackerDoc;</p><p>const casterTokenUuid = attackerDoc?.document?.uuid ?? attackerDoc?.uuid ?? \"\";</p><p>const targetUuids = Array.isArray(p?.targets) ? p.targets : [];</p><p>const firstTargetUuid = targetUuids[0] ?? \"\";</p><p>if (!firstTargetUuid) {</p><p>if (DEBUG) console.warn(TAG, \"No target found.\");</p><p>return;</p><p>}</p><p>const targetDoc = await fromUuid(firstTargetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>const targetTokenUuid = targetDoc?.document?.uuid ?? targetDoc?.uuid ?? \"\";</p><p>if (!casterActor || !targetActor) {</p><p>if (DEBUG) {</p><p>console.warn(TAG, \"Missing caster or target.\", {</p><p>caster: casterActor?.name ?? null,</p><p>target: targetActor?.name ?? null</p><p>});</p><p>}</p><p>return;</p><p>}</p><p>const cognitiveFocusItem = casterActor.items.find(i =&gt; i.name === \"Cognitive Focus\");</p><p>const skillLevel = Math.max(</p><p>0,</p><p>parseInt(cognitiveFocusItem?.system?.props?.level ?? \"0\", 10) || 0</p><p>);</p><p>// Register visible token status icon once</p><p>if (!CONFIG.statusEffects.some(se =&gt; se.id === STATUS_ID)) {</p><p>CONFIG.statusEffects.push({</p><p>id: STATUS_ID,</p><p>name: \"Focus\",</p><p>img: ICON_URL</p><p>});</p><p>}</p><p>// Remove previous Focus from THIS same caster on this target</p><p>const previousFocus = targetActor.effects.filter(e =&gt;</p><p>e.name === \"Focus\" &amp;&amp;</p><p>String(e.getFlag(\"oni\", \"cognitiveFocus\")?.casterActorId ?? \"\") === String(casterActor.id)</p><p>);</p><p>if (previousFocus.length &gt; 0) {</p><p>await targetActor.deleteEmbeddedDocuments(</p><p>\"ActiveEffect\",</p><p>previousFocus.map(e =&gt; e.id)</p><p>);</p><p>}</p><p>const effectData = {</p><p>name: \"Focus\",</p><p>img: ICON_URL,</p><p>description: `Focus applied by ${casterActor.name}. Removed at the start of ${casterActor.name}'s next turn.`,</p><p>disabled: false,</p><p>changes: [],</p><p>statuses: [STATUS_ID],</p><p>duration: {},</p><p>flags: {</p><p>oni: {</p><p>cognitiveFocus: {</p><p>active: true,</p><p>sourceSkill: \"Cognitive Focus\",</p><p>casterActorId: casterActor.id,</p><p>casterTokenUuid,</p><p>targetTokenUuid,</p><p>skillLevel,</p><p>appliedAt: Date.now()</p><p>}</p><p>}</p><p>}</p><p>};</p><p>const [effect] = await targetActor.createEmbeddedDocuments(\"ActiveEffect\", [effectData]);</p><p>if (DEBUG) {</p><p>console.log(TAG, \"Focus applied.\", {</p><p>caster: casterActor.name,</p><p>target: targetActor.name,</p><p>skillLevel,</p><p>effectId: effect?.id</p><p>});</p><p>}</p><p>// Auto-remove at the START of the caster's NEXT turn</p><p>const combat = game.combat;</p><p>const casterCombatant = combat?.combatants?.find(c =&gt; c.actor?.id === casterActor.id) ?? null;</p><p>const casterCombatantId = casterCombatant?.id ?? null;</p><p>if (!combat || !casterCombatantId) {</p><p>if (DEBUG) {</p><p>console.log(TAG, \"No combat / no caster combatant. Focus applied without combat auto-removal hook.\");</p><p>}</p><p>return;</p><p>}</p><p>let hasPassedAwayFromCaster = false;</p><p>let lastSeenKey = null;</p><p>const hookId = Hooks.on(\"updateCombat\", async (updatedCombat, changed) =&gt; {</p><p>if (changed.turn === undefined) return;</p><p>if (typeof updatedCombat.turn !== \"number\") return;</p><p>const activeCombatantId = updatedCombat.combatant?.id ?? null;</p><p>const dedupeKey = `${updatedCombat.id}:${updatedCombat.round}:${updatedCombat.turn}:${activeCombatantId}`;</p><p>if (dedupeKey === lastSeenKey) return;</p><p>lastSeenKey = dedupeKey;</p><p>// Wait until combat has moved away from the caster at least once</p><p>if (activeCombatantId !== casterCombatantId) {</p><p>hasPassedAwayFromCaster = true;</p><p>if (DEBUG) {</p><p>console.log(TAG, \"Turn moved away from caster. Waiting for caster next turn start.\", {</p><p>activeCombatantId,</p><p>casterCombatantId</p><p>});</p><p>}</p><p>return;</p><p>}</p><p>// Ignore the current/original caster turn when the effect was first created</p><p>if (!hasPassedAwayFromCaster) {</p><p>if (DEBUG) {</p><p>console.log(TAG, \"Still on original caster turn. Ignoring.\");</p><p>}</p><p>return;</p><p>}</p><p>Hooks.off(\"updateCombat\", hookId);</p><p>const liveEffect = targetActor.effects.get(effect.id);</p><p>if (liveEffect) {</p><p>await liveEffect.delete();</p><p>}</p><p>if (DEBUG) {</p><p>console.log(TAG, \"Focus removed at start of caster next turn.\", {</p><p>caster: casterActor.name,</p><p>target: targetActor.name</p><p>});</p><p>}</p><p>});</p>",
+          "damage_bonus": "",
+          "defense_target_type": "def",
           "description": "<p>At the start of your turn during a conflict, you may choose one ally who is able to hear you or one enemy you can see that is suffering from <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span>, <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span>, and/or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span>. Until the start of your next turn, the chosen creature becomes your <strong>focus</strong>.</p><p>You gain a bonus equal to <strong>【SL】</strong> to <strong>Checks</strong> you perform to examine your <strong>focus</strong>, as well as to your <strong>Accuracy Checks</strong> and <strong>Magic Checks</strong> for 【⚔️Attack】 and 【⚡Offensive Spell】 that include your <strong>focus</strong> among the targets. When you cause your <strong>focus</strong> to recover <strong>Hit Points</strong> and/or <strong>Mind Points</strong>, they recover <strong>【SL × 2】</strong> additional <strong>HP</strong> and/or <strong>MP</strong>, respectively.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "auto_target": "confirm",
+              "candidate_source": "combat",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "cf_pick",
+              "exclude_self": true,
+              "mode": "exact",
+              "skip_when_passive": false,
+              "target_filter": "IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED + HAS_STATUS_SHAKEN)"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Cognitive Focus",
+              "effect_kind": "apply_ae",
+              "effect_label": "cf_apply",
+              "target_ref": "cf_pick"
+            },
+            "2": {
+              "$deleted": false,
+              "accuracy_amount": "SL",
+              "accuracy_operation": "add",
+              "effect_kind": "adjust_accuracy",
+              "effect_label": "cf_acc"
+            },
+            "3": {
+              "$deleted": false,
+              "condition_formula": "TARGET_HAS_MY_FOCUS == 1",
+              "effect_kind": "adjust_grant",
+              "effect_label": "cf_heal",
+              "grant_amount": "SL * 2",
+              "grant_operation": "add"
+            }
+          },
           "heroic_requirement": "",
+          "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "5",
           "name": "Cognitive Focus",
           "optional_params": {},
           "passive_logic_action": "<p>[{\"id\":\"focus-outgoing-bonus\",\"label\":\"Cognitive Focus\",\"when\":{\"all\":[{\"actor\":{\"flagEquals\":{\"ns\":\"oni\",\"key\":\"focus.active\",\"equals\":true}}}]},\"effects\":[{\"type\":\"percent\",\"scope\":\"outgoing\",\"element\":\"all\",\"amount\":0.25}],\"options\":{\"recalcOnConfirm\":\"ifElementUnknown\"}}]</p>",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "cf_apply",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1",
+              "reaction_action_kind": "Attack,Spell,Skill",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "cf_acc",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            },
+            "2": {
+              "$deleted": false,
+              "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1",
+              "reaction_action_kind": "Item",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "cf_heal",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Checks Bonus</strong></p></td><td><p><strong>Extra HP/MP to Focus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td><td><p>+2</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td><td><p>+4</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td><td><p>+6</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td><td><p>+8</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td><td><p>+10</p></td></tr></tbody></table>",
           "skill_range": "",
           "skill_target": "",
@@ -481,7 +759,281 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "0Up4BNAxtoUC23jq"
+        "uniqueId": "8ta8kqa1PLv1b04D"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "gpSHoDwjyiTFzb2A",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398880625,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "2YUUh6Qp3aEcdIFt",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "chargeKey": "brainwave",
+              "charges": 0,
+              "chargesMax": 4,
+              "hudResourceColor": "#a06bff",
+              "lifetimeMode": "persistent_counter",
+              "reactionConfig": {
+                "effect_table": {},
+                "reaction_config_table": {}
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 0,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+          "name": "Brainwave Clock",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-brainwave-clock"
+          ],
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/SwordKnightPassive1.png",
+      "name": "Thermokinesis",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Esper",
+          "cost": "5+ MP",
+          "custom_logic_action": "",
+          "custom_logic_resolution": "",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<ul><li><strong><em>Trigger:</em></strong> When you deal damage.</li></ul><p>That damage becomes <strong>Fire</strong> or <strong>Ice</strong> (your choice), and its source deals extra damage equal to <strong>2 + the number of filled sections in your Brainwave Clock</strong>.</p><p>The cost is <strong>5 MP</strong> (or, if your Brainwave Clock has 2 or more filled sections, <strong>5 MP per filled section</strong>). Using this gift fills <strong>1 section</strong> of your Brainwave Clock.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "therm_offer",
+              "menu_option_descriptions": "Becomes Fire; +2 damage (+1 per filled Brainwave section)|Becomes Ice; +2 damage (+1 per filled Brainwave section)",
+              "menu_option_labels": "Fire|Ice",
+              "menu_option_refs": "therm_fire,therm_ice",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Infuse the damage with Fire or Ice",
+              "menu_title": "Thermokinesis"
+            },
+            "1": {
+              "chain_steps": "therm_pay,therm_el_fire,therm_bonus,therm_fill",
+              "effect_kind": "chain",
+              "effect_label": "therm_fire",
+              "menu_label": "Fire"
+            },
+            "2": {
+              "chain_steps": "therm_pay,therm_el_ice,therm_bonus,therm_fill",
+              "effect_kind": "chain",
+              "effect_label": "therm_ice",
+              "menu_label": "Ice"
+            },
+            "3": {
+              "consume_amount": "max(5, AE_CHARGES_BRAINWAVE_CLOCK * 5)",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "therm_pay",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "4": {
+              "change_element": "fire",
+              "effect_kind": "change_damage_element",
+              "effect_label": "therm_el_fire"
+            },
+            "5": {
+              "change_element": "ice",
+              "effect_kind": "change_damage_element",
+              "effect_label": "therm_el_ice"
+            },
+            "6": {
+              "damage_amount": "2 + AE_CHARGES_BRAINWAVE_CLOCK",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "therm_bonus"
+            },
+            "7": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_initial_charges_max": "4",
+              "ae_template_ref": "Brainwave Clock",
+              "effect_kind": "apply_ae",
+              "effect_label": "therm_fill",
+              "target_ref": "therm_self"
+            },
+            "8": {
+              "candidate_source": "self",
+              "effect_kind": "targeting",
+              "effect_label": "therm_self"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Thermokinesis",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "therm_offer",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Filled Sections</strong></p></td><td><p><strong>MP Cost to Use Gift</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>0</p></td><td><p>5</p></td><td><p>2</p></td></tr><tr><td><p>1</p></td><td><p>5</p></td><td><p>3</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td><td><p>5</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td><td><p>6</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "017fLL4jHjuyiPO1"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "hmCaI4KkGbzyJCBz",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783398880625,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/MastermindSkill2.png",
+      "name": "Life Transference",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "auto_target": "confirm",
+              "candidate_source": "self_or_my_focus",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "lt_pick",
+              "mode": "exact",
+              "skip_when_passive": false,
+              "target_filter": "HAS_STATUS_CRISIS"
+            },
+            "1": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "lt_heal",
+              "grant_amount": "5 + AE_CHARGES_BRAINWAVE_CLOCK * 5",
+              "grant_resource": "hp",
+              "target_ref": "lt_pick"
+            }
+          },
+          "level": "1",
+          "name": "Life Transference",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_STATUS_CRISIS == 1 || MY_FOCUS_IN_CRISIS == 1",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "lt_heal",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_completes_action"
+            }
+          },
+          "skill_type": "Active"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "jp5JDPhrhjBsFbYf"
       },
       "type": "equippableItem"
     },
@@ -1052,57 +1604,56 @@
       "type": "equippableItem"
     },
     {
-      "_id": "O61p6lhDXWyXhTmG",
+      "_id": "Pw50kMaQmNokZSRH",
       "_stats": {
-        "compendiumSource": "Item.39Y43bBRXTeu4SNo",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1757033554960,
-        "duplicateSource": "Item.xsFQ7dGyfH0X3i2t",
+        "createdTime": 1783398880625,
+        "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "effects": [
         {
-          "_id": "CC67DwXyTlecVFHO",
+          "_id": "w49zjIPFB9YvWke4",
           "_stats": {
             "compendiumSource": null,
-            "coreVersion": "12.331",
+            "coreVersion": "12.343",
             "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
-            "systemVersion": "4.6.4"
+            "systemVersion": "4.8.5"
           },
-          "changes": [
-            {
-              "key": "extra_damage_mod_all",
-              "mode": 2,
-              "priority": 1,
-              "value": "${2 + target.clock_brainwave}$"
-            },
-            {
-              "key": "override_damage_type",
-              "mode": 5,
-              "priority": 1,
-              "value": "Ice"
-            }
-          ],
-          "description": "<p>Your next instance of damage becomes <span style=\"text-decoration:underline\"><span style=\"font-family:Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;scrollbar-color:rgb(93, 20, 43) rgba(0, 0, 0, 0);cursor:pointer;--content-link-background:rgba(0, 0, 0, 0.1);background-image:none !important;background-position:initial !important;background-size:initial !important;background-repeat:initial !important;background-attachment:initial !important;background-origin:initial !important;background-clip:initial !important;background-color:rgb(102, 102, 102);padding:0px !important;border:none !important;border-radius:2px;white-space:nowrap;word-break:break-all;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(166, 227, 255) 0px 0px 4px;font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;letter-spacing:normal;orphans:2;text-align:start;text-indent:0px;text-transform:none;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px\"><strong><span style=\"text-decoration:underline\">Ice</span></strong></a></span></span>, and it deals extra damage equal to <strong>【2 + the number of filled sections in your Brainwave Clock】</strong></p>",
+          "changes": [],
+          "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
           "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": 298800,
+            "startTime": null,
             "startTurn": null,
             "turns": null
           },
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "CC67DwXyTlecVFHO",
-              "originalParentId": "39Y43bBRXTeu4SNo",
-              "originalUuid": "Item.39Y43bBRXTeu4SNo.ActiveEffect.CC67DwXyTlecVFHO"
+              "originalId": "w49zjIPFB9YvWke4",
+              "originalParentId": "Kq1SPcfl8zNwegqj",
+              "originalUuid": "Item.Kq1SPcfl8zNwegqj.ActiveEffect.w49zjIPFB9YvWke4"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "chargeKey": "brainwave",
+              "charges": 0,
+              "chargesMax": 4,
+              "hudResourceColor": "#a06bff",
+              "lifetimeMode": "persistent_counter",
+              "reactionConfig": {
+                "effect_table": {},
+                "reaction_config_table": {}
+              }
             },
             "statuscounter": {
               "config": {
@@ -1113,295 +1664,82 @@
               "visible": false
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/SwordKnightPassive1.png",
-          "name": "Thermokinesis (Ice)",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+          "name": "Brainwave Clock",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        },
-        {
-          "_id": "DMXxZ5p6XvqCRXnR",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.331",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.6.4"
-          },
-          "changes": [
-            {
-              "key": "extra_damage_mod_all",
-              "mode": 2,
-              "priority": 1,
-              "value": "${2 + target.clock_brainwave}$"
-            },
-            {
-              "key": "override_damage_type",
-              "mode": 5,
-              "priority": 1,
-              "value": "Fire"
-            }
+          "statuses": [
+            "fud-brainwave-clock"
           ],
-          "description": "<p>Your next instance of damage becomes <span style=\"text-decoration:underline\"><span style=\"font-family:Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;scrollbar-color:rgb(93, 20, 43) rgba(0, 0, 0, 0);cursor:pointer;--content-link-background:rgba(0, 0, 0, 0.1);background-image:none !important;background-position:initial !important;background-size:initial !important;background-repeat:initial !important;background-attachment:initial !important;background-origin:initial !important;background-clip:initial !important;background-color:rgb(102, 102, 102);padding:0px !important;border:none !important;border-radius:2px;white-space:nowrap;word-break:break-all;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(255, 174, 0) 0px 0px 4px;font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;letter-spacing:normal;orphans:2;text-align:start;text-indent:0px;text-transform:none;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px\"><strong><span style=\"text-decoration:underline\">Fire</span></strong></a></span></span>, and it deals extra damage equal to <strong>【2 + the number of filled sections in your Brainwave Clock】</strong></p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "DMXxZ5p6XvqCRXnR",
-              "originalParentId": "39Y43bBRXTeu4SNo",
-              "originalUuid": "Item.39Y43bBRXTeu4SNo.ActiveEffect.DMXxZ5p6XvqCRXnR"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/SwordKnightPassive1.png",
-          "name": "Thermokinesis (Fire)",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
           "system": {
-            "tags": []
+            "tags": [
+              "resource"
+            ]
           },
           "tint": "#ffffff",
-          "transfer": true,
+          "transfer": false,
           "type": "base"
         }
       ],
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/SwordKnightPassive1.png",
-      "name": "Thermokinesis",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Esper",
-          "cost": "X MP",
-          "damage_bonus": "0",
-          "description": "<ul><li><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a></span> When you deal damage</li></ul><p>That damage becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span>, and its source deals extra damage equal to <strong>[2 + the number of filled sections in your Brainwave Clock]</strong>.</p>",
-          "duration": "Instantaneous",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Thermokinesis",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Filled Sections</strong></p></td><td><p><strong>MP Cost to Use Gift</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>0</p></td><td><p>5</p></td><td><p>2</p></td></tr><tr><td><p>1</p></td><td><p>5</p></td><td><p>3</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td><td><p>5</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td><td><p>6</p></td></tr></tbody></table>",
-          "skill_range": "Any",
-          "skill_target": "Self",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "39Y43bBRXTeu4SNo"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "olW2zXPPViVXtsDk",
-      "_stats": {
-        "compendiumSource": "Item.tW8QuBva77z4HwZY",
-        "coreVersion": "12.343",
-        "createdTime": 1757033531869,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
-      "name": "Psychic Gifts",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Esper",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>Each time you take this Skill, you gain a <strong>gift</strong>. The rules for gifts and for the <strong>Brainwave Clock</strong> can be found on the Unique Mechanic and Facet section of this sheet.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "5",
-          "name": "Psychic Gifts",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Other",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "tW8QuBva77z4HwZY"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "PxvJlPxdibCh6irm",
-      "_stats": {
-        "compendiumSource": "Item.Yt8dPWkIZtissH3m",
-        "coreVersion": "12.343",
-        "createdTime": 1757033549181,
-        "duplicateSource": "Item.qTU1jyH5qDXfr1MU",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/MastermindSkill2.png",
-      "name": "Life Transference",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "check_bonus": "0",
-          "class": "Esper",
-          "cost": "X MP",
-          "damage_bonus": "0",
-          "description": "<ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a></span></span> When you cause one or more enemies to lose Hit Points</li></ul><p><strong>Choose yourself or an ally</strong> as your <strong>focus</strong>: if the chosen creature is in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, they recover an amount of <strong>Hit Points</strong> equal to <strong>[5 + (the number of filled sections in your Brainwave Clock, multiplied by 5)]</strong>.</p>",
-          "duration": "Instantaneous",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": true,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Life Transference",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Filled Sections</strong></p></td><td><p><strong>MP Cost to Use Gift</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>0</p></td><td><p>5</p></td><td><p>5</p></td></tr><tr><td><p>1</p></td><td><p>5</p></td><td><p>10</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td><td><p>15</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td><td><p>20</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td><td><p>25</p></td></tr></tbody></table>",
-          "skill_range": "Any",
-          "skill_target": "Self",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "Yt8dPWkIZtissH3m"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "t6M1qwGtNm5TG39u",
-      "_stats": {
-        "compendiumSource": "Item.N2IgLImJ07QLdBVT",
-        "coreVersion": "12.343",
-        "createdTime": 1757033518484,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive5.png",
       "name": "Brainwave Discharge",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
-          "check_bonus": "0",
-          "class": "Esper",
-          "cost": "4 Brainwave Clock",
-          "damage_bonus": "0",
-          "description": "<p>While your <strong>Brainwave Clock</strong> is full, you may use an action to erase all of its sections. If you do, <strong>choose one option:</strong></p><ul><li>You deal <strong>20</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage to every enemy that is present on the scene</li><li>You deal <strong>30</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage to a single enemy you can see</li></ul><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>The damage increases to <strong>30</strong> (all enemies) or <strong>40</strong> (single enemy).</p><p><strong>Skill Enhancement Lv. 40 ― </strong>The damage increases to <strong>40</strong> (all enemies) or <strong>50</strong> (single enemy).</p>",
-          "duration": "Instantaneous",
-          "heroic_requirement": "You must have mastered the Esper Class.",
+          "cost": "",
+          "effect_table": {
+            "0": {
+              "chain_steps": "bd_erase,bd_dmg",
+              "effect_kind": "chain",
+              "effect_label": "bd_root"
+            },
+            "1": {
+              "candidate_source": "self",
+              "effect_kind": "targeting",
+              "effect_label": "bd_self"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "0",
+              "ae_initial_charges_max": "4",
+              "ae_template_ref": "Brainwave Clock",
+              "effect_kind": "apply_ae",
+              "effect_label": "bd_erase",
+              "target_ref": "bd_self"
+            },
+            "3": {
+              "damage_amount": "20 + (ACTION_TARGET_COUNT == 1) * 10 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10",
+              "damage_cause": "damage",
+              "damage_element": "physical",
+              "effect_kind": "deal_damage",
+              "effect_label": "bd_dmg",
+              "target_ref": "enemy_action_targets"
+            }
+          },
           "isCheck": false,
-          "isFacet": false,
-          "isHeroic": true,
-          "isOffensiveSpell": false,
           "level": "1",
-          "max_level": "1",
           "name": "Brainwave Discharge",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_range": "Any",
-          "skill_target": "Special",
+          "on_activate_effect_ref": "bd_root",
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "skill_target": "Up to 99 Enemies",
           "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
+          "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "N2IgLImJ07QLdBVT"
+        "uniqueId": "Kq1SPcfl8zNwegqj"
       },
       "type": "equippableItem"
     },
@@ -1462,60 +1800,134 @@
       "type": "equippableItem"
     },
     {
-      "_id": "ZZHrWYaJTA69Tblm",
+      "_id": "x1kDmCw0ZkBCnNG8",
       "_stats": {
-        "compendiumSource": "Item.iSDT72qWfpPtIczE",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1757033529409,
+        "createdTime": 1783398880625,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "wdsdya99TeBHekKT",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "chargeKey": "brainwave",
+              "charges": 0,
+              "chargesMax": 4,
+              "hudResourceColor": "#a06bff",
+              "lifetimeMode": "persistent_counter",
+              "reactionConfig": {
+                "effect_table": {},
+                "reaction_config_table": {}
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 0,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+          "name": "Brainwave Clock",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-brainwave-clock"
+          ],
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperSkill7.png",
-      "name": "Hypercognition",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+      "name": "Psychic Gifts",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
-          "check_bonus": "0",
-          "class": "Esper",
-          "cost": "",
-          "damage_bonus": "0",
-          "description": "<p>The total MP cost of your <strong>spells</strong> and <strong>verses</strong> that include your <strong>focus</strong> among their targets is reduced by <strong>【SL】</strong>, or by <strong>【SL × 2】</strong> if your <strong>focus</strong> is the only target (to a minimum cost of 0 <strong>Mind Points</strong>).</p>\n",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "candidate_source": "self",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "pg_self",
+              "mode": "exact",
+              "skip_when_passive": true
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "0",
+              "ae_initial_charges_max": "4",
+              "ae_template_ref": "Brainwave Clock",
+              "effect_kind": "apply_ae",
+              "effect_label": "pg_seed_clock",
+              "target_ref": "pg_self"
+            }
+          },
           "level": "1",
-          "max_level": "5",
-          "name": "Hypercognition",
-          "optional_params": {},
-          "passive_logic_action": "<p>[{\"id\":\"hyper-crit-ramp\",\"label\":\"Hypercognition\",\"when\":{\"all\":[{\"actor\":{\"flagCompare\":{\"ns\":\"oni\",\"key\":\"focus.stacks\",\"op\":\">=\",\"value\":3}}}]},\"effects\":[{\"type\":\"critMult\",\"amount\":1.5},{\"type\":\"flat\",\"scope\":\"outgoing\",\"element\":\"ice\",\"amount\":250}]}]</p>",
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>MP Reduction</strong></p></td><td><p><strong>MP Reduction (Focus Only)</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td><td><p>8</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td><td><p>10</p></td></tr></tbody></table>",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
+          "name": "Psychic Gifts",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "pg_seed_clock",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "skill_type": "Passive"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "iSDT72qWfpPtIczE"
+        "uniqueId": "HFjo7pO12BzyfODR"
       },
       "type": "equippableItem"
     }

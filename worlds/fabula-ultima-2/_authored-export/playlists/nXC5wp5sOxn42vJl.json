@@ -1,0 +1,427 @@
+{
+  "_id": "nXC5wp5sOxn42vJl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1704534453269,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "channel": "music",
+  "description": "",
+  "fade": null,
+  "flags": {},
+  "folder": "sK5ygcug2LQ6JXfi",
+  "mode": 0,
+  "name": "The Winterlands Witch Trial",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "seed": 195,
+  "sort": 0,
+  "sorting": "a",
+  "sounds": [
+    {
+      "_id": "0z7fuPJbUJN8VTkM",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Lacus Frysta Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Lacus_Frysta_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "3Gif5uRs6oFwLuc9",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Generic Boss A",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Fabula_Boss_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.35
+    },
+    {
+      "_id": "42lvR8Vi85P2szsv",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Hotel Staregrad",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Hotel_Staregrad.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "5czABOZlHsQiVR3c",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Cryonic Pulse",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Cryonic_Pulse.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "8k6nwcpfUBcnYdJx",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Mermaid_Song",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Mermaid_Song.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "aUWnSmqFkkIBQ8CG",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Lesnistrom Forest",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Lesnistrom_Forest.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "cud9ZM200uaSRqm9",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Yaga House",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Yaga_House.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "DlvubuhIPGqzo16u",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Wwt Title Screen",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/WWT_Title_Screen.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.3
+    },
+    {
+      "_id": "dVzUihKLh6IdTmGB",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Vyrona Night",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Vyrona_Night.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "fVEfm7lNOWORQ6JT",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Glacial Lake",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Glacial_Lake.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "g1pamTqaHc5OoEPq",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Lesnimir Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Lesnimir_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "gUro8oj3p8wktRol",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Witch's Temptation",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Witch%27s_Temptation.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.3
+    },
+    {
+      "_id": "HiOKpt70w5q5xsbX",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Supreme Authority",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Supreme_Authority.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.46
+    },
+    {
+      "_id": "IZbvdneEv7lZNbYK",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Northland Hunter",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Northland_Hunter.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "j16Vn5LRLr56Hf0n",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Enforcer Mansion",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Enforcer_Mansion.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.46
+    },
+    {
+      "_id": "JQpynhKbzuZIvXze",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Hako Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Hako_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "Kc2Ph1nCmSEUsnMX",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "White Haired Man",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/White_Hair_Man.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "KOA8NmzajmPehyr2",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Battle With Villian",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Battle_with_Villian.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "nE72maTDjUkotObf",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Magical House",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Magical_House.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "NNY8cVFRg06oBBoJ",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Ice Cavern",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Ice_Cavern.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "PyTOfcm7pyrWKlTZ",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Smuggler Tunnel",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Smuggler_Tunnel.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.41
+    },
+    {
+      "_id": "QtYxqkbrc74y2VFm",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Smuggler Port",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Smuggler_Port.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.3
+    },
+    {
+      "_id": "rnOHLvqRUSbQpcVz",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Lustro Silva",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Dungeon_Theme_A.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.25
+    },
+    {
+      "_id": "S29n1D84URznrOmu",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "The Frozen Wasteland",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/The%20Frozen%20Wasteland.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.35
+    },
+    {
+      "_id": "U3lQmhZQCD5ReSOW",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Freeze Code",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Freeze_Code.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "UfmCngaRZ3oU7tfS",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Wiarachia Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Wiarachia_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    },
+    {
+      "_id": "vVQOv41C9zD8m9gC",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Vyrona Theme",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/The%20Winterlands%20Witch%20Trial/Vyrona_Theme.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "XSVoQWAEF2te9A8D",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": false
+        }
+      },
+      "name": "Generic Battle B",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Fabula_Battle_Theme_B.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    }
+  ]
+}

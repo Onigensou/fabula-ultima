@@ -1,0 +1,120 @@
+{
+  "_id": "B4Kz5WIXRbf1CwRG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767936848561,
+    "duplicateSource": "RollTable.S46aDzzbD7EtghoA",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "zCj82a9RbmCZPvkD",
+  "formula": "1d6",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Eidrachian%20Knights/EidrachianKnight_Standard.png",
+  "name": "Eisendrache Arena - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "8Tuav4wNLpjtfkzy",
+      "documentCollection": "Actor",
+      "documentId": "GINJQ0L5tcOCQpxG",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Gardner_Battle.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Gardner",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "iJUaY9zOPXg7fhpp",
+      "documentCollection": "Actor",
+      "documentId": "PUk8MzjcNsqU1jEZ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ape_Standard.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Ape",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "IVX91lcfI4juGrm3",
+      "documentCollection": "Actor",
+      "documentId": "KZ7jQ3mXrfqu42yO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wolf_Standard.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Wolf",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "nJNlKXD7xSxEFSy3",
+      "documentCollection": "Actor",
+      "documentId": "Usyut9yS2Tm5ZCXI",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bruce%20V/Bruce%20V_Armor.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Bruce",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "QL67vSs6t4D15LC6",
+      "documentCollection": "Actor",
+      "documentId": "Tm04BQuJAmAIWnHq",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Lurkara.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Voidog",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "sJTDt7aJtwl1aCFu",
+      "documentCollection": "Actor",
+      "documentId": "HSLzklG64h0nVZGE",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Nullis_Battle.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Nullis",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 100000
+}

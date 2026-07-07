@@ -1,0 +1,44 @@
+{
+  "_id": "SnpuZA1fqyPLoZ2B",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767841100097,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "NhYXwCvjexXHkrRm",
+  "formula": "1d1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+  "name": "Eisendrache Highroad - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "otezxIsSv58o21gr",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Bandit, Bandit, Bandit",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 150000
+}

@@ -1,0 +1,99 @@
+{
+  "_id": "2IOBBlG7FfsPz0fA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1678626560080,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "channel": "music",
+  "description": "",
+  "fade": null,
+  "flags": {},
+  "folder": null,
+  "mode": 0,
+  "name": "green",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "seed": 312,
+  "sort": 0,
+  "sorting": "a",
+  "sounds": [
+    {
+      "_id": "BeTzYNdEoVoFpybM",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Tavern",
+      "path": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Music/General/Tavern.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.09
+    },
+    {
+      "_id": "dhz9WGpr8eEjC2WG",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Fight Intense Rpg2",
+      "path": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Music/General/Fight_Intense_RPG2.mp3",
+      "repeat": false,
+      "sort": 0,
+      "volume": 0.3
+    },
+    {
+      "_id": "gT5DYg6PEuIK6BBJ",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Town Calm Street",
+      "path": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Music/General/Town%20-%20Calm%20Street.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "JsUWk4FazNuu53PD",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Hall Inn",
+      "path": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Music/General/Hall_Inn.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.13
+    },
+    {
+      "_id": "KxFLTLAkNYscX7om",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Fight Minor",
+      "path": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Music/General/Fight_Minor.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.16
+    },
+    {
+      "_id": "O0Ts2tNoiJA8W9RK",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {},
+      "name": "Fight Intense Rpg",
+      "path": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Music/General/Fight_Intense_RPG.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.21
+    }
+  ]
+}

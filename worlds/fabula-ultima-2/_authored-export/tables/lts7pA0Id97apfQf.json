@@ -1,0 +1,330 @@
+{
+  "_id": "lts7pA0Id97apfQf",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774098036101,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "IxpkbdLoQodYFW6Y",
+  "formula": "1d20",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+  "name": "Bandits Hideout - Weapon",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "238v1DSrgzZozg0b",
+      "documentCollection": "Item",
+      "documentId": "7rqRLdk9jF3m9xe2",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Looting Bow",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "6pODxOSQf75KwJmQ",
+      "documentCollection": "Item",
+      "documentId": "6gAihECVvDbXj7Et",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Scale Thresher",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "7zJEWvmyvTmgWg5u",
+      "documentCollection": "Item",
+      "documentId": "cfSbM3uCD5RH9yGn",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Quickdraw",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Db5AtAKY8XhPwqex",
+      "documentCollection": "Item",
+      "documentId": "p5JpfwoS2auCgI4b",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Spell Sever",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "dSq1U01wBXudaLl8",
+      "documentCollection": "Item",
+      "documentId": "0vF825X8e5EqfBx8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Hive Dart",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "FmU5QO5IuNYjzAUY",
+      "documentCollection": "Item",
+      "documentId": "Sot0IPra5zNXIUvG",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Voltaic Hound",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "gpuTwiMjXkZqyHYz",
+      "documentCollection": "Item",
+      "documentId": "2v7Z5aljbQkZyDzl",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Venom Claw",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "HdcdZQMQplxwayoY",
+      "documentCollection": "Item",
+      "documentId": "hE1yaFNXrlAhLBNd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1232.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Tantō",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "IFlW0uHRbzT3uAhd",
+      "documentCollection": "Item",
+      "documentId": "bu3WvEEayKs2hfyk",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Shadow Fang",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "jf68ynKUSPO75GkR",
+      "documentCollection": "Item",
+      "documentId": "4qXalxoKZVy8h2wD",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Deadly Premonition",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "JwHRqVEchYFZykuG",
+      "documentCollection": "Item",
+      "documentId": "GyArIXzGOCwQzDYY",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1974.gif",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Poison Lash",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "lek5yIFlpWGGC3jS",
+      "documentCollection": "Item",
+      "documentId": "11VnQe3QurUQkROc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Narwhalhorn",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "oLg3py1weBqseKGC",
+      "documentCollection": "Item",
+      "documentId": "VXGW0EAulcUnmnZd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Serpent Spear",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "P2pRFYVF1CQiyCt1",
+      "documentCollection": "Item",
+      "documentId": "9mEeAoPKlrCCQjRN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1250.gif",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Jur",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "QRoFqyuEQI3cePAf",
+      "documentCollection": "Item",
+      "documentId": "HRKMErxra6n5K4yp",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Viper Bone",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "tChfIVG707TIGHy4",
+      "documentCollection": "Item",
+      "documentId": "l0j9cRoBPtneGfq5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Chakram",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xiBbg29RnCHZT9cG",
+      "documentCollection": "Item",
+      "documentId": "oahgecKQD4NvCFcI",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Boomerang",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xpWqxuclSFi8DRCg",
+      "documentCollection": "Item",
+      "documentId": "QSc714kwztiZVOQy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Silent Edge",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "YwUdgrh153Iq85qt",
+      "documentCollection": "Item",
+      "documentId": "qP4euiobFGi27XuO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Main Gauche",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ZgTm9oM5HSw5JzNa",
+      "documentCollection": "Item",
+      "documentId": "ZtNcznuWB5roECru",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Aura Hammer",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

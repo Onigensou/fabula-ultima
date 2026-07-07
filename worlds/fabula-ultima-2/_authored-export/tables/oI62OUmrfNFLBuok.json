@@ -1,0 +1,345 @@
+{
+  "_id": "oI62OUmrfNFLBuok",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1748648406040,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "1d21",
+  "img": "icons/svg/d20-grey.svg",
+  "name": "4 Star",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "6s778AwnsYArBEj3",
+      "documentCollection": "Item",
+      "documentId": "5E2jOUDbpFlIkySU",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/commodities/tech/metal-jaws.webp",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Man Catcher",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "6YBJAKriuycTJly0",
+      "documentCollection": "Item",
+      "documentId": "3UYXnhsSCTo0lV68",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Encyclopedia",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "7MPFPAMwnN7manLr",
+      "documentCollection": "Item",
+      "documentId": "9G7GfCYAFNV1ojkx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1971.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Beast Tamer",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "8OmpakI7JKPPUAv3",
+      "documentCollection": "Item",
+      "documentId": "9mEeAoPKlrCCQjRN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1250.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Jur",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "9Fx7qaPEVIso6SDw",
+      "documentCollection": "Item",
+      "documentId": "cG0hXOFNc0NftvbM",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2409.gif",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Happy Feet",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "9jc1aalzzeVhHl4c",
+      "documentCollection": "Item",
+      "documentId": "NNTvabK5vy807Mvt",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2612.gif",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Fairy Ring",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "9NTSB4Ii4GM6Hi63",
+      "documentCollection": "Item",
+      "documentId": "iTT3JNZKFeIE55ge",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/3D/SH2R_Steel_Pipe.webp",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Rusty Pipe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "dGqKhPiqUm6xZ20a",
+      "documentCollection": "Item",
+      "documentId": "Ll5YDptyYjmwjuhW",
+      "drawn": false,
+      "flags": {},
+      "img": "https://cdna.artstation.com/p/assets/images/images/024/014/374/large/marko-bubalo-jetpack-novi2.jpg?1581033568",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Jetpack",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "e9y32Tphz9RxbR8B",
+      "documentCollection": "Item",
+      "documentId": "CtVrZqnTjAHvmYLG",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13109.gif",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Persuader",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "GFKjZn9Hu8foTqrR",
+      "documentCollection": "Item",
+      "documentId": "5CjAC78JMmlcO744",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/equipment/hand/gauntelet-tooled-blue.webp",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Rocket Punch",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "jAfhZ8JGidxTRSzF",
+      "documentCollection": "Item",
+      "documentId": "7Qc6YoHblezkuamj",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Therion Ripper",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "kZNe9tmDWT88xDsm",
+      "documentCollection": "Item",
+      "documentId": "tqx7YuLnGXgF2hWi",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Hammer/Icon-Frying_Pan.webp",
+      "range": [
+        21,
+        21
+      ],
+      "text": "Frying Pan",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pqAYCwFkDcyLdMfT",
+      "documentCollection": "Item",
+      "documentId": "nt0aSfqujhxInx6y",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2603.gif",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Hypno Pendulum",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Q87DjVfevRXu0nFK",
+      "documentCollection": "Item",
+      "documentId": "53YPmJxiXvLx7Ysa",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Forest Hatchet",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Qp7T7f8a2mF4s9c9",
+      "documentCollection": "Item",
+      "documentId": "Xl16aahsbiCGM6oW",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/toxic-orb.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Toxic Orb",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "QRmcnEGdl2tIIj0L",
+      "documentCollection": "Item",
+      "documentId": "BIbreDnYgqPYJy6s",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/6381.gif",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Gravedigger Shovel",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Qrrrv5tYhp75s6eb",
+      "documentCollection": "Item",
+      "documentId": "Y2FqqcwEbuEkprP5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Battle_Wrench_render.webp",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Battle Wrench",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "u095uhTctDvalKpU",
+      "documentCollection": "Item",
+      "documentId": "7rqRLdk9jF3m9xe2",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Looting Bow",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "XnOY1rp8BRZd4uLQ",
+      "documentCollection": "Item",
+      "documentId": "Qj7ruUSbcYUqO0uz",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1223.gif",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Trick Dagger",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xwfPXFEiioEiVWfT",
+      "documentCollection": "Item",
+      "documentId": "aTdfmfmApSbbJ2c4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bamboo%20Copter.webp",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Bamboo Copter",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ZRKqPrLdxph67vy6",
+      "documentCollection": "Item",
+      "documentId": "HRKMErxra6n5K4yp",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Viper Bone",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

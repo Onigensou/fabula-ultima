@@ -634,86 +634,104 @@
       "type": "equippableItem"
     },
     {
-      "_id": "59DvOVZHpS5rVLjl",
+      "_id": "4E8q3p2h4iMJNTU5",
       "_stats": {
-        "compendiumSource": "Item.wPC22EqyPCSc20i0",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148641930,
+        "createdTime": 1783398988900,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
-        "core": {
-          "sourceId": "Item.wPC22EqyPCSc20i0"
-        },
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
-      "name": "Heal",
+      "folder": null,
+      "img": "icons/svg/item-bag.svg",
+      "name": "Zero Trigger: Motivation",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "nSGZ1sz1rdKao0kz": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
           "check_bonus": "0",
-          "class": "Spiritist",
-          "cost": "10 x T MP",
-          "custom_logic_action": "",
-          "damage_bonus": "40",
+          "class": "Blanche",
+          "cost": "-",
+          "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
-          "duration": "Instantaneous",
+          "description": "<p>When an ally you can see unleashes their zero effect. Gain 6 Zero Power</p>",
+          "duration": "-",
           "effect_table": {
             "0": {
               "$deleted": false,
               "effect_kind": "grant",
-              "effect_label": "heal_hp",
-              "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
-              "grant_resource": "hp",
-              "target_ref": "action_targets"
+              "effect_label": "ZP refill",
+              "grant_amount": "6",
+              "grant_resource": "zero_power",
+              "target_ref": "ztm_self"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "ztm_self",
+              "exclude_self": false,
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
             }
           },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
-          "isFacet": true,
+          "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Heal",
-          "on_activate_effect_ref": "heal_hp",
+          "name": "Zero Trigger: Motivation",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "ZP refill",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "ally",
+              "reaction_trigger": "creature_unleashes_zero_power"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
-          "skill_range": "Range",
-          "skill_target": "Up to three creatures",
-          "skill_type": "Spell",
-          "type_damage": "Heal",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "wPC22EqyPCSc20i0"
+        "uniqueId": "6TwEYePbTyuH0fFg"
       },
       "type": "equippableItem"
     },
@@ -1362,7 +1380,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1380,8 +1397,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "cXbX8RdGLCiQ5V1d",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mirror%20Shield.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -1417,7 +1432,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.cXbX8RdGLCiQ5V1d",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1568,144 +1582,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "E1dOu3pYQKL60blD"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "eGpAVtP9SFw4QJy3",
-      "_stats": {
-        "compendiumSource": "Item.nMkcYQIOYWFKigMv",
-        "coreVersion": "12.343",
-        "createdTime": 1783148641930,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "icons/svg/item-bag.svg",
-      "name": "Zero Trigger: Motivation",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "check_bonus": "0",
-          "class": "Blanche",
-          "cost": "-",
-          "damage_bonus": "",
-          "defense_target_type": "def",
-          "description": "<p>When an ally you can see unleashes their zero effect. Gain 6 Zero Power</p>",
-          "duration": "-",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "consume_self": false,
-              "effect_kind": "grant",
-              "effect_label": "ZP refill",
-              "from_resource": "",
-              "grant_amount": "6",
-              "grant_operation": "",
-              "grant_resource": "zero_power",
-              "grant_round": "",
-              "menu_label": "",
-              "target_ref": "ztm_self",
-              "to_resource": ""
-            },
-            "1": {
-              "$deleted": false,
-              "allow_empty": false,
-              "auto_confirm_when_obvious": true,
-              "auto_target": true,
-              "candidate_source": "self",
-              "category": "",
-              "consume_self": false,
-              "count": "1",
-              "effect_kind": "targeting",
-              "effect_label": "ztm_self",
-              "exclude": "",
-              "exclude_action_targets": false,
-              "exclude_self": false,
-              "from_resource": "",
-              "iteration_mode": "together",
-              "menu_label": "",
-              "mode": "exact",
-              "skip_when_passive": true,
-              "target_filter": "",
-              "target_prompt": "",
-              "to_resource": ""
-            }
-          },
-          "gadget_alchemy_tier": "",
-          "gadget_infusion_tier": "",
-          "gadget_magitech_tier": "",
-          "heroic_requirement": "",
-          "ignore_hr": false,
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": true,
-          "isZeroPower": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Zero Trigger: Motivation",
-          "on_activate_effect_ref": "",
-          "optional_params": {},
-          "pre_activate_effect_ref": "",
-          "reaction_config_table": {
-            "0": {
-              "$deleted": false,
-              "condition_formula": "",
-              "reaction_action_intent": "",
-              "reaction_action_kind": "",
-              "reaction_action_target": "",
-              "reaction_cause_filter": "",
-              "reaction_damage_amount": "",
-              "reaction_damage_source": "",
-              "reaction_damage_type": "",
-              "reaction_debuff_count_min": "",
-              "reaction_debuff_count_target": "",
-              "reaction_effect_ref": "ZP refill",
-              "reaction_isPassive": false,
-              "reaction_ownership": "",
-              "reaction_passive_mode": "on",
-              "reaction_passive_target": "self",
-              "reaction_resource_filter": "",
-              "reaction_responder": "",
-              "reaction_source": "ally",
-              "reaction_source_skill": "",
-              "reaction_status_filter": "",
-              "reaction_subject_kind": "",
-              "reaction_trigger": "creature_unleashes_zero_power",
-              "requires_skill": ""
-            }
-          },
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "",
-          "skill_target": "-",
-          "skill_type": "Passive",
-          "target_eligibility": "",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": true,
-        "uniqueId": "qcrYlGDps1OzZ1Zk"
       },
       "type": "equippableItem"
     },
@@ -3007,47 +2883,40 @@
       "type": "equippableItem"
     },
     {
-      "_id": "mu1lQYmXO6pYVif5",
+      "_id": "LMnXdh32LS4ZRCn5",
       "_stats": {
-        "compendiumSource": "Item.wPC22EqyPCSc20i0",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148641930,
+        "createdTime": 1783398988900,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
-        "core": {
-          "sourceId": "Item.wPC22EqyPCSc20i0"
-        },
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
+      "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
       "name": "Heal",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "nSGZ1sz1rdKao0kz": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
           "check_bonus": "0",
           "class": "Spiritist",
           "cost": "10 x T MP",
-          "custom_logic_action": "",
-          "damage_bonus": "40",
+          "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
-          "duration": "Instantaneous",
+          "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+          "duration": "-",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -3061,7 +2930,7 @@
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
-          "isFacet": true,
+          "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
@@ -3071,6 +2940,8 @@
           "name": "Heal",
           "on_activate_effect_ref": "heal_hp",
           "optional_params": {},
+          "passive_logic_action": "",
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
@@ -3078,15 +2949,15 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
-          "skill_target": "Up to three creatures",
+          "skill_target": "",
           "skill_type": "Spell",
-          "type_damage": "Heal",
+          "type_damage": "healing",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "wPC22EqyPCSc20i0"
+        "unique": true,
+        "uniqueId": "7ApZzLcwZfDZz0nE"
       },
       "type": "equippableItem"
     },
@@ -3398,7 +3269,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3416,8 +3286,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "oM6Bo3Hc4wV9ICa9",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -3452,7 +3320,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.oM6Bo3Hc4wV9ICa9",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4028,7 +3895,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -4046,8 +3912,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "rcyOz2H1OGzvSE0P",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/brom.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -4082,7 +3946,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.rcyOz2H1OGzvSE0P",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4718,7 +4581,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -4737,8 +4599,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "y8noOLFXVNhH9Ubp",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -4771,7 +4631,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.y8noOLFXVNhH9Ubp",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4945,13 +4804,10 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>After an enemy you can see loses Hit Points due to damage dealt by one of your allies, if that damage was increased by one or more of your <strong>“hex” invocations</strong>, you may perform a <strong>free attack</strong> with a weapon you have equipped. This attack may only target that enemy, and receives a bonus equal to <strong>[SL]</strong> to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all <strong>“hex” invocations</strong> present on its target end immediately after the attack has been resolved.</p>\n<p>If two or more enemies trigger this Skill at the same time, you can perform a <strong>free attack</strong> against each of them, in whatever order you prefer.</p>\n",
-          "details_roller": "Show",
           "duration": "Instantanious",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "Uq2ImnVoeNW4gt88",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/dragon_kick.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -4971,8 +4827,7 @@
           "skill_target": "Special",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.Uq2ImnVoeNW4gt88"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -5854,7 +5709,6 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You may use an action and spend 5 Mind Points to perform an <strong>invocation</strong>, drawing energy from one of the <strong>wellsprings</strong> present on the scene (see <strong>Invoker's</strong> <strong>Unique Mechanic</strong>). Your <strong>【SL】</strong> in this Skill determines which invocations you have access to.</p>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -6426,9 +6280,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "wecgr398559brY1I",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/phantom_rush.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -6453,8 +6305,7 @@
           "skill_type": "Active",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -6783,7 +6634,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -6802,8 +6652,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "czkjXYoh6vPaj5bQ",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Silverfish_icon1.png",
           "ingredient_taste": "sweet",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -6843,7 +6691,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.czkjXYoh6vPaj5bQ",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -6929,7 +6776,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -6948,8 +6794,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "y8noOLFXVNhH9Ubp",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -6982,7 +6826,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.y8noOLFXVNhH9Ubp",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
