@@ -634,7 +634,7 @@ export async function dispatchReactionMenu({
     };
   }
 
-  async function processDecision(cand) {
+  async function processDecision(cand, remotePrompt = null) {
     // GM-side authoritative stale-click safeguard. If a player click
     // arrives for a blade that's currently disabled (peer-acting badge
     // OR cost-walker badge), reject it before firing the chain. Two
@@ -699,6 +699,13 @@ export async function dispatchReactionMenu({
     try {
       chainResult = await firePreAcceptedCandidate({
         director, casterActor: reactor, candidate: cand, payload,
+        // Route any secondary picker (e.g. Cognitive Focus's target pick)
+        // to the reactor's OWN client when a player accepted this lifecycle
+        // reaction remotely. Null on a GM-local accept → GM picks locally.
+        // Mirrors the action-card pill's remote-prompt routing so a
+        // standalone (turn_start/…) ask reaction no longer forces the GM to
+        // make the player's pick.
+        remotePrompt,
       });
       if (isCancelledResult(chainResult)) {
         // The player backed out of a secondary picker (target selection /
@@ -885,7 +892,14 @@ export async function dispatchReactionMenu({
           return;
         }
         sendAck();
-        const keepGoing = await processDecision(cand);
+        // A PLAYER accepted remotely → route any secondary picker in the
+        // chain (target pick, option menu) back to THEIR client. Only when
+        // the sender is a real non-GM user (mirrors the action-card pill's
+        // routeUserId guard); a GM-owned remote falls through to local.
+        const remotePrompt = (fromUid && channel && !game.users?.get(fromUid)?.isGM)
+          ? { channel, targetUserId: fromUid, combatId }
+          : null;
+        const keepGoing = await processDecision(cand, remotePrompt);
         if (keepGoing) renderMenu();
         else { closeMenusEverywhere(); resolveClose(); }
       }).catch((e) => {

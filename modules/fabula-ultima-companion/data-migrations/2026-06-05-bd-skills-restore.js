@@ -57,6 +57,17 @@ function findInFolder(game, folderId, name) {
 }
 
 export async function migrate(game, log) {
+  // RETIRED (2026-07-06): the Battle Director masters have been MOVED into the
+  // legacy "💥 Skill / Class Skill" library and the BD tree deleted (single
+  // source of truth). This restore recreated masters BY BD FOLDER PATH from the
+  // snapshot — after the move its existence check ("is this in Battle Director /
+  // <Class> / Skill?") can no longer see them, so it would recreate DUPLICATES
+  // in a freshly rebuilt BD tree. Neutralized to a no-op. Co-dev worlds now get
+  // this content by pulling world data (per the world-data sharing policy), not
+  // by this migration. Kept in the manifest so its key stays recorded.
+  log("BD skills restore retired — no-op (masters consolidated into 💥 Skill / Class Skill; content ships via world-data push)");
+  return { applied: true, summary: "retired — no BD-master restore (tree consolidated into 💥 Skill)" };
+  /* eslint-disable no-unreachable */
   const snap = await fetchSnapshot(log);
   if (!Array.isArray(snap)) {
     return { applied: false, summary: "snapshot unavailable — will retry next boot" };

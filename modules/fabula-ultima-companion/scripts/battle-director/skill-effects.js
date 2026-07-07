@@ -1267,7 +1267,7 @@ function weaponReactionInPlay(item, payload, casterActor) {
 // CONTAINER item's `isEquipped` (the `_skill` itself has no equip state).
 // Fail-open when the container is missing/dangling or isn't equippable gear, so
 // ordinary (non-gear-linked) skill/AE reactions are never gated.
-function containerReactionInPlay(item, casterActor) {
+function containerReactionInPlay(item, casterActor, payload) {
   const containerId = item?.system?.container;
   if (!containerId) return true;
   const container = casterActor?.items?.get?.(containerId);
@@ -1275,7 +1275,20 @@ function containerReactionInPlay(item, casterActor) {
   const itemType = String(container.system?.props?.item_type ?? "").toLowerCase();
   const GEAR = new Set(["accessory", "armor", "weapon", "shield"]);
   if (!GEAR.has(itemType)) return true;
-  return container.system?.props?.isEquipped === true;
+  if (container.system?.props?.isEquipped === true) return true;
+  // A WEAPON container that was actually USED in the triggering action counts as
+  // "in play" even when it isn't flagged isEquipped — NPC weapons are almost never
+  // marked equipped (they rely on weapon-USED gating, as the legacy on-weapon
+  // `weaponReactionInPlay` path did). Mirror that: only the acting attacker, only
+  // the matching weapon. Per-row `reaction_requires_weapon_used` still constrains
+  // WHICH rows fire; this just stops the equip flag from gating the item out.
+  if (itemType === "weapon") {
+    const usedUuid = payload?.weaponUuid ?? null;
+    const actingUuid = payload?.sourceActorUuid ?? null;
+    const reactorIsActor = !!actingUuid && casterActor?.uuid === actingUuid;
+    if (usedUuid && reactorIsActor && container.uuid === usedUuid) return true;
+  }
+  return false;
 }
 
 // Per-ROW weapon-USED gate. A reaction row may DECLARE (via the checkbox column
@@ -1449,7 +1462,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
     const rc = item.system?.props?.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
     if (!weaponReactionInPlay(item, payload, casterActor)) continue;
-    if (!containerReactionInPlay(item, casterActor)) continue;
+    if (!containerReactionInPlay(item, casterActor, payload)) continue;
     const effectTable = item.system?.props?.effect_table ?? {};
     for (const key of Object.keys(rc)) {
       const row = rc[key];
@@ -1691,19 +1704,22 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     appliedByActorUuid,
     appliedByTokenUuid,
   });
-  // Visual-first: show passive card before the effect applies so players
-  // see the trigger before it acts. Only for auto-fire rows (on / force);
-  // ask-mode rows already have a blade menu as visual feedback.
+  // Show the passive card for auto-fire rows (on / force); ask-mode rows
+  // already have a blade menu as visual feedback. FIRE-AND-FORGET: the game
+  // flow no longer blocks on the card's ~280ms enter before applying the
+  // effect (dropped the await). The spec still enqueues synchronously here,
+  // so the FIFO queue preserves the one-at-a-time stagger — each actor's
+  // badge still animates in turn, just off the critical path.
   if (isAutoFireReactionMode(candidate.mode) && ctx.reactorToken) {
     try {
       const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
-      await enqueuePassiveCard({
+      enqueuePassiveCard({
         title:       candidate.carrierName,
         casterToken: ctx.reactorToken,
         icon:        candidate.carrierImg,
-      });
+      }).catch((e) => warn("firePreAcceptedCandidate: passive card threw", e));
     } catch (e) {
-      warn("firePreAcceptedCandidate: passive card threw", e);
+      warn("firePreAcceptedCandidate: passive card import threw", e);
     }
   }
 
@@ -7395,12 +7411,28 @@ async function applyTakeTurnNextEffect(row, ctx) {
   const tr = await resolveTargetRef(row.target_ref || "last_summoned", ctx);
   if (!tr.ok || !tr.tokens.length) return { ok: false, kind: "take_turn_next", reason: tr.reason ?? "no-targets" };
   const applied = [];
+  // Are we BETWEEN turns? A turn_end reaction resolves AFTER TURN_END already
+  // called nextTurn() (which cleared currentCombatantId and consumed any
+  // forced-next slot). A deferred forceNextTurn() here would sit unconsumed
+  // until the NEXT turn transition — one turn too late — so "acts immediately
+  // after you" never lands (e.g. Ouroboros Dance danced at turn_END, vs
+  // turn_START which sets the slot before that nextTurn() runs). When
+  // mid-transition we PIN the combatant directly, the same override nextTurn()
+  // applies at its step 1b; TURN_START honors a non-null currentCombatantId
+  // without re-picking (state-handlers TurnStart).
+  const betweenTurns = dc.currentCombatantId == null;
   for (const token of tr.tokens) {
     const c = dc.combatants?.find?.((x) => x.tokenId === token.id || x.tokenDoc?.uuid === token.uuid);
     if (!c) { warn(`skill-effects.take_turn_next: ${token.name ?? token.uuid} is not a combatant`); continue; }
     // Ensure it has a turn to take this round (a fresh summon has 0).
     if (!(c.turnsRemaining > 0)) c.turnsRemaining = Math.max(1, c.turnsPerRound || 1);
-    dc.forceNextTurn(c.id);
+    if (betweenTurns) {
+      dc.currentSide = c.side;
+      dc.currentCombatantId = c.id;      // PIN — TURN_START honors it (no re-pick)
+      dc.forcedNextCombatantId = null;
+    } else {
+      dc.forceNextTurn(c.id);
+    }
     applied.push(c.id);
   }
   if (applied.length) { try { dc._notifyTurnActions?.(); } catch {} }

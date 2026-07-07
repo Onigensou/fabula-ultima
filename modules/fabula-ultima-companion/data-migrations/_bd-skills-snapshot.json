@@ -4442,9 +4442,6 @@
             "$deleted": false,
             "effect_label": "cf_pick",
             "effect_kind": "targeting",
-            "menu_title": "Cognitive Focus",
-            "menu_option_refs": "cf_ally, cf_enemy",
-            "menu_option_labels": "Focus an ally|Focus a Dazed / Enraged / Shaken enemy",
             "candidate_source": "combat",
             "mode": "exact",
             "count": 1,
@@ -4457,10 +4454,6 @@
             "$deleted": false,
             "effect_label": "cf_apply",
             "effect_kind": "apply_ae",
-            "candidate_source": "combat",
-            "category": "ally",
-            "mode": "exact",
-            "count": 1,
             "ae_template_ref": "Cognitive Focus",
             "target_ref": "cf_pick",
             "ae_duplicate_mode": "replace_per_caster"
@@ -15133,7 +15126,13 @@
             "reaction_source": "self",
             "reaction_passive_mode": "ask",
             "reaction_action_kind": "Item",
-            "reaction_effect_ref": "pr_do"
+            "reaction_effect_ref": "",
+            "reaction_isPassive": false,
+            "reaction_damage_type": "",
+            "reaction_damage_amount": "",
+            "reaction_debuff_count_target": "",
+            "reaction_debuff_count_min": "",
+            "reaction_passive_target": ""
           }
         },
         "defense_target_type": "def",
@@ -15172,7 +15171,12 @@
             "skip_when_passive": false,
             "auto_confirm_when_obvious": false
           }
-        }
+        },
+        "uuid": "Item.4sTRuDSN47Q0T4Wj",
+        "id": "4sTRuDSN47Q0T4Wj",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/prognosis.png",
+        "details_roller": "Show",
+        "reaction_effect_table": {}
       },
       "unique": false,
       "uniqueId": "4sTRuDSN47Q0T4Wj"
