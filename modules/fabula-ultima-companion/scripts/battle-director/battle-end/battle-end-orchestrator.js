@@ -14,6 +14,7 @@ import { runBattleEndFx } from "./battle-end-fx.js";
 import { runBattleEndSummaryLogic } from "./battle-end-summary-logic.js";
 import { runBattleEndRank } from "./battle-end-rank.js";
 import { runBattleEndSummaryUI } from "./battle-end-summary-ui.js";
+import { runBattleEndDefeatScreen } from "./battle-end-defeat-screen.js";
 import { runBattleEndTransition } from "./battle-end-transition.js";
 import { runBattleEndResourceReset } from "./battle-end-cleanup.js";
 import { evaluateFollowups, mergeRewardSnapshots } from "./battle-followup.js";
@@ -147,6 +148,13 @@ export async function runBattleEndSequence(director) {
     await runBattleEndSummaryLogic(endCtx);
     await runBattleEndRank(endCtx);
     await runBattleEndSummaryUI(endCtx); // awaited: transition only starts after GM's animation finishes
+  } else if (endCtx.outcome === "defeat" && !endCtx.debug) {
+    // Party-wipe (Game Over) screen — awaited like the victory summary so the
+    // transition holds until it finishes. Currently a STUB (no-op) handed off for
+    // co-dev implementation; see battle-end-defeat-screen.js. Wrapped so a future
+    // implementation throwing can't block teardown.
+    try { await runBattleEndDefeatScreen(endCtx); }
+    catch (e) { warn("[BattleEnd] defeat screen threw", e); }
   }
 
   await runBattleEndTransition(endCtx);

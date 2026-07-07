@@ -24,6 +24,7 @@ import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { readPropNum, resolveAffinity } from "./snapshot.js";
+import { isActorDefeated } from "./defeat-reactor.js";
 import { computeIncomingDamage } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
@@ -1448,6 +1449,12 @@ export function bumpReactionRoundCount(director, carrierUuid, rowKey) {
 
 export async function findPassiveCandidates({ casterActor, trigger, payload, includeUnavailable = false }) {
   if (!casterActor || !trigger) return [];
+  // A defeated creature (HP <= 0) triggers NO reaction — with ONE exception: its
+  // own `creature_defeated` on-death emit (the sanctioned death hook, e.g. Flame
+  // Burst), which the defeat reactor dispatches while the token still exists. Any
+  // other trigger (targeted / takes-damage / performs-action / lifecycle) is
+  // suppressed so a KO'd creature can't react. Mirrors the free-action defeat gate.
+  if (trigger !== "creature_defeated" && isActorDefeated(casterActor)) return [];
   const out = [];
 
   // Single-mode model (reaction_isPassive retired 2026-06-07): every row's

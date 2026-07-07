@@ -61,6 +61,17 @@ function parseDbOption(value) {
   return s === "on" || s === "true" || s === "1" || s === "yes" || s === "enabled";
 }
 
+// Actor-level live-defeat signal (mirrors DirectorCombatant.isDefeatedLive but
+// takes a raw actor). The canonical gate for "this creature is DOWN": HP <= 0.
+// A downed creature forfeits turns (isDefeatedLive), takes NO free action, and
+// triggers NO reaction — EXCEPT its own `creature_defeated` on-death emit. Kept
+// here (the defeat domain module) and imported by free-actions + skill-effects so
+// all three read one definition. `num` returns null on a bad read → not defeated.
+export function isActorDefeated(actor) {
+  const hp = num(get(actor, PATH_HP));
+  return hp != null && hp <= 0;
+}
+
 function isAllowedRank(v) {
   const r = String(v ?? "").trim().toLowerCase();
   if (!r || r === "champion") return false;
@@ -176,9 +187,12 @@ async function evaluateDefeat(director, actor, payload) {
   const tokenDoc = await resolveDefeatedToken(actor, payload);
   if (!tokenDoc) { warn(`defeat-reactor: ${actor.name} at HP 0 but no token found — skip`); return false; }
 
-  // Enemy disposition gate (-1).
+  // Disposition gate — a rank-eligible (Soldier/Elite) minion of ANY allegiance
+  // is removed on death: enemy (-1), neutral (0), or ally/friendly (1). The
+  // creature_defeated on-death emit already fired in defeatReactor before this,
+  // so their death reactions still resolve. Secret (-2) tokens are left in place.
   const disposition = getDisposition(tokenDoc);
-  if (disposition !== -1) return false;
+  if (![-1, 0, 1].includes(disposition)) return false;
 
   await performDefeat(director, tokenDoc, actor);
   return true;
@@ -252,6 +266,61 @@ async function emitCreatureDefeated(director, actor, payload, firedKeys) {
   }
 }
 
+// ── KO / Defeated status (survivors kept on the scene at 0 HP) ────────────
+// A visible, reversible marker for creatures that hit 0 HP but are NOT physically
+// removed (PCs, Champions/bosses, persist tokens, and anything when auto-defeat is
+// off). Mirrors the crisis-reactor reconcile: apply at HP ≤ 0, remove at HP > 0
+// (revive). Carries `preventFreeAttack` so the existing free-action suppression
+// also recognizes it, plus a `bdDefeated` marker other systems can gate on. The
+// system's canonical "KO" status supplies the token overlay. Removed creatures
+// never get it — the caller skips this when evaluateDefeat took the token.
+//
+// KO status (CONFIG.statusEffects id, name "KO", Incapacitate icon) is referenced
+// by id, exactly as the Crisis AE references its own status id. This world has no
+// core "dead" status.
+const KO_STATUS_ID = "4g2B0rdJ3SiUQvUv";
+const KO_STATUS_IMG = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Incapacitate.png";
+function isKoAE(e) {
+  if (!e || e.disabled === true) return false;
+  return e.flags?.["fabula-ultima-companion"]?.bdDefeated === true;
+}
+function findKoAEs(actor) {
+  return (actor?.effects?.contents ?? []).filter(isKoAE);
+}
+function buildKoData() {
+  return {
+    name: "KO",
+    img: KO_STATUS_IMG,
+    statuses: [KO_STATUS_ID],            // renders the KO token overlay
+    duration: {},                        // indefinite until HP recovers
+    changes: [],                         // marker only — no computable changes
+    flags: { "fabula-ultima-companion": { bdDefeated: true, preventFreeAttack: true } },
+  };
+}
+// Reconcile ONE surviving actor's Defeated AE against current HP. Idempotent:
+// applies once at HP ≤ 0, removes at HP > 0, collapses accidental duplicates.
+async function evaluateDefeatStatus(actor) {
+  if (!actor) return null;
+  const hp = num(get(actor, PATH_HP));
+  if (hp == null) return null;
+  const down = hp <= 0;
+  const existing = findKoAEs(actor);
+  if (down && existing.length === 0) {
+    await actor.createEmbeddedDocuments("ActiveEffect", [buildKoData()]);
+    log(`defeat-reactor: applied Defeated status to ${actor.name} (hp ${hp})`);
+    return "applied";
+  }
+  if (!down && existing.length > 0) {
+    await actor.deleteEmbeddedDocuments("ActiveEffect", existing.map((e) => e.id).filter(Boolean));
+    log(`defeat-reactor: removed Defeated status from ${actor.name} (hp ${hp} > 0 — revived)`);
+    return "removed";
+  }
+  if (down && existing.length > 1) {
+    await actor.deleteEmbeddedDocuments("ActiveEffect", existing.slice(1).map((e) => e.id).filter(Boolean));
+  }
+  return null;
+}
+
 // Built-in reactor — settleInstance invokes this per ledger event, passing the
 // shared `firedKeys` dedup set as the third arg.
 export async function defeatReactor(director, cfg, extra) {
@@ -267,7 +336,11 @@ export async function defeatReactor(director, cfg, extra) {
   if (actor && hp != null && hp <= 0) {
     await emitCreatureDefeated(director, actor, payload, extra?.firedKeys);
   }
-  await evaluateDefeat(director, actor, payload);
+  const removed = await evaluateDefeat(director, actor, payload);
+  // Survivors (not physically removed) get the visible, reversible Defeated
+  // status; recovery (HP > 0) reconciles it off on the same reactor. Removed
+  // creatures are gone — skip.
+  if (!removed) await evaluateDefeatStatus(actor);
 }
 
 // One-time sweep over all combatants — removes creatures that begin combat
@@ -277,6 +350,7 @@ export async function sweepDefeat(director) {
   for (const c of combatants) {
     const actor = c.actor ?? (c.actorUuid ? await fromUuid(c.actorUuid).catch(() => null) : null);
     if (!actor) continue;
-    await evaluateDefeat(director, actor, { subjectTokenUuid: c.tokenUuid ?? null });
+    const removed = await evaluateDefeat(director, actor, { subjectTokenUuid: c.tokenUuid ?? null });
+    if (!removed) await evaluateDefeatStatus(actor);
   }
 }

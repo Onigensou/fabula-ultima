@@ -200,30 +200,50 @@ export function installApplierReaperWatcher(director) {
   log("Applier reaper watcher installed");
 }
 
-// Detects when all enemy combatants are defeated and ends dCombat so the
-// FSM routes to BATTLE_ENDING on the next TURN_END rather than continuing
-// into the "outnumbered" path where nextTurn() never signals `ended`.
-export function installEnemyWipeWatcher(director) {
+// A side is "wiped" when it has no LIVING member — either every member is
+// defeated (isDefeatedLive: HP<=0 / defeated flag) OR the side has been emptied
+// entirely (all members fled / removed / destroyed). Empty = wiped so a side
+// cleared by NON-HP removal (leave_combat, destroy_summon, banish) is caught too.
+function sideIsWiped(dc, side) {
+  const members = dc.combatants.filter((c) => c.side === side);
+  if (!members.length) return true;
+  return members.every((c) => c.isDefeatedLive());
+}
+
+// End dCombat when EITHER side is wiped, so the FSM routes to BATTLE_ENDING on
+// the next TURN_END rather than continuing into the "outnumbered" path where
+// nextTurn() never signals `ended`. Covers enemy wipe (→ victory), TOTAL PARTY
+// KILL (→ defeat — previously undetected, so a wiped party's enemies kept acting
+// forever), and a side emptied by non-damage removal. Idempotent — dc.end()
+// no-ops once ended. detectOutcome() classifies victory vs defeat downstream.
+export function checkSideWipe(director) {
+  const dc = director?.dCombat;
+  if (!dc?.started || dc.ended) return false;
+  const partyWiped = sideIsWiped(dc, "party");
+  const enemyWiped = sideIsWiped(dc, "enemy");
+  if (!partyWiped && !enemyWiped) return false;
+  const which = [partyWiped ? "party" : null, enemyWiped ? "enemy" : null].filter(Boolean).join("+");
+  log(`checkSideWipe: ${which} side wiped — ending dCombat`);
+  dc.end();
+  return true;
+}
+
+// Event-driven half of side-wipe detection: every HP change that lands a creature
+// at <=0 re-checks BOTH sides. The removal half (a side emptied by leave_combat /
+// destroy_summon / banish with no HP change) is covered by the removeCombatant
+// path, which also calls checkSideWipe.
+export function installSideWipeWatcher(director) {
   director.hooks.on("updateActor", (actor, change) => {
     try {
       if (!game.user?.isGM) return;
       const newHp = foundry.utils.getProperty(change, "system.props.current_hp");
       if (newHp === undefined || newHp === null) return;
-      if (Number(newHp) > 0) return;
+      if (Number(newHp) > 0) return;                 // only a drop to <=0 can wipe a side
+      checkSideWipe(director);
+    } catch (e) { warn("SideWipeWatcher threw", e); }
+  }, { label: "side-wipe" });
 
-      const dc = director.dCombat;
-      if (!dc?.started || dc.ended) return;
-
-      const enemies = dc.combatants.filter((c) => c.side === "enemy");
-      if (!enemies.length) return;
-      if (!enemies.every((c) => c.isDefeatedLive())) return;
-
-      log("EnemyWipeWatcher: all enemies defeated — ending dCombat");
-      dc.end();
-    } catch (e) { warn("EnemyWipeWatcher threw", e); }
-  }, { label: "enemy-wipe" });
-
-  log("Enemy wipe watcher installed");
+  log("Side wipe watcher installed");
 }
 
 // Build a short, human-readable description of an actionResult for the
@@ -1490,8 +1510,8 @@ const Prep = {
       installGuardHpWatcher(director);
       // Reap orphaned applier-tied AEs when an applier is defeated/removed.
       installApplierReaperWatcher(director);
-      // End dCombat when all enemies are wiped so TURN_END routes to BATTLE_ENDING.
-      installEnemyWipeWatcher(director);
+      // End dCombat when EITHER side is wiped so TURN_END routes to BATTLE_ENDING.
+      installSideWipeWatcher(director);
       // Rewind tool: buffer item deletions between snapshots so the
       // rewind UI can recreate consumed items. See [[director-rewind-tool-plan]].
       installItemDeletionTracker(director);
