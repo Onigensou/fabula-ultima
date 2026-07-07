@@ -6152,7 +6152,7 @@
       "away_name_3": "",
       "away_name_4": "",
       "battle_bgm": "Fabula Battle Theme",
-      "battle_log": "[\n  {\n    \"ts\": \"2026-07-04T17:37:04.138Z\",\n    \"accuracy\": \"19\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 80,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 80 Ice damage to Pyrefly [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-04T17:37:04.565Z\",\n    \"accuracy\": \"19\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 80,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 80 Ice damage to Pyrefly [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-04T17:38:55.364Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Keren\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 56,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Keren deals 56 Ice damage to Pyrefly [Vulnerable]\"\n  }\n]",
+      "battle_log": "[\n  {\n    \"ts\": \"2026-07-04T17:37:04.138Z\",\n    \"accuracy\": \"19\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 80,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 80 Ice damage to Pyrefly [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-04T17:37:04.565Z\",\n    \"accuracy\": \"19\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 80,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 80 Ice damage to Pyrefly [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-04T17:38:55.364Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Keren\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 56,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Keren deals 56 Ice damage to Pyrefly [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-07T03:14:00.367Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Skull Orb\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"dark\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 5,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999994\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Skull Orb deals 5 Dark damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-07T03:14:00.911Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Skull Orb\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"dark\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 5,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999994,\n        \"to\": 999989\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Skull Orb deals 5 Dark damage to BD Dummy Enemy [Normal]\"\n  }\n]",
       "battle_log_table": [
         {
           "$deleted": false,
@@ -6196,6 +6196,36 @@
           "range": "None",
           "source_type": "Spell",
           "value": "56",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Skull Orb",
+          "damage_type": "Dark",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "effect",
+          "value": "5",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Skull Orb",
+          "damage_type": "Dark",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "effect",
+          "value": "5",
           "value_type": "HP",
           "weapon_type": "—"
         }
