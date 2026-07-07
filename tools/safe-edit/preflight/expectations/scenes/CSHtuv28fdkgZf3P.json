@@ -1,0 +1,1352 @@
+{
+  "sceneId": "CSHtuv28fdkgZf3P",
+  "name": "Wyrmwood_Map005",
+  "tokens": [
+    {
+      "name": "Hina",
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "actorLink": true
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "Hina",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.14,
+        "scaleY": 1.14,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.15,
+        "angle": 360,
+        "bright": 0,
+        "color": "#eea149",
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": "flame",
+          "speed": 2,
+          "intensity": 4,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 5,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Overworld%20Tokens/Hina%20Party/Hina_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "x": 198,
+      "y": 492,
+      "_id": "hLgHsTyMnAg7VTi5",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "hidden": false,
+      "_regions": []
+    }
+  ],
+  "notes": [],
+  "tileCount": 21,
+  "full": {
+    "name": "Wyrmwood_Map005",
+    "navName": "Wyrmwood - Pond",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Wyrmwood_Map005.png",
+      "anchorX": 0,
+      "anchorY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "fit": "fill",
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "alphaThreshold": 0
+    },
+    "width": 510,
+    "height": 719,
+    "folder": "LM4NmY6n4yIAJsdD",
+    "padding": 0,
+    "_id": "CSHtuv28fdkgZf3P",
+    "active": false,
+    "navigation": false,
+    "navOrder": 0,
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "worlds/fabula-ultima-2/assets/scenes/CSHtuv28fdkgZf3P-thumb.webp",
+    "initial": {
+      "x": 247,
+      "y": 532,
+      "scale": 3
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 55,
+      "style": "solidLines",
+      "thickness": 1,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m"
+    },
+    "tokenVision": false,
+    "fog": {
+      "exploration": true,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "environment": {
+      "darknessLevel": 0,
+      "darknessLock": false,
+      "globalLight": {
+        "enabled": false,
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "luminosity": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "playlist": "VrpdABUTSoREMDR5",
+    "playlistSound": "mhjFx9J1oegXYHdt",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 0,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": [],
+        "isTriggered": false
+      },
+      "LockView": {
+        "editViewbox": false,
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": false,
+        "lockZoomInit": false,
+        "boundingBox": false,
+        "boundingBoxInit": false,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": false,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        }
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "campSceneUuid": "Scene.rCtVwyNpf4i0TQZI",
+        "oniFabula": {
+          "general": {
+            "sceneMode": "dungeon",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "sceneVisited": true,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
+          },
+          "sceneNetwork": "[{\"name\":\"Wyrmwood Theatre Scene\",\"id\":\"Scene.u4UwSVZ6JOzyJ0tl\"},{\"name\":\"Wyrmwood - Forest Path\",\"id\":\"wkdzuO0tBlSOtQiW\"},{\"name\":\"Wyrmwood - Exit\",\"id\":\"kMy1SUlXdIiBIqXK\"}]"
+        },
+        "oniDungeon": {
+          "threatLevel": "medium",
+          "encounterTable": "RollTable.dVTBvuqiiIbsydxt",
+          "enemiesTable": "RollTable.EggrsY05k3rIY9iS",
+          "battleMap": "Scene.OzZIYbff6H0Drj8r",
+          "battleBGM": "DRG_Battle",
+          "bossBGM": "DRG_Boss",
+          "event": {
+            "skillCheckEvent": "RollTable.0mvIad0w47sOkFhO",
+            "clockEvent": "RollTable.CthUDDkpmJYgTTiq"
+          },
+          "loot": {
+            "weapon": "RollTable.8zdktLBCbkf2u8RM",
+            "armor": "RollTable.eXxNIQ3UcglIdF7F",
+            "accessory": "RollTable.CRGj5HutohiPQnl1",
+            "consumable": "RollTable.r1RCffEXmNdKe9lu",
+            "item": "RollTable.6P0CB87nx5yZZQa2",
+            "zenit": "RollTable.5zFaLHS36v9rL0OG",
+            "treasure": "RollTable.hS4XNu1vLtWbPSne"
+          }
+        },
+        "dungeonPathing": {
+          "tileStates": {
+            "nAjOSzuKMHRC3IDi": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "VQxV5vy2ygh1QCmZ": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "tNMx6hpOEpyva0hf": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "rYQthCRsEuHwsWue": {
+              "initialType": "story",
+              "currentType": "story",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "2bfpP9cbZrzX4aH7": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "GovEiNKzRBXZceL7": {
+              "initialType": "accessory",
+              "currentType": "accessory",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "7PNAepO11mDeWgia": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "RjurWG6OWiClQZ1J": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "ng10iiulCbKL2BZ6": {
+              "initialType": "healing",
+              "currentType": "healing",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "YlBoHHl4UMuDPdy0": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "2zbtcR9U25DXHxwG": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "d487PFdWg7QPaUJ1": {
+              "initialType": "gold",
+              "currentType": "gold",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "Q3jwWYJtPp6am8ah": {
+              "initialType": "skill_check",
+              "currentType": "skill_check",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "m7cMFeaXUTM7ddvy": {
+              "initialType": "consumable",
+              "currentType": "consumable",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "oHbs1SnZsa5vBC9j": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "cpZ54QTsMeyLwMwc": {
+              "initialType": "treasure",
+              "currentType": "treasure",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "ITCwg7NBgsx0z4OC": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "SzkaV4nVNFAKOjvF": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "Q7DrBvUtTZDzZl99": {
+              "initialType": "gathering",
+              "currentType": "gathering",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "LO9P5woSUjiTM1TZ": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "UZnrmlX6EyvcaUam": {
+              "initialType": "camp",
+              "currentType": "camp",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Camp_Tile.png"
+            },
+            "BylLEBDraAIeeQVS": {
+              "initialType": "fishing",
+              "currentType": "fishing",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fishing_Tile.png"
+            }
+          },
+          "visitedTiles": {
+            "nAjOSzuKMHRC3IDi": true,
+            "VQxV5vy2ygh1QCmZ": true,
+            "rYQthCRsEuHwsWue": true
+          }
+        }
+      },
+      "fxmaster": {
+        "effects": {
+          "core_embers": {
+            "type": "embers",
+            "options": {
+              "belowTokens": false,
+              "tint": {
+                "apply": false,
+                "value": "#f77300"
+              },
+              "scale": 0.8,
+              "speed": 0.4,
+              "lifetime": 2.1,
+              "density": 0.15,
+              "alpha": 0.5
+            }
+          }
+        }
+      },
+      "core": {
+        "forceInitialView": true
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": null,
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1780396670285,
+      "modifiedTime": 1783195167957,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "drawings": [
+      {
+        "x": 362.483874714165,
+        "y": 292.40719761704196,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            -46.96774942832997,
+            25.185604765916082
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "2pe6A9FaFaIdMOcQ",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 400.7682091366647,
+        "y": 161.09073601217477,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            -50.536418273329446,
+            -30.181472024349546
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "8FOnxom0DHrfoihO",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 189.2666845932448,
+        "y": 169.58959926588236,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            43.46663081351039,
+            -44.1791985317647
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "8jp25lrU0J1v3DoR",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 394.2666845932448,
+        "y": 488.5895992658823,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            43.46663081351039,
+            -44.179198531764655
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "AiSSIz7oben7Gx8e",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 241.86216673358703,
+        "y": 104.00524769124722,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            1.2756665328259373,
+            -44.01049538249444
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "EAxAHsWv0jyIdLgY",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 449.4619522523876,
+        "y": 423.3559957652109,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            14.076095495224763,
+            -57.711991530421756
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "FZreDLoVBahSoO2I",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 302.09439396164737,
+        "y": 530.0332771508076,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            -64.18878792329474,
+            7.93344569838473
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "J2UJX7QCPfQ1iWci",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 440.31235658783385,
+        "y": 271.27693141036696,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            -54.624713175667694,
+            12.446137179266088
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "QGNwQe42XLCY7Zi9",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 242.90062867922305,
+        "y": 364.5662475471846,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            51.198742641553935,
+            -34.13249509436923
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "SxICaYt2GJVPTyRH",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 454.531453252661,
+        "y": 280.83382331972746,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            9.937093494678038,
+            60.332353360545085
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "TKK5Sahyzx2x5Sib",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 140.44795189598824,
+        "y": 501.06641744881546,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            -27.89590379197648,
+            -63.132834897630914
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "XqOFXfwIsboZeI6K",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 95.3711408680895,
+        "y": 322.0006642046818,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            -0.7422817361789953,
+            -72.0013284093636
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "ZNyr7Kd8vYbpLs2Z",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 104.80751320820306,
+        "y": 230.4285665199537,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            65.38497358359388,
+            -44.85713303990741
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "f40esGuSHD64U5bA",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 245.71532951991898,
+        "y": 128.26779490977387,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            15.569340960162009,
+            43.46441018045226
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "kONrcDqSwziLRCt7",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 1,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 325.9556666138413,
+        "y": 523.4982300700129,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            48.088666772317424,
+            -20.99646014002593
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "kYvPKcyUJHtFuCJj",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 157.34365348734,
+        "y": 516.4972330519772,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            56.312693025320016,
+            19.005533896045563
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "qpGrN2nFhyQgFhDp",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 253.9585576977826,
+        "y": 117.51702511818634,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            73.08288460443478,
+            5.9659497636273215
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "qtBetgcgOKREL1mm",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 166.8861443545888,
+        "y": 626.4889786349191,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            -51.77228870917759,
+            43.02204273016173
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "sGMIKzqH4Ufq7rMq",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 97.1167398008471,
+        "y": 346.8950051398278,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            8.7665203983058,
+            67.20998972034442
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "snGnZnX4Ll1dm04M",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      },
+      {
+        "x": 218.9113117034493,
+        "y": 550.1225790903572,
+        "shape": {
+          "type": "p",
+          "points": [
+            0,
+            0,
+            -35.82262340689857,
+            57.7548418192855
+          ],
+          "width": 0,
+          "height": 0,
+          "radius": null
+        },
+        "strokeColor": "#ffffff",
+        "strokeWidth": 5,
+        "strokeAlpha": 0.6,
+        "fillType": 0,
+        "fillAlpha": 0,
+        "text": "",
+        "_id": "wMZsNYto9hLhyCEL",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      }
+    ],
+    "lights": [
+      {
+        "x": 269,
+        "y": 333,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.75,
+          "angle": 360,
+          "bright": 0.88,
+          "color": "#f58c14",
+          "coloration": 1,
+          "dim": 5.76,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "fog",
+            "speed": 5,
+            "intensity": 2,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "CsyzCQ3Jya1s7nxU"
+      }
+    ],
+    "walls": [
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          720,
+          510,
+          720
+        ],
+        "_id": "PqF9Emd9FTLM3XH7",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          0,
+          0,
+          720
+        ],
+        "_id": "gaY66HvPcoOYRxPK",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          510,
+          0,
+          0,
+          0
+        ],
+        "_id": "l3vvdvrTZnzqTa1G",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          510,
+          720,
+          510,
+          0
+        ],
+        "_id": "rDTWFWbSaBYtCUJR",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      }
+    ]
+  }
+}

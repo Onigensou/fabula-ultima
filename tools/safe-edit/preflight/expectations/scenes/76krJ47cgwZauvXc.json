@@ -1,0 +1,1266 @@
+{
+  "sceneId": "76krJ47cgwZauvXc",
+  "name": "Wyrmwood_Map009",
+  "tokens": [
+    {
+      "name": "⭐️ Wandering Flames",
+      "actorId": "KygETN50UthluNPl",
+      "actorLink": true
+    },
+    {
+      "name": "⭐️ Masked Girl",
+      "actorId": "LnlydRl7Ed7agd1g",
+      "actorLink": true
+    },
+    {
+      "name": "Hina",
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "actorLink": true
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "⭐️ Wandering Flames",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/WanderingFlame_Standard.png",
+        "anchorX": 0.2,
+        "anchorY": 0.7,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": -1.59,
+        "scaleY": 1.59,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "fabula-ultima-companion": {
+          "dominanceCrestOffset": {
+            "x": 44,
+            "y": 35
+          },
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "KygETN50UthluNPl",
+      "hidden": true,
+      "sort": 1,
+      "_id": "1s9vbv5tq6mbi8ev",
+      "x": 382,
+      "y": 175,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "ly6LWjoltLiQcRFo"
+      ]
+    },
+    {
+      "name": "⭐️ Masked Girl",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Kalina_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.7,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": -0.95,
+        "scaleY": 0.95,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Kalina_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true,
+          "hideBorderFill": true
+        },
+        "token-border-supplements": {
+          "hideBorder": true,
+          "hideBorderFill": true
+        },
+        "tokenborder": {
+          "hideBorder": true,
+          "hideBorderFill": true
+        },
+        "fabula-ultima-companion": {
+          "dominanceCrestOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "LnlydRl7Ed7agd1g",
+      "hidden": true,
+      "sort": 2,
+      "_id": "GIlRrlng4JM8LlZl",
+      "x": 387,
+      "y": 40,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "ly6LWjoltLiQcRFo"
+      ]
+    },
+    {
+      "name": "Hina",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.14,
+        "scaleY": 1.14,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.15,
+        "angle": 360,
+        "bright": 0,
+        "color": "#eea149",
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": "flame",
+          "speed": 2,
+          "intensity": 4,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 5,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Overworld%20Tokens/Hina%20Party/Hina_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "hidden": false,
+      "sort": 0,
+      "_id": "aci0Yo4SMBvpAkIc",
+      "x": 425,
+      "y": 51,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "ly6LWjoltLiQcRFo"
+      ]
+    }
+  ],
+  "notes": [],
+  "tileCount": 0,
+  "full": {
+    "name": "Wyrmwood_Map009",
+    "navName": "Wyrmwood - Clearing",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Wyrmwood_Map019.png",
+      "anchorX": 0,
+      "anchorY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "fit": "fill",
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "alphaThreshold": 0
+    },
+    "width": 881,
+    "height": 564,
+    "folder": "LM4NmY6n4yIAJsdD",
+    "padding": 0,
+    "_id": "76krJ47cgwZauvXc",
+    "active": false,
+    "navigation": false,
+    "navOrder": 0,
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "worlds/fabula-ultima-2/assets/scenes/76krJ47cgwZauvXc-thumb.webp",
+    "initial": {
+      "x": 467,
+      "y": 349,
+      "scale": 2.382470734301806
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 75,
+      "style": "solidLines",
+      "thickness": 1,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m"
+    },
+    "tokenVision": false,
+    "fog": {
+      "exploration": true,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "environment": {
+      "darknessLevel": 0,
+      "darknessLock": false,
+      "globalLight": {
+        "enabled": false,
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "luminosity": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "playlist": null,
+    "playlistSound": null,
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 0,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "LockView": {
+        "editViewbox": false,
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": false,
+        "lockZoomInit": false,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": false,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        }
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": [],
+        "isTriggered": false
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "campSceneUuid": "Scene.rCtVwyNpf4i0TQZI",
+        "oniFabula": {
+          "general": {
+            "sceneMode": "exploration",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "sceneVisited": true,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
+          },
+          "sceneNetwork": "[{\"name\":\"Wyrmwood Theatre Scene\",\"id\":\"Scene.u4UwSVZ6JOzyJ0tl\"}]"
+        },
+        "oniDungeon": {
+          "threatLevel": "medium",
+          "encounterTable": "RollTable.dVTBvuqiiIbsydxt",
+          "enemiesTable": "RollTable.EggrsY05k3rIY9iS",
+          "battleMap": "Scene.OzZIYbff6H0Drj8r",
+          "battleBGM": "DRG_Battle",
+          "bossBGM": "DRG_Boss",
+          "event": {
+            "skillCheckEvent": "RollTable.0mvIad0w47sOkFhO",
+            "clockEvent": "RollTable.CthUDDkpmJYgTTiq"
+          },
+          "loot": {
+            "weapon": "RollTable.8zdktLBCbkf2u8RM",
+            "armor": "RollTable.eXxNIQ3UcglIdF7F",
+            "accessory": "RollTable.CRGj5HutohiPQnl1",
+            "consumable": "RollTable.r1RCffEXmNdKe9lu",
+            "item": "RollTable.6P0CB87nx5yZZQa2",
+            "zenit": "RollTable.5zFaLHS36v9rL0OG",
+            "treasure": "RollTable.hS4XNu1vLtWbPSne"
+          }
+        }
+      },
+      "fxmaster": {
+        "effects": {
+          "core_embers": {
+            "type": "embers",
+            "options": {
+              "belowTokens": false,
+              "tint": {
+                "apply": false,
+                "value": "#f77300"
+              },
+              "scale": 0.8,
+              "speed": 0.4,
+              "lifetime": 2.1,
+              "density": 0.15,
+              "alpha": 0.5
+            }
+          }
+        }
+      },
+      "core": {
+        "forceInitialView": true
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": null,
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1780396678707,
+      "modifiedTime": 1783185928678,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "regions": [
+      {
+        "name": "Ground",
+        "_id": "ly6LWjoltLiQcRFo",
+        "color": "#e3901c",
+        "shapes": [
+          {
+            "type": "rectangle",
+            "x": -14.48571063552589,
+            "y": -26.308894272118806,
+            "width": 888.1391008102592,
+            "height": 600.9153077226147,
+            "rotation": 0,
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              73.74002785555945,
+              303.0671960945998,
+              220.7829253407017,
+              393.2535065521537,
+              362.9243929096725,
+              480.49895906000484,
+              341.35810127851835,
+              525.5921142887818,
+              247.2506468880273,
+              539.3161180540617,
+              200.19691969278176,
+              565.7838396013873,
+              65.89773998968519,
+              597.1529910648843,
+              -78.20429954575417,
+              595.1924190984157,
+              -72.3225836463485,
+              -34.15118213799306,
+              494.28271466306626,
+              -51.796329836210106,
+              433.5049837025408,
+              37.4096946381095,
+              357.04267701026686,
+              79.5619919171836,
+              193.33491781014186,
+              109.95085739744633,
+              124.71489898374216,
+              147.20172476034907,
+              89.42460358730796,
+              181.51173417354892,
+              41.39059040882819,
+              215.82174358674877,
+              72.75974187232521,
+              298.1657661784284,
+              94.32603350347938,
+              319.73205780958267
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              566.952114513586,
+              -34.60728960027237,
+              564.9915425471174,
+              66.36216667285865,
+              740.4627335460539,
+              148.70618926453832,
+              838.4913318694821,
+              185.957056627441,
+              952.2045059246586,
+              175.17391081186392,
+              982.5933714049215,
+              17.347867511144557,
+              911.032494628819,
+              -40.48900549967806,
+              729.6795877304768,
+              -72.83844294640934
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              638.5129912896886,
+              591.7954536864336,
+              570.8732584465232,
+              520.234576910331,
+              529.7012471506833,
+              443.7722702180571,
+              618.907271625003,
+              408.4819748216229,
+              736.5415896131168,
+              370.25082147548596,
+              815.9447542550936,
+              332.01966812934893,
+              879.663343165322,
+              308.49280453172616,
+              976.7116555055159,
+              385.9353972072345,
+              961.0270797737674,
+              542.7811545247195,
+              868.8801973497448,
+              632.9674649822734,
+              679.6850025855284,
+              633.9477509655077,
+              681.645574551997,
+              633.9477509655077,
+              697.3301502837455,
+              638.8491808816791
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              827.7081860539049,
+              169.2921949124582,
+              852.2153356347619,
+              261.43907733648075,
+              822.8067561377336,
+              354.56624574373745,
+              796.3390345904079,
+              400.63968695574863,
+              917.8944965114588,
+              414.36369072102855,
+              996.3173751702013,
+              169.2921949124582,
+              912.0127806120531,
+              123.21875370044697,
+              802.2207504898137,
+              134.0018995160241
+            ],
+            "hole": true
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.v6CQ0x21Egd7LmcG",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": 1780545354574,
+              "modifiedTime": 1780545354574,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            },
+            "_id": "jDWsGjzs60HK5zWb"
+          }
+        ]
+      },
+      {
+        "name": "Grass",
+        "_id": "wmHTtsc17BzDBEog",
+        "color": "#4de723",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              60.01602409027953,
+              306.988340027537,
+              210.98006550835885,
+              378.5492168036395,
+              299.20580399944424,
+              457.9523814456163,
+              386.4512565072953,
+              490.30181889234757,
+              342.3383872617526,
+              535.3949741211246
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              451.0018807909415,
+              1.7893330299763193,
+              366.6972862327933,
+              65.50792194020462,
+              214.75295883147965,
+              98.83764537017018,
+              101.03978477630301,
+              148.83223051511854,
+              26.53805005049759,
+              213.53110540858117,
+              66.72977536310316,
+              312.53998971524356,
+              313.7618431381421,
+              462.52374515008864,
+              345.13099460163915,
+              479.1886068650714,
+              331.4069908363592,
+              524.2817620938484,
+              219.65438874765107,
+              535.0649079094255,
+              161.81751573682845,
+              567.4143453561568,
+              6.932330385811952,
+              588.980636987311,
+              -44.042540742370704,
+              586.0397790376081,
+              -69.529976306462,
+              368.4162907595976,
+              -19.535391161513644,
+              -24.678388517349276
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              572.831822787298,
+              -7.252824879376703,
+              569.8909648375952,
+              55.48547804761728,
+              827.7061784282112,
+              172.1395100524968,
+              859.0753298917082,
+              251.5426746944736,
+              840.4498962102568,
+              341.7289851520276,
+              545.3838152567382,
+              446.6195853580957,
+              577.7332527034694,
+              520.1410341006668,
+              635.5701257142921,
+              583.8596230108951,
+              883.5824794725652,
+              574.0567631785523,
+              854.1738999755369,
+              -14.114826762016719
+            ],
+            "hole": false
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.CRagAwYLpsANGP9h",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": 1780545354577,
+              "modifiedTime": 1780545354577,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            },
+            "_id": "Oi0GoaTJ95Qh8A5S"
+          }
+        ]
+      }
+    ],
+    "walls": [
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          291,
+          563,
+          309,
+          497
+        ],
+        "_id": "22Waf3PT0dtekV5b",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          122,
+          394,
+          0,
+          384
+        ],
+        "_id": "2rwRqjcBU1dln0RF",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          47,
+          122,
+          0,
+          150
+        ],
+        "_id": "4gldtHWEfpPc5LDG",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          291,
+          47,
+          131,
+          84
+        ],
+        "_id": "9vjzymKIxWJXUB8v",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          872,
+          413,
+          722,
+          469
+        ],
+        "_id": "ACMUdcxfm6TUrWKC",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          309,
+          497,
+          122,
+          394
+        ],
+        "_id": "CnAju2dH0rWz1o4e",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          347,
+          0,
+          291,
+          47
+        ],
+        "_id": "IRXKM6sCJfezUdw7",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          563,
+          872,
+          553
+        ],
+        "_id": "J5cIzCcx0OUXolBx",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          131,
+          84,
+          47,
+          122
+        ],
+        "_id": "JU8ZvfRuOVoLRFWZ",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          0,
+          0,
+          563
+        ],
+        "_id": "PyVy6gBaAuEob77P",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          863,
+          0,
+          0,
+          0
+        ],
+        "_id": "gmrTdSg46QRL7I6d",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          666,
+          0,
+          684,
+          84
+        ],
+        "_id": "gw6VCpfAjZdJBhbE",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          722,
+          469,
+          647,
+          553
+        ],
+        "_id": "nM932BXMMVetBEUX",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          684,
+          84,
+          797,
+          122
+        ],
+        "_id": "o20p9IreIuSNlEDg",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          873,
+          562,
+          863,
+          9
+        ],
+        "_id": "qBWKKqjuHPBVea1C",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          797,
+          122,
+          863,
+          141
+        ],
+        "_id": "ybesY5lOmHSMKqVC",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      }
+    ]
+  }
+}

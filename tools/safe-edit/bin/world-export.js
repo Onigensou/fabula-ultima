@@ -50,18 +50,24 @@ const { ClassicLevel } = require("classic-level");
 const { collectionDir, worldDataDir, REPO_ROOT, DEFAULT_WORLD } = require("../lib/paths");
 const { collectionLocked } = require("../lib/lock");
 
-// Collections that hold AUTHORED content (skills, NPCs, organization).
-// Deliberately excludes volatile session churn (scenes/combats/messages/fog/...).
-const COLLECTIONS = ["folders", "items", "actors"];
+// Collections that hold AUTHORED content (skills, NPCs, organization, loot
+// tables, music). Deliberately excludes volatile session churn (scenes are
+// handled by preflight's per-scene golden; combats/messages/fog are ignored).
+const COLLECTIONS = ["folders", "items", "actors", "tables", "playlists"];
 
 // Embedded sub-collection fields, rebuilt from their own LevelDB keys.
-const EMBEDDED_FIELDS = new Set(["items", "effects"]);
+//   items/effects → actors & items;  results → RollTables;  sounds → Playlists.
+const EMBEDDED_FIELDS = new Set(["items", "effects", "results", "sounds"]);
 
 // CSB-derived sheet fields under `system` — pure noise, stripped for clean diffs.
 const DERIVED_SYSTEM_FIELDS = ["body", "display", "header", "modifiers", "hidden", "attributeBar"];
 
 // Volatile metadata that churns every session — stripped for diff stability.
 const VOLATILE_STATS = ["modifiedTime", "lastModifiedBy"];
+
+// Playback state on playlists/sounds churns constantly — strip so the diff
+// reflects the authored playlist (which sounds it contains), not what's playing.
+const VOLATILE_PLAYBACK = ["playing", "pausedTime", "timeSerial"];
 
 function exportDir(world) {
   return path.join(worldDataDir(world), "..", "_authored-export");
@@ -148,6 +154,7 @@ function sanitize(doc) {
   if (doc && typeof doc._stats === "object" && doc._stats) {
     for (const k of VOLATILE_STATS) delete doc._stats[k];
   }
+  for (const k of VOLATILE_PLAYBACK) if (k in doc) delete doc[k];
   for (const f of EMBEDDED_FIELDS) {
     if (Array.isArray(doc[f])) for (const child of doc[f]) sanitize(child);
   }
@@ -205,6 +212,10 @@ function summarize(collection, doc) {
     base.effects = (doc.effects || []).length;
   } else if (collection === "folders") {
     base.parent = doc.folder || null;
+  } else if (collection === "tables") {
+    base.results = (doc.results || []).length;
+  } else if (collection === "playlists") {
+    base.sounds = (doc.sounds || []).length;
   }
   return base;
 }
@@ -313,12 +324,13 @@ function baselinePrior(world) {
   };
 }
 
-function embeddedDelta(priorJson, currentJson) {
-  // Compare `items` arrays by id; surfaces silent within-actor skill loss.
+// Compare an embedded array by id; surfaces silent within-document loss (a
+// skill vanishing from an actor, a result row vanishing from a loot table).
+function embeddedDelta(priorJson, currentJson, field, labelFn) {
   const setOf = (txt) => {
     try {
       const d = JSON.parse(txt);
-      return new Map((d.items || []).map((it) => [it._id, it.name]));
+      return new Map((d[field] || []).map((x) => [x._id, labelFn(x)]));
     } catch { return new Map(); }
   };
   const a = setOf(priorJson), b = setOf(currentJson);
@@ -327,16 +339,24 @@ function embeddedDelta(priorJson, currentJson) {
   return { removed, added };
 }
 
+// Which embedded array to watch for within-doc loss, per collection path.
+function embeddedSpec(file) {
+  if (file.includes("/actors/")) return { field: "items", label: (x) => x.name };
+  if (file.includes("/tables/")) return { field: "results", label: (x) => x.text || (Array.isArray(x.range) ? x.range.join("-") : x._id) };
+  return null;
+}
+
 function report(world, prior) {
   const relRoot = relFromRepo(exportDir(world));
   const { added, removed, modified } = prior.classify();
 
-  // Within-document losses on modified actor files (the silent class — file
-  // survives but a skill vanished from its embedded list).
+  // Within-document losses on modified files (the silent class — file survives
+  // but a skill/result vanished from its embedded list).
   const losses = [];
   for (const f of modified) {
-    if (!f.includes("/actors/")) continue;
-    const delta = embeddedDelta(prior.get(f) || "{}", fs.readFileSync(path.join(REPO_ROOT, f), "utf8"));
+    const spec = embeddedSpec(f);
+    if (!spec) continue;
+    const delta = embeddedDelta(prior.get(f) || "{}", fs.readFileSync(path.join(REPO_ROOT, f), "utf8"), spec.field, spec.label);
     if (delta.removed.length) losses.push({ file: f, removed: delta.removed, added: delta.added });
   }
 
@@ -356,7 +376,7 @@ function report(world, prior) {
     for (const f of removed) lines.push(`     - ${short(f)}  [${docName(f)}]`);
   }
   if (losses.length) {
-    lines.push("\n  ⚠ Skills/embedded docs REMOVED from existing actors:");
+    lines.push("\n  ⚠ Embedded docs REMOVED from existing documents (skills from actors, result rows from tables):");
     for (const l of losses) {
       lines.push(`     - ${short(l.file)}`);
       lines.push(`         removed: ${l.removed.join(", ")}`);

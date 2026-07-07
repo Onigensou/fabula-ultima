@@ -23,10 +23,15 @@ print a categorized changelog before you push.
 
 ## What it covers
 
-`folders`, `items`, `actors` (the authored content), with each actor's embedded
-skills + their Active Effects fully assembled into the actor's JSON. It
-deliberately ignores volatile session churn (scenes, combats, messages, fog,
-playlists, settings). Output: `worlds/<world>/_authored-export/`.
+`folders`, `items`, `actors`, `tables`, `playlists` (the authored content):
+each actor's embedded skills + Active Effects, each RollTable's result rows, and
+each Playlist's sounds are fully assembled into the document's JSON. A removed
+skill, a dropped loot-table result row, or a deleted table/playlist all show up
+in the diff. Volatile playback state (`playing`/`pausedTime`) is stripped from
+playlists so the diff reflects the authored playlist, not what's currently
+playing. It still ignores true session churn (combats, messages, fog, settings).
+Scenes are covered separately by preflight's per-scene golden (`bless`). Output:
+`worlds/<world>/_authored-export/`.
 
 CSB-derived sheet fields and volatile `_stats` timestamps are stripped, and all
 keys are sorted, so diffs reflect real content changes only.

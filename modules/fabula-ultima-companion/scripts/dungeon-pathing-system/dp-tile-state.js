@@ -47,8 +47,6 @@
       texBase = decodeURIComponent(texSrc.split("?")[0]).split("/").pop().toLowerCase();
     } catch {}
 
-    const raw = `${name} ${texBase}`;
-
     const KNOWN = [
       "random_battle", "random battle", "battle",
       "gold", "blank", "stealth", "chaos", "advantage", "event", "final",
@@ -67,6 +65,7 @@
       "poison", "recipe", "settlement", "obstacle", "skill check",
       "skillcheck", "slippery", "trap", "camp", "alert", "door", "treasure",
       "item", "weapon", "armor", "accessory", "consumable",
+      "dirt", "gusty",
     ];
 
     // Map display-name fragments to canonical type keys
@@ -107,7 +106,13 @@
       "triplesouthwest":     DP.TILE_TYPES.FORCE_MOVE,
     };
 
-    const hit = KNOWN.find(k => raw.includes(k));
+    // Prefer the tile NAME over its texture. A configured tile's name declares
+    // its type ("Weapon Tile"), while its texture is often Blank_Tile.png by
+    // design (hidden-surprise loot). Matching name+texture together mis-read
+    // such tiles as "blank" because "blank" precedes "weapon"/etc. in KNOWN.
+    // Fall back to the texture basename only when the name yields no known type.
+    const hit = KNOWN.find(k => name.includes(k))
+             ?? KNOWN.find(k => texBase.includes(k));
     if (!hit) return DP.TILE_TYPES.UNKNOWN;
 
     return ALIAS[hit] ?? hit.replace(/\s+/g, "_");

@@ -1,0 +1,706 @@
+{
+  "sceneId": "WTYzSEb84rUiZ9Z2",
+  "name": "Wyrmwood_Map001",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 1,
+  "full": {
+    "name": "Wyrmwood_Map001",
+    "navName": "Wyrmwood - Entrance",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Wyrmwood_Map001.png",
+      "anchorX": 0,
+      "anchorY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "fit": "fill",
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "alphaThreshold": 0
+    },
+    "width": 768,
+    "height": 512,
+    "folder": "LM4NmY6n4yIAJsdD",
+    "padding": 0,
+    "_id": "WTYzSEb84rUiZ9Z2",
+    "active": false,
+    "navigation": false,
+    "navOrder": 0,
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "worlds/fabula-ultima-2/assets/scenes/WTYzSEb84rUiZ9Z2-thumb.webp",
+    "initial": {
+      "x": 281,
+      "y": 307,
+      "scale": 3
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 80,
+      "style": "solidLines",
+      "thickness": 1,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m"
+    },
+    "tokenVision": true,
+    "fog": {
+      "exploration": true,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "environment": {
+      "darknessLevel": 0,
+      "darknessLock": false,
+      "globalLight": {
+        "enabled": false,
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "luminosity": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "playlist": null,
+    "playlistSound": null,
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 0,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "LockView": {
+        "editViewbox": false,
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": false,
+        "lockZoomInit": false,
+        "boundingBox": false,
+        "boundingBoxInit": false,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": false,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        }
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": []
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "campSceneUuid": "Scene.rCtVwyNpf4i0TQZI",
+        "oniFabula": {
+          "general": {
+            "sceneMode": "exploration",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "sceneVisited": true
+          },
+          "sceneNetwork": "[{\"name\":\"Wyrmwood Theatre Scene\",\"id\":\"Scene.u4UwSVZ6JOzyJ0tl\"},{\"name\":\"Wyrmwood - Forest Path\",\"id\":\"0JcIojCGQhNZ0T1j\"}]"
+        },
+        "oniDungeon": {
+          "threatLevel": "medium",
+          "encounterTable": "RollTable.dVTBvuqiiIbsydxt",
+          "enemiesTable": "RollTable.EggrsY05k3rIY9iS",
+          "battleMap": "Scene.OzZIYbff6H0Drj8r",
+          "battleBGM": "DRG_Battle",
+          "bossBGM": "DRG_Boss",
+          "event": {
+            "skillCheckEvent": "RollTable.0mvIad0w47sOkFhO",
+            "clockEvent": "RollTable.CthUDDkpmJYgTTiq"
+          },
+          "loot": {
+            "weapon": "RollTable.8zdktLBCbkf2u8RM",
+            "armor": "RollTable.eXxNIQ3UcglIdF7F",
+            "accessory": "RollTable.CRGj5HutohiPQnl1",
+            "consumable": "RollTable.r1RCffEXmNdKe9lu",
+            "item": "RollTable.6P0CB87nx5yZZQa2",
+            "zenit": "RollTable.5zFaLHS36v9rL0OG",
+            "treasure": "RollTable.hS4XNu1vLtWbPSne"
+          }
+        }
+      },
+      "fxmaster": {
+        "effects": {
+          "core_embers": {
+            "type": "embers",
+            "options": {
+              "belowTokens": false,
+              "tint": {
+                "apply": false,
+                "value": "#f77300"
+              },
+              "scale": 0.8,
+              "speed": 0.4,
+              "lifetime": 2.1,
+              "density": 0.15,
+              "alpha": 0.5
+            }
+          }
+        }
+      },
+      "world": {
+        "battleInit": {},
+        "battleEnd": {}
+      },
+      "core": {
+        "forceInitialView": true
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": null,
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1780396662433,
+      "modifiedTime": 1781425605761,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "regions": [
+      {
+        "name": "Ground",
+        "_id": "FQUVoywo2s9a4v7L",
+        "color": "#df7026",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              0.15782927118115708,
+              450.08615375286536,
+              354.700540788236,
+              327.50099262792094,
+              361.3069267171253,
+              269.5116050298933,
+              257.07283761687313,
+              196.1073169311242,
+              246.79623728304546,
+              122.70302883235502,
+              512.5197602005896,
+              -2.8183038165401797,
+              574.1793622035558,
+              5.256167874324419,
+              538.9453039161466,
+              52.968955138524365,
+              361.3069267171253,
+              171.88390185853032,
+              453.0622868405867,
+              277.5860767207579,
+              607.2112918480019,
+              265.8413906249548,
+              637.3070499684973,
+              331.17120703285934,
+              105.86000413340872,
+              499.26702677904075,
+              93.38127515661796,
+              511.7457557558315,
+              -2.044299371781932,
+              511.01171287484374
+            ],
+            "hole": false
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.v6CQ0x21Egd7LmcG",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": 1780545329644,
+              "modifiedTime": 1780545329644,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            },
+            "_id": "zlR6E4SspHfO6xt0"
+          }
+        ]
+      },
+      {
+        "name": "Grass",
+        "_id": "xWqXPQaKqtwp3pe9",
+        "color": "#23f014",
+        "shapes": [
+          {
+            "type": "rectangle",
+            "x": -2.778342252769619,
+            "y": -2.8183038165401797,
+            "width": 772.947153680039,
+            "height": 513.0959738103962,
+            "rotation": 0,
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              101.45574684748254,
+              417.788266989407,
+              353.96649790724837,
+              326.76694974693316,
+              359.1047980741622,
+              275.3839480777948,
+              256.3387947358854,
+              196.84135981211185,
+              246.06219440205774,
+              123.43707171334273,
+              512.5197602005896,
+              -4.286389578515568,
+              574.9134050845435,
+              4.522124993336732,
+              537.4772181541712,
+              53.70299801951205,
+              359.83884095514986,
+              173.35198762050575,
+              453.79632972157435,
+              274.64990519680714,
+              558.0304188218265,
+              273.1818194348317,
+              607.2112918480019,
+              265.1073477439671,
+              638.0410928494849,
+              332.6392927948348,
+              360.57288383613763,
+              417.05422410841925,
+              108.79617565735947,
+              498.532983898053,
+              97.78553244254408,
+              511.01171287484374,
+              -6.448556657708082,
+              510.2776699938561,
+              -3.5123851337573058,
+              447.88402510990227
+            ],
+            "hole": true
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.CRagAwYLpsANGP9h",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": 1780545329631,
+              "modifiedTime": 1780545329631,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            },
+            "_id": "h3QsovMELpLg2GEZ"
+          }
+        ]
+      }
+    ],
+    "walls": [
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          10,
+          170,
+          90,
+          140
+        ],
+        "_id": "0MVCqJLgYIWrHcKM",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          710,
+          440,
+          770,
+          380
+        ],
+        "_id": "1WLek5VT4j4AmJni",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          770,
+          510,
+          770,
+          0
+        ],
+        "_id": "31CDJlAKuJQ3EBYl",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          130,
+          80,
+          330,
+          0
+        ],
+        "_id": "5ob89IbxwPrRsdVo",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          0,
+          0,
+          510
+        ],
+        "_id": "6AsAllGmqVKdjDwk",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          650,
+          140,
+          770,
+          130
+        ],
+        "_id": "EFW3LLaDSPHkXY4P",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          770,
+          0,
+          0,
+          0
+        ],
+        "_id": "Mvk4Ey6iPd0QKNZ7",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          90,
+          140,
+          130,
+          80
+        ],
+        "_id": "Oim7cxrEGqQz8cz4",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          510,
+          770,
+          510
+        ],
+        "_id": "WBDEtUGlI14q5bNk",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          590,
+          460,
+          670,
+          410
+        ],
+        "_id": "cvIbPjxMbuob0GvQ",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          520,
+          420,
+          590,
+          460
+        ],
+        "_id": "h2mtebrDWr7e1p8G",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          670,
+          410,
+          710,
+          440
+        ],
+        "_id": "ixt50ywZlI44aZ9F",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          460,
+          510,
+          520,
+          420
+        ],
+        "_id": "lzsG6ReeYrwydvmN",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          650,
+          140,
+          610,
+          0
+        ],
+        "_id": "nUUFScA3uTn2CPQD",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      }
+    ]
+  }
+}
