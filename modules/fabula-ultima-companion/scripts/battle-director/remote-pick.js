@@ -43,6 +43,15 @@ async function renderLocalPick({ kind, spec = {}, externalCancel = null }) {
       sections: spec.sections ?? null,
       zIndex: spec.zIndex ?? 97,
       cancelLabel: spec.cancelLabel ?? "Cancel",
+      // Multi-select relay: an open_action_menu with menu_pick_count > 1 broadcasts a
+      // multi-select spec. Without forwarding these fields the reaction OWNER's client
+      // would fall back to a single-select menu (different UI than the GM intended /
+      // than a local pick would show). Defaults keep every single-select spec identical.
+      multiSelect: spec.multiSelect ?? false,
+      maxSelect: spec.maxSelect ?? 0,
+      preselectAll: spec.preselectAll ?? false,
+      preselect: spec.preselect ?? null,
+      confirmLabel: spec.confirmLabel ?? "Confirm",
       externalCancel,
     });
   }

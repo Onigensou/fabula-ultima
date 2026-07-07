@@ -6292,6 +6292,59 @@ function resolveEnemyPlayerUserIds(casterActor, casterToken = null) {
   return Array.from(userIds);
 }
 
+// Route an open_action_menu prompt to the correct client and return the RAW pick.
+// The SINGLE place that owns pick routing (was duplicated across the single-pick
+// loop + the multi-select branch):
+//   1. menu_responder:"enemy" (opt-in via allowEnemyResponder) — broadcast to the
+//      VICTIM side; loudest wins; no enemy online/answers → GM-local fallback. On a
+//      win, ctx.remotePrompt is set so this action's FOLLOW-ON picks go to the winner.
+//   2. ctx.remotePrompt — the single reaction-owner (a player's own reaction).
+//   3. GM-local pickFromList (NPC casts, GM-owned reactions).
+// Returns whatever the picker resolves: single-select → the chosen option's `value`
+// (a number) or null; multi-select (listArgs.multiSelect) → an array of values or
+// null. Caller maps values back to its own option list. `row` supplies
+// menu_responder + effect_label (logging); the same `listArgs` renders identically
+// local or remote (remote-pick relays multiSelect/maxSelect).
+async function promptMenuList(listArgs, ctx, row, { allowEnemyResponder = false } = {}) {
+  const responder = String(row.menu_responder ?? "").trim().toLowerCase();
+  if (allowEnemyResponder && responder === "enemy" && !ctx?.remotePrompt) {
+    const director = ctx.director
+      ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
+      ?? null;
+    const channel = director?.intentChannel ?? null;
+    const enemyUserIds = resolveEnemyPlayerUserIds(ctx.reactorActor, ctx.reactorToken);
+    if (channel && enemyUserIds.length) {
+      const { remotePickAny, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+      log(`open_action_menu: routing "${row.effect_label}" to ${enemyUserIds.length} enemy player(s) — loudest wins`);
+      const res = await remotePickAny({
+        channel, targetUserIds: enemyUserIds, combatId: director?.combatId ?? null,
+        kind: REMOTE_PICK_KINDS.LIST, onTimeoutValue: null, spec: listArgs,
+      });
+      let picked = res?.value ?? null;
+      // Route this action's follow-on picks to the SAME player who answered.
+      if (picked != null && res?.winnerUserId) {
+        ctx.remotePrompt = { channel, targetUserId: res.winnerUserId, combatId: director?.combatId ?? null };
+      }
+      if (picked == null) {
+        log(`open_action_menu: no enemy answered "${row.effect_label}" — GM-local fallback`);
+        picked = await pickFromList(listArgs);
+      }
+      return picked;
+    }
+    // No online enemy player owns a target → GM picks on their behalf.
+    return await pickFromList(listArgs);
+  }
+  if (ctx?.remotePrompt?.channel && ctx.remotePrompt.targetUserId) {
+    const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+    return await remotePick({
+      channel: ctx.remotePrompt.channel, targetUserId: ctx.remotePrompt.targetUserId,
+      combatId: ctx.remotePrompt.combatId ?? null, kind: REMOTE_PICK_KINDS.LIST,
+      onTimeoutValue: null, spec: listArgs,
+    });
+  }
+  return await pickFromList(listArgs);
+}
+
 async function selectMenuPicks(row, ctx, options) {
   // Replay captured picks — the pre_activate window recorded these BEFORE the
   // card was built; RESOLVE replays them so the menu applies without re-
@@ -6320,6 +6373,55 @@ async function selectMenuPicks(row, ctx, options) {
     if (Number.isFinite(n) && n >= 1) pickCount = Math.floor(n);
   }
   pickCount = Math.max(1, Math.min(pickCount, options.length));
+
+  // ── Multi-pick → ONE multi-select picker (checkboxes), not N menus ────────
+  // When a menu asks for MORE THAN ONE option (Warning Shot + Perfect Aim →
+  // menu_pick_count "1 + HAS_SKILL_PERFECT_AIM" = 2; Meteor Shower = 2), present a
+  // single checkbox picker ("choose up to N" + Confirm) instead of N consecutive
+  // single-select menus. Only for genuinely INTERACTIVE picks — a queued
+  // harness/replay context, a passive auto-pick (skip_when_passive), or an
+  // enemy-responder broadcast still use the per-pick loop below. Routes to the
+  // reaction owner (ctx.remotePrompt) when set, else GM-local. Picks are distinct
+  // by construction (checkboxes); order is menu order. pickCount==1 is untouched,
+  // and the capture-mode preview goes through here too (RESOLVE replays the labels),
+  // so preview + resolve still pick identically.
+  const _hasPickQueue =
+    (Array.isArray(ctx?.harnessPicks) && ctx.harnessPicks.length > (ctx._harnessPicksCursor ?? 0)) ||
+    (Array.isArray(ctx?.menuPicks)   && ctx.menuPicks.length   > (ctx._harnessPicksCursor ?? 0));
+  const _passiveSkip = ctx.isPassive && row.skip_when_passive === true;
+  const _enemyResponder = String(row.menu_responder ?? "").trim().toLowerCase() === "enemy";
+  if (pickCount > 1 && !_hasPickQueue && !_passiveSkip && !_enemyResponder) {
+    const baseSubtitle = row.menu_subtitle ? interpolateMenuText(String(row.menu_subtitle), ctx) : null;
+    const listArgs = {
+      title: interpolateMenuText(String(row.menu_title ?? "Choose an option"), ctx),
+      subtitle: `${baseSubtitle ? baseSubtitle + " — " : ""}choose up to ${pickCount}`,
+      options: menuOptionsToRows(options),
+      multiSelect: true,
+      maxSelect: pickCount,
+      confirmLabel: "Confirm",
+      zIndex: 97,
+    };
+    // Enemy-responder is excluded above (_enemyResponder guard) — this menu is always
+    // the reactor's OWN pick → owner-remote or GM-local via the shared router.
+    const picked = await promptMenuList(listArgs, ctx, row, { allowEnemyResponder: false });
+    if (picked == null) return { chosenIndices: [], cancelled: true };
+    // multiSelect resolves to an array of chosen `value`s (= local option indices,
+    // since menuOptionsToRows sets value=i). Filter to enabled + distinct, cap at N.
+    const arr = Array.isArray(picked) ? picked : [picked];
+    const seen = new Set();
+    const chosen = [];
+    for (const v of arr) {
+      const i = Number(v);
+      if (!Number.isInteger(i) || i < 0 || i >= options.length) continue;
+      if (options[i].disabled || seen.has(i)) continue;
+      seen.add(i); chosen.push(i);
+      if (chosen.length >= pickCount) break;
+    }
+    // Confirming zero selections reads as "no effect chosen" → cancel (matches the
+    // per-pick loop's first-pick-cancel; for Warning Shot the damage-nullify step
+    // already ran earlier in the chain, exactly as before).
+    return { chosenIndices: chosen, cancelled: chosen.length === 0 };
+  }
 
   const chosenIndices = [];
   const remainingIdx = options.map((_, i) => i);
@@ -6365,66 +6467,15 @@ async function selectMenuPicks(row, ctx, options) {
         ? `${baseSubtitle ? baseSubtitle + " — " : ""}choose ${pickCount} (${pick + 1}/${pickCount})`
         : baseSubtitle;
       const remOptions = remainingIdx.map((i) => options[i]);
-      const listArgs = {
+      // Single-select pick over the REMAINING options, routed by the shared helper
+      // (enemy-responder → owner-remote → GM-local). Returns a value = index into
+      // remOptions, mapped back to the full list via remainingIdx below.
+      const pickedLocal = await promptMenuList({
         title: interpolateMenuText(String(row.menu_title ?? "Choose an option"), ctx),
         subtitle,
         options: menuOptionsToRows(remOptions),
         zIndex: 97,  // above the action card (95) during RESOLVE
-      };
-      // Pick routing, in priority order:
-      //   1. menu_responder:"enemy" — the VICTIM side chooses (Cruel Ultimatum).
-      //      Broadcast to every enemy player; the first to answer wins
-      //      ("loudest wins"). No enemy online / no answer → GM resolves locally
-      //      so the action never stalls.
-      //   2. ctx.remotePrompt — single reaction-owner routing (player's reaction).
-      //   3. Local — render on the GM (NPC casts, GM-owned reactions).
-      let pickedLocal;
-      const responder = String(row.menu_responder ?? "").trim().toLowerCase();
-      if (responder === "enemy" && !ctx?.remotePrompt) {
-        const director = ctx.director
-          ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
-          ?? null;
-        const channel = director?.intentChannel ?? null;
-        const enemyUserIds = resolveEnemyPlayerUserIds(ctx.reactorActor, ctx.reactorToken);
-        if (channel && enemyUserIds.length) {
-          const { remotePickAny, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
-          log(`open_action_menu: routing "${row.effect_label}" to ${enemyUserIds.length} enemy player(s) — loudest wins`);
-          const res = await remotePickAny({
-            channel,
-            targetUserIds: enemyUserIds,
-            combatId: director?.combatId ?? null,
-            kind: REMOTE_PICK_KINDS.LIST,
-            onTimeoutValue: null,
-            spec: listArgs,
-          });
-          pickedLocal = res?.value ?? null;
-          // Route this action's FOLLOW-ON picks (e.g. branch A's "which enemy
-          // takes 300") to the SAME player who answered — set ctx.remotePrompt so
-          // the dispatched option's targeting/menu rows render on their client.
-          if (pickedLocal != null && res?.winnerUserId) {
-            ctx.remotePrompt = { channel, targetUserId: res.winnerUserId, combatId: director?.combatId ?? null };
-          }
-          if (pickedLocal == null) {
-            log(`open_action_menu: no enemy answered "${row.effect_label}" — GM-local fallback`);
-            pickedLocal = await pickFromList(listArgs);
-          }
-        } else {
-          // No online enemy player owns a target → GM picks on their behalf.
-          pickedLocal = await pickFromList(listArgs);
-        }
-      } else if (ctx?.remotePrompt?.channel && ctx.remotePrompt.targetUserId) {
-        const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
-        pickedLocal = await remotePick({
-          channel: ctx.remotePrompt.channel,
-          targetUserId: ctx.remotePrompt.targetUserId,
-          combatId: ctx.remotePrompt.combatId ?? null,
-          kind: REMOTE_PICK_KINDS.LIST,
-          onTimeoutValue: null,
-          spec: listArgs,
-        });
-      } else {
-        pickedLocal = await pickFromList(listArgs);
-      }
+      }, ctx, row, { allowEnemyResponder: true });
       if (pickedLocal == null) {
         if (pick === 0) return { chosenIndices: [], cancelled: true };
         // Capture mode (pre_activate wizard): a multi-pick menu steps BACK one
