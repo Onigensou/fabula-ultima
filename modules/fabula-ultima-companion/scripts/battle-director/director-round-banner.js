@@ -29,6 +29,24 @@ const LAYER_ID = "fu-dir-round-layer";
 const ROUND_SFX_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Critical_1.wav";
 const ACCENT = "#ffd866";
+// ── Follow-up flash (Initiative / Ambush / Advantage) ──────────────────────
+// A transient centered banner shown AFTER the round banner docks, announcing
+// which side seized initiative this round (rolled mode) or the surprise-round
+// engagement. Its own layer/style so it overlays WITHOUT disturbing the docked
+// round HUD (turn tracker). SFX are the two Forge initiative cues.
+const FOLLOWUP_LAYER_ID = "fu-dir-initiative-layer";
+const FOLLOWUP_STYLE_ID = "fu-dir-initiative-style";
+const SFX_PLAYER_INIT_URL =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/player_initiative.wav";
+const SFX_ENEMY_INIT_URL =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/enemy_initiative.wav";
+// Per-kind text / colour / SFX. Blue = party favour, red = enemy favour.
+const FOLLOWUP_SPECS = {
+  playerInitiative: { text: "Player Initiative", color: "#4aa3ff", sfx: SFX_PLAYER_INIT_URL },
+  enemyInitiative:  { text: "Enemy Initiative",  color: "#eb4d4d", sfx: SFX_ENEMY_INIT_URL },
+  advantage:        { text: "ADVANTAGE!",        color: "#3ad07a", sfx: SFX_PLAYER_INIT_URL },
+  ambush:           { text: "AMBUSH!",           color: "#ff5a3c", sfx: SFX_ENEMY_INIT_URL },
+};
 // Icon dimensions (vh) — shared between the CSS and the JS that reserves equal
 // width for both sides so the ROUND text stays screen-centred with uneven
 // combatant counts.
@@ -596,6 +614,8 @@ async function playRoundBannerLocal(payload = {}) {
       // above); dockScale bumped 20% (0.4 → 0.48), uniform so the ratio holds.
       dockTopPct = 0, dockScale = 0.48, dockBgOpacity = 0.3,
       instant = false,
+      // Optional follow-up flash ({ kind, side }) shown AFTER this banner docks.
+      followup = null,
     } = payload;
 
     // Instant mode (rewind restore) — jump straight to the docked persistent
@@ -679,6 +699,16 @@ async function playRoundBannerLocal(payload = {}) {
     revealTurnActionIconsStaggered();
     // Note: NO layer.classList.remove — the banner persists until the next
     // round (exited above) or battle end (hideRoundBanner).
+
+    // ── Follow-up flash (Initiative / Ambush / Advantage) ──
+    // Sequenced AFTER the round banner has docked + icons begun revealing, so it
+    // reads as a distinct "second banner". Carried on the SAME ACTION_PLAY
+    // broadcast (payload.followup), so every client plays it in the same order
+    // with no extra socket. The instant/resume path returns early above, so a
+    // reload/rewind never replays the flash.
+    if (followup?.kind) {
+      setTimeout(() => { playFollowupBannerLocal(followup); }, 320);
+    }
   } catch (e) {
     warn("playRoundBannerLocal threw", e);
   }
@@ -699,10 +729,98 @@ async function playBattleStartBannerLocal(payload = {}) {
   }
 }
 
+// ── Follow-up flash (Initiative / Ambush / Advantage) ──────────────────────
+// A short centered banner on ITS OWN layer (so the docked round HUD is left
+// untouched): bold-italic coloured label fades + scales in, holds, fades out.
+// Reuses the module's Web-Audio SFX helper for the two Forge initiative cues.
+let _followupSurfaceId = null;
+
+function ensureFollowupStyle() {
+  if (document.getElementById(FOLLOWUP_STYLE_ID)) return;
+  const css = `
+#${FOLLOWUP_LAYER_ID} { position: fixed; inset: 0; z-index: 99; pointer-events: none; display: none; }
+#${FOLLOWUP_LAYER_ID}.active { display: block; }
+#${FOLLOWUP_LAYER_ID} .fu-init-text {
+  position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%);
+  white-space: nowrap; font-style: italic; font-weight: 900;
+  font-family: "Pixel Operator", system-ui, sans-serif;
+  font-size: 6vh; letter-spacing: .04em; opacity: 0;
+  /* Strong dark outline + halo so the coloured label reads on any battlefield. */
+  -webkit-text-stroke: 0.8px rgba(0,0,0,.92); paint-order: stroke fill;
+  text-shadow: 0 0 4px rgba(0,0,0,.9), 0 3px 14px rgba(0,0,0,.7);
+}
+`.trim();
+  const style = document.createElement("style");
+  style.id = FOLLOWUP_STYLE_ID;
+  style.textContent = css;
+  document.head.appendChild(style);
+}
+
+function ensureFollowupLayer() {
+  ensureFollowupStyle();
+  let layer = document.getElementById(FOLLOWUP_LAYER_ID);
+  if (layer && layer.__fu) return layer;
+  layer = document.createElement("div");
+  layer.id = FOLLOWUP_LAYER_ID;
+  const tx = document.createElement("div");
+  tx.className = "fu-init-text";
+  layer.append(tx);
+  document.body.appendChild(layer);
+  layer.__fu = { tx };
+  return layer;
+}
+
+// Resolve a followup descriptor to its display spec. `kind` is "initiative"
+// (side decides Player/Enemy), "ambush", or "advantage".
+function resolveFollowupSpec(followup) {
+  const kind = String(followup?.kind ?? "");
+  if (kind === "ambush") return FOLLOWUP_SPECS.ambush;
+  if (kind === "advantage") return FOLLOWUP_SPECS.advantage;
+  if (kind === "initiative") {
+    return followup?.side === "party" ? FOLLOWUP_SPECS.playerInitiative : FOLLOWUP_SPECS.enemyInitiative;
+  }
+  return null;
+}
+
+// Play the follow-up flash locally (runs on every client via the round-banner
+// broadcast that carries `payload.followup`). Enter → hold → exit; fire-and-
+// forget SFX. Guarded so a bad descriptor never throws into the caller.
+async function playFollowupBannerLocal(followup = {}, { holdMs = 1000, sfx = true } = {}) {
+  try {
+    const spec = resolveFollowupSpec(followup);
+    if (!spec) return;
+    const layer = ensureFollowupLayer();
+    const { tx } = layer.__fu;
+    for (const a of tx.getAnimations?.() ?? []) a.cancel();
+    tx.textContent = spec.text;
+    tx.style.color = spec.color;
+    tx.style.opacity = "0";
+    layer.classList.add("active");
+    if (!_followupSurfaceId) _followupSurfaceId = registerSurface({ kind: "initiative-banner" });
+    if (sfx && spec.sfx) playRoundSfx(spec.sfx, 0.7);
+
+    await tx.animate([
+      { opacity: 0, transform: "translate(-50%, -50%) scale(1.6)" },
+      { opacity: 1, transform: "translate(-50%, -50%) scale(1)" },
+    ], { duration: 300, easing: EASE_ENERGETIC, fill: "forwards" }).finished;
+    await sleep(holdMs);
+    await tx.animate([
+      { opacity: 1, transform: "translate(-50%, -50%) scale(1)" },
+      { opacity: 0, transform: "translate(-50%, -50%) scale(1.15)" },
+    ], { duration: 300, easing: "ease-in", fill: "forwards" }).finished;
+
+    for (const a of tx.getAnimations?.() ?? []) a.cancel();
+    layer.classList.remove("active");
+    if (_followupSurfaceId) { unregisterSurface(_followupSurfaceId); _followupSurfaceId = null; }
+  } catch (e) {
+    warn("playFollowupBannerLocal threw", e);
+  }
+}
+
 // ── public: fire from ROUND_START ─────────────────────────────────────────
 // Render on THIS (GM) client + broadcast to all OTHERS. Fire-and-forget so the
 // FSM is not blocked by the ~2.5s cinematic.
-export function playRoundBanner({ round = 0 } = {}) {
+export function playRoundBanner({ round = 0, followup = null } = {}) {
   try {
     // Populate the icons from the LIVE combat before revealing them. The
     // dCombat start()/nextTurn turn-action hook normally builds them, but after
@@ -712,7 +830,7 @@ export function playRoundBanner({ round = 0 } = {}) {
     // in the normal path (re-snapshots the same data). GM-only inside.
     try { globalThis.FUCompanion?.api?.experimental?.battleDirector?.refreshTurnActions?.(); }
     catch (_e) {}
-    const payload = { round };
+    const payload = { round, ...(followup ? { followup } : {}) };
     playRoundBannerLocal(payload);
     try { _socket?.executeForOthers?.(ACTION_PLAY, payload); }
     catch (e) { warn("director-round-banner: broadcast failed", e); }

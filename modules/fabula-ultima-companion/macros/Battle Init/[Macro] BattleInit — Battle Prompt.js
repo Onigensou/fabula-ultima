@@ -385,6 +385,23 @@ log("Party Defaults (DB):", {
     { id: "director", label: "Battle Director (EXPERIMENTAL)" }
   ];
 
+  // Initiative rule (Battle Director only). "rolled" = Fabula Ultima Initiative
+  // Group Check, re-rolled each round (backend); the winning side acts first.
+  // "sidePriority" = the legacy fixed rule (players first; boss/villain → enemies
+  // first) all fight. Default is the new rolled behaviour.
+  const INITIATIVE_MODES = [
+    { id: "rolled",       label: "Rolled Initiative (default)" },
+    { id: "sidePriority", label: "Side Priority (Players/Boss first)" }
+  ];
+
+  // Engagement (Battle Director only). Ambush/Advantage alter ROUND 1 only: the
+  // favoured side takes its whole first round consecutively (JRPG surprise round).
+  const ENGAGEMENTS = [
+    { id: "normal",    label: "Normal (default)" },
+    { id: "advantage", label: "Advantage — party surprise round" },
+    { id: "ambush",    label: "Ambush — enemy surprise round" }
+  ];
+
   // Initial BGM prefill
   const initialBattleType = "default";
   const initialBgmValue = battleBGMDefault || "";
@@ -529,6 +546,32 @@ log("Party Defaults (DB):", {
       </div>
     </div>
 
+    <!-- Initiative Rule + Engagement (Battle Director) -->
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding:8px 10px; border:1px solid var(--color-border-light-primary); border-radius:10px; background:rgba(122,155,182,0.08);">
+      <div>
+        <label style="font-weight:900;">Initiative Rule</label>
+        <select name="initiativeMode" style="width:100%; margin-top:4px;">
+          ${INITIATIVE_MODES.map(m => `<option value="${m.id}">${esc(m.label)}</option>`).join("")}
+        </select>
+        <div style="font-size:12px; opacity:0.85; margin-top:6px; line-height:1.4;">
+          <b>Rolled</b> — every round both sides roll for initiative (backend Group Check);
+          the winner acts first. A blue/red banner announces the result each round.<br>
+          <b>Side Priority</b> — players act first (boss/villain battles: enemies first), fixed all fight.
+        </div>
+      </div>
+      <div>
+        <label style="font-weight:900;">Engagement</label>
+        <select name="engagement" style="width:100%; margin-top:4px;">
+          ${ENGAGEMENTS.map(e => `<option value="${e.id}">${esc(e.label)}</option>`).join("")}
+        </select>
+        <div style="font-size:12px; opacity:0.85; margin-top:6px; line-height:1.4;">
+          <b>Ambush</b> — enemies take the whole first round consecutively.<br>
+          <b>Advantage</b> — the party takes the whole first round consecutively.<br>
+          Round 2 onward reverts to the Initiative Rule above.
+        </div>
+      </div>
+    </div>
+
    <!-- Manual List UI: 5 slots (each slot = 1 enemy) -->
 <div data-bi-manualblock style="display:none; padding:10px 12px; border:1px solid var(--color-border-light-primary); border-radius:10px;">
   <div style="font-weight:900; margin-bottom:6px;">Manual Enemy List</div>
@@ -648,6 +691,13 @@ const randomChance = Math.max(0, Math.min(100, Number.isFinite(parsedRandomChanc
     const battleSystemRaw = String(fd.get("battleSystem") ?? "legacy").trim();
     const battleSystem = BATTLE_SYSTEMS.some(b => b.id === battleSystemRaw) ? battleSystemRaw : "legacy";
 
+    // Initiative rule + engagement (Battle Director). Validated against the
+    // lists above; unexpected values fall back to the defaults (rolled / normal).
+    const initiativeModeRaw = String(fd.get("initiativeMode") ?? "rolled").trim();
+    const initiativeMode = INITIATIVE_MODES.some(m => m.id === initiativeModeRaw) ? initiativeModeRaw : "rolled";
+    const engagementRaw = String(fd.get("engagement") ?? "normal").trim();
+    const engagement = ENGAGEMENTS.some(e => e.id === engagementRaw) ? engagementRaw : "normal";
+
     // If enabled, clear battle log NOW (before payload is created)
     let clearBattleLogReport = null;
     if (optClearBattleLog) {
@@ -709,7 +759,11 @@ const randomChance = Math.max(0, Math.min(100, Number.isFinite(parsedRandomChanc
       battlePlan: {
         type: battleType,                 // "default" | "random" | "boss"
         randomChancePercent: randomChance,
-        isBoss
+        isBoss,
+        // Battle Director initiative rule + engagement (read by
+        // buildDCombatFromSpawn → buildDirectorCombat). Defaults: rolled / normal.
+        initiativeMode,                   // "rolled" | "sidePriority"
+        engagement                        // "normal" | "advantage" | "ambush"
       },
       encounterPlan: {
         mode: enemySetting,               // "rollEncounterTable" | "manual"
