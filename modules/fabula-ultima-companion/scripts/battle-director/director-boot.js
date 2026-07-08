@@ -1415,7 +1415,7 @@ Hooks.once("ready", () => {
   try {
     registerDevTool({
       id: "anim-studio",
-      icon: "🎬",
+      icon: "🎞️",
       label: "Anim Studio — Preview Bench",
       onClick: () => globalThis.FUCompanion?.api?.animStudio?.openBench?.(),
     });
