@@ -2989,7 +2989,7 @@ function buildStudyCard({ attacker, target, roll, tier, previousBest, improved }
   };
 }
 
-function buildEquipmentCard({ attacker, attackerActor, round }) {
+function buildEquipmentCard({ attacker, attackerActor, round, allowArmor = false }) {
   // Integrated swap UI — one custom dropdown per slot (Main / Off / Acc 1
   // / Acc 2). Each lists the current selection + every eligible item from
   // the actor's inventory, with icon + name + subtitle (element • type •
@@ -3006,18 +3006,26 @@ function buildEquipmentCard({ attacker, attackerActor, round }) {
   // it points at the same itemId — no double-equipping the same physical
   // item in both hands / both accessory slots.
   const slotInfo = attackerActor
-    ? tryBuild("equipment-slots", () => gatherEquipmentSlots(attackerActor, { round: round ?? null }))
+    ? tryBuild("equipment-slots", () => gatherEquipmentSlots(attackerActor, { round: round ?? null, includeArmor: !!allowArmor }))
     : { slots: [] };
 
   const groupOf = (key) =>
-    (key === "main" || key === "off") ? "hand" : "acc";
+    (key === "main" || key === "off") ? "hand"
+    : (key === "armor") ? "armor"   // its own group — never dedups vs accessories
+    : "acc";
 
   const emptyLabelOf = (key) =>
-    (key === "main" || key === "off") ? "Empty Hand" : "No Accessory";
+    (key === "main" || key === "off") ? "Empty Hand"
+    : (key === "armor") ? "No Armor"
+    : "No Accessory";
   const emptySubtitleOf = (key) =>
-    (key === "main" || key === "off") ? "No weapon equipped" : "Slot is open";
+    (key === "main" || key === "off") ? "No weapon equipped"
+    : (key === "armor") ? "Unarmored"
+    : "Slot is open";
   const emptyIconOf = (key) =>
-    (key === "main" || key === "off") ? "✋" : "—";
+    (key === "main" || key === "off") ? "✋"
+    : (key === "armor") ? "🛡️"
+    : "—";
 
   const metaHTML = (cand) => {
     const parts = [];
@@ -3259,7 +3267,7 @@ function buildEquipmentCard({ attacker, attackerActor, round }) {
   return {
     titleIcon: `<i class="fa-solid fa-toolbox" style="font-size:20px; color:var(--fud-stroke,#7a6a55);"></i>`,
     titleText: "Equipment",
-    subtitle: `<div class="fud-bf-subtitle">Swap any items<span class="dot">•</span>No armor mid-combat</div>`,
+    subtitle: `<div class="fud-bf-subtitle">Swap any items<span class="dot">•</span>${allowArmor ? "Armor swap enabled (debug)" : "No armor mid-combat"}</div>`,
     portraits: tryBuild("portraits", () => buildPortraitsHTML({ attacker, perTargetResults: [] })),
     body: `
       <fieldset class="fud-bf-section">
@@ -4365,7 +4373,14 @@ export async function postActionCard({ director, kind, payload }) {
   // The Equipment card bakes each weapon's per-round free-transform availability
   // (for the Done-button economy indicator) — it needs the authoritative BD round.
   if (kind === "Equipment") {
-    effectivePayload = { ...effectivePayload, round: director?.dCombat?.round ?? 0 };
+    // Armor swap is RAW-forbidden mid-combat, so it's only offered in a debug /
+    // lean battle (the commit re-checks this authoritatively). Same devMode/lean
+    // signal the battle-end + init paths read.
+    const allowArmor = !!(
+      director?.ctx?.payload?.options?.devMode ||
+      director?.ctx?.payload?.context?.lean
+    );
+    effectivePayload = { ...effectivePayload, round: director?.dCombat?.round ?? 0, allowArmor };
   }
 
   let card = null;

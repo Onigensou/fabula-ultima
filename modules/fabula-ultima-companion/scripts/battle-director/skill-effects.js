@@ -5853,7 +5853,17 @@ async function applyEquipSwapEffect(row, ctx) {
     const applied = [];
     let gearChanged = false;
     if (selections) {
-      const result = await applyEquipmentSwap(actor, selections);
+      // Armor swaps are RAW-forbidden mid-combat and only surfaced in a debug /
+      // lean battle. Re-derive that gate here (authoritatively, from the running
+      // director — never trusting the card) so a forged `armor` selection can't
+      // swap armor in a real fight.
+      const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+      const director = ctx.director ?? bd?.getActiveDirector?.() ?? null;
+      const allowArmor = !!(
+        director?.ctx?.payload?.options?.devMode ||
+        director?.ctx?.payload?.context?.lean
+      );
+      const result = await applyEquipmentSwap(actor, selections, { allowArmor });
       if (!result?.skipped) {
         gearChanged = (result?.changes?.length ?? 0) > 0;
         applied.push(...(result?.changes ?? []));

@@ -378,6 +378,7 @@
     "scripts/healing-system/healing-api.js",
     "scripts/battle-director/director-boot.js",
     "scripts/battle-director/set-bonus-hooks.js",
+    "scripts/battle-director/armor-equip-gate.js",
     "scripts/battle-director/battle-end/battle-end-orchestrator.js",
     "scripts/battle-director/battle-end/battle-end-prompt.js",
     "scripts/battle-director/battle-end/battle-end-fx.js",

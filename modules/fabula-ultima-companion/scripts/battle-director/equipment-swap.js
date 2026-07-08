@@ -32,6 +32,7 @@ const FLAG_NS = "fabula-ultima-companion";
 const ITEM_TYPE_WEAPON    = "weapon";
 const ITEM_TYPE_SHIELD    = "shield";
 const ITEM_TYPE_ACCESSORY = "accessory";
+const ITEM_TYPE_ARMOR     = "armor";
 
 // RAW Core p.???: shields can only be equipped in the OFF-hand slot.
 // Dual Shieldbearer (Guardian Skill) relaxes this — owners may equip a
@@ -64,6 +65,7 @@ function partitionInventory(actor) {
     weapons:     all.filter((i) => i?.system?.props?.item_type === ITEM_TYPE_WEAPON),
     shields:     all.filter((i) => i?.system?.props?.item_type === ITEM_TYPE_SHIELD),
     accessories: all.filter((i) => i?.system?.props?.item_type === ITEM_TYPE_ACCESSORY),
+    armor:       all.filter((i) => i?.system?.props?.item_type === ITEM_TYPE_ARMOR),
   };
 }
 
@@ -165,7 +167,7 @@ function activeFormFreeAvailable(item, round) {
 // Equipment card resolves "current" so a no-change submission reads as no change.
 function currentEquippedIds(actor) {
   const props = actor?.system?.props ?? {};
-  const { weapons, shields, accessories } = partitionInventory(actor);
+  const { weapons, shields, accessories, armor } = partitionInventory(actor);
   const hand = [...weapons, ...shields];
   const byName = (list, name) => {
     const i = indexByEquippedName(list, name);
@@ -176,6 +178,8 @@ function currentEquippedIds(actor) {
     off: byName(hand, props.off_hand),
     accessory1: byName(accessories, props.accessory_name),
     accessory2: byName(accessories, props.accessory2_name),
+    // Armor has no slot prop — its own isEquipped is the source of truth.
+    armor: armor.find((a) => !!a?.system?.props?.isEquipped)?.id ?? null,
   };
 }
 
@@ -195,7 +199,7 @@ export function planEquipmentActionCost(actor, { equipmentSelections, weaponForm
 
   if (equipmentSelections && typeof equipmentSelections === "object") {
     const cur = currentEquippedIds(actor);
-    for (const k of ["main", "off", "accessory1", "accessory2"]) {
+    for (const k of ["main", "off", "accessory1", "accessory2", "armor"]) {
       if (!(k in equipmentSelections)) continue;
       if ((equipmentSelections[k] || null) !== (cur[k] || null)) { out.gearChanged = true; break; }
     }
@@ -314,11 +318,33 @@ function buildAccCandidate(it) {
     description: String(p.description ?? ""),
   };
 }
+function buildArmorCandidate(it) {
+  const p = it.system?.props ?? {};
+  const def  = Number(p.item_def_bonus ?? 0)  || 0;
+  const mdef = Number(p.item_mdef_bonus ?? 0) || 0;
+  return {
+    id: it.id,
+    name: p.name ?? it.name ?? "(unnamed)",
+    img: it.img ?? null,
+    category: "armor",
+    typeIcon: "🛡️",
+    element: null,
+    weaponType: null,
+    attackStat: null,
+    defenseLine: `DEF ${def >= 0 ? "+" : ""}${def} • MDEF ${mdef >= 0 ? "+" : ""}${mdef}`,
+    isTwoHanded: false,
+    isMartial: !!p.isMartial,
+    rarity: String(p.item_rarity ?? "") || null,
+    description: String(p.description ?? ""),
+  };
+}
 
-export function gatherEquipmentSlots(actor, { round = null } = {}) {
+// `includeArmor` adds a 5th "armor" slot — RAW forbids armor swaps mid-combat,
+// so it's opt-in and the caller only enables it inside a debug/lean battle.
+export function gatherEquipmentSlots(actor, { round = null, includeArmor = false } = {}) {
   if (!actor) return { slots: [], hasUnarmed: false };
 
-  const { weapons, shields, accessories } = partitionInventory(actor);
+  const { weapons, shields, accessories, armor } = partitionInventory(actor);
   const handItems = [...weapons, ...shields];
 
   const props = actor.system?.props ?? {};
@@ -376,6 +402,18 @@ export function gatherEquipmentSlots(actor, { round = null } = {}) {
         currentName: acc2Idx >= 0 ? accessories[acc2Idx].system?.props?.name : "—",
         candidates: accCandidates,
       },
+      // Armor (debug-battle only). Single slot — its own `isEquipped` is the
+      // source of truth (no hand/accessory slot prop). Omitted entirely unless
+      // includeArmor, so a normal battle's card is unchanged.
+      ...(includeArmor ? [(() => {
+        const worn = armor.find((a) => !!a?.system?.props?.isEquipped) ?? null;
+        return {
+          key: "armor", label: "Armor",
+          currentItemId: worn?.id ?? null,
+          currentName: worn?.system?.props?.name ?? "—",
+          candidates: armor.map(buildArmorCandidate),
+        };
+      })()] : []),
     ],
     hasUnarmed: true,
   };
@@ -436,10 +474,40 @@ function resolveItemEffectDocs(item) {
   return out.size ? [...out.values()] : owned;
 }
 
+// Sync an item's resident AE `disabled` state to its OWN `isEquipped` prop.
+//
+// The slot-driven paths (applyEquipmentSwap / reconcileEquip) toggle AE-disabled
+// for hand/accessory gear off the SLOT source-of-truth. Armor has no slot — it's
+// equipped directly on the CSB sheet, so its own `isEquipped` IS the truth. This
+// helper closes the loop for such gear: a worn item's effects are enabled, an
+// unworn item's effects are disabled. Idempotent (only writes wrong-way flips);
+// returns the number of effects flipped.
+export async function syncItemEffectsToEquip(item) {
+  if (!item?.id) return 0;
+  const equipped = !!item.system?.props?.isEquipped;
+  const docs = resolveItemEffectDocs(item);
+  const updates = docs
+    .filter((fx) => !!fx.disabled === equipped) // currently wrong-way → flip
+    .map((fx) => ({ _id: fx.id, disabled: !equipped }));
+  if (!updates.length) return 0;
+  try {
+    await item.updateEmbeddedDocuments("ActiveEffect", updates);
+  } catch (e) {
+    warn(`syncItemEffectsToEquip: AE sync failed for ${item.name}`, e);
+  }
+  return updates.length;
+}
+
 // ─── Public: apply the swap ─────────────────────────────────────────
 
 // `selections` = { main: itemIdOrNull, off: itemIdOrNull,
-//                  accessory1: itemIdOrNull, accessory2: itemIdOrNull }
+//                  accessory1: itemIdOrNull, accessory2: itemIdOrNull,
+//                  armor: itemIdOrNull }   // armor only honored with allowArmor
+//
+// `opts.allowArmor` — commit the `armor` slot too. RAW forbids armor swaps
+// mid-combat, so callers pass this ONLY inside a debug/lean battle. When false
+// (default), a stale/forged `armor` selection is ignored — this is the
+// authoritative gate, mirroring the shield-in-main re-check.
 //
 // Compares against the actor's current equipped state, builds the same
 // three commit batches the legacy macro does (item updates, item-AE
@@ -447,7 +515,7 @@ function resolveItemEffectDocs(item) {
 // items → AEs → actor.
 //
 // Returns a summary { changes: [...], skipped: bool }.
-export async function applyEquipmentSwap(actor, selections) {
+export async function applyEquipmentSwap(actor, selections, opts = {}) {
   if (!actor) { warn("applyEquipmentSwap: no actor"); return { changes: [], skipped: true }; }
   if (!selections || typeof selections !== "object") {
     warn("applyEquipmentSwap: no selections");
@@ -456,11 +524,12 @@ export async function applyEquipmentSwap(actor, selections) {
   // BD owns this equip: suppress the ambient set-bonus hook for the actor while
   // we drive it, so BD reconciles (below) on its own terms and the hook can't
   // race or pre-empt a BD pre-step. The hook resumes for out-of-band changes.
-  return withManagedEquip(actor, () => _applyEquipmentSwap(actor, selections));
+  return withManagedEquip(actor, () => _applyEquipmentSwap(actor, selections, opts));
 }
 
-async function _applyEquipmentSwap(actor, selections) {
-  const { weapons, shields, accessories } = partitionInventory(actor);
+async function _applyEquipmentSwap(actor, selections, opts = {}) {
+  const { allowArmor = false } = opts;
+  const { weapons, shields, accessories, armor } = partitionInventory(actor);
   const handItems = [...weapons, ...shields];
 
   const findById = (list, id) => id ? list.find((it) => it.id === id) ?? null : null;
@@ -583,6 +652,32 @@ async function _applyEquipmentSwap(actor, selections) {
     queueEffectSync(acc, next);
   }
 
+  // ARMOR (debug-battle only — gated by allowArmor; RAW forbids mid-combat armor
+  // swaps). Single slot: equipping one armor unequips every other. Armor has no
+  // hand/accessory slot prop, so its `isEquipped` + resident-AE `disabled` (the
+  // Ghostly-Sheet pattern) is the whole of its equip state. Same commit batches
+  // as above (items → AEs). An armor selection is ignored entirely when the flag
+  // is off — the authoritative counterpart to the card only showing the slot in
+  // a debug battle.
+  if (allowArmor && ("armor" in selections)) {
+    const wantArmor = selections.armor ? (armor.find((a) => a.id === selections.armor) ?? null) : null;
+    const curArmor  = armor.find((a) => !!a?.system?.props?.isEquipped) ?? null;
+    if ((curArmor?.id ?? null) !== (wantArmor?.id ?? null)) {
+      for (const a of armor) {
+        const cur = !!a.system?.props?.isEquipped;
+        const next = !!wantArmor && a.id === wantArmor.id;
+        if (cur !== next) addItemPatch(a.id, "system.props.isEquipped", next);
+        queueEffectSync(a, next);
+      }
+      changes.push({
+        slot: "Armor",
+        fromName: curArmor?.system?.props?.name ?? "None",
+        toName:   wantArmor?.system?.props?.name ?? "None",
+        icon: "🛡️",
+      });
+    }
+  }
+
   if (!changes.length) {
     return { changes: [], skipped: true };
   }
@@ -694,11 +789,23 @@ async function _reconcileEquip(actor) {
     log(`reconcileEquip: synced ${itemUpdates.length} item(s) to slots on ${actor.name}`);
   }
 
+  // Armor has no hand/accessory SLOT — its own `isEquipped` is the source of
+  // truth (RAW: armor is equipped out of combat on the sheet, never slot-swapped
+  // here). Heal its resident-AE state to that, so a load/clone repair sweep fixes
+  // armor-borne transfer AEs (e.g. Ghostly Sheet) the same way the slot loops
+  // above fix weapon/accessory effects.
+  let armorSynced = 0;
+  for (const it of Array.from(actor.items ?? [])) {
+    if (String(it?.system?.props?.item_type ?? "").trim().toLowerCase() !== "armor") continue;
+    armorSynced += await syncItemEffectsToEquip(it);
+  }
+  if (armorSynced) log(`reconcileEquip: synced ${armorSynced} armor effect(s) on ${actor.name}`);
+
   // Set bonuses — reconcile even when nothing changed here, so a load/clone repair
   // sweep restores a missing set-bonus AE (e.g. aquatic 2-piece → "always Wet").
   let setBonus = null;
   try { setBonus = await reconcileSetBonuses(actor); }
   catch (e) { warn("reconcileEquip: set-bonus reconcile failed", e); }
 
-  return { changed: itemUpdates.length, setBonus };
+  return { changed: itemUpdates.length + armorSynced, setBonus };
 }
