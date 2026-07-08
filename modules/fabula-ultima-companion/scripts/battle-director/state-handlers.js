@@ -24,6 +24,7 @@ import { destroyDirectorHud } from "./director-player-hud.js";
 import { playStudyVfx, playActionNamecard, playMissVfx, playBlockVfx, playResourceSpendVfx } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
 import { playRoundBanner, hideRoundBanner } from "./director-round-banner.js";
+import { resolveInitiativeGroupCheck } from "./director-initiative.js";
 import { applyEquipmentSwap } from "./equipment-swap.js";
 import { gatherConsumables, gatherCreatables, readActorIp, consumeOne, spendIp, getLinkedSkillUuid } from "./item-resource.js";
 import { saveDirectorState, installItemDeletionTracker, clearAllDirectorStateFlags } from "./persistence.js";
@@ -1576,6 +1577,64 @@ const Prep = {
   },
 };
 
+// Resolve which side seizes initiative for `roundNo` and COMMIT it to dCombat
+// BEFORE the turn picker runs, returning the follow-up banner descriptor
+// ({ kind, side? }) for ROUND_START to fan out after the round banner (or null
+// for no flash). Director-orchestrated so the manager fully tracks the outcome
+// (persisted via dCombat.initiativeThisRound + firstSide/currentSide).
+//
+// Modes:
+//   • Ambush / Advantage — ROUND 1 only: the favoured side is forced first (the
+//     consecutive surprise round is enforced by dCombat.nextTurn); flash
+//     "AMBUSH!" / "ADVANTAGE!".
+//   • rolled       — every round: backend Initiative Group Check
+//     (director-initiative.js); the winner acts first; flash
+//     "Player/Enemy Initiative".
+//   • sidePriority — legacy fixed rule (firstSide set at build); no roll, no flash.
+async function resolveRoundInitiative(director, roundNo) {
+  const dc = director?.dCombat;
+  if (!dc) return null;
+
+  // Idempotent re-entry (same round already resolved): reuse the committed side,
+  // don't re-roll or replay the flash. (Reload resumes at TURN_START/TURN_END, so
+  // ROUND_START isn't re-entered there — this only guards in-session re-entry.)
+  if (dc.initiativeThisRound?.round === roundNo) {
+    const side = dc.initiativeThisRound.side === "enemy" ? "enemy" : "party";
+    dc.firstSide = side;
+    dc.currentSide = side;
+    return null;
+  }
+
+  // Round 1 Ambush / Advantage — forced surprise side, no check.
+  if (roundNo === 1 && (dc.engagement === "ambush" || dc.engagement === "advantage")) {
+    const side = dc.engagement === "ambush" ? "enemy" : "party";
+    dc.firstSide = side;
+    dc.currentSide = side;
+    dc.initiativeThisRound = { round: roundNo, side, forced: true, engagement: dc.engagement };
+    return { kind: dc.engagement };
+  }
+
+  // Rolled mode — backend Initiative Group Check every round.
+  if (dc.initiativeMode === "rolled") {
+    const res = await resolveInitiativeGroupCheck(dc);
+    const side = res.side === "party" ? "party" : "enemy";
+    dc.firstSide = side;
+    dc.currentSide = side;
+    dc.initiativeThisRound = {
+      round: roundNo, side, forced: false,
+      dl: res.dl, bonus: res.bonus,
+      leaderName: res.leaderName ?? null, leaderTotal: res.leaderTotal ?? null,
+      degraded: !!res.degraded,
+    };
+    return { kind: "initiative", side };
+  }
+
+  // sidePriority — fixed firstSide from build; reaffirm currentSide, no flash.
+  dc.currentSide = dc.firstSide;
+  dc.initiativeThisRound = { round: roundNo, side: dc.firstSide, forced: false, mode: "sidePriority" };
+  return null;
+}
+
 // ─── ROUND_START ───────────────────────────────────────────────────────
 // In v1 nothing happens here; we just advance. Real implementation would
 // drain round-start reaction triggers.
@@ -1593,10 +1652,19 @@ const RoundStart = {
     const roundNo = director.dCombat?.round ?? director.combat?.round ?? 0;
     log(`ROUND_START — round ${roundNo}`);
 
-    // Start-of-round cinematic banner ("ROUND N" + Critical_1 SFX). Fire-and-
-    // forget so the ~2.5s flourish overlays the next state rather than
-    // blocking the FSM. Broadcasts to all clients.
-    if (roundNo > 0) playRoundBanner({ round: roundNo });
+    // Determine which side seizes initiative THIS round (director-orchestrated,
+    // committed to dCombat before TURN_START picks) and the follow-up flash to
+    // announce it. Awaited so currentSide is authoritative before the picker.
+    let followup = null;
+    if (roundNo > 0) {
+      try { followup = await resolveRoundInitiative(director, roundNo); }
+      catch (e) { warn("resolveRoundInitiative threw", e); }
+    }
+
+    // Start-of-round cinematic banner ("ROUND N" + Critical_1 SFX), then the
+    // initiative / ambush / advantage flash (if any). Fire-and-forget so the
+    // flourish overlays the next state rather than blocking the FSM.
+    if (roundNo > 0) playRoundBanner({ round: roundNo, followup });
 
     // Boss Dominance accrual — every enemy boss banks 1 Dominance Point on
     // rounds 3, 6, 9, ... (capped). Awaited so the AE exists before any

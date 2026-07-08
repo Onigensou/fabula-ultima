@@ -314,6 +314,12 @@ export async function saveDirectorState(director, opts = {}) {
       ended: dc.ended,
       firstSide: dc.firstSide,
       currentSide: dc.currentSide,
+      // Initiative rule + engagement config, plus the round's committed
+      // initiative result. Persisted so a mid-round reload doesn't re-roll the
+      // Initiative Group Check (which would risk flipping which side acts first).
+      initiativeMode: dc.initiativeMode,
+      engagement: dc.engagement,
+      initiativeThisRound: dc.initiativeThisRound ?? null,
       // currentCombatantId is preserved so resume re-picks the same
       // actor whose turn it was. Resume rewinds to TURN_START which
       // re-enters DECLARE — the player re-makes their pick.
@@ -708,6 +714,12 @@ export async function reconstructDirectorCombat(state, scene) {
   dc.ended = !!state.dCombat.ended;
   dc.firstSide = state.dCombat.firstSide;
   dc.currentSide = state.dCombat.currentSide;
+  // Initiative config + the round's committed result. Defaults keep pre-feature
+  // saves resuming cleanly (rolled / normal); initiativeThisRound carries the
+  // already-decided side so resume never re-rolls the round's initiative.
+  dc.initiativeMode = state.dCombat.initiativeMode ?? "rolled";
+  dc.engagement = state.dCombat.engagement ?? "normal";
+  dc.initiativeThisRound = state.dCombat.initiativeThisRound ?? null;
   // Preserve `currentCombatantId` from the saved snapshot so the resume
   // lands on the SAME combatant whose turn it was. We validate it after
   // combatants are loaded below (and fall back to null — forcing a re-

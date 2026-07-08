@@ -102,7 +102,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.7U51cd54zi0rB8h4",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.zmzx1m9uLYZJiCCM",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },
@@ -161,10 +161,10 @@
         "fabula-ultima-companion": {
           "category": "Other",
           "directorAppliedBy": {
-            "appliedAtRound": 4,
+            "appliedAtRound": 2,
             "effectLabel": "dance_apply",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.luXXPlt0jBkWkvyK",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.LOa4jZRnZ4RDWiVU",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
             "turnsRemaining": null
           },
@@ -7909,6 +7909,7 @@
       "charm_status": 0,
       "check_mod_accuracy": 0,
       "check_mod_all": 0,
+      "check_mod_init": 0,
       "check_mod_magic": 0,
       "check_mod_melee": 0,
       "check_mod_ranged": 4,
@@ -8415,6 +8416,13 @@
           "name": "Maid cap",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.QfaU0E6iq829nPxO"
+        },
+        "SopXXY9q83NQSm2x": {
+          "acess_description": "<ul><li>When you apply or re-apply a <strong>Status Conditions</strong> to a creature, it takes&nbsp;<strong>5&nbsp;Dark&nbsp;</strong>damage.</li></ul>",
+          "id": "${item.id}",
+          "name": "Skull Orb",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.SopXXY9q83NQSm2x"
         },
         "Ti72kIFBm0pAkmtb": {
           "acess_description": "<ul>\n<li>When you take damage for the&nbsp;<strong>first time&nbsp;</strong>in a&nbsp;<strong>conflict,&nbsp;</strong>reduce that damage to&nbsp;<strong>0</strong></li>\n</ul>",
@@ -9696,7 +9704,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 4037328691
+    "templateSystemUniqueVersion": 1137758910
   },
   "type": "character"
 }

@@ -29,6 +29,29 @@ const LAYER_ID = "fu-dir-round-layer";
 const ROUND_SFX_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Critical_1.wav";
 const ACCENT = "#ffd866";
+// ── Follow-up flash (Initiative / Ambush / Advantage) ──────────────────────
+// A transient centered banner shown AFTER the round banner docks, announcing
+// which side seized initiative this round (rolled mode) or the surprise-round
+// engagement. Its own layer/style so it overlays WITHOUT disturbing the docked
+// round HUD (turn tracker). SFX are the two Forge initiative cues.
+const FOLLOWUP_LAYER_ID = "fu-dir-initiative-layer";
+const FOLLOWUP_STYLE_ID = "fu-dir-initiative-style";
+const SFX_PLAYER_INIT_URL =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/player_initiative.wav";
+const SFX_ENEMY_INIT_URL =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/enemy_initiative.wav";
+// Disposition base colours (match the legacy initiative tracker's border tints):
+// party/ally = blue, enemy = red. The LABEL text is always white; the
+// disposition colour lives on the framing accent lines + the wash.
+const DISP_BLUE = "#5aaaff";  // party / advantage favour
+const DISP_RED  = "#ff5050";  // enemy / ambush favour
+// Per-kind label + line colour + SFX. Text is white for every kind.
+const FOLLOWUP_SPECS = {
+  playerInitiative: { text: "Player Initiative", line: DISP_BLUE, sfx: SFX_PLAYER_INIT_URL },
+  enemyInitiative:  { text: "Enemy Initiative",  line: DISP_RED,  sfx: SFX_ENEMY_INIT_URL },
+  advantage:        { text: "ADVANTAGE!",        line: DISP_BLUE, sfx: SFX_PLAYER_INIT_URL },
+  ambush:           { text: "AMBUSH!",           line: DISP_RED,  sfx: SFX_ENEMY_INIT_URL },
+};
 // Icon dimensions (vh) — shared between the CSS and the JS that reserves equal
 // width for both sides so the ROUND text stays screen-centred with uneven
 // combatant counts.
@@ -128,6 +151,13 @@ export function initDirectorRoundBanner() {
   } catch (e) {
     warn("director-round-banner: init failed", e);
   }
+  // Pre-decode the initiative + round SFX so the (frequent, timing-sensitive)
+  // initiative banner plays instantly from cache on the first round. Ensure the
+  // style/layer exist too so the first reveal isn't stalled by DOM/style setup.
+  try {
+    prewarmSfx([SFX_PLAYER_INIT_URL, SFX_ENEMY_INIT_URL, ROUND_SFX_URL]);
+    ensureFollowupStyle();
+  } catch (e) { warn("director-round-banner: sfx/style prewarm failed", e); }
   // GM drives the turn-action tracker off dCombat's state-change hook (fired
   // from director-combat.js). Registered outside the socket guard so the GM's
   // own local render still works even if socketlib is unavailable.
@@ -190,6 +220,30 @@ async function playRoundSfx(url = ROUND_SFX_URL, vol = 0.6) {
     src.start(0);
   } catch (e) {
     warn("director-round-banner: sfx failed", e);
+  }
+}
+
+// Pre-decode SFX into the buffer cache so the FIRST play has no fetch+decode lag
+// — important for the initiative banner, which fires every round and must stay
+// tightly synced to its curtain reveal. `decodeAudioData` works on a suspended
+// context (no user gesture needed), so we can warm the cache at boot; only
+// playback needs the resumed context (handled in playRoundSfx). Idempotent:
+// cached URLs are skipped, so repeated calls are cheap.
+async function prewarmSfx(urls = []) {
+  try {
+    _audio.ctx = _audio.ctx || new (window.AudioContext || window.webkitAudioContext)();
+    for (const url of urls) {
+      if (!url || _audio.cache[url]) continue;
+      try {
+        const resp = await fetch(url, { cache: "reload" });
+        if (!resp.ok) continue;
+        _audio.cache[url] = await _audio.ctx.decodeAudioData((await resp.arrayBuffer()).slice(0));
+      } catch (e) {
+        warn("director-round-banner: prewarmSfx decode failed for", url, e);
+      }
+    }
+  } catch (e) {
+    warn("director-round-banner: prewarmSfx failed", e);
   }
 }
 
@@ -596,6 +650,8 @@ async function playRoundBannerLocal(payload = {}) {
       // above); dockScale bumped 20% (0.4 → 0.48), uniform so the ratio holds.
       dockTopPct = 0, dockScale = 0.48, dockBgOpacity = 0.3,
       instant = false,
+      // Optional follow-up flash ({ kind, side }) shown AFTER this banner docks.
+      followup = null,
     } = payload;
 
     // Instant mode (rewind restore) — jump straight to the docked persistent
@@ -679,6 +735,16 @@ async function playRoundBannerLocal(payload = {}) {
     revealTurnActionIconsStaggered();
     // Note: NO layer.classList.remove — the banner persists until the next
     // round (exited above) or battle end (hideRoundBanner).
+
+    // ── Follow-up flash (Initiative / Ambush / Advantage) ──
+    // Sequenced AFTER the round banner has docked + icons begun revealing, so it
+    // reads as a distinct "second banner". Carried on the SAME ACTION_PLAY
+    // broadcast (payload.followup), so every client plays it in the same order
+    // with no extra socket. The instant/resume path returns early above, so a
+    // reload/rewind never replays the flash.
+    if (followup?.kind) {
+      setTimeout(() => { playFollowupBannerLocal(followup); }, 320);
+    }
   } catch (e) {
     warn("playRoundBannerLocal threw", e);
   }
@@ -699,10 +765,181 @@ async function playBattleStartBannerLocal(payload = {}) {
   }
 }
 
+// ── Follow-up flash (Initiative / Ambush / Advantage) ──────────────────────
+// A short centered banner on ITS OWN layer (so the docked round HUD is left
+// untouched): bold-italic coloured label fades + scales in, holds, fades out.
+// Reuses the module's Web-Audio SFX helper for the two Forge initiative cues.
+let _followupSurfaceId = null;
+
+// Animation timing (ms) — kept as named constants so the sequence stays precise
+// and easy to retune. Total ≈ WASH + CURTAIN + TEXT_IN + hold + TEXT_OUT + FADE.
+const FU_WASH_MS    = 200;   // panel wash fades in first
+const FU_CURTAIN_MS = 440;   // accent lines sweep open from centre (curtain)
+const FU_TEXT_IN_MS = 300;   // label slides in from the left + fades
+const FU_TEXT_OUT_MS = 300;  // label slides out to the right + fades
+const FU_FADE_MS    = 320;   // whole banner fades out
+const FU_TEXT_SHIFT = "9vw"; // horizontal slide distance for the label in/out
+
+function ensureFollowupStyle() {
+  if (document.getElementById(FOLLOWUP_STYLE_ID)) return;
+  const css = `
+#${FOLLOWUP_LAYER_ID} { position: fixed; inset: 0; z-index: 99; pointer-events: none; display: none; }
+#${FOLLOWUP_LAYER_ID}.active { display: block; }
+/* Framing panel: two disposition-coloured accent lines with a subtle wash
+   between them. Centred; --line drives the disposition colour. */
+#${FOLLOWUP_LAYER_ID} .fu-init-band {
+  position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
+  width: 88vw; height: 12vh;
+  display: flex; flex-direction: column; justify-content: space-between;
+  --line: ${DISP_BLUE};
+}
+#${FOLLOWUP_LAYER_ID} .fu-init-wash {
+  position: absolute; inset: 0; opacity: 0;
+  /* horizontal band of disposition light, brightest at the centre. Set inline. */
+}
+#${FOLLOWUP_LAYER_ID} .fu-init-line {
+  position: relative; width: 100%; height: 3px; transform: scaleX(0);
+  transform-origin: 50% 50%;  /* curtain opens from the centre outward */
+  background: linear-gradient(90deg, transparent 0%, var(--line) 6%, var(--line) 94%, transparent 100%);
+  box-shadow: 0 0 10px var(--line), 0 0 3px var(--line);
+}
+#${FOLLOWUP_LAYER_ID} .fu-init-text {
+  position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
+  white-space: nowrap; font-style: italic; font-weight: 900;
+  font-family: "Pixel Operator", system-ui, sans-serif;
+  font-size: 6.4vh; letter-spacing: .03em; opacity: 0; color: #fff;
+  /* Dark outline + halo so the white label reads on any battlefield. */
+  -webkit-text-stroke: 0.9px rgba(0,0,0,.92); paint-order: stroke fill;
+  text-shadow: 0 0 5px rgba(0,0,0,.9), 0 3px 16px rgba(0,0,0,.7);
+}
+`.trim();
+  const style = document.createElement("style");
+  style.id = FOLLOWUP_STYLE_ID;
+  style.textContent = css;
+  document.head.appendChild(style);
+}
+
+function ensureFollowupLayer() {
+  ensureFollowupStyle();
+  let layer = document.getElementById(FOLLOWUP_LAYER_ID);
+  if (layer && layer.__fu) return layer;
+  layer = document.createElement("div");
+  layer.id = FOLLOWUP_LAYER_ID;
+  const band = document.createElement("div"); band.className = "fu-init-band";
+  const wash = document.createElement("div"); wash.className = "fu-init-wash";
+  const topLine = document.createElement("div"); topLine.className = "fu-init-line top";
+  const bottomLine = document.createElement("div"); bottomLine.className = "fu-init-line bottom";
+  band.append(wash, topLine, bottomLine);
+  const tx = document.createElement("div"); tx.className = "fu-init-text";
+  layer.append(band, tx);
+  document.body.appendChild(layer);
+  layer.__fu = { band, wash, topLine, bottomLine, tx };
+  return layer;
+}
+
+// Resolve a followup descriptor to its display spec. `kind` is "initiative"
+// (side decides Player/Enemy), "ambush", or "advantage".
+function resolveFollowupSpec(followup) {
+  const kind = String(followup?.kind ?? "");
+  if (kind === "ambush") return FOLLOWUP_SPECS.ambush;
+  if (kind === "advantage") return FOLLOWUP_SPECS.advantage;
+  if (kind === "initiative") {
+    return followup?.side === "party" ? FOLLOWUP_SPECS.playerInitiative : FOLLOWUP_SPECS.enemyInitiative;
+  }
+  return null;
+}
+
+// Play the follow-up flash locally (runs on every client via the round-banner
+// broadcast that carries `payload.followup`). Sequence:
+//   1. panel WASH fades in,
+//   2. accent lines CURTAIN-open from the centre outward,
+//   3. white label SLIDES + fades in from the left,
+//   4. hold,
+//   5. label slides OUT to the opposite (right) side,
+//   6. the whole banner fades out.
+// SFX fires exactly at the curtain reveal (played from the pre-warmed cache so
+// there's no first-play decode lag). Guarded so a bad descriptor never throws.
+async function playFollowupBannerLocal(followup = {}, { holdMs = 850, sfx = true } = {}) {
+  try {
+    const spec = resolveFollowupSpec(followup);
+    if (!spec) return;
+    const layer = ensureFollowupLayer();
+    const { band, wash, topLine, bottomLine, tx } = layer.__fu;
+    for (const el of [wash, topLine, bottomLine, tx]) el.getAnimations?.().forEach((a) => a.cancel());
+
+    // Disposition colour on the band (drives the line var) + the wash gradient.
+    band.style.setProperty("--line", spec.line);
+    wash.style.background =
+      `linear-gradient(90deg, transparent 0%, ${spec.line}22 24%, ${spec.line}3a 50%, ${spec.line}22 76%, transparent 100%)`;
+    tx.textContent = spec.text;
+
+    // Reset to the fully-masked start state before revealing.
+    wash.style.opacity = "0";
+    topLine.style.transform = "scaleX(0)";
+    bottomLine.style.transform = "scaleX(0)";
+    tx.style.opacity = "0";
+    tx.style.transform = `translate(-50%, -50%) translateX(-${FU_TEXT_SHIFT})`;
+
+    layer.classList.add("active");
+    if (!_followupSurfaceId) _followupSurfaceId = registerSurface({ kind: "initiative-banner" });
+
+    // 1. Panel wash in.
+    await wash.animate([{ opacity: 0 }, { opacity: 1 }],
+      { duration: FU_WASH_MS, easing: "ease-out", fill: "forwards" }).finished;
+
+    // SFX at the curtain reveal — cached buffer → instant, precise sync.
+    if (sfx && spec.sfx) playRoundSfx(spec.sfx, 0.7);
+
+    // 2. Curtain: both accent lines sweep open from the centre.
+    await Promise.all([
+      topLine.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+        { duration: FU_CURTAIN_MS, easing: EASE_ENERGETIC, fill: "forwards" }).finished,
+      bottomLine.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+        { duration: FU_CURTAIN_MS, easing: EASE_ENERGETIC, fill: "forwards" }).finished,
+    ]);
+
+    // 3. Label slides in from the left + fades.
+    await tx.animate([
+      { opacity: 0, transform: `translate(-50%, -50%) translateX(-${FU_TEXT_SHIFT})` },
+      { opacity: 1, transform: "translate(-50%, -50%) translateX(0)" },
+    ], { duration: FU_TEXT_IN_MS, easing: EASE_ENERGETIC, fill: "forwards" }).finished;
+
+    // 4. Hold.
+    await sleep(holdMs);
+
+    // 5. Label slides out to the opposite (right) side + fades.
+    await tx.animate([
+      { opacity: 1, transform: "translate(-50%, -50%) translateX(0)" },
+      { opacity: 0, transform: `translate(-50%, -50%) translateX(${FU_TEXT_SHIFT})` },
+    ], { duration: FU_TEXT_OUT_MS, easing: "ease-in", fill: "forwards" }).finished;
+
+    // 6. Whole banner fades out (wash + both lines together).
+    await Promise.all([
+      wash.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FU_FADE_MS, easing: "ease-in", fill: "forwards" }).finished,
+      topLine.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FU_FADE_MS, easing: "ease-in", fill: "forwards" }).finished,
+      bottomLine.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FU_FADE_MS, easing: "ease-in", fill: "forwards" }).finished,
+    ]);
+
+    for (const el of [wash, topLine, bottomLine, tx]) el.getAnimations?.().forEach((a) => a.cancel());
+    layer.classList.remove("active");
+    if (_followupSurfaceId) { unregisterSurface(_followupSurfaceId); _followupSurfaceId = null; }
+  } catch (e) {
+    warn("playFollowupBannerLocal threw", e);
+  }
+}
+
+// Dev/preview helper — render the follow-up initiative banner in ISOLATION on
+// its own layer (never touches the docked round HUD), for tuning + smoke tests.
+// `followup` is { kind:"initiative", side:"party"|"enemy" } | { kind:"ambush" }
+// | { kind:"advantage" }. Local-only (no broadcast). Safe to call mid-battle.
+export function previewInitiativeBanner(followup = { kind: "initiative", side: "party" }) {
+  playFollowupBannerLocal(followup);
+}
+
 // ── public: fire from ROUND_START ─────────────────────────────────────────
 // Render on THIS (GM) client + broadcast to all OTHERS. Fire-and-forget so the
 // FSM is not blocked by the ~2.5s cinematic.
-export function playRoundBanner({ round = 0 } = {}) {
+export function playRoundBanner({ round = 0, followup = null } = {}) {
   try {
     // Populate the icons from the LIVE combat before revealing them. The
     // dCombat start()/nextTurn turn-action hook normally builds them, but after
@@ -712,7 +949,7 @@ export function playRoundBanner({ round = 0 } = {}) {
     // in the normal path (re-snapshots the same data). GM-only inside.
     try { globalThis.FUCompanion?.api?.experimental?.battleDirector?.refreshTurnActions?.(); }
     catch (_e) {}
-    const payload = { round };
+    const payload = { round, ...(followup ? { followup } : {}) };
     playRoundBannerLocal(payload);
     try { _socket?.executeForOthers?.(ACTION_PLAY, payload); }
     catch (e) { warn("director-round-banner: broadcast failed", e); }
