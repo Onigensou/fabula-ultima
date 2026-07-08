@@ -802,19 +802,31 @@
           "damage_bonus": "43",
           "defense_target_type": "def",
           "description": "<p>You conjure up a great Firestorm, Each target hit by this spell suffers <strong>【HR + 43】</strong>fire damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a></span></span></p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "ae_duplicate_mode": "add_charges",
+              "ae_family": "",
               "ae_initial_charges": "3",
+              "ae_initial_charges_max": "",
               "ae_template_ref": "Burn",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "ignis_opportunity_burn",
-              "target_ref": "hit_action_targets"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "YClTOeSsVFm0ngyO",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/fire_iii.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -826,14 +838,31 @@
           "name": "Ignis Finis",
           "on_activate_effect_ref": "",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
               "condition_formula": "CRIT == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
               "reaction_effect_ref": "ignis_opportunity_burn",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
               "reaction_passive_mode": "on",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "self",
               "reaction_source_skill": "Ignis Finis",
-              "reaction_trigger": "creature_deals_damage"
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "INS",
@@ -842,10 +871,13 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "",
+          "skill_tags": "",
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
+          "target_eligibility": "",
           "type_damage": "fire",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.RJECgM6oVt4UI4ds.Item.YClTOeSsVFm0ngyO"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1420,6 +1452,16 @@
           "spell_description": "<p>You conjure up a great Firestorm, Each target hit by this spell suffers <strong>【HR + 43】</strong>fire damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a></span></span></p>",
           "spell_target": "Up to three creatures",
           "uuid": "Actor.RJECgM6oVt4UI4ds.Item.YClTOeSsVFm0ngyO"
+        },
+        "ah2fzhk6PBxDmiPH": {
+          "cost": "10 MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Dispel",
+          "roll": "",
+          "spell_description": "<p>You release a wave of negative energy and cleanse all magic from a creature. If the target is affected by one or more spells with a <strong>duration</strong> of Scene, they are no longer affected by any of those spells instead</p>",
+          "spell_target": "One creature",
+          "uuid": "Actor.RJECgM6oVt4UI4ds.Item.ah2fzhk6PBxDmiPH"
         }
       },
       "npc_rank": "soldier",

@@ -82,7 +82,7 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": 298800,
+        "startTime": null,
         "startTurn": null,
         "turns": null
       },
@@ -102,7 +102,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.luXXPlt0jBkWkvyK",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.7U51cd54zi0rB8h4",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },

@@ -10,79 +10,6 @@
   },
   "effects": [
     {
-      "_id": "669MaxYKvSKvboIv",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783431944233,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "propheticPoint01",
-          "originalParentId": "Lmzs6VllFRo44jZq",
-          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "prophecy",
-          "charges": 1,
-          "chargesMax": 99,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "pds_gain",
-            "lifetimeMode": "persistent_counter",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.aXPg2fe414jgjEKL",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
-            "turnsRemaining": null
-          },
-          "directorPermanent": false,
-          "hudResourceColor": "#a06bff",
-          "lifetimeMode": "persistent_counter"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
-      "name": "Prophecy Point",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
-      "sort": 0,
-      "statuses": [
-        "fud-prophecy-point"
-      ],
-      "system": {
-        "tags": [
-          "resource",
-          "points"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
       "_id": "Drm9IULS4IrA13Yd",
       "_stats": {
         "compendiumSource": null,
@@ -346,7 +273,7 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": 298800,
+        "startTime": null,
         "startTurn": null,
         "turns": null
       },
@@ -366,7 +293,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.aXPg2fe414jgjEKL",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.GfPPq66bYCrcTiNF",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -387,69 +314,6 @@
       "sort": 0,
       "statuses": [
         "fud-heart-of-darkness-ready"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "qxhjBS66EtRl1SPu",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783431944233,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Lucky Seven Ready:</em> Lucky Seven is available this scene. Spent when used; refreshes each conflict.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "DIJbLrv3X5vkOVnj",
-          "originalParentId": "v56GvN63nvIYV4iJ",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ.ActiveEffect.DIJbLrv3X5vkOVnj"
-        },
-        "fabula-ultima-companion": {
-          "chargeKey": "lucky_seven",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "ls_arm",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.aXPg2fe414jgjEKL",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
-            "turnsRemaining": 2
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/control/buff-flight-wings-runes-purple.webp",
-      "name": "Lucky Seven Ready",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
-      "sort": 0,
-      "statuses": [
-        "fud-lucky-seven-ready"
       ],
       "system": {},
       "tint": "#ffffff",

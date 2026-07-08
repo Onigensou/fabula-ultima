@@ -13253,13 +13253,6 @@
         "effects": 1
       },
       {
-        "id": "xuQUKgqPJcDmnX9B",
-        "name": "BD Dummy Enemy",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "N5k5aBtdGBakHLGO",
         "name": "Berserker",
         "type": "character",
@@ -16848,7 +16841,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 6
+        "effects": 4
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -17754,7 +17747,7 @@
             "name": "Zero Trigger: Shattered Phantasm"
           }
         ],
-        "effects": 3
+        "effects": 2
       },
       {
         "id": "EHyFlGpLQLriK65C",
