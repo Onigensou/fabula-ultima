@@ -1,0 +1,330 @@
+// ============================================================================
+// Anim Studio — Preview Bench
+//
+// The testing pain-killer. Runs any animation through the REAL Battle Director
+// execution core (FUCompanion.api.animStudio.preview → executeAnimationScript)
+// with NO combat, NO FSM, and NO damage. Kills the "enter combat, set up an
+// actor with the skill, target, fire, repeat" loop.
+//
+// Features:
+//   - Source = a skill/weapon on the selected token (dropdown of items that
+//     actually have an animation_script), OR a pasted item UUID, OR a scratch
+//     script textarea.
+//   - Caster = the controlled token; Targets = your current user targets
+//     (re-read live at each Run so you can retarget without reopening).
+//   - Replay + Loop.
+//   - Live CFG panel: the `const CFG = {…}` block is auto-extracted into an
+//     editable box; edit numbers and hit Run to see the change instantly. The
+//     edited block is spliced back into the script for the preview only (never
+//     written to the item).
+//   - Opens the SFX Browser.
+//
+// Installs an "Anim Studio" button in the token scene-controls (GM only), the
+// house idiom used by reload-button.js / save-bootstrap.js.
+// ============================================================================
+(() => {
+  const TAG = "[AnimStudio][Bench]";
+
+  function studioApi() { return globalThis.FUCompanion?.api?.animStudio ?? null; }
+
+  let _loop = false;       // loop toggle
+  let _running = false;    // guard against overlapping runs
+  let _dlg = null;
+
+  function esc(s) {
+    return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  // ── CFG block extraction / splice ─────────────────────────────────────────
+  //
+  // Finds `const CFG = { … };` and returns the exact source slice of the object
+  // literal (brace-balanced). Our animation templates keep a single numeric CFG
+  // block at the top by convention, so brace-counting is safe here.
+  function extractCfg(script) {
+    const m = /const\s+CFG\s*=\s*/.exec(script);
+    if (!m) return null;
+    const braceStart = m.index + m[0].length;
+    if (script[braceStart] !== "{") return null;
+    let depth = 0, i = braceStart;
+    for (; i < script.length; i++) {
+      const c = script[i];
+      if (c === "{") depth++;
+      else if (c === "}") { depth--; if (depth === 0) { i++; break; } }
+    }
+    if (depth !== 0) return null;
+    return { start: braceStart, end: i, text: script.slice(braceStart, i) };
+  }
+
+  function spliceCfg(script, newObjText) {
+    const cfg = extractCfg(script);
+    if (!cfg) return script;
+    return script.slice(0, cfg.start) + newObjText + script.slice(cfg.end);
+  }
+
+  // ── Source resolution ─────────────────────────────────────────────────────
+
+  function controlledCaster() { return canvas?.tokens?.controlled?.[0] ?? null; }
+  function currentTargets() { return Array.from(game.user?.targets ?? []); }
+
+  // List items on an actor that carry an animation_script, for the dropdown.
+  function animItemsOf(actor) {
+    const out = [];
+    for (const item of (actor?.items?.contents ?? [])) {
+      const raw = String(item?.system?.props?.animation_script ?? "").trim();
+      if (!raw || /insert your sequencer animation here/i.test(raw)) continue;
+      out.push({ uuid: item.uuid, name: item.name, type: item.type });
+    }
+    return out.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  // ── Run ───────────────────────────────────────────────────────────────────
+
+  async function run(root) {
+    if (_running) return;
+    const api = studioApi();
+    if (!api?.preview) { ui.notifications?.error?.("Anim Studio preview API missing (is the Battle Director loaded?)."); return; }
+
+    const mode = root.querySelector('input[name="as-mode"]:checked')?.value ?? "skill";
+    const caster = controlledCaster();
+    const targets = currentTargets();
+    const casterUuid = caster?.document?.uuid ?? null;
+    const targetUuids = targets.map((t) => t?.document?.uuid).filter(Boolean);
+
+    if (!casterUuid) {
+      ui.notifications?.warn?.("Anim Studio: select a caster token first (most scripts need one).");
+    }
+
+    let script = "";
+    let timingMode = "default";
+    let timingOffset = 0;
+
+    if (mode === "scratch") {
+      script = root.querySelector(".as-scratch")?.value ?? "";
+      timingMode = root.querySelector(".as-timing-mode")?.value ?? "default";
+      timingOffset = Number(root.querySelector(".as-timing-offset")?.value ?? 0) || 0;
+      if (!script.trim()) { ui.notifications?.warn?.("Anim Studio: scratch script is empty."); return; }
+    } else {
+      const uuid = (root.querySelector(".as-item-uuid")?.value
+        || root.querySelector(".as-item-select")?.value || "").trim();
+      if (!uuid) { ui.notifications?.warn?.("Anim Studio: pick or paste an item to preview."); return; }
+      let spec;
+      try { spec = await api.resolveSpec({ skillUuid: uuid }); }
+      catch (e) { ui.notifications?.error?.("Anim Studio: failed to read the item's animation."); console.error(TAG, e); return; }
+      if (!spec?.hasScript) { ui.notifications?.warn?.("Anim Studio: that item has no animation_script."); return; }
+      script = spec.script;
+      timingMode = spec.timingMode;
+      timingOffset = spec.timingOffset;
+    }
+
+    // Apply live CFG override (preview-only; never persisted to the item).
+    const cfgBox = root.querySelector(".as-cfg");
+    const cfgEdited = cfgBox?.value?.trim();
+    if (cfgEdited && cfgBox && !cfgBox.disabled) {
+      const spliced = spliceCfg(script, cfgEdited);
+      if (spliced !== script) script = spliced;
+    }
+
+    const statusEl = root.querySelector(".as-status");
+    _running = true;
+    if (statusEl) statusEl.textContent = "▶ playing…";
+    do {
+      let res;
+      try {
+        res = await api.preview({ script, timingMode, timingOffset, casterTokenUuid: casterUuid, targetTokenUuids: targetUuids });
+      } catch (e) {
+        console.error(TAG, "preview threw", e);
+        res = { ok: false, ms: 0, error: String(e?.message ?? e) };
+      }
+      if (statusEl) {
+        statusEl.textContent = res.ok
+          ? `✓ done in ${res.ms}ms${_loop ? " · looping…" : ""}`
+          : `✗ error: ${res.error ?? "unknown"}`;
+      }
+      if (!res.ok) break;                 // don't loop a broken script
+      if (_loop) await new Promise((r) => setTimeout(r, 400));
+    } while (_loop && _dlg?.rendered);
+    _running = false;
+  }
+
+  // Populate the CFG box + item dropdown from the currently-selected source.
+  async function refreshCfg(root) {
+    const mode = root.querySelector('input[name="as-mode"]:checked')?.value ?? "skill";
+    const cfgBox = root.querySelector(".as-cfg");
+    const cfgNote = root.querySelector(".as-cfg-note");
+    let script = "";
+
+    if (mode === "scratch") {
+      script = root.querySelector(".as-scratch")?.value ?? "";
+    } else {
+      const uuid = (root.querySelector(".as-item-uuid")?.value
+        || root.querySelector(".as-item-select")?.value || "").trim();
+      if (uuid) {
+        try {
+          const spec = await studioApi()?.resolveSpec({ skillUuid: uuid });
+          script = spec?.script ?? "";
+        } catch { /* ignore */ }
+      }
+    }
+    const cfg = extractCfg(script);
+    if (cfg && cfgBox) {
+      cfgBox.value = cfg.text;
+      cfgBox.disabled = false;
+      if (cfgNote) cfgNote.textContent = "Edit numbers, then Run. (Preview-only — not saved to the item.)";
+    } else if (cfgBox) {
+      cfgBox.value = "";
+      cfgBox.disabled = true;
+      if (cfgNote) cfgNote.textContent = "No `const CFG = {…}` block found in this script.";
+    }
+  }
+
+  function refreshCasterInfo(root) {
+    const c = controlledCaster();
+    const targets = currentTargets();
+    const el = root.querySelector(".as-caster-info");
+    if (el) {
+      el.innerHTML = `Caster: <b>${esc(c?.name ?? "— none selected —")}</b> · `
+        + `Targets: <b>${targets.length ? targets.map((t) => esc(t.name)).join(", ") : "none"}</b>`;
+    }
+    // Rebuild the item dropdown from the caster's actor.
+    const sel = root.querySelector(".as-item-select");
+    if (sel) {
+      const items = animItemsOf(c?.actor);
+      const prev = sel.value;
+      sel.innerHTML = `<option value="">— pick an animated item —</option>`
+        + items.map((it) => `<option value="${esc(it.uuid)}">${esc(it.name)} (${esc(it.type)})</option>`).join("");
+      if (items.find((it) => it.uuid === prev)) sel.value = prev;
+    }
+  }
+
+  // ── Rendering ─────────────────────────────────────────────────────────────
+
+  function content() {
+    return `
+    <div class="anim-studio-bench" style="display:flex;flex-direction:column;gap:8px;min-width:520px;">
+      <div class="as-caster-info" style="font-size:.85em;padding:6px 8px;background:rgba(0,0,0,.2);border-radius:4px;"></div>
+
+      <div style="display:flex;gap:14px;align-items:center;">
+        <label><input type="radio" name="as-mode" value="skill" checked/> Item / skill</label>
+        <label><input type="radio" name="as-mode" value="scratch"/> Scratch script</label>
+        <button type="button" class="as-refresh" title="Re-read selected token + targets" style="margin-left:auto;">
+          <i class="fas fa-rotate"></i> Refresh</button>
+      </div>
+
+      <div class="as-skill-pane">
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select class="as-item-select" style="flex:1 1 auto;"></select>
+        </div>
+        <input type="text" class="as-item-uuid" placeholder="…or paste an Item UUID (overrides the dropdown)"
+               style="width:100%;margin-top:4px;"/>
+      </div>
+
+      <div class="as-scratch-pane" style="display:none;">
+        <textarea class="as-scratch" placeholder="Paste a full animation_script (plain JS outer script)…"
+                  style="width:100%;height:140px;font-family:monospace;font-size:12px;"></textarea>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px;font-size:.85em;">
+          <label>Timing:
+            <select class="as-timing-mode">
+              <option value="default">default (wait oni:animationEnd)</option>
+              <option value="timing_offset">offset ms after start</option>
+            </select>
+          </label>
+          <label>offset <input type="number" class="as-timing-offset" value="0" min="0" style="width:70px;"/> ms</label>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <b style="font-size:.85em;">CFG (live tuning)</b>
+          <span class="as-cfg-note" style="font-size:.75em;opacity:.6;"></span>
+        </div>
+        <textarea class="as-cfg" spellcheck="false"
+                  style="width:100%;height:150px;font-family:monospace;font-size:12px;"></textarea>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button type="button" class="as-run" style="font-weight:600;"><i class="fas fa-play"></i> Run</button>
+        <label style="font-size:.85em;"><input type="checkbox" class="as-loop"/> Loop</label>
+        <button type="button" class="as-sfx" style="margin-left:auto;"><i class="fas fa-music"></i> SFX Browser</button>
+      </div>
+      <div class="as-status" style="font-size:.82em;opacity:.8;min-height:1.2em;"></div>
+    </div>`;
+  }
+
+  function wire(html) {
+    const root = html[0] ?? html;
+
+    const syncPanes = () => {
+      const mode = root.querySelector('input[name="as-mode"]:checked')?.value ?? "skill";
+      root.querySelector(".as-skill-pane").style.display = mode === "skill" ? "" : "none";
+      root.querySelector(".as-scratch-pane").style.display = mode === "scratch" ? "" : "none";
+      refreshCfg(root);
+    };
+
+    root.querySelectorAll('input[name="as-mode"]').forEach((r) =>
+      r.addEventListener("change", syncPanes));
+
+    root.querySelector(".as-refresh")?.addEventListener("click", () => {
+      refreshCasterInfo(root);
+      refreshCfg(root);
+    });
+    root.querySelector(".as-item-select")?.addEventListener("change", () => {
+      // Selecting from the dropdown clears the manual UUID override.
+      const u = root.querySelector(".as-item-uuid"); if (u) u.value = "";
+      refreshCfg(root);
+    });
+    root.querySelector(".as-item-uuid")?.addEventListener("change", () => refreshCfg(root));
+    let st = null;
+    root.querySelector(".as-scratch")?.addEventListener("input", () => {
+      clearTimeout(st); st = setTimeout(() => refreshCfg(root), 300);
+    });
+
+    root.querySelector(".as-loop")?.addEventListener("change", (e) => { _loop = e.target.checked; });
+    root.querySelector(".as-run")?.addEventListener("click", () => run(root));
+    root.querySelector(".as-sfx")?.addEventListener("click", () => studioApi()?.openSfxBrowser?.());
+
+    refreshCasterInfo(root);
+    syncPanes();
+  }
+
+  function open() {
+    if (!game.user?.isGM) { ui.notifications?.warn?.("Anim Studio is GM-only."); return; }
+    if (_dlg?.rendered) { _dlg.bringToTop?.(); return _dlg; }
+    _loop = false;
+    _dlg = new Dialog({
+      title: "Anim Studio — Preview Bench",
+      content: content(),
+      buttons: { close: { icon: '<i class="fas fa-times"></i>', label: "Close" } },
+      default: "close",
+      render: (html) => wire(html),
+      close: () => { _loop = false; _dlg = null; },
+    }, { width: 560, resizable: true, classes: ["anim-studio-dialog"] });
+    _dlg.render(true);
+    return _dlg;
+  }
+
+  // Keep the caster/target readout + item list fresh while the bench is open.
+  Hooks.on("controlToken", () => { if (_dlg?.rendered) { const r = _dlg.element?.[0]; if (r) refreshCasterInfo(r); } });
+  Hooks.on("targetToken", () => { if (_dlg?.rendered) { const r = _dlg.element?.[0]; if (r) refreshCasterInfo(r); } });
+
+  Hooks.on("getSceneControlButtons", (controls) => {
+    if (!game.user?.isGM) return;
+    const tokenLayer = controls.find((c) => c.name === "token");
+    if (!tokenLayer) return;
+    tokenLayer.tools.push({
+      name: "animStudio",
+      title: "Anim Studio — Preview Bench",
+      icon: "fas fa-clapperboard",
+      button: true,
+      onClick: () => open(),
+    });
+  });
+
+  Hooks.once("ready", () => {
+    globalThis.FUCompanion ??= {};
+    globalThis.FUCompanion.api ??= {};
+    globalThis.FUCompanion.api.animStudio ??= {};
+    globalThis.FUCompanion.api.animStudio.openBench = open;
+    console.debug(TAG, "ready.");
+  });
+})();

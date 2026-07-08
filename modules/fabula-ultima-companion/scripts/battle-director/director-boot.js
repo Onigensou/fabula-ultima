@@ -87,6 +87,10 @@ import {
   saveDirectorState,
 } from "./persistence.js";
 import { peekTop, topIsFreeAction, topIsSrwDetour, stackDepth } from "./continuation-stack.js";
+// Anim Studio preview — lets the Preview Bench run a skill/scratch animation
+// through the real BD execution core (payload shape, selection bridging, damage
+// gate) with NO director/combat/damage. See director-animation.js.
+import { previewAnimation, resolveAnimationSpec } from "./director-animation.js";
 // Test harness — side-effect import (registers
 // FUCompanion.api.test.runDirectorSkillCompute on the "ready" hook).
 // Doesn't add behavior to the live director; lets the test bridge
@@ -894,6 +898,11 @@ Hooks.once("ready", () => {
     .catch((e) => warn("initOrbment failed to load", e));
   const root = (globalThis.FUCompanion = globalThis.FUCompanion ?? {});
   const api = (root.api = root.api ?? {});
+  // Anim Studio preview surface — the Preview Bench (classic script) calls these
+  // to run a skill/scratch animation through the real BD core without combat.
+  const studio = (api.animStudio = api.animStudio ?? {});
+  studio.preview = previewAnimation;
+  studio.resolveSpec = resolveAnimationSpec;
   const exp = (api.experimental = api.experimental ?? {});
   exp.battleDirector = {
     start,

@@ -222,22 +222,30 @@ function compileScript(script) {
   return fn;
 }
 
-// ── Main runner ─────────────────────────────────────────────────────────
+// ── Shared script-execution core ─────────────────────────────────────────
 //
-// Called from AnimationState.onEnter. Runs the animation script, awaits the
-// damage gate, then enqueues INTERNAL_DONE so the FSM advances to RESOLVE.
+// Compiles + runs an animation script the way BD does: publishes the
+// ActionAnimationHandler-shape `payload`/`targets`, bridges BD's caster +
+// targets onto Foundry's canvas selection / user targeting (legacy scripts read
+// canvas.tokens.controlled[0] / game.user.targets), runs the script, restores
+// selection, and awaits the damage gate.
 //
-// Sets director.ctx.animationController = { playing: true, abort: fn } for the
-// duration so `director.isAnimationPlaying` returns true and
-// `director.skipAnimation()` can abort early.
+// This is the single source of truth shared by:
+//   - playDirectorAnimation (FSM path: adds the abort controller + INTERNAL_DONE)
+//   - previewAnimation      (Anim Studio bench: no director, no damage, no FSM)
 //
-// The script receives `payload` and `targets` matching the
-// ActionAnimationHandler convention. globalThis.__PAYLOAD / __TARGETS are also
-// published so animation scripts that reference those globals continue to work.
+// `abortPromise` (optional) races the gate so the FSM's skipAnimation() can
+// collapse it early. Returns nothing; resolves when the gate resolves.
 
-export async function playDirectorAnimation({ spec, director, casterTokenUuid, targetTokenUuids }) {
-  const { script, timingMode, timingOffset } = spec;
-
+async function executeAnimationScript({
+  script,
+  timingMode,
+  timingOffset,
+  casterTokenUuid,
+  targetTokenUuids,
+  abortPromise = null,
+  timeoutMs = 35000,
+}) {
   // Resolve token placeables for the `targets` argument. Scripts typically
   // call target.position, target.center, etc. on the placeable.
   const targets = (targetTokenUuids ?? []).map((u) => {
@@ -263,6 +271,71 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
     animation_damage_timing_offset:  timingOffset,
   };
 
+  const fn = compileScript(script);
+
+  // Race the normal gate against the (optional) abort signal so skipAnimation()
+  // resolves the gate immediately without needing a separate state transition.
+  const gate = waitForDamageMoment(timingMode, timingOffset, { timeoutMs });
+  const gatePromise = abortPromise ? Promise.race([gate, abortPromise]) : gate;
+
+  // Publish globals for animation scripts that read __PAYLOAD / __TARGETS
+  // (the convention the legacy ActionAnimationHandler established).
+  const prevPayload = globalThis.__PAYLOAD;
+  const prevTargets = globalThis.__TARGETS;
+  globalThis.__PAYLOAD = payload;
+  globalThis.__TARGETS = targets;
+  // Bridge BD's caster + card targets onto Foundry's canvas selection / targeting
+  // for the duration of the animation. Legacy animation scripts (written for the
+  // pre-BD action system) read `canvas.tokens.controlled[0]` for the SOURCE and
+  // `game.user.targets` for the TARGETS — neither of which BD sets (it drives the
+  // caster/targets through its card, not the canvas selection). Without this they
+  // bail ("select a token first" / "target at least 1 token first"). Saved + restored.
+  const prevUserTargetIds = Array.from(game.user?.targets ?? []).map((t) => t.id);
+  const prevControlledIds = (canvas?.tokens?.controlled ?? []).map((t) => t.id);
+  const animTargetIds = targets.map((t) => t?.id).filter(Boolean);
+  const casterId = String(casterTokenUuid ?? "").split(".Token.").pop();
+  const casterTok = casterId ? (canvas?.tokens?.get?.(casterId) ?? null) : null;
+  try { if (animTargetIds.length) game.user?.updateTokenTargets(animTargetIds); }
+  catch (e) { warn("[BD Anim] target bridge (set) threw", e); }
+  try { if (casterTok) casterTok.control({ releaseOthers: true }); }
+  catch (e) { warn("[BD Anim] caster control bridge (set) threw", e); }
+  try {
+    const result = fn(payload, targets);
+    if (result && typeof result.then === "function") await result;
+  } catch (e) {
+    warn("[BD Anim] animation script threw", e);
+  } finally {
+    globalThis.__PAYLOAD = prevPayload;
+    globalThis.__TARGETS = prevTargets;
+    try { game.user?.updateTokenTargets(prevUserTargetIds); }
+    catch (e) { warn("[BD Anim] target bridge (restore) threw", e); }
+    try {
+      if (casterTok) {
+        canvas?.tokens?.releaseAll?.();
+        for (const id of prevControlledIds) canvas?.tokens?.get?.(id)?.control?.({ releaseOthers: false });
+      }
+    } catch (e) { warn("[BD Anim] caster control bridge (restore) threw", e); }
+  }
+
+  await gatePromise;
+}
+
+// ── Main runner ─────────────────────────────────────────────────────────
+//
+// Called from AnimationState.onEnter. Runs the animation script, awaits the
+// damage gate, then enqueues INTERNAL_DONE so the FSM advances to RESOLVE.
+//
+// Sets director.ctx.animationController = { playing: true, abort: fn } for the
+// duration so `director.isAnimationPlaying` returns true and
+// `director.skipAnimation()` can abort early.
+//
+// The script receives `payload` and `targets` matching the
+// ActionAnimationHandler convention. globalThis.__PAYLOAD / __TARGETS are also
+// published so animation scripts that reference those globals continue to work.
+
+export async function playDirectorAnimation({ spec, director, casterTokenUuid, targetTokenUuids }) {
+  const { script, timingMode, timingOffset } = spec;
+
   // Abort mechanism: calling abortResolve() collapses the gate Promise.race.
   let abortResolve;
   const abortPromise = new Promise((res) => { abortResolve = res; });
@@ -270,55 +343,11 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   director.ctx.animationController = { playing: true, abort: abortResolve };
 
   try {
-    const fn = compileScript(script);
-
-    // Race the normal gate against the abort signal so skipAnimation() resolves
-    // the gate immediately without needing a separate state transition.
-    const gatePromise = Promise.race([
-      waitForDamageMoment(timingMode, timingOffset, { timeoutMs: 35000 }),
-      abortPromise,
-    ]);
-
-    // Publish globals for animation scripts that read __PAYLOAD / __TARGETS
-    // (the convention the legacy ActionAnimationHandler established).
-    const prevPayload = globalThis.__PAYLOAD;
-    const prevTargets = globalThis.__TARGETS;
-    globalThis.__PAYLOAD = payload;
-    globalThis.__TARGETS = targets;
-    // Bridge BD's caster + card targets onto Foundry's canvas selection / targeting
-    // for the duration of the animation. Legacy animation scripts (written for the
-    // pre-BD action system) read `canvas.tokens.controlled[0]` for the SOURCE and
-    // `game.user.targets` for the TARGETS — neither of which BD sets (it drives the
-    // caster/targets through its card, not the canvas selection). Without this they
-    // bail ("select a token first" / "target at least 1 token first"). Saved + restored.
-    const prevUserTargetIds = Array.from(game.user?.targets ?? []).map((t) => t.id);
-    const prevControlledIds = (canvas?.tokens?.controlled ?? []).map((t) => t.id);
-    const animTargetIds = targets.map((t) => t?.id).filter(Boolean);
-    const casterId = String(casterTokenUuid ?? "").split(".Token.").pop();
-    const casterTok = casterId ? (canvas?.tokens?.get?.(casterId) ?? null) : null;
-    try { if (animTargetIds.length) game.user?.updateTokenTargets(animTargetIds); }
-    catch (e) { warn("[BD Anim] target bridge (set) threw", e); }
-    try { if (casterTok) casterTok.control({ releaseOthers: true }); }
-    catch (e) { warn("[BD Anim] caster control bridge (set) threw", e); }
-    try {
-      const result = fn(payload, targets);
-      if (result && typeof result.then === "function") await result;
-    } catch (e) {
-      warn("[BD Anim] animation script threw", e);
-    } finally {
-      globalThis.__PAYLOAD = prevPayload;
-      globalThis.__TARGETS = prevTargets;
-      try { game.user?.updateTokenTargets(prevUserTargetIds); }
-      catch (e) { warn("[BD Anim] target bridge (restore) threw", e); }
-      try {
-        if (casterTok) {
-          canvas?.tokens?.releaseAll?.();
-          for (const id of prevControlledIds) canvas?.tokens?.get?.(id)?.control?.({ releaseOthers: false });
-        }
-      } catch (e) { warn("[BD Anim] caster control bridge (restore) threw", e); }
-    }
-
-    await gatePromise;
+    await executeAnimationScript({
+      script, timingMode, timingOffset,
+      casterTokenUuid, targetTokenUuids,
+      abortPromise, timeoutMs: 35000,
+    });
     log("[BD Anim] gate resolved — advancing to RESOLVE");
   } catch (e) {
     warn("[BD Anim] playDirectorAnimation threw", e);
@@ -328,4 +357,53 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
 
   // Always advance — even on error or abort, RESOLVE must run to apply damage.
   director.enqueue({ type: INTENTS.INTERNAL_DONE });
+}
+
+// ── Anim Studio preview entry ────────────────────────────────────────────
+//
+// Runs an animation exactly like the FSM would — same payload shape, same
+// selection bridging, same damage gate — but with NO director, NO combat, and
+// NO damage (RESOLVE never runs). This is what the Preview Bench calls so an
+// animation can be seen/tuned outside of combat.
+//
+// Accepts either a resolved `spec` ({ script, timingMode, timingOffset }) or a
+// raw plain-JS `script` string (+ optional timingMode/timingOffset). A scratch
+// script typed into the bench is plain JS (no HTML round-trip); a stored skill's
+// script should be passed via `spec` from resolveAnimationSpec (already
+// _stripHtml'd).
+//
+// Returns { ok, ms } so the bench can report duration / loop.
+export async function previewAnimation({
+  spec = null,
+  script = null,
+  timingMode = "default",
+  timingOffset = 0,
+  casterTokenUuid = null,
+  targetTokenUuids = [],
+  timeoutMs = 35000,
+} = {}) {
+  const s = spec?.script ?? script;
+  if (!s || !String(s).trim()) {
+    ui.notifications?.warn?.("Anim Studio: no animation script to preview.");
+    return { ok: false, ms: 0, error: "empty script" };
+  }
+  const mode   = spec ? spec.timingMode   : _parseTimingMode(timingMode);
+  const offset = spec ? spec.timingOffset : _parseTimingOffset(timingOffset);
+
+  const t0 = performance.now();
+  try {
+    await executeAnimationScript({
+      script: String(s),
+      timingMode: mode,
+      timingOffset: offset,
+      casterTokenUuid,
+      targetTokenUuids,
+      abortPromise: null,
+      timeoutMs,
+    });
+    return { ok: true, ms: Math.round(performance.now() - t0) };
+  } catch (e) {
+    warn("[BD Anim] previewAnimation threw", e);
+    return { ok: false, ms: Math.round(performance.now() - t0), error: String(e?.message ?? e) };
+  }
 }
