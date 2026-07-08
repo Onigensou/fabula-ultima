@@ -201,6 +201,12 @@ export function buildOni(ctx, env) {
     cleanup();
   }
 
+  // Blackout — a whiteout to black. Same fade-in → onPeak → hold → fade-out
+  // envelope; use for ominous cut-to-black / scene transitions.
+  async function blackout(opts = {}) {
+    return whiteout({ color: 0x000000, fadeIn: 200, hold: 120, fadeOut: 300, ...opts });
+  }
+
   // Cinematic dim sheet (returns { fadeOut }). Handy behind cut-ins / charges.
   async function dim({ to = 0.6, fadeIn = 200, color = 0x000000, zIndex = 80000 } = {}) {
     const s = screen();
@@ -291,7 +297,7 @@ export function buildOni(ctx, env) {
     // textures / media
     gradientTexture, radialTexture, webmSprite,
     // full-screen fx
-    whiteout, dim, screenshake,
+    whiteout, blackout, dim, screenshake,
     // audio
     sfx, sfxUrl,
     // gate + lifecycle

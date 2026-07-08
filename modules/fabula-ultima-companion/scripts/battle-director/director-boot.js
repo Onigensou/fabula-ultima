@@ -48,7 +48,7 @@ import { initDirectorCutin } from "./director-cutin.js";
 import { initDirectorRoundBanner, hideRoundBanner, refreshTurnActions as bannerRefreshTurnActions, showRoundBannerForResume, showRoundBannerForResumeFromState } from "./director-round-banner.js";
 import { initDirectorBattleLoader } from "./director-battle-loader.js";
 import { initIconFocusTuner } from "./icon-focus-tuner.js";
-import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
+import { stopBattleBgm, preloadDirectorSfx, playResourceLossVfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
@@ -56,7 +56,8 @@ import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
-import { initDamageNumberAudition } from "./damage-numbers/damage-number-audition.js";
+// Damage-number audition (look-only) tool is intentionally not registered as a
+// dev-tool button — consolidated into the live-path tool below to save space.
 import { initDamageNumberLivetest } from "./damage-numbers/damage-number-livetest.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
 import { initTestBattleTool } from "./test-battle-tool.js";
@@ -65,7 +66,7 @@ import { crisisReactor } from "./crisis-reactor.js";
 import { defeatReactor } from "./defeat-reactor.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initKeywordSuggest } from "./keyword-suggest.js";
-import { initDevToolsMenu } from "./dev-tools-menu.js";
+import { initDevToolsMenu, registerDevTool } from "./dev-tools-menu.js";
 import { registerAutopilotSetting, registerAutopilotDevTool } from "./enemy-autopilot.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage } from "./skill-effects.js";
@@ -903,6 +904,11 @@ Hooks.once("ready", () => {
   const studio = (api.animStudio = api.animStudio ?? {});
   studio.preview = previewAnimation;
   studio.resolveSpec = resolveAnimationSpec;
+  // Damage-number preview — fires the REAL production feedback (number + impact
+  // + sound) on a token so the bench can show how a hit "feels" landing at the
+  // animation's impact moment. Same path applyDamageToTarget drives in battle;
+  // does NOT touch HP/MP (cosmetic only).
+  studio.previewDamageVfx = (payload) => { try { playResourceLossVfx(payload); } catch (e) { warn("previewDamageVfx threw", e); } };
   const exp = (api.experimental = api.experimental ?? {});
   exp.battleDirector = {
     start,
@@ -1403,6 +1409,18 @@ Hooks.once("ready", () => {
   try { initDevToolsMenu(); }
   catch (e) { warn("initDevToolsMenu on ready threw", e); }
 
+  // Anim Studio — Preview Bench, registered into the Developer Tools launcher
+  // (moved off the Foundry scene-controls toolbar). The bench itself links to
+  // the SFX Browser + Brief Builder.
+  try {
+    registerDevTool({
+      id: "anim-studio",
+      icon: "🎬",
+      label: "Anim Studio — Preview Bench",
+      onClick: () => globalThis.FUCompanion?.api?.animStudio?.openBench?.(),
+    });
+  } catch (e) { warn("registerDevTool(anim-studio) on ready threw", e); }
+
   // Enemy Autopilot toggle button (registers into the Developer Tools launcher).
   try { registerAutopilotDevTool(); }
   catch (e) { warn("registerAutopilotDevTool on ready threw", e); }
@@ -1440,13 +1458,13 @@ Hooks.once("ready", () => {
   try { initDominationCrest(); }
   catch (e) { warn("initDominationCrest on ready threw", e); }
 
-  // Damage-number audition tool — registers into the Developer Tools launcher.
-  try { initDamageNumberAudition(); }
-  catch (e) { warn("initDamageNumberAudition on ready threw", e); }
-
-  // Damage FX live-path test tool — fires the REAL director-vfx functions
-  // (number + Sequencer impact + SFX + broadcast) on the selected token, so the
-  // Phase-1 integration can be verified without finding an attack per pattern.
+  // Damage-number dev tool — consolidated to a SINGLE button (the robust
+  // live-path version below). The look-only audition tool
+  // (initDamageNumberAudition) is intentionally NOT registered as its own
+  // button to save space; its renderer is still available via the API.
+  //
+  // Damage FX live-path tool — fires the REAL director-vfx functions (number +
+  // impact + SFX + broadcast) on the selected token. This is the one button.
   try { initDamageNumberLivetest(); }
   catch (e) { warn("initDamageNumberLivetest on ready threw", e); }
 

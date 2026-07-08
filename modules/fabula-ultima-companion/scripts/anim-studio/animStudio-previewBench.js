@@ -128,6 +128,17 @@
       if (spliced !== script) script = spliced;
     }
 
+    // Optional damage-number preview config (fired at impact, below).
+    const dmgOn = !!root.querySelector(".as-dmg")?.checked;
+    const dmgCfg = {
+      amount: Number(root.querySelector(".as-dmg-amt")?.value ?? 0) || 0,
+      element: root.querySelector(".as-dmg-el")?.value ?? "fire",
+      affinity: root.querySelector(".as-dmg-aff")?.value ?? "NE",
+      isCrit: !!root.querySelector(".as-dmg-crit")?.checked,
+    };
+    // Whom the numbers pop on: the targets, or the caster if none (self FX).
+    const dmgTokens = targetUuids.length ? targetUuids : (casterUuid ? [casterUuid] : []);
+
     const statusEl = root.querySelector(".as-status");
     _running = true;
     if (statusEl) statusEl.textContent = "▶ playing…";
@@ -138,6 +149,13 @@
       } catch (e) {
         console.error(TAG, "preview threw", e);
         res = { ok: false, ms: 0, error: String(e?.message ?? e) };
+      }
+      // preview() resolves at the damage gate (impact / set timing), so firing
+      // the dummy number here makes it pop exactly when a real hit would land.
+      if (res.ok && dmgOn && dmgTokens.length && typeof api.previewDamageVfx === "function") {
+        for (const t of dmgTokens) {
+          api.previewDamageVfx({ tokenUuid: t, resource: "hp", amount: dmgCfg.amount, element: dmgCfg.element, affinity: dmgCfg.affinity, isCrit: dmgCfg.isCrit });
+        }
       }
       if (statusEl) {
         statusEl.textContent = res.ok
@@ -250,6 +268,22 @@
                   style="width:100%;height:150px;font-family:monospace;font-size:12px;"></textarea>
       </div>
 
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.82em;
+                  padding:5px 7px;background:rgba(0,0,0,.12);border-radius:4px;">
+        <label title="Pop a dummy damage number on the target(s) at the impact moment, like real play"><input type="checkbox" class="as-dmg"/> Damage #</label>
+        <input type="number" class="as-dmg-amt" value="120" min="0" style="width:60px;" title="dummy amount"/>
+        <select class="as-dmg-el" title="element (colour)">
+          <option value="physical">physical</option><option value="fire" selected>fire</option>
+          <option value="ice">ice</option><option value="bolt">bolt</option><option value="earth">earth</option>
+          <option value="wind">wind</option><option value="light">light</option><option value="dark">dark</option>
+          <option value="poison">poison</option><option value="elementless">none</option>
+        </select>
+        <select class="as-dmg-aff" title="affinity">
+          <option value="NE">normal</option><option value="VU">WEAK!</option><option value="RS">resist</option>
+        </select>
+        <label><input type="checkbox" class="as-dmg-crit"/> crit</label>
+      </div>
+
       <div style="display:flex;gap:8px;align-items:center;">
         <button type="button" class="as-run" style="font-weight:600;"><i class="fas fa-play"></i> Run</button>
         <label style="font-size:.85em;"><input type="checkbox" class="as-loop"/> Loop</label>
@@ -319,18 +353,8 @@
   Hooks.on("controlToken", () => { if (!_running && _dlg?.rendered) { const r = _dlg.element?.[0]; if (r) refreshCasterInfo(r); } });
   Hooks.on("targetToken", () => { if (!_running && _dlg?.rendered) { const r = _dlg.element?.[0]; if (r) refreshCasterInfo(r); } });
 
-  Hooks.on("getSceneControlButtons", (controls) => {
-    if (!game.user?.isGM) return;
-    const tokenLayer = controls.find((c) => c.name === "token");
-    if (!tokenLayer) return;
-    tokenLayer.tools.push({
-      name: "animStudio",
-      title: "Anim Studio — Preview Bench",
-      icon: "fas fa-clapperboard",
-      button: true,
-      onClick: () => open(),
-    });
-  });
+  // Access is via the Developer Tools launcher (🎬), registered in director-boot.
+  // (Previously a Foundry scene-controls toolbar button; moved to declutter.)
 
   Hooks.once("ready", () => {
     globalThis.FUCompanion ??= {};

@@ -55,6 +55,7 @@ suggestions — omit any to accept sensible defaults.
 | `stutterScale` | grow-in-spurts with shudder holds | `steps`, `totalMs` |
 | `telegraph` | ground shadow that scales up before a slam | `growMs`, `color` |
 | `whiteout` | full-screen flash (often the impact) | `fadeIn`, `hold`, `fadeOut`, `color` |
+| `blackout` | full-screen fade to black (ominous cut) | `fadeIn`, `hold`, `fadeOut`, `color` |
 | `dim` | cinematic dim sheet behind the action | `to`, `fadeInMs` |
 | `screenshake` | shake the canvas | `intensity`, `durationMs` |
 | `impact` | marker: fire the damage gate here | — |

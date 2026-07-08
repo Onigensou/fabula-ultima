@@ -32,6 +32,7 @@
     stutterScale:  { steps: 4, totalMs: 900 },
     telegraph:     { growMs: 500, color: "#000000" },
     whiteout:      { fadeIn: 140, hold: 90, fadeOut: 240, color: "#ffffff" },
+    blackout:      { fadeIn: 200, hold: 120, fadeOut: 300, color: "#000000" },
     dim:           { to: 0.6, fadeInMs: 200 },
     screenshake:   { intensity: 7, durationMs: 300 },
     impact:        {},
@@ -40,7 +41,7 @@
   const GROUPS = [
     ["Motion / projectile", ["projectile", "tokenLunge", "cameraPan", "zoomOutReveal", "stutterScale"]],
     ["VFX", ["vfxProc", "vfxDb", "vfxFile", "glowAura"]],
-    ["Screen / camera", ["whiteout", "dim", "screenshake", "telegraph", "cutIn"]],
+    ["Screen / camera", ["whiteout", "blackout", "dim", "screenshake", "telegraph", "cutIn"]],
     ["Audio / timing", ["sfxCue", "impact"]],
   ];
 
