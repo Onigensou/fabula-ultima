@@ -59,39 +59,45 @@
     }
   }
 
-  // ── Scoped stylesheet (self-contained dark panel) ─────────────────────────
+  // ── Scoped stylesheet (warm parchment — matches the system UI) ────────────
+  // Colors set with !important + explicit dark text so a global stylesheet rule
+  // can't wash the names out (the earlier dark panel was overridden invisible).
   const STYLE = `
-    .as-sfx-browser { --as-bg:#1b1e24; --as-row:#232830; --as-row2:#20242b; --as-hi:#2d3440;
-      --as-text:#e8ebf0; --as-sub:#97a0ad; --as-accent:#ffb347; color:var(--as-text); }
+    .as-sfx-browser { --as-bg:#efe4c6; --as-row:#f4ecd5; --as-row2:#e9dcba; --as-hi:#e6d5a6;
+      --as-text:#2b2113; --as-sub:#7a6544; --as-accent:#9c6b1f; --as-line:#c3ad78;
+      color:var(--as-text) !important; }
     .as-sfx-browser * { box-sizing:border-box; }
     .as-sfx-browser .as-top { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
-    .as-sfx-browser .as-search { flex:1 1 auto; background:#12151a; color:var(--as-text);
-      border:1px solid #3a414d; border-radius:5px; padding:6px 9px; font-size:13px; }
-    .as-sfx-browser .as-search::placeholder { color:var(--as-sub); }
-    .as-sfx-browser .as-rescan { background:var(--as-row); color:var(--as-text); border:1px solid #3a414d;
+    .as-sfx-browser .as-search { flex:1 1 auto; background:#fffdf5 !important; color:#2b2113 !important;
+      border:1px solid var(--as-line); border-radius:5px; padding:6px 9px; font-size:13px; }
+    .as-sfx-browser .as-search::placeholder { color:var(--as-sub) !important; }
+    .as-sfx-browser .as-rescan { background:var(--as-row); color:var(--as-text) !important; border:1px solid var(--as-line);
       border-radius:5px; padding:6px 10px; cursor:pointer; white-space:nowrap; }
     .as-sfx-browser .as-rescan:hover { background:var(--as-hi); }
-    .as-sfx-browser .as-count { font-size:11px; color:var(--as-sub); margin-bottom:5px; }
-    .as-sfx-browser .as-list { flex:1 1 auto; overflow-y:auto; background:var(--as-bg);
-      border:1px solid #333a45; border-radius:6px; }
-    .as-sfx-browser .as-row { display:flex; align-items:center; gap:10px; padding:6px 10px;
-      border-bottom:1px solid rgba(255,255,255,.05); cursor:default; }
+    .as-sfx-browser .as-count { font-size:11px; color:var(--as-sub) !important; margin-bottom:5px; }
+    .as-sfx-browser .as-list { flex:1 1 auto; overflow-y:auto; overflow-x:hidden; background:var(--as-bg);
+      border:1px solid var(--as-line); border-radius:6px; }
+    /* GRID (not flex) so the middle name column always has width — a flexbox
+       quirk was collapsing it to 0 and clipping the name. */
+    .as-sfx-browser .as-row { display:grid !important; grid-template-columns:32px minmax(0,1fr) auto;
+      align-items:center; gap:10px; width:100%; padding:6px 10px;
+      border-bottom:1px solid rgba(90,60,20,.14); cursor:default; }
     .as-sfx-browser .as-row:nth-child(even) { background:var(--as-row2); }
     .as-sfx-browser .as-row:hover { background:var(--as-hi); }
     .as-sfx-browser .as-row.playing { box-shadow:inset 3px 0 0 var(--as-accent); }
-    .as-sfx-browser .as-play { flex:0 0 auto; width:30px; height:30px; border-radius:50%;
-      border:1px solid #3a414d; background:#12151a; color:var(--as-accent); cursor:pointer;
-      display:flex; align-items:center; justify-content:center; }
+    .as-sfx-browser .as-play { width:30px; height:30px; border-radius:50%;
+      border:1px solid var(--as-line); background:#fff7e2; color:var(--as-accent) !important; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; padding:0; }
     .as-sfx-browser .as-play:hover { background:var(--as-hi); }
-    .as-sfx-browser .as-meta { flex:1 1 auto; min-width:0; }
-    .as-sfx-browser .as-name { font-weight:600; font-size:13px; color:var(--as-text);
+    .as-sfx-browser .as-meta { min-width:0; overflow:hidden; }
+    .as-sfx-browser .as-name { font-weight:700; font-size:13px; color:#2b2113 !important;
       overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .as-sfx-browser .as-sub { font-size:11px; color:var(--as-sub);
+    .as-sfx-browser .as-sub { font-size:11px; color:var(--as-sub) !important;
       overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .as-sfx-browser .as-copy { flex:0 0 auto; background:var(--as-row); color:var(--as-text);
-      border:1px solid #3a414d; border-radius:5px; padding:4px 9px; cursor:pointer; font-size:12px; }
-    .as-sfx-browser .as-copy:hover { background:var(--as-accent); color:#1b1e24; }
-    .as-sfx-browser .as-empty { padding:20px; text-align:center; color:var(--as-sub); }
+    .as-sfx-browser .as-copy { flex:0 0 auto; background:var(--as-row); color:var(--as-text) !important;
+      border:1px solid var(--as-line); border-radius:5px; padding:4px 9px; cursor:pointer; font-size:12px; }
+    .as-sfx-browser .as-copy:hover { background:var(--as-accent); color:#fff7e2 !important; }
+    .as-sfx-browser .as-empty { padding:20px; text-align:center; color:var(--as-sub) !important; }
   `;
 
   function rowsHtml(files) {
