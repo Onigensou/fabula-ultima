@@ -7513,11 +7513,11 @@
       "bond_temp": "",
       "bonus_defense": 7,
       "bonus_dex": 0,
-      "bonus_hp": 0,
+      "bonus_hp": 5,
       "bonus_ins": 0,
       "bonus_magic_defense": 2,
       "bonus_mig": 0,
-      "bonus_mp": 0,
+      "bonus_mp": 5,
       "bonus_wlp": 0,
       "bow_ef": "100",
       "brawling_ef": "100",
@@ -7532,6 +7532,7 @@
       "charm_status": 0,
       "check_mod_accuracy": 0,
       "check_mod_all": 0,
+      "check_mod_init": 0,
       "check_mod_magic": 0,
       "check_mod_melee": 0,
       "check_mod_ranged": 0,
@@ -7682,9 +7683,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "151",
+      "current_hp": "156",
       "current_ip": "8",
-      "current_mp": "66",
+      "current_mp": "71",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Blanche_Cut-in002.png",
       "cut_in_fumble": "",
@@ -8213,9 +8214,9 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.ya38b6iI7xoO4Jur"
         }
       },
-      "max_hp": 151,
-      "max_ip": 8,
-      "max_mp": 66,
+      "max_hp": 156,
+      "max_ip": 10,
+      "max_mp": 71,
       "memories_list": {},
       "memory": "Memories",
       "mig_base": "12",
@@ -8266,6 +8267,17 @@
           "spell_description": "<p>Permanently increase your maximum Hit Points by <strong>【SL x 5】</strong>.</p>",
           "spell_target": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.KGCFXR53w9u6ispa"
+        },
+        "LMnXdh32LS4ZRCn5": {
+          "class": "Spiritist",
+          "cost": "10 x T MP",
+          "duration": "-",
+          "id": "${item.id}",
+          "name": "Heal",
+          "roll": "",
+          "spell_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+          "spell_target": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.LMnXdh32LS4ZRCn5"
         },
         "bElIg6CwtxVuDtqk": {
           "class": "Guardian",
@@ -9065,7 +9077,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 4037328691
+    "templateSystemUniqueVersion": 1137758910
   },
   "type": "character"
 }
