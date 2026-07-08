@@ -158,6 +158,30 @@ export class DirectorCombat {
     this.ended = false;
     this.combatants = [];
 
+    // ── Initiative rule + engagement (set by buildDirectorCombat from payload) ──
+    // initiativeMode:
+    //   "rolled"       — Fabula Ultima Initiative Group Check, RE-ROLLED every
+    //                    round (custom ruling). Whichever side wins the check
+    //                    seizes initiative (acts first) that round. The roll is
+    //                    run backend at ROUND_START (director-initiative.js) and
+    //                    the winning side is written to firstSide/currentSide +
+    //                    recorded in initiativeThisRound. This is the DEFAULT.
+    //   "sidePriority" — the legacy fixed rule: any enemy Villain/Boss present →
+    //                    enemies act first all fight; else the party acts first.
+    //                    No roll, no initiative banner.
+    this.initiativeMode = "rolled";
+    // engagement: "normal" | "ambush" | "advantage". Ambush/Advantage only alter
+    // ROUND 1: the favoured side takes ALL of its turns CONSECUTIVELY before the
+    // other side acts (JRPG surprise-round). From round 2 on, normal rules
+    // (initiativeMode) resume. See _alternationPolicyForRound / nextTurn.
+    this.engagement = "normal";
+    // Per-round initiative result, committed by ROUND_START's resolver so a
+    // mid-round reload doesn't re-roll and flip sides. Shape:
+    //   { round, side, leaderName?, leaderTotal?, dl?, bonus?, forced? }
+    // `forced:true` marks a round whose side came from ambush/advantage (round 1)
+    // rather than a rolled check. Serialized by persistence.js.
+    this.initiativeThisRound = null;
+
     // Side-based alternation state.
     this.firstSide = "party";        // computed by buildDirectorCombat
     this.currentSide = "party";      // flips during nextTurn
@@ -334,6 +358,21 @@ export class DirectorCombat {
 
   _otherSide(side) {
     return side === "party" ? "enemy" : "party";
+  }
+
+  // Turn-ordering policy for a given round:
+  //   "consecutive" — the leading side takes ALL its turns before the other side
+  //                   acts (no alternation). Used for ROUND 1 under an Ambush /
+  //                   Advantage engagement (JRPG surprise round).
+  //   "alternate"   — the RAW side-by-side alternation (default every round, and
+  //                   every round ≥ 2 even after an ambush/advantage round 1).
+  // nextTurn() reads this each turn so the ordering rule is always derived from
+  // live state (engagement + round), never cached.
+  _alternationPolicyForRound(round) {
+    if (round === 1 && (this.engagement === "ambush" || this.engagement === "advantage")) {
+      return "consecutive";
+    }
+    return "alternate";
   }
 
   // ── Mutators ────────────────────────────────────────────────────────
@@ -550,10 +589,21 @@ export class DirectorCombat {
     let sameEligible = this.eligibleOnSide(sameSide);
     let otherEligible = this.eligibleOnSide(otherSide);
 
+    // Ordering policy for the CURRENT round. "consecutive" (Ambush/Advantage
+    // round 1) prefers STAYING on the leading side until it is exhausted, then
+    // hands the whole turn block to the other side. "alternate" (default) flips
+    // sides each turn per RAW.
+    const consecutive = this._alternationPolicyForRound(this.round) === "consecutive";
+
     let wrappedRound = false;
-    if (otherEligible.length > 0) {
+    if (consecutive && sameEligible.length > 0) {
+      // Surprise round: the leading side keeps acting until it runs out.
+      // currentSide stays.
+    } else if (otherEligible.length > 0) {
       // Alternate to other side (works whether sameSide is also eligible
-      // or not — RAW says "alternate as long as possible").
+      // or not — RAW says "alternate as long as possible"). Under the
+      // consecutive policy this branch is only reached once the leading
+      // side is exhausted, so it hands the block to the other side.
       this.currentSide = otherSide;
     } else if (sameEligible.length > 0) {
       // Other side exhausted; outnumbered side burns remaining turns here.
@@ -605,6 +655,9 @@ export class DirectorCombat {
       round: this.round,
       firstSide: this.firstSide,
       currentSide: this.currentSide,
+      initiativeMode: this.initiativeMode,
+      engagement: this.engagement,
+      initiativeThisRound: this.initiativeThisRound,
       currentCombatantId: this.currentCombatantId,
       started: this.started,
       ended: this.ended,
@@ -629,11 +682,22 @@ export class DirectorCombat {
 // Build a DirectorCombat from a list of TokenDocument arrays. Used by
 // PrepState directly (no Foundry Combat doc is created in director mode).
 //
-// First-side rule (Fabula Ultima Feb 2026 playtest variant): if ANY enemy
-// is a Villain (or Boss), the enemy side acts first. Otherwise the party
-// acts first. No initiative roll, no Initiative Score reads.
-export function buildDirectorCombat({ scene, partyTokens, enemyTokens, sourceSceneId = null }) {
+// First-side rule depends on the chosen initiativeMode + engagement:
+//   • engagement "ambush"    → enemies lead round 1 (consecutive surprise round).
+//   • engagement "advantage" → party leads round 1 (consecutive surprise round).
+//   • engagement "normal":
+//       – initiativeMode "rolled"       → provisional (party); the round-1
+//         Initiative Group Check at ROUND_START (director-initiative.js) rolls
+//         and OVERRIDES firstSide/currentSide before the first turn is picked.
+//       – initiativeMode "sidePriority" → legacy fixed rule: any enemy
+//         Villain/Boss present → enemies first; else party first.
+export function buildDirectorCombat({
+  scene, partyTokens, enemyTokens, sourceSceneId = null,
+  initiativeMode = "rolled", engagement = "normal",
+} = {}) {
   const dc = new DirectorCombat({ scene, sourceSceneId });
+  dc.initiativeMode = (initiativeMode === "sidePriority") ? "sidePriority" : "rolled";
+  dc.engagement = (engagement === "ambush" || engagement === "advantage") ? engagement : "normal";
   for (const td of (partyTokens ?? [])) {
     if (!td) continue;
     dc.addCombatant({ tokenDoc: td, side: "party", disposition: 1 });
@@ -644,9 +708,18 @@ export function buildDirectorCombat({ scene, partyTokens, enemyTokens, sourceSce
   }
 
   const villainPresent = dc.combatants.some((c) => c.side === "enemy" && (c.isVillain || c.isBoss));
-  dc.firstSide = villainPresent ? "enemy" : "party";
+  if (dc.engagement === "ambush") {
+    dc.firstSide = "enemy";       // enemies get the drop, act first (round 1)
+  } else if (dc.engagement === "advantage") {
+    dc.firstSide = "party";       // party gets the drop, act first (round 1)
+  } else if (dc.initiativeMode === "sidePriority") {
+    dc.firstSide = villainPresent ? "enemy" : "party";
+  } else {
+    // rolled + normal: provisional; ROUND_START round-1 resolver sets the real side.
+    dc.firstSide = "party";
+  }
   dc.currentSide = dc.firstSide;
-  log(`buildDirectorCombat: ${dc.size} combatants, villainPresent=${villainPresent}, firstSide=${dc.firstSide}`);
+  log(`buildDirectorCombat: ${dc.size} combatants, initiativeMode=${dc.initiativeMode}, engagement=${dc.engagement}, villainPresent=${villainPresent}, firstSide=${dc.firstSide}`);
   return dc;
 }
 

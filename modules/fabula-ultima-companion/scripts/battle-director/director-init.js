@@ -847,11 +847,18 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
 // sourceSceneId is stamped on dCombat itself so the end pipeline can return
 // to it (replacing the old `combat.flags.directorMode.sourceSceneId`).
 function buildDCombatFromSpawn({ battleScene, partyTokens, enemyTokens, payload }) {
+  // Initiative rule + engagement come from the Battle Prompt (battlePlan). Old
+  // payloads lack these → default to the new "rolled" initiative + "normal"
+  // engagement (the intended default behaviour going forward).
+  const initiativeMode = String(payload?.battlePlan?.initiativeMode ?? "rolled");
+  const engagement = String(payload?.battlePlan?.engagement ?? "normal");
   const dCombat = buildDirectorCombat({
     scene: battleScene,
     partyTokens,
     enemyTokens,
     sourceSceneId: payload?.context?.sourceSceneId ?? null,
+    initiativeMode,
+    engagement,
   });
   // Solo-player test mode (dev tool): zero everyone's turns except the main
   // player, so only they act. Set before start() so the round-1 reset honors it.

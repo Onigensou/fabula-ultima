@@ -293,7 +293,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.GfPPq66bYCrcTiNF",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.CEc00N3vv2Ml8gjy",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -10385,6 +10385,9 @@
       "charm_status": 0,
       "check_mod_accuracy": 0,
       "check_mod_all": 0,
+      "check_mod_dex": 0,
+      "check_mod_init": 0,
+      "check_mod_ins": 0,
       "check_mod_magic": 6,
       "check_mod_melee": 0,
       "check_mod_ranged": 0,
@@ -12253,6 +12256,18 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.0Y4TgCZZz1vv1pn6"
         },
+        "1r6HAJN2JWYt3Dj2": {
+          "active_class": "",
+          "active_cost": "",
+          "active_description": "<p><span class=\"fontstyle0\">When a rule or ability requires you to spend </span><span class=\"fontstyle2\">100 or fewer </span><span class=\"fontstyle0\">Hit Points, Mind Points, or<br>Inventory Points, you may suffer </span><span class=\"fontstyle2\">1d8 Instability Points </span><span class=\"fontstyle0\">to ignore that cost.</span></p><p><span class=\"fontstyle0\">At the end of each session, you lose </span><span class=\"fontstyle2\">1d6 Instability Points </span><span class=\"fontstyle0\">(to a minimum of zero).</span></p><p><span class=\"fontstyle0\">If your </span><span class=\"fontstyle2\">Instability Points </span><span class=\"fontstyle0\">ever reach </span><span class=\"fontstyle2\">10 or more</span><span class=\"fontstyle0\">, you are immediately reduced to 0 Hit<br>Points and must </span><span class=\"fontstyle2\">Surrender</span><span class=\"fontstyle0\">.</span></p><p><span class=\"fontstyle0\">The consequences of this Surrender should be closely tied<br>to you losing control of your abilities. Then, you lose all </span><span class=\"fontstyle2\">Instability Points</span> </p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Fugitive Experiment",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.1r6HAJN2JWYt3Dj2"
+        },
         "2QV4dfxKeibAejia": {
           "active_class": "Entropist",
           "active_cost": "",
@@ -14053,7 +14068,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 4037328691
+    "templateSystemUniqueVersion": 1137758910
   },
   "type": "character"
 }
