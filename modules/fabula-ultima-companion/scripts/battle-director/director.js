@@ -76,6 +76,13 @@ export class BattleDirector {
       endOfRound: false,
       endOfCombat: false,
       abortReason: null,
+      // Completion promise for the current round's opening banner sequence
+      // (round banner + initiative/ambush/advantage flash), set by ROUND_START
+      // and consumed one-shot by TURN_START to gate the enemy autopilot so it
+      // doesn't declare on top of the cinematic. Null when no banner is in
+      // flight. Live-only (never persisted — ROUND_START isn't re-entered on
+      // resume, so a reload simply has no banner to wait on).
+      initiativeBannerDone: null,
     };
 
     this._stateHandlers = stateHandlers ?? {};

@@ -741,9 +741,12 @@ async function playRoundBannerLocal(payload = {}) {
     // reads as a distinct "second banner". Carried on the SAME ACTION_PLAY
     // broadcast (payload.followup), so every client plays it in the same order
     // with no extra socket. The instant/resume path returns early above, so a
-    // reload/rewind never replays the flash.
+    // reload/rewind never replays the flash. AWAITED (not fire-and-forget) so
+    // this function's promise resolves only once the whole sequence has cleared —
+    // that promise is what the director tracks to gate the enemy autopilot.
     if (followup?.kind) {
-      setTimeout(() => { playFollowupBannerLocal(followup); }, 320);
+      await sleep(320);
+      await playFollowupBannerLocal(followup);
     }
   } catch (e) {
     warn("playRoundBannerLocal threw", e);
@@ -950,11 +953,16 @@ export function playRoundBanner({ round = 0, followup = null } = {}) {
     try { globalThis.FUCompanion?.api?.experimental?.battleDirector?.refreshTurnActions?.(); }
     catch (_e) {}
     const payload = { round, ...(followup ? { followup } : {}) };
-    playRoundBannerLocal(payload);
+    // Capture the GM-local completion so the caller (ROUND_START) can hand the
+    // director a signal to gate the enemy autopilot on. Still non-blocking: the
+    // broadcast + return happen immediately; only the RETURNED promise waits.
+    const localDone = playRoundBannerLocal(payload);
     try { _socket?.executeForOthers?.(ACTION_PLAY, payload); }
     catch (e) { warn("director-round-banner: broadcast failed", e); }
+    return localDone;
   } catch (e) {
     warn("playRoundBanner threw", e);
+    return Promise.resolve();
   }
 }
 

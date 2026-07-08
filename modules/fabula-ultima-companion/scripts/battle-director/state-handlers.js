@@ -1662,9 +1662,14 @@ const RoundStart = {
     }
 
     // Start-of-round cinematic banner ("ROUND N" + Critical_1 SFX), then the
-    // initiative / ambush / advantage flash (if any). Fire-and-forget so the
-    // flourish overlays the next state rather than blocking the FSM.
-    if (roundNo > 0) playRoundBanner({ round: roundNo, followup });
+    // initiative / ambush / advantage flash (if any). Non-blocking — the banner
+    // plays asynchronously. We hand the director its COMPLETION promise on ctx so
+    // the enemy autopilot (TURN_START) can hold until the cinematic clears,
+    // keeping the sequencing owned + tracked by the director rather than a loose
+    // global. Reset to null when there's no banner (no round yet).
+    director.ctx.initiativeBannerDone = (roundNo > 0)
+      ? playRoundBanner({ round: roundNo, followup })
+      : null;
 
     // Boss Dominance accrual — every enemy boss banks 1 Dominance Point on
     // rounds 3, 6, 9, ... (capped). Awaited so the AE exists before any
@@ -1814,6 +1819,19 @@ const TurnStart = {
           const aiPool = eligible.filter(isAiControlledCombatant);
           const wholeSideAi = aiPool.length > 0 && aiPool.length === eligible.length;
           if (wholeSideAi) {
+            // Polish: hold the enemy automation until this round's opening
+            // cinematic (round banner + initiative/ambush/advantage flash) has
+            // finished, so the enemy doesn't "think" or declare on top of it.
+            // The banner's completion is a director-tracked signal on ctx (set in
+            // ROUND_START); consume it one-shot here so only the FIRST turn of the
+            // round waits. A race-timeout guarantees a missed/never-resolving
+            // banner promise can never wedge the turn.
+            const bannerDone = director.ctx.initiativeBannerDone;
+            if (bannerDone) {
+              director.ctx.initiativeBannerDone = null;
+              try { await Promise.race([bannerDone, new Promise((r) => setTimeout(r, 8000))]); }
+              catch (_e) {}
+            }
             try {
               const autoId = await autopilotPickCombatant(director, aiPool);
               if (autoId) {
