@@ -8,8 +8,9 @@
 // Opens from the Anim Studio scene-control group (installed by
 // animStudio-previewBench.js) and via FUCompanion.api.animStudio.openSfxBrowser().
 //
-// Uses the classic Application/Dialog stack (module is Foundry v12). Preview is
-// a single reused HTMLAudioElement so clicking a new row stops the previous one.
+// Ships a SELF-CONTAINED scoped stylesheet (own dark panel + explicit colors)
+// so the list is always legible regardless of the ambient dialog/module theme —
+// the earlier version inherited a washed-out text color and names went blank.
 // ============================================================================
 (() => {
   const TAG = "[AnimStudio][SFXBrowser]";
@@ -18,20 +19,32 @@
 
   // Single shared preview player — clicking another row cancels the last.
   let _player = null;
-  function preview(url, volume = 0.8) {
+  let _playingUrl = null;
+  function preview(url, rowEl, volume = 0.85) {
     try {
       if (_player) { _player.pause(); _player = null; }
+      // toggle off if clicking the same row
+      if (_playingUrl === url) { _playingUrl = null; markPlaying(rowEl, false); return; }
       const a = new Audio(url);
       a.volume = volume;
       a.play().catch((e) => console.warn(TAG, "preview play blocked:", e?.message ?? e));
-      _player = a;
+      a.addEventListener("ended", () => { _playingUrl = null; markPlaying(rowEl, false); }, { once: true });
+      _player = a; _playingUrl = url;
+      markPlaying(rowEl, true);
     } catch (e) { console.warn(TAG, "preview failed:", e); }
+  }
+  function markPlaying(rowEl, on) {
+    if (!rowEl) return;
+    rowEl.closest(".as-list")?.querySelectorAll(".as-row.playing").forEach((r) => r.classList.remove("playing"));
+    if (on) rowEl.classList.add("playing");
   }
 
   function esc(s) {
     return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;")
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
+  // Folders keep %20 in older manifests — show them decoded.
+  function pretty(dir) { try { return decodeURIComponent(String(dir ?? "")); } catch { return String(dir ?? ""); } }
 
   async function copyToken(name) {
     const token = `sfx("${name}")`;
@@ -39,7 +52,6 @@
       await navigator.clipboard.writeText(token);
       ui.notifications?.info?.(`Copied: ${token}`);
     } catch {
-      // Fallback: transient textarea select-copy (clipboard API can be blocked).
       const ta = document.createElement("textarea");
       ta.value = token; document.body.appendChild(ta); ta.select();
       try { document.execCommand("copy"); ui.notifications?.info?.(`Copied: ${token}`); }
@@ -47,41 +59,66 @@
     }
   }
 
-  // ── Rendering ─────────────────────────────────────────────────────────────
+  // ── Scoped stylesheet (self-contained dark panel) ─────────────────────────
+  const STYLE = `
+    .as-sfx-browser { --as-bg:#1b1e24; --as-row:#232830; --as-row2:#20242b; --as-hi:#2d3440;
+      --as-text:#e8ebf0; --as-sub:#97a0ad; --as-accent:#ffb347; color:var(--as-text); }
+    .as-sfx-browser * { box-sizing:border-box; }
+    .as-sfx-browser .as-top { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+    .as-sfx-browser .as-search { flex:1 1 auto; background:#12151a; color:var(--as-text);
+      border:1px solid #3a414d; border-radius:5px; padding:6px 9px; font-size:13px; }
+    .as-sfx-browser .as-search::placeholder { color:var(--as-sub); }
+    .as-sfx-browser .as-rescan { background:var(--as-row); color:var(--as-text); border:1px solid #3a414d;
+      border-radius:5px; padding:6px 10px; cursor:pointer; white-space:nowrap; }
+    .as-sfx-browser .as-rescan:hover { background:var(--as-hi); }
+    .as-sfx-browser .as-count { font-size:11px; color:var(--as-sub); margin-bottom:5px; }
+    .as-sfx-browser .as-list { flex:1 1 auto; overflow-y:auto; background:var(--as-bg);
+      border:1px solid #333a45; border-radius:6px; }
+    .as-sfx-browser .as-row { display:flex; align-items:center; gap:10px; padding:6px 10px;
+      border-bottom:1px solid rgba(255,255,255,.05); cursor:default; }
+    .as-sfx-browser .as-row:nth-child(even) { background:var(--as-row2); }
+    .as-sfx-browser .as-row:hover { background:var(--as-hi); }
+    .as-sfx-browser .as-row.playing { box-shadow:inset 3px 0 0 var(--as-accent); }
+    .as-sfx-browser .as-play { flex:0 0 auto; width:30px; height:30px; border-radius:50%;
+      border:1px solid #3a414d; background:#12151a; color:var(--as-accent); cursor:pointer;
+      display:flex; align-items:center; justify-content:center; }
+    .as-sfx-browser .as-play:hover { background:var(--as-hi); }
+    .as-sfx-browser .as-meta { flex:1 1 auto; min-width:0; }
+    .as-sfx-browser .as-name { font-weight:600; font-size:13px; color:var(--as-text);
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .as-sfx-browser .as-sub { font-size:11px; color:var(--as-sub);
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .as-sfx-browser .as-copy { flex:0 0 auto; background:var(--as-row); color:var(--as-text);
+      border:1px solid #3a414d; border-radius:5px; padding:4px 9px; cursor:pointer; font-size:12px; }
+    .as-sfx-browser .as-copy:hover { background:var(--as-accent); color:#1b1e24; }
+    .as-sfx-browser .as-empty { padding:20px; text-align:center; color:var(--as-sub); }
+  `;
 
   function rowsHtml(files) {
     if (!files.length) {
-      return `<div class="as-empty" style="padding:18px;text-align:center;opacity:.7;">
-        No sounds. Click <b>Rescan Library</b> to index your Forge Sound/ folder.</div>`;
+      return `<div class="as-empty">No sounds. Click <b>Rescan</b> to index your Forge Sound/ folder.</div>`;
     }
     return files.map((f) => `
-      <div class="as-row" data-url="${esc(f.url)}" data-name="${esc(f.name)}"
-           style="display:flex;align-items:center;gap:8px;padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.06);">
-        <button type="button" class="as-play" title="Preview"
-                style="flex:0 0 auto;width:26px;height:26px;cursor:pointer;">
-          <i class="fas fa-play"></i></button>
-        <div style="flex:1 1 auto;min-width:0;">
-          <div class="as-name" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(f.name)}</div>
-          <div style="font-size:.78em;opacity:.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(f.dir)} · .${esc(f.ext)}</div>
+      <div class="as-row" data-url="${esc(f.url)}" data-name="${esc(f.name)}">
+        <button type="button" class="as-play" title="Preview"><i class="fas fa-play"></i></button>
+        <div class="as-meta">
+          <div class="as-name">${esc(f.name)}</div>
+          <div class="as-sub">${esc(pretty(f.dir))} · .${esc(f.ext)}</div>
         </div>
-        <button type="button" class="as-copy" title="Copy sfx(&quot;…&quot;)"
-                style="flex:0 0 auto;cursor:pointer;"><i class="fas fa-copy"></i> token</button>
+        <button type="button" class="as-copy" title='Copy sfx("…")'><i class="fas fa-copy"></i> copy</button>
       </div>`).join("");
   }
 
   function content(files, count) {
     return `
-      <div class="anim-studio-sfx" style="display:flex;flex-direction:column;height:520px;">
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-          <input type="text" class="as-search" placeholder="Search name or folder…"
-                 style="flex:1 1 auto;" autofocus/>
-          <button type="button" class="as-rescan" title="Re-index the Forge Sound/ library">
-            <i class="fas fa-sync"></i> Rescan</button>
+      <style>${STYLE}</style>
+      <div class="as-sfx-browser" style="display:flex;flex-direction:column;height:540px;">
+        <div class="as-top">
+          <input type="text" class="as-search" placeholder="Search name or folder…  (e.g. fire, explosion, ME/)" autofocus/>
+          <button type="button" class="as-rescan" title="Re-index the Forge Sound/ library"><i class="fas fa-sync"></i> Rescan</button>
         </div>
-        <div class="as-count" style="font-size:.8em;opacity:.6;margin-bottom:4px;">${count} sounds indexed</div>
-        <div class="as-list" style="flex:1 1 auto;overflow-y:auto;border:1px solid rgba(255,255,255,.1);border-radius:4px;">
-          ${rowsHtml(files)}
-        </div>
+        <div class="as-count">${count} sounds indexed · click ▶ to preview, <b>copy</b> for sfx("Name")</div>
+        <div class="as-list">${rowsHtml(files)}</div>
       </div>`;
   }
 
@@ -94,10 +131,9 @@
     const refresh = (q = "") => {
       const files = api()?.all(q) ?? [];
       listEl.innerHTML = rowsHtml(files);
-      countEl.textContent = `${files.length} sounds${q ? " matched" : " indexed"}`;
+      countEl.textContent = `${files.length} sound${files.length === 1 ? "" : "s"}${q ? " matched" : " indexed"}`;
     };
 
-    // Debounced search.
     let t = null;
     searchEl?.addEventListener("input", (e) => {
       clearTimeout(t);
@@ -105,17 +141,17 @@
       t = setTimeout(() => refresh(q), 120);
     });
 
-    // Event delegation for play / copy.
     listEl?.addEventListener("click", (e) => {
       const row = e.target.closest(".as-row");
       if (!row) return;
-      if (e.target.closest(".as-play")) preview(row.dataset.url);
-      else if (e.target.closest(".as-copy")) copyToken(row.dataset.name);
+      if (e.target.closest(".as-copy")) copyToken(row.dataset.name);
+      else preview(row.dataset.url, row);   // ▶ OR anywhere else on the row previews
     });
 
     root.querySelector(".as-rescan")?.addEventListener("click", async () => {
       const a = api();
       if (!a) return;
+      countEl.textContent = "indexing…";
       await a.scan({ onProgress: (n) => { if (countEl) countEl.textContent = `indexing… ${n}`; } });
       refresh(searchEl?.value ?? "");
     });
@@ -133,7 +169,7 @@
       buttons: { close: { icon: '<i class="fas fa-times"></i>', label: "Close" } },
       default: "close",
       render: (html) => wire(html),
-    }, { width: 480, resizable: true, classes: ["anim-studio-dialog"] });
+    }, { width: 500, resizable: true, classes: ["anim-studio-dialog"] });
     dlg.render(true);
     return dlg;
   }

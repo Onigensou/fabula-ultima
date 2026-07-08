@@ -44,7 +44,9 @@ suggestions — omit any to accept sensible defaults.
 |---|---|---|
 | `sfxCue` | play a sound (by manifest name) | `sfx`, `volume`, `at` ("start"/inline), `delayMs` |
 | `projectile` | glowing bolt caster→target | `color`, `boltSize`, `travelMs` |
-| `webmOnTarget` | play a `.webm` at target/caster | `webmUrl`, `size`, `anchor`, `preFlash` |
+| `vfxProc` | procedural DOM/PIXI shape via oni helpers | `shape` (glow/ring/burst), `color`, `size`, `anchor`, `at` |
+| `vfxDb` | a Sequencer database key (jb2a / blfx webm) | `dbPath` (e.g. `jb2a.explosion.01.orange`), `size`, `anchor`, `at` |
+| `vfxFile` | a given image/webm by URL | `url`, `size`, `anchor`, `loop`, `at` |
 | `tokenLunge` | caster darts at target + recoils | `distance`, `outMs`, `backMs` |
 | `glowAura` | radial glow (+ optional embers) on a token | `color`, `size`, `durationMs`, `embers` |
 | `cutIn` | dim + slide-in portrait of a token, hold, slide out | `who` ("caster"/"target"), `holdMs`, `stingSfx` |
@@ -56,6 +58,19 @@ suggestions — omit any to accept sensible defaults.
 | `dim` | cinematic dim sheet behind the action | `to`, `fadeInMs` |
 | `screenshake` | shake the canvas | `intensity`, `durationMs` |
 | `impact` | marker: fire the damage gate here | — |
+
+## Working with VFX — three sources
+
+1. **Procedural (DOM/PIXI)** — `vfxProc`. Built from the `oni` helpers
+   (`radialTexture`/`gradientTexture`/`webmSprite`, blend modes, tweens). No
+   asset needed; best for glows, rings, energy.
+2. **Sequencer database** — `vfxDb`. jb2a / blfx animated `.webm` files exposed
+   via Sequencer. Click **VFX DB** in the Brief Builder to open Sequencer's
+   viewer, find a key (e.g. `jb2a.explosion.01.orange`), and put it in `dbPath`.
+   When generating the script it's resolved with
+   `Sequencer.Database.getEntry(dbPath).file` → played as an `oni.webmSprite`.
+3. **Given file** — `vfxFile`. A direct image or `.webm` URL (e.g. something you
+   provide) in `url`.
 
 ## Why this helps
 

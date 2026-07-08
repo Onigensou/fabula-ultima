@@ -30,6 +30,8 @@
   let _loop = false;       // loop toggle
   let _running = false;    // guard against overlapping runs
   let _dlg = null;
+  let _selItem = "";       // sticky selected item uuid — survives dropdown rebuilds
+  let _casterUuid = null;  // sticky caster — locked while tuning so a run's control-bridge can't lose it
 
   function esc(s) {
     return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;")
@@ -87,8 +89,9 @@
 
     const mode = root.querySelector('input[name="as-mode"]:checked')?.value ?? "skill";
     const caster = controlledCaster();
+    if (caster) _casterUuid = caster.document.uuid;   // remember the last real selection
     const targets = currentTargets();
-    const casterUuid = caster?.document?.uuid ?? null;
+    const casterUuid = caster?.document?.uuid ?? _casterUuid ?? null;  // sticky — survives the control-bridge
     const targetUuids = targets.map((t) => t?.document?.uuid).filter(Boolean);
 
     if (!casterUuid) {
@@ -106,7 +109,7 @@
       if (!script.trim()) { ui.notifications?.warn?.("Anim Studio: scratch script is empty."); return; }
     } else {
       const uuid = (root.querySelector(".as-item-uuid")?.value
-        || root.querySelector(".as-item-select")?.value || "").trim();
+        || _selItem || root.querySelector(".as-item-select")?.value || "").trim();
       if (!uuid) { ui.notifications?.warn?.("Anim Studio: pick or paste an item to preview."); return; }
       let spec;
       try { spec = await api.resolveSpec({ skillUuid: uuid }); }
@@ -158,7 +161,7 @@
       script = root.querySelector(".as-scratch")?.value ?? "";
     } else {
       const uuid = (root.querySelector(".as-item-uuid")?.value
-        || root.querySelector(".as-item-select")?.value || "").trim();
+        || _selItem || root.querySelector(".as-item-select")?.value || "").trim();
       if (uuid) {
         try {
           const spec = await studioApi()?.resolveSpec({ skillUuid: uuid });
@@ -179,21 +182,26 @@
   }
 
   function refreshCasterInfo(root) {
+    // Never rebuild mid-run: a preview transiently releases/re-controls the
+    // caster (control-bridge), which would otherwise wipe the dropdown selection.
+    if (_running) return;
     const c = controlledCaster();
+    if (c) _casterUuid = c.document.uuid;
     const targets = currentTargets();
     const el = root.querySelector(".as-caster-info");
     if (el) {
       el.innerHTML = `Caster: <b>${esc(c?.name ?? "— none selected —")}</b> · `
         + `Targets: <b>${targets.length ? targets.map((t) => esc(t.name)).join(", ") : "none"}</b>`;
     }
-    // Rebuild the item dropdown from the caster's actor.
+    // Rebuild the item dropdown from the caster's actor. Preserve the sticky
+    // selection (_selItem) across rebuilds so tuning never loses the item.
     const sel = root.querySelector(".as-item-select");
     if (sel) {
       const items = animItemsOf(c?.actor);
-      const prev = sel.value;
+      const keep = _selItem || sel.value;
       sel.innerHTML = `<option value="">— pick an animated item —</option>`
         + items.map((it) => `<option value="${esc(it.uuid)}">${esc(it.name)} (${esc(it.type)})</option>`).join("");
-      if (items.find((it) => it.uuid === prev)) sel.value = prev;
+      if (items.find((it) => it.uuid === keep)) { sel.value = keep; _selItem = keep; }
     }
   }
 
@@ -269,12 +277,13 @@
       refreshCasterInfo(root);
       refreshCfg(root);
     });
-    root.querySelector(".as-item-select")?.addEventListener("change", () => {
-      // Selecting from the dropdown clears the manual UUID override.
+    root.querySelector(".as-item-select")?.addEventListener("change", (e) => {
+      // Selecting from the dropdown clears the manual UUID override + sticks.
+      _selItem = e.target.value || "";
       const u = root.querySelector(".as-item-uuid"); if (u) u.value = "";
       refreshCfg(root);
     });
-    root.querySelector(".as-item-uuid")?.addEventListener("change", () => refreshCfg(root));
+    root.querySelector(".as-item-uuid")?.addEventListener("change", () => { _selItem = ""; refreshCfg(root); });
     let st = null;
     root.querySelector(".as-scratch")?.addEventListener("input", () => {
       clearTimeout(st); st = setTimeout(() => refreshCfg(root), 300);
@@ -292,7 +301,7 @@
   function open() {
     if (!game.user?.isGM) { ui.notifications?.warn?.("Anim Studio is GM-only."); return; }
     if (_dlg?.rendered) { _dlg.bringToTop?.(); return _dlg; }
-    _loop = false;
+    _loop = false; _selItem = ""; _casterUuid = null;
     _dlg = new Dialog({
       title: "Anim Studio — Preview Bench",
       content: content(),
@@ -305,9 +314,10 @@
     return _dlg;
   }
 
-  // Keep the caster/target readout + item list fresh while the bench is open.
-  Hooks.on("controlToken", () => { if (_dlg?.rendered) { const r = _dlg.element?.[0]; if (r) refreshCasterInfo(r); } });
-  Hooks.on("targetToken", () => { if (_dlg?.rendered) { const r = _dlg.element?.[0]; if (r) refreshCasterInfo(r); } });
+  // Keep the caster/target readout + item list fresh while the bench is open —
+  // but never during a run (the preview's control-bridge would wipe selection).
+  Hooks.on("controlToken", () => { if (!_running && _dlg?.rendered) { const r = _dlg.element?.[0]; if (r) refreshCasterInfo(r); } });
+  Hooks.on("targetToken", () => { if (!_running && _dlg?.rendered) { const r = _dlg.element?.[0]; if (r) refreshCasterInfo(r); } });
 
   Hooks.on("getSceneControlButtons", (controls) => {
     if (!game.user?.isGM) return;
