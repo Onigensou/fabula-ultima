@@ -13,6 +13,8 @@
  * - We do NOT pass `game` into the dynamic function by default.
  */
 
+import { buildOni } from "../anim-studio/oni-helpers.js";
+
 (() => {
   const TAG = "[ONI][PseudoAnim][Listener]";
   const SOCKET_NS = "module.fabula-ultima-companion";
@@ -39,10 +41,18 @@
     }
 
     // We compile a function that runs an async IIFE containing the scriptSource.
-    // The script can use: ctx, canvas, PIXI, AudioHelper, loadTexture, fromUuid, wait, foundry
+    // The script can use: ctx, canvas, PIXI, AudioHelper, loadTexture, fromUuid,
+    // wait, foundry, and `oni` (the Anim Studio helper library — screen-lock,
+    // token clone/hide, whiteout, screenshake, sfx, fireDone, …).
     //
     // NOTE: We intentionally do NOT pass `game` here by default.
     // If you need it later, you can add it explicitly as a parameter.
+    //
+    // `oni` is ADDITIVE: pre-existing scripts don't reference it and are
+    // unaffected. New scripts opt in. oni resources auto-dispose after the
+    // inner async IIFE resolves (so a script that forgets to clean up still
+    // leaves the stage at baseline) — scripts wanting a lingering cosmetic tail
+    // must `await` it before returning.
 globalThis.__ONI_PSEUDO_FN_CACHE__ ??= new Map();
 
 const cacheKey = scriptSource;
@@ -58,6 +68,7 @@ if (!fn) {
     "fromUuid",
     "wait",
     "foundry",
+    "oni",
     `
     "use strict";
     return (async () => {
@@ -70,7 +81,22 @@ if (!fn) {
 }
 
 const audio = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
-return await fn(ctx, canvas, PIXI, audio, loadTexture, fromUuid, wait, foundry);
+
+// Build the per-run `oni` helper (snapshots the current stage; binds this
+// run's caster/targets). Guarded so a helper-build failure can never break a
+// legacy script that doesn't use it.
+let oni = null;
+try {
+  oni = buildOni(ctx, { canvas, PIXI, FAudioHelper: audio, loadTexture, fromUuid, wait, foundry });
+} catch (e) {
+  warn("buildOni failed (continuing without helpers):", e);
+}
+
+try {
+  return await fn(ctx, canvas, PIXI, audio, loadTexture, fromUuid, wait, foundry, oni);
+} finally {
+  try { oni?.dispose?.(); } catch (e) { warn("oni.dispose threw", e); }
+}
   }
 
   // ---------------------------------------------------------------------------
