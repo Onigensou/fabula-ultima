@@ -62,6 +62,8 @@
 !/tools/parse-fu-pdfs/**
 !/tools/csb-template/
 !/tools/csb-template/**
+!/tools/anim-studio/
+!/tools/anim-studio/**
 
 # -----------------------------
 # LevelDB runtime files — never commit these.

@@ -1,0 +1,15 @@
+{
+  "name": "anim-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Animation authoring CLI for BD animation_script fields — encode/validate/push/pull via the live test-bridge, plus a starter template library.",
+  "bin": {
+    "anim-studio": "bin/anim-studio.js"
+  },
+  "scripts": {
+    "anim": "node bin/anim-studio.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
