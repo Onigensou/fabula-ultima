@@ -97,6 +97,12 @@ function validate(script) {
     warnings.push("contains the legacy placeholder sentinel — BD will treat this as an empty animation.");
   }
 
+  // 5. pseudo.play without scriptId is silently BLOCKED by validateOutgoing
+  //    ("Missing scriptId"), so the animation never broadcasts.
+  if (/pseudo\.play\s*\(/.test(src) && !/scriptId\s*:/.test(src)) {
+    errors.push("game.ONI.pseudo.play({…}) is missing a `scriptId:` — pseudo-core blocks the emit without one, so nothing plays. Add e.g. scriptId: \"anim-studio/<name>\".");
+  }
+
   return { ok: errors.length === 0, errors, warnings };
 }
 

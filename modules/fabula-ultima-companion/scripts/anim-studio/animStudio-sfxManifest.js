@@ -103,7 +103,9 @@
     // Decode %20 etc. so callers can use human names; the stored url stays raw.
     let decoded = name;
     try { decoded = decodeURIComponent(name); } catch { /* keep raw */ }
-    return { name: decoded, ext, dir };
+    let decodedDir = dir;
+    try { decodedDir = decodeURIComponent(dir); } catch { /* keep raw */ }
+    return { name: decoded, ext, dir: decodedDir };
   }
 
   // ── Scraper ───────────────────────────────────────────────────────────────
@@ -175,8 +177,12 @@
   // Mirror the manifest to disk so the repo + disk CLI can read it. Uses the
   // "data" FilePicker source (module folder lives under the Foundry data dir).
   async function _writeDisk(manifest) {
-    const dir = `modules/${MODULE_ID}/data/anim-studio`;
-    try { await FilePicker.createDirectory("data", dir, {}); } catch { /* exists */ }
+    // FilePicker.createDirectory is NOT recursive — create each ancestor.
+    const parts = [`modules/${MODULE_ID}`, `modules/${MODULE_ID}/data`, `modules/${MODULE_ID}/data/anim-studio`];
+    for (const p of parts) {
+      try { await FilePicker.createDirectory("data", p, {}); } catch { /* exists — fine */ }
+    }
+    const dir = parts[parts.length - 1];
     const json = JSON.stringify(manifest, null, 2);
     const file = new File([json], "sfx-manifest.json", { type: "application/json" });
     await FilePicker.upload("data", dir, file, {}, { notify: false });

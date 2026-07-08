@@ -92,6 +92,15 @@ class Bridge {
     }
   }
 
+  // A real round-trip liveness check. The bridge idles its heartbeat when no
+  // requests arrive (state.json goes stale) but still answers requests — so a
+  // live ping is more reliable than trusting `health().alive`. Returns the
+  // bootId, or throws on timeout.
+  async pingLive({ timeoutMs = 6000 } = {}) {
+    const r = await this.send("ping", {}, { timeoutMs });
+    return r?.bootId ?? null;
+  }
+
   evalGM(code, opts = {}) { return this.send("evalGM", { code }, { auth: true, ...opts }); }
   updateDocument(uuid, changes, opts = {}) { return this.send("updateDocument", { uuid, changes }, opts); }
   fromUuid(uuid, opts = {}) { return this.send("query", { kind: "fromUuid", filter: { uuid } }, opts); }

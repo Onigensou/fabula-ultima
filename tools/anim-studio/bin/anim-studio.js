@@ -52,6 +52,16 @@ function parseArgs(argv) {
 function die(msg) { console.error(`✗ ${msg}`); process.exit(1); }
 function ok(msg) { console.log(`✓ ${msg}`); }
 
+// Live-ping gate. The bridge idles its heartbeat when no requests arrive (so
+// state.json goes stale) but still answers — a real ping is the reliable check
+// and wakes it. Dies with guidance if it doesn't respond.
+async function ensureLive(bridge) {
+  try { await bridge.pingLive(); }
+  catch {
+    die("test-bridge not responding. Open the game (GM), then run in the console: FUCompanion.api.testBridge.activate()");
+  }
+}
+
 // ── Commands ────────────────────────────────────────────────────────────────
 
 function cmdListTemplates() {
@@ -114,8 +124,7 @@ async function cmdPush(positional, flags) {
   // 2. Encode + write live.
   const stored = encode(src);
   const bridge = new Bridge({ world: flags.world });
-  const h = bridge.health();
-  if (!h.alive) die(`test-bridge not alive (age ${Math.round(h.ageMs)}ms). Start the game + activate the bridge.`);
+  await ensureLive(bridge);
   await bridge.updateDocument(uuid, { [ANIM_FIELD]: stored });
   ok(`pushed ${src.length} chars → ${uuid}`);
 
@@ -143,8 +152,7 @@ async function cmdPull(flags) {
   const uuid = flags.uuid;
   if (!uuid) die("usage: pull --uuid ITEM_UUID [--out FILE]");
   const bridge = new Bridge({ world: flags.world });
-  const h = bridge.health();
-  if (!h.alive) die(`test-bridge not alive. Start the game + activate the bridge.`);
+  await ensureLive(bridge);
   const raw = await bridge.evalGM(`return (await fromUuid(${JSON.stringify(uuid)}))?.system?.props?.animation_script ?? "";`);
   if (!raw) die("item has no animation_script.");
   const plain = decode(raw);
@@ -155,8 +163,7 @@ async function cmdPull(flags) {
 
 async function cmdSfxSync(flags) {
   const bridge = new Bridge({ world: flags.world });
-  const h = bridge.health();
-  if (!h.alive) die(`test-bridge not alive. Start the game + activate the bridge.`);
+  await ensureLive(bridge);
   console.log("Triggering in-game Forge SFX scan (this walks the Sound/ tree)…");
   const res = await bridge.evalGM(
     `const m = await FUCompanion.api.animStudio.sfx.scan(); return { count: m?.count ?? 0 };`,
@@ -165,12 +172,14 @@ async function cmdSfxSync(flags) {
   ok(`scan complete — ${res.count} sounds indexed. Manifest mirrored to modules/fabula-ultima-companion/data/anim-studio/sfx-manifest.json`);
 }
 
-function cmdHealth(flags) {
+async function cmdHealth(flags) {
   const bridge = new Bridge({ world: flags.world });
   const h = bridge.health();
   console.log(`world: ${bridge.world}`);
-  console.log(`bridge: ${h.alive ? "ALIVE" : "not alive"} (heartbeat age ${Math.round(h.ageMs)}ms, bootId ${h.bootId ?? "?"})`);
-  if (!h.alive) console.log("→ open the game, GM logged in, then: FUCompanion.api.testBridge.activate()");
+  console.log(`heartbeat: ${Math.round(h.ageMs)}ms old (bootId ${h.bootId ?? "?"})`);
+  // Live ping — the reliable signal (heartbeat idles even while the bridge works).
+  try { const boot = await bridge.pingLive(); console.log(`bridge: ALIVE (ping ok, bootId ${boot ?? "?"})`); }
+  catch { console.log("bridge: NOT RESPONDING → open the game (GM), then: FUCompanion.api.testBridge.activate()"); }
 }
 
 // ── Dispatch ─────────────────────────────────────────────────────────────

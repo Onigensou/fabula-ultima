@@ -71,6 +71,7 @@
   `;
 
   game.ONI.pseudo.play({
+    scriptId: "anim-studio/projectile",   // required — pseudo.play blocks calls without one
     scriptSource,
     casterTokenUuid: casterUuid,
     targetTokenUuids: targetUuids,

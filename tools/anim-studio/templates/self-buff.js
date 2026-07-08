@@ -82,6 +82,7 @@
   `;
 
   game.ONI.pseudo.play({
+    scriptId: "anim-studio/self-buff",   // required — pseudo.play blocks calls without one
     scriptSource,
     casterTokenUuid: casterUuid,
     targetTokenUuids: [],

@@ -69,6 +69,7 @@
   `;
 
   game.ONI.pseudo.play({
+    scriptId: "anim-studio/webm-target",   // required — pseudo.play blocks calls without one
     scriptSource,
     casterTokenUuid: casterUuid,
     targetTokenUuids: targetUuids,
