@@ -47,6 +47,7 @@
     "scripts/action-animation/animation-asset-cache.js",
     "scripts/anim-studio/animStudio-sfxManifest.js",
     "scripts/anim-studio/animStudio-sfxBrowser.js",
+    "scripts/anim-studio/animStudio-briefBuilder.js",
     "scripts/anim-studio/animStudio-previewBench.js",
     "scripts/action-execution-core.js",
     "scripts/apply-damage-core.js",

@@ -1,0 +1,14 @@
+{
+  "name": "",
+  "concept": "",
+  "caster": "",
+  "target": "",
+  "palette": ["#ffffff"],
+  "timing": "default",
+  "beats": [
+    { "type": "sfxCue", "sfx": "", "at": "start" },
+    { "type": "projectile", "color": "#ff8a3d", "travelMs": 420 },
+    { "type": "impact" },
+    { "type": "screenshake", "intensity": 7, "durationMs": 300 }
+  ]
+}

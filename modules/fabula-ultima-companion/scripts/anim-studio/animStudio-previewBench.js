@@ -245,7 +245,8 @@
       <div style="display:flex;gap:8px;align-items:center;">
         <button type="button" class="as-run" style="font-weight:600;"><i class="fas fa-play"></i> Run</button>
         <label style="font-size:.85em;"><input type="checkbox" class="as-loop"/> Loop</label>
-        <button type="button" class="as-sfx" style="margin-left:auto;"><i class="fas fa-music"></i> SFX Browser</button>
+        <button type="button" class="as-brief" style="margin-left:auto;"><i class="fas fa-list-check"></i> Brief Builder</button>
+        <button type="button" class="as-sfx"><i class="fas fa-music"></i> SFX Browser</button>
       </div>
       <div class="as-status" style="font-size:.82em;opacity:.8;min-height:1.2em;"></div>
     </div>`;
@@ -282,6 +283,7 @@
     root.querySelector(".as-loop")?.addEventListener("change", (e) => { _loop = e.target.checked; });
     root.querySelector(".as-run")?.addEventListener("click", () => run(root));
     root.querySelector(".as-sfx")?.addEventListener("click", () => studioApi()?.openSfxBrowser?.());
+    root.querySelector(".as-brief")?.addEventListener("click", () => studioApi()?.openBriefBuilder?.());
 
     refreshCasterInfo(root);
     syncPanes();
