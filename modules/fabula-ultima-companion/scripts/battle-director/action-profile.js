@@ -565,16 +565,22 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       damageVal = applyAffinityToDamage(rawDamage, affinityCode);
 
       // Damage-class affinity (strike/magic) + universal damage_taken_mult — the
-      // SAME incoming axes the effect ruleset applies, via the shared helper. The
-      // attack path historically skipped both (see damage-unification-plan.md), so
-      // an actor with affinity_class_strike:"IM" / damage_taken_mult≠1 (e.g. Ghostly
-      // Sheet: immune to Strike, 200% from all else) now has them honored on basic
-      // attacks too. strike = a weapon Attack (targets DEF); magic = a Spell
-      // (targets MDEF); other skills/MP = neither (null → both axes inert).
+      // SAME incoming axes the effect ruleset applies, via the shared helper. An
+      // actor with affinity_class_strike:"IM" / damage_taken_mult≠1 (e.g. Ghostly
+      // Sheet: immune to Strike, 200% from all else) has them honored here.
+      //
+      // The class follows the ACCURACY CHECK, not the action kind:
+      //   • a check resolving vs DEF   → "strike"
+      //   • a check resolving vs MDEF  → "magic"
+      //   • no accuracy check at all (auto-hit skill / effect) → null (both axes
+      //     inert).
+      // `vsMDef` is the SAME DEF/MDEF resolution the hit test + card labels use
+      // (resolvesVsMagicDefense: explicit per-item defense_target_type wins, else
+      // Spell→MDEF). So a weapon Attack tagged `mdef` (Arc Wand) reads as "magic",
+      // a non-Spell skill that checks vs DEF reads as "strike", and an auto-hit
+      // spell reads as null. MP damage skips the whole incoming layer.
       if (!primary.isMpDamage) {
-        const dmgClass = kind === "Attack" ? "strike"
-          : (kind === "Spell" || String(ar?.skillType ?? "").toLowerCase() === "spell") ? "magic"
-          : null;
+        const dmgClass = check.required ? (vsMDef ? "magic" : "strike") : null;
         const cm = applyClassAffinityAndMult(liveTarget, damageVal, {
           damageClass: dmgClass,
           elementAbsorbed: affinityCode === "AB",

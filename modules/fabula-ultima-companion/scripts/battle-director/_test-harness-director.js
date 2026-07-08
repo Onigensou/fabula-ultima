@@ -287,6 +287,11 @@ function buildInitialActionResult(skill, attackerSnap, targetSnaps, deps) {
     skillName: skill.name,
     skillImg: skill.img,
     skillType: String(p.skill_type ?? ""),
+    // Mirror real COMPUTE (state-handlers.js): the DEF/MDEF the accuracy check
+    // resolves against. Without this the harness would fall back to isSpell →
+    // MDEF and mis-model DEF-targeting spells (e.g. Ignis Finis: a Spell that
+    // checks vs DEF), both for the hit test and the strike/magic damage class.
+    defenseTargetType: String(p.defense_target_type ?? "").toLowerCase(),
     isCheck: !!p.isCheck,
     rolledA1: String(p.rolled_atr1 ?? "").toUpperCase(),
     rolledA2: String(p.rolled_atr2 ?? "").toUpperCase(),
