@@ -86,6 +86,23 @@
   async function gatherAllClocks() {
     const clocks = [];
 
+    // Clock System clocks (FUCompanion.api.clocks) — the ones with sides, poles
+    // and success/failure. Listed first because they are the ones that matter.
+    // Only ACTIVE clocks: spending an opportunity on a clock that already
+    // resolved would be a no-op the player paid for.
+    const clockApi = globalThis.FUCompanion?.api?.clocks;
+    if (clockApi) {
+      for (const c of clockApi.list({ state: clockApi.CLOCK_STATE.ACTIVE })) {
+        if (c.visibility === clockApi.VISIBILITY.GM && !game.user.isGM) continue;
+        clocks.push({
+          id: `f:${c.id}`, name: c.name, value: c.value, max: c.sections,
+          source: "fu", fuId: c.id,
+        });
+      }
+    }
+
+    // Legacy: the standalone Global Progress Clocks module. No API, no sides,
+    // no success/failure — kept only so clocks authored there still work.
     const db = window.clockDatabase;
     if (db) {
       db.forEach(c => clocks.push({
@@ -328,7 +345,9 @@
   async function showProgressOverlay(clocks) {
     ensureOverlayStyle();
     return new Promise(resolve => {
-      // Build optgroups: global clocks first, then per-actor groups (preserving order)
+      // Build optgroups: Clock System first, then the legacy module's clocks,
+      // then per-actor groups (preserving order)
+      const fuClocks  = clocks.filter(c => c.source === "fu");
       const globals   = clocks.filter(c => c.source === "global");
       const actorMap  = new Map();
       for (const c of clocks.filter(c => c.source === "actor")) {
@@ -337,8 +356,14 @@
       }
 
       let opts = "";
+      if (fuClocks.length) {
+        opts += `<optgroup label="⏱ Clocks">`;
+        for (const c of fuClocks)
+          opts += `<option value="${clocks.indexOf(c)}">${esc(c.name)} (${c.value} / ${c.max})</option>`;
+        opts += `</optgroup>`;
+      }
       if (globals.length) {
-        opts += `<optgroup label="⏱ Global Clocks">`;
+        opts += `<optgroup label="⏱ Global Clocks (legacy)">`;
         for (const c of globals)
           opts += `<option value="${clocks.indexOf(c)}">${esc(c.name)} (${c.value} / ${c.max})</option>`;
         opts += `</optgroup>`;
@@ -686,6 +711,7 @@
           newValue,
           max:       clock.max,
           source:    clock.source,
+          fuId:      clock.fuId,
           dbId:      clock.dbId,
           actorId:   clock.actorId,
           clockKey:  clock.clockKey,
@@ -694,10 +720,36 @@
 
       async post(ctx, preResult) {
         if (!preResult) return;
-        const { clockName, oldValue, newValue, max, source, dbId, actorId, clockKey } = preResult;
+        const { clockName, oldValue, newValue, max, source, fuId, dbId, actorId, clockKey } = preResult;
 
         const step       = newValue > oldValue ? 1 : -1;
         const isIncrease = step > 0;
+
+        // ── Clock System clocks ────────────────────────────────────────────
+        // No spotlight, no SVG loop: the clock bar already animates its own
+        // sections one at a time with a tick, on every client. Duplicating that
+        // here would double the sound and fight the bar's own stepper.
+        //
+        // `direction` moves the AXIS rather than a side's pole, so an
+        // opportunity can nudge a clock whichever way the fiction demands —
+        // including a direction whose pole nobody owns.
+        if (source === "fu") {
+          const clockApi = globalThis.FUCompanion?.api?.clocks;
+          if (!clockApi) { console.error(TAG, "[post] clock API not available"); return; }
+
+          const moved = await clockApi.advance(fuId, {
+            direction: isIncrease ? clockApi.POLE.HIGH : clockApi.POLE.LOW,
+            sections: Math.abs(newValue - oldValue),
+            cause: `Opportunity: Progress (${ctx.actorName})`,
+          });
+          if (!moved) { console.warn(TAG, "[post] clock advance refused or was a no-op"); return; }
+
+          // Let the bar's staggered fill land before the chat card.
+          await delay(Math.abs(newValue - oldValue) * 140 + 500);
+          await postProgressCard({ actorName: ctx.actorName, clockName, oldValue, newValue, max });
+          console.debug(TAG, "[done]");
+          return;
+        }
 
         // Update real data once before animation — hidden behind the dim.
         if (source === "global") {

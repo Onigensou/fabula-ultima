@@ -2279,6 +2279,26 @@ export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource
 export async function firePassiveTriggers({ director, casterActor, trigger, payload, skipEvaluated }) {
   if (!casterActor || !trigger) return { fired: [] };
 
+  // ── Outward observation hook ──────────────────────────────────────────────
+  // Until now the director's triggers were dispatched ONLY to reaction rows, so
+  // no other subsystem could observe combat events at all. This re-broadcasts
+  // every trigger as a plain Foundry hook, additively: it changes no dispatch,
+  // consumes no result, and cannot influence resolution.
+  //
+  // Deliberately fired BEFORE the token guard below. A reaction menu needs a
+  // token to anchor to; an observer (the clock system's automation rows, a
+  // logger, a stream overlay) does not, and dropping the event for a tokenless
+  // actor would be a silent gap.
+  //
+  // Subscribers MUST treat the payload as read-only and MUST NOT assume they
+  // run on one client — this fires on whichever client is running the director.
+  // First consumer: clock-automation.js (see [[project_clock_system]]).
+  try {
+    Hooks.callAll("fu-director-trigger", { director, casterActor, trigger, payload });
+  } catch (e) {
+    warn(`fu-director-trigger hook threw for "${trigger}"`, e);
+  }
+
   // Token resolution preference:
   //   1. Active canvas scene — the menu anchors to the token's pixel
   //      position via canvas.stage.toGlobal(); using a token on a

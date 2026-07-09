@@ -16,8 +16,8 @@ Hooks.once("ready", () => {
     const CFG = {
       gmOnly:         true,
       offsetRightPx:  313,
-      offsetBottomPx: 322,
-      sizePx:         60,
+      offsetBottomPx: 302,
+      sizePx:         52,
       zIndex:         83,
       iconText:       "🎯",
       label:          "Request Check",
