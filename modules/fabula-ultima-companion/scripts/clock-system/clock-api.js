@@ -21,9 +21,14 @@
 //     Hooks.on("fu-clock-discarded",({ clock, destroyed }) => ...);
 //
 // ── Who may write ───────────────────────────────────────────────────────────
-// Only the active GM writes the registry. Until the socket layer lands (phase
-// 4), a mutation called on a player client warns and returns null. Reads and
-// `previewCheck` work everywhere, on every client, with no gate.
+// Only the active GM writes the registry. Calling a mutation from a player
+// client relays it to the GM over a socket and awaits the result — so the API
+// is symmetric, and callers never branch on `game.user.isGM`. Players may
+// `advance` and `applyCheck`; every other write is GM-only and is refused at
+// the GM's end, not merely hidden on the client.
+//
+// Every write resolves to `null` when it was refused, timed out, or changed
+// nothing. Reads and `previewCheck` are ungated and never touch the socket.
 //
 // ── Quick start ─────────────────────────────────────────────────────────────
 //     const c = await FUCompanion.api.clocks.create(
@@ -39,6 +44,7 @@
 import * as store from "./clock-store.js";
 import * as model from "./clock-model.js";
 import * as check from "./clock-check.js";
+import { dispatch, wireClockSocket } from "./clock-socket.js";
 import {
   CLOCK_MODULE_ID, CLOCK_TAG, CLOCK_HOOK, SIDE, POLE, OUTCOME,
   CLOCK_STATE, LIFECYCLE, GROUP_MODE, GROUP_ROLE, VISIBILITY,
@@ -58,24 +64,28 @@ const api = {
   all: () => store.all(),
   siblings: (clock) => store.siblings(clock),
 
-  // ── Writes (active GM) ────────────────────────────────────────────────────
+  // ── Writes ────────────────────────────────────────────────────────────────
+  // All routed through `dispatch`: applied directly on the active GM, relayed
+  // to it over the socket from anywhere else. Players may only advance clocks
+  // and apply checks; the rest are GM-only and refused at the GM's end.
+  // Every write resolves to `null` when refused, timed out, or a no-op.
 
   /**
-   * Create a clock from a spec or a `preset.*()` product.
+   * Create a clock from a spec or a `preset.*()` product. GM-only.
    * @returns {Promise<object|null>} the stored clock, or null if refused.
    */
-  create: (spec = {}) => store.create(_stampScene(spec)),
+  create: (spec = {}) => dispatch("create", { spec: _stampScene(spec) }),
 
   /**
    * Advance by `sections`, signed toward `side`'s OWN pole. Negative pulls it
    * back (RAW "Turning Back a Clock"). Pass `direction` only when the acting
    * side owns no pole — combining it with a negative `sections` double-negates.
    */
-  advance: (id, opts) => store.advance(id, opts),
+  advance: (id, opts) => dispatch("advance", { id, opts }),
 
   /** Sugar: pull a clock back, away from `side`'s pole. */
   turnBack: (id, { side, sections = 1, ...rest } = {}) =>
-    store.advance(id, { side, sections: -Math.abs(sections), ...rest }),
+    dispatch("advance", { id, opts: { ...rest, side, sections: -Math.abs(sections) } }),
 
   /**
    * RAW "Other Events": the GM may fill or erase one section for an event, or
@@ -83,14 +93,14 @@ const api = {
    */
   event: (id, { side, major = false, erase = false, ...rest } = {}) => {
     const n = major ? EVENT_SECTIONS_MAJOR : EVENT_SECTIONS_MINOR;
-    return store.advance(id, { ...rest, side, sections: erase ? -n : n, cause: rest.cause ?? "event" });
+    return dispatch("advance", { id, opts: { ...rest, side, sections: erase ? -n : n, cause: rest.cause ?? "event" } });
   },
 
-  set: (id, value, opts) => store.set(id, value, opts),
-  resolve: (id, pole, opts) => store.resolve(id, pole, opts),
-  reopen: (id) => store.reopen(id),
-  discard: (id, opts) => store.discard(id, opts),
-  destroy: (id) => store.destroy(id),
+  set: (id, value, opts) => dispatch("set", { id, value, opts }),
+  resolve: (id, pole, opts) => dispatch("resolve", { id, pole, opts }),
+  reopen: (id) => dispatch("reopen", { id }),
+  discard: (id, opts) => dispatch("discard", { id, opts }),
+  destroy: (id) => dispatch("destroy", { id }),
 
   // ── Checks ────────────────────────────────────────────────────────────────
 
@@ -109,15 +119,15 @@ const api = {
    * @param {string} [spec.cause]                 recorded in the clock's history
    * @returns {Promise<object[]|null>} one result per touched clock
    */
-  applyCheck: (id, spec) => store.check(id, spec),
+  applyCheck: (id, spec) => dispatch("applyCheck", { id, spec }),
 
-  /** Same math, no write, no GM gate. For pre-roll previews. */
+  /** Same math, no write, no GM gate, no socket. For pre-roll previews. */
   previewCheck: (id, spec) => store.preview(id, spec),
 
-  // ── Lifecycle ─────────────────────────────────────────────────────────────
-  sweep: (lifecycle, opts) => store.sweep(lifecycle, opts),
-  sweepScene: (sceneId, opts) => store.sweepScene(sceneId ?? canvas?.scene?.id, opts),
-  purgeDiscarded: () => store.purgeDiscarded(),
+  // ── Lifecycle (GM-only) ───────────────────────────────────────────────────
+  sweep: (lifecycle, opts) => dispatch("sweep", { lifecycle, opts }),
+  sweepScene: (sceneId, opts) => dispatch("sweepScene", { sceneId: sceneId ?? canvas?.scene?.id, opts }),
+  purgeDiscarded: () => dispatch("purgeDiscarded"),
 
   // ── Pure helpers (no world access; usable in tests + previews) ─────────────
   preset: model.preset,
@@ -160,6 +170,7 @@ Hooks.once("init", () => {
 Hooks.once("ready", () => {
   try {
     store.wireClockStore();
+    wireClockSocket();
 
     const m = ensureModuleApi(); if (m) m.clocks = api;
     ensureGlobalApi().clocks = api;
