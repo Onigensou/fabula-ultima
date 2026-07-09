@@ -85,6 +85,7 @@ export function injectClockStyles() {
   --ck-wood-3: #4e2f19;
   --ck-ink: #4a2f18;
   --ck-gold: #f4e2a8;
+  --ck-gear-ink: #1d1109;   /* dark brown, nearly black */
 
   --ck-blue: #3f9fd6;
   --ck-blue-hi: #9fe0ff;
@@ -110,14 +111,20 @@ export function injectClockStyles() {
   transition: transform var(--ck-reflow, 320ms) cubic-bezier(.22,.8,.3,1);
 }
 
+/* Near-black brown fill with a gold outline, so the gear reads against both the
+ * bright parchment and a dark scene. An icon font is a glyph, not a shape, so
+ * the outline is a stack of 1px drop-shadows rather than a stroke. */
 .oni-clock-gear {
   order: 2;
   width: var(--ck-gear-size, 30px); height: var(--ck-gear-size, 30px);
   flex: 0 0 auto;
   display: grid; place-items: center;
-  color: var(--ck-wood-2);
+  color: var(--ck-gear-ink);
   font-size: calc(var(--ck-gear-size, 30px) * 0.82);
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,.35));
+  filter:
+    drop-shadow( 1px  0   0 var(--ck-gold)) drop-shadow(-1px  0   0 var(--ck-gold))
+    drop-shadow( 0    1px 0 var(--ck-gold)) drop-shadow( 0   -1px 0 var(--ck-gold))
+    drop-shadow( 0    2px 2px rgba(0,0,0,.5));
   opacity: 0;
 }
 
@@ -138,16 +145,28 @@ export function injectClockStyles() {
   transform: translateX(34px);
 }
 
-/* Floating name tab, overhanging the panel's top-left corner. */
+/* Floating name tab, overhanging the panel's top-left corner.
+ *
+ * The outline is built from text-shadow, NOT `-webkit-text-stroke` +
+ * `paint-order: stroke fill`. Chromium only honours `paint-order` on HTML text
+ * from v128; before that it PARSES the property (so CSS.supports() answers
+ * "yes") but paints the stroke over the fill, which turns light-stroked dark
+ * text into an illegible blob. The Foundry desktop app is Electron 29 /
+ * Chromium 122, so it hit that path while a modern browser client did not —
+ * same stylesheet, two different renderings. text-shadow always paints behind
+ * the glyph, on every engine. Check Roller's card has the same bug for the
+ * same reason. */
 .oni-clock-name {
   position: absolute;
   top: -9px; left: 8px;
   font-size: var(--ck-name-size, 15px);
   font-weight: 700; letter-spacing: .3px;
   color: var(--ck-wood-3);
-  -webkit-text-stroke: 2.4px var(--ck-gold);
-  paint-order: stroke fill;
-  text-shadow: 0 1px 2px rgba(0,0,0,.30);
+  text-shadow:
+    -2px -2px 0 var(--ck-gold), 0 -2px 0 var(--ck-gold), 2px -2px 0 var(--ck-gold),
+    -2px  0   0 var(--ck-gold),                          2px  0   0 var(--ck-gold),
+    -2px  2px 0 var(--ck-gold), 0  2px 0 var(--ck-gold), 2px  2px 0 var(--ck-gold),
+    0 2px 3px rgba(0,0,0,.45);
   white-space: nowrap; max-width: calc(var(--ck-panel-w, 250px) - 22px);
   overflow: hidden; text-overflow: ellipsis;
   pointer-events: none;
