@@ -51,6 +51,9 @@ export const RITUAL_MATERIAL = Object.freeze({
 // Feather cursor sprite — the same asset the Healing HUD and Save/Load UI use.
 export const RITUAL_CURSOR_SRC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
 
+// Prefix icon on the Offer Material button.
+export const RITUAL_MATERIAL_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Crystal.png";
+
 // Keyboard controls, imported wholesale from the Healing HUD so the two menus
 // feel like one game. Arrows move between rows; Left/Right (and the wheel)
 // scroll a value; Z confirms or scrolls forward; X cancels.

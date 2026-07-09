@@ -71,7 +71,6 @@ export async function openMaterialPicker({ performer, current = null } = {}) {
             : materials.map(rowHtml).join("")}
         </div>
         <div class="oni-rmp-footer">
-          <span class="hint"><b>↑↓</b> Move <b>Z</b> Choose <b>X</b> Back</span>
           <button class="oni-ritual-btn ghost" data-act="none">Offer nothing</button>
         </div>
       </div>`;

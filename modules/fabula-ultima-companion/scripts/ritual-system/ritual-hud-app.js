@@ -32,7 +32,7 @@
 
 import {
   RITUAL_TAG, POTENCY, AREA, POTENCY_ORDER, AREA_ORDER,
-  RITUAL_KEYS, RITUAL_CURSOR_SRC, playRitualSfx, disciplineById,
+  RITUAL_KEYS, RITUAL_CURSOR_SRC, RITUAL_MATERIAL_ICON, playRitualSfx, disciplineById,
 } from "./ritual-const.js";
 import { computeCost, canAfford, currentMp, shortfall } from "./ritual-cost.js";
 import { resolvePerformer, disciplinesForActor } from "./ritual-actor.js";
@@ -54,6 +54,11 @@ const ROWS = ["discipline", "potency", "area", "material", "group", "intent", "c
 // and ←/→ moves between the pair instead of scrolling.
 const ROW_PAIRS = { potency: "area", area: "potency", material: "group", group: "material" };
 
+// Slide/roll timings. SLIDE_MS must match the CSS transition on .disc-track and
+// .v-layer, or a rebuild lands mid-animation and the value visibly jumps.
+const SLIDE_MS = 200;
+const ROLL_MS = 260;
+
 const RitualHUD = {
   _root: null,
   _performer: null,
@@ -65,6 +70,8 @@ const RitualHUD = {
   _cursorReady: false,
   _keyHandler: null,
   _pickerOpen: false,
+  _discAnim: false,       // guards the carousel against a mid-slide re-entry
+  _shown: { mp: null, dl: null },   // last painted numbers, for the roll animation
 
   get isOpen() { return Boolean(this._root); },
 
@@ -100,6 +107,8 @@ const RitualHUD = {
     this._casting = false;
     this._row = "discipline";
     this._cursorReady = false;
+    this._discAnim = false;
+    this._shown = { mp: null, dl: null };
 
     this._build();
     this._installKeyboard();
@@ -146,11 +155,13 @@ const RitualHUD = {
         </div>
 
         <div class="oni-ritual-body">
-          <div class="oni-ritual-scroll oni-ritual-focusable wide" data-row="discipline" tabindex="-1">
+          <div class="oni-ritual-disc oni-ritual-focusable" data-row="discipline" tabindex="-1">
             <div class="lbl">Discipline</div>
             <div class="picker">
               <span class="arrow" data-dir="-1">◀</span>
-              <span class="val disc" data-disc-val></span>
+              <div class="disc-viewport">
+                <div class="disc-track" data-disc-track></div>
+              </div>
               <span class="arrow" data-dir="1">▶</span>
             </div>
           </div>
@@ -178,11 +189,12 @@ const RitualHUD = {
             </div>
           </div>
 
-          <div class="oni-ritual-duo">
+          <div class="oni-ritual-actions">
             <button class="oni-ritual-mat oni-ritual-focusable" data-row="material" tabindex="-1">
+              <img class="mat-crystal" src="${escapeHtml(RITUAL_MATERIAL_ICON)}" />
               <span data-mat-label>Offer Material</span>
             </button>
-            <div class="oni-ritual-toggle oni-ritual-focusable" data-row="group" tabindex="-1">
+            <div class="oni-ritual-group oni-ritual-focusable" data-row="group" tabindex="-1">
               <span class="tg-label">Group Check</span>
               <span class="tg-switch"><span class="knob"></span></span>
             </div>
@@ -194,7 +206,7 @@ const RitualHUD = {
           </div>
 
           <div class="oni-ritual-final oni-ritual-focusable" data-row="confirm" tabindex="-1">
-            <div class="fin-left">
+            <div class="fin-mid">
               <div class="fin-cost" data-fin-cost></div>
               <div class="fin-note" data-fin-note></div>
             </div>
@@ -203,7 +215,6 @@ const RitualHUD = {
         </div>
 
         <div class="oni-ritual-footer">
-          <span class="hint"><b>↑↓</b> Move <b>←→</b> Change <b>Z</b> Confirm <b>X</b> Cancel</span>
           <button class="oni-ritual-btn ghost" data-act="cancel">Cancel</button>
           <button class="oni-ritual-btn" data-act="cast">Perform</button>
         </div>
@@ -222,8 +233,9 @@ const RitualHUD = {
     root.querySelector('[data-act="cast"]').addEventListener("click", () => this._cast());
     root.addEventListener("click", (ev) => { if (ev.target === root) this.close(); });
 
-    // Scroll rows: arrows, wheel, click-to-focus.
-    for (const el of root.querySelectorAll(".oni-ritual-scroll")) {
+    // Scroll rows: arrows, wheel, click-to-focus. The discipline carousel is a
+    // different element but takes exactly the same interactions.
+    for (const el of root.querySelectorAll(".oni-ritual-scroll, .oni-ritual-disc")) {
       const row = el.dataset.row;
       el.addEventListener("wheel", (ev) => {
         ev.preventDefault(); ev.stopPropagation();
@@ -264,7 +276,7 @@ const RitualHUD = {
       this._spec.useAltAttrs = ev.target.checked;
     });
 
-    this._renderDiscipline();
+    this._paintDiscipline();
     this._renderPotencyArea();
     this._renderMaterial();
     this._renderGroup();
@@ -280,16 +292,15 @@ const RitualHUD = {
     const wrap = (list, cur) => list[(list.indexOf(cur) + dir + list.length) % list.length];
 
     if (row === "discipline") {
+      if (this._discAnim || this._disciplines.length < 2) return;
       const ids = this._disciplines.map((d) => d.id);
-      this._spec.discipline = wrap(ids, this._spec.discipline);
-      this._spec.useAltAttrs = false;
-      this._renderDiscipline();
+      this._slideDiscipline(wrap(ids, this._spec.discipline), dir);
     } else if (row === "potency") {
       this._spec.potency = wrap([...POTENCY_ORDER], this._spec.potency);
-      this._renderPotencyArea();
+      this._renderPotencyArea(dir);
     } else if (row === "area") {
       this._spec.area = wrap([...AREA_ORDER], this._spec.area);
-      this._renderPotencyArea();
+      this._renderPotencyArea(dir);
     } else {
       return;
     }
@@ -297,44 +308,121 @@ const RitualHUD = {
     this._refreshFinalize();
   },
 
-  _renderDiscipline() {
+  /**
+   * Slide + fade one text value out and the next in.
+   *
+   * Two absolutely-stacked layers inside an overflow-hidden host: the outgoing
+   * one leaves against the scroll direction, the incoming one arrives with it.
+   */
+  _swapValue(host, text, dir) {
+    const old = host.querySelector(".v-layer");
+    const next = document.createElement("span");
+    next.className = "v-layer";
+    next.textContent = text;
+    if (!dir || !old) {
+      old?.remove();
+      host.appendChild(next);
+      return;
+    }
+    next.style.transform = `translateX(${dir * 60}%)`;
+    next.style.opacity = "0";
+    host.appendChild(next);
+    requestAnimationFrame(() => {
+      next.style.transform = "translateX(0)";
+      next.style.opacity = "1";
+      old.style.transform = `translateX(${-dir * 60}%)`;
+      old.style.opacity = "0";
+    });
+    setTimeout(() => old.remove(), SLIDE_MS + 40);
+  },
+
+  /**
+   * The discipline carousel: previous / current / next, the neighbours faded.
+   *
+   * Sliding the whole track by one slot moves the neighbour the user asked for
+   * into the centre; once it lands we rebuild the triple around the new centre
+   * and snap the transform back to zero with the transition off, so the reset
+   * is invisible.
+   */
+  _slideDiscipline(newId, dir) {
+    const track = this._root.querySelector("[data-disc-track]");
+    this._discAnim = true;
+    track.style.transition = `transform ${SLIDE_MS}ms cubic-bezier(.22,.8,.3,1)`;
+    track.style.transform = `translateX(${-dir * (100 / 3)}%)`;
+
+    setTimeout(() => {
+      this._spec.discipline = newId;
+      this._spec.useAltAttrs = false;
+      track.style.transition = "none";
+      track.style.transform = "translateX(0)";
+      this._paintDiscipline();
+      // Re-enable the transition only after the snap has been painted, or the
+      // browser animates the snap itself and the carousel jitters backwards.
+      requestAnimationFrame(() => { track.style.transition = ""; this._discAnim = false; });
+    }, SLIDE_MS);
+  },
+
+  _discSlotHtml(id, cls) {
+    const d = disciplineById(id);
+    if (!d) return `<div class="disc-slot ${cls}"></div>`;
+    return `<div class="disc-slot ${cls}">
+      <img class="disc-icon" src="${escapeHtml(d.icon)}" />
+      <span class="disc-name">${escapeHtml(d.label)}${d.homebrew ? " ✦" : ""}</span>
+    </div>`;
+  },
+
+  _paintDiscipline() {
+    const ids = this._disciplines.map((d) => d.id);
+    const i = ids.indexOf(this._spec.discipline);
+    const n = ids.length;
+    const prev = n > 1 ? ids[(i - 1 + n) % n] : null;
+    const next = n > 1 ? ids[(i + 1) % n] : null;
+
+    const track = this._root.querySelector("[data-disc-track]");
+    track.innerHTML =
+      this._discSlotHtml(prev, "side") +
+      this._discSlotHtml(ids[i], "cur") +
+      this._discSlotHtml(next, "side");
+
     const d = disciplineById(this._spec.discipline);
-    const el = this._root.querySelector("[data-disc-val]");
-    el.innerHTML = `<img class="disc-icon" src="${escapeHtml(d.icon)}" /><span class="disc-name">${escapeHtml(d.label)}${d.homebrew ? " ✦" : ""}</span>`;
-    el.closest(".oni-ritual-scroll").title = d.blurb;
+    const rowEl = this._root.querySelector('[data-row="discipline"]');
+    rowEl.title = d.blurb;
+    // A single performable discipline has nothing to scroll to.
+    rowEl.classList.toggle("solo", n < 2);
 
     // The alt-attribute toggle exists only for Chimerism.
     const wrap = this._root.querySelector("[data-alt]");
     wrap.hidden = !d.altAttrs;
     if (wrap.hidden) this._root.querySelector('[data-field="useAltAttrs"]').checked = false;
-
-    // A single performable discipline has nothing to scroll to.
-    this._root.querySelector('[data-row="discipline"]')
-      .classList.toggle("solo", this._disciplines.length < 2);
   },
 
-  _renderPotencyArea() {
+  _renderPotencyArea(dir = 0) {
     const p = Object.values(POTENCY).find((x) => x.id === this._spec.potency);
     const a = Object.values(AREA).find((x) => x.id === this._spec.area);
-    const pEl = this._root.querySelector("[data-potency-val]");
-    const aEl = this._root.querySelector("[data-area-val]");
-    pEl.textContent = p.label;
-    aEl.textContent = a.label;
-    pEl.closest(".oni-ritual-scroll").title = p.example;
-    aEl.closest(".oni-ritual-scroll").title = a.example;
+    const pHost = this._root.querySelector("[data-potency-val]");
+    const aHost = this._root.querySelector("[data-area-val]");
+    if (pHost.querySelector(".v-layer")?.textContent !== p.label) this._swapValue(pHost, p.label, dir);
+    if (aHost.querySelector(".v-layer")?.textContent !== a.label) this._swapValue(aHost, a.label, dir);
+    pHost.closest(".oni-ritual-scroll").title = p.example;
+    aHost.closest(".oni-ritual-scroll").title = a.example;
   },
 
   _renderMaterial() {
     const btn = this._root.querySelector('[data-row="material"]');
     const label = btn.querySelector("[data-mat-label]");
+    const crystal = btn.querySelector(".mat-crystal");
     const m = this._spec.material;
     btn.classList.toggle("offered", Boolean(m));
     if (!m) {
+      crystal.src = RITUAL_MATERIAL_ICON;
       label.textContent = "Offer Material";
       btn.title = "Offer a rare or powerful ingredient to reduce the cost.";
       return;
     }
-    label.innerHTML = `<img class="mat-icon" src="${escapeHtml(m.img)}" /><span>${escapeHtml(m.name)}</span><span class="mat-off">−${Math.round(m.discount * 100)}%</span>`;
+    // The offered material takes over the prefix slot — showing both its icon
+    // and a generic crystal would read as two separate ingredients.
+    crystal.src = m.img;
+    label.innerHTML = `${escapeHtml(m.name)}<span class="mat-off">−${Math.round(m.discount * 100)}%</span>`;
     btn.title = `${m.name} (${m.rarity}) — click to change or clear`;
   },
 
@@ -373,6 +461,30 @@ const RitualHUD = {
   // The one place a number is shown. No formula: the performer is choosing a
   // ritual, not auditing arithmetic. Everything goes red when it cannot be
   // performed, and only then does a shortage report appear.
+  /**
+   * Count a number up or down to its new value.
+   *
+   * `_shown` remembers what is on screen because the DOM text carries a suffix
+   * and re-parsing it back out would be one more thing to get wrong. A null
+   * previous value means "first paint" — snap, do not roll.
+   */
+  _rollNumber(el, key, to, suffix = "") {
+    const from = this._shown[key];
+    this._shown[key] = to;
+    if (from === null || from === to) { el.textContent = `${to}${suffix}`; return; }
+
+    const t0 = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - t0) / ROLL_MS);
+      const eased = 1 - Math.pow(1 - t, 3);          // ease-out cubic
+      el.textContent = `${Math.round(from + (to - from) * eased)}${suffix}`;
+      // Bail if the window closed or another roll superseded this one.
+      if (t < 1 && this._root && this._shown[key] === to) requestAnimationFrame(tick);
+      else if (this._shown[key] === to && el.isConnected) el.textContent = `${to}${suffix}`;
+    };
+    requestAnimationFrame(tick);
+  },
+
   _refreshFinalize() {
     const cost = computeCost({ ...this._spec, materialRarity: this._spec.material?.rarity ?? null });
     if (!cost) return;
@@ -386,8 +498,8 @@ const RitualHUD = {
     const panel = this._root.querySelector(".oni-ritual-final");
     panel.classList.toggle("short", !affordable);
 
-    this._root.querySelector("[data-fin-cost]").textContent = `${cost.mp} MP`;
-    this._root.querySelector("[data-fin-dl]").textContent = String(cost.dl);
+    this._rollNumber(this._root.querySelector("[data-fin-cost]"), "mp", cost.mp, " MP");
+    this._rollNumber(this._root.querySelector("[data-fin-dl]"), "dl", cost.dl);
 
     const note = this._root.querySelector("[data-fin-note]");
     if (!affordable) note.textContent = `${short} MP short — ${mp} of ${cost.mp}`;
