@@ -8,6 +8,307 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "6EbsEXJunZjDCLlY",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783628406637,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Counter Pass:</em> ready to counter a missed attack this round.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "shlfp8LFBBHH9oZn",
+          "originalParentId": "r4G9YFC4MXYL8lC3",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.r4G9YFC4MXYL8lC3.ActiveEffect.shlfp8LFBBHH9oZn"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "counterpass",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 4,
+            "effectLabel": "cp_refresh",
+            "lifetimeMode": "on_activation",
+            "reactorActorUuid": "Actor.uJFaNQCSvwwsr2AW",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.acT4Jdv2pOIB53GI",
+            "skillUuid": "Actor.uJFaNQCSvwwsr2AW.Item.r4G9YFC4MXYL8lC3",
+            "turnsRemaining": null
+          },
+          "lifetimeMode": "on_activation"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Counter Pass",
+      "origin": "Actor.uJFaNQCSvwwsr2AW.Item.r4G9YFC4MXYL8lC3",
+      "sort": 0,
+      "statuses": [
+        "fud-counter-pass-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "K5Dl0SqvzGEs7wS9",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783628407412,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Protect:</em> Once per turn. Take an ally's incoming attack or status instead.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "wzbHa8YwfDRdSWZF",
+          "originalParentId": "0bJVBvEP9ESLcbxs",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.0bJVBvEP9ESLcbxs.ActiveEffect.wzbHa8YwfDRdSWZF"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "protect",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 3,
+            "effectLabel": "protect_refill",
+            "reactorActorUuid": "Actor.uJFaNQCSvwwsr2AW",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.acT4Jdv2pOIB53GI",
+            "skillUuid": "Actor.uJFaNQCSvwwsr2AW.Item.0bJVBvEP9ESLcbxs",
+            "turnsRemaining": 3
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+      "name": "Protect",
+      "origin": "Actor.uJFaNQCSvwwsr2AW.Item.0bJVBvEP9ESLcbxs",
+      "sort": 0,
+      "statuses": [
+        "fud-protect-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "n1vqhSMhSvAaNOdf",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783628405608,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Pases:</em> Adoration Clock — fills on enemy misses, resets when you take damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "xaJdAkD2wJVFYXWX",
+          "originalParentId": "iYTRG3YcHC2PVLYm",
+          "originalUuid": "Item.iYTRG3YcHC2PVLYm.ActiveEffect.xaJdAkD2wJVFYXWX"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "adoration",
+          "charges": 0,
+          "chargesMax": 5,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "ado_seed",
+            "lifetimeMode": "persistent_counter",
+            "reactorActorUuid": "Actor.uJFaNQCSvwwsr2AW",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.acT4Jdv2pOIB53GI",
+            "skillUuid": "Actor.uJFaNQCSvwwsr2AW.Item.WBMByjJUKDlD8TmE",
+            "turnsRemaining": null
+          },
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/emboite.png",
+      "name": "Adoration Clock",
+      "origin": "Actor.uJFaNQCSvwwsr2AW.Item.WBMByjJUKDlD8TmE",
+      "sort": 0,
+      "statuses": [
+        "fud-adoration-clock"
+      ],
+      "system": {
+        "tags": [
+          "resource"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "oUCw0uHpZUws0Usj",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783628464462,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_ins",
+          "mode": 2,
+          "priority": 2,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Decrease <strong>【INS】 </strong>by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "nGDTBPQ9omhKG3rM",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.nGDTBPQ9omhKG3rM"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-dazed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "dazed",
+          "charges": 1,
+          "chargesMax": 3,
+          "directorAppliedBy": {
+            "appliedAtRound": 1,
+            "effectLabel": "hinder_menu:Dazed",
+            "lifetimeMode": "target_turn_end",
+            "reactorActorUuid": "Scene.jvvy4FvYYmCJtLoz.Token.5ZzEuIcy1u46GIPL.Actor.xOWpWm3W7lxxmceV",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.5ZzEuIcy1u46GIPL",
+            "skillUuid": "Item.FjwC9WmxPnKYDT3C",
+            "turnsRemaining": 3
+          },
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGICDEFENSE%20DOWN.png",
+      "name": "Dazed",
+      "origin": "Item.FjwC9WmxPnKYDT3C",
+      "sort": 0,
+      "statuses": [
+        "wA1E8GxiXmzz80XQ"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.4"
@@ -4916,7 +5217,24 @@
           "defense_target_type": "def",
           "description": "<p>After an enemy you can see loses Hit Points due to damage dealt by one of your allies, if that damage was increased by one or more of your <strong>“hex” invocations</strong>, you may perform a <strong>free attack</strong> with a weapon you have equipped. This attack may only target that enemy, and receives a bonus equal to <strong>[SL]</strong> to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all <strong>“hex” invocations</strong> present on its target end immediately after the attack has been resolved.</p>\n<p>If two or more enemies trigger this Skill at the same time, you can perform a <strong>free attack</strong> against each of them, in whatever order you prefer.</p>\n",
           "duration": "Instantanious",
-          "effect_table": {},
+          "effect_table": [
+            {
+              "action_ref": "Attack",
+              "check_bonus_formula": "SL",
+              "effect_kind": "free_action",
+              "effect_label": "ripple_strike",
+              "element_override": "trigger_element",
+              "on_hit_effect_refs": "ripple_end_hex",
+              "target_ref": "trigger_subject"
+            },
+            {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "ripple_end_hex",
+              "filter_tag": "hex",
+              "target_ref": "hit_action_targets"
+            }
+          ],
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -4930,13 +5248,24 @@
           "name": "Ripples",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": [
+            {
+              "condition_formula": "AFFECTED_BY_HEX == 1",
+              "reaction_cause_filter": "damage",
+              "reaction_damage_source": "ally",
+              "reaction_effect_ref": "ripple_strike",
+              "reaction_passive_mode": "ask",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "enemy",
+              "reaction_trigger": "creature_lose_resource"
+            }
+          ],
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Accuracy Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td></tr></tbody></table>",
           "skill_range": "Any",
           "skill_target": "Special",
-          "skill_type": "Active",
+          "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -5511,12 +5840,18 @@
               "visible": false
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+          "img": "icons/magic/air/wind-tornado-funnel-blue.webp",
           "name": "Aero Hex",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "fud-hex-aero"
+          ],
+          "system": {
+            "tags": [
+              "hex"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -5579,12 +5914,18 @@
               "visible": false
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+          "img": "icons/magic/fire/explosion-fireball-medium-orange.webp",
           "name": "Pyro Hex",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "fud-hex-pyro"
+          ],
+          "system": {
+            "tags": [
+              "hex"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -5647,12 +5988,18 @@
               "visible": false
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+          "img": "icons/magic/water/snowflake-ice-blue.webp",
           "name": "Hydro Hex",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "fud-hex-hydro"
+          ],
+          "system": {
+            "tags": [
+              "hex"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -5715,12 +6062,18 @@
               "visible": false
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+          "img": "icons/magic/lightning/bolt-strike-sparks-yellow.webp",
           "name": "Electro Hex",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "fud-hex-electro"
+          ],
+          "system": {
+            "tags": [
+              "hex"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -5783,12 +6136,18 @@
               "visible": false
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+          "img": "icons/magic/earth/strike-fist-stone-gray.webp",
           "name": "Geo Hex",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "fud-hex-geo"
+          ],
+          "system": {
+            "tags": [
+              "hex"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -7499,7 +7858,7 @@
       "backstory": "",
       "bane_status": 0,
       "base_defense": 12,
-      "base_magic_defense": 6,
+      "base_magic_defense": 4,
       "battle_facing_direction": "left",
       "berserk_status": 0,
       "bleed_status": 0,
@@ -7514,7 +7873,7 @@
       "bonus_defense": 7,
       "bonus_dex": 0,
       "bonus_hp": 5,
-      "bonus_ins": 0,
+      "bonus_ins": -2,
       "bonus_magic_defense": 2,
       "bonus_mig": 0,
       "bonus_mp": 5,
@@ -7685,7 +8044,7 @@
       "critical_dice_range": 0,
       "current_hp": 156,
       "current_ip": 8,
-      "current_mp": 71,
+      "current_mp": 56,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Blanche_Cut-in002.png",
       "cut_in_fumble": "",
@@ -7794,14 +8153,14 @@
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Portrait/Blanche_Portrait001.png",
       "init_penalty": "0",
       "ins_base": "6",
-      "ins_current": 6,
+      "ins_current": 4,
       "inventory_label": "💼 Inventory",
       "inventory_list": {},
       "ip_reduction_value": 0,
       "isAwake": false,
       "isBounce": false,
       "isClarity": false,
-      "isDazed": false,
+      "isDazed": true,
       "isEnergized": false,
       "isEnraged": false,
       "isFloat": false,
@@ -8196,7 +8555,7 @@
       "level": "36",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
-      "magic_defense": 8,
+      "magic_defense": 6,
       "magic_defense_mod": "0",
       "main_attrib_1": "SHI",
       "main_attrib_2": "SHI",

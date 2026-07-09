@@ -102,7 +102,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.zmzx1m9uLYZJiCCM",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.I2LhAaYcs0bkHIFM",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },
@@ -161,10 +161,10 @@
         "fabula-ultima-companion": {
           "category": "Other",
           "directorAppliedBy": {
-            "appliedAtRound": 2,
+            "appliedAtRound": 4,
             "effectLabel": "dance_apply",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.LOa4jZRnZ4RDWiVU",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.I2LhAaYcs0bkHIFM",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
             "turnsRemaining": null
           },
@@ -8209,7 +8209,7 @@
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
       "current_hp": "106",
-      "current_ip": "7",
+      "current_ip": 4,
       "current_mp": "76",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
