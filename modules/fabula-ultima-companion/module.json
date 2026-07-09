@@ -378,6 +378,7 @@
     "scripts/healing-system/healing-api.js",
     "scripts/clock-system/clock-api.js",
     "scripts/clock-system/clock-ui-bar.js",
+    "scripts/clock-system/clock-manager-app.js",
     "scripts/battle-director/director-boot.js",
     "scripts/battle-director/set-bonus-hooks.js",
     "scripts/battle-director/armor-equip-gate.js",
