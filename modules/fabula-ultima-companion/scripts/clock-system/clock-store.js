@@ -267,7 +267,7 @@ export async function destroy(id) {
 // registry from becoming a graveyard. Callers: director-boot's stop (combat),
 // the canvas-ready hook (scene). `manual` is never swept.
 
-export async function sweep(lifecycle, { cause = null } = {}) {
+export async function sweep(lifecycle, { cause = null, keep = () => false } = {}) {
   if (lifecycle === LIFECYCLE.MANUAL) return 0;
   if (!isActiveGM()) return 0;
 
@@ -276,11 +276,25 @@ export async function sweep(lifecycle, { cause = null } = {}) {
   for (const clock of Object.values(registry)) {
     if (clock.lifecycle !== lifecycle) continue;
     if (clock.state === CLOCK_STATE.DISCARDED) continue;
+    if (keep(clock)) continue;
     registry[clock.id] = applyDiscard(clock, { cause: cause ?? `${lifecycle} lifecycle ended` });
     swept++;
   }
   if (swept) await _writeRaw(registry);
   return swept;
+}
+
+/**
+ * Sweep scene-scoped clocks belonging to any scene OTHER than the one we just
+ * activated. Keeping the current scene's clocks is the whole point — a clock
+ * created for the room you just walked into must survive its own canvasReady.
+ */
+export async function sweepScene(currentSceneId, opts = {}) {
+  return sweep(LIFECYCLE.SCENE, {
+    cause: "left the scene",
+    keep: (clock) => clock.sceneId === currentSceneId,
+    ...opts,
+  });
 }
 
 /** Purge discarded clocks from the registry entirely. Used by the manager window. */

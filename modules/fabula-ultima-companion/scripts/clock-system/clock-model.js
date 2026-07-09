@@ -135,6 +135,11 @@ export function makeClock(spec = {}) {
     lifecycle: oneOf(spec.lifecycle, LIFECYCLE, LIFECYCLE.MANUAL),
     visibility: oneOf(spec.visibility, VISIBILITY, VISIBILITY.ALL),
 
+    // Owning scene, for the `scene` lifecycle only. Without it a scene sweep
+    // couldn't tell "clock from the room we just left" from "clock created for
+    // the room we just entered", and would discard both.
+    sceneId: spec.sceneId ? String(spec.sceneId) : null,
+
     automation: Array.isArray(spec.automation) ? spec.automation.map((r) => ({ ...r })) : [],
     history: [],
 
