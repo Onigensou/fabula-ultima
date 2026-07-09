@@ -85,6 +85,8 @@ export function injectRitualStyles() {
   font-size: 17px; font-weight: 700; color: inherit; white-space: nowrap;
   transition: transform 200ms cubic-bezier(.22,.8,.3,1), opacity 200ms ease;
 }
+/* A layer on its way out must not be picked up as the current value. */
+.v-layer.exit { pointer-events: none; }
 
 /* ── Discipline carousel ────────────────────────────────────────────────── */
 /* No panel: the current discipline floats on the parchment with its faded
@@ -98,15 +100,17 @@ export function injectRitualStyles() {
 .oni-ritual-disc .arrow { font-size: 14px; color: var(--rt-wood-2); padding: 0 2px; opacity: .75; flex: none; }
 .oni-ritual-disc .arrow:hover { opacity: 1; color: var(--rt-wood-3); }
 .oni-ritual-disc.solo .arrow { visibility: hidden; }
-.disc-viewport { flex: 1; overflow: hidden; }
-/* Three equal slots; only the middle one is over the viewport at rest, so the
-   track is 300% wide and offset by one slot. */
+.disc-viewport { flex: 1; overflow: hidden; min-width: 0; }
+/* All THREE slots share the viewport, a third each, so the neighbours are on
+   screen either side of the current one. (A 300%-wide track offset by -100%
+   also centres the current slot, but parks the neighbours exactly off-stage.)
+   One scroll step therefore slides the track by a third of its own width. */
 .disc-track {
-  display: grid; grid-template-columns: repeat(3, 33.3333%);
-  width: 300%; transform: translateX(0); margin-left: -100%;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  width: 100%; transform: translateX(0);
 }
 .disc-slot {
-  display: flex; align-items: center; justify-content: center; gap: 9px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
   min-width: 0; padding: 2px 4px;
 }
 .disc-slot .disc-icon { width: 30px; height: 30px; object-fit: contain; flex: none; }
@@ -126,32 +130,39 @@ export function injectRitualStyles() {
 .oni-ritual-alt label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 
 /* ── Actions row: the material button, then Group Check as bare text ────── */
-.oni-ritual-actions { display: flex; align-items: center; gap: 14px; }
+.oni-ritual-actions { display: flex; align-items: center; justify-content: flex-start; gap: 14px; }
 
 /* The one button that should shout. Dark reddish-brown fill, vivid yellow
-   border, dark-brown label carved out with a yellow stroke. */
+   border, dark-brown label carved out with a yellow stroke.
+   The width:auto below is load-bearing: Foundry's core stylesheet sets
+   button { width: 100% }, which stretched this to the full row and shoved
+   Group Check off the right edge of the frame. flex:none does not stop it. */
 .oni-ritual-mat {
-  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
-  border: 2px solid #ffd84d; border-radius: 10px;
+  width: auto; flex: 0 0 auto;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 2px solid #ffd84d; border-radius: 9px;
   background: linear-gradient(180deg, #7d3428 0%, #57231b 100%);
-  color: #3b2a19; font: 800 15px "Signika", sans-serif; letter-spacing: .3px;
-  padding: 9px 16px; cursor: pointer; min-height: 44px; flex: none;
+  color: #3b2a19; font: 900 13.5px "Signika", sans-serif; letter-spacing: .2px;
+  padding: 6px 13px; cursor: pointer; min-height: 36px; line-height: 1;
   box-shadow: 0 3px 0 #3a1712, 0 5px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10);
   transition: transform .1s ease, box-shadow .12s ease;
 }
-.oni-ritual-mat span { -webkit-text-stroke: 1.1px #ffe14d; paint-order: stroke fill; }
+/* Thinner stroke, heavier glyph: a 1.1px stroke on a 15px face ate the
+   counters and the label read as a smudge. */
+.oni-ritual-mat span { -webkit-text-stroke: 0.5px #ffe14d; paint-order: stroke fill; }
 .oni-ritual-mat:hover { box-shadow: 0 3px 0 #3a1712, 0 0 14px var(--rt-glow); }
 .oni-ritual-mat:active { transform: translateY(2px); box-shadow: 0 1px 0 #3a1712; }
 .oni-ritual-mat.offered { background: linear-gradient(180deg, #8d4a24 0%, #6b3218 100%); }
-.oni-ritual-mat .mat-crystal { width: 26px; height: 26px; object-fit: contain; flex: none; }
+.oni-ritual-mat .mat-crystal { width: 22px; height: 22px; object-fit: contain; flex: none; }
 .oni-ritual-mat .mat-off {
-  margin-left: 8px; font-weight: 800; color: #bff5c2; -webkit-text-stroke: 0.8px #14421a;
+  margin-left: 7px; font-weight: 900; color: #bff5c2; -webkit-text-stroke: 0.4px #14421a;
 }
 
 /* Group Check: no panel. Bare text on the parchment, beside the button. */
 .oni-ritual-group {
-  display: inline-flex; align-items: center; gap: 9px;
+  display: inline-flex; align-items: center; gap: 9px; flex: 0 0 auto;
   cursor: pointer; user-select: none; padding: 6px 4px; border-radius: 6px;
+  white-space: nowrap;
 }
 .oni-ritual-group .tg-label { font-size: 14px; font-weight: 700; color: var(--rt-wood-3); }
 .oni-ritual-group.on .tg-label { color: var(--rt-ok); }
@@ -184,7 +195,13 @@ export function injectRitualStyles() {
 /* The cost is centred in the PANEL, not merely in the space the DL leaves —
    so the DL is taken out of flow and pinned right. */
 .oni-ritual-final .fin-mid { text-align: center; }
-.oni-ritual-final .fin-cost { font-size: 23px; font-weight: 800; line-height: 1.1; }
+/* Mind Points read as mana: blue, glowing, bold italic — and the glow is the
+   fastest read of "can I cast this", long before the shortage line is parsed. */
+.oni-ritual-final .fin-cost {
+  font-size: 32px; font-weight: 800; font-style: italic; line-height: 1.1;
+  color: #2f5fae;
+  text-shadow: 0 0 12px rgba(95,168,239,.75), 0 0 26px rgba(95,168,239,.35), 0 1px 1px rgba(0,0,0,.22);
+}
 .oni-ritual-final .fin-note { font-size: 11px; opacity: .85; margin-top: 1px; min-height: 13px; }
 .oni-ritual-final .fin-dl {
   position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
@@ -200,6 +217,10 @@ export function injectRitualStyles() {
 .oni-ritual-final.short .fin-note,
 .oni-ritual-final.short .dl-lbl,
 .oni-ritual-final.short .dl-val { color: var(--rt-bad); opacity: 1; }
+/* The blue mana glow becomes a red one — same weight, opposite meaning. */
+.oni-ritual-final.short .fin-cost {
+  text-shadow: 0 0 12px rgba(220,74,60,.75), 0 0 26px rgba(220,74,60,.35), 0 1px 1px rgba(0,0,0,.22);
+}
 
 /* ── Footer ─────────────────────────────────────────────────────────────── */
 /* No keyboard legend: the scheme is the same one the Healing HUD teaches, and

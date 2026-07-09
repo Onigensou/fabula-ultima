@@ -311,29 +311,43 @@ const RitualHUD = {
   /**
    * Slide + fade one text value out and the next in.
    *
-   * Two absolutely-stacked layers inside an overflow-hidden host: the outgoing
-   * one leaves against the scroll direction, the incoming one arrives with it.
+   * Absolutely-stacked layers inside an overflow-hidden host: the outgoing one
+   * leaves against the scroll direction, the incoming one arrives with it.
+   *
+   * Every layer that is not already leaving is retired, not just the first one.
+   * `querySelector` returns the FIRST `.v-layer` in DOM order, which during a
+   * fast scroll is the one already animating out — so retiring only that left
+   * each previous incoming layer parented forever, and the values visibly
+   * stacked on top of each other ("EMinore"). The `.exit` class is what makes
+   * "already leaving" observable.
    */
   _swapValue(host, text, dir) {
-    const old = host.querySelector(".v-layer");
+    const olds = [...host.querySelectorAll(".v-layer:not(.exit)")];
     const next = document.createElement("span");
     next.className = "v-layer";
     next.textContent = text;
-    if (!dir || !old) {
-      old?.remove();
+
+    if (!dir || !olds.length) {
+      host.querySelectorAll(".v-layer").forEach((l) => l.remove());
       host.appendChild(next);
       return;
     }
+
     next.style.transform = `translateX(${dir * 60}%)`;
     next.style.opacity = "0";
     host.appendChild(next);
     requestAnimationFrame(() => {
       next.style.transform = "translateX(0)";
       next.style.opacity = "1";
-      old.style.transform = `translateX(${-dir * 60}%)`;
-      old.style.opacity = "0";
+      for (const old of olds) {
+        old.style.transform = `translateX(${-dir * 60}%)`;
+        old.style.opacity = "0";
+      }
     });
-    setTimeout(() => old.remove(), SLIDE_MS + 40);
+    for (const old of olds) {
+      old.classList.add("exit");
+      setTimeout(() => old.remove(), SLIDE_MS + 40);
+    }
   },
 
   /**
@@ -396,13 +410,19 @@ const RitualHUD = {
     if (wrap.hidden) this._root.querySelector('[data-field="useAltAttrs"]').checked = false;
   },
 
+  /** The value currently ARRIVING in a host — never one that is on its way out. */
+  _liveLayerText(host) {
+    const live = host.querySelectorAll(".v-layer:not(.exit)");
+    return live.length ? live[live.length - 1].textContent : null;
+  },
+
   _renderPotencyArea(dir = 0) {
     const p = Object.values(POTENCY).find((x) => x.id === this._spec.potency);
     const a = Object.values(AREA).find((x) => x.id === this._spec.area);
     const pHost = this._root.querySelector("[data-potency-val]");
     const aHost = this._root.querySelector("[data-area-val]");
-    if (pHost.querySelector(".v-layer")?.textContent !== p.label) this._swapValue(pHost, p.label, dir);
-    if (aHost.querySelector(".v-layer")?.textContent !== a.label) this._swapValue(aHost, a.label, dir);
+    if (this._liveLayerText(pHost) !== p.label) this._swapValue(pHost, p.label, dir);
+    if (this._liveLayerText(aHost) !== a.label) this._swapValue(aHost, a.label, dir);
     pHost.closest(".oni-ritual-scroll").title = p.example;
     aHost.closest(".oni-ritual-scroll").title = a.example;
   },
