@@ -19,6 +19,7 @@
 import {
   CLOCK_TAG, CLOCK_HOOK, CLOCK_STATE, LIFECYCLE, VISIBILITY, POLE,
   CLOCK_SECTIONS_MIN, CLOCK_SECTIONS_MAX,
+  ATTRIBUTES, CLOCK_DL_DEFAULT, FAILURE_MODE,
 } from "./clock-const.js";
 import { preset, notchOwnerAt } from "./clock-model.js";
 import * as store from "./clock-store.js";
@@ -79,7 +80,42 @@ function injectManagerStyles() {
 .cm-close { margin-left: auto; cursor: pointer; opacity: .8; font-size: 20px; line-height: 1; padding: 0 4px; }
 .cm-close:hover { opacity: 1; }
 
+/* ── Tabs ─────────────────────────────────────────────────────────────── */
+.cm-tabs {
+  display: flex; gap: 0;
+  background: var(--cm-parch-3);
+  border-bottom: 2px solid var(--cm-wood-2);
+}
+.cm-tabbtn {
+  flex: 1 1 0; text-align: center; cursor: pointer; user-select: none;
+  padding: 8px 12px; font-size: 12px; font-weight: 700;
+  letter-spacing: .5px; text-transform: uppercase;
+  color: var(--cm-wood-2); opacity: .72;
+  border-right: 1px solid var(--cm-wood-1);
+  transition: background .12s ease, opacity .12s ease;
+}
+.cm-tabbtn:last-child { border-right: 0; }
+.cm-tabbtn:hover { opacity: 1; background: rgba(255,255,255,.35); }
+.cm-tabbtn.active {
+  opacity: 1; color: var(--cm-wood-3);
+  background: var(--cm-parch-2);
+  box-shadow: inset 0 -3px 0 var(--cm-gold-2);
+}
+
 .cm-body { overflow-y: auto; padding: 13px 16px 16px; background: var(--cm-parch-2); }
+
+.cm-sub {
+  font-size: 10px; font-weight: 400; letter-spacing: .2px;
+  text-transform: none; opacity: .7; margin-left: 6px;
+}
+.cm-lbl {
+  display: flex; flex-direction: column; gap: 3px;
+  font-size: 10px; letter-spacing: .4px; text-transform: uppercase;
+  color: var(--cm-wood-2);
+}
+.cm-check { flex-direction: row; align-items: center; gap: 6px; text-transform: none; font-size: 11px; }
+.cm-check input { width: auto; }
+.cm-fields-4 { margin-bottom: 4px; }
 
 .cm-row {
   background: var(--cm-parch-1);
@@ -208,32 +244,86 @@ function rowHtml(clock) {
 </div>`;
 }
 
-function newClockHtml() {
-  const shapes = [
-    ["progress", "Progress — players fill it to win"],
-    ["threat", "Threat — fills as players fail"],
-    ["teardown", "Teardown — starts full, players empty it"],
-    ["struggle", "Struggle — both sides push one axis"],
-  ];
+// ── Tab: Create ─────────────────────────────────────────────────────────────
+//
+// The tab the GM actually lives in. Once a clock exists, left/right-clicking its
+// panel drives it, so "Manage" is the exception rather than the rule — which is
+// why Create is first and opens by default.
+
+const SHAPES = [
+  ["progress", "Progress — players fill it to win"],
+  ["threat", "Threat — fills as players fail"],
+  ["teardown", "Teardown — starts full, players empty it"],
+  ["struggle", "Struggle — both sides push one axis"],
+];
+
+const attrOptions = (id) => `
+  <select id="${id}">
+    <option value="">Any</option>
+    ${ATTRIBUTES.map((x) => `<option value="${x}">${x}</option>`).join("")}
+  </select>`;
+
+function createTabHtml() {
   return `
-<div class="cm-new">
-  <h3>New clock</h3>
-  <div class="cm-fields">
-    <input id="cm-name" type="text" placeholder="Clock name" />
+<div class="cm-pane" data-pane="create">
+  <h3>Shape</h3>
+  <div class="cm-fields cm-fields-4">
+    <input id="cm-name" type="text" placeholder="Clock name" autocomplete="off" />
     <input id="cm-sections" type="number" min="${CLOCK_SECTIONS_MIN}" max="${CLOCK_SECTIONS_MAX}" value="6" title="Sections" />
-    <select id="cm-shape">${shapes.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join("")}</select>
-    <select id="cm-lifecycle">
+    <select id="cm-shape">${SHAPES.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join("")}</select>
+    <select id="cm-lifecycle" title="When this clock is swept">
       <option value="${LIFECYCLE.MANUAL}">Manual</option>
       <option value="${LIFECYCLE.COMBAT}">Combat</option>
       <option value="${LIFECYCLE.SCENE}">Scene</option>
     </select>
   </div>
+
+  <h3>Check <span class="cm-sub">rolled when a player clicks the panel</span></h3>
+  <div class="cm-fields cm-fields-4">
+    <label class="cm-lbl">Attribute A ${attrOptions("cm-attrA")}</label>
+    <label class="cm-lbl">Attribute B ${attrOptions("cm-attrB")}</label>
+    <label class="cm-lbl">Difficulty <input id="cm-dl" type="number" min="1" value="${CLOCK_DL_DEFAULT}" /></label>
+    <label class="cm-lbl cm-check">
+      <input id="cm-hiddenDl" type="checkbox" checked /> Hide DL
+    </label>
+  </div>
+
+  <h3>On a failed roll</h3>
+  <div class="cm-fields cm-fields-4">
+    <select id="cm-failMode">
+      <option value="${FAILURE_MODE.NONE}">Nothing happens</option>
+      <option value="${FAILURE_MODE.ERASE}">The clock moves the other way</option>
+    </select>
+    <label class="cm-lbl">Sections <input id="cm-failSections" type="number" min="1" value="1" disabled /></label>
+    <div></div><div></div>
+  </div>
+
   <div class="cm-foot">
-    <button class="cm-btn good" id="cm-create">Create</button>
-    <button class="cm-btn" id="cm-toggle-discarded">Show discarded</button>
+    <button class="cm-btn good" id="cm-create">Create clock</button>
+  </div>
+</div>`;
+}
+
+// ── Tab: Manage ─────────────────────────────────────────────────────────────
+
+function manageTabHtml(clocks, showDiscarded) {
+  const body = clocks.length
+    ? clocks.map(rowHtml).join("")
+    : `<div class="cm-empty">No clocks. Create one in the Create tab.</div>`;
+  return `
+<div class="cm-pane" data-pane="manage">
+  ${body}
+  <div class="cm-foot">
+    <button class="cm-btn" id="cm-toggle-discarded">${showDiscarded ? "Hide discarded" : "Show discarded"}</button>
     <button class="cm-btn danger" id="cm-purge" style="margin-left:auto">Purge discarded</button>
   </div>
 </div>`;
+}
+
+function tabsHtml(active) {
+  const tab = (id, label) =>
+    `<div class="cm-tabbtn ${active === id ? "active" : ""}" data-tab="${id}">${label}</div>`;
+  return `<div class="cm-tabs">${tab("create", "Create new clock")}${tab("manage", "Manage")}</div>`;
 }
 
 // ── The window ──────────────────────────────────────────────────────────────
@@ -241,6 +331,9 @@ function newClockHtml() {
 export const ClockManager = {
   _root: null,
   _showDiscarded: false,
+  // Create opens first: once a clock exists, its panel's left/right click drives
+  // it, so managing one by hand is the exception.
+  _tab: "create",
 
   get isOpen() { return Boolean(this._root?.isConnected); },
 
@@ -260,12 +353,19 @@ export const ClockManager = {
           <div class="cm-title">Clocks</div>
           <div class="cm-close" data-act="close">&times;</div>
         </div>
+        ${tabsHtml(this._tab)}
         <div class="cm-body"></div>
       </div>`;
     document.body.appendChild(root);
     this._root = root;
 
     root.addEventListener("click", (ev) => this._onClick(ev));
+    // The failure "sections" field is meaningless when nothing happens on a miss.
+    root.addEventListener("change", (ev) => {
+      if (ev.target.id !== "cm-failMode") return;
+      const n = root.querySelector("#cm-failSections");
+      if (n) n.disabled = ev.target.value !== FAILURE_MODE.ERASE;
+    });
     root.addEventListener("mousedown", (ev) => { if (ev.target === root) this.close(); });
     this._onKey = (ev) => { if (ev.key === "Escape") this.close(); };
     window.addEventListener("keydown", this._onKey);
@@ -286,21 +386,42 @@ export const ClockManager = {
 
   toggle() { this.isOpen ? this.close() : this.open(); },
 
+  /**
+   * Re-render the active pane.
+   *
+   * The Create pane is NOT re-rendered on clock changes — it holds half-typed
+   * user input, and blowing it away because some other clock ticked would be
+   * hostile. Only Manage reflects live state.
+   */
   render() {
     if (!this.isOpen) return;
-    const clocks = store.list({ includeDiscarded: this._showDiscarded });
     const body = this._root.querySelector(".cm-body");
-    body.innerHTML =
-      (clocks.length ? clocks.map(rowHtml).join("") : `<div class="cm-empty">No clocks. Create one below.</div>`)
-      + newClockHtml();
 
-    const toggle = body.querySelector("#cm-toggle-discarded");
-    if (toggle) toggle.textContent = this._showDiscarded ? "Hide discarded" : "Show discarded";
+    if (this._tab === "create") {
+      if (!body.querySelector('[data-pane="create"]')) body.innerHTML = createTabHtml();
+    } else {
+      const clocks = store.list({ includeDiscarded: this._showDiscarded });
+      body.innerHTML = manageTabHtml(clocks, this._showDiscarded);
+    }
+
+    for (const el of this._root.querySelectorAll(".cm-tabbtn")) {
+      el.classList.toggle("active", el.dataset.tab === this._tab);
+    }
+  },
+
+  _setTab(tab) {
+    if (this._tab === tab) return;
+    this._tab = tab;
+    this._root.querySelector(".cm-body").innerHTML = "";   // force a rebuild
+    this.render();
   },
 
   // ── Actions ───────────────────────────────────────────────────────────────
 
   async _onClick(ev) {
+    const tabBtn = ev.target.closest(".cm-tabbtn");
+    if (tabBtn) return this._setTab(tabBtn.dataset.tab);
+
     const btn = ev.target.closest("[data-act], #cm-create, #cm-purge, #cm-toggle-discarded");
     if (!btn) return;
 
@@ -335,21 +456,41 @@ export const ClockManager = {
 
   async _create() {
     const root = this._root;
-    const name = root.querySelector("#cm-name").value.trim();
+    const val = (id) => root.querySelector(id)?.value ?? "";
+    const name = val("#cm-name").trim();
     if (!name) { ui.notifications?.warn("Clocks: a clock needs a name."); return; }
 
-    const sections = Number(root.querySelector("#cm-sections").value) || 6;
-    const shape = root.querySelector("#cm-shape").value;
-    const lifecycle = root.querySelector("#cm-lifecycle").value;
+    const sections = Number(val("#cm-sections")) || 6;
+    const shape = val("#cm-shape");
+    const lifecycle = val("#cm-lifecycle");
+
+    // "" means Any — leave the attribute unset so the Check Requester's own
+    // default wins and the player picks.
+    const check = {
+      attrA: val("#cm-attrA") || null,
+      attrB: val("#cm-attrB") || null,
+      dl: Number(val("#cm-dl")) || CLOCK_DL_DEFAULT,
+      hiddenDl: Boolean(root.querySelector("#cm-hiddenDl")?.checked),
+    };
+    const failure = {
+      mode: val("#cm-failMode") || FAILURE_MODE.NONE,
+      sections: Number(val("#cm-failSections")) || 1,
+    };
 
     const build = preset[shape] ?? preset.progress;
     // `preset.*` validates and throws on a bad spec; the store assigns the id.
     let spec;
-    try { spec = build({ name, sections, lifecycle }); }
+    try { spec = build({ name, sections, lifecycle, check, failure }); }
     catch (e) { ui.notifications?.error(`Clocks: ${e.message}`); return; }
 
-    await this._guard(api().create(spec));
+    const made = await api().create(spec);
+    if (!made) { ui.notifications?.warn("Clocks: create was refused."); return; }
+
+    ui.notifications?.info(`Clocks: "${made.name}" created.`);
+    // Clear the name only. Section count, shape, DL and failure policy usually
+    // repeat across a batch of clocks; retyping them every time is friction.
     root.querySelector("#cm-name").value = "";
+    root.querySelector("#cm-name").focus();
   },
 
   /** Every write returns null when refused or a no-op; say so rather than silently doing nothing. */

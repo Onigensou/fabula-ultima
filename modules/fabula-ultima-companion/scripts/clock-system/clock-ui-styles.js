@@ -91,6 +91,8 @@ export function injectClockStyles() {
   --ck-blue-hi: #9fe0ff;
   --ck-red: #cf4034;
   --ck-red-hi: #ff9a8f;
+  --ck-clash: #f2cf7a;      /* warm amber where the beams meet — not white */
+  --ck-spark: #f7dda0;
 
   position: fixed;
   top: var(--ck-top, 12px);
@@ -227,10 +229,12 @@ export function injectClockStyles() {
   left: var(--ck-v, 50%);
   width: 26px; margin-left: -13px;
   pointer-events: none;
+  /* Warm amber rather than near-white: the two beams grind against each other,
+     they don't blow out the exposure. Softer core, narrower hot centre. */
   background:
-    radial-gradient(closest-side, rgba(255,255,255,.95), rgba(255,255,255,0) 70%),
-    linear-gradient(90deg, var(--ck-blue) 0%, #fff5d0 45%, #fff5d0 55%, var(--ck-red) 100%);
-  filter: blur(.4px) saturate(1.3);
+    radial-gradient(closest-side, rgba(255,232,170,.62), rgba(255,232,170,0) 72%),
+    linear-gradient(90deg, var(--ck-blue) 0%, var(--ck-clash) 46%, var(--ck-clash) 54%, var(--ck-red) 100%);
+  filter: blur(.4px) saturate(1.15);
   animation: oni-clash-jitter 220ms steps(2, jump-none) infinite,
              oni-clash-pulse 900ms ease-in-out infinite;
   transition: left var(--ck-advance, 480ms) cubic-bezier(.22,.8,.3,1);
@@ -249,8 +253,8 @@ export function injectClockStyles() {
 }
 /* The slow shove: the whole band swells and recedes, pushed back and forth. */
 @keyframes oni-clash-pulse {
-  0%, 100% { width: 24px; margin-left: -12px; filter: blur(.4px) saturate(1.3) brightness(1); }
-  50%      { width: 34px; margin-left: -17px; filter: blur(.6px) saturate(1.5) brightness(1.35); }
+  0%, 100% { width: 24px; margin-left: -12px; filter: blur(.4px) saturate(1.15) brightness(1); }
+  50%      { width: 34px; margin-left: -17px; filter: blur(.6px) saturate(1.3) brightness(1.14); }
 }
 
 /* Sparks thrown off where the beams meet. Each is one span with its own delay,
@@ -258,7 +262,7 @@ export function injectClockStyles() {
 .oni-clock-spark {
   position: absolute; top: 50%; left: var(--ck-v, 50%);
   width: 3px; height: 3px; border-radius: 50%;
-  background: #fff5d0; box-shadow: 0 0 5px 1px #ffe9a0;
+  background: var(--ck-spark); box-shadow: 0 0 4px 1px rgba(255,233,160,.7);
   pointer-events: none; opacity: 0; z-index: 3;
   transition: left var(--ck-advance, 480ms) cubic-bezier(.22,.8,.3,1);
   animation: oni-spark var(--sp-dur, 700ms) ease-out var(--sp-delay, 0ms) infinite;
@@ -369,10 +373,10 @@ const _SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 
 export const CLOCK_SFX = Object.freeze({
   CREATE:  { src: `${_SND}clock_create.ogg`,  volume: 0.8 },
-  ADVANCE: { src: `${_SND}clock_advance.ogg`, volume: 0.5 },
+  ADVANCE: { src: `${_SND}clock_advance.ogg`, volume: 0.4 },
   // Kept level with ADVANCE: they are the two halves of one gesture, and a
   // regress that is louder than an advance sounds like a bug.
-  REGRESS: { src: `${_SND}clock_regress.ogg`, volume: 0.5 },
+  REGRESS: { src: `${_SND}clock_regress.ogg`, volume: 0.4 },
   SUCCESS: { src: `${_SND}clock_success.ogg`, volume: 0.75 },
   FAILURE: { src: `${_SND}clock_failure.ogg`, volume: 0.75 },
 });

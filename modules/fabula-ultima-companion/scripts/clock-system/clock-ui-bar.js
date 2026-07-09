@@ -35,6 +35,16 @@ import { injectClockStyles, applyClockTune, playClockSfx, CLOCK_TUNE } from "./c
 import { playResolution, wireResolutionChat } from "./clock-ui-resolve.js";
 import { bindPanelClicks, clickHint } from "./clock-interaction.js";
 
+// Imported for its side effect (it installs the floating GM button on `ready`).
+//
+// NOT listed in module.json's `esmodules`, deliberately. Foundry's SERVER reads
+// that list when the world launches and hands the client a fixed set of module
+// scripts; a browser reload re-runs the same set. So a newly-added entry never
+// boots until the world is relaunched — which is exactly why this button kept
+// vanishing. Reaching it through an import from a file that IS in the manifest
+// makes it load on every boot, with no relaunch and no manifest edit.
+import "./clock-gm-button.js";
+
 const LAYER_ID = "oni-clock-layer";
 const SETTING_SHOW_BAR = "clockShowBar";
 
