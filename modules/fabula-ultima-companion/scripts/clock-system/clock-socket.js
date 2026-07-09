@@ -58,15 +58,15 @@ const OPS = Object.freeze({
   purgeDiscarded: () => store.purgeDiscarded(),
 });
 
-// Ops a non-GM may request. Players advance clocks and commit the result of a
-// check they rolled (that is the point of the system); they do not get to
-// create, delete, force-resolve, or sweep them.
+// Ops a non-GM may request. Players advance clocks; they do not get to create,
+// delete, force-resolve, or sweep them.
 //
-// `applyRoll` carries a die result the client produced. The GM re-runs the RAW
-// section math from it, but cannot know the dice were honest — exactly as it
-// cannot know a player read their own roll out loud correctly. The trust
-// boundary is the same one the table already has.
-export const PLAYER_OPS = Object.freeze(new Set(["advance", "applyCheck", "applyRoll"]));
+// `applyRoll` is deliberately NOT here. A player's panel click doesn't send a
+// die result — it asks the GM to run a Check Requester session (the Requester
+// is GM-orchestrated; see clock-interaction.js), and the GM commits the outcome
+// from dice rolled on its own client. So no client-supplied roll ever reaches
+// the registry.
+export const PLAYER_OPS = Object.freeze(new Set(["advance", "applyCheck"]));
 
 /** Exported so a headless test can prove the API never dispatches a typo. */
 export const OP_NAMES = Object.freeze(Object.keys(OPS));

@@ -33,7 +33,7 @@ import * as store from "./clock-store.js";
 import { clockTone, clockPercent } from "./clock-model.js";
 import { injectClockStyles, applyClockTune, playClockSfx, CLOCK_TUNE } from "./clock-ui-styles.js";
 import { playResolution, wireResolutionChat } from "./clock-ui-resolve.js";
-import { bindPanelClicks, clickHint } from "./clock-interaction.js";
+import { bindPanelClicks, clickHint, wireClockRolls } from "./clock-interaction.js";
 
 // Imported for its side effect (it installs the floating GM button on `ready`).
 //
@@ -340,6 +340,10 @@ export function wireClockBar() {
   // The chat card is not the bar: it stays wired even for a GM who turned the
   // on-screen gauge off. (It self-gates to the active GM.)
   wireResolutionChat();
+
+  // Players' panel clicks arrive here as socket requests; only the active GM
+  // acts on them. Registered on every client so a GM promoted mid-session works.
+  wireClockRolls();
 
   syncClockBar();
   console.debug(CLOCK_TAG, "bar wired");

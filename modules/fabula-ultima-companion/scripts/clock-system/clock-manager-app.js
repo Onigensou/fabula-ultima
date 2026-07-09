@@ -257,9 +257,11 @@ const SHAPES = [
   ["struggle", "Struggle — both sides push one axis"],
 ];
 
-const attrOptions = (id) => `
+// "" = leave it to the Check Requester, which uses DEX + MIG. It is NOT a
+// player choice: the Requester's panel has no attribute picker.
+const attrOptions = (id, fallback) => `
   <select id="${id}">
-    <option value="">Any</option>
+    <option value="">Default (${fallback})</option>
     ${ATTRIBUTES.map((x) => `<option value="${x}">${x}</option>`).join("")}
   </select>`;
 
@@ -280,8 +282,8 @@ function createTabHtml() {
 
   <h3>Check <span class="cm-sub">rolled when a player clicks the panel</span></h3>
   <div class="cm-fields cm-fields-4">
-    <label class="cm-lbl">Attribute A ${attrOptions("cm-attrA")}</label>
-    <label class="cm-lbl">Attribute B ${attrOptions("cm-attrB")}</label>
+    <label class="cm-lbl">Attribute A ${attrOptions("cm-attrA", "DEX")}</label>
+    <label class="cm-lbl">Attribute B ${attrOptions("cm-attrB", "MIG")}</label>
     <label class="cm-lbl">Difficulty <input id="cm-dl" type="number" min="1" value="${CLOCK_DL_DEFAULT}" /></label>
     <label class="cm-lbl cm-check">
       <input id="cm-hiddenDl" type="checkbox" checked /> Hide DL

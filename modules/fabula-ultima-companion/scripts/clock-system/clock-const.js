@@ -33,6 +33,11 @@ export const CLOCK_CHANNEL = `module.${CLOCK_MODULE_ID}`;
 export const CLOCK_SOCKET = Object.freeze({
   REQ: "clock.mutate.req",
   RES: "clock.mutate.res",
+  // A player asking the GM to run a Check Requester session for their clock
+  // click. Fire-and-forget: the roll can take a minute (invokes, confirm), far
+  // longer than the mutate envelope's timeout, and the player's bar updates
+  // from the registry diff anyway. See clock-interaction.js.
+  ROLL_REQ: "clock.roll.req",
 });
 
 // ── Hook names — the decoupling seam ────────────────────────────────────────
@@ -118,8 +123,9 @@ export const CLOCK_HISTORY_MAX = 50;
 // ── Check defaults (panel-click → Check Requester) ──────────────────────────
 //
 // A clock may declare the attribute pair and Difficulty Level its checks use.
-// `null` attributes mean "any": the Requester falls back to its own defaults and
-// the player picks. A clock with nothing declared still works.
+// A `null` attribute means "use the Check Requester's default" (DEX / MIG) — it
+// is NOT a player choice; the Requester's panel has no attribute picker. A clock
+// with nothing declared still works, it just rolls DEX + MIG at DL 10.
 export const ATTRIBUTES = Object.freeze(["MIG", "DEX", "INS", "WLP"]);
 export const CLOCK_DL_DEFAULT = 10;
 
