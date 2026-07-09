@@ -194,11 +194,26 @@ convention.
 `clock-ui-bar.js`, `clock-manager-app.js`, `clock-automation.js` — so the engine
 boots before its consumers. Everything else is pulled in by import.
 
+> **Adding a NEW file to `esmodules` needs a world relaunch, not an F5.** The
+> Foundry *server* reads `module.json` when the world launches and hands the
+> client that list; a browser reload re-runs the same four scripts. Symptom: your
+> new file's `Hooks.once("ready")` never fires and `game.modules.get(id).esmodules`
+> doesn't contain it. Editing an *existing* esmodule is fine with a reload.
+
 ### Tuning
 
-Layout lives in `CLOCK_TUNE` (`clock-ui-styles.js`) and is applied as CSS custom
-properties, so it can be dialled in live and then baked into the defaults:
-`layerTop`, `barWidth`, `barHeight`, `notchGap`, `tickStaggerMs`, `compactAt`.
+Layout and choreography live in `CLOCK_TUNE` (`clock-ui-styles.js`), applied as
+CSS custom properties so they can be dialled in live and then baked into the
+defaults:
+
+| | |
+|---|---|
+| Layout | `layerTop`, `layerGap`, `panelWidth`, `panelHeight`, `barHeight` |
+| Type | `nameSize`, `pctSize`, `gearSize` |
+| Spawn (3 beats) | `gearInMs` → `panelInMs` → `barFillMs` |
+| Live change | `advanceMs` |
+| Finality | `holdMs` (5000) |
+| Exit | `outMs`, `reflowMs` |
 
 ---
 
@@ -256,22 +271,47 @@ await api.applyCheck(rift.id, { result: 8, difficulty: 10, isFumble: false });
 
 ## 10. The UI
 
-A JRPG segmented gauge — discrete notches, like a boss stagger bar. Stacked
-top-center, collapsing to a compact strip past four clocks. Sections land **one
-at a time** with a tick, because "two sections" is the unit the rules speak in
-and the player should feel both. The renderer keeps its own `shown` value and
-walks it toward the real one, so a change arriving mid-animation retargets
-rather than stacking.
+A warm parchment plate docked to the **top right**, hanging off
+`--fu-sidebar-anchor-right` so the stack tracks the chat sidebar frame-by-frame
+as it expands and collapses. (That var is republished by a `ResizeObserver` in
+`custom-ui/sidebar-anchor.js`; Foundry's own `collapseSidebar` hook fires only
+*after* the width animation finishes, which would snap rather than track.)
 
-The colour rule is `notchOwnerAt` (§1), and it lives in the model, not the
-renderer — so the bar and the manager's mini-gauge cannot disagree about what a
-clock looks like, and all four shapes are under test rather than eyeballed.
+```
+  [ Ambushed! ]                 ← floating name tab, overhangs the panel
+  ┌───────────────────────┐  ⚙  ← brass gear, right of the panel
+  │ ████████░░░░░░░  50%  │
+  └───────────────────────┘
+```
+
+**One continuous fill bar, not discrete notches**, reading a whole percentage
+**rounded up**. The user chose legibility over literalism, and rounding up is
+what makes it honest: any progress at all shows above 0%, and only a truly full
+clock reads 100%. Sections still govern everything underneath — the bar is a
+view of `value / sections`.
+
+**The glow says what kind of clock it is** — `clockTone` (§1): red threat, blue
+progress, blue→red gradient for a two-poled contest. Derived from the poles, so
+it can't disagree with how the clock behaves. A teardown clock reads as
+`progress`: its pole is a player success, and counting down is a rendering
+detail.
+
+**Choreography.** Spawn is three beats — the gear fades in, the panel slides in
+from the right, then the bar fills to its starting value. Resolution flares the
+panel, turns the gear, holds **five seconds**, then exits. Exit is one beat:
+everything slides and fades together. When a clock leaves, the survivors FLIP
+upward, so the stack always reforms toward the top.
+
+`clockTone` and `clockPercent` live in the pure model beside `notchOwnerAt`, so
+the tones and the rounding rule are tested rather than eyeballed.
 
 Turn it off with the client setting **"Show the clock bar"**. Resolution chat
 cards stay wired regardless, and self-gate to the active GM so a six-client
-table sees one card.
+table sees one card. The card carries **no speaker** — a clock has no voice — and
+hides Foundry's message header via `:has(.oni-clock-card)`.
 
-**GM manager**: `FUCompanion.api.clocks.manager.open()`.
+**GM manager**: the clock button in the right-edge column, or
+`FUCompanion.api.clocks.manager.open()`.
 
 ---
 
