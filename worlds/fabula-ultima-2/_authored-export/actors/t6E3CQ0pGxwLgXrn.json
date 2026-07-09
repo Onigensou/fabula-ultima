@@ -717,78 +717,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "5Kt5YMTdrUfblDI4",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783398959052,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "recipe",
-            "fromTemplate": "VJCHYWOx1mPsMSip",
-            "itemId": "H4XNJ67N8XSVnRcj",
-            "itemName": "Elixir",
-            "pickedOldProps": {
-              "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
-              "recipe_flavor": "",
-              "recipe_ip": "3",
-              "recipe_label": ""
-            },
-            "ts": 1769647435537
-          }
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
-      "name": "Elixir",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "description": "<p>Target creature recovers 50 Mind Points.</p>",
-          "ip_cost": "3",
-          "isRelatedItem": false,
-          "item_skill_active": {
-            "nTD1ZUzaAOV9TGT8": {
-              "id": "${item.id}",
-              "name": "Elixir",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.nTD1ZUzaAOV9TGT8"
-            }
-          },
-          "item_type": "recipe",
-          "name": "Elixir",
-          "related_item_list": {
-            "nTD1ZUzaAOV9TGT8": {
-              "id": "${item.id}",
-              "name": "Elixir",
-              "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
-              "uuid": "Item.nTD1ZUzaAOV9TGT8"
-            }
-          }
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "NlUsrJJRcIOWJVWc"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "AcMJCQfYI0ZH76h6",
       "_stats": {
         "compendiumSource": null,
@@ -848,6 +776,14 @@
               "skill_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
               "skill_maxLevel": 1,
               "uuid": "Item.nTD1ZUzaAOV9TGT8"
+            },
+            "rEEtv35hOJCY48R4": {
+              "id": "${item.id}",
+              "name": "Elixir",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": ""
             }
           },
           "item_type": "recipe",
@@ -864,6 +800,12 @@
               "name": "Elixir",
               "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
               "uuid": "Item.nTD1ZUzaAOV9TGT8"
+            },
+            "rEEtv35hOJCY48R4": {
+              "id": "${item.id}",
+              "name": "Elixir",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
+              "uuid": ""
             }
           }
         },
@@ -1674,6 +1616,14 @@
               "skill_maxLevel": 1,
               "uuid": "Item.jNN7WCFgjvU9wXr4"
             },
+            "tvHxQ2h9j1KuwlIO": {
+              "id": "${item.id}",
+              "name": "Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": ""
+            },
             "up1sbEZUSPX4kxID": {
               "id": "${item.id}",
               "name": "Remedy",
@@ -1691,6 +1641,12 @@
               "name": "Remedy",
               "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
               "uuid": "Item.jNN7WCFgjvU9wXr4"
+            },
+            "tvHxQ2h9j1KuwlIO": {
+              "id": "${item.id}",
+              "name": "Remedy",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
+              "uuid": ""
             },
             "up1sbEZUSPX4kxID": {
               "id": "${item.id}",
@@ -3224,78 +3180,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "KN5J6FFhqRHsyWGF",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783398959052,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "recipe",
-            "fromTemplate": "VJCHYWOx1mPsMSip",
-            "itemId": "H4XNJ67N8XSVnRcj",
-            "itemName": "Elixir",
-            "pickedOldProps": {
-              "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
-              "recipe_flavor": "",
-              "recipe_ip": "3",
-              "recipe_label": ""
-            },
-            "ts": 1769647435537
-          }
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
-      "name": "Remedy",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "description": "<p>Target creature recovers 50 Hit Points.</p>",
-          "ip_cost": "3",
-          "isRelatedItem": false,
-          "item_skill_active": {
-            "jNN7WCFgjvU9wXr4": {
-              "id": "${item.id}",
-              "name": "Remedy",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.jNN7WCFgjvU9wXr4"
-            }
-          },
-          "item_type": "recipe",
-          "name": "Remedy",
-          "related_item_list": {
-            "jNN7WCFgjvU9wXr4": {
-              "id": "${item.id}",
-              "name": "Remedy",
-              "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
-              "uuid": "Item.jNN7WCFgjvU9wXr4"
-            }
-          }
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "G2cjE5FjEIntUewf"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "KSepKK2J2itbHUUK",
       "_stats": {
         "compendiumSource": null,
@@ -3622,6 +3506,61 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "yVFJkol5V9OWvceZ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NxXbRDaJ9x6qYtly",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783621013836,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/531.gif",
+      "name": "Apple Juice",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "32IdnR3tifOIbDCD",
+        "props": {
+          "cost": "-",
+          "description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "applejuice_heal",
+              "grant_amount": "30",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
+          "id": "NxXbRDaJ9x6qYtly",
+          "isCheck": false,
+          "name": "Apple Juice",
+          "on_activate_effect_ref": "applejuice_heal",
+          "skill_tags": "potion",
+          "skill_target": "One Ally",
+          "skill_type": "Item",
+          "type_damage": "",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.NxXbRDaJ9x6qYtly"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "FgLDNOvQyYbNqlV8"
       },
       "type": "equippableItem"
     },
@@ -4611,6 +4550,74 @@
       "type": "equippableItem"
     },
     {
+      "_id": "rEEtv35hOJCY48R4",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1783620130771,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "name": "Elixir",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "AcMJCQfYI0ZH76h6",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "50",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "id": "rEEtv35hOJCY48R4",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Elixir",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "MP",
+          "use_optional_params": false,
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.rEEtv35hOJCY48R4"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "Y8MD5DnW2rHkhxIV"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "rsQehCmVCCnx0J3G",
       "_stats": {
         "compendiumSource": null,
@@ -5054,6 +5061,74 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "cSynFyjRWqRbgrZx"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "tvHxQ2h9j1KuwlIO",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1783620130771,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "name": "Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "ERZjg9YBPVLk6nsc",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "50",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
+          "duration": "Instnataneous",
+          "heroic_requirement": "",
+          "id": "tvHxQ2h9j1KuwlIO",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Remedy",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "Heal",
+          "use_optional_params": false,
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.tvHxQ2h9j1KuwlIO"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "uFoFmcWMN4tVtaeA"
       },
       "type": "equippableItem"
     },

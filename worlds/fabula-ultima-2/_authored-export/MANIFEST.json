@@ -4727,12 +4727,6 @@
         "effects": 0
       },
       {
-        "id": "5K7TTYa2uNQcmaEJ",
-        "name": "Elemental Shard",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "dQq1DsQ1nkurbQlG",
         "name": "Elemental Shard",
         "type": "equippableItem",
@@ -4830,12 +4824,6 @@
       },
       {
         "id": "C1sbMzuHM6lA5u8q",
-        "name": "Elixir",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "H4XNJ67N8XSVnRcj",
         "name": "Elixir",
         "type": "equippableItem",
         "effects": 0
@@ -9263,12 +9251,6 @@
         "effects": 0
       },
       {
-        "id": "vfHGsdplGlAOzKNF",
-        "name": "Remedy",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "bLDsPMvsYMlv5hJA",
         "name": "Remedy Lily",
         "type": "equippableItem",
@@ -11100,12 +11082,6 @@
       },
       {
         "id": "oeVIkRiMnPERPb7W",
-        "name": "Tonic",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "zR8XK1LQJdxKOx9D",
         "name": "Tonic",
         "type": "equippableItem",
         "effects": 0
@@ -14993,6 +14969,10 @@
             "name": "Apple"
           },
           {
+            "id": "NxXbRDaJ9x6qYtly",
+            "name": "Apple Juice"
+          },
+          {
             "id": "32IdnR3tifOIbDCD",
             "name": "Apple Juice Recipe"
           },
@@ -15053,11 +15033,11 @@
             "name": "Elemental Shard"
           },
           {
-            "id": "5Kt5YMTdrUfblDI4",
+            "id": "AcMJCQfYI0ZH76h6",
             "name": "Elixir"
           },
           {
-            "id": "AcMJCQfYI0ZH76h6",
+            "id": "rEEtv35hOJCY48R4",
             "name": "Elixir"
           },
           {
@@ -15125,7 +15105,7 @@
             "name": "Remedy"
           },
           {
-            "id": "KN5J6FFhqRHsyWGF",
+            "id": "tvHxQ2h9j1KuwlIO",
             "name": "Remedy"
           },
           {
