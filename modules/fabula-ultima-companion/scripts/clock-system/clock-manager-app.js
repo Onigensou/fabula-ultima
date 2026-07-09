@@ -112,7 +112,7 @@ function injectManagerStyles() {
 
 .cm-controls { display: flex; flex-wrap: wrap; gap: 6px; }
 .cm-btn {
-  /* Foundry's core stylesheet sets `button { width: 100% }`, which stacked every
+  /* Foundry's core stylesheet sets button { width: 100% }, which stacked every
      control on its own full-width row. Size to content instead. */
   width: auto; flex: 0 0 auto; line-height: normal; height: auto;
   cursor: pointer; user-select: none;

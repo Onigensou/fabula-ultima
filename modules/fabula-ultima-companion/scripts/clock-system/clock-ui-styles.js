@@ -147,8 +147,8 @@ export function injectClockStyles() {
 
 /* Floating name tab, overhanging the panel's top-left corner.
  *
- * The outline is built from text-shadow, NOT `-webkit-text-stroke` +
- * `paint-order: stroke fill`. Chromium only honours `paint-order` on HTML text
+ * The outline is built from text-shadow, NOT -webkit-text-stroke +
+ * paint-order: stroke fill. Chromium only honours paint-order on HTML text
  * from v128; before that it PARSES the property (so CSS.supports() answers
  * "yes") but paints the stroke over the fill, which turns light-stroked dark
  * text into an illegible blob. The Foundry desktop app is Electron 29 /
