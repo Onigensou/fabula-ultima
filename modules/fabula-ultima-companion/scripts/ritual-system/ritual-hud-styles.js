@@ -107,7 +107,8 @@ export function injectRitualStyles() {
    One scroll step therefore slides the track by a third of its own width. */
 .disc-track {
   display: grid; grid-template-columns: repeat(3, 1fr);
-  width: 100%; transform: translateX(0);
+  width: 100%; transform: translate3d(0,0,0);
+  backface-visibility: hidden;   /* keeps the promoted layer off the fractional-pixel path */
 }
 .disc-slot {
   display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -142,14 +143,20 @@ export function injectRitualStyles() {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   border: 2px solid #ffd84d; border-radius: 9px;
   background: linear-gradient(180deg, #7d3428 0%, #57231b 100%);
-  color: #3b2a19; font: 900 13.5px "Signika", sans-serif; letter-spacing: .2px;
-  padding: 6px 13px; cursor: pointer; min-height: 36px; line-height: 1;
+  color: #3b2a19; font: 900 14.5px "Signika", sans-serif; letter-spacing: .3px;
+  padding: 6px 14px; cursor: pointer; min-height: 36px; line-height: 1;
   box-shadow: 0 3px 0 #3a1712, 0 5px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10);
   transition: transform .1s ease, box-shadow .12s ease;
 }
-/* Thinner stroke, heavier glyph: a 1.1px stroke on a 15px face ate the
-   counters and the label read as a smudge. */
-.oni-ritual-mat span { -webkit-text-stroke: 0.5px #ffe14d; paint-order: stroke fill; }
+/* Dark brown on dark red only separates BECAUSE of the yellow edge, so thinning
+   the stroke has to buy the contrast back somewhere. A hairline stroke keeps the
+   letter counters open, and a tight yellow glow restores the edge the stroke
+   used to provide. */
+.oni-ritual-mat span {
+  -webkit-text-stroke: 0.25px #ffe14d; paint-order: stroke fill;
+  font-weight: 900;
+  text-shadow: 0 0 3px rgba(255,225,77,.75), 0 0 6px rgba(255,216,77,.45);
+}
 .oni-ritual-mat:hover { box-shadow: 0 3px 0 #3a1712, 0 0 14px var(--rt-glow); }
 .oni-ritual-mat:active { transform: translateY(2px); box-shadow: 0 1px 0 #3a1712; }
 .oni-ritual-mat.offered { background: linear-gradient(180deg, #8d4a24 0%, #6b3218 100%); }

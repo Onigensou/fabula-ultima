@@ -54,9 +54,12 @@ const ROWS = ["discipline", "potency", "area", "material", "group", "intent", "c
 // and ←/→ moves between the pair instead of scrolling.
 const ROW_PAIRS = { potency: "area", area: "potency", material: "group", group: "material" };
 
-// Slide/roll timings. SLIDE_MS must match the CSS transition on .disc-track and
-// .v-layer, or a rebuild lands mid-animation and the value visibly jumps.
+// Slide/roll timings. SLIDE_MS must match the CSS transition on .v-layer, or a
+// rebuild lands mid-animation and the value visibly jumps. The carousel runs a
+// touch longer and drives itself off `transitionend`, so it has no such
+// coupling — DISC_SLIDE_MS only feeds the inline transition it sets.
 const SLIDE_MS = 200;
+const DISC_SLIDE_MS = 280;
 const ROLL_MS = 260;
 
 const RitualHUD = {
@@ -361,19 +364,45 @@ const RitualHUD = {
   _slideDiscipline(newId, dir) {
     const track = this._root.querySelector("[data-disc-track]");
     this._discAnim = true;
-    track.style.transition = `transform ${SLIDE_MS}ms cubic-bezier(.22,.8,.3,1)`;
-    track.style.transform = `translateX(${-dir * (100 / 3)}%)`;
 
-    setTimeout(() => {
+    // Land the rebuild on the real `transitionend` rather than a setTimeout
+    // racing it: a timer that fires a frame early snaps the track back while
+    // the compositor is still easing, which is what read as chop. The timeout
+    // survives only as a safety net for a transition that never fires (the
+    // element was hidden, the user tabbed away).
+    let settled = false;
+    const settle = () => {
+      if (settled) return;
+      settled = true;
+      track.removeEventListener("transitionend", onEnd);
+
       this._spec.discipline = newId;
       this._spec.useAltAttrs = false;
       track.style.transition = "none";
-      track.style.transform = "translateX(0)";
+      track.style.transform = "translate3d(0,0,0)";
       this._paintDiscipline();
       // Re-enable the transition only after the snap has been painted, or the
       // browser animates the snap itself and the carousel jitters backwards.
-      requestAnimationFrame(() => { track.style.transition = ""; this._discAnim = false; });
-    }, SLIDE_MS);
+      requestAnimationFrame(() => {
+        track.style.transition = "";
+        track.style.willChange = "";
+        this._discAnim = false;
+      });
+    };
+    const onEnd = (ev) => { if (ev.propertyName === "transform") settle(); };
+    track.addEventListener("transitionend", onEnd);
+    setTimeout(settle, DISC_SLIDE_MS + 120);
+
+    // Promote to its own layer before animating, and move on the compositor:
+    // translate3d avoids the per-frame layout+repaint that plain translateX on
+    // a grid of images was costing.
+    track.style.willChange = "transform";
+    // A frame between "promote" and "move" — setting both in one paint means the
+    // first animated frame is also the frame that uploads the new layer.
+    requestAnimationFrame(() => {
+      track.style.transition = `transform ${DISC_SLIDE_MS}ms cubic-bezier(0.33, 0.0, 0.15, 1.0)`;
+      track.style.transform = `translate3d(${-dir * (100 / 3)}%, 0, 0)`;
+    });
   },
 
   _discSlotHtml(id, cls) {
@@ -522,7 +551,7 @@ const RitualHUD = {
     this._rollNumber(this._root.querySelector("[data-fin-dl]"), "dl", cost.dl);
 
     const note = this._root.querySelector("[data-fin-note]");
-    if (!affordable) note.textContent = `${short} MP short — ${mp} of ${cost.mp}`;
+    if (!affordable) note.textContent = `${short} MP short`;
     else if (cost.saved > 0) note.textContent = `${cost.saved} MP saved by the offering`;
     else note.textContent = "";
 
