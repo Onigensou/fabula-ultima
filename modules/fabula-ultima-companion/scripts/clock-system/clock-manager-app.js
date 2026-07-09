@@ -300,13 +300,11 @@ export const ClockManager = {
     const lifecycle = root.querySelector("#cm-lifecycle").value;
 
     const build = preset[shape] ?? preset.progress;
-    // `preset.*` validates and would throw on a bad spec; `id` is filled in by
-    // the store, so hand it a placeholder to satisfy makeClock's check.
+    // `preset.*` validates and throws on a bad spec; the store assigns the id.
     let spec;
-    try { spec = build({ id: "pending", name, sections, lifecycle }); }
+    try { spec = build({ name, sections, lifecycle }); }
     catch (e) { ui.notifications?.error(`Clocks: ${e.message}`); return; }
 
-    delete spec.id;
     await this._guard(api().create(spec));
     root.querySelector("#cm-name").value = "";
   },

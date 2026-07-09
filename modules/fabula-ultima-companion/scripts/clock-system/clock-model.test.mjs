@@ -48,6 +48,24 @@ eq("struggle odd sections centers low", strugOdd.value, 3);
 const strugExplicit = preset.struggle({ id: "s3", name: "Explicit", sections: 8, value: 6 });
 eq("struggle explicit value wins", strugExplicit.value, 6);
 
+// ── preset labels (caught live: an explicit `poles` was silently discarded) ─
+eq("successLabel reaches the pole", preset.progress({ id: "l1", name: "n", successLabel: "We escape!" }).poles.high.label, "We escape!");
+eq("failureLabel reaches the pole", preset.threat({ id: "l2", name: "n", failureLabel: "They find you" }).poles.high.label, "They find you");
+eq("struggle takes both labels",
+  [preset.struggle({ id: "l3", name: "n", successLabel: "Stopped", failureLabel: "Rift" }).poles.high.label,
+   preset.struggle({ id: "l4", name: "n", successLabel: "Stopped", failureLabel: "Rift" }).poles.low.label],
+  ["Stopped", "Rift"]);
+
+const explicit = preset.teardown({
+  id: "l5", name: "Ceiling",
+  poles: { low: { side: "players", outcome: "success", label: "It collapses!" } },
+});
+eq("an explicit poles override WINS over the preset default", explicit.poles.low.label, "It collapses!");
+eq("...and the preset's other pole is respected too", explicit.poles.high, null);
+eq("an explicit poles override on a threat clock", preset.threat({
+  id: "l6", name: "n", poles: { low: { side: "gm", outcome: "failure", label: "Doom" } },
+}).poles.low.label, "Doom");
+
 // ── direction: the core claim ─────────────────────────────────────────────
 eq("players push progress UP", signFor(prog, SIDE.PLAYERS), +1);
 eq("gm has no pole on progress", signFor(prog, SIDE.GM), 0);
@@ -148,6 +166,16 @@ eq("struggle won: all players", strip(strug, 8), "pppppppp");
 
 // ── validation ────────────────────────────────────────────────────────────
 const throws = (fn) => { try { fn(); return false; } catch { return true; } };
+
+// The id belongs to the STORE, not the model — a preset must be buildable
+// before it is ever persisted, which is exactly how api.create() is documented
+// to be called. (Caught live: `preset.threat({name})` used to throw.)
+eq("a preset builds with no id", throws(() => preset.threat({ name: "Ambushed!" })), false);
+eq("...and its id is null until stored", preset.threat({ name: "Ambushed!" }).id, null);
+eq("makeClock needs no id", makeClock({ name: "n", poles: { high: { side: "gm" } } }).id, null);
+eq("reviveClock REJECTS a record with no id", M.reviveClock({ name: "n", poles: { high: { side: "gm" } } }), null);
+eq("reviveClock accepts one with an id", M.reviveClock({ id: "z", name: "n", poles: { high: { side: "gm" } } })?.id, "z");
+
 eq("no poles rejected", throws(() => makeClock({ id: "x", name: "n", poles: {} })), true);
 eq("same side on both poles rejected", throws(() => makeClock({
   id: "x", name: "n",

@@ -70,11 +70,19 @@ function normalizeGroup(spec) {
 // ── Construction ────────────────────────────────────────────────────────────
 
 /**
- * Build a validated clock from a loose spec. `id` is supplied by the store
- * (this module never touches foundry.utils.randomID — it stays pure).
+ * Build a validated clock from a loose spec.
+ *
+ * `id` is OPTIONAL here and is assigned by the store on create — this module
+ * never touches foundry.utils.randomID, it stays pure. That means a preset can
+ * be built and inspected before it is ever persisted:
+ *
+ *     await api.create(api.preset.threat({ name: "Ambushed!" }));
+ *
+ * `reviveClock` does require an id, because a record read back out of the
+ * registry without one is corrupt.
  *
  * @param {object} spec
- * @param {string} spec.id
+ * @param {string} [spec.id]      assigned by the store when absent
  * @param {string} spec.name
  * @param {number} [spec.sections=6]
  * @param {number} [spec.value]           defaults to 0, or `sections` when only
@@ -87,8 +95,7 @@ function normalizeGroup(spec) {
  * @param {object[]} [spec.automation]    trigger rows; matched in phase 7
  */
 export function makeClock(spec = {}) {
-  const id = String(spec.id ?? "").trim();
-  if (!id) bad("id is required");
+  const id = String(spec.id ?? "").trim() || null;
 
   const name = String(spec.name ?? "").trim();
   if (!name) bad("name is required");
@@ -154,6 +161,7 @@ export function makeClock(spec = {}) {
  */
 export function reviveClock(raw) {
   if (!raw || typeof raw !== "object") return null;
+  if (!raw.id) return null;   // a persisted record without an id is corrupt
   try {
     const base = makeClock(raw);
     return {
@@ -371,24 +379,35 @@ export function applyDiscard(clock, { cause = null, at = Date.now() } = {}) {
 // ── Presets ─────────────────────────────────────────────────────────────────
 // Sugar over `makeClock` for the four canonical shapes. Nothing the engine
 // treats specially — each is just a pole configuration.
+//
+// Label a pole either way, whichever reads better at the call site:
+//
+//     preset.teardown({ name: "Ceiling", successLabel: "It collapses!" })
+//     preset.teardown({ name: "Ceiling", poles: { low: { side: "players",
+//                       outcome: "success", label: "It collapses!" } } })
+//
+// An explicit `poles` WINS. It used to be silently discarded — the presets
+// spread `...spec` before their own `poles` key, so a caller who passed poles
+// got the default back with no error and a generic banner. Caught in the first
+// live demo.
 
 export const preset = Object.freeze({
   /** Players work toward something. Fills from empty; full = they win. */
   progress: (spec) => makeClock({
     sections: CLOCK_SECTIONS_DEFAULT, ...spec,
-    poles: { high: { side: SIDE.PLAYERS, outcome: OUTCOME.SUCCESS, label: spec?.successLabel }, low: null },
+    poles: spec?.poles ?? { high: { side: SIDE.PLAYERS, outcome: OUTCOME.SUCCESS, label: spec?.successLabel }, low: null },
   }),
 
   /** A danger closing in. Fills as the players fail; full = they lose. */
   threat: (spec) => makeClock({
     sections: 4, ...spec,
-    poles: { high: { side: SIDE.GM, outcome: OUTCOME.FAILURE, label: spec?.failureLabel }, low: null },
+    poles: spec?.poles ?? { high: { side: SIDE.GM, outcome: OUTCOME.FAILURE, label: spec?.failureLabel }, low: null },
   }),
 
   /** Players tear something down. Starts full; empty = they win. */
   teardown: (spec) => makeClock({
     sections: CLOCK_SECTIONS_DEFAULT, ...spec,
-    poles: { high: null, low: { side: SIDE.PLAYERS, outcome: OUTCOME.SUCCESS, label: spec?.successLabel } },
+    poles: spec?.poles ?? { high: null, low: { side: SIDE.PLAYERS, outcome: OUTCOME.SUCCESS, label: spec?.successLabel } },
   }),
 
   /** Both sides push the same axis. Starts centered unless told otherwise. */
@@ -400,7 +419,7 @@ export const preset = Object.freeze({
       // Centered by default — `makeClock` would otherwise start a two-poled
       // clock at 0, which is the GM already having won.
       value: spec?.value ?? Math.floor(sections / 2),
-      poles: {
+      poles: spec?.poles ?? {
         high: { side: SIDE.PLAYERS, outcome: OUTCOME.SUCCESS, label: spec?.successLabel },
         low:  { side: SIDE.GM,      outcome: OUTCOME.FAILURE, label: spec?.failureLabel },
       },

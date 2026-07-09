@@ -3,9 +3,25 @@
 Automates Fabula Ultima Clocks (core rulebook pp. 52–55) as a reusable API.
 The bundled UI is optional; the engine has no idea it exists.
 
-Status: **all eight phases complete.** Verified headlessly (160 assertions);
-**not yet run in a live world** — awaiting a play session for smoke test and
-visual tuning.
+Status: **all eight phases complete and live-tested.** 171 headless assertions
+plus 63 assertions run against a live Foundry client (engine, rendering,
+resolution, groups, sweeps, and the Battle Director bridge). Remaining: visual
+tuning, and the player-client half of the socket (a real non-GM login).
+
+Two bugs the headless suite could not have caught, both found in the first ten
+minutes of live use, both now pinned by tests:
+
+1. `makeClock` required an `id`, but the id is assigned by the store on create —
+   so `api.create(api.preset.threat({name}))`, the usage in this very document,
+   threw. Every headless test passed an explicit `id`, the way a *test* does and
+   a caller never would. The tell was in the code: the manager window had to
+   pass `id: "pending"` and then `delete spec.id`.
+2. The presets spread `...spec` **before** their own `poles` key, so a caller who
+   passed `poles` had it silently discarded and got a generic banner. Found by
+   reading the demo's chat card, not by any assertion.
+
+Both share a shape: the engine was correct, and the *seam between the engine and
+its callers* was not. Tests written from inside the module cannot see it.
 
 ---
 
@@ -192,7 +208,7 @@ Run in bare Node — no Foundry, no browser, no world. Keeping the model pure is
 what makes this possible, and these harnesses are what keep it pure.
 
 ```
-node scripts/clock-system/clock-model.test.mjs       # 67 assertions
+node scripts/clock-system/clock-model.test.mjs       # 78 assertions
 node scripts/clock-system/clock-check.test.mjs       # 58 assertions
 node scripts/clock-system/clock-automation.test.mjs  # 24 assertions
 node scripts/clock-system/clock-socket.test.mjs      # 11 assertions
