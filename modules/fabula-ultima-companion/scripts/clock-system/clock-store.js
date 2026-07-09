@@ -28,6 +28,7 @@ import {
 import {
   makeClock, reviveClock, applyDelta, applySet, applyResolve, applyReopen, applyDiscard,
 } from "./clock-model.js";
+import { applyCheckToMany, previewCheckToMany } from "./clock-check.js";
 
 // Last registry we emitted events for. Seeded on `ready`; compared on every
 // `updateSetting`. Values are frozen-by-convention (never mutated in place).
@@ -194,6 +195,61 @@ export async function reopen(id) {
 
 export async function discard(id, opts = {}) {
   return _mutate(id, (clock) => applyDiscard(clock, opts), { cause: opts.cause });
+}
+
+// ── Check-driven advancement ────────────────────────────────────────────────
+
+/**
+ * Which clocks a check against `clock` touches. For a `paired` group that is
+ * every member — each one's poles decide whether it takes the result, so the
+ * success clock advances on a pass and the parallel failure clock on a miss
+ * (RAW p.54) without this function knowing which is which.
+ */
+function _checkTargets(registry, clock) {
+  if (clock.group?.mode !== GROUP_MODE.PAIRED) return [clock];
+  return Object.values(registry)
+    .filter((c) => c.group?.id === clock.group.id && c.state === CLOCK_STATE.ACTIVE)
+    .sort((a, b) => a.createdAt - b.createdAt);
+}
+
+/**
+ * Apply a Fabula Ultima check to a clock (and its paired siblings), persisting
+ * every advance in ONE write.
+ *
+ * @returns {object[]} one `applyCheck` result per touched clock, each carrying
+ *   its `.preview` so the caller can narrate the rules that fired.
+ */
+export async function check(id, spec = {}) {
+  const registry = all();
+  const clock = registry[id];
+  if (!clock) {
+    console.warn(CLOCK_TAG, "check: no such clock", id);
+    return null;
+  }
+
+  const results = applyCheckToMany(_checkTargets(registry, clock), spec);
+  const changed = results.filter((r) => !r.noop);
+  if (!changed.length) return results;
+
+  const next = { ...registry };
+  for (const r of changed) {
+    next[r.clock.id] = r.clock;
+    _settleRaceInto(next, r.clock, spec.cause ?? null);
+  }
+  const ok = await _writeRaw(next);
+  return ok ? results : null;
+}
+
+/**
+ * Read-only twin of `check` — what WOULD this check do? Safe on any client
+ * (no write, no GM gate), which is what lets a player's action card show the
+ * outcome before the roll is committed.
+ */
+export function preview(id, spec = {}) {
+  const registry = all();
+  const clock = registry[id];
+  if (!clock) return null;
+  return previewCheckToMany(_checkTargets(registry, clock), spec);
 }
 
 /** Hard-remove a clock from the registry. `discard` is almost always what you want. */
