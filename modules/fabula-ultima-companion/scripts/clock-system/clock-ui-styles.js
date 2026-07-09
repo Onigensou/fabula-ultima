@@ -1,25 +1,25 @@
 // ============================================================================
 // Clock System — bundled UI styles (injected once) + live-tunable layout.
 //
-// A JRPG segmented gauge, not the rulebook's pizza slice. Notches read as
-// discrete steps (a boss stagger bar / tension meter) rather than a continuous
-// percentage, because a clock IS discrete — "two sections" is the unit the
-// rules speak in.
+// Warm parchment plate, matched to the camp/shop/heal UIs so a clock reads as
+// part of the same game. A floating name tab overhangs the panel's top-left; a
+// continuous fill bar reads as a percentage; a brass gear sits at the right.
 //
-// Colour follows the axis model directly:
-//   notch i < value  → the HIGH pole's owner colour
-//   notch i >= value → the LOW pole's owner colour
-//   unclaimed pole   → neutral track
+// ── Docking ─────────────────────────────────────────────────────────────────
+// The layer hangs off `--fu-sidebar-anchor-right`, published every animation
+// frame by scripts/custom-ui/sidebar-anchor.js from a ResizeObserver on
+// #sidebar. So the stack tracks the chat sidebar live as it expands/collapses,
+// rather than snapping after the fact (Foundry's `collapseSidebar` hook fires
+// only once the width animation has already finished).
 //
-// which yields every shape without a special case:
-//   progress  players fill left→right, remainder empty
-//   threat    the GM's crimson creeps rightward
-//   teardown  solid neutral "obstacle" eaten away from the right by the players
-//   struggle  a true two-colour tug-of-war meeting wherever `value` sits
+// ── Tone ────────────────────────────────────────────────────────────────────
+// The glow says what KIND of clock this is, derived from the poles:
+//   one pole, outcome=failure  → threat    (red)
+//   one pole, outcome=success  → progress  (blue)
+//   both poles claimed         → contest   (blue→red gradient, a tug-of-war)
 //
 // NOTE: the global stylesheet puts a 1px black border on every <img>. Nothing
-// here uses <img> — the icon is a background-image on a div. See
-// [[feedback_dom_img_transparent_border]].
+// here uses <img>. See [[feedback_dom_img_transparent_border]].
 // ============================================================================
 
 const STYLE_ID = "oni-clock-styles";
@@ -27,26 +27,41 @@ const STYLE_ID = "oni-clock-styles";
 // Mutated by the tuner and re-applied as CSS custom properties, so layout can
 // be dialled in live. Edit these defaults to bake a final design.
 export const CLOCK_TUNE = {
-  layerTop: 74,        // px from viewport top (below the scene name)
+  layerTop: 12,        // px from viewport top
   layerGap: 10,        // px between stacked clocks
-  barWidth: 320,       // px
-  barHeight: 20,       // px
-  notchGap: 3,         // px between sections
-  labelSize: 14,       // px
-  poleLabelSize: 11,   // px
-  compactAt: 4,        // collapse to a compact strip past this many clocks
-  tickStaggerMs: 90,   // per-section delay when animating a multi-section change
+  panelWidth: 250,     // px — the parchment plate
+  panelHeight: 42,     // px
+  barHeight: 15,       // px — the continuous fill bar
+  nameSize: 15,        // px — floating name tab
+  pctSize: 12,         // px
+  gearSize: 30,        // px
+
+  // Animation (ms). Spawn is a three-beat sequence; exit is one beat.
+  gearInMs: 220,       // 1. gear fades in
+  panelInMs: 280,      // 2. panel slides in from the right + fades
+  barFillMs: 620,      // 3. bar fills to its starting value
+  advanceMs: 480,      // a live advance/regress
+  holdMs: 5000,        // resolved clock glows, then holds, before exiting
+  outMs: 300,          // slide + fade out, everything at once
+  reflowMs: 320,       // remaining clocks slide up to close the gap
 };
 
 export function clockTuneVars(t = CLOCK_TUNE) {
   return {
     "--ck-top": `${t.layerTop}px`,
     "--ck-gap": `${t.layerGap}px`,
-    "--ck-bar-w": `${t.barWidth}px`,
+    "--ck-panel-w": `${t.panelWidth}px`,
+    "--ck-panel-h": `${t.panelHeight}px`,
     "--ck-bar-h": `${t.barHeight}px`,
-    "--ck-notch-gap": `${t.notchGap}px`,
-    "--ck-label-size": `${t.labelSize}px`,
-    "--ck-pole-size": `${t.poleLabelSize}px`,
+    "--ck-name-size": `${t.nameSize}px`,
+    "--ck-pct-size": `${t.pctSize}px`,
+    "--ck-gear-size": `${t.gearSize}px`,
+    "--ck-gear-in": `${t.gearInMs}ms`,
+    "--ck-panel-in": `${t.panelInMs}ms`,
+    "--ck-bar-fill": `${t.barFillMs}ms`,
+    "--ck-advance": `${t.advanceMs}ms`,
+    "--ck-out": `${t.outMs}ms`,
+    "--ck-reflow": `${t.reflowMs}ms`,
   };
 }
 
@@ -62,154 +77,198 @@ export function injectClockStyles() {
   s.id = STYLE_ID;
   s.textContent = `
 #oni-clock-layer {
-  --ck-players: #47b7e8;
-  --ck-players-hi: #a7e6ff;
-  --ck-gm: #d1443c;
-  --ck-gm-hi: #ff9a8f;
-  --ck-track: #2a2a30;
-  --ck-track-edge: #4a4a54;
-  --ck-neutral: #6c6c78;
-  --ck-ink: #f2ece1;
-  --ck-plate: rgba(14, 13, 18, 0.78);
+  /* Parchment palette — shared with the camp / shop / healing UIs. */
+  --ck-parch-1: #f7eed7;
+  --ck-parch-2: #ece0c2;
+  --ck-wood-1: #8d5f38;
+  --ck-wood-2: #6f4526;
+  --ck-wood-3: #4e2f19;
+  --ck-ink: #4a2f18;
+  --ck-gold: #f4e2a8;
+
+  --ck-blue: #3f9fd6;
+  --ck-blue-hi: #9fe0ff;
+  --ck-red: #cf4034;
+  --ck-red-hi: #ff9a8f;
 
   position: fixed;
-  top: var(--ck-top, 74px);
-  left: 50%;
-  transform: translateX(-50%);
+  top: var(--ck-top, 12px);
+  /* Live sidebar anchor — tracks the chat panel frame-by-frame. */
+  right: var(--fu-sidebar-anchor-right, 313px);
   z-index: 70;
-  display: flex; flex-direction: column; align-items: center;
+  display: flex; flex-direction: column; align-items: flex-end;
   gap: var(--ck-gap, 10px);
   pointer-events: none;
   font-family: "Signika","Noto Sans","Segoe UI",sans-serif;
 }
 
+/* ── One clock: [ panel ][ gear ] ──────────────────────────────────────── */
 .oni-clock {
   pointer-events: auto;
-  min-width: var(--ck-bar-w, 320px);
-  padding: 7px 12px 8px;
-  background: var(--ck-plate);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 9px;
-  box-shadow: 0 6px 22px rgba(0,0,0,0.5);
-  color: var(--ck-ink);
-  opacity: 0; transform: translateY(-10px);
-  transition: opacity .22s ease, transform .22s cubic-bezier(.22,.8,.3,1);
-}
-.oni-clock.visible { opacity: 1; transform: translateY(0); }
-.oni-clock.leaving { opacity: 0; transform: translateY(-8px) scale(.98); }
-
-.oni-clock-head {
   display: flex; align-items: center; gap: 7px;
-  margin-bottom: 5px;
+  /* FLIP: the reflow sets a transform, then transitions it back to zero. */
+  transition: transform var(--ck-reflow, 320ms) cubic-bezier(.22,.8,.3,1);
 }
-.oni-clock-icon {
-  width: 16px; height: 16px; flex: 0 0 auto;
-  background-size: contain; background-repeat: no-repeat; background-position: center;
-  border: 0; outline: 0; box-shadow: none;
+
+.oni-clock-gear {
+  order: 2;
+  width: var(--ck-gear-size, 30px); height: var(--ck-gear-size, 30px);
+  flex: 0 0 auto;
+  display: grid; place-items: center;
+  color: var(--ck-wood-2);
+  font-size: calc(var(--ck-gear-size, 30px) * 0.82);
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.35));
+  opacity: 0;
 }
+
+.oni-clock-panel {
+  order: 1;
+  position: relative;
+  width: var(--ck-panel-w, 250px);
+  min-height: var(--ck-panel-h, 42px);
+  box-sizing: border-box;
+  display: flex; align-items: flex-end;
+  padding: 15px 10px 7px;
+  background: linear-gradient(180deg, var(--ck-parch-1), var(--ck-parch-2));
+  border: 2px solid var(--ck-wood-2);
+  border-radius: 7px;
+  box-shadow: 0 0 0 1px var(--ck-wood-3), 0 6px 18px rgba(0,0,0,.45),
+              inset 0 0 18px rgba(160,118,73,.20);
+  opacity: 0;
+  transform: translateX(34px);
+}
+
+/* Floating name tab, overhanging the panel's top-left corner. */
 .oni-clock-name {
-  font-size: var(--ck-label-size, 14px); font-weight: 600;
-  letter-spacing: .2px; text-shadow: 0 1px 2px rgba(0,0,0,.7);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.oni-clock-count {
-  margin-left: auto; font-size: 11px; opacity: .62; font-variant-numeric: tabular-nums;
-}
-.oni-clock-gmonly { font-size: 10px; opacity: .55; letter-spacing: .5px; }
-
-/* ── the gauge ─────────────────────────────────────────────────────────── */
-.oni-clock-track {
-  display: flex; gap: var(--ck-notch-gap, 3px);
-  height: var(--ck-bar-h, 20px);
-  padding: 2px; border-radius: 5px;
-  background: rgba(0,0,0,.45);
-  box-shadow: inset 0 0 0 1px var(--ck-track-edge);
-}
-.oni-clock-notch {
-  flex: 1 1 0; border-radius: 2px;
-  background: var(--ck-track);
-  transition: background-color .16s ease, box-shadow .16s ease, transform .16s ease;
-}
-.oni-clock-notch.players { background: var(--ck-players); }
-.oni-clock-notch.gm      { background: var(--ck-gm); }
-.oni-clock-notch.neutral { background: var(--ck-neutral); }
-.oni-clock-notch.empty   { background: var(--ck-track); }
-
-/* the section that just moved */
-.oni-clock-notch.pop { transform: scaleY(1.28); }
-.oni-clock-notch.pop.players { box-shadow: 0 0 10px 2px var(--ck-players-hi); }
-.oni-clock-notch.pop.gm      { box-shadow: 0 0 10px 2px var(--ck-gm-hi); }
-.oni-clock-notch.pop.neutral,
-.oni-clock-notch.pop.empty   { box-shadow: 0 0 8px 1px rgba(255,255,255,.35); }
-
-/* ── pole labels ───────────────────────────────────────────────────────── */
-.oni-clock-poles {
-  display: flex; justify-content: space-between; margin-top: 4px;
-  font-size: var(--ck-pole-size, 11px); letter-spacing: .3px; opacity: .74;
-}
-.oni-clock-pole-low  { text-align: left; }
-.oni-clock-pole-high { text-align: right; margin-left: auto; }
-.oni-clock-pole-low.players, .oni-clock-pole-high.players { color: var(--ck-players-hi); }
-.oni-clock-pole-low.gm, .oni-clock-pole-high.gm { color: var(--ck-gm-hi); }
-
-/* ── resolution flourish ───────────────────────────────────────────────── */
-.oni-clock.resolved .oni-clock-track { box-shadow: inset 0 0 0 1px currentColor; }
-.oni-clock.resolved-success { color: var(--ck-players-hi); }
-.oni-clock.resolved-failure { color: var(--ck-gm-hi); }
-
-.oni-clock-flash {
-  position: absolute; inset: 0; border-radius: 9px; pointer-events: none;
-  background: currentColor; opacity: 0;
-}
-.oni-clock-flash.fire { animation: oni-clock-flash .62s ease-out; }
-@keyframes oni-clock-flash {
-  0% { opacity: .55; } 100% { opacity: 0; }
+  position: absolute;
+  top: -9px; left: 8px;
+  font-size: var(--ck-name-size, 15px);
+  font-weight: 700; letter-spacing: .3px;
+  color: var(--ck-wood-3);
+  -webkit-text-stroke: 2.4px var(--ck-gold);
+  paint-order: stroke fill;
+  text-shadow: 0 1px 2px rgba(0,0,0,.30);
+  white-space: nowrap; max-width: calc(var(--ck-panel-w, 250px) - 22px);
+  overflow: hidden; text-overflow: ellipsis;
+  pointer-events: none;
 }
 
-.oni-clock-banner {
-  margin-top: 5px; text-align: center;
-  font-size: 13px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase;
-  text-shadow: 0 0 12px currentColor;
-  opacity: 0; transform: scale(.9);
-  animation: oni-clock-banner .5s cubic-bezier(.22,.8,.3,1) forwards;
-}
-@keyframes oni-clock-banner {
-  to { opacity: 1; transform: scale(1); }
+/* ── The continuous bar ────────────────────────────────────────────────── */
+.oni-clock-bar {
+  position: relative;
+  flex: 1 1 auto;
+  height: var(--ck-bar-h, 15px);
+  border-radius: 3px;
+  background: rgba(78, 47, 25, .30);
+  border: 1px solid var(--ck-wood-2);
+  overflow: hidden;
 }
 
-/* ── compact strip (many clocks at once) ───────────────────────────────── */
-#oni-clock-layer.compact .oni-clock { padding: 4px 9px 5px; }
-#oni-clock-layer.compact .oni-clock-track { height: calc(var(--ck-bar-h, 20px) * 0.6); }
-#oni-clock-layer.compact .oni-clock-poles { display: none; }
-#oni-clock-layer.compact .oni-clock-name { font-size: calc(var(--ck-label-size, 14px) - 2px); }
+.oni-clock-fill {
+  position: absolute; inset: 0 auto 0 0;
+  width: 0%;
+  border-radius: 2px 0 0 2px;
+  transition: width var(--ck-advance, 480ms) cubic-bezier(.22,.8,.3,1);
+}
+.oni-clock.spawning .oni-clock-fill { transition-duration: var(--ck-bar-fill, 620ms); }
 
-/* the clock element needs a positioning context for the flash overlay */
-.oni-clock { position: relative; }
+.oni-clock-pct {
+  position: absolute; inset: 0; z-index: 1;
+  display: grid; place-items: center;
+  font-size: var(--ck-pct-size, 12px); font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ck-parch-1);
+  text-shadow: 0 1px 2px rgba(0,0,0,.85), 0 0 3px rgba(0,0,0,.7);
+  pointer-events: none;
+}
+
+/* ── Tone: what KIND of clock is this ──────────────────────────────────── */
+.oni-clock[data-tone="progress"] .oni-clock-fill { background: linear-gradient(180deg, var(--ck-blue-hi), var(--ck-blue)); }
+.oni-clock[data-tone="threat"]   .oni-clock-fill { background: linear-gradient(180deg, var(--ck-red-hi), var(--ck-red)); }
+.oni-clock[data-tone="contest"]  .oni-clock-fill { background: linear-gradient(90deg, var(--ck-red), var(--ck-blue)); }
+
+.oni-clock[data-tone="progress"] .oni-clock-panel { box-shadow: 0 0 0 1px var(--ck-wood-3), 0 0 14px 1px rgba(63,159,214,.55), 0 6px 18px rgba(0,0,0,.45), inset 0 0 18px rgba(160,118,73,.20); }
+.oni-clock[data-tone="threat"]   .oni-clock-panel { box-shadow: 0 0 0 1px var(--ck-wood-3), 0 0 14px 1px rgba(207,64,52,.55), 0 6px 18px rgba(0,0,0,.45), inset 0 0 18px rgba(160,118,73,.20); }
+.oni-clock[data-tone="contest"]  .oni-clock-panel { box-shadow: 0 0 0 1px var(--ck-wood-3), -7px 0 14px -3px rgba(207,64,52,.60), 7px 0 14px -3px rgba(63,159,214,.60), 0 6px 18px rgba(0,0,0,.45), inset 0 0 18px rgba(160,118,73,.20); }
+
+/* ── Beat 1+2+3: spawn in ──────────────────────────────────────────────── */
+.oni-clock.gear-in .oni-clock-gear {
+  opacity: 1;
+  transition: opacity var(--ck-gear-in, 220ms) ease;
+}
+.oni-clock.panel-in .oni-clock-panel {
+  opacity: 1; transform: translateX(0);
+  transition: opacity var(--ck-panel-in, 280ms) ease,
+              transform var(--ck-panel-in, 280ms) cubic-bezier(.22,.8,.3,1);
+}
+
+/* ── Exit: everything slides + fades at once ───────────────────────────── */
+.oni-clock.leaving { pointer-events: none; }
+.oni-clock.leaving .oni-clock-panel,
+.oni-clock.leaving .oni-clock-gear {
+  opacity: 0; transform: translateX(34px);
+  transition: opacity var(--ck-out, 300ms) ease, transform var(--ck-out, 300ms) ease-in;
+}
+
+/* ── Finality: glow, then hold ─────────────────────────────────────────── */
+.oni-clock.resolved .oni-clock-panel { animation: oni-clock-finale 1.1s ease-out; }
+.oni-clock.resolved .oni-clock-gear  { animation: oni-clock-gear-spin 1.1s cubic-bezier(.22,.8,.3,1); }
+
+.oni-clock.resolved-success .oni-clock-fill { background: linear-gradient(180deg, var(--ck-blue-hi), var(--ck-blue)) !important; }
+.oni-clock.resolved-failure .oni-clock-fill { background: linear-gradient(180deg, var(--ck-red-hi), var(--ck-red)) !important; }
+
+@keyframes oni-clock-finale {
+  0%   { filter: brightness(1); }
+  22%  { filter: brightness(1.9); }
+  100% { filter: brightness(1); }
+}
+@keyframes oni-clock-gear-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(180deg); }
+}
+
+.oni-clock.resolved-success .oni-clock-panel { border-color: #2f6f96; }
+.oni-clock.resolved-failure .oni-clock-panel { border-color: #8d2c24; }
+
+/* ── The resolution chat card ──────────────────────────────────────────── */
+/* Foundry stamps a sender header + portrait on every message. A clock has no
+   speaker, so hide it — the card is the whole message. */
+.message:has(.oni-clock-card) .message-header { display: none; }
+.message:has(.oni-clock-card) .message-content { margin: 0; }
+
+.oni-clock-card {
+  border-left: 4px solid var(--tone, #8d5f38);
+  padding: 5px 9px;
+  line-height: 1.35;
+}
+.oni-clock-card .ck-verdict {
+  font-weight: 700; letter-spacing: .4px; color: var(--tone, #8d5f38);
+}
+.oni-clock-card .ck-line { opacity: .88; font-size: 12px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .oni-clock, .oni-clock-notch { transition: none; }
-  .oni-clock-flash.fire, .oni-clock-banner { animation-duration: .01ms; }
+  .oni-clock, .oni-clock-panel, .oni-clock-gear, .oni-clock-fill { transition: none !important; }
+  .oni-clock.resolved .oni-clock-panel, .oni-clock.resolved .oni-clock-gear { animation-duration: .01ms; }
 }
 `;
   document.head.appendChild(s);
 }
 
 // ── SFX ─────────────────────────────────────────────────────────────────────
-// Same soundboard the Progress opportunity effect uses, so a clock tick sounds
-// like a clock tick everywhere in the game.
 const _SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 
 export const CLOCK_SFX = Object.freeze({
-  TICK_FILL:  { src: `${_SND}SFX_TINK.wav`, volume: 0.55 },
-  TICK_ERASE: { src: `${_SND}collision_1.wav`, volume: 0.5 },
-  SUCCESS:    { src: `${_SND}opportunity_confirmed.wav`, volume: 0.7 },
-  FAILURE:    { src: `${_SND}bond_cleared.wav`, volume: 0.7 },
+  CREATE:  { src: `${_SND}clock_create.ogg`,  volume: 0.7 },
+  ADVANCE: { src: `${_SND}clock_advance.ogg`, volume: 0.65 },
+  REGRESS: { src: `${_SND}clock_regress.ogg`, volume: 0.65 },
+  SUCCESS: { src: `${_SND}clock_success.ogg`, volume: 0.75 },
+  FAILURE: { src: `${_SND}clock_failure.ogg`, volume: 0.75 },
 });
 
 /**
  * Play a clock sound locally. A fresh Audio node per call, deliberately: the
- * AudioHelper de-duplicates identical rapid plays, which would swallow every
- * tick after the first in a multi-section fill.
+ * AudioHelper de-duplicates identical rapid plays, which would swallow the
+ * second of two clocks advancing together.
  */
 export function playClockSfx(key) {
   const cfg = typeof key === "string" ? CLOCK_SFX[key] : key;

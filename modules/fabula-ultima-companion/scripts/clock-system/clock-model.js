@@ -224,6 +224,36 @@ export function notchOwnerAt(clock, i, value = clock.value) {
   return i < value ? "neutral" : "empty";
 }
 
+/**
+ * What KIND of clock is this, for the UI's glow? Derived from the poles, so it
+ * cannot disagree with how the clock actually behaves:
+ *
+ *   both poles claimed        → "contest"   a tug-of-war (blue↔red gradient)
+ *   one pole, outcome=failure → "threat"    (red)
+ *   one pole, outcome=success → "progress"  (blue)
+ *
+ * A teardown clock is `progress`: its single claimed pole is a player success,
+ * and emptying it is the win — the fact that it counts DOWN is a rendering
+ * detail, not a different kind of clock.
+ *
+ * @returns {"contest"|"threat"|"progress"}
+ */
+export function clockTone(clock) {
+  if (clock.poles.high && clock.poles.low) return "contest";
+  const pole = clock.poles.high ?? clock.poles.low;
+  return pole?.outcome === OUTCOME.FAILURE ? "threat" : "progress";
+}
+
+/**
+ * The bar's fill, as a whole percentage, ROUNDED UP — a clock with any progress
+ * at all must never read 0%, and only a truly full clock reads 100%.
+ */
+export function clockPercent(clock, value = clock.value) {
+  if (value <= 0) return 0;
+  if (value >= clock.sections) return 100;
+  return Math.ceil((value / clock.sections) * 100);
+}
+
 // ── Resolution ──────────────────────────────────────────────────────────────
 
 /**

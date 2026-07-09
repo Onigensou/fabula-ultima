@@ -7,40 +7,42 @@
 // downstream system that wants its own clock rendering turns this off and
 // listens to the same four hooks.
 //
-// ── The colour rule ─────────────────────────────────────────────────────────
-// Straight from the axis model, one rule for every shape:
+// ── Anatomy ─────────────────────────────────────────────────────────────────
+//   [ Ambushed! ]                 ← floating name tab, overhangs the panel
+//   ┌───────────────────────┐  ⚙  ← brass gear, right of the panel
+//   │ ████████░░░░░░░  50%  │
+//   └───────────────────────┘
 //
-//     notch i <  value  →  the HIGH pole's owner colour
-//     notch i >= value  →  the LOW  pole's owner colour
-//     (an unclaimed pole renders as neutral track)
+// One continuous fill bar, not discrete notches: the player reads "how close",
+// and a percentage is unambiguous where counting notches at a glance is not.
+// The section count still governs everything underneath — the bar is a view of
+// `value / sections`, rounded UP so any progress at all shows.
 //
-//   progress  players fill left→right, remainder empty
-//   threat    the GM's crimson creeps rightward
-//   teardown  a solid neutral obstacle, eaten from the right by the players
-//   struggle  a two-colour tug-of-war meeting wherever `value` sits
-//
-// ── Animation ───────────────────────────────────────────────────────────────
-// Sections land ONE AT A TIME with a tick, because "two sections" is the unit
-// the rules speak in and the player should feel both. The renderer keeps its
-// own `shown` value and walks it toward the clock's real value, so a change
-// arriving mid-animation retargets rather than stacking.
+// ── Choreography ────────────────────────────────────────────────────────────
+// Spawn is three beats: the gear fades in, the panel slides in from the right,
+// then the bar fills to its starting value. Exit is one beat: everything slides
+// and fades together. A resolved clock glows, holds five seconds, then exits.
+// When a clock leaves, the ones below FLIP upward to close the gap — the stack
+// always reforms toward the top.
 // ============================================================================
 
 import {
   CLOCK_MODULE_ID, CLOCK_TAG, CLOCK_HOOK, CLOCK_STATE, VISIBILITY,
 } from "./clock-const.js";
 import * as store from "./clock-store.js";
-import { notchOwnerAt } from "./clock-model.js";
+import { clockTone, clockPercent } from "./clock-model.js";
 import { injectClockStyles, applyClockTune, playClockSfx, CLOCK_TUNE } from "./clock-ui-styles.js";
-import { playResolution, wireResolutionChat, RESOLVE_HOLD_MS } from "./clock-ui-resolve.js";
+import { playResolution, wireResolutionChat } from "./clock-ui-resolve.js";
 
 const LAYER_ID = "oni-clock-layer";
 const SETTING_SHOW_BAR = "clockShowBar";
 
-/** id → { root, notches, poles, count, shown, stepping } */
+/** id → { root, panel, gear, fill, pct, name, shown, exiting } */
 const _els = new Map();
 let _layer = null;
 let _wired = false;
+
+const _sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ── Visibility ──────────────────────────────────────────────────────────────
 
@@ -58,8 +60,8 @@ function _visibleToMe(clock) {
  * Render a clock at all?
  *
  * Active clocks always. A RESOLVED clock only while we already have its element
- * on screen — that is the flourish playing out. A client that reloads after a
- * clock resolved should not be greeted by a stale victory banner.
+ * on screen — that is the finality beat playing out. A client that reloads after
+ * a clock resolved should not be greeted by a stale victory glow.
  */
 function _shouldRender(clock) {
   if (!_visibleToMe(clock)) return false;
@@ -81,145 +83,146 @@ function _ensureLayer() {
 
 function _buildElement(clock) {
   const root = document.createElement("div");
-  root.className = "oni-clock";
+  root.className = "oni-clock spawning";
   root.dataset.clockId = clock.id;
+  root.dataset.tone = clockTone(clock);
 
-  const head = document.createElement("div");
-  head.className = "oni-clock-head";
-
-  if (clock.icon) {
-    const icon = document.createElement("div");
-    icon.className = "oni-clock-icon";
-    // background-image, never <img> — the global stylesheet borders every image.
-    icon.style.backgroundImage = `url("${clock.icon}")`;
-    head.appendChild(icon);
-  }
+  const panel = document.createElement("div");
+  panel.className = "oni-clock-panel";
 
   const name = document.createElement("div");
   name.className = "oni-clock-name";
   name.textContent = clock.name;
-  head.appendChild(name);
+  panel.appendChild(name);
 
-  if (clock.visibility === VISIBILITY.GM) {
-    const gm = document.createElement("div");
-    gm.className = "oni-clock-gmonly";
-    gm.textContent = "GM";
-    head.appendChild(gm);
-  }
+  const bar = document.createElement("div");
+  bar.className = "oni-clock-bar";
+  const fill = document.createElement("div");
+  fill.className = "oni-clock-fill";
+  const pct = document.createElement("div");
+  pct.className = "oni-clock-pct";
+  bar.append(fill, pct);
+  panel.appendChild(bar);
 
-  const count = document.createElement("div");
-  count.className = "oni-clock-count";
-  head.appendChild(count);
-  root.appendChild(head);
+  const gear = document.createElement("div");
+  gear.className = "oni-clock-gear";
+  gear.innerHTML = `<i class="fas fa-gear"></i>`;
 
-  const track = document.createElement("div");
-  track.className = "oni-clock-track";
-  const notches = [];
-  for (let i = 0; i < clock.sections; i++) {
-    const n = document.createElement("div");
-    n.className = "oni-clock-notch";
-    track.appendChild(n);
-    notches.push(n);
-  }
-  root.appendChild(track);
-
-  const poles = document.createElement("div");
-  poles.className = "oni-clock-poles";
-  const low = document.createElement("div");
-  low.className = "oni-clock-pole-low";
-  const high = document.createElement("div");
-  high.className = "oni-clock-pole-high";
-  poles.append(low, high);
-  root.appendChild(poles);
-
-  const flash = document.createElement("div");
-  flash.className = "oni-clock-flash";
-  root.appendChild(flash);
-
-  const entry = { root, notches, count, low, high, flash, shown: clock.value, stepping: false };
-  _paintPoles(entry, clock);
-  _paint(entry, clock, clock.value);
-
+  root.append(panel, gear);
   _ensureLayer().appendChild(root);
-  requestAnimationFrame(() => root.classList.add("visible"));
+
+  // Start empty, whatever the real value: beat 3 fills it.
+  const entry = { root, panel, gear, fill, pct, name, shown: 0, exiting: false };
+  _paint(entry, clock, 0);
   return entry;
 }
 
-function _paintPoles(entry, clock) {
-  const { low, high } = entry;
-  low.textContent = clock.poles.low?.label ?? "";
-  high.textContent = clock.poles.high?.label ?? "";
-  low.className = `oni-clock-pole-low ${clock.poles.low?.side ?? ""}`;
-  high.className = `oni-clock-pole-high ${clock.poles.high?.side ?? ""}`;
-}
-
 function _paint(entry, clock, value) {
-  entry.notches.forEach((n, i) => {
-    n.className = `oni-clock-notch ${notchOwnerAt(clock, i, value)}`;
-  });
-  entry.count.textContent = `${value} / ${clock.sections}`;
+  entry.fill.style.width = `${clockPercent(clock, value)}%`;
+  entry.pct.textContent = `${clockPercent(clock, value)}%`;
 }
 
-/** Flash the one section that just flipped. */
-function _pop(entry, index) {
-  const n = entry.notches[index];
-  if (!n) return;
-  n.classList.add("pop");
-  setTimeout(() => n.classList.remove("pop"), 200);
+// ── Choreography ────────────────────────────────────────────────────────────
+
+/** Beat 1: gear fades in. Beat 2: panel slides in. Beat 3: bar fills. */
+async function _spawnIn(entry, clock) {
+  const { root } = entry;
+  await _sleep(20);                       // let the initial styles settle
+  root.classList.add("gear-in");
+  playClockSfx("CREATE");
+
+  await _sleep(CLOCK_TUNE.gearInMs);
+  if (!root.isConnected) return;
+  root.classList.add("panel-in");
+
+  await _sleep(CLOCK_TUNE.panelInMs);
+  if (!root.isConnected) return;
+
+  entry.shown = clock.value;
+  _paint(entry, clock, clock.value);      // still `.spawning`: the slow fill
+
+  await _sleep(CLOCK_TUNE.barFillMs);
+  root.classList.remove("spawning");
 }
-
-// ── Animation ───────────────────────────────────────────────────────────────
-
-const _sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Walk `entry.shown` toward the clock's real value, one section per tick. Only
- * one stepper runs per clock; a change that arrives mid-walk simply moves the
- * target, so rapid advances never queue up or double-animate.
+ * Move the bar to the clock's current value. One sound per change, not per
+ * section — the bar is continuous now, so a three-section swing is one motion.
  */
-async function _step(entry, clock) {
-  if (entry.stepping) return;
-  entry.stepping = true;
-  try {
-    while (entry.shown !== clock.value) {
-      const dir = clock.value > entry.shown ? 1 : -1;
-      const next = entry.shown + dir;
+function _advanceTo(entry, clock) {
+  if (entry.shown === clock.value) return;
+  const rising = clock.value > entry.shown;
+  entry.shown = clock.value;
+  _paint(entry, clock, clock.value);
+  playClockSfx(rising ? "ADVANCE" : "REGRESS");
+}
 
-      // Growing → the notch we just claimed is at index `shown`.
-      // Shrinking → the notch we just gave up is at index `next`.
-      const touched = dir > 0 ? entry.shown : next;
+// ── Reflow (FLIP) ───────────────────────────────────────────────────────────
+//
+// The stack always reforms toward the top. When a clock is removed, the ones
+// below it would jump up instantly; instead we record every element's position
+// BEFORE the layout changes, then translate each back to where it was and let
+// CSS transition it to zero. Elements on their way out are skipped — they are
+// mid-exit and must not be dragged upward.
 
-      entry.shown = next;
-      _paint(entry, clock, next);
-      _pop(entry, touched);
-      playClockSfx(dir > 0 ? "TICK_FILL" : "TICK_ERASE");
-
-      if (entry.shown !== clock.value) await _sleep(CLOCK_TUNE.tickStaggerMs);
-    }
-  } finally {
-    entry.stepping = false;
+function _captureRects() {
+  const rects = new Map();
+  for (const [id, entry] of _els) {
+    if (entry.exiting) continue;
+    rects.set(id, entry.root.getBoundingClientRect().top);
   }
+  return rects;
+}
+
+function _playReflow(before) {
+  for (const [id, top] of before) {
+    const entry = _els.get(id);
+    if (!entry?.root.isConnected || entry.exiting) continue;
+
+    const delta = top - entry.root.getBoundingClientRect().top;
+    if (!delta) continue;
+
+    entry.root.style.transition = "none";
+    entry.root.style.transform = `translateY(${delta}px)`;
+    void entry.root.offsetWidth;                  // force the start frame
+    entry.root.style.transition = "";
+    entry.root.style.transform = "";
+  }
+}
+
+// ── Removal ─────────────────────────────────────────────────────────────────
+
+function _remove(id, { immediate = false } = {}) {
+  const entry = _els.get(id);
+  if (!entry || entry.exiting) return;
+
+  if (immediate) {
+    _els.delete(id);
+    const before = _captureRects();
+    entry.root.remove();
+    _playReflow(before);
+    return;
+  }
+
+  entry.exiting = true;
+  entry.root.classList.add("leaving");
+
+  setTimeout(() => {
+    _els.delete(id);
+    const before = _captureRects();       // positions of the SURVIVORS
+    entry.root.remove();
+    _playReflow(before);
+  }, CLOCK_TUNE.outMs);
 }
 
 // ── Sync ────────────────────────────────────────────────────────────────────
 
-function _remove(id, { immediate = false } = {}) {
-  const entry = _els.get(id);
-  if (!entry) return;
-  _els.delete(id);
-  if (immediate) { entry.root.remove(); _reflow(); return; }
-  entry.root.classList.add("leaving");
-  setTimeout(() => { entry.root.remove(); _reflow(); }, 240);
-}
-
-function _reflow() {
-  if (!_layer) return;
-  _layer.classList.toggle("compact", _els.size > CLOCK_TUNE.compactAt);
-}
-
 /** Reconcile the whole layer against the registry. Cheap; called on any change. */
 export function syncClockBar() {
-  if (!_barEnabled()) { _els.forEach((_, id) => _remove(id, { immediate: true })); return; }
+  if (!_barEnabled()) {
+    for (const id of [..._els.keys()]) _remove(id, { immediate: true });
+    return;
+  }
   _ensureLayer();
 
   const live = new Map();
@@ -234,18 +237,15 @@ export function syncClockBar() {
     if (!entry) {
       entry = _buildElement(clock);
       _els.set(id, entry);
-    } else if (entry.notches.length !== clock.sections) {
-      // Section count changed — cheaper and safer to rebuild than to splice.
-      _remove(id, { immediate: true });
-      entry = _buildElement(clock);
-      _els.set(id, entry);
-    } else {
-      _paintPoles(entry, clock);
+      _spawnIn(entry, clock).catch((e) => console.warn(CLOCK_TAG, "spawn-in threw", e));
+      continue;                            // beat 3 paints the starting value
     }
-    _step(entry, clock).catch((e) => console.warn(CLOCK_TAG, "bar animation threw", e));
-  }
+    if (entry.exiting) continue;
 
-  _reflow();
+    entry.name.textContent = clock.name;
+    entry.root.dataset.tone = clockTone(clock);
+    if (!entry.root.classList.contains("spawning")) _advanceTo(entry, clock);
+  }
 }
 
 // ── Wiring ──────────────────────────────────────────────────────────────────
@@ -270,13 +270,13 @@ export function wireClockBar() {
   Hooks.on(CLOCK_HOOK.DISCARDED, ({ clock }) => _remove(clock.id));
 
   Hooks.on(CLOCK_HOOK.RESOLVED, async ({ clock, resolution }) => {
-    // Let the final section land before the flourish fires.
-    syncClockBar();
+    syncClockBar();                        // let the final fill land
     const entry = _els.get(clock.id);
     if (!entry) return;
-    while (entry.stepping) await _sleep(40);
+
     playResolution(entry, clock, resolution);
-    setTimeout(() => _remove(clock.id), RESOLVE_HOLD_MS);
+    await _sleep(CLOCK_TUNE.holdMs);       // glow, then hold
+    _remove(clock.id);
   });
 
   // The chat card is not the bar: it stays wired even for a GM who turned the

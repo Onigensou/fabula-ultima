@@ -1,24 +1,31 @@
 // ============================================================================
-// Clock System — resolution flourish + chat card.
+// Clock System — the finality beat + chat card.
 //
-// When a clock lands on a claimed pole the bar flashes in the winning side's
-// colour, the pole's label takes over the gauge, and a chat card records what
-// happened. Then the clock leaves the screen.
+// When a clock lands on a claimed pole the panel flares, the gear turns, and
+// the fill takes the winning side's colour. The bar then holds for five seconds
+// before sliding out — long enough for the table to read what just happened.
 //
 // The flourish is local (every client renders its own, driven by the diffed
 // `fu-clock-resolved` hook). The chat card is written ONCE, by the active GM —
 // otherwise a six-client table gets six identical cards.
+//
+// The card carries no speaker: a clock is not a creature. Foundry stamps a
+// sender header + portrait on every message, so the card's own class hides it
+// (see the `:has(.oni-clock-card)` rule in clock-ui-styles.js) and the message
+// becomes just the coloured block.
 // ============================================================================
 
 import { CLOCK_TAG, OUTCOME, POLE } from "./clock-const.js";
 import { playClockSfx } from "./clock-ui-styles.js";
 import { isActiveGM } from "./clock-store.js";
 
-/** How long a resolved clock stays on screen before it fades out. */
-export const RESOLVE_HOLD_MS = 2600;
-
 const esc = (s) => String(s ?? "")
   .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+const TONE = Object.freeze({
+  success: "#3f9fd6",
+  failure: "#cf4034",
+});
 
 /** The banner text: the pole's own label, else a sensible default. */
 function bannerFor(clock, resolution) {
@@ -28,29 +35,17 @@ function bannerFor(clock, resolution) {
 }
 
 /**
- * Flash the gauge, drop a banner under it, and dim the clock into its resolved
- * state. Purely visual — the registry already says `resolved`.
+ * The finality beat. Purely visual — the registry already says `resolved`. The
+ * five-second hold lives in the bar's RESOLVED handler, not here.
  */
 export function playResolution(entry, clock, resolution) {
-  const { root, flash } = entry;
+  const { root } = entry;
   if (!root?.isConnected) return;
 
-  const tone = resolution.outcome === OUTCOME.SUCCESS ? "resolved-success" : "resolved-failure";
-  root.classList.add("resolved", tone);
+  const success = resolution.outcome === OUTCOME.SUCCESS;
+  root.classList.add("resolved", success ? "resolved-success" : "resolved-failure");
 
-  // Restart the CSS animation even if the class is already present.
-  flash.classList.remove("fire");
-  void flash.offsetWidth;
-  flash.classList.add("fire");
-
-  if (!root.querySelector(".oni-clock-banner")) {
-    const banner = document.createElement("div");
-    banner.className = "oni-clock-banner";
-    banner.textContent = bannerFor(clock, resolution);
-    root.appendChild(banner);
-  }
-
-  playClockSfx(resolution.outcome === OUTCOME.SUCCESS ? "SUCCESS" : "FAILURE");
+  playClockSfx(success ? "SUCCESS" : "FAILURE");
 }
 
 /**
@@ -61,21 +56,19 @@ export async function postResolutionCard(clock, resolution) {
   if (!isActiveGM()) return;
 
   const success = resolution.outcome === OUTCOME.SUCCESS;
-  const colour = success ? "#47b7e8" : "#d1443c";
-  const verdict = success ? "Success" : "Failure";
-  const pole = resolution.pole === POLE.HIGH ? "filled" : "emptied";
-  const label = bannerFor(clock, resolution);
+  const tone = success ? TONE.success : TONE.failure;
+  const verdict = bannerFor(clock, resolution);
+  const filled = resolution.pole === POLE.HIGH ? "filled" : "emptied";
+  const forWhom = success ? "Success" : "Failure";
 
-  const content = `
-<div style="border-left:4px solid ${colour};padding:6px 10px;">
-  <div style="font-weight:700;letter-spacing:.5px;color:${colour};">${esc(label)}</div>
-  <div style="opacity:.85;margin-top:2px;">
-    Clock <b>${esc(clock.name)}</b> was ${pole} — <b>${verdict}</b> for the party.
-  </div>
-</div>`.trim();
+  const content = `<div class="oni-clock-card" style="--tone:${tone}">`
+    + `<div class="ck-verdict">${esc(verdict)}</div>`
+    + `<div class="ck-line"><b>${esc(clock.name)}</b> ${filled} — ${forWhom} for the party.</div>`
+    + `</div>`;
 
   try {
-    await ChatMessage.create({ content, speaker: { alias: "Clock" } });
+    // No speaker: a clock has no voice, and the header is hidden by CSS.
+    await ChatMessage.create({ content, speaker: {} });
   } catch (e) {
     console.warn(CLOCK_TAG, "resolution chat card failed", e);
   }

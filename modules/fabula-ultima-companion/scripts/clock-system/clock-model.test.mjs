@@ -164,6 +164,23 @@ eq("struggle centered: a two-colour tug of war", strip(strug, 4), "ppppgggg");
 eq("struggle losing: the GM owns most of the bar", strip(strug, 1), "pggggggg");
 eq("struggle won: all players", strip(strug, 8), "pppppppp");
 
+// ── tone: which glow does the UI wear ─────────────────────────────────────
+eq("progress clock is a blue 'progress'", M.clockTone(prog), "progress");
+eq("threat clock is a red 'threat'", M.clockTone(threat), "threat");
+eq("teardown is ALSO 'progress' (its pole is a player success)", M.clockTone(tear), "progress");
+eq("struggle is a 'contest' (both poles claimed)", M.clockTone(strug), "contest");
+
+// ── percentage: rounded UP, but 0 and 100 are exact ───────────────────────
+eq("empty reads 0%", M.clockPercent(prog, 0), 0);
+eq("full reads 100%", M.clockPercent(prog, 6), 100);
+eq("1 of 6 rounds up to 17%, never 0%", M.clockPercent(prog, 1), 17);
+eq("3 of 6 is 50%", M.clockPercent(prog, 3), 50);
+eq("5 of 6 rounds up to 84%, never 100%", M.clockPercent(prog, 5), 84);
+eq("1 of 3 rounds up to 34%", M.clockPercent(makeClock({ name: "n", sections: 3, poles: { high: { side: "gm" } } }), 1), 34);
+eq("a teardown clock at 6/6 reads 100%", M.clockPercent(tear, 6), 100);
+eq("a teardown clock emptied reads 0%", M.clockPercent(tear, 0), 0);
+eq("defaults to the clock's own value", M.clockPercent({ ...prog, value: 3 }), 50);
+
 // ── validation ────────────────────────────────────────────────────────────
 const throws = (fn) => { try { fn(); return false; } catch { return true; } };
 
