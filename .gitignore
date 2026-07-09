@@ -64,6 +64,10 @@
 !/tools/csb-template/**
 !/tools/anim-studio/
 !/tools/anim-studio/**
+!/tools/skill-regression/
+!/tools/skill-regression/**
+!/tools/hot-reload-map/
+!/tools/hot-reload-map/**
 
 # -----------------------------
 # LevelDB runtime files — never commit these.

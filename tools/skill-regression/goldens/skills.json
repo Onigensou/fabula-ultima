@@ -1,0 +1,881 @@
+{
+  "_meta": {
+    "mode": "compute",
+    "scene": "Training Ground",
+    "casters": [
+      "Blanche",
+      "Hina",
+      "Keren",
+      "Zarg"
+    ],
+    "enemyTarget": "Salamander",
+    "count": 52,
+    "engineVersion": "1.0.423",
+    "override": {
+      "SL": 5,
+      "CHAR_LEVEL": 50,
+      "BOND_COUNT": 4,
+      "BOND_STRENGTH": 4
+    },
+    "force": {
+      "rA": 5,
+      "rB": 6
+    }
+  },
+  "skills": {
+    "Blanche / Capote": {
+      "caster": "Blanche",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Capote",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Blanche / Castigo": {
+      "caster": "Blanche",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Castigo",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Blanche / Descabello": {
+      "caster": "Blanche",
+      "element": "physical",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 48,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": null,
+      "skill": "Descabello",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Blanche / Heal": {
+      "caster": "Blanche",
+      "element": "hp",
+      "hasDamage": false,
+      "hasHealing": true,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 50,
+          "grantRes": "hp",
+          "hit": true,
+          "resource": null
+        }
+      ],
+      "roll": null,
+      "skill": "Heal",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Blanche / Invocation": {
+      "caster": "Blanche",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Invocation",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Blanche / Muleta": {
+      "caster": "Blanche",
+      "element": "physical",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 21,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Muleta",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Blanche / Protect": {
+      "caster": "Blanche",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Protect",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Blanche / Ripples": {
+      "caster": "Blanche",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Ripples",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Blanche / Tafallera": {
+      "caster": "Blanche",
+      "element": "physical",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": false,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 5
+      },
+      "skill": "Tafallera",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Blanche / Verónica": {
+      "caster": "Blanche",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Verónica",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Blanche / Zero Power: Give me tips or 5stars": {
+      "caster": "Blanche",
+      "element": "hp",
+      "hasDamage": false,
+      "hasHealing": true,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 58,
+          "grantRes": "hp",
+          "hit": true,
+          "resource": null
+        }
+      ],
+      "roll": null,
+      "skill": "Zero Power: Give me tips or 5stars",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Hina / Acceleration": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Acceleration",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Cleanse": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Cleanse",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Dispel": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Dispel",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Divination": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Divination",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Draconic Roar": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 9
+      },
+      "skill": "Draconic Roar",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Hina / Drain Spirit": {
+      "caster": "Hina",
+      "element": "mp",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 21,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "mp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Drain Spirit",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Elemental Shroud": {
+      "caster": "Hina",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Elemental Shroud",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Elemental Weapon": {
+      "caster": "Hina",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Elemental Weapon",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Encyclopedia Strike": {
+      "caster": "Hina",
+      "element": "physical",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 23,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Encyclopedia Strike",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Hina / Glacies": {
+      "caster": "Hina",
+      "element": "ice",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 16,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Glacies",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Glacies Finis #7vAXk1": {
+      "caster": "Hina",
+      "element": "ice",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 31,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Glacies Finis",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Glacies Finis #C3K6l9": {
+      "caster": "Hina",
+      "element": "ice",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 31,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Glacies Finis",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Heal": {
+      "caster": "Hina",
+      "element": "hp",
+      "hasDamage": false,
+      "hasHealing": true,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 50,
+          "grantRes": "hp",
+          "hit": true,
+          "resource": null
+        }
+      ],
+      "roll": null,
+      "skill": "Heal",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Iceberg": {
+      "caster": "Hina",
+      "element": "ice",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 24,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Iceberg",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Starfall": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Starfall",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Starfall Comet": {
+      "caster": "Hina",
+      "element": "light",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 18,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 9
+      },
+      "skill": "Starfall Comet",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Stop": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Stop",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Symptom Shift": {
+      "caster": "Hina",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Symptom Shift",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Zero Power: A Million Possibility": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Zero Power: A Million Possibility",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Keren / Brainwave Discharge": {
+      "caster": "Keren",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Brainwave Discharge",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Keren / Charm": {
+      "caster": "Keren",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Charm",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Keren / Create Phantasm: Dread": {
+      "caster": "Keren",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Create Phantasm: Dread",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Keren / Create Phantasm: Numen": {
+      "caster": "Keren",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Create Phantasm: Numen",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Keren / Create Phantasm: Strike": {
+      "caster": "Keren",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Create Phantasm: Strike",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Keren / Detonate Phantasm": {
+      "caster": "Keren",
+      "element": "VAR_ELEMENT",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Detonate Phantasm",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Keren / Illusory Shield": {
+      "caster": "Keren",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Illusory Shield",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Keren / Life Transference": {
+      "caster": "Keren",
+      "element": "hp",
+      "hasDamage": false,
+      "hasHealing": true,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 5,
+          "grantRes": "hp",
+          "hit": true,
+          "resource": null
+        }
+      ],
+      "roll": null,
+      "skill": "Life Transference",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Keren / Nocebo Weapon": {
+      "caster": "Keren",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Nocebo Weapon",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Keren / See you later": {
+      "caster": "Keren",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "See you later",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Keren / Zero Power: Last Den of Cinders": {
+      "caster": "Keren",
+      "element": "fire",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "RS",
+          "damage": 10,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": null,
+      "skill": "Zero Power: Last Den of Cinders",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Barrage": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Barrage",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Gadgets": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Gadgets",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Golem Dance": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Golem Dance",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / High Speed": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "High Speed",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Lion Dance": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Lion Dance",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Ouroboros Dance": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Ouroboros Dance",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / See you later": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "See you later",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Soul Steal": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Soul Steal",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Unicorn Dance": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Unicorn Dance",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Warning Shot": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Warning Shot",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Zero Power: Meteor Shower": {
+      "caster": "Zarg",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Zero Power: Meteor Shower",
+      "skillType": "Active",
+      "targets": 1
+    }
+  }
+}
