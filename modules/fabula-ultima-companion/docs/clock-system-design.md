@@ -3,13 +3,15 @@
 Automates Fabula Ultima Clocks (core rulebook pp. 52–55) as a reusable API.
 The bundled UI is optional; the engine has no idea it exists.
 
-Status: **all eight phases complete and live-tested.** 171 headless assertions
-plus 63 assertions run against a live Foundry client (engine, rendering,
-resolution, groups, sweeps, and the Battle Director bridge). Remaining: visual
-tuning, and the player-client half of the socket (a real non-GM login).
+Status: **v1 complete.** 212 headless assertions plus ~150 run against a live
+Foundry client, including a two-client (GM + player) test of the panel-click
+roll. Engine, rendering, resolution, groups, lifecycle sweeps, the Battle
+Director bridge, the GM button column, and the Check Requester wiring are all
+exercised live.
 
-Two bugs the headless suite could not have caught, both found in the first ten
-minutes of live use, both now pinned by tests:
+### Bugs the headless suite could not have caught
+
+Every one was found by running the thing, and each is now pinned by a test.
 
 1. `makeClock` required an `id`, but the id is assigned by the store on create —
    so `api.create(api.preset.threat({name}))`, the usage in this very document,
@@ -19,9 +21,18 @@ minutes of live use, both now pinned by tests:
 2. The presets spread `...spec` **before** their own `poles` key, so a caller who
    passed `poles` had it silently discarded and got a generic banner. Found by
    reading the demo's chat card, not by any assertion.
+3. Backticks inside CSS comments in a JS template literal killed four modules at
+   import. `node --check` passed them — it parses the CommonJS *script* goal,
+   while Foundry loads ES *modules*. See `tools/check-esm.js`.
+4. `paint-order` on HTML text is honoured only from Chromium 128. The desktop
+   app (Electron 29 / Chromium 122) parses it — `CSS.supports` answers `true` —
+   and paints the stroke over the fill. Same CSS, two renderings.
+5. The Check Requester is **GM-orchestrated**: `interactiveRequest` throws on a
+   non-GM client. A player's panel click had to become a request to the GM.
 
-Both share a shape: the engine was correct, and the *seam between the engine and
-its callers* was not. Tests written from inside the module cannot see it.
+The first two share a shape worth remembering: the engine was correct, and the
+*seam between the engine and its callers* was not. Tests written from inside a
+module cannot see that seam.
 
 ---
 
@@ -358,19 +369,23 @@ went only to reaction rows: no subsystem could observe combat events at all.
 
 ---
 
-## 12. Still to verify
+## 12. Verified live
 
-Nothing here has run in a live world. Before trusting it in a session:
-
-- [ ] the bar renders, stacks, and collapses past four clocks
-- [ ] a multi-section advance ticks once per section, not all at once
-- [ ] a struggle clock reads as a two-colour tug-of-war
-- [ ] resolution: flash, banner, exactly ONE chat card at a two-GM table
-- [ ] a player advancing a clock relays to the GM and updates every client
-- [ ] `combat` clocks vanish when the director stops; `scene` clocks survive
+- [x] the bar renders, docks to the sidebar, and reforms upward on removal
+- [x] each shape renders its documented colour; the clash band tracks `value`
+- [x] resolution: flare, 5s hold, exit, exactly ONE chat card
+- [x] `combat` clocks vanish when the director stops; `scene` clocks survive
       their own `canvasReady` and die when you leave
-- [ ] an automation row fires once per trigger, not once per GM
-- [ ] the Progress opportunity effect lists Clock System clocks first
+- [x] an automation row fires once per trigger, not once per GM
+- [x] the BD trigger bridge fires even for a tokenless actor
+- [x] GM panel clicks adjust the axis; a resolved clock ignores clicks
+- [x] a player's panel click opens the Requester on THEIR client and moves the
+      clock on confirm (tested GM + player, two clients)
+- [x] the Progress opportunity effect lists Clock System clocks first
+
+Not yet exercised: a **two-GM table** (every `isActiveGM()` guard is right by
+inspection but has never had a second GM to contend with), and `race` /`paired`
+groups in a real session rather than a scripted one.
 
 `CLOCK_TUNE` is where the visual dialling-in happens.
 
