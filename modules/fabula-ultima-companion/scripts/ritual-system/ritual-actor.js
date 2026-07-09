@@ -140,7 +140,31 @@ export function resolvePerformer() {
   return { actor, uuid: actor.uuid, name: actor.name, img: actor.img ?? "" };
 }
 
-/** True when the docked ritual button should be clickable for this client. */
+/**
+ * True when the docked ritual button should be clickable for this client.
+ *
+ * A resolvable performer is not enough — they must know at least one
+ * discipline. A GM selecting the party token ("EXFURSION Party", which holds
+ * the group's shared inventory but no ritual skills) resolves a performer who
+ * can perform nothing, and the button must say so by staying grey rather than
+ * inviting a click that only produces a warning.
+ */
 export function canOpenRitual() {
-  return Boolean(resolvePerformer());
+  const performer = resolvePerformer();
+  if (!performer) return false;
+  return disciplinesForActor(performer.actor).length > 0;
+}
+
+/** Why the button is greyed, for its tooltip. Null when it is clickable. */
+export function blockedReason() {
+  const performer = resolvePerformer();
+  if (!performer) {
+    return game.user?.isGM
+      ? "Ritual — select a token first"
+      : "Ritual — no character assigned to your user";
+  }
+  if (!disciplinesForActor(performer.actor).length) {
+    return `Ritual — ${performer.name} knows no ritual disciplines`;
+  }
+  return null;
 }

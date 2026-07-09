@@ -125,7 +125,17 @@
     return DP.UI?.SCENE_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 242, LEFT_NO_FT: 168, LEFT_SOLO: 20, FONT_SIZE: "28px" };
   }
   function cfgRitual() {
-    return DP.UI?.RITUAL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 390, LEFT_SOLO: 20, FONT_SIZE: "28px" };
+    return DP.UI?.RITUAL_BUTTON
+      ?? { SIZE: 64, BOTTOM: 80, LEFT: 390, LEFT_NO_FT: 316, LEFT_EXPLORATION: 168, LEFT_SOLO: 20, FONT_SIZE: "28px" };
+  }
+
+  // The ritual button is the rightmost of the row, so its slot depends on how
+  // many buttons the current mode docked to its left.
+  function getRitualLeft(mode) {
+    const c = cfgRitual();
+    if (mode === "theatre") return c.LEFT_SOLO;            // only button on screen
+    if (mode === "exploration") return c.LEFT_EXPLORATION; // travel(20) + heal(94)
+    return isFtEnabled() ? c.LEFT : c.LEFT_NO_FT;          // dungeon: FT may be hidden
   }
 
   function isFtEnabled() {
@@ -442,14 +452,14 @@
     _ritualBtn.classList.toggle("dp-btn-disabled", !enabled);
     _ritualBtn.title = enabled
       ? "Ritual — perform a Ritual"
-      : (game.user?.isGM ? "Ritual — select a token first" : "Ritual — no character assigned to your user");
+      : (api?.blockedReason?.() ?? "Ritual — unavailable");
   }
 
   /** Show the ritual button. mode: "dungeon" | "exploration" | "theatre" */
   function showRitualBtn(mode = "dungeon") {
     injectStyles();
     const c = cfgRitual();
-    const left = mode === "theatre" ? c.LEFT_SOLO : c.LEFT;
+    const left = getRitualLeft(mode);
 
     if (_ritualBtn) {
       _ritualBtn.style.left = `${left}px`;
@@ -466,9 +476,7 @@
         const api = ritualApi();
         if (!api?.open) { ui.notifications?.warn("Ritual system not available."); return; }
         if (!api.canOpen()) {
-          ui.notifications?.warn(game.user?.isGM
-            ? "Ritual: select a token to perform as."
-            : "Ritual: no character assigned to your user.");
+          ui.notifications?.warn((api.blockedReason?.() ?? "Ritual unavailable.").replace(/^Ritual — /, "Ritual: "));
           return;
         }
         if (api.isOpen) api.close();
@@ -542,6 +550,9 @@
       // FT enabled while dungeon mode is active — ensure travel button is shown/repositioned
       showTravelBtn("dungeon");
     }
+
+    // The ritual button docks to the right of them all, so toggling FT slides it.
+    if (_ritualBtn) _ritualBtn.style.left = `${getRitualLeft("dungeon")}px`;
   }
 
   // Show the scene travel button (called from bootstrap for dungeon + exploration modes).

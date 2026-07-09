@@ -205,13 +205,16 @@
       FONT_SIZE: "28px",
     },
 
-    // Ritual button — placed to the right of the Scene Travel button. Shown in
-    // Dungeon, Exploration and Theatre modes.
+    // Ritual button — the rightmost of the row. Shown in Dungeon, Exploration
+    // and Theatre modes, and each mode docks a different set of buttons to its
+    // left, so it has a slot per mode rather than one fixed offset.
     RITUAL_BUTTON: {
       SIZE:      64,
       BOTTOM:    80,
-      LEFT:      390,        // 316 (scene travel left) + 64 (size) + 10 (gap)
-      LEFT_SOLO:  20,        // Theatre: the only button, so it takes the leftmost slot
+      LEFT:      390,        // dungeon, FT on:  316 (scene travel) + 64 + 10
+      LEFT_NO_FT: 316,       // dungeon, FT off: scene travel slides to 242
+      LEFT_EXPLORATION: 168, // exploration: only travel (20) + heal (94) dock
+      LEFT_SOLO:  20,        // theatre: the only button, so it takes the leftmost slot
       FONT_SIZE: "28px",
     },
   };

@@ -21,7 +21,7 @@ import { RITUAL_MODULE_ID, RITUAL_TAG } from "./ritual-const.js";
 import { RitualHUD } from "./ritual-hud-app.js";
 import { wireRitualSocket } from "./ritual-socket.js";
 import { performCast } from "./ritual-cast.js";
-import { canOpenRitual, resolvePerformer, disciplinesForActor } from "./ritual-actor.js";
+import { canOpenRitual, blockedReason, resolvePerformer, disciplinesForActor } from "./ritual-actor.js";
 
 const api = {
   /** Open the local Ritual window. */
@@ -30,8 +30,10 @@ const api = {
   close() { RitualHUD.close(); },
   /** True while the window is on screen. */
   get isOpen() { return RitualHUD.isOpen; },
-  /** True when this client has a performer (GM: selected token; player: their character). */
+  /** True when this client has a performer who knows at least one discipline. */
   canOpen() { return canOpenRitual(); },
+  /** Why canOpen() is false — a tooltip string, or null when it is true. */
+  blockedReason() { return blockedReason(); },
   /** The resolved performer, or null. */
   performer() { return resolvePerformer(); },
   /** Disciplines an actor may perform. */
