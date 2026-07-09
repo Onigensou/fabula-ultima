@@ -31,10 +31,10 @@ Hooks.once("ready", () => {
       // EXP Awarder:  expected above Combat
       // AEM:          above EXP Awarder
       offsetRightPx: 313,
-      offsetBottomPx: 254,
+      offsetBottomPx: 238,
 
       // Visual
-      sizePx: 60,
+      sizePx: 52,
       zIndex: 82,
       iconText: "💫",
 

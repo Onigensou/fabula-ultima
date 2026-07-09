@@ -249,9 +249,25 @@
         font-style: italic;
         letter-spacing:.4px;
         color:#8a4b22;
-        -webkit-text-stroke: calc(var(--cr-check-stroke, 2) * 1px) var(--cr-check-stroke-color, #f7ecd9);
-        paint-order: stroke fill;
-        text-shadow: 0 1px 0 rgba(0,0,0,.25);
+        /* Outline via text-shadow, NOT -webkit-text-stroke + paint-order.
+           Chromium honours paint-order on HTML text only from v128; earlier
+           builds parse it (so CSS.supports() answers "yes") but paint the
+           stroke OVER the fill, so this light stroke ate these dark glyphs.
+           The Foundry desktop app is Electron 29 / Chromium 122 and hit exactly
+           that, while a browser client rendered the same CSS correctly.
+           text-shadow always paints behind the glyph, on every engine. */
+        --cr-stroke-w: calc(var(--cr-check-stroke, 2) * 1px);
+        --cr-stroke-c: var(--cr-check-stroke-color, #f7ecd9);
+        text-shadow:
+          calc(-1 * var(--cr-stroke-w)) calc(-1 * var(--cr-stroke-w)) 0 var(--cr-stroke-c),
+          0 calc(-1 * var(--cr-stroke-w)) 0 var(--cr-stroke-c),
+          var(--cr-stroke-w) calc(-1 * var(--cr-stroke-w)) 0 var(--cr-stroke-c),
+          calc(-1 * var(--cr-stroke-w)) 0 0 var(--cr-stroke-c),
+          var(--cr-stroke-w) 0 0 var(--cr-stroke-c),
+          calc(-1 * var(--cr-stroke-w)) var(--cr-stroke-w) 0 var(--cr-stroke-c),
+          0 var(--cr-stroke-w) 0 var(--cr-stroke-c),
+          var(--cr-stroke-w) var(--cr-stroke-w) 0 var(--cr-stroke-c),
+          0 1px 0 rgba(0,0,0,.25);
         pointer-events:none;
       }
 

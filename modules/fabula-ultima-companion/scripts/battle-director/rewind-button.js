@@ -29,8 +29,8 @@ Hooks.once("ready", () => {
       gmOnly: true,
       // Position (above the CheckRequester button at 322).
       offsetRightPx: 313,
-      offsetBottomPx: 390,
-      sizePx: 60,
+      offsetBottomPx: 430,
+      sizePx: 52,
       zIndex: 81,
       // The panel + confirm modal must lay ABOVE the Battle Director action
       // card (z-index 95) so they're never hidden behind it — same intent as
