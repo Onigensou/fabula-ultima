@@ -1175,6 +1175,21 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .split(/[\s,]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
           return tags.includes(needle) ? 1 : 0;
         }
+        // Dynamic AFFECTED_BY_<TAG> — 1 if a `<tag>`-tagged Active Effect ACTUALLY
+        // APPLIED its damage-increase to the hit that fired this trigger, else 0.
+        // The resource-ledger stamps `payload.appliedEffectTags` with the tags of
+        // every AE whose `damage_taken_increased_<element>` bump contributed to
+        // THIS hit — element-gated, so an effect inert for the dealt element is NOT
+        // listed (an Invoker Hex covering {bolt,fire} reads AFFECTED_BY_HEX == 1 on
+        // a fire hit but 0 on an ice hit). General "react when the damage was
+        // amplified by a <tag> effect" primitive; the Invoker's Ripples gates on
+        // AFFECTED_BY_HEX. Provenance is by-tag, not mere AE presence — a hex
+        // sitting on the target that didn't touch this element does NOT count.
+        if (name.startsWith("AFFECTED_BY_")) {
+          const needle = name.slice("AFFECTED_BY_".length).replace(/_/g, " ").toLowerCase().trim();
+          const tags = Array.isArray(payload?.appliedEffectTags) ? payload.appliedEffectTags : [];
+          return tags.map((t) => String(t ?? "").toLowerCase().trim()).includes(needle) ? 1 : 0;
+        }
         // Dynamic ANY_TARGET_HAS_MY_<STATUS> — per-applier twin of
         // ANY_TARGET_HAS_<STATUS>: 1 if ANY of the action's targets carries the
         // named status/AE THAT THIS ACTOR APPLIED (the AE's directorAppliedBy

@@ -784,6 +784,13 @@ async function resolveAction(director, ar, opts = {}) {
           accuracyTotal: ar.roll?.total ?? null,
           highRoll: ar.roll?.hr ?? null,
           pierce: !!r.pierceMiss,
+          // Tag-provenance of any AE damage-increase actually applied to THIS
+          // hit's element (element-gated) — backs AFFECTED_BY_<TAG>. The
+          // effective element is the per-hit reaction override if any, else the
+          // action element. Only on an HP loss; heals never carry a hex bump.
+          appliedEffectTags: valueDirection === "loss"
+            ? SE().collectAppliedIncreaseTags(targetActor, r.element ?? ar.damageType)
+            : [],
         });
 
         // Drain keyword (Tinkerer Vampire infusion / Keyword Repository): the
@@ -971,6 +978,34 @@ async function resolveAction(director, ar, opts = {}) {
     if (struck.length) {
       const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
       const struckTokenUuids = struck.map((r) => r.tokenUuid);
+
+      // Free-action grant ON-HIT riders — the granting skill's effect_table rows
+      // named in `onHitEffectRefs` run against the GENUINELY HIT targets
+      // (hit_action_targets), so a spawned free attack can carry a declarative
+      // on-hit effect from its source skill without baking logic into the weapon.
+      // Ripples ends all "hex" AEs on the struck enemy here (RAW: hexes end "after
+      // the attack has been resolved" and only "if it is successful"). Gated on a
+      // real hit (not a pierce-miss). The element retype was already baked at
+      // COMPUTE via grant.elementOverride.
+      const _onHitRefs = ar.freeActionGrant?.onHitEffectRefs;
+      if (Array.isArray(_onHitRefs) && _onHitRefs.length) {
+        const _hitTokenUuids = struck.filter((r) => r.hit).map((r) => r.tokenUuid);
+        const _srcSkill = (_hitTokenUuids.length && ar.freeActionGrant?.sourceItemUuid)
+          ? await fromUuid(ar.freeActionGrant.sourceItemUuid).catch(() => null) : null;
+        if (_srcSkill) {
+          const riderCtx = {
+            director, skill: _srcSkill, reactorActor: casterActor,
+            reactorToken: ar.attacker?.tokenUuid ? { uuid: ar.attacker.tokenUuid } : null,
+            hitActionTargetUuids: _hitTokenUuids,
+            payload: { hitTargets: _hitTokenUuids, targetTokenUuids: _hitTokenUuids },
+          };
+          for (const ref of _onHitRefs) {
+            try { await SE().applyEffectByLabel(String(ref).trim(), riderCtx); }
+            catch (e) { warn(`RESOLVE: free-action on-hit ref "${ref}" threw`, e); }
+          }
+        }
+      }
+
       for (const r of struck) {
         queuePostResolveTrigger(director, {
           casterActor,
@@ -4196,7 +4231,13 @@ const Compute = {
           // then skips the primary. (Also stops a MISSED target getting hit-gated
           // AEs via the resolve-time all-targets fallback.)
           hitTokenUuids: delta.hitTokenUuids,
-          ...(attackGrant ? { freeActionGrant: { sourceLabel: attackGrant.sourceLabel, checkBonus: attackGrant.checkBonus ?? 0, damageBonus: attackGrant.damageBonus ?? 0 } } : {}),
+          ...(attackGrant ? { freeActionGrant: { sourceLabel: attackGrant.sourceLabel, checkBonus: attackGrant.checkBonus ?? 0, damageBonus: attackGrant.damageBonus ?? 0,
+            // Rider metadata for on-hit effect refs (Ripples ends hexes) — needs to
+            // survive to RESOLVE. elementOverride already baked into the profile at
+            // COMPUTE; carried here only for card/debug parity.
+            elementOverride: attackGrant.elementOverride ?? null,
+            onHitEffectRefs: attackGrant.onHitEffectRefs ?? null,
+            sourceItemUuid: attackGrant.sourceItemUuid ?? null } } : {}),
         });
         director.enqueue({ type: INTENTS.INTERNAL_DONE });
         return;
@@ -6353,6 +6394,10 @@ const FreeActionWindow = {
       // reads allowedSkillRefs; the targeting step reads lockedTargetTokenUuid.
       allowedSkillRefs:      req.allowedSkillRefs ?? null,
       lockedTargetTokenUuid: req.lockedTargetTokenUuid ?? null,
+      // Rider knobs (Ripples): force the spawned attack's element (adopt the
+      // ally's) + run on-hit effect refs from the granting skill after it lands.
+      elementOverride:       req.elementOverride ?? null,
+      onHitEffectRefs:       req.onHitEffectRefs ?? null,
       // free_action preset (null for compose-style free_mode grants): a fully
       // determined action bundle. DECLARE reads this to skip composeAction and
       // stage the exact action directly. See applyFreeActionEffect.

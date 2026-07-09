@@ -139,7 +139,11 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
       : keywords;
     const native = weapon?.damageType ?? "Physical";
     const overridden = resolveDamageElementOverride({ actor: liveAttacker, scope: "attack", native });
-    const element = String(overridden ?? native ?? "Physical").toLowerCase();
+    // Free-action grant element override (Ripples: the free attack's damage becomes
+    // the ally's element). Wins over the actor-scoped override + native — a
+    // grant-scoped, one-shot retype threaded via ctx.grant. Empty = untouched.
+    const grantElement = String(grant?.elementOverride ?? "").trim().toLowerCase();
+    const element = grantElement || String(overridden ?? native ?? "Physical").toLowerCase();
     const rangeKind = /melee/i.test(weapon?.range ?? "") ? "melee"
       : /rang/i.test(weapon?.range ?? "") ? "ranged" : null;
     const weaponKey = String(weapon?.weaponType ?? "").toLowerCase() || null;
@@ -154,7 +158,11 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
       mode: "damage", element, resource: "hp", isMpDamage: false,
       damageBonus: (Number(weapon?.damageBonus ?? 0) || 0) + grantDb,
       outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
-      rangeKind, weaponKey, nativeElement: native, overriddenElement: overridden,
+      // overriddenElement drives the HEADLINE damage element (projectProfileToActionResult's
+      // ladder reads it before nativeElement) — so a grant element override (Ripples: the
+      // free attack "becomes the ally's element") must surface here too, else the per-target
+      // damage retypes correctly but the card/ar.damageType still shows the weapon's native.
+      rangeKind, weaponKey, nativeElement: native, overriddenElement: grantElement || overridden,
       // Pierce is a property of the action (a `pierce` action keyword — inherent on
       // the weapon or, for a spell like Iceberg, on the skill), not of being an
       // Attack. `weapon?.hasPierce` stays for the NPC pseudo-weapon path.

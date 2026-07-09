@@ -2223,7 +2223,7 @@ export async function refreshReactionSubjects({ acceptedPrePassives, ar, attacke
 // the subject. No-op without a director (out of combat) — resource reactions
 // are combat-context by design. Rows filter via reaction_resource_filter +
 // reaction_cause_filter (see passesMatchFilters).
-export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null }) {
+export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [] }) {
   if (!director?.ctx || !actor || !resource || !(amount > 0)) return;
   if (direction !== "loss" && direction !== "recover") return;
   if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
@@ -2272,8 +2272,47 @@ export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource
       // reflect/leech-style reactions (Painful Lesson). NOT the source filter.
       causeActorUuid: source.actorUuid ?? null,
       causeTokenUuid: source.tokenUuid ?? null,
+      // Tags of every AE whose damage-increase change was ACTUALLY APPLIED to
+      // this hit (element-gated — see collectAppliedIncreaseTags). Backs the
+      // generic AFFECTED_BY_<TAG> reaction identifier: "react when the damage
+      // was amplified by a <tag> effect." Empty for tick/heal/unhexed lines.
+      appliedEffectTags: Array.isArray(appliedEffectTags) ? appliedEffectTags : [],
     },
   });
+}
+
+// Collect the `system.tags` of every ACTIVE Active Effect on `actor` that
+// contributed a positive `damage_taken_increased_<element>` change — i.e. the
+// tagged effects whose bump was actually APPLIED to a hit of THIS element.
+// Backs the generic AFFECTED_BY_<TAG> reaction identifier (skill-formulas.js).
+//
+// Element-gating falls out for free: an effect that writes no key for the dealt
+// element contributes nothing, so it isn't collected. An Invoker Hex covering
+// {bolt, fire} thus registers as "affected" on a fire hit but NOT on an ice hit,
+// exactly matching RAW "if that damage was increased by … your hex invocations."
+// Reads `appliedEffects` (Foundry's non-disabled, non-suppressed set) so it
+// mirrors the same AEs that seeded the summed accumulator flag.
+export function collectAppliedIncreaseTags(actor, element) {
+  const el = String(element ?? "").toLowerCase().trim();
+  if (!actor || !el) return [];
+  const key = `flags.fabula-ultima-companion.damage_taken_increased_${el}`;
+  const out = new Set();
+  try {
+    const effects = actor.appliedEffects ?? actor.effects ?? [];
+    for (const eff of effects) {
+      if (!eff || eff.disabled) continue;
+      const changes = Array.isArray(eff.changes) ? eff.changes : [];
+      if (!changes.some((c) => c?.key === key && Number(c?.value) > 0)) continue;
+      const tags = eff.system?.tags;
+      if (Array.isArray(tags)) {
+        for (const t of tags) {
+          const s = String(t ?? "").trim().toLowerCase();
+          if (s) out.add(s);
+        }
+      }
+    }
+  } catch { /* non-fatal — no attribution rather than a thrown resolve */ }
+  return [...out];
 }
 
 export async function firePassiveTriggers({ director, casterActor, trigger, payload, skipEvaluated }) {
@@ -4693,6 +4732,9 @@ async function dealDamageApply(row, ctx, d) {
             // Who CAUSED the loss — the AE's applier (Fafnir) for an attributed
             // rider, so reflect/leech reactions on the bearer point at the caster.
             source: causeSource,
+            // Tag-provenance of any AE-sourced increase applied to this line —
+            // element-gated. Only meaningful on an HP loss (heals don't hex).
+            appliedEffectTags: delta < 0 ? collectAppliedIncreaseTags(actor, element) : [],
           });
         }
       }
@@ -7114,6 +7156,28 @@ async function applyFreeActionEffect(row, ctx) {
   const allowedSkillRefs = String(row.allowed_skill_refs ?? "")
     .split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
 
+  // element_override — force the spawned action's damage element (Ripples: "all
+  // its damage becomes of the same type dealt by your ally"). The literal
+  // `trigger_element` resolves to the trigger payload's element (the ally's damage
+  // type); any other value is taken as a literal element. Empty = no override.
+  // Generic knob: reusable by any free-action attack that changes element.
+  const eoRaw = String(row.element_override ?? "").trim().toLowerCase();
+  let elementOverride = null;
+  if (eoRaw === "trigger_element" || eoRaw === "payload_element") {
+    elementOverride = String(ctx.payload?.element ?? "").trim().toLowerCase() || null;
+  } else if (eoRaw) {
+    elementOverride = eoRaw;
+  }
+
+  // on_hit_effect_refs — effect_label(s) on THIS (the granting) skill's effect_table
+  // to run AFTER the spawned attack RESOLVES, against its struck targets
+  // (hit_action_targets). Gated on a hit at the RESOLVE site. Ripples ends all
+  // "hex" AEs on the struck enemy via a remove_tagged_ae row. Generic on-hit rider
+  // for a spawned free attack — the source skill declares the effect, no engine
+  // logic per skill.
+  const onHitEffectRefs = String(row.on_hit_effect_refs ?? "")
+    .split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+
   const sourceLabel = ctx.skill?.name ?? row.effect_label ?? "Free Action";
   freeActionQueue.enqueue({
     reactorActorId:   reactor.id,
@@ -7129,6 +7193,10 @@ async function applyFreeActionEffect(row, ctx) {
     lockedTargetTokenUuid: presetTargetTokenUuids?.[0] ?? null,
     // Skill menu allow-list (compose-style only). Empty array = unrestricted.
     allowedSkillRefs: allowedSkillRefs.length ? allowedSkillRefs : null,
+    // Rider knobs (Ripples): force the spawned attack's element + run on-hit
+    // effect refs from THIS skill after it resolves. Both null/empty when unset.
+    elementOverride,
+    onHitEffectRefs: onHitEffectRefs.length ? onHitEffectRefs : null,
     preset,                                    // null = compose; set = staged directly in DECLARE
     // chain: this free action is a CHAIN strike, not a "free attack" — it
     // BYPASSES preventFreeAttack (a "no Free Attacks" debuff must not stop a
