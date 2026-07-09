@@ -269,6 +269,9 @@ const RitualHUD = {
     this._renderMaterial();
     this._renderGroup();
     this._refreshFinalize();
+    // Paint the starting row. Setting `_row` alone leaves every row unringed,
+    // so the feather points at a control that does not look selected.
+    this._focus(this._row, { silent: true });
   },
 
   // ── Value cycling ────────────────────────────────────────────────────────
