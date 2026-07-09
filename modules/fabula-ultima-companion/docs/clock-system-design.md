@@ -3,8 +3,9 @@
 Automates Fabula Ultima Clocks (core rulebook pp. 52–55) as a reusable API.
 The bundled UI is optional; the engine has no idea it exists.
 
-Status: phases 1–4 complete (the API deliverable). UI, GM manager window, and
-the Battle Director automation bridge are not built yet.
+Status: **all eight phases complete.** Verified headlessly (160 assertions);
+**not yet run in a live world** — awaiting a play session for smoke test and
+visual tuning.
 
 ---
 
@@ -162,13 +163,26 @@ convention.
 | File | Purpose | Pure? |
 |---|---|---|
 | `clock-const.js` | enums, hook names, RAW thresholds | yes |
-| `clock-model.js` | schema, advance/resolve math, presets | yes |
+| `clock-model.js` | schema, advance/resolve math, presets, `notchOwnerAt` | yes |
 | `clock-check.js` | RAW check rules, `previewCheck` | yes |
 | `clock-store.js` | world-setting registry, writer gate, diff emission | no |
 | `clock-socket.js` | GM-mediated mutation | no |
 | `clock-api.js` | public surface + bootstrap | no |
+| `clock-ui-styles.js` | injected CSS, `CLOCK_TUNE`, SFX | no |
+| `clock-ui-bar.js` | the segmented gauge (a consumer) | no |
+| `clock-ui-resolve.js` | resolution flourish + chat card | no |
+| `clock-manager-app.js` | GM manager window (a consumer) | no |
+| `clock-automation.js` | `fu-director-trigger` subscriber, rule matcher | no |
 
-Only `clock-api.js` is listed in `module.json`; it pulls in the rest.
+`module.json` lists the four entry points — `clock-api.js` first, then
+`clock-ui-bar.js`, `clock-manager-app.js`, `clock-automation.js` — so the engine
+boots before its consumers. Everything else is pulled in by import.
+
+### Tuning
+
+Layout lives in `CLOCK_TUNE` (`clock-ui-styles.js`) and is applied as CSS custom
+properties, so it can be dialled in live and then baked into the defaults:
+`layerTop`, `barWidth`, `barHeight`, `notchGap`, `tickStaggerMs`, `compactAt`.
 
 ---
 
@@ -178,9 +192,10 @@ Run in bare Node — no Foundry, no browser, no world. Keeping the model pure is
 what makes this possible, and these harnesses are what keep it pure.
 
 ```
-node scripts/clock-system/clock-model.test.mjs    # 57 assertions
-node scripts/clock-system/clock-check.test.mjs    # 58 assertions
-node scripts/clock-system/clock-socket.test.mjs   # 11 assertions
+node scripts/clock-system/clock-model.test.mjs       # 67 assertions
+node scripts/clock-system/clock-check.test.mjs       # 58 assertions
+node scripts/clock-system/clock-automation.test.mjs  # 24 assertions
+node scripts/clock-system/clock-socket.test.mjs      # 11 assertions
 ```
 
 The load-bearing cases are the pole-ownership ones ("players push a teardown
@@ -223,28 +238,97 @@ await api.applyCheck(rift.id, { result: 8, difficulty: 10, isFumble: false });
 
 ---
 
-## 10. Not built yet
+## 10. The UI
 
-Phases 5–8 of the agreed plan:
+A JRPG segmented gauge — discrete notches, like a boss stagger bar. Stacked
+top-center, collapsing to a compact strip past four clocks. Sections land **one
+at a time** with a tick, because "two sections" is the unit the rules speak in
+and the player should feel both. The renderer keeps its own `shown` value and
+walks it toward the real one, so a change arriving mid-animation retargets
+rather than stacking.
 
-5. **Default UI** — segmented JRPG gauge (not a pie), center-out fill for
-   struggle clocks, per-section tick animation, resolution flourish.
-6. **GM manager window** — create/edit/advance/turn-back/discard, stale sweep.
-7. **Battle Director automation bridge** — one additive `Hooks.callAll(
-   "fu-director-trigger", …)` inside `firePassiveTriggers`, which is the only BD
-   edit the feature needs. BD's 26 triggers are currently dispatched only to
-   reaction rows, so no subsystem can observe combat events today. Clock
-   `automation` rows (already on the schema, currently inert) then match against
-   it on the active GM.
-8. **Migration** — repoint `opportunity-effect-progress.js` off the
-   `global-progress-clocks` module (which has no public API and no concept of
-   sides, poles, or success/failure) onto this one.
+The colour rule is `notchOwnerAt` (§1), and it lives in the model, not the
+renderer — so the bar and the manager's mini-gauge cannot disagree about what a
+clock looks like, and all four shapes are under test rather than eyeballed.
 
-### Deferred, with reasons
+Turn it off with the client setting **"Show the clock bar"**. Resolution chat
+cards stay wired regardless, and self-gate to the active GM so a six-client
+table sees one card.
+
+**GM manager**: `FUCompanion.api.clocks.manager.open()`.
+
+---
+
+## 11. Automation
+
+A clock's `automation` array is data:
+
+```js
+automation: [
+  { trigger: "creature_defeated", subject: "enemy", side: "players", sections: 1 },
+  { trigger: "round_end",         side: "gm", sections: 1, cause: "the ritual advances" },
+  { trigger: "creature_fumbles_check", side: "gm", sections: 2, once: true },
+]
+```
+
+Filters: `trigger`, `subject` (`player`/`enemy`/`any`), `skill` (name match),
+`once`, and `condition`. `mode: "check"` re-uses the RAW advancement rules when
+the payload carries a check, so the sections come from the margin.
+
+Events arrive on `fu-director-trigger`. **Conditions are a named-predicate
+registry, not a formula language** — BD already has one, and a second dialect to
+keep in sync would be a liability:
+
+```js
+FUCompanion.api.clocks.automation.registerCondition(
+  "bossIsBloodied", ({ casterActor }) => hpFraction(casterActor) < 0.5);
+```
+
+An unknown or throwing condition **rejects the row** rather than passing it.
+
+### The Battle Director edit
+
+`firePassiveTriggers` now re-broadcasts every trigger as a plain
+`fu-director-trigger` hook. Additive: it changes no dispatch, consumes no
+result, cannot influence resolution, and is wrapped so a subscriber that throws
+cannot break combat.
+
+It fires **before** the token guard, deliberately — a reaction menu needs a token
+to anchor to, but an observer does not, and dropping the event for a tokenless
+actor would be a silent gap.
+
+That is the entire BD footprint of this feature. Before it, BD's 26 triggers
+went only to reaction rows: no subsystem could observe combat events at all.
+
+---
+
+## 12. Still to verify
+
+Nothing here has run in a live world. Before trusting it in a session:
+
+- [ ] the bar renders, stacks, and collapses past four clocks
+- [ ] a multi-section advance ticks once per section, not all at once
+- [ ] a struggle clock reads as a two-colour tug-of-war
+- [ ] resolution: flash, banner, exactly ONE chat card at a two-GM table
+- [ ] a player advancing a clock relays to the GM and updates every client
+- [ ] `combat` clocks vanish when the director stops; `scene` clocks survive
+      their own `canvasReady` and die when you leave
+- [ ] an automation row fires once per trigger, not once per GM
+- [ ] the Progress opportunity effect lists Clock System clocks first
+
+`CLOCK_TUNE` is where the visual dialling-in happens.
+
+---
+
+## 13. Deferred, with reasons
 
 - **Predictive preview on the action card.** `previewCheck` exists and is pure;
   wiring it into BD's pre-resolve pill mechanism is separate work and should not
   sit on the critical path to a working clock.
+- **Retiring `global-progress-clocks`.** The Progress opportunity effect now
+  lists Clock System clocks *first* and keeps the legacy module's clocks under a
+  "(legacy)" group, rather than ripping them out from under a live world. Once
+  no authored clock lives there, delete the branch and the module.
 - **Outcome scripts on a pole.** Letting a pole spawn an actor or end a combat
   turns clocks into a scene-scripting primitive. The clean version is a pole
   emitting `fu-clock-resolved` and letting `event-system` own the response —
