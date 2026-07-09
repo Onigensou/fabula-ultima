@@ -22,6 +22,8 @@ import { injectHealingStyles } from "./healing-hud-styles.js";
 import { gatherHealingActions } from "./healing-actions.js";
 import { requestApply, broadcastHealFeedback } from "./healing-socket.js";
 import { actorDebuffs } from "./healing-cleanse.js";
+import { getPotionRain } from "./potion-rain.js";
+import { HealingFeedback } from "./healing-feedback.js";
 
 const CATEGORY_ORDER = [HEAL_CATEGORY.SKILL, HEAL_CATEGORY.SPELL, HEAL_CATEGORY.ITEM, HEAL_CATEGORY.CREATE];
 
@@ -40,11 +42,17 @@ const HealingHUD = {
   _zone: "list",          // "list" | "targets" | "debuffs"
   _armed: null,           // descriptor
   _targetIndex: 0,
-  _targetMode: "single",  // "single" | "all" | "self" (from armed.targeting)
+  _targetMode: "single",  // "single" | "all" | "self" | "multi" (Potion Rain spread)
+  _potionRain: { has: false, sl: 0 },  // caster's Potion Rain ownership + SL
+  _potionRainOn: false,   // toggle state (persists across potions; inert on non-potions)
+  _multiSelected: new Set(),  // member indices chosen for a Potion Rain spread
   _debuffIndex: 0,        // index within the targeted actor's debuff list (picker)
   _keyHandler: null,
   _updateHook: null,
   _refreshing: false,
+  _applying: false,       // true while an apply is in flight — suppresses the
+                          // per-write updateActor→_refreshActions re-gather storm
+                          // (CSB prepareData is heavy; _afterApply refreshes once)
   _cursorEl: null,
   _cursorReady: false,
   _extraCursors: [],      // additional feather cursors for "all" targeting
@@ -88,6 +96,9 @@ const HealingHUD = {
     }
 
     this._actions = await gatherHealingActions(caster);
+    this._potionRain = getPotionRain(caster);
+    this._potionRainOn = false;
+    this._multiSelected = new Set();
     // Start on the first tab that has entries.
     this._category = CATEGORY_ORDER.find((c) => this._actions[c]?.length) ?? HEAL_CATEGORY.SKILL;
     this._listIndex = 0;
@@ -144,6 +155,10 @@ const HealingHUD = {
         <div class="oni-heal-header">
           <div class="title"><span class="heart">❤</span>Healing</div>
           <div class="caster">Caster: <b>${escapeHtml(this._caster.name)}</b></div>
+          <div class="oni-heal-pr-toggle" title="Potion Rain — spread a potion to allies (each heals half)" style="display:none">
+            <span class="pr-ico">🌧</span><span class="pr-label">Potion Rain</span>
+            <span class="pr-switch"><span class="knob"></span></span>
+          </div>
           <div class="oni-heal-close" title="Close (X)">✕</div>
         </div>
         <div class="oni-heal-body">
@@ -180,11 +195,20 @@ const HealingHUD = {
     document.body.appendChild(this._aeTooltipEl);
 
     root.querySelector(".oni-heal-close").addEventListener("click", () => { this.close(); });
+    root.querySelector(".oni-heal-pr-toggle").addEventListener("click", () => { this._togglePotionRain(); });
     // Click on the dark backdrop (outside the frame) closes.
     root.addEventListener("pointerdown", (ev) => { if (ev.target === root) this.close(); });
 
-    // Debuff-icon hover tooltip (event delegation on the grid).
+    // Right-click a chosen ally (Potion Rain spread) → deselect it.
     const grid = root.querySelector(".oni-heal-grid");
+    grid.addEventListener("contextmenu", (ev) => {
+      const cell = ev.target.closest?.(".oni-heal-cell");
+      if (!cell || this._zone !== "targets" || this._targetMode !== "multi") return;
+      ev.preventDefault();
+      this._multiDeselect(Number(cell.dataset.idx));
+    });
+
+    // Debuff-icon hover tooltip (event delegation on the grid).
     grid.addEventListener("mouseover", (ev) => {
       const icon = ev.target.closest?.(".oni-heal-debuff");
       if (!icon) return;
@@ -211,6 +235,7 @@ const HealingHUD = {
     this._renderList();
     this._renderParty(true);   // staggered intro
     this._renderBanner();
+    this._renderPotionToggle();
   },
 
   _renderTabs() {
@@ -236,6 +261,7 @@ const HealingHUD = {
       empty.textContent = `No ${this._category.toLowerCase()} heals available.`;
       listEl.appendChild(empty);
       if (this._zone === "list") this._updateCursor();
+      this._renderPotionToggle();
       return;
     }
     if (this._listIndex >= rows.length) this._listIndex = rows.length - 1;
@@ -266,6 +292,7 @@ const HealingHUD = {
       listEl.appendChild(row);
     });
     if (this._zone === "list") this._updateCursor();
+    this._renderPotionToggle();
   },
 
   // Battle-sprite (transparent) with token fallback. Animated .webm sprites
@@ -309,6 +336,7 @@ const HealingHUD = {
       cell.addEventListener("click", () => {
         if (!this._armed) { return; }   // must arm an action first
         if (this._zone === "debuffs") return;   // debuff icons handle their own clicks
+        if (this._targetMode === "multi") { this._onMultiCellClick(i); return; }
         if (this._targetMode === "all") { this._onConfirmTargets(); return; }
         this._targetIndex = i; this._updateCellStates();
         this._onConfirmTargets();
@@ -328,8 +356,11 @@ const HealingHUD = {
       const i = Number(cell.dataset.idx);
       const entry = this._members[i] ?? null;
       const canBenefit = !!entry && (!this._armed || this._canBenefit(entry.actor, this._armed));
-      const targeting = !!entry && inTargets && !!this._armed
-        && (this._targetMode === "all" ? canBenefit : i === this._targetIndex);
+      let pick;
+      if (this._targetMode === "all") pick = canBenefit;
+      else if (this._targetMode === "multi") pick = this._multiSelected.has(i);
+      else pick = i === this._targetIndex;
+      const targeting = !!entry && inTargets && !!this._armed && pick;
       const dimFull = !!entry && !!this._armed && !canBenefit;
       cell.classList.toggle("sel", targeting);
       cell.classList.toggle("targeting", targeting);
@@ -476,6 +507,26 @@ const HealingHUD = {
       });
       return;
     }
+    // Potion Rain spread → a planted feather on each chosen ally, plus the roving
+    // cursor on the current cell.
+    if (this._zone === "targets" && this._targetMode === "multi") {
+      this._clearExtraCursors();
+      for (const idx of this._multiSelected) {
+        const cell = this._root.querySelector(`.oni-heal-cell[data-idx="${idx}"]`);
+        if (!cell) continue;
+        const cur = document.createElement("img");
+        cur.className = "oni-heal-cursor stuck";
+        cur.src = HEAL_CURSOR_SRC;
+        document.body.appendChild(cur);
+        this._extraCursors.push(cur);
+        const r = cell.getBoundingClientRect();
+        cur.style.left = `${r.right}px`; cur.style.top = `${r.bottom}px`; cur.classList.add("is-visible");
+      }
+      const cell = this._root.querySelector(`.oni-heal-cell[data-idx="${this._targetIndex}"]`);
+      if (cell) this._placeCursorAt(this._cursorEl, cell.getBoundingClientRect());
+      else this._cursorEl.classList.remove("is-visible");
+      return;
+    }
     this._clearExtraCursors();
 
     let targetEl = null;
@@ -511,10 +562,78 @@ const HealingHUD = {
     const a = this._armed;
     let tail;
     if (this._zone === "debuffs") tail = "choose a debuff to cleanse";
+    else if (this._targetMode === "multi") {
+      const n = this._multiSelected.size, cap = this._potionRainCap();
+      tail = n > 0
+        ? `🌧 ${n}/${cap} chosen${n > 1 ? " · ½ each" : ""} — click a chosen ally to confirm · X / right-click removes`
+        : `🌧 Potion Rain — pick up to ${cap} allies (each extra heals half)`;
+    }
     else if (this._targetMode === "all") tail = "confirm to apply to all";
     else if (a.targeting === "self") tail = "confirm on self";
     else tail = "choose a target";
     el.innerHTML = `Using <b>${escapeHtml(a.name)}</b> (${escapeHtml(a.healLabel)}) — ${tail}`;
+  },
+
+  // ── Potion Rain ─────────────────────────────────────────────────────────────
+  // The action currently "in focus": the armed action, else the highlighted row.
+  _contextAction() {
+    return this._armed ?? (this._currentRows()[this._listIndex] ?? null);
+  },
+  // Is Potion Rain applicable to the focused action? Requires ownership AND that
+  // the object in use is a single-target heal *potion* — both must be at play.
+  _potionRainApplicable(desc = this._contextAction()) {
+    return !!(this._potionRain?.has && desc && desc.isPotion && desc.kind === "heal" && desc.targeting === "single");
+  },
+  // Total-target cap: 1 primary + SL extra.
+  _potionRainCap() { return 1 + (this._potionRain?.sl ?? 0); },
+  // Is the ARMED action currently operating as a Potion Rain spread?
+  _potionRainActive() { return this._potionRainOn && !!this._armed && this._potionRainApplicable(this._armed); },
+
+  // Show/hide + on-state of the header toggle (visible only when Potion Rain is
+  // at play: caster owns it and the focused action is a potion).
+  _renderPotionToggle() {
+    const el = this._root?.querySelector(".oni-heal-pr-toggle");
+    if (!el) return;
+    el.style.display = this._potionRainApplicable() ? "flex" : "none";
+    el.classList.toggle("on", this._potionRainOn);
+  },
+
+  _togglePotionRain() {
+    if (!this._potionRainApplicable()) return;
+    this._potionRainOn = !this._potionRainOn;
+    playHealSfx(this._potionRainOn ? "ARM" : "CANCEL");
+    // If a potion is already armed, switch its targeting mode live.
+    if (this._armed && this._zone === "targets") {
+      this._multiSelected.clear();
+      this._targetMode = this._potionRainActive() ? "multi" : (this._armed.targeting ?? "single");
+      if (this._targetMode === "single" && !this._members[this._targetIndex]) this._targetIndex = 0;
+    }
+    this._renderPotionToggle(); this._updateCellStates(); this._renderBanner();
+  },
+
+  // A click / Z on a party cell while in Potion Rain spread mode. Selecting an
+  // ally plants a feather on it; clicking an already-chosen ally confirms.
+  _onMultiCellClick(i) {
+    const entry = this._members[i];
+    if (!entry?.actor) return;
+    this._targetIndex = i;
+    if (this._multiSelected.has(i)) { this._applyAction(); return; }   // chosen again → confirm
+    if (!this._canBenefit(entry.actor, this._armed)) { playHealSfx("FULL"); this._updateCellStates(); return; }
+    if (this._multiSelected.size >= this._potionRainCap()) { playHealSfx("DENY"); return; }
+    this._multiSelected.add(i);
+    playHealSfx("SELECT");
+    this._updateCellStates(); this._renderBanner();
+  },
+
+  // Remove a chosen ally from the Potion Rain selection (keyboard X on the
+  // current cell, or right-click a chosen ally). Returns true if it deselected.
+  _multiDeselect(i) {
+    if (this._targetMode !== "multi" || !this._multiSelected.has(i)) return false;
+    this._multiSelected.delete(i);
+    this._targetIndex = i;
+    playHealSfx("CANCEL");
+    this._updateCellStates(); this._renderBanner();
+    return true;
   },
 
   // ── Interaction ───────────────────────────────────────────────────────────
@@ -545,7 +664,8 @@ const HealingHUD = {
     if (!desc) return;
     if (!desc.affordable) { playHealSfx("DENY"); ui.notifications?.warn(`Cannot use ${desc.name}: not enough resources.`); return; }
     this._armed = desc;
-    this._targetMode = desc.targeting ?? "single";
+    this._multiSelected.clear();
+    this._targetMode = this._potionRainActive() ? "multi" : (desc.targeting ?? "single");
     this._zone = "targets";
     if (this._targetMode === "self") this._targetIndex = this._casterIndex();
     else if (!this._members[this._targetIndex]) this._targetIndex = 0;
@@ -564,6 +684,7 @@ const HealingHUD = {
     }
     this._armed = null;
     this._targetMode = "single";
+    this._multiSelected.clear();
     this._zone = "list";
     playHealSfx("CANCEL");
     this._renderList(); this._updateCellStates(); this._renderBanner();
@@ -593,6 +714,9 @@ const HealingHUD = {
   // List of target entries for the armed action's targeting mode.
   _resolvedTargets() {
     if (this._targetMode === "all") return this._members.filter((m) => m?.actor);
+    if (this._targetMode === "multi") {
+      return [...this._multiSelected].sort((a, b) => a - b).map((i) => this._members[i]).filter((m) => m?.actor);
+    }
     const entry = this._members[this._targetIndex];
     return entry?.actor ? [entry] : [];
   },
@@ -602,6 +726,9 @@ const HealingHUD = {
   _onConfirmTargets() {
     const desc = this._armed;
     if (!desc) return;
+    // Potion Rain: Z on the current cell mirrors a click — select it, or confirm
+    // if it was already chosen.
+    if (this._targetMode === "multi") { this._onMultiCellClick(this._targetIndex); return; }
     if (desc.kind === "cleanse" && desc.cleanseScope === "one" && this._targetMode !== "all") {
       this._enterDebuffPicker();
       return;
@@ -631,6 +758,7 @@ const HealingHUD = {
       effectItemUuid: d.effectItemUuid,
       costItemUuid: d.costItemUuid,
       consumableUuid: d.consumableUuid ?? null,
+      carrierUuid: d.carrierUuid ?? null,   // create-preset carrier (potion tag may live here)
       mode: d.mode ?? "use",
       ipCost: d.ipCost ?? 0,
     };
@@ -640,6 +768,7 @@ const HealingHUD = {
   async _applyAction() {
     const desc = this._armed;
     if (!desc) return;
+    const spread = this._targetMode === "multi";
     const targets = this._resolvedTargets().filter((t) => this._canBenefit(t.actor, desc));
     if (!targets.length) { playHealSfx("FULL"); return; }
 
@@ -648,10 +777,14 @@ const HealingHUD = {
       kind: desc.kind,
       cleanseScope: desc.cleanseScope ?? null,
       targetUuids: targets.map((t) => t.actor.uuid),
-      targetCount: targets.length,
+      // Spreading a potion is one use — cost resolves against a single cast.
+      targetCount: spread ? 1 : targets.length,
     };
+    if (spread) { payload.potionRain = true; payload.potionRainSl = this._potionRain?.sl ?? 0; }
+    this._applying = true;
     const result = await requestApply(payload).catch((e) => { console.warn(HEAL_TAG, "requestApply threw", e); return { ok: false, reason: "exception" }; });
     this._afterApply(desc, result, targets.map((t) => this._members.indexOf(t)));
+    if (spread) { this._multiSelected.clear(); this._updateCellStates(); this._renderBanner(); }
   },
 
   // Apply a single picked debuff removal (cleanse-one).
@@ -666,6 +799,7 @@ const HealingHUD = {
       cleansePicks: { [target.uuid]: debuffId },
       targetCount: 1,
     };
+    this._applying = true;
     const result = await requestApply(payload).catch((e) => { console.warn(HEAL_TAG, "requestApply threw", e); return { ok: false, reason: "exception" }; });
     this._afterApply(desc, result, [this._targetIndex]);
 
@@ -678,15 +812,21 @@ const HealingHUD = {
     }
   },
 
-  // Shared post-apply: SFX, flash, spectator broadcast, notification, refresh.
+  // Shared post-apply: SFX, flash, healing banner (operator + spectators), refresh.
   _afterApply(desc, result, cellIdxs) {
+    this._applying = false;   // writes are done; re-gathers are safe again
     if (!result?.ok) { playHealSfx("DENY"); ui.notifications?.warn(`${desc.kind === "cleanse" ? "Cleanse" : "Heal"} failed: ${result?.reason ?? "unknown"}.`); return; }
     playHealSfx(desc.kind === "cleanse" ? "CLEANSE" : "HEAL");
     for (const i of cellIdxs) if (i >= 0) this._flashCell(i);
 
+    // Banner animation — the operator sees it locally (broadcast doesn't echo);
+    // spectators get it via broadcast. One card per target line, queued in
+    // sequence (so a multi-target spread plays each target's banner in turn).
     const lines = this._feedbackLines(desc, result);
-    if (lines.length) broadcastHealFeedback({ casterName: this._caster.name, lines });
-    if (lines.length) ui.notifications?.info(lines[0].text ?? `${desc.name} used.`);
+    if (lines.length) {
+      HealingFeedback.enqueue({ casterName: this._caster.name, lines });
+      broadcastHealFeedback({ casterName: this._caster.name, lines });
+    }
 
     this._updateResources(); this._updateDebuffs(); this._updateCellStates();
     this._refreshActions();
@@ -743,6 +883,11 @@ const HealingHUD = {
     this._updateHook = (actor) => {
       if (!this._root) return;
       if (!watched.has(actor.id)) return;
+      // Skip ALL per-write work during our own apply: each target/cost write fires
+      // this hook, and the DOM refresh + affordability re-gather (heavy CSB
+      // prepareData) × several writes stalls the apply for seconds. _afterApply
+      // runs one consolidated refresh once every write has landed.
+      if (this._applying) return;
       // Update resource numbers + dim states for any watched actor (no sprite rebuild).
       this._updateResources(); this._updateCellStates();
       // If the CASTER changed (cost spent elsewhere), refresh affordability.
@@ -779,6 +924,9 @@ const HealingHUD = {
       } else { return; }
 
       if (keyMatch(ev, HEAL_KEYS.CANCEL)) {
+        // Potion Rain: X removes the current chosen ally first; only backs out
+        // once the current cell isn't selected.
+        if (this._zone === "targets" && this._multiDeselect(this._targetIndex)) return;
         if (this._zone === "targets" || this._zone === "debuffs") { this._disarm(); }
         else { this.close(); }
         return;

@@ -58,6 +58,28 @@ export function injectHealingStyles() {
 }
 .oni-heal-close:hover { background: rgba(180,57,47,0.85); color: #fff; }
 
+/* Potion Rain toggle — shown in the header only while a potion is in focus and
+   the caster owns Potion Rain (the controller manages visibility). */
+.oni-heal-pr-toggle {
+  display: flex; align-items: center; gap: 7px; cursor: pointer; user-select: none;
+  padding: 4px 9px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #4b3517;
+  background: rgba(255,255,255,0.22); border: 1px solid rgba(90,60,34,0.5);
+  transition: background .12s ease, border-color .12s ease;
+}
+.oni-heal-pr-toggle:hover { background: rgba(255,255,255,0.42); }
+.oni-heal-pr-toggle .pr-ico { font-size: 14px; }
+.oni-heal-pr-toggle .pr-switch {
+  position: relative; width: 30px; height: 16px; border-radius: 9px;
+  background: rgba(90,60,34,0.4); border: 1px solid rgba(90,60,34,0.6); transition: background .14s ease;
+}
+.oni-heal-pr-toggle .pr-switch .knob {
+  position: absolute; top: 1px; left: 1px; width: 12px; height: 12px; border-radius: 50%;
+  background: #f6ebd3; box-shadow: 0 1px 2px rgba(0,0,0,.4); transition: left .14s ease;
+}
+.oni-heal-pr-toggle.on { background: linear-gradient(180deg,#d8f0c4,#bfe3a6); border-color: #6fa04a; color: #1f4a14; }
+.oni-heal-pr-toggle.on .pr-switch { background: #4f8a34; }
+.oni-heal-pr-toggle.on .pr-switch .knob { left: 16px; }
+
 .oni-heal-body { display: flex; flex: 1; min-height: 0; align-items: stretch; }
 
 /* ── Left: action list with tabs ── */
@@ -207,6 +229,9 @@ export function injectHealingStyles() {
 }
 #oni-heal-cursor.is-visible, .oni-heal-cursor.is-visible { opacity: 1; animation: oniHealCursorFloat 2.2s ease-in-out infinite; }
 #oni-heal-cursor.no-anim, .oni-heal-cursor.no-anim { transition: none !important; }
+/* Planted feather on a Potion-Rain-selected ally — static (no float) so it
+   reads as "stuck" while the roving cursor still floats on the current cell. */
+.oni-heal-cursor.stuck.is-visible { animation: none; opacity: .95; }
 @keyframes oniHealCursorFloat {
   0%, 100% { transform: translate(-38%, -92%) rotate(20deg) translateY(0px); }
   50%       { transform: translate(-38%, -92%) rotate(20deg) translateY(-7px); }

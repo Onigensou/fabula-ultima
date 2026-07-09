@@ -28,6 +28,7 @@ import { HEAL_TAG, HEAL_CATEGORY, HEAL_CREATE_PRESETS } from "./healing-const.js
 import { classifyActionIntent } from "../battle-director/skill-intent.js";
 import { resolveHealAction, formatCostMap, formatGrants } from "./healing-resolve.js";
 import { getCleanseInfoForItem } from "./healing-cleanse.js";
+import { isPotionItem } from "./potion-rain.js";
 import { parseJRPGTargetingText } from "../jrpg-targeting-system/jrpg-targeting-parser.js";
 
 // Targeting mode for an action: "self" | "single" | "all".
@@ -120,6 +121,10 @@ function buildDescriptor({ caster, category, displayItem, effectItem, costItem, 
     costLabel: consumableUuid ? "1 Use" : formatCostMap(resolved.costMap),
     affordable: resolved.affordable && (quantity == null || quantity > 0),
     skillTarget: String(p.skill_target ?? "").trim(),
+    // Potion Rain eligibility: is this a "potion"? (shared tag def). Items act
+    // through a linked action generally, so check the display carrier AND the
+    // effect item — the tag may live on either.
+    isPotion: isPotionItem(displayItem) || isPotionItem(effectItem),
   };
 }
 
@@ -170,6 +175,7 @@ async function gatherCreateActions(caster) {
       effectItemUuid: effectItem.uuid,
       costItemUuid: null,
       consumableUuid: null,
+      carrierUuid: carrier.uuid,   // preset item — potion tag may live here (not the linked action)
       ipCost,
       source: "create",
       sourceItemName: null,
@@ -179,6 +185,7 @@ async function gatherCreateActions(caster) {
       costLabel: `${ipCost} IP`,
       affordable: casterIp >= ipCost,
       skillTarget: String(effectItem.system?.props?.skill_target ?? carrier.system?.props?.skill_target ?? "").trim(),
+      isPotion: isPotionItem(carrier) || isPotionItem(effectItem),
     });
   }
   list.sort((a, b) => (a.affordable !== b.affordable ? (a.affordable ? -1 : 1) : a.name.localeCompare(b.name, game.i18n?.lang)));

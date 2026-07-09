@@ -25,6 +25,7 @@ import { actorDebuffs } from "./healing-cleanse.js";
 import { HealingFeedback } from "./healing-feedback.js";
 import { debitCost } from "../battle-director/skill-cost.js";
 import { consumeOne, spendIp } from "../battle-director/item-resource.js";
+import { getPotionRain, isPotionItem, halveHeal } from "./potion-rain.js";
 
 const CHANNEL = "module.fabula-ultima-companion";
 const T_REQ = "healing.apply.req";
@@ -49,26 +50,6 @@ function _readNum(actor, key) {
   return Number.isFinite(n) ? n : 0;
 }
 
-// Apply heal grants to one target. Returns applied entries (per resource).
-async function _applyHealToTarget(target, grants) {
-  const update = {};
-  const applied = [];
-  for (const g of (grants ?? [])) {
-    const slot = { hp: ["current_hp", "max_hp"], mp: ["current_mp", "max_mp"], ip: ["current_ip", "max_ip"] }[g.resource];
-    if (!slot) continue;
-    const [curKey, maxKey] = slot;
-    const before = _readNum(target, curKey);
-    const max = _readNum(target, maxKey) || before + g.amount;
-    const after = Math.min(max, before + g.amount);
-    update[`system.props.${curKey}`] = after;
-    applied.push({ type: "heal", targetName: target.name, resource: g.resource, before, after, max, healed: after - before });
-  }
-  if (Object.keys(update).length) {
-    try { await target.update(update); } catch (e) { console.warn(HEAL_TAG, "target.update failed", e); }
-  }
-  return applied;
-}
-
 // Remove debuff(s) from one target. scope "all" → every debuff; "one" → the
 // picked debuff (debuffId), else the first. Returns applied entries.
 async function _applyCleanseToTarget(target, scope, debuffId) {
@@ -91,6 +72,7 @@ async function applyHeal(payload) {
   const {
     kind = "heal", casterUuid, targetUuids = [], effectItemUuid, costItemUuid, consumableUuid = null,
     mode = "use", ipCost = 0, cleanseScope = null, cleansePicks = null, targetCount = 1,
+    potionRain = false, carrierUuid = null,
   } = payload ?? {};
   const isCreate = mode === "create";
   const isCleanse = kind === "cleanse";
@@ -119,18 +101,85 @@ async function applyHeal(payload) {
     if (!isUnique && qty <= 0) return { ok: false, reason: "out-of-stock" };
   }
 
-  // Apply to each target.
-  const applied = [];
-  for (const target of targets) {
-    if (isCleanse) applied.push(...await _applyCleanseToTarget(target, cleanseScope, cleansePicks?.[target.uuid] ?? null));
-    else applied.push(...await _applyHealToTarget(target, resolved.grants));
+  // Potion Rain spread — AUTHORITATIVE re-validation (never trust the client):
+  // the caster must own Potion Rain, the item must be a tagged potion, and the
+  // target count must fit 1 primary + SL extra. Only then do grants halve.
+  let spread = false;
+  if (potionRain && !isCleanse && targets.length > 1) {
+    const pr = getPotionRain(caster);
+    if (!pr.has) return { ok: false, reason: "no-potion-rain" };
+    // The potion tag may live on the effect item (consumables: carrier == effect)
+    // OR on the carrier/preset (Create presets heal via a linked action whose
+    // own item isn't tagged). Accept either.
+    const presetCarrier = carrier ?? (carrierUuid ? await fromUuid(carrierUuid).catch(() => null) : null);
+    if (!isPotionItem(effectItem) && !isPotionItem(presetCarrier)) return { ok: false, reason: "not-a-potion" };
+    if (targets.length > 1 + pr.sl) return { ok: false, reason: "too-many-targets" };
+    spread = true;
   }
 
-  // Deduct the caster's cost ONCE. Create → spend IP; else → parsed cost map.
-  if (isCreate) {
-    if (ipCost > 0) { try { await spendIp(caster, ipCost); } catch (e) { console.warn(HEAL_TAG, "spendIp failed", e); } }
-  } else if (resolved.costMap.size) {
-    try { await debitCost(caster, resolved.costMap); } catch (e) { console.warn(HEAL_TAG, "debitCost failed", e); }
+  const applied = [];
+
+  if (isCleanse) {
+    // Cleanse = embedded ActiveEffect deletes (can't fold into an actor update).
+    const perTarget = await Promise.all(targets.map((target) =>
+      _applyCleanseToTarget(target, cleanseScope, cleansePicks?.[target.uuid] ?? null)));
+    applied.push(...perTarget.flat());
+    // Deduct the caster's cost (separate write; cleanse isn't the perf case).
+    if (isCreate) {
+      if (ipCost > 0) { try { await spendIp(caster, ipCost); } catch (e) { console.warn(HEAL_TAG, "spendIp failed", e); } }
+    } else if (resolved.costMap.size) {
+      try { await debitCost(caster, resolved.costMap); } catch (e) { console.warn(HEAL_TAG, "debitCost failed", e); }
+    }
+  } else {
+    // Heal: build ONE merged write per actor — target recoveries AND the caster's
+    // cost — then commit them all in a single batched Actor.updateDocuments call.
+    // Each actor.update triggers heavy synchronous CSB prepareData, so paying it
+    // once for the whole group (instead of per target + per cost) is the win.
+    const spreadGrants = spread ? resolved.grants.map((g) => ({ ...g, amount: halveHeal(g.amount) })) : resolved.grants;
+    const HEAL_PROP = { hp: "current_hp", mp: "current_mp", ip: "current_ip" };
+    const HEAL_MAX = { hp: "max_hp", mp: "max_mp", ip: "max_ip" };
+    const plan = new Map();   // actorId → { doc, update }
+    const ensure = (doc) => { let e = plan.get(doc.id); if (!e) plan.set(doc.id, e = { doc, update: {} }); return e; };
+
+    for (const target of targets) {
+      const e = ensure(target);
+      for (const g of spreadGrants) {
+        const prop = HEAL_PROP[g.resource]; if (!prop) continue;
+        const before = _readNum(target, prop);
+        const max = _readNum(target, HEAL_MAX[g.resource]) || before + g.amount;
+        const after = Math.min(max, before + g.amount);
+        e.update[`system.props.${prop}`] = after;
+        applied.push({ type: "heal", targetName: target.name, resource: g.resource, before, after, max, healed: after - before });
+      }
+    }
+
+    // Fold the caster's cost into the same batch (reads the merged value first so
+    // a self-heal + cost on the same resource composes correctly).
+    const debit = (prop, amount) => {
+      const e = ensure(caster);
+      const key = `system.props.${prop}`;
+      const cur = e.update[key] ?? _readNum(caster, prop);
+      e.update[key] = Math.max(0, cur - amount);
+    };
+    if (isCreate) {
+      if (ipCost > 0) debit("current_ip", ipCost);
+    } else {
+      for (const [resource, amount] of resolved.costMap) { if (HEAL_PROP[resource]) debit(HEAL_PROP[resource], amount); }
+    }
+
+    // Commit: one batched write for world actors; token/synthetic actors update
+    // individually (they live on the scene, not the world collection).
+    const worldUpdates = [];
+    const tokenWrites = [];
+    for (const { doc, update } of plan.values()) {
+      if (!Object.keys(update).length) continue;
+      if (doc.isToken) tokenWrites.push(doc.update(update));
+      else worldUpdates.push({ _id: doc.id, ...update });
+    }
+    try {
+      if (worldUpdates.length) await Actor.updateDocuments(worldUpdates);
+      if (tokenWrites.length) await Promise.all(tokenWrites);
+    } catch (e) { console.warn(HEAL_TAG, "batched heal update failed", e); }
   }
 
   // Consume one unit of the consumable (use mode only).
