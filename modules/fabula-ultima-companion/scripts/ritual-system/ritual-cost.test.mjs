@@ -14,9 +14,9 @@
 // Spiritists — the exact bug this harness exists to prevent from returning.
 // ============================================================================
 
-import { computeCost, describeCost, canAfford, attrsFor, currentMp } from "./ritual-cost.js";
+import { computeCost, canAfford, attrsFor, currentMp, shortfall } from "./ritual-cost.js";
 import { disciplinesForActorLike } from "./ritual-actor.js";
-import { POTENCY, AREA } from "./ritual-const.js";
+import { POTENCY, AREA, discountForRarity } from "./ritual-const.js";
 
 let pass = 0, fail = 0;
 const eq = (label, got, want) => {
@@ -36,16 +36,29 @@ eq("Ritualism extreme/huge = 200 MP, DL 16",
 eq("Entropism medium/individual = 30 MP, DL 10",
    (({ mp, dl }) => [mp, dl])(computeCost({ potency: "medium", area: "individual" })), [30, 10]);
 
-// ── Ingredient halves the FINAL cost, once ──────────────────────────────────
-eq("ingredient halves 200 → 100", computeCost({ potency: "extreme", area: "huge", ingredient: true }).mp, 100);
-eq("ingredient halves 20 → 10",   computeCost({ potency: "minor", area: "individual", ingredient: true }).mp, 10);
-eq("ingredient does not change DL", computeCost({ potency: "major", area: "small", ingredient: true }).dl, 13);
-eq("baseMp survives halving",      computeCost({ potency: "major", area: "small", ingredient: true }).baseMp, 80);
-eq("halved flag set",              computeCost({ potency: "minor", area: "small", ingredient: true }).halved, true);
+// ── Material discount scales with rarity (homebrew) ─────────────────────────
+// Common 10%, Uncommon 20%, Rare 30%, then a 20-point jump to Legendary 50% so
+// the book's original "halve the cost" survives as the Legendary case.
+eq("rarity ladder", ["common", "uncommon", "rare", "legendary"].map(discountForRarity), [0.10, 0.20, 0.30, 0.50]);
+eq("unknown rarity → no discount", discountForRarity("mythic"), 0);
+eq("rarity is case-insensitive",   discountForRarity("LEGENDARY"), 0.50);
 
-// Rounds up — a ritual must never get cheaper by rounding. No table pairing
-// yields a fraction today; this guards a future odd multiplier.
-eq("ceil on odd halves", Math.ceil(25 / 2), 13);
+const withMat = (potency, area, materialRarity) => computeCost({ potency, area, materialRarity }).mp;
+eq("legendary halves 200 → 100", withMat("extreme", "huge", "Legendary"), 100);
+eq("rare 30% off 200 → 140",     withMat("extreme", "huge", "Rare"), 140);
+eq("uncommon 20% off 200 → 160", withMat("extreme", "huge", "Uncommon"), 160);
+eq("common 10% off 200 → 180",   withMat("extreme", "huge", "Common"), 180);
+eq("legendary halves 20 → 10",   withMat("minor", "individual", "Legendary"), 10);
+eq("no material → full price",   withMat("major", "small", null), 80);
+
+// Rounds UP — a ritual must never get cheaper by rounding. 30% off 50 is 35, not 34.
+eq("ceil, not floor: rare off 50 MP", withMat("extreme", "individual", "Rare"), 35);
+eq("ceil: common off 30 MP",          withMat("medium", "individual", "Common"), 27);
+
+eq("material does not change DL", computeCost({ potency: "major", area: "small", materialRarity: "Legendary" }).dl, 13);
+eq("baseMp survives the discount", computeCost({ potency: "major", area: "small", materialRarity: "Legendary" }).baseMp, 80);
+eq("saved is reported",            computeCost({ potency: "major", area: "small", materialRarity: "Legendary" }).saved, 40);
+eq("discount is reported",         computeCost({ potency: "major", area: "small", materialRarity: "Rare" }).discount, 0.30);
 
 // ── Full table sweep: every pairing prices and never returns null ───────────
 {
@@ -62,21 +75,22 @@ eq("unknown potency → null", computeCost({ potency: "cosmic", area: "huge" }),
 eq("unknown area → null",    computeCost({ potency: "minor", area: "galactic" }), null);
 eq("missing args → null",    computeCost({}), null);
 
-// ── Readout ────────────────────────────────────────────────────────────────
-eq("describeCost plain",     describeCost({ potency: "major", area: "small" }),
-   "40 MP × 2 (Small) = 80 MP · DL 13");
-eq("describeCost ingredient", describeCost({ potency: "major", area: "small", ingredient: true }),
-   "40 MP × 2 (Small) = 80 MP → 40 MP (ingredient) · DL 13");
-
-// ── Affordability ──────────────────────────────────────────────────────────
+// ── Affordability + the red shortage report ────────────────────────────────
 const mpActor = (n) => ({ system: { props: { current_mp: n } } });
 eq("currentMp reads prop",        currentMp(mpActor(45)), 45);
 eq("currentMp tolerates garbage", currentMp({ system: { props: { current_mp: "abc" } } }), 0);
 eq("currentMp tolerates missing", currentMp(undefined), 0);
 eq("exact MP affords",  canAfford(mpActor(80), computeCost({ potency: "major", area: "small" })), true);
 eq("1 short cannot",    canAfford(mpActor(79), computeCost({ potency: "major", area: "small" })), false);
-eq("ingredient rescues", canAfford(mpActor(40), computeCost({ potency: "major", area: "small", ingredient: true })), true);
+eq("legendary rescues", canAfford(mpActor(40), computeCost({ potency: "major", area: "small", materialRarity: "Legendary" })), true);
 eq("null cost cannot afford", canAfford(mpActor(999), null), false);
+
+// CSB stores current_mp as a STRING — the string path must afford identically.
+eq("string MP affords", canAfford({ system: { props: { current_mp: "111" } } }, computeCost({ potency: "minor", area: "individual" })), true);
+
+eq("shortfall when short",     shortfall(mpActor(111), computeCost({ potency: "extreme", area: "huge" })), 89);
+eq("shortfall zero when able", shortfall(mpActor(200), computeCost({ potency: "extreme", area: "huge" })), 0);
+eq("shortfall never negative", shortfall(mpActor(999), computeCost({ potency: "minor", area: "individual" })), 0);
 
 // ── Attribute pairs ────────────────────────────────────────────────────────
 eq("arcanism is WLP+WLP",        attrsFor("arcanism"), ["WLP", "WLP"]);

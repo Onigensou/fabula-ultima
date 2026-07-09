@@ -1,17 +1,19 @@
 // ============================================================================
-// Ritual System — player → active-GM relay.
+// Ritual System — player → active-GM relay, and operator → everyone feedback.
 //
 // Raw game.socket on module.fabula-ultima-companion, matching healing-socket.js
 // (socketlib's registerModule is single-use per module and gm-executor.js
 // already claimed it).
 //
 // Only the ACTIVE GM acts on CAST_REQ. With two GMs logged in, an ungated
-// handler would deduct the Mind Points twice and run two Check Requester
-// sessions over the top of each other — the standard dual-GM dedupe trap.
+// handler would deduct the Mind Points twice, consume the material twice, and
+// run two Check Requester sessions over the top of each other — the standard
+// dual-GM dedupe trap.
 // ============================================================================
 
 import { RITUAL_TAG, RITUAL_CHANNEL, RITUAL_SOCKET } from "./ritual-const.js";
 import { performCast } from "./ritual-cast.js";
+import { RitualFeedback, broadcastFeedback } from "./ritual-feedback.js";
 
 let _wired = false;
 
@@ -25,6 +27,11 @@ function _isActiveGM() {
   return firstGM ? firstGM.id === game.user.id : true;
 }
 
+// broadcastFeedback lives in ritual-feedback.js (ritual-cast.js needs it, and
+// importing this module from there would close an import cycle). Re-exported so
+// callers have one obvious place to look.
+export { broadcastFeedback };
+
 /**
  * Cast a ritual from ANY client.
  *
@@ -34,7 +41,7 @@ function _isActiveGM() {
  *
  * `override` is GM fiat: cast despite insufficient MP. It does NOT make the
  * ritual free — debitCost clamps at zero, so the performer is simply drained.
- * Players never get it; the window disables their Cast button instead.
+ * Players never get it; the window disables their Perform button instead.
  */
 export async function requestCast({ performerUuid, spec, override = false }) {
   if (_isActiveGM()) {
@@ -56,6 +63,11 @@ export function wireRitualSocket() {
 
   game.socket.on(RITUAL_CHANNEL, async (msg) => {
     if (!msg || typeof msg !== "object") return;
+
+    if (msg.type === RITUAL_SOCKET.FEEDBACK) {
+      RitualFeedback.enqueue(msg.payload ?? {});
+      return;
+    }
 
     if (msg.type === RITUAL_SOCKET.CAST_REQ) {
       if (!_isActiveGM()) return;

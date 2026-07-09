@@ -21,6 +21,8 @@ import { RITUAL_MODULE_ID, RITUAL_TAG } from "./ritual-const.js";
 import { RitualHUD } from "./ritual-hud-app.js";
 import { wireRitualSocket } from "./ritual-socket.js";
 import { performCast } from "./ritual-cast.js";
+import { RitualFeedback } from "./ritual-feedback.js";
+import { gatherOfferableMaterials } from "./ritual-materials.js";
 import { canOpenRitual, blockedReason, resolvePerformer, disciplinesForActor } from "./ritual-actor.js";
 
 const api = {
@@ -38,6 +40,10 @@ const api = {
   performer() { return resolvePerformer(); },
   /** Disciplines an actor may perform. */
   disciplines(actor) { return disciplinesForActor(actor); },
+  /** Materials an actor may offer: their own bag plus the party's. */
+  materials(actor) { return gatherOfferableMaterials(actor); },
+  /** Spectator banner — `.feedback._test()` to preview it locally. */
+  feedback: RitualFeedback,
   /** GM-authoritative cast. Exported for the deferred in-conflict flow. */
   performCast,
   /** Direct handle (advanced / debugging). */
