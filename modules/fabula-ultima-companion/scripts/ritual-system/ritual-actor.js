@@ -27,7 +27,7 @@
 // so the table above can be regression-tested headlessly.
 // ============================================================================
 
-import { DISCIPLINE, DISCIPLINE_ORDER, disciplineById } from "./ritual-const.js";
+import { DISCIPLINE_ORDER, disciplineById } from "./ritual-const.js";
 
 /** Every id a copy might use to point back at its source item. */
 function sourceIdsOf(item) {
@@ -144,5 +144,3 @@ export function resolvePerformer() {
 export function canOpenRitual() {
   return Boolean(resolvePerformer());
 }
-
-export { DISCIPLINE };
