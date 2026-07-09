@@ -115,6 +115,30 @@ export const VISIBILITY = Object.freeze({
 // history is bounded; the full registry stays in the tens of KB.
 export const CLOCK_HISTORY_MAX = 50;
 
+// ── Check defaults (panel-click → Check Requester) ──────────────────────────
+//
+// A clock may declare the attribute pair and Difficulty Level its checks use.
+// `null` attributes mean "any": the Requester falls back to its own defaults and
+// the player picks. A clock with nothing declared still works.
+export const ATTRIBUTES = Object.freeze(["MIG", "DEX", "INS", "WLP"]);
+export const CLOCK_DL_DEFAULT = 10;
+
+// What a FAILED roll does. The click already declared the player's intent, so a
+// failure never advances the clock the way they wanted.
+//   none  — the attempt simply fails (default)
+//   erase — the clock moves `sections` the OTHER way
+export const FAILURE_MODE = Object.freeze({
+  NONE: "none",
+  ERASE: "erase",
+});
+export const FAILURE_SECTIONS_DEFAULT = 1;
+
+// Panel-click intent. The GM manipulates the AXIS; a player declares a GOAL.
+export const CLICK = Object.freeze({
+  LEFT: "left",
+  RIGHT: "right",
+});
+
 // RAW defaults. "A Clock normally features four to twelve sections."
 export const CLOCK_SECTIONS_DEFAULT = 6;
 export const CLOCK_SECTIONS_MIN = 1;

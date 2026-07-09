@@ -33,6 +33,7 @@ import * as store from "./clock-store.js";
 import { clockTone, clockPercent } from "./clock-model.js";
 import { injectClockStyles, applyClockTune, playClockSfx, CLOCK_TUNE } from "./clock-ui-styles.js";
 import { playResolution, wireResolutionChat } from "./clock-ui-resolve.js";
+import { bindPanelClicks, clickHint } from "./clock-interaction.js";
 
 const LAYER_ID = "oni-clock-layer";
 const SETTING_SHOW_BAR = "clockShowBar";
@@ -81,14 +82,31 @@ function _ensureLayer() {
   return _layer;
 }
 
+/** Sparks thrown off the clash band. Scattered by per-spark delay + vector. */
+const SPARKS = [
+  { dx: -14, dy: -13, dur: 720, delay: 0 },
+  { dx: 12, dy: -16, dur: 640, delay: 130 },
+  { dx: -9, dy: 12, dur: 800, delay: 260 },
+  { dx: 15, dy: 10, dur: 700, delay: 390 },
+  { dx: -16, dy: -3, dur: 760, delay: 520 },
+  { dx: 10, dy: 3, dur: 680, delay: 640 },
+];
+
 function _buildElement(clock) {
+  const tone = clockTone(clock);
+
   const root = document.createElement("div");
   root.className = "oni-clock spawning";
   root.dataset.clockId = clock.id;
-  root.dataset.tone = clockTone(clock);
+  root.dataset.tone = tone;
 
   const panel = document.createElement("div");
   panel.className = "oni-clock-panel";
+  panel.title = clickHint(clock);
+
+  const shine = document.createElement("div");
+  shine.className = "oni-clock-shine";
+  panel.appendChild(shine);
 
   const name = document.createElement("div");
   name.className = "oni-clock-name";
@@ -102,6 +120,23 @@ function _buildElement(clock) {
   const pct = document.createElement("div");
   pct.className = "oni-clock-pct";
   bar.append(fill, pct);
+
+  // A contest clock gets the clash band + its sparks. Other tones never do:
+  // there is nothing for the beam to push against.
+  if (tone === "contest") {
+    const clash = document.createElement("div");
+    clash.className = "oni-clock-clash";
+    bar.appendChild(clash);
+    for (const s of SPARKS) {
+      const spark = document.createElement("div");
+      spark.className = "oni-clock-spark";
+      spark.style.setProperty("--sp-dx", `${s.dx}px`);
+      spark.style.setProperty("--sp-dy", `${s.dy}px`);
+      spark.style.setProperty("--sp-dur", `${s.dur}ms`);
+      spark.style.setProperty("--sp-delay", `${s.delay}ms`);
+      bar.appendChild(spark);
+    }
+  }
   panel.appendChild(bar);
 
   const gear = document.createElement("div");
@@ -111,6 +146,8 @@ function _buildElement(clock) {
   root.append(panel, gear);
   _ensureLayer().appendChild(root);
 
+  bindPanelClicks(panel, clock.id);
+
   // Start empty, whatever the real value: beat 3 fills it.
   const entry = { root, panel, gear, fill, pct, name, shown: 0, exiting: false };
   _paint(entry, clock, 0);
@@ -118,8 +155,19 @@ function _buildElement(clock) {
 }
 
 function _paint(entry, clock, value) {
-  entry.fill.style.width = `${clockPercent(clock, value)}%`;
-  entry.pct.textContent = `${clockPercent(clock, value)}%`;
+  const pct = clockPercent(clock, value);
+  entry.fill.style.width = `${pct}%`;
+  entry.pct.textContent = `${pct}%`;
+  // The clash band and its sparks ride this, so they track the meeting point.
+  entry.root.style.setProperty("--ck-v", `${pct}%`);
+
+  // Two sections or fewer from a pole: the panel pulses in the colour of
+  // whichever side is about to win. Only meaningful where both can win.
+  const contest = entry.root.dataset.tone === "contest";
+  const nearHigh = contest && value >= clock.sections - 2;
+  const nearLow = contest && value <= 2;
+  entry.root.classList.toggle("near-high", nearHigh && !nearLow);
+  entry.root.classList.toggle("near-low", nearLow && !nearHigh);
 }
 
 // ── Choreography ────────────────────────────────────────────────────────────

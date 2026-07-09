@@ -204,7 +204,110 @@ export function injectClockStyles() {
 /* ── Tone: what KIND of clock is this ──────────────────────────────────── */
 .oni-clock[data-tone="progress"] .oni-clock-fill { background: linear-gradient(180deg, var(--ck-blue-hi), var(--ck-blue)); }
 .oni-clock[data-tone="threat"]   .oni-clock-fill { background: linear-gradient(180deg, var(--ck-red-hi), var(--ck-red)); }
-.oni-clock[data-tone="contest"]  .oni-clock-fill { background: linear-gradient(90deg, var(--ck-red), var(--ck-blue)); }
+
+/* ── Contest: two beams clashing ───────────────────────────────────────────
+ * The bar is NOT one gradient across its whole width — that read as a single
+ * blended thing rather than two forces meeting. Instead:
+ *   the track is solid GM red (the ground the players have not taken),
+ *   the fill is solid player blue up to the current value,
+ *   and only where they MEET is there a blend — the clash band.
+ * Past the midpoint the bar is overwhelmingly one colour, which is the point.
+ *
+ * No percentage label: "62%" on a tug-of-war invites the question "62% of
+ * what?". The clash position already says everything.
+ */
+.oni-clock[data-tone="contest"] .oni-clock-bar { background: linear-gradient(180deg, var(--ck-red-hi), var(--ck-red)); }
+.oni-clock[data-tone="contest"] .oni-clock-fill { background: linear-gradient(180deg, var(--ck-blue-hi), var(--ck-blue)); }
+.oni-clock[data-tone="contest"] .oni-clock-pct { display: none; }
+
+/* The clash band, centred on the meeting point. Jitters and shudders as the two
+ * beams shove each other. --ck-v is the fill percentage, set by the renderer. */
+.oni-clock-clash {
+  position: absolute; top: -2px; bottom: -2px;
+  left: var(--ck-v, 50%);
+  width: 26px; margin-left: -13px;
+  pointer-events: none;
+  background:
+    radial-gradient(closest-side, rgba(255,255,255,.95), rgba(255,255,255,0) 70%),
+    linear-gradient(90deg, var(--ck-blue) 0%, #fff5d0 45%, #fff5d0 55%, var(--ck-red) 100%);
+  filter: blur(.4px) saturate(1.3);
+  animation: oni-clash-jitter 220ms steps(2, jump-none) infinite,
+             oni-clash-pulse 900ms ease-in-out infinite;
+  transition: left var(--ck-advance, 480ms) cubic-bezier(.22,.8,.3,1);
+  z-index: 2;
+}
+.oni-clock.spawning .oni-clock-clash { transition-duration: var(--ck-bar-fill, 620ms); }
+
+/* Small, fast, irregular: a struggle, not a wobble. */
+@keyframes oni-clash-jitter {
+  0%   { transform: translate(0, 0) scaleY(1); }
+  20%  { transform: translate(-1.5px, .5px) scaleY(1.06); }
+  40%  { transform: translate(1.5px, -.5px) scaleY(.96); }
+  60%  { transform: translate(-1px, -.5px) scaleY(1.08); }
+  80%  { transform: translate(1px, .5px) scaleY(.98); }
+  100% { transform: translate(0, 0) scaleY(1); }
+}
+/* The slow shove: the whole band swells and recedes, pushed back and forth. */
+@keyframes oni-clash-pulse {
+  0%, 100% { width: 24px; margin-left: -12px; filter: blur(.4px) saturate(1.3) brightness(1); }
+  50%      { width: 34px; margin-left: -17px; filter: blur(.6px) saturate(1.5) brightness(1.35); }
+}
+
+/* Sparks thrown off where the beams meet. Each is one span with its own delay,
+ * so they scatter rather than pulsing in lockstep. */
+.oni-clock-spark {
+  position: absolute; top: 50%; left: var(--ck-v, 50%);
+  width: 3px; height: 3px; border-radius: 50%;
+  background: #fff5d0; box-shadow: 0 0 5px 1px #ffe9a0;
+  pointer-events: none; opacity: 0; z-index: 3;
+  transition: left var(--ck-advance, 480ms) cubic-bezier(.22,.8,.3,1);
+  animation: oni-spark var(--sp-dur, 700ms) ease-out var(--sp-delay, 0ms) infinite;
+}
+@keyframes oni-spark {
+  0%   { opacity: 0;  transform: translate(-50%, -50%) scale(.4); }
+  12%  { opacity: 1; }
+  100% { opacity: 0;  transform: translate(calc(-50% + var(--sp-dx, 0px)), calc(-50% + var(--sp-dy, -10px))) scale(.15); }
+}
+
+/* ── Near a pole: the panel itself pulses and shimmers ──────────────────────
+ * Applied when the clash is two sections or fewer from either end. The colour
+ * is the side that is ABOUT TO WIN. */
+.oni-clock.near-high .oni-clock-panel { animation: oni-near-blue 1.05s ease-in-out infinite; }
+.oni-clock.near-low  .oni-clock-panel { animation: oni-near-red  1.05s ease-in-out infinite; }
+
+@keyframes oni-near-blue {
+  0%, 100% { box-shadow: 0 0 0 1px var(--ck-wood-3), 0 0 12px 1px rgba(63,159,214,.45), 0 6px 18px rgba(0,0,0,.45); }
+  50%      { box-shadow: 0 0 0 1px var(--ck-wood-3), 0 0 26px 5px rgba(63,159,214,.85), 0 6px 18px rgba(0,0,0,.45); }
+}
+@keyframes oni-near-red {
+  0%, 100% { box-shadow: 0 0 0 1px var(--ck-wood-3), 0 0 12px 1px rgba(207,64,52,.45), 0 6px 18px rgba(0,0,0,.45); }
+  50%      { box-shadow: 0 0 0 1px var(--ck-wood-3), 0 0 26px 5px rgba(207,64,52,.85), 0 6px 18px rgba(0,0,0,.45); }
+}
+
+/* Shimmer sweep across the parchment.
+ * It rides its own clipping layer rather than a panel ::after pseudo-element:
+ * the panel cannot take overflow hidden, because the name tab deliberately
+ * overhangs its top-left corner, and the sweep must not escape the plate. */
+.oni-clock-shine {
+  position: absolute; inset: 0; border-radius: 5px;
+  overflow: hidden; pointer-events: none; z-index: 0;
+}
+.oni-clock.near-high .oni-clock-shine::after,
+.oni-clock.near-low  .oni-clock-shine::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%);
+  animation: oni-shimmer 1.6s linear infinite;
+}
+@keyframes oni-shimmer {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  35%  { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+/* The panel is the button. */
+.oni-clock-panel { cursor: pointer; }
+.oni-clock-panel:hover { filter: brightness(1.04); }
+.oni-clock.resolved .oni-clock-panel { cursor: default; }
 
 .oni-clock[data-tone="progress"] .oni-clock-panel { box-shadow: 0 0 0 1px var(--ck-wood-3), 0 0 14px 1px rgba(63,159,214,.55), 0 6px 18px rgba(0,0,0,.45), inset 0 0 18px rgba(160,118,73,.20); }
 .oni-clock[data-tone="threat"]   .oni-clock-panel { box-shadow: 0 0 0 1px var(--ck-wood-3), 0 0 14px 1px rgba(207,64,52,.55), 0 6px 18px rgba(0,0,0,.45), inset 0 0 18px rgba(160,118,73,.20); }
@@ -265,9 +368,11 @@ export function injectClockStyles() {
 const _SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 
 export const CLOCK_SFX = Object.freeze({
-  CREATE:  { src: `${_SND}clock_create.ogg`,  volume: 0.7 },
-  ADVANCE: { src: `${_SND}clock_advance.ogg`, volume: 0.65 },
-  REGRESS: { src: `${_SND}clock_regress.ogg`, volume: 0.65 },
+  CREATE:  { src: `${_SND}clock_create.ogg`,  volume: 0.8 },
+  ADVANCE: { src: `${_SND}clock_advance.ogg`, volume: 0.5 },
+  // Kept level with ADVANCE: they are the two halves of one gesture, and a
+  // regress that is louder than an advance sounds like a bug.
+  REGRESS: { src: `${_SND}clock_regress.ogg`, volume: 0.5 },
   SUCCESS: { src: `${_SND}clock_success.ogg`, volume: 0.75 },
   FAILURE: { src: `${_SND}clock_failure.ogg`, volume: 0.75 },
 });

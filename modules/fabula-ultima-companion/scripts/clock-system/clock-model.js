@@ -16,6 +16,7 @@ import {
   SIDE, POLE, OUTCOME, CLOCK_STATE, LIFECYCLE, GROUP_MODE, GROUP_ROLE,
   VISIBILITY, CLOCK_HISTORY_MAX, CLOCK_SECTIONS_DEFAULT,
   CLOCK_SECTIONS_MIN, CLOCK_SECTIONS_MAX,
+  ATTRIBUTES, CLOCK_DL_DEFAULT, FAILURE_MODE, FAILURE_SECTIONS_DEFAULT, CLICK,
 } from "./clock-const.js";
 
 // ── Small helpers ───────────────────────────────────────────────────────────
@@ -53,6 +54,41 @@ function normalizePole(spec, poleName) {
     side,
     outcome,
     label: String(spec.label ?? "").trim() || null,
+  };
+}
+
+/** An attribute preset, or null for "any" (the Requester's own default wins). */
+function normalizeAttr(v) {
+  const a = String(v ?? "").toUpperCase();
+  return ATTRIBUTES.includes(a) ? a : null;
+}
+
+/**
+ * The check a panel-click rolls. Everything is optional: a clock with no `check`
+ * still rolls, at DL 10, with the player choosing both attributes.
+ */
+function normalizeCheck(spec) {
+  const dl = int(spec?.dl, CLOCK_DL_DEFAULT);
+  return {
+    attrA: normalizeAttr(spec?.attrA),
+    attrB: normalizeAttr(spec?.attrB),
+    dl: Math.max(1, dl),
+    // A secret DL is the point of a "High Alert!" clock. The Requester computes
+    // pass/fail whenever a DL exists, regardless of whether it shows it.
+    hiddenDl: spec?.hiddenDl !== false,
+  };
+}
+
+/**
+ * What a FAILED roll does. The click already declared the intent, so a failure
+ * never advances the clock the way the roller wanted; the only question is
+ * whether it costs them ground.
+ */
+function normalizeFailure(spec) {
+  const mode = oneOf(spec?.mode, FAILURE_MODE, FAILURE_MODE.NONE);
+  return {
+    mode,
+    sections: Math.max(1, int(spec?.sections, FAILURE_SECTIONS_DEFAULT)),
   };
 }
 
@@ -137,6 +173,10 @@ export function makeClock(spec = {}) {
 
     state: CLOCK_STATE.ACTIVE,
     resolution: null,
+
+    // Panel-click check config + what a miss costs.
+    check: normalizeCheck(spec.check),
+    failure: normalizeFailure(spec.failure),
 
     group: normalizeGroup(spec.group),
     lifecycle: oneOf(spec.lifecycle, LIFECYCLE, LIFECYCLE.MANUAL),
@@ -252,6 +292,49 @@ export function clockPercent(clock, value = clock.value) {
   if (value <= 0) return 0;
   if (value >= clock.sections) return 100;
   return Math.ceil((value / clock.sections) * 100);
+}
+
+// ── Click → direction ───────────────────────────────────────────────────────
+//
+// The two roles read a clock differently, and this is the whole reason a
+// player's left-click "reverses depending on bar type".
+//
+//   The GM manipulates the AXIS.  left = fill (high), right = erase (low).
+//   A player declares a GOAL.     left = toward the thing they want.
+//
+// On a progress clock those agree. On a teardown clock — where the players win
+// by EMPTYING it — the player's left-click erases, because that is their goal.
+
+/**
+ * Which pole does a player push toward to get what they want?
+ *
+ * The pole they own, if they own one. If only the GM owns a pole, the players'
+ * goal is to push AWAY from it — a threat clock has no player pole, but keeping
+ * it empty is unmistakably what they want.
+ *
+ * @returns {"high"|"low"}
+ */
+export function playerGoalDirection(clock) {
+  if (clock.poles.high?.side === SIDE.PLAYERS) return POLE.HIGH;
+  if (clock.poles.low?.side === SIDE.PLAYERS) return POLE.LOW;
+  // Only the GM owns a pole: the players want the other end.
+  if (clock.poles.high?.side === SIDE.GM) return POLE.LOW;
+  return POLE.HIGH;
+}
+
+/**
+ * Resolve a panel click into an axis direction.
+ *
+ * @param {object} clock
+ * @param {"left"|"right"} click
+ * @param {boolean} isGM  the GM manipulates the axis; a player declares a goal
+ * @returns {"high"|"low"}
+ */
+export function directionForClick(clock, click, isGM) {
+  const flip = (d) => (d === POLE.HIGH ? POLE.LOW : POLE.HIGH);
+  if (isGM) return click === CLICK.LEFT ? POLE.HIGH : POLE.LOW;
+  const goal = playerGoalDirection(clock);
+  return click === CLICK.LEFT ? goal : flip(goal);
 }
 
 // ── Resolution ──────────────────────────────────────────────────────────────

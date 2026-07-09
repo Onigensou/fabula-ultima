@@ -28,7 +28,7 @@ import {
 import {
   makeClock, reviveClock, applyDelta, applySet, applyResolve, applyReopen, applyDiscard,
 } from "./clock-model.js";
-import { applyCheckToMany, previewCheckToMany } from "./clock-check.js";
+import { applyCheckToMany, previewCheckToMany, applyRoll, previewRoll } from "./clock-check.js";
 
 // Last registry we emitted events for. Seeded on `ready`; compared on every
 // `updateSetting`. Values are frozen-by-convention (never mutated in place).
@@ -250,6 +250,21 @@ export function preview(id, spec = {}) {
   const clock = registry[id];
   if (!clock) return null;
   return previewCheckToMany(_checkTargets(registry, clock), spec);
+}
+
+/**
+ * Apply a panel-click roll: an explicitly-directed check, with the clock's own
+ * failure policy deciding what a miss costs. Single clock — a roll is one
+ * character's declared attempt, not a group-wide event, so it never fans out.
+ */
+export async function roll(id, spec = {}) {
+  return _mutate(id, (clock) => applyRoll(clock, spec), { cause: spec.cause });
+}
+
+/** Read-only twin of `roll`. Safe on any client. */
+export function previewRollFor(id, spec = {}) {
+  const clock = get(id);
+  return clock ? previewRoll(clock, spec) : null;
 }
 
 /** Hard-remove a clock from the registry. `discard` is almost always what you want. */

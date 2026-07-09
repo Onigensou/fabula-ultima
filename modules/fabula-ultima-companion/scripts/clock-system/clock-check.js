@@ -43,6 +43,7 @@
 
 import {
   OUTCOME, MARGIN_TIER_1, MARGIN_TIER_2, OPPORTUNITY_SECTIONS, CLOCK_STATE,
+  POLE, FAILURE_MODE,
 } from "./clock-const.js";
 import { applyDelta, signFor, resolutionFor } from "./clock-model.js";
 
@@ -196,6 +197,100 @@ export function applyCheck(clock, spec = {}) {
     sections: preview.sections,
     direction: spec.direction ?? null,
     cause: spec.cause ?? `check:${preview.outcome}`,
+    actorUuid: spec.actorUuid ?? null,
+    at: spec.at,
+  });
+
+  return { ...result, preview };
+}
+
+// ── Intent-driven rolls (the panel click) ───────────────────────────────────
+//
+// `applyCheck` above derives the direction from the clock's poles: a progress
+// clock takes your successes and ignores your failures. That is right for RAW
+// check-advancement, and wrong for a panel click, where the USER has already
+// declared which way they are pushing.
+//
+// So a roll has an explicit `direction`, and:
+//
+//   PASS → move `direction` by the RAW section count (1 + margin + opportunity)
+//   FAIL → the clock's `failure` policy decides:
+//            "none"  → nothing moves; the attempt simply failed
+//            "erase" → move `failure.sections` the OTHER way
+//
+// A failure never advances the clock the way the roller wanted. The only
+// question a clock answers is whether a miss costs them ground.
+
+const flip = (d) => (d === POLE.HIGH ? POLE.LOW : POLE.HIGH);
+
+/**
+ * What would this roll do to this clock, given a declared direction? Pure; the
+ * preview for a panel click, and the engine behind `applyRoll`.
+ *
+ * @param {object} clock
+ * @param {object} spec  { direction, result, difficulty, opposedResult,
+ *                         isCritical, isFumble, spendOpportunity }
+ */
+export function previewRoll(clock, spec = {}) {
+  const { outcome, margin, opposed } = readCheck(spec);
+  const intended = spec.direction === POLE.LOW ? POLE.LOW : POLE.HIGH;
+  const inactive = clock.state !== CLOCK_STATE.ACTIVE;
+
+  const passed = outcome === OUTCOME.SUCCESS;
+  const policy = clock.failure ?? { mode: FAILURE_MODE.NONE, sections: 1 };
+
+  let direction = intended;
+  let tally;
+
+  if (passed) {
+    tally = checkSections({ ...spec, outcome, margin, advanceOn: OUTCOME.SUCCESS });
+  } else if (policy.mode === FAILURE_MODE.ERASE) {
+    // The miss costs ground: a fixed section count, the other way. Deliberately
+    // NOT margin-scaled — the clock's author sets the price of failure.
+    direction = flip(intended);
+    tally = { sections: policy.sections, base: policy.sections, marginSections: 0, opportunitySections: 0, opportunitySpent: false };
+  } else {
+    tally = { ...ZERO_TALLY };
+  }
+
+  const sign = inactive ? 0 : (direction === POLE.HIGH ? 1 : -1);
+  const applies = !inactive && sign !== 0 && tally.sections > 0;
+
+  const nextValue = applies
+    ? Math.min(clock.sections, Math.max(0, clock.value + sign * tally.sections))
+    : clock.value;
+
+  return {
+    ...tally,
+    clockId: clock.id,
+    clockName: clock.name,
+    outcome, margin, opposed,
+    passed,
+    intended,
+    direction,
+    failureMode: policy.mode,
+    applies,
+    from: clock.value,
+    to: nextValue,
+    delta: nextValue - clock.value,
+    wouldResolve: applies ? resolutionFor(clock, nextValue) : null,
+  };
+}
+
+/** Apply a panel-click roll. Returns an `applyDelta`-shaped result + `preview`. */
+export function applyRoll(clock, spec = {}) {
+  const preview = previewRoll(clock, spec);
+
+  if (!preview.applies) {
+    return { clock, delta: 0, previous: clock.value, resolution: null, noop: true, preview };
+  }
+
+  const result = applyDelta(clock, {
+    // `direction` drives the axis; `side` is recorded for the ledger only.
+    side: spec.side ?? null,
+    direction: preview.direction,
+    sections: preview.sections,
+    cause: spec.cause ?? `roll:${preview.outcome}`,
     actorUuid: spec.actorUuid ?? null,
     at: spec.at,
   });

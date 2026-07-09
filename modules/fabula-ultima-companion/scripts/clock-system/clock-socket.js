@@ -48,6 +48,7 @@ const OPS = Object.freeze({
   advance:        (p) => store.advance(p.id, p.opts),
   set:            (p) => store.set(p.id, p.value, p.opts),
   applyCheck:     (p) => store.check(p.id, p.spec),
+  applyRoll:      (p) => store.roll(p.id, p.spec),
   resolve:        (p) => store.resolve(p.id, p.pole, p.opts),
   reopen:         (p) => store.reopen(p.id),
   discard:        (p) => store.discard(p.id, p.opts),
@@ -57,9 +58,15 @@ const OPS = Object.freeze({
   purgeDiscarded: () => store.purgeDiscarded(),
 });
 
-// Ops a non-GM may request. Players advance clocks (that is the point of the
-// system); they do not get to create, delete, force-resolve, or sweep them.
-export const PLAYER_OPS = Object.freeze(new Set(["advance", "applyCheck"]));
+// Ops a non-GM may request. Players advance clocks and commit the result of a
+// check they rolled (that is the point of the system); they do not get to
+// create, delete, force-resolve, or sweep them.
+//
+// `applyRoll` carries a die result the client produced. The GM re-runs the RAW
+// section math from it, but cannot know the dice were honest — exactly as it
+// cannot know a player read their own roll out loud correctly. The trust
+// boundary is the same one the table already has.
+export const PLAYER_OPS = Object.freeze(new Set(["advance", "applyCheck", "applyRoll"]));
 
 /** Exported so a headless test can prove the API never dispatches a typo. */
 export const OP_NAMES = Object.freeze(Object.keys(OPS));

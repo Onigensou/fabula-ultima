@@ -44,7 +44,9 @@ eq("every op in the table is reachable from the API", unreachable, []);
 const strays = [...PLAYER_OPS].filter((op) => !OP_NAMES.includes(op));
 eq("the player allowlist is a subset of the op table", strays, []);
 
-eq("players may advance and applyCheck", [...PLAYER_OPS].sort(), ["advance", "applyCheck"]);
+// A player may advance a clock, and may commit the result of a check they
+// rolled. They may not create, delete, force-resolve or sweep.
+eq("players may advance, applyCheck and applyRoll", [...PLAYER_OPS].sort(), ["advance", "applyCheck", "applyRoll"]);
 
 for (const gmOnly of ["create", "destroy", "resolve", "sweep", "purgeDiscarded"]) {
   eq(`"${gmOnly}" is GM-only`, PLAYER_OPS.has(gmOnly), false);

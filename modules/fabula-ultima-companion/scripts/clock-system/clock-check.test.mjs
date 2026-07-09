@@ -143,5 +143,67 @@ eq("paired: a bad miss fills the failure clock faster",
 eq("paired: fumbled opportunity feeds the failure clock (1+2+2=4 → full)", rf.clock.value, 4);
 eq("paired: and that resolves it as a player failure", [rf.clock.state, rf.resolution.outcome], ["resolved", "failure"]);
 
+// ── panel-click direction: GM works the AXIS, a player declares a GOAL ─────
+const { directionForClick, playerGoalDirection } = M;
+
+eq("GM: left fills, right erases — progress", [directionForClick(prog, "left", true), directionForClick(prog, "right", true)], ["high", "low"]);
+eq("GM: left fills, right erases — teardown", [directionForClick(tear, "left", true), directionForClick(tear, "right", true)], ["high", "low"]);
+eq("GM: struggle left goes right (high)", directionForClick(strug, "left", true), "high");
+
+eq("player goal: progress is to fill", playerGoalDirection(prog), "high");
+eq("player goal: teardown is to EMPTY", playerGoalDirection(tear), "low");
+eq("player goal: threat is to keep it empty", playerGoalDirection(threat), "low");
+eq("player goal: struggle is their own pole", playerGoalDirection(strug), "high");
+
+eq("player: left fills a progress clock", directionForClick(prog, "left", false), "high");
+eq("player: left ERASES a teardown clock (the reversal)", directionForClick(tear, "left", false), "low");
+eq("player: right fills a teardown clock", directionForClick(tear, "right", false), "high");
+eq("player: left erases a threat clock", directionForClick(threat, "left", false), "low");
+eq("player: right fills a threat clock", directionForClick(threat, "right", false), "high");
+eq("player: struggle left drives their pole", directionForClick(strug, "left", false), "high");
+
+// ── previewRoll / applyRoll: intent decides direction, not the poles ───────
+const { previewRoll, applyRoll } = CH;
+
+// A progress clock ignores failures under applyCheck. Under a DIRECTED roll it
+// still ignores them by default — but because the failure POLICY says so.
+let r = applyRoll(prog, { direction: "high", result: 14, difficulty: 10 });
+eq("roll: pass by 4 fills 2 sections", [r.clock.value, r.preview.sections], [2, 2]);
+eq("roll: direction is the one declared", r.preview.direction, "high");
+
+r = applyRoll(prog, { direction: "high", result: 4, difficulty: 10 });
+eq("roll: failureMode none → nothing moves", r.noop, true);
+
+// A player rolling to ERASE a progress clock: intent beats poles.
+const filled = M.applyDelta(prog, { side: "players", sections: 4 }).clock;
+r = applyRoll(filled, { direction: "low", result: 14, difficulty: 10 });
+eq("roll: a passed ERASE moves the clock DOWN", [r.preview.from, r.clock.value], [4, 2]);
+
+// failureMode: erase
+const risky = preset.progress({ id: "rk", name: "Risky", sections: 6, failure: { mode: "erase", sections: 2 } });
+const riskyMid = M.applyDelta(risky, { side: "players", sections: 4 }).clock;
+r = applyRoll(riskyMid, { direction: "high", result: 3, difficulty: 10 });
+eq("failureMode erase: a miss costs ground", [r.preview.direction, r.clock.value], ["low", 2]);
+eq("failureMode erase: the cost is fixed, not margin-scaled", r.preview.sections, 2);
+eq("failureMode erase: reported as a failure", r.preview.passed, false);
+
+r = applyRoll(riskyMid, { direction: "low", result: 3, difficulty: 10 });
+eq("failureMode erase flips whatever was intended", [r.preview.intended, r.preview.direction], ["low", "high"]);
+
+// a miss that would push past a pole clamps, and can RESOLVE against the roller
+const brink = M.applyDelta(preset.threat({ id: "bk", name: "Brink", sections: 4, failure: { mode: "erase", sections: 3 } }), { side: "gm", sections: 2 }).clock;
+r = applyRoll(brink, { direction: "low", result: 1, difficulty: 10 });
+eq("a punished miss can fill a threat clock to the top", r.clock.value, 4);
+eq("...and resolve it as a player failure", [r.clock.state, r.resolution.outcome], ["resolved", "failure"]);
+
+// opportunity still applies on a directed pass
+r = applyRoll(prog, { direction: "high", result: 10, difficulty: 10, isCritical: true, spendOpportunity: true });
+eq("roll: crit opportunity adds 2 on a pass", r.preview.sections, 3);
+r = applyRoll(prog, { direction: "high", result: 10, difficulty: 10, isFumble: true, spendOpportunity: true });
+eq("roll: a fumble's opportunity cannot be spent on a pass", r.preview.sections, 1);
+
+eq("roll: a resolved clock ignores rolls", applyRoll({ ...prog, state: "resolved" }, { direction: "high", result: 20, difficulty: 10 }).noop, true);
+eq("previewRoll writes nothing", (previewRoll(prog, { direction: "high", result: 20, difficulty: 10 }), prog.value), 0);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -49,6 +49,7 @@ import {
   CLOCK_MODULE_ID, CLOCK_TAG, CLOCK_HOOK, SIDE, POLE, OUTCOME,
   CLOCK_STATE, LIFECYCLE, GROUP_MODE, GROUP_ROLE, VISIBILITY,
   EVENT_SECTIONS_MINOR, EVENT_SECTIONS_MAJOR,
+  ATTRIBUTES, CLOCK_DL_DEFAULT, FAILURE_MODE, CLICK,
 } from "./clock-const.js";
 
 /** Default a `scene`-lifecycle clock to the scene it was born on. */
@@ -124,6 +125,26 @@ const api = {
   /** Same math, no write, no GM gate, no socket. For pre-roll previews. */
   previewCheck: (id, spec) => store.preview(id, spec),
 
+  /**
+   * Commit a panel-click roll: an EXPLICITLY-directed check. Unlike applyCheck,
+   * the direction comes from the click, not from the clock's poles — the user
+   * already declared which way they are pushing. On a pass the clock moves that
+   * way by the RAW section count; on a miss the clock's `failure` policy decides
+   * whether it costs ground.
+   *
+   * @param {object} spec  { direction: "high"|"low", result, difficulty,
+   *                         opposedResult?, isCritical?, isFumble?,
+   *                         spendOpportunity?, actorUuid?, cause? }
+   */
+  applyRoll: (id, spec) => dispatch("applyRoll", { id, spec }),
+
+  /** Read-only twin of applyRoll. */
+  previewRoll: (id, spec) => store.previewRollFor(id, spec),
+
+  /** Resolve a panel click into an axis direction (GM = axis, player = goal). */
+  directionForClick: (clock, click, isGM) => model.directionForClick(clock, click, isGM),
+  playerGoalDirection: (clock) => model.playerGoalDirection(clock),
+
   // ── Lifecycle (GM-only) ───────────────────────────────────────────────────
   sweep: (lifecycle, opts) => dispatch("sweep", { lifecycle, opts }),
   sweepScene: (sceneId, opts) => dispatch("sweepScene", { sceneId: sceneId ?? canvas?.scene?.id, opts }),
@@ -141,6 +162,7 @@ const api = {
 
   // ── Enums, so consumers never hardcode strings ────────────────────────────
   SIDE, POLE, OUTCOME, CLOCK_STATE, LIFECYCLE, GROUP_MODE, GROUP_ROLE, VISIBILITY,
+  ATTRIBUTES, FAILURE_MODE, CLICK, DL_DEFAULT: CLOCK_DL_DEFAULT,
   HOOK: CLOCK_HOOK,
 
   /** True on the one GM client that owns registry writes. */
