@@ -21,10 +21,10 @@ Hooks.once("ready", () => {
 
       // Placement (match CombatButton's right offset, but higher bottom)
       offsetRightPx: 313,
-      offsetBottomPx: 180, // <- "a bit above" the combat button (combat is 110)
+      offsetBottomPx: 174, // <- "a bit above" the combat button (combat is 110)
 
       // Visual
-      sizePx: 60,
+      sizePx: 52,
       zIndex: 82, // slightly above combat button
       iconText: "📙",
       tooltip: "EXP Awarder",

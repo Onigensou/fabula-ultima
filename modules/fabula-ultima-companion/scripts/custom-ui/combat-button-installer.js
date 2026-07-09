@@ -35,7 +35,7 @@ Hooks.once("ready", () => {
       offsetBottomPx: 110,
 
       // Visual
-      sizePx: 60,
+      sizePx: 52,
       zIndex: 81,
       iconText: "⚔️",
 

@@ -17,14 +17,23 @@ const ROOT_ID = "oni-clock-gm-root";
 const BTN_ID = "oni-clock-gm-btn";
 const STYLE_ID = "oni-clock-gm-styles";
 
-// Matched to the Check Requester button (cr-sidebar-button.js), which is the
-// established pattern for this column: same 60px diameter, same z-index, same
-// 22px icon, same hover tooltip. A smaller button would sit off-centre from its
-// neighbours, because they all share one `right:` edge rather than a centreline.
+// Matched to the Check Requester button (cr-sidebar-button.js), the established
+// pattern for this column: same diameter, z-index, icon size, hover tooltip. The
+// buttons share a `right:` edge rather than a centreline, so an odd-sized one
+// sits visibly off-centre from its neighbours.
+//
+// Column, bottom → top (12px gaps):
+//   Check Roller     38   60px — shared with players, so it stays large
+//   Combat          110   52px
+//   EXP Awarder     174   52px
+//   AEM             238   52px
+//   Check Requester 302   52px
+//   Clocks          366   52px  ← here
+//   Rewind          430   52px — battle-only, so it takes the top slot
 const CFG = {
   offsetRightPx: 313,   // fallback when the sidebar anchor hasn't published yet
-  offsetBottomPx: 462,  // next free slot above Rewind (390)
-  sizePx: 60,
+  offsetBottomPx: 366,  // directly above Check Requester (302)
+  sizePx: 52,
   zIndex: 83,
   label: "Clocks",
 };
