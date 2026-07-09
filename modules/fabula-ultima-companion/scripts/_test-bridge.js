@@ -185,6 +185,23 @@
     return token;
   }
 
+  // Blank a request's inbox file (best-effort). Used by the reload path to
+  // neutralize its OWN request before navigating: an unconsumed `reload` request
+  // re-runs on the next boot (the watcher's processed-map is in-memory and
+  // cleared on reload), so a committed reload would otherwise re-trigger another
+  // reload every boot — a reload LOOP. We can't delete via FilePicker, so
+  // overwrite empty; the next boot's fetchJson fails to parse and skips it.
+  async function emptyInboxRequest(id) {
+    if (!id) return;
+    try {
+      const blob = new Blob([""], { type: "application/json" });
+      const file = new File([blob], `req-${id}.json`, { type: "application/json" });
+      await FilePicker.upload(SOURCE, inboxDir(), file, {}, { notify: false });
+    } catch (e) {
+      console.warn(`${TAG} failed to blank inbox request req-${id}.json`, e);
+    }
+  }
+
   async function armActivationSentinel(reason = "manual") {
     const token = `${foundry.utils.randomID(12)}@${new Date().toISOString()}#${reason}`;
     const blob = new Blob([token], { type: "text/plain" });
@@ -201,6 +218,21 @@
   // shell would refuse to close because its close handshake depends on the
   // renderer's beforeunload — required end-task to exit the desktop app.
   const RELOAD_WATCHDOG_MS = 5000;
+  // Escalation cadence: fire the next navigation strategy this long after the
+  // previous one if the page hasn't begun to unload. 700ms is comfortably longer
+  // than a normal commit (pagehide fires in <<100ms when a strategy takes).
+  const RELOAD_ESCALATE_MS = 700;
+  // Additive, self-verifying reload. location.reload() remains the first attempt
+  // (unchanged when it works). If the page hasn't begun unloading shortly after,
+  // we ESCALATE to location.replace(href) — a distinct navigation trigger that
+  // sometimes commits when reload() is swallowed by the Electron shell (see
+  // reference_bridge_reload_pathology). beforeunload is neutralized at BOTH
+  // capture and bubble phases, since a single-phase strip can miss a veto set by
+  // a handler in the other phase — a likelier root cause of a swallowed reload
+  // than reload() itself failing. pagehide/unload signal a real commit and stop
+  // all escalation; if nothing commits, the watchdog restores beforeunload so we
+  // never poison Electron's close handshake, and logs loudly so the failure is
+  // OBSERVABLE (the caller also gets preReloadBootId to poll state.json against).
   function suppressBeforeUnloadAndReload() {
     const prevOnBeforeUnload = window.onbeforeunload;
     const killOthers = (e) => {
@@ -212,24 +244,49 @@
     };
     const restore = () => {
       try { window.removeEventListener("beforeunload", killOthers, { capture: true }); } catch {}
+      try { window.removeEventListener("beforeunload", killOthers, { capture: false }); } catch {}
       try { window.onbeforeunload = prevOnBeforeUnload; } catch {}
     };
     try { window.onbeforeunload = null; } catch {}
     window.addEventListener("beforeunload", killOthers, { capture: true });
-    // pagehide fires once navigation actually commits — that's our signal the
-    // reload "took" and the watchdog isn't needed.
-    const watchdog = setTimeout(() => {
+    window.addEventListener("beforeunload", killOthers, { capture: false });
+
+    const href = window.location.href;
+    // Same-URL-safe strategies only: reload() and replace() both re-navigate to
+    // the current URL. (Assigning location.href = <same url> is a no-op, so it is
+    // deliberately excluded — it would look like a strategy but never navigate.)
+    const strategies = [
+      () => location.reload(),
+      () => location.replace(href),
+    ];
+    let committed = false;
+    const timers = [];
+    const clearAll = () => { for (const t of timers) { try { clearTimeout(t); } catch {} } };
+    const onCommit = () => { committed = true; clearAll(); };
+    // pagehide/unload fire the instant navigation actually commits.
+    window.addEventListener("pagehide", onCommit, { once: true, capture: true });
+    window.addEventListener("unload", onCommit, { once: true, capture: true });
+
+    strategies.forEach((fn, i) => {
+      timers.push(setTimeout(() => {
+        if (committed) return;
+        try {
+          if (i > 0) console.warn(`${TAG} reload escalation ${i}: navigation didn't commit, trying next strategy`);
+          fn();
+        } catch (e) {
+          console.warn(`${TAG} reload strategy ${i} threw`, e);
+        }
+      }, i * RELOAD_ESCALATE_MS));
+    });
+
+    // Final watchdog — all strategies exhausted without a commit.
+    timers.push(setTimeout(() => {
+      if (committed) return;
+      try { window.removeEventListener("pagehide", onCommit, { capture: true }); } catch {}
+      try { window.removeEventListener("unload", onCommit, { capture: true }); } catch {}
       restore();
-      console.warn(`${TAG} reload watchdog fired — restored beforeunload state (navigation didn't commit)`);
-    }, RELOAD_WATCHDOG_MS);
-    window.addEventListener("pagehide", () => { clearTimeout(watchdog); }, { once: true, capture: true });
-    try {
-      location.reload();
-    } catch (e) {
-      clearTimeout(watchdog);
-      restore();
-      throw e;
-    }
+      console.warn(`${TAG} reload watchdog fired — ${strategies.length} strategies exhausted, navigation didn't commit; restored beforeunload state`);
+    }, (strategies.length - 1) * RELOAD_ESCALATE_MS + RELOAD_WATCHDOG_MS));
   }
 
   async function loadOrCreateSecret() {
@@ -550,6 +607,9 @@
         // if the navigation doesn't actually commit.
         setTimeout(async () => {
           try {
+            // Blank our own request FIRST so a reload that commits can't leave
+            // this file behind to re-trigger another reload on the next boot.
+            await emptyInboxRequest(req.id);
             try { await armActivationSentinel("reload"); }
             catch (e) { console.warn(`${TAG} failed to arm activation sentinel pre-reload`, e); }
             suppressBeforeUnloadAndReload();
@@ -557,7 +617,11 @@
             console.warn(`${TAG} reload failed`, e);
           }
         }, delayMs);
-        return { reloading: true, delayMs, sentinelArmed: true };
+        // preReloadBootId lets the caller VERIFY the reload actually committed:
+        // poll state.json until bootId differs from this value (a fresh boot
+        // regenerates it). If it never changes, the reload was swallowed — the
+        // reload pathology — and the caller can surface that instead of hanging.
+        return { reloading: true, delayMs, sentinelArmed: true, preReloadBootId: bootId };
       }
 
       default:
