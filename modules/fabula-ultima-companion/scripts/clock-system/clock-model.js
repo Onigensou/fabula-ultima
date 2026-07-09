@@ -197,6 +197,25 @@ export function poleFor(clock, side) {
   return null;
 }
 
+/**
+ * Who owns section `i` when the clock reads `value`? The rendering rule, kept
+ * here rather than in the renderer because it is a statement about the MODEL:
+ * the axis below the value belongs to the high pole, the axis above it to the
+ * low pole, and an unclaimed pole is nobody's.
+ *
+ * Every clock shape falls out of it — a progress bar fills with the players'
+ * colour, a threat bar with the GM's, a teardown bar is a neutral obstacle
+ * eaten from the right, and a struggle bar is a two-colour tug-of-war meeting
+ * at `value`.
+ *
+ * @returns {"players"|"gm"|"neutral"|"empty"}
+ */
+export function notchOwnerAt(clock, i, value = clock.value) {
+  const pole = i < value ? clock.poles.high : clock.poles.low;
+  if (pole) return pole.side;
+  return i < value ? "neutral" : "empty";
+}
+
 // ── Resolution ──────────────────────────────────────────────────────────────
 
 /**

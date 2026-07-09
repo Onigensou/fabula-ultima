@@ -128,6 +128,24 @@ eq("reopen clears resolution", [reopened.state, reopened.resolution], ["active",
 const reopenedLow = applyReopen(applyResolve(tear, POLE.LOW));
 eq("reopen from low pole lands at 1", reopenedLow.value, 1);
 
+// ── the rendering rule (one rule, four shapes) ────────────────────────────
+const strip = (clock, value) =>
+  Array.from({ length: clock.sections }, (_, i) => M.notchOwnerAt(clock, i, value)[0]).join("");
+
+eq("progress empty: all track", strip(prog, 0), "eeeeee");
+eq("progress at 2: players then track", strip(prog, 2), "ppeeee");
+eq("progress full: all players", strip(prog, 6), "pppppp");
+
+eq("threat at 2 of 4: the GM's menace creeps right", strip(threat, 2), "ggee");
+
+eq("teardown full: a solid neutral obstacle", strip(tear, 6), "nnnnnn");
+eq("teardown at 2: eaten from the right by the players", strip(tear, 2), "nnpppp");
+eq("teardown empty: wholly torn down", strip(tear, 0), "pppppp");
+
+eq("struggle centered: a two-colour tug of war", strip(strug, 4), "ppppgggg");
+eq("struggle losing: the GM owns most of the bar", strip(strug, 1), "pggggggg");
+eq("struggle won: all players", strip(strug, 8), "pppppppp");
+
 // ── validation ────────────────────────────────────────────────────────────
 const throws = (fn) => { try { fn(); return false; } catch { return true; } };
 eq("no poles rejected", throws(() => makeClock({ id: "x", name: "n", poles: {} })), true);
