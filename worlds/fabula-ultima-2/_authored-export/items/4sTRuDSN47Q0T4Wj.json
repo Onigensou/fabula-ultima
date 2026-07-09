@@ -24,6 +24,8 @@
   "system": {
     "props": {
       "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
       "check_bonus": "0",
       "class": "Tinkerer",
       "cost": "",
@@ -98,6 +100,8 @@
       "reaction_effect_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
       "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Target</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr></tbody></table>",
       "skill_range": "",
       "skill_target": "",

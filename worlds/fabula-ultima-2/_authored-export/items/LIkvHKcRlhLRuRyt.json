@@ -54,6 +54,7 @@
       "beast_ef": "100",
       "category": "Arcane",
       "celestial_ef": "100",
+      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "0",
@@ -71,6 +72,8 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
+      "id": "LIkvHKcRlhLRuRyt",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
       "insect_ef": "100",
       "ip_cost": "3",
       "isEquipped": false,
@@ -94,7 +97,7 @@
           "skill_cost": "-",
           "skill_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
           "skill_maxLevel": 1,
-          "uuid": ""
+          "uuid": "Item.uFoFmcWMN4tVtaeA"
         }
       },
       "item_type": "consumable",
@@ -103,22 +106,26 @@
       "name": "Remedy",
       "optional_params": {},
       "plant_ef": "100",
+      "refine_count": "0",
+      "refine_level": "0",
       "related_item_list": {
         "uFoFmcWMN4tVtaeA": {
           "id": "${item.id}",
           "name": "Remedy",
           "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
-          "uuid": ""
+          "uuid": "Item.uFoFmcWMN4tVtaeA"
         }
       },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
       "set_name": "",
+      "skill_tags": "potion",
       "soldier_ef": "100",
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
+      "uuid": "Item.LIkvHKcRlhLRuRyt",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },
