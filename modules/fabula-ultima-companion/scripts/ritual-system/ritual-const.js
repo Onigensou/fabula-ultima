@@ -18,10 +18,15 @@ export const RITUAL_TAG = "[FU][Ritual]";
 // Fire-and-forget, not request/response. A cast runs a Check Requester session
 // (dice, invokes, a confirm step) which can take a minute — far past any sane
 // envelope timeout. The GM applies the MP debit and posts the outcome card;
-// nothing needs to travel back. Same reasoning as clock-interaction.js.
+// the result reaches the player through the chat card, not the socket. Same
+// reasoning as clock-interaction.js.
+//
+// REFUSED travels back anyway. A cast the GM rejects (ineligible, unaffordable)
+// posts no card, so without it the player's click would vanish in silence.
 export const RITUAL_CHANNEL = `module.${RITUAL_MODULE_ID}`;
 export const RITUAL_SOCKET = Object.freeze({
   CAST_REQ: "ritual.cast.req",
+  REFUSED:  "ritual.cast.refused",
 });
 
 // CSB resource property, matching healing-const.js's HEAL_RESOURCE.mp.

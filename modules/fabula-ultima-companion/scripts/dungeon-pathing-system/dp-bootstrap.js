@@ -65,7 +65,7 @@
   function getSceneMode(scene) {
     const fab  = scene?.flags?.[MOD]?.[DP.FABULA_ROOT_KEY]?.[DP.GENERAL_KEY];
     const mode = fab?.[DP.SCENE_MODE_KEY];
-    if (mode === DP.SCENE_MODE.DUNGEON || mode === DP.SCENE_MODE.EXPLORATION || mode === DP.SCENE_MODE.NONE || mode === DP.SCENE_MODE.CAMP || mode === DP.SCENE_MODE.TITLE) return mode;
+    if (mode === DP.SCENE_MODE.DUNGEON || mode === DP.SCENE_MODE.EXPLORATION || mode === DP.SCENE_MODE.NONE || mode === DP.SCENE_MODE.CAMP || mode === DP.SCENE_MODE.TITLE || mode === DP.SCENE_MODE.THEATRE) return mode;
     const legacy = fab?.cameraFollowToken;
     if (legacy === true || legacy === "true" || legacy === 1) return DP.SCENE_MODE.EXPLORATION;
     return DP.SCENE_MODE.NONE;
@@ -714,6 +714,7 @@
       // Sync FT button visibility (flag may have changed since last activate)
       DP.ScanMode?.updateFtBtnVisibility?.();
       DP.ScanMode?.showHealBtn?.();
+      DP.ScanMode?.showRitualBtn?.("dungeon");
     } else {
       if (state.active) deactivate();
       // Exploration mode: show travel button if FT is enabled; hide otherwise
@@ -726,9 +727,17 @@
           DP.ScanMode?.hideTravelBtn?.();
         }
         DP.ScanMode?.showHealBtn?.();   // healing available in exploration too
+        DP.ScanMode?.showRitualBtn?.("exploration");
+      } else if (mode === DP.SCENE_MODE.THEATRE) {
+        // Visual-novel scene: no pathing, no travel, no healing. The ritual
+        // button is the only docked action, so it takes the leftmost slot.
+        DP.ScanMode?.hideTravelBtn?.();
+        DP.ScanMode?.hideHealBtn?.();
+        DP.ScanMode?.showRitualBtn?.("theatre");
       } else {
         DP.ScanMode?.hideTravelBtn?.();
         DP.ScanMode?.hideHealBtn?.();
+        DP.ScanMode?.hideRitualBtn?.();
       }
     }
   }

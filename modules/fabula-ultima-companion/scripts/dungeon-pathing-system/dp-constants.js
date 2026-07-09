@@ -36,6 +36,10 @@
     CAMP:        "camp",
     TITLE:       "title",
     CONFLICT:    "conflict",
+    // Visual-novel style scene: background only, used for roleplaying. Its
+    // presentation is not implemented — for now the mode exists as a label that
+    // hosts the Ritual button and suppresses dungeon pathing.
+    THEATRE:     "theatre",
   });
 
   // Turn phase — tracks the current stage of the dungeon turn lifecycle.
@@ -198,6 +202,16 @@
       LEFT:      316,        // 242 (ft left) + 64 (ft size) + 10 (gap)
       LEFT_NO_FT: 242,       // used when FT button is hidden (takes its slot)
       LEFT_SOLO:  20,        // used in exploration mode (leftmost; heal docks at 94)
+      FONT_SIZE: "28px",
+    },
+
+    // Ritual button — placed to the right of the Scene Travel button. Shown in
+    // Dungeon, Exploration and Theatre modes.
+    RITUAL_BUTTON: {
+      SIZE:      64,
+      BOTTOM:    80,
+      LEFT:      390,        // 316 (scene travel left) + 64 (size) + 10 (gap)
+      LEFT_SOLO:  20,        // Theatre: the only button, so it takes the leftmost slot
       FONT_SIZE: "28px",
     },
   };
