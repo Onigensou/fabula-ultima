@@ -249,21 +249,9 @@ export function injectClockStyles() {
 .oni-clock.resolved-success .oni-clock-panel { border-color: #2f6f96; }
 .oni-clock.resolved-failure .oni-clock-panel { border-color: #8d2c24; }
 
-/* ── The resolution chat card ──────────────────────────────────────────── */
-/* Foundry stamps a sender header + portrait on every message. A clock has no
-   speaker, so hide it — the card is the whole message. */
-.message:has(.oni-clock-card) .message-header { display: none; }
-.message:has(.oni-clock-card) .message-content { margin: 0; }
-
-.oni-clock-card {
-  border-left: 4px solid var(--tone, #8d5f38);
-  padding: 5px 9px;
-  line-height: 1.35;
-}
-.oni-clock-card .ck-verdict {
-  font-weight: 700; letter-spacing: .4px; color: var(--tone, #8d5f38);
-}
-.oni-clock-card .ck-line { opacity: .88; font-size: 12px; }
+/* The resolution chat card's CSS lives in clock-ui-resolve.js, NOT here: a card
+   is posted even when this bar is switched off, and this stylesheet is only
+   injected when the bar builds its layer. */
 
 @media (prefers-reduced-motion: reduce) {
   .oni-clock, .oni-clock-panel, .oni-clock-gear, .oni-clock-fill { transition: none !important; }

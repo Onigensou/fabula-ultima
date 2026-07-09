@@ -27,6 +27,38 @@ const TONE = Object.freeze({
   failure: "#cf4034",
 });
 
+const CARD_STYLE_ID = "oni-clock-card-styles";
+
+/**
+ * The card's own stylesheet. Deliberately NOT part of the bar's: a card is
+ * posted even when the bar is switched off (and even when no clock is on
+ * screen), and the bar only injects its CSS when it builds its layer. Keeping
+ * the card's styles here means it can never render naked.
+ */
+function injectCardStyles() {
+  if (document.getElementById(CARD_STYLE_ID)) return;
+  const s = document.createElement("style");
+  s.id = CARD_STYLE_ID;
+  s.textContent = `
+/* Foundry stamps a sender header + portrait on every message. A clock has no
+   speaker, so hide it — the card is the whole message. Beats core's
+   \`.flexrow { display: flex }\` on specificity. */
+.message:has(.oni-clock-card) .message-header { display: none; }
+.message:has(.oni-clock-card) .message-content { margin: 0; }
+
+.oni-clock-card {
+  border-left: 4px solid var(--tone, #8d5f38);
+  padding: 5px 9px;
+  line-height: 1.35;
+}
+.oni-clock-card .ck-verdict {
+  font-weight: 700; letter-spacing: .4px; color: var(--tone, #8d5f38);
+}
+.oni-clock-card .ck-line { opacity: .88; font-size: 12px; }
+`;
+  document.head.appendChild(s);
+}
+
 /** The banner text: the pole's own label, else a sensible default. */
 function bannerFor(clock, resolution) {
   const pole = clock.poles[resolution.pole];
@@ -76,6 +108,7 @@ export async function postResolutionCard(clock, resolution) {
 
 /** Subscribe the chat card to resolutions. Called once, from the bar's bootstrap. */
 export function wireResolutionChat() {
+  injectCardStyles();
   Hooks.on("fu-clock-resolved", ({ clock, resolution }) => {
     postResolutionCard(clock, resolution).catch(() => {});
   });
