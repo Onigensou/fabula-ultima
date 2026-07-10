@@ -48,11 +48,13 @@ const keyMatch = (ev, list) => list.includes(ev.key);
 
 // Row order == focus order. Kept as data so the keyboard handler never needs a
 // switch on row names to know what comes next.
-const ROWS = ["discipline", "potency", "area", "material", "group", "intent", "confirm"];
+const ROWS = ["discipline", "potency", "area", "material", "group", "altattr", "intent", "confirm"];
 
-// Rows that live side by side; ↑/↓ from either lands on the row above/below,
-// and ←/→ moves between the pair instead of scrolling.
-const ROW_PAIRS = { potency: "area", area: "potency", material: "group", group: "material" };
+// Controls that share one VISUAL row. ↑/↓ jumps clear of the whole group;
+// ←/→ walks within it. A group, not a pair, because the actions row now holds
+// three controls and `altattr` is only present for Chimerism.
+const ROW_GROUPS = [["potency", "area"], ["material", "group", "altattr"]];
+const groupOf = (row) => ROW_GROUPS.find((g) => g.includes(row)) ?? null;
 
 // Rows whose value is changed by scrolling, and which therefore must be ENGAGED
 // with Z before ←/→ will move that value rather than move between rows.
@@ -183,10 +185,6 @@ const RitualHUD = {
             </div>
           </div>
 
-          <div class="oni-ritual-alt" data-alt hidden>
-            <label><input type="checkbox" data-field="useAltAttrs" /> Use <b>MIG + WLP</b> instead of INS + WLP</label>
-          </div>
-
           <div class="oni-ritual-duo">
             <div class="oni-ritual-scroll oni-ritual-focusable" data-row="potency" tabindex="-1">
               <div class="lbl">Potency</div>
@@ -213,6 +211,10 @@ const RitualHUD = {
             </button>
             <div class="oni-ritual-group oni-ritual-focusable" data-row="group" tabindex="-1">
               <span class="tg-label">Group Check</span>
+              <span class="tg-switch"><span class="knob"></span></span>
+            </div>
+            <div class="oni-ritual-group oni-ritual-focusable" data-row="altattr" tabindex="-1" hidden>
+              <span class="tg-label">MIG + WLP</span>
               <span class="tg-switch"><span class="knob"></span></span>
             </div>
           </div>
@@ -277,6 +279,10 @@ const RitualHUD = {
       this._focus("group", { silent: true });
       this._toggleGroup();
     });
+    root.querySelector('[data-row="altattr"]').addEventListener("click", () => {
+      this._focus("altattr", { silent: true });
+      this._toggleAltAttrs();
+    });
     root.querySelector('[data-row="confirm"]').addEventListener("click", () => this._focus("confirm"));
 
     const ta = root.querySelector('[data-field="description"]');
@@ -288,10 +294,6 @@ const RitualHUD = {
       if (ev.key === "Escape") { ev.preventDefault(); ta.blur(); this._root?.focus(); }
     });
     root.querySelector('[data-row="intent"]').addEventListener("click", () => { ta.focus(); });
-
-    root.querySelector('[data-field="useAltAttrs"]').addEventListener("change", (ev) => {
-      this._spec.useAltAttrs = ev.target.checked;
-    });
 
     this._paintDiscipline();
     this._renderPotencyArea();
@@ -470,11 +472,32 @@ const RitualHUD = {
     rowEl.title = d.blurb;
     // A single performable discipline has nothing to scroll to.
     rowEl.classList.toggle("solo", n < 2);
+    this._renderAltAttrs();
+  },
 
-    // The alt-attribute toggle exists only for Chimerism.
-    const wrap = this._root.querySelector("[data-alt]");
-    wrap.hidden = !d.altAttrs;
-    if (wrap.hidden) this._root.querySelector('[data-field="useAltAttrs"]').checked = false;
+  /**
+   * The alternate attribute pair exists only for Chimerism (MIG+WLP instead of
+   * INS+WLP), so its switch is hidden for every other discipline — and hiding
+   * it must also clear the flag, or a ritual could carry an invisible MIG+WLP.
+   */
+  _renderAltAttrs() {
+    const d = disciplineById(this._spec.discipline);
+    const el = this._root.querySelector('[data-row="altattr"]');
+    const available = Boolean(d?.altAttrs);
+    el.hidden = !available;
+    if (!available) this._spec.useAltAttrs = false;
+    el.classList.toggle("on", this._spec.useAltAttrs);
+    el.title = available
+      ? `Roll ${d.altAttrs.join(" + ")} instead of ${d.attrs.join(" + ")}`
+      : "";
+    // Never leave the cursor parked on a row that just disappeared.
+    if (!available && this._row === "altattr") this._focus("group", { silent: true });
+  },
+
+  _toggleAltAttrs() {
+    this._spec.useAltAttrs = !this._spec.useAltAttrs;
+    this._renderAltAttrs();
+    playRitualSfx("SELECT");
   },
 
   /** The value currently ARRIVING in a host — never one that is on its way out. */
@@ -615,8 +638,14 @@ const RitualHUD = {
     }
   },
 
+  /** Is this control on screen? The MIG+WLP switch only exists for Chimerism. */
+  _rowVisible(row) {
+    const el = this._root?.querySelector(`.oni-ritual-focusable[data-row="${row}"]`);
+    return Boolean(el) && !el.hidden;
+  },
+
   _focus(row, { silent = false, noFocusSteal = false } = {}) {
-    if (!ROWS.includes(row)) return;
+    if (!ROWS.includes(row) || !this._rowVisible(row)) return;
     const changed = this._row !== row;
     this._row = row;
     // Moving off a row always releases it; an engaged row you are no longer
@@ -693,10 +722,11 @@ const RitualHUD = {
       if (keyMatch(ev, RITUAL_KEYS.UP) || keyMatch(ev, RITUAL_KEYS.DOWN)) {
         ev.preventDefault(); ev.stopPropagation();
         const step = keyMatch(ev, RITUAL_KEYS.DOWN) ? 1 : -1;
-        // Skip the partner of a side-by-side pair: ↓ from Potency goes to the
-        // Material row, not sideways to Area.
+        // Jump clear of the whole visual row: ↓ from Potency reaches Material,
+        // never sideways to Area. Hidden controls are not landing spots.
+        const here = groupOf(this._row);
         let next = idx + step;
-        while (ROWS[next] && ROW_PAIRS[this._row] === ROWS[next]) next += step;
+        while (ROWS[next] && ((here && here.includes(ROWS[next])) || !this._rowVisible(ROWS[next]))) next += step;
         if (ROWS[next]) this._focus(ROWS[next]);
         return;
       }
@@ -704,8 +734,11 @@ const RitualHUD = {
       if (keyMatch(ev, RITUAL_KEYS.LEFT) || keyMatch(ev, RITUAL_KEYS.RIGHT)) {
         ev.preventDefault(); ev.stopPropagation();
         // Disengaged, ←/→ always walks sideways — never changes a value.
-        const partner = ROW_PAIRS[this._row];
-        if (partner) this._focus(partner);
+        const dir = keyMatch(ev, RITUAL_KEYS.RIGHT) ? 1 : -1;
+        const members = (groupOf(this._row) ?? []).filter((r) => this._rowVisible(r));
+        const at = members.indexOf(this._row);
+        const target = members[at + dir];
+        if (target) this._focus(target);
         return;
       }
 
@@ -715,6 +748,7 @@ const RitualHUD = {
         else if (this._row === "confirm") this._cast();
         else if (this._row === "material") this._openMaterialPicker();
         else if (this._row === "group") this._toggleGroup();
+        else if (this._row === "altattr") this._toggleAltAttrs();
         else if (this._row === "intent") this._root.querySelector('[data-field="description"]').focus();
         return;
       }

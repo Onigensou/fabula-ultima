@@ -145,8 +145,6 @@ export function injectRitualStyles() {
 .disc-slot.side .disc-name { text-shadow: none; }
 .oni-ritual-disc.solo .disc-slot.side { visibility: hidden; }
 
-.oni-ritual-alt { font-size: 12px; display: flex; align-items: center; gap: 8px; padding-left: 4px; }
-.oni-ritual-alt label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 
 /* ── Actions row: the material button, then Group Check as bare text ────── */
 .oni-ritual-actions { display: flex; align-items: center; justify-content: flex-start; gap: 14px; }
@@ -240,12 +238,16 @@ export function injectRitualStyles() {
   margin-left: 7px; font-weight: 900; color: #bff5c2; -webkit-text-stroke: 0.4px #14421a;
 }
 
-/* Group Check: no panel. Bare text on the parchment, beside the button. */
+/* Group Check and MIG+WLP: no panel. Bare text on the parchment, beside the
+   button. display:inline-flex beats [hidden]'s UA display:none, so the hidden
+   state has to be restated — the MIG+WLP switch only exists for Chimerism and
+   would otherwise stay on screen for every discipline. */
 .oni-ritual-group {
   display: inline-flex; align-items: center; gap: 9px; flex: 0 0 auto;
   cursor: pointer; user-select: none; padding: 6px 4px; border-radius: 6px;
   white-space: nowrap;
 }
+.oni-ritual-group[hidden] { display: none; }
 .oni-ritual-group .tg-label { font-size: 14px; font-weight: 700; color: var(--rt-wood-3); }
 .oni-ritual-group.on .tg-label { color: var(--rt-ok); }
 .oni-ritual-group .tg-switch {
