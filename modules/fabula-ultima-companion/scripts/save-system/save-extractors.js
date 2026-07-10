@@ -187,12 +187,15 @@
       }
     }
 
+    // Changed-document name lists are only built when verbose load debugging is
+    // on — in normal play the counts are all that's kept.
+    const debug = SS.DEBUG_LOAD;
     return {
       type,
       create: toCreate.length, update: toUpdate.length, delete: toDelete.length, skip, nested,
-      updated: toUpdate.map(d => d.name),
-      created: toCreate.map(d => d.name),
-      deleted: toDelete.map(id => liveById.get(id)?.name ?? id),
+      updated: debug ? toUpdate.map(d => d.name) : [],
+      created: debug ? toCreate.map(d => d.name) : [],
+      deleted: debug ? toDelete.map(id => liveById.get(id)?.name ?? id) : [],
     };
   }
 

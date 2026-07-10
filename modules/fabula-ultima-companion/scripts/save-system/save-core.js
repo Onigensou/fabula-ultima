@@ -258,6 +258,8 @@
     };
     SS._lastLoadReport = { slotId, label, totalMs, actors: report, totals };
 
+    if (!SS.DEBUG_LOAD) return; // counts kept on _lastLoadReport; skip the console group
+
     try {
       console.groupCollapsed(
         `%c[SaveSystem][Diff] slot ${slotId} — ${totals.itemUpdate + totals.itemCreate + totals.itemDelete} item writes, ` +

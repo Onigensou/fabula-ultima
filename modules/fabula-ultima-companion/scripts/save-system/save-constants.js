@@ -12,6 +12,12 @@
   SS.SLOT_COUNT   = 3;
   SS.SAVE_VERSION = 1;
 
+  // Verbose load diagnostics: the per-actor embed-diff console group and the
+  // changed-document name lists on SaveSystem._lastLoadReport. Off in normal
+  // play (no console spam, no name-list building); flip true to debug a load.
+  //   game.modules.get("fabula-ultima-companion") … or just: SaveSystem.DEBUG_LOAD = true
+  SS.DEBUG_LOAD = false;
+
   SS.SETTING = Object.freeze({
     SLOT:         i => `saveSystem.slot.${i}`,
     NPC_TEMPLATE: "saveSystem.npcTemplateId",
