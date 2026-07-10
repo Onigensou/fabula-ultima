@@ -119,6 +119,7 @@
   SS.registerExtractor({
     key:   "databasePointer",
     label: "Database Pointer",
+    critical: true,
 
     async extract({ currentGame }) {
       if (!currentGame) return null;
@@ -142,6 +143,7 @@
   SS.registerExtractor({
     key:   "partyActorData",
     label: "Party Actor",
+    critical: true,
 
     async extract({ partyActor }) {
       if (!partyActor) return null;
@@ -168,6 +170,7 @@
   SS.registerExtractor({
     key:   "partyData",
     label: "Party Members",
+    critical: true,
 
     async extract({ memberUuids }) {
       const result = {};
@@ -204,6 +207,7 @@
   SS.registerExtractor({
     key:   "npcData",
     label: "Linked NPCs & Bosses",
+    critical: true,
 
     async extract({ memberUuids }) {
       const npcTemplateId = SS.Storage.getNpcTemplateId();
@@ -238,9 +242,14 @@
   });
 
   // ── 5. Active Scene ────────────────────────────────────────────────────────
+  // phase 1: activate LAST, after every scene-document mutation (backgrounds,
+  // audio, dungeon flags, tiles, tokens, drawings) has landed — so the canvas
+  // draws once, cleanly, instead of activating then churning heavy module tiles
+  // (MAT/levels/tile-scroll) on the live canvas.
   SS.registerExtractor({
     key:   "activeScene",
     label: "Active Scene",
+    phase: 1,
 
     async extract() {
       const s = game.scenes.active;
