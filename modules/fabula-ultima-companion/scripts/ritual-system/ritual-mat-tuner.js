@@ -39,11 +39,11 @@ const KNOBS = [
 
   // "Outline" is the width VISIBLE OUTSIDE the glyph. The stylesheet doubles it,
   // because the fill hides the inner half of the stroke it is drawn from.
-  { k: "--rm-stroke-w", label: "Outline (outer)", type: "range", def: 0.5,  min: 0,  max: 3,  step: 0.05, unit: "px" },
-  { k: "--rm-fat",      label: "Glyph fatten",   type: "range",  def: 0.45, min: 0,  max: 1.5, step: 0.05, unit: "px" },
-  { k: "--rm-glow-1",   label: "Glow inner blur",type: "range",  def: 5,    min: 0,  max: 20, step: 1,    unit: "px" },
+  { k: "--rm-stroke-w", label: "Outline (outer)", type: "range", def: 1.3,  min: 0,  max: 3,  step: 0.05, unit: "px" },
+  { k: "--rm-fat",      label: "Glyph fatten",   type: "range",  def: 0,    min: 0,  max: 1.5, step: 0.05, unit: "px" },
+  { k: "--rm-glow-1",   label: "Glow inner blur",type: "range",  def: 2,    min: 0,  max: 20, step: 1,    unit: "px" },
   { k: "--rm-glow-2",   label: "Glow outer blur",type: "range",  def: 11,   min: 0,  max: 40, step: 1,    unit: "px" },
-  { k: "--rm-weight",   label: "Font weight",    type: "range",  def: 900,  min: 400, max: 900, step: 100 },
+  { k: "--rm-weight",   label: "Font weight",    type: "range",  def: 500,  min: 400, max: 900, step: 100 },
   { k: "--rm-size",     label: "Font size",      type: "range",  def: 14.5, min: 9,  max: 26, step: 0.5,  unit: "px" },
   { k: "--rm-letter",   label: "Letter spacing", type: "range",  def: 0.3,  min: -1, max: 3,  step: 0.1,  unit: "px" },
   { k: "--rm-pad-x",    label: "Padding X",      type: "range",  def: 14,   min: 0,  max: 40, step: 1,    unit: "px" },

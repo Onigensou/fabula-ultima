@@ -169,7 +169,7 @@ export function injectRitualStyles() {
   background: linear-gradient(180deg, var(--rm-fill-1, #7d3428) 0%, var(--rm-fill-2, #57231b) 100%);
   color: var(--rm-text, #3b2a19);
   font-family: "Signika", sans-serif;
-  font-weight: var(--rm-weight, 900);
+  font-weight: var(--rm-weight, 500);
   font-size: var(--rm-size, 14.5px);
   letter-spacing: var(--rm-letter, .3px);
   padding: var(--rm-pad-y, 6px) var(--rm-pad-x, 14px);
@@ -205,12 +205,14 @@ export function injectRitualStyles() {
 .oni-ritual-mat > span {
   position: relative; z-index: 0;
   display: inline-flex; align-items: center;
-  font-weight: var(--rm-weight, 900);
-  /* Faux-bold: Signika stops at 900, so four hairline same-colour offsets
-     thicken the glyph. Fill only — the outline layer must not be fattened. */
+  font-weight: var(--rm-weight, 500);
+  /* Faux-bold: four hairline same-colour offsets thicken the glyph. Fill only —
+     the outline layer must not be fattened. Off by default: once the outline
+     genuinely sits outside the letters, a lighter face reads better against it
+     than a fattened one. */
   text-shadow:
-    var(--rm-fat, 0.45px) 0 0 currentColor, calc(-1 * var(--rm-fat, 0.45px)) 0 0 currentColor,
-    0 var(--rm-fat, 0.45px) 0 currentColor, 0 calc(-1 * var(--rm-fat, 0.45px)) 0 currentColor;
+    var(--rm-fat, 0px) 0 0 currentColor, calc(-1 * var(--rm-fat, 0px)) 0 0 currentColor,
+    0 var(--rm-fat, 0px) 0 currentColor, 0 calc(-1 * var(--rm-fat, 0px)) 0 currentColor;
 }
 .oni-ritual-mat > span::before {
   content: attr(data-text);
@@ -219,10 +221,12 @@ export function injectRitualStyles() {
   white-space: nowrap; pointer-events: none;
   font: inherit; letter-spacing: inherit;
   color: transparent;                       /* only the stroke of this copy shows */
-  -webkit-text-stroke: calc(var(--rm-stroke-w, 0.5px) * 2) var(--rm-stroke, #ffe14d);
-  /* The glow belongs on the layer behind the fill, or it washes the letters out. */
+  -webkit-text-stroke: calc(var(--rm-stroke-w, 1.3px) * 2) var(--rm-stroke, #ffe14d);
+  /* The glow belongs on the layer behind the fill, or it washes the letters out.
+     The inner blur is tight so it reads as a rim light on the outline rather
+     than a haze around the word. */
   text-shadow:
-    0 0 var(--rm-glow-1, 5px) var(--rm-glow-c1, rgba(255,225,77,.95)),
+    0 0 var(--rm-glow-1, 2px) var(--rm-glow-c1, rgba(255,225,77,.95)),
     0 0 var(--rm-glow-2, 11px) var(--rm-glow-c2, rgba(255,216,77,.6));
 }
 .oni-ritual-mat:hover { box-shadow: 0 3px 0 #3a1712, 0 0 14px var(--rt-glow); }
