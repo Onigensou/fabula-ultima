@@ -107,6 +107,9 @@
       // True while the success message is showing — prevents canvas hooks from
       // closing the overlay before the 3-second hold completes.
       this._showingSuccess = false;
+      // Latches on the first PROCEED so a duplicate broadcast can't restart the
+      // success hold (or race _closeWait against it).
+      this._proceeded      = false;
     }
 
     // ── Open: wire into SS.UI ────────────────────────────────────────────────────
@@ -122,6 +125,7 @@
       this._required       = TS.REQUIRED_PLAYERS;
       this._votes          = {};
       this._showingSuccess = false;
+      this._proceeded      = false;
 
       SS.UI.openInMode("load");
       // Lift the file selector above Foundry app windows (menu stays at z-index 60)
@@ -270,6 +274,9 @@
     }
 
     async onProceed(_payload) {
+      if (this._proceeded) return;
+      this._proceeded = true;
+
       await this._finishProgress();
 
       // Show success message and hold for 3 seconds
@@ -287,17 +294,27 @@
       this._closeWait();
     }
 
-    onConflict(_payload) {
+    // Serves two distinct failures. A vote disagreement carries `votes`; a
+    // failed load carries `error` — say which, rather than telling the table
+    // they disagreed when the save actually failed to apply.
+    onConflict({ error } = {}) {
       sfx("fail");
       cancelAnimationFrame(this._progressRaf);
-      this._progress = 0;
-      this._sel      = null;
-      this._showWait("PLAYERS CHOSE DIFFERENT FILES!<br>PLEASE CHOOSE AGAIN.");
+      this._progress  = 0;
+      this._sel       = null;
+      this._proceeded = false;
+
+      const msg = error
+        ? `LOAD FAILED!<br>${String(error).toUpperCase()}`
+        : "PLAYERS CHOSE DIFFERENT FILES!<br>PLEASE CHOOSE AGAIN.";
+      this._showWait(msg);
+
+      // Hold a real error on screen longer — it names the domain that failed.
       setTimeout(() => {
         if (!this._waitEl) return;
         this._closeWait();
         this.open();
-      }, 2500);
+      }, error ? 6000 : 2500);
     }
 
     // ── Progress bar (mirrors save-ui PS1 pattern) ───────────────────────────────
