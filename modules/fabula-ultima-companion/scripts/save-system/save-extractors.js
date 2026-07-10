@@ -94,19 +94,114 @@
     if (Object.keys(deletions).length) await actor.update(deletions);
   }
 
-  // Delete-all + recreate-all for items and effects so mergeObject semantics
-  // in updateEmbeddedDocuments can never leave stale flag values behind.
+  // ── Diff-based embedded application (Tier 2) ────────────────────────────────
+  //
+  // Replaces delete-all/recreate-all. Unchanged documents are left untouched, so
+  // a load no longer tears down and rebuilds ~200 items per PC — it writes only
+  // what actually changed. This removes the container delete-cascade (the source
+  // of the "item <id> does not exist" spam) and most of the churn/re-render cost.
+  //
+  // canonicalizeEmbed strips volatile/derived fields so two serializations of the
+  // same logical document compare equal:
+  //   • _stats  — createdTime/modifiedTime, always volatile.
+  //   • items   — the nested sub-item view. CSB stores contained children as
+  //     separate flat sibling entries keyed by system.container, so a container's
+  //     rendered `.items` is derived; comparing it flags every container falsely.
+  // Verified against the live world: after this strip, the only real diffs are
+  // value-changes (no live-only "stale" keys), so a plain in-place update is safe
+  // — no delete needed to clear removed keys.
+  function canonicalizeEmbed(obj) {
+    if (Array.isArray(obj)) return obj.map(canonicalizeEmbed);
+    if (obj && typeof obj === "object") {
+      const out = {};
+      for (const [k, v] of Object.entries(obj)) {
+        if (k === "_stats" || k === "items") continue;
+        out[k] = canonicalizeEmbed(v);
+      }
+      return out;
+    }
+    return obj;
+  }
+
+  // Diff one embedded collection of `owner` (an Actor's Items/Effects, or — via
+  // recursion — an Item's own Effects) toward the saved snapshot. Returns a
+  // summary for the load-level observability rollup.
+  //
+  // IMPORTANT (verified live): updateEmbeddedDocuments on an Item MERGES its
+  // embedded `effects` (updates by _id, inserts new) but does NOT delete effects
+  // absent from the array. So an updated Item's effects are reconciled RECURSIVELY
+  // here — not left to the parent update — and `effects` is stripped from the Item
+  // body update to keep ownership of them in one place.
+  async function applyEmbedsDiff(owner, type, savedArr = []) {
+    const collection = owner.getEmbeddedCollection(type);
+    const liveById   = new Map([...collection.values()].map(d => [d.id, d]));
+    const savedById  = new Map((savedArr ?? []).map(d => [d._id, d]));
+
+    const toCreate = [], toUpdate = [], toDelete = [];
+    let skip = 0;
+    const nested = { update: 0, create: 0, delete: 0 }; // effect ops on updated items
+
+    // Present live but not in the save → remove (rare: taken off the PC since save).
+    for (const id of liveById.keys()) {
+      if (!savedById.has(id)) toDelete.push(id);
+    }
+    // In the save → create if missing, update if changed, skip if identical.
+    for (const [id, saved] of savedById) {
+      const live = liveById.get(id);
+      if (!live) { toCreate.push(saved); continue; }
+      if (foundry.utils.objectsEqual(canonicalizeEmbed(live.toObject()), canonicalizeEmbed(saved))) skip++;
+      else toUpdate.push(saved); // saved carries _id
+    }
+
+    // safeDeleteEmbeds mutes any residual cascade "does not exist".
+    if (toDelete.length) await safeDeleteEmbeds(owner, type, toDelete);
+
+    if (toUpdate.length) {
+      const updates = toUpdate.map(d => {
+        const c = { ...d };
+        delete c._stats;                              // Foundry owns these timestamps
+        if (type === "Item") { delete c.effects; delete c.items; } // reconciled separately
+        return c;
+      });
+      await owner.updateEmbeddedDocuments(type, updates);
+
+      // Reconcile each updated Item's embedded effects (the merge-not-replace fix).
+      if (type === "Item") {
+        for (const saved of toUpdate) {
+          const item = owner.getEmbeddedCollection("Item").get(saved._id);
+          if (!item) continue;
+          const fx = await applyEmbedsDiff(item, "ActiveEffect", saved.effects ?? []);
+          nested.update += fx.update; nested.create += fx.create; nested.delete += fx.delete;
+        }
+      }
+    }
+
+    if (toCreate.length) {
+      // Creates carry their nested effects — createEmbeddedDocuments builds those
+      // correctly, so no recursion is needed on the create path.
+      try { await owner.createEmbeddedDocuments(type, toCreate, { keepId: true }); }
+      catch {
+        await Promise.allSettled(
+          toCreate.map(d => owner.createEmbeddedDocuments(type, [d], { keepId: true }).catch(() => {}))
+        );
+      }
+    }
+
+    return {
+      type,
+      create: toCreate.length, update: toUpdate.length, delete: toDelete.length, skip, nested,
+      updated: toUpdate.map(d => d.name),
+      created: toCreate.map(d => d.name),
+      deleted: toDelete.map(id => liveById.get(id)?.name ?? id),
+    };
+  }
+
   async function applyActorEmbeds(actor, { items = [], effects = [] }) {
-    const srcSet   = new Set((actor._source?.items ?? []).map(d => d._id));
-    const toDelete = [...actor.items.values()].map(i => i.id).filter(id => srcSet.has(id));
-    await safeDeleteEmbeds(actor, "Item", toDelete);
-    // Run creates even when delete had errors — orphaned IDs get healed here
-    // because keepId:true creates the missing item sub-level record.
-    if (items.length)    await actor.createEmbeddedDocuments("Item", items, { keepId: true });
-    const fxSet    = new Set((actor._source?.effects ?? []).map(d => d._id));
-    const fxDelete = [...actor.effects.values()].map(e => e.id).filter(id => fxSet.has(id));
-    await safeDeleteEmbeds(actor, "ActiveEffect", fxDelete);
-    if (effects.length)  await actor.createEmbeddedDocuments("ActiveEffect", effects, { keepId: true });
+    const t0 = performance.now();
+    const item   = await applyEmbedsDiff(actor, "Item", items);
+    const effect = await applyEmbedsDiff(actor, "ActiveEffect", effects);
+    const ms = Math.round(performance.now() - t0);
+    (SS._diffReport ??= []).push({ actor: actor.name, ms, item, effect });
   }
 
   // Scene mode is stored by the DungeonPathing / Fabula configuration system.
@@ -119,6 +214,7 @@
   SS.registerExtractor({
     key:   "databasePointer",
     label: "Database Pointer",
+    critical: true,
 
     async extract({ currentGame }) {
       if (!currentGame) return null;
@@ -142,6 +238,7 @@
   SS.registerExtractor({
     key:   "partyActorData",
     label: "Party Actor",
+    critical: true,
 
     async extract({ partyActor }) {
       if (!partyActor) return null;
@@ -168,6 +265,7 @@
   SS.registerExtractor({
     key:   "partyData",
     label: "Party Members",
+    critical: true,
 
     async extract({ memberUuids }) {
       const result = {};
@@ -204,6 +302,7 @@
   SS.registerExtractor({
     key:   "npcData",
     label: "Linked NPCs & Bosses",
+    critical: true,
 
     async extract({ memberUuids }) {
       const npcTemplateId = SS.Storage.getNpcTemplateId();
@@ -238,9 +337,14 @@
   });
 
   // ── 5. Active Scene ────────────────────────────────────────────────────────
+  // phase 1: activate LAST, after every scene-document mutation (backgrounds,
+  // audio, dungeon flags, tiles, tokens, drawings) has landed — so the canvas
+  // draws once, cleanly, instead of activating then churning heavy module tiles
+  // (MAT/levels/tile-scroll) on the live canvas.
   SS.registerExtractor({
     key:   "activeScene",
     label: "Active Scene",
+    phase: 1,
 
     async extract() {
       const s = game.scenes.active;

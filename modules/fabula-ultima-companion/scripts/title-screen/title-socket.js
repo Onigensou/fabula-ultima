@@ -39,10 +39,23 @@
 
   // ── Voter roster ─────────────────────────────────────────────────────────────
   //
-  // Who gets a say: the primary GM, plus every ACTIVE user who owns one of the
-  // current party's member actors. Spectators and the co-GM watch the lobby but
-  // do not vote — otherwise a spectator can stall the ready-check forever, or
-  // five players can quorum and trigger a load with no GM consent at all.
+  // Who gets a say: the host (primary) GM, plus the ASSIGNED PLAYER of each
+  // MAIN-PARTY member actor — counted whether or not they are currently
+  // connected. The roster is therefore fixed by party composition (host GM + the
+  // 4 party players = 5 in a normal session), not by who happens to be online,
+  // so the ready-check waits for the whole party.
+  //
+  // Detection is by User#character (Foundry's assigned-character link), NOT
+  // ownership. Ownership is unreliable here — many player accounts hold OWNER on
+  // the party actors (shared/permissive defaults), which counted all ~20 users.
+  // `user.character` is the concrete 1:1 link: an actor is the assigned
+  // character of exactly one user, so this yields precisely the 4 PC players.
+  // Bench characters, spectators, extra player accounts and the co-GM are all
+  // excluded — they can watch, but are not required to start.
+  //
+  // An offline player still counts, so the lobby cannot complete without the
+  // full party present — the GM-only "Load Anyway" debug bypass (forceLoad) is
+  // the deliberate escape hatch for solo testing.
   //
   // Recomputed on lobby open and on connect/disconnect (see title-bootstrap).
   // Cached as a Set because _voteState()/_evaluate() need it synchronously.
@@ -55,14 +68,22 @@
     const gm = globalThis.FUCompanion?.primaryGM?.();
     if (gm) ids.add(gm.id);
 
-    const ctx = await globalThis.SaveSystem?.Core?.buildContext?.();
-    for (const uuid of ctx?.memberUuids ?? []) {
-      const actor = game.actors.get(uuid.startsWith("Actor.") ? uuid.slice(6) : uuid);
-      if (!actor) continue;
-      for (const user of game.users.contents) {
-        if (!user.active || user.isGM) continue;
-        if (actor.testUserPermission(user, "OWNER")) ids.add(user.id);
-      }
+    // Main-party members only (member_id_1..N). buildContext().memberUuids folds
+    // in bench characters too, so read the party props directly for members.
+    const ctx      = await globalThis.SaveSystem?.Core?.buildContext?.();
+    const props    = ctx?.partyActor?.system?.props ?? {};
+    const memberIds = new Set();
+    for (let i = 1; i <= 10; i++) {
+      const raw = props[`member_id_${i}`];
+      if (!raw) continue;
+      memberIds.add(String(raw).startsWith("Actor.") ? String(raw).slice(6) : String(raw));
+    }
+
+    // The player of a member actor = the user whose assigned character IS it.
+    for (const user of game.users.contents) {
+      if (user.isGM) continue; // GMs are the host seat, never a "player" seat
+      const charId = user.character?.id;
+      if (charId && memberIds.has(charId)) ids.add(user.id);
     }
     return ids;
   }
@@ -169,10 +190,17 @@
 
     const slotId = values[0];
     _votes = {};
+    console.log(TAG, `All ${required} users agreed on slot ${slotId}. Loading…`);
+    await _performLoad(slotId);
+  }
+
+  // Run the actual load and drive every client's lobby through it. Reached two
+  // ways: quorum (_evaluate) and the GM-only debug bypass (forceLoad). The
+  // _evaluating flag serializes them so a bypass mid-quorum can't double-load.
+  async function _performLoad(slotId) {
+    if (_evaluating) return;
     _evaluating = true;
     try {
-      console.log(TAG, `All ${required} users agreed on slot ${slotId}. Loading…`);
-
       // Tell everyone (and our own UI) to show the loading bar
       _broadcast(TS.MSG.LOAD_LOADING, { slotId });
       TS.LoadUI?.onLoading?.({ slotId });
@@ -219,6 +247,18 @@
           payload: { userId: game.user.id },
         });
       }
+    },
+
+    // DEBUG bypass — skip quorum and load a slot immediately. Primary-GM only,
+    // no socket path (a co-GM cannot trigger it). Wired to a GM-only button so
+    // the whole party isn't needed for solo testing; there is no real-play case
+    // for loading past a failed ready-check.
+    forceLoad(slotId) {
+      if (!isPrimaryGM()) { console.warn(TAG, "forceLoad ignored: not the primary GM."); return; }
+      if (!slotId) return;
+      console.warn(TAG, `DEBUG force-load of slot ${slotId} (quorum bypassed).`);
+      _votes = {};
+      return _performLoad(slotId);
     },
 
     // ── Install listener (called on ready for all clients) ──────────────────

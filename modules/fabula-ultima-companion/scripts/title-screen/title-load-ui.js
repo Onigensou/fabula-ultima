@@ -83,6 +83,15 @@
     .ts-wait-msg      { font-size: 10px; letter-spacing: 3px; color: #9b7040; text-transform: uppercase; }
     .ts-conflict-msg  { font-size: 11px; letter-spacing: 2px; color: #8b2210; text-align: center; text-transform: uppercase; }
     .ts-success-msg   { font-size: 13px; letter-spacing: 3px; color: #3a6228; text-align: center; text-transform: uppercase; }
+    /* GM-only debug bypass — deliberately styled apart from the parchment so it
+       never reads as a normal player control. */
+    .ts-force-btn {
+      border: 1px dashed #a35a1a !important;
+      color: #8a3d0a !important;
+      background: repeating-linear-gradient(45deg, rgba(163,90,26,0.06), rgba(163,90,26,0.06) 6px, transparent 6px, transparent 12px) !important;
+      font-size: 9px !important; letter-spacing: 3px !important; opacity: 0.85;
+    }
+    .ts-force-btn:hover { opacity: 1; }
   `;
 
   function _injectWaitCSS() {
@@ -212,6 +221,12 @@
 
       const dots = this._renderDots();
 
+      // GM-only debug bypass: load without waiting for the whole party. Shown
+      // only on the primary GM's own wait panel — a co-GM can't trigger a load.
+      const forceBtn = (!conflictMsg && !spectating && (globalThis.FUCompanion?.isPrimaryGM?.() ?? false))
+        ? `<button class="ss-back-btn ts-force-btn" id="ts-wait-force" style="width:100%;margin-top:4px;">⚡ LOAD ANYWAY — DEBUG</button>`
+        : "";
+
       let body;
       if (conflictMsg) {
         body = `<div class="ts-conflict-msg ss-breathe">${conflictMsg}</div>`;
@@ -220,7 +235,8 @@
                 <button class="ss-back-btn" id="ts-wait-leave" style="width:100%;margin-top:4px;">◄ BACK</button>`;
       } else {
         body = `<div class="ts-wait-msg ss-breathe">Waiting for other players…</div>
-                <button class="ss-back-btn" id="ts-wait-cancel" style="width:100%;margin-top:4px;">◄ CHANGE CHOICE</button>`;
+                <button class="ss-back-btn" id="ts-wait-cancel" style="width:100%;margin-top:4px;">◄ CHANGE CHOICE</button>
+                ${forceBtn}`;
       }
 
       this._waitEl = document.createElement("div");
@@ -248,6 +264,12 @@
       document.getElementById("ts-wait-leave")?.addEventListener("click", () => {
         sfx("cancel");
         this._closeWait();
+      });
+
+      // DEBUG force-load — bypasses the ready-check and loads the GM's chosen slot.
+      document.getElementById("ts-wait-force")?.addEventListener("click", () => {
+        sfx("confirm");
+        TS.Socket.forceLoad(this._sel);
       });
     }
 

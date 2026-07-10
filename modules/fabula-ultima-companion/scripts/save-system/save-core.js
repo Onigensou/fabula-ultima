@@ -181,42 +181,124 @@
 
       console.log(TAG, `Loading slot ${slotId}: "${blob.label}"…`);
       const ctx = await buildContext();
+      SS._diffReport = []; // per-actor embed diff summaries, filled during apply
+      const loadStart = performance.now();
 
-      const failed = [];
-      for (const ext of SS.getExtractors()) {
-        const domainData = blob.data?.[ext.key];
-        try {
-          await withTimeout(ext.apply(ctx, domainData), APPLY_TIMEOUT_MS, ext.key);
-          console.debug(TAG, `  ✓ applied [${ext.key}]`);
-        } catch (e) {
-          console.error(TAG, `  ✗ apply failed [${ext.key}]:`, e);
-          failed.push(ext.key);
-          // A thrown apply has settled — the next one can safely run. A timed-out
-          // apply is still running: continuing would put two extractors' writes
-          // on the wire at once, which is the corruption we are here to prevent.
-          if (e instanceof ApplyTimeout) {
-            _poisoned = `a previous load timed out in [${ext.key}] and may still be writing`;
-            console.error(TAG, "Aborting load — a timed-out apply is still in flight.");
-            break;
+      // Load-wide suppression of "does not exist" delete errors. applyActorEmbeds
+      // deletes each actor's items en masse; CSB's CustomItem._preDelete then
+      // cascade-deletes contained children UNAWAITED, so the batch's own delete of
+      // those children lands as "does not exist" — asynchronously, after any
+      // per-call mute would have restored. The end state is correct (verified: no
+      // orphans). Route the noise to the console for the whole load instead.
+      const restoreNotify = _suppressMissingDocErrors();
+
+      const failedCritical = [];
+      const failedCosmetic = [];
+      try {
+        for (const ext of SS.getExtractors()) {
+          const domainData = blob.data?.[ext.key];
+          try {
+            await withTimeout(ext.apply(ctx, domainData), APPLY_TIMEOUT_MS, ext.key);
+            console.debug(TAG, `  ✓ applied [${ext.key}]`);
+          } catch (e) {
+            console.error(TAG, `  ✗ apply failed [${ext.key}]${ext.critical ? " (CRITICAL)" : ""}:`, e);
+            (ext.critical ? failedCritical : failedCosmetic).push(ext.key);
+            // A thrown apply has settled — the next one can safely run. A timed-out
+            // apply is still running: continuing would put two extractors' writes
+            // on the wire at once, which is the corruption we are here to prevent.
+            if (e instanceof ApplyTimeout) {
+              _poisoned = `a previous load timed out in [${ext.key}] and may still be writing`;
+              console.error(TAG, "Aborting load — a timed-out apply is still in flight.");
+              break;
+            }
           }
         }
+      } finally {
+        restoreNotify();
       }
 
-      // Previously this returned ok:true unconditionally, so a load whose
-      // partyData threw still showed "LOAD COMPLETE" over a half-restored world.
-      if (failed.length) {
-        const error = `apply failed: ${failed.join(", ")}`;
-        console.error(TAG, `Load incomplete — ${error}`);
-        ui.notifications?.error?.(`[Save System] Load incomplete — ${error}`);
-        return { ok: false, error, failed, label: blob.label };
+      // Only a CRITICAL failure (actor/database data) fails the load and drives the
+      // retry UI. A cosmetic miss (a scene layer, journal, shop) still loads — the
+      // core state is intact — and comes back as a soft warning, not a scary error
+      // that throws the table back to the picker over a working world.
+      if (failedCritical.length) {
+        const error = `apply failed: ${failedCritical.join(", ")}`;
+        console.error(TAG, `Load FAILED — ${error}`);
+        ui.notifications?.error?.(`[Save System] Load failed — ${error}`);
+        return { ok: false, error, failed: failedCritical, label: blob.label };
       }
 
-      ui.notifications?.info?.(`[Save System] Loaded Slot ${slotId}: "${blob.label}"`);
+      if (failedCosmetic.length) {
+        console.warn(TAG, `Loaded with cosmetic misses: ${failedCosmetic.join(", ")}`);
+        ui.notifications?.warn?.(`[Save System] Loaded — some visuals didn't fully restore: ${failedCosmetic.join(", ")}`);
+      } else {
+        ui.notifications?.info?.(`[Save System] Loaded Slot ${slotId}: "${blob.label}"`);
+      }
+      _reportDiff(slotId, blob.label, Math.round(performance.now() - loadStart));
       console.log(TAG, `Loaded slot ${slotId}`);
-      return { ok: true, label: blob.label };
+      return { ok: true, label: blob.label, warnings: failedCosmetic };
     } finally {
       _inFlight = null;
     }
+  }
+
+  // ── Load observability ──────────────────────────────────────────────────────
+  // Print a readable per-actor embed-diff summary and stash the full report on
+  // SS._lastLoadReport so it can be inspected programmatically (test bridge). This
+  // is the debug surface for the diff-based apply: at a glance you see how many
+  // items/effects were updated/created/deleted vs left untouched, and which ones.
+  function _reportDiff(slotId, label, totalMs) {
+    const report = SS._diffReport ?? [];
+    const sum = (sel) => report.reduce((n, r) => n + sel(r), 0);
+    const totals = {
+      itemUpdate: sum(r => r.item.update),   itemCreate: sum(r => r.item.create),
+      itemDelete: sum(r => r.item.delete),   itemSkip:   sum(r => r.item.skip),
+      fxUpdate:   sum(r => r.effect.update), fxCreate:   sum(r => r.effect.create),
+      fxDelete:   sum(r => r.effect.delete), fxSkip:     sum(r => r.effect.skip),
+    };
+    SS._lastLoadReport = { slotId, label, totalMs, actors: report, totals };
+
+    try {
+      console.groupCollapsed(
+        `%c[SaveSystem][Diff] slot ${slotId} — ${totals.itemUpdate + totals.itemCreate + totals.itemDelete} item writes, ` +
+        `${totals.fxUpdate + totals.fxCreate + totals.fxDelete} effect writes ` +
+        `(${totals.itemSkip} items untouched) in ${totalMs}ms`,
+        "color:#c9a22a;font-weight:bold"
+      );
+      for (const r of report) {
+        const i = r.item, e = r.effect, n = i.nested ?? { update: 0, create: 0, delete: 0 };
+        console.log(
+          `%c${r.actor}%c  items: ${i.skip} skip / ${i.update} upd / ${i.create} new / ${i.delete} del` +
+          `   item-fx: ${n.update} upd / ${n.create} new / ${n.delete} del` +
+          `   actor-fx: ${e.skip} skip / ${e.update} upd / ${e.create} new / ${e.delete} del   (${r.ms}ms)`,
+          "font-weight:bold", "color:inherit"
+        );
+        if (i.updated.length) console.log(`    item upd: ${i.updated.join(", ")}`);
+        if (i.created.length) console.log(`    item new: ${i.created.join(", ")}`);
+        if (i.deleted.length) console.log(`    item del: ${i.deleted.join(", ")}`);
+        if (e.updated.length) console.log(`    actor-fx upd: ${e.updated.join(", ")}`);
+        if (e.deleted.length) console.log(`    actor-fx del: ${e.deleted.join(", ")}`);
+      }
+      console.log("Full report → SaveSystem._lastLoadReport");
+      console.groupEnd();
+    } catch { /* console grouping is best-effort */ }
+  }
+
+  // Temporarily filter "does not exist" out of ui.notifications.error for the
+  // duration of a load. Returns a restore fn. Everything else passes through, and
+  // the suppressed messages are still logged (console.debug) so nothing is hidden.
+  function _suppressMissingDocErrors() {
+    const notif = ui?.notifications;
+    if (!notif?.error) return () => {};
+    const orig = notif.error.bind(notif);
+    notif.error = (msg, ...rest) => {
+      if (typeof msg === "string" && msg.includes("does not exist")) {
+        console.debug(TAG, "(suppressed)", msg);
+        return;
+      }
+      return orig(msg, ...rest);
+    };
+    return () => { notif.error = orig; };
   }
 
   // ── Public API ─────────────────────────────────────────────────────────────
