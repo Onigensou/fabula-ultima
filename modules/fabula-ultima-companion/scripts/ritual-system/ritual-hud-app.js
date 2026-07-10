@@ -234,8 +234,8 @@ const RitualHUD = {
         </div>
 
         <div class="oni-ritual-footer">
-          <button class="oni-ritual-btn ghost" data-act="cancel">Cancel</button>
           <button class="oni-ritual-btn" data-act="cast">Perform</button>
+          <button class="oni-ritual-btn ghost" data-act="cancel">Cancel</button>
         </div>
       </div>`;
 

@@ -83,7 +83,9 @@ export const RITUAL_SFX = Object.freeze({
   SELECT: { src: `${_SND_BASE}BattleCursor_2.wav`,   volume: 0.55 },
   ARM:    { src: `${_SND_BASE}check_ready.wav`,      volume: 0.6 },
   CANCEL: { src: `${_SND_BASE}BattleCursor_2.wav`,   volume: 0.4 },
-  DENY:   { src: `${_SND_BASE}BattleCursor_4.wav`,   volume: 0.35 },
+  // A nudge that changed nothing: a scroll refused at the end of a clamped
+  // scale, or a cast a player cannot afford.
+  DENY:   { src: `${_SND_BASE}collision_1.wav`,      volume: 0.45 },
   EXIT:   { src: `${_SND_BASE}bond_cleared.wav`,     volume: 0.6 },
 });
 
