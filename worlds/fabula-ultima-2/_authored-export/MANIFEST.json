@@ -117,6 +117,12 @@
         "parent": "yvRW0RqT5kwSxKFl"
       },
       {
+        "id": "EJXucYZiBl1yo4ih",
+        "name": "Ancient Temple",
+        "type": "RollTable",
+        "parent": "OeC0hsLCW5zTWD6w"
+      },
+      {
         "id": "1FOcwV6lQYuv1PRt",
         "name": "Arcane",
         "type": "Item",
@@ -621,6 +627,12 @@
         "parent": "Zsb2yoayhdKZd3IA"
       },
       {
+        "id": "FGz8aJ9jJX9FjGMl",
+        "name": "Encounter",
+        "type": "RollTable",
+        "parent": "EJXucYZiBl1yo4ih"
+      },
+      {
         "id": "NhYXwCvjexXHkrRm",
         "name": "Encounter",
         "type": "RollTable",
@@ -669,6 +681,12 @@
         "parent": "wPp7MjmyKqkuVU1J"
       },
       {
+        "id": "yGYeUKCz5yXYPjg4",
+        "name": "Enemies",
+        "type": "RollTable",
+        "parent": "EJXucYZiBl1yo4ih"
+      },
+      {
         "id": "zCj82a9RbmCZPvkD",
         "name": "Enemies",
         "type": "RollTable",
@@ -715,6 +733,12 @@
         "name": "Event",
         "type": "RollTable",
         "parent": "Zsb2yoayhdKZd3IA"
+      },
+      {
+        "id": "iBCCcaig7x28MuO5",
+        "name": "Event",
+        "type": "RollTable",
+        "parent": "EJXucYZiBl1yo4ih"
       },
       {
         "id": "mBVQ1HVss7LfRjCm",
@@ -1993,6 +2017,12 @@
         "name": "Trap",
         "type": "Item",
         "parent": "97p1xGjGPYztDsVo"
+      },
+      {
+        "id": "9LaJVdEJbCUtGA5b",
+        "name": "Treasure",
+        "type": "RollTable",
+        "parent": "EJXucYZiBl1yo4ih"
       },
       {
         "id": "DAg9RfuNcR9huljS",
@@ -5766,6 +5796,12 @@
       },
       {
         "id": "BS0baHXHi9Lc2MZE",
+        "name": "Golem Punch",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "aaNOOcEruZDckELN",
         "name": "Golem Punch",
         "type": "equippableItem",
         "effects": 0
@@ -13268,7 +13304,52 @@
         "id": "8ZKo5tt90i1Tdtr5",
         "name": "Blacksmith Shade",
         "type": "character",
-        "items": [],
+        "items": [
+          {
+            "id": "eHZgjIMONjFv9B4d",
+            "name": "Brave Glaive"
+          },
+          {
+            "id": "vCfe08LDCBHL55oG",
+            "name": "Fox Garb"
+          },
+          {
+            "id": "JpB7hatb5TDEdgsH",
+            "name": "Gae Bolg"
+          },
+          {
+            "id": "5X0s5FIyhltSPWtt",
+            "name": "Granny Vest"
+          },
+          {
+            "id": "Wms2UZ4UZeNynp9d",
+            "name": "Lily Vembrace"
+          },
+          {
+            "id": "E3hCxZKDdCySVMug",
+            "name": "Memorialis"
+          },
+          {
+            "id": "QTuszWnEw4W2uvRh",
+            "name": "Rocinante"
+          },
+          {
+            "id": "4Ahpybkum7HZJuN9",
+            "name": "Serpent Spear"
+          },
+          {
+            "id": "1X93myZ3GBXdA4Bk",
+            "name": "Shield of Spring"
+          },
+          {
+            "id": "CR2n1tUFYgg2sm2B",
+            "name": "Umbra Shield"
+          },
+          {
+            "id": "SG7t9PgyVSwtN61r",
+            "name": "Verdant Force"
+          }
+        ],
         "effects": 0
       },
       {
@@ -13441,7 +13522,7 @@
             "name": "Zero Trigger: Motivation"
           }
         ],
-        "effects": 4
+        "effects": 0
       },
       {
         "id": "UXagcMfhhqcSz7OZ",
@@ -14116,7 +14197,44 @@
         "id": "C7PsWytpMXK0PZSt",
         "name": "Commodities Shade",
         "type": "character",
-        "items": [],
+        "items": [
+          {
+            "id": "quaTHZtCyWVxSvDm",
+            "name": "Dead Branch"
+          },
+          {
+            "id": "tjguvUtR1XPiPUL8",
+            "name": "Goddess Tear"
+          },
+          {
+            "id": "dppHYHBTaodIyVds",
+            "name": "Mega-Elixir"
+          },
+          {
+            "id": "og6M1Ld71YwQdpNl",
+            "name": "Mega-Elixir"
+          },
+          {
+            "id": "bNkNrpohezxyBvm7",
+            "name": "Mega-Remedy"
+          },
+          {
+            "id": "FwUkhIhraQGl8gkR",
+            "name": "Mega-Remedy"
+          },
+          {
+            "id": "H0EaQj8kuVhmbURk",
+            "name": "Mega-Remedy Recipe"
+          },
+          {
+            "id": "ilXHEBQwqeYaQOub",
+            "name": "Phoenix Feather"
+          },
+          {
+            "id": "nLkSAFq6CBTuBdLq",
+            "name": "Phoenix Feather"
+          }
+        ],
         "effects": 0
       },
       {
@@ -17506,7 +17624,36 @@
         "id": "HMVout7kK8udbjEi",
         "name": "Jeweler Shade",
         "type": "character",
-        "items": [],
+        "items": [
+          {
+            "id": "HBtqEpQbklujmCB6",
+            "name": "Crimson Gloves"
+          },
+          {
+            "id": "rHyyYRj2G7jFpNVr",
+            "name": "Dragonslayer Pendant"
+          },
+          {
+            "id": "PIrih1q3B16lte1F",
+            "name": "Elemental Ward"
+          },
+          {
+            "id": "f4GjfD6UsiMY99W4",
+            "name": "Gorger Ward"
+          },
+          {
+            "id": "AsTycp3Y9S23tGJH",
+            "name": "Icarus Wing"
+          },
+          {
+            "id": "Den3kU0k4CkleWGo",
+            "name": "Ring of Defiance"
+          },
+          {
+            "id": "CMgIEaF2XorSgahW",
+            "name": "Ring of Regeneration"
+          }
+        ],
         "effects": 0
       },
       {
@@ -18605,6 +18752,50 @@
           {
             "id": "JKUvd2HkzFF5yJ6I",
             "name": "Tome"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "j6IpMoeBol2PprPp",
+        "name": "O'lmek",
+        "type": "character",
+        "items": [
+          {
+            "id": "EEx3KGlLGAuRqpJT",
+            "name": "Laser Eyes"
+          },
+          {
+            "id": "SY4gKcchvUw2fjl5",
+            "name": "Shatter"
+          },
+          {
+            "id": "fndVDNqXrGB9D6ho",
+            "name": "Stone Gaze"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "EShS04Ee3Jv149EY",
+        "name": "O'zealot",
+        "type": "character",
+        "items": [
+          {
+            "id": "yQKwY825PAWNZjEQ",
+            "name": "Jump"
+          },
+          {
+            "id": "QRU7bPfGycaFS1lK",
+            "name": "Sky High"
+          },
+          {
+            "id": "icCyXKz5UyI0o07V",
+            "name": "Spear"
+          },
+          {
+            "id": "ZhTHSF0NcnWVC4mg",
+            "name": "Stoneshatter Dive"
           }
         ],
         "effects": 0
@@ -21759,6 +21950,66 @@
         "id": "oI62OUmrfNFLBuok",
         "name": "4 Star",
         "results": 21
+      },
+      {
+        "id": "uy9NYXCJlJftNUhl",
+        "name": "Ancient Temple - Accessory",
+        "results": 7
+      },
+      {
+        "id": "1DrCvMVXn0yc1FQr",
+        "name": "Ancient Temple - Armor",
+        "results": 7
+      },
+      {
+        "id": "vlzaVsLzBucp1mP9",
+        "name": "Ancient Temple - Clock Event",
+        "results": 0
+      },
+      {
+        "id": "oPbo24YWiSscsOnW",
+        "name": "Ancient Temple - Consumable",
+        "results": 11
+      },
+      {
+        "id": "wcdUb4RPnvw1uTTO",
+        "name": "Ancient Temple - Encounter",
+        "results": 11
+      },
+      {
+        "id": "3RdJ30rU43jtnkFF",
+        "name": "Ancient Temple - Enemies",
+        "results": 8
+      },
+      {
+        "id": "8nBjRB3WAjyRGhKr",
+        "name": "Ancient Temple - Hazard",
+        "results": 0
+      },
+      {
+        "id": "kyDjXHWxUhiJsvmt",
+        "name": "Ancient Temple - Item",
+        "results": 8
+      },
+      {
+        "id": "iwjb2W18shMqJzBJ",
+        "name": "Ancient Temple - Skill Check",
+        "results": 0
+      },
+      {
+        "id": "UXc5dhppK09OZ2Nd",
+        "name": "Ancient Temple - Treasure",
+        "results": 8
+      },
+      {
+        "id": "rZuUdYf5K9CoKQzN",
+        "name": "Ancient Temple - Weapon",
+        "results": 12
+      },
+      {
+        "id": "0kvKZTVDBmXUHrCx",
+        "name": "Ancient Temple - Zenit",
+        "results": 11
       },
       {
         "id": "jlDJQx6WUtsw7npK",

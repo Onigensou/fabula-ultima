@@ -1,0 +1,135 @@
+{
+  "_id": "1DrCvMVXn0yc1FQr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783661974938,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "9LaJVdEJbCUtGA5b",
+  "formula": "1d7",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dreae.png",
+  "name": "Ancient Temple - Armor",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "dMSDeDZJBAUZMSdi",
+      "documentCollection": "Item",
+      "documentId": "jnhWaWPLwZcPQ883",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mant.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Mana Robe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "fgqOIZgOLlG9SvA5",
+      "documentCollection": "Item",
+      "documentId": "S1Wdikp3QcyfRvCs",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Valkyrie Wings",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "I75TKJmS6awOr4H7",
+      "documentCollection": "Item",
+      "documentId": "JJoFipvJxSFs9Bk1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Engineer Jacket",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "iZilmztV9fW9ytah",
+      "documentCollection": "Item",
+      "documentId": "ALjvA9L7HbOEbuCS",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/armor.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Automaton Suit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ML8ZjCN2qFgWNYZx",
+      "documentCollection": "Item",
+      "documentId": "nJxmusiX9jL2riul",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mant.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Meditation Robe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "tVZE23M7l73GM8Gg",
+      "documentCollection": "Item",
+      "documentId": "dD85U7jxv0LviO8u",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/herosui.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Crystal Plate",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "XjwBlMbXnDRVJ5OU",
+      "documentCollection": "Item",
+      "documentId": "SJSmfMW8C8gzwsuT",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/equipment/chest/robe-layered-blue.webp",
+      "range": [
+        5,
+        5
+      ],
+      "text": "The Selfless",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

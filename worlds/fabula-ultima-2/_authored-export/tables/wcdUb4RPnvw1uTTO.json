@@ -1,0 +1,184 @@
+{
+  "_id": "wcdUb4RPnvw1uTTO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783661974756,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "FGz8aJ9jJX9FjGMl",
+  "formula": "1d11",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Ancient Temple - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "21ldoOsV8TEA8fv7",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        7,
+        7
+      ],
+      "text": "O'zealot, O'lmek, O'zealot",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "6wqChohzy9YBbsLi",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        10,
+        10
+      ],
+      "text": "O'zealot, Pyrefly, O'zealot",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "bouLDNNISiNCM6PJ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Pyrefly, Pyrefly, Pyrefly, Pyrefly, Pyrefly",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ck4ldcI2I0S3GL78",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "O'zealot, O'zealot, O'zealot",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "g3hnGAnZoxKtMJQv",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Salamander, Inferex, Salamander",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Ixbvn5obIsgLB2Gh",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        5,
+        5
+      ],
+      "text": "O'lmek",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "lxSuPY0kRJxLleUr",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Centuaros, Inferex",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "M8tYf7W0TuTrLQPq",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Pyrefly, Dryad, Pyrefly",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "NfL9t7yHhAax6rlV",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Salamander, Dryad, Inferex",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "TpDwFUXNVeNCh3zP",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Dryad, Centuaros, Dryad",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "zjIZGGH7NscR1cEn",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/d20-black.svg",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Pyrefly, O'lmek, Pyrefly",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

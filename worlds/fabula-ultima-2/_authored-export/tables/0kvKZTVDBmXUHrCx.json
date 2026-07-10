@@ -1,0 +1,180 @@
+{
+  "_id": "0kvKZTVDBmXUHrCx",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783661975078,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {},
+  "folder": "9LaJVdEJbCUtGA5b",
+  "formula": "1d11",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+  "name": "Ancient Temple - Zenit",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "4PqMVSVcBSJLdzg0",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "1599",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "8TWPUEj7bEaQd6an",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "199",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Cw0V4l8G2kW513CP",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "10",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ilYRI99XX5sdtKZL",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "299",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "mZyNp9rqNaHShsr2",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "399",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "Qc2u1DxvD6ox9c3H",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "300 zenit",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "qGjyTrQ7u3fNXEmq",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "699",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "rAFCSIaYMWo5tM7s",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "1999",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "TsZFGiJ0BVCPa92Q",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "450",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "VTC6TrdswhuLDhzZ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "499",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "w3oP9Dlv5aDwiwsO",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "799",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

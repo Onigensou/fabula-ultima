@@ -1,0 +1,150 @@
+{
+  "_id": "3RdJ30rU43jtnkFF",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783661974786,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "yGYeUKCz5yXYPjg4",
+  "formula": "1d8",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Ancient Temple - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "auv9BWxCxFcC5GFX",
+      "documentCollection": "Actor",
+      "documentId": "RJECgM6oVt4UI4ds",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dryad_Standard.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Dryad",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "iBiBcotoSA6ih5OR",
+      "documentCollection": "Actor",
+      "documentId": "5m6jyFCVzfBSzJvN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Creeps_Standard.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Creeps",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "tdnqxN134aOisJnp",
+      "documentCollection": "Actor",
+      "documentId": "zODzgQipiH3nsimr",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Inferex_Standard.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Inferex",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vg76LYgx5VabeeIp",
+      "documentCollection": "Actor",
+      "documentId": "EShS04Ee3Jv149EY",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        3,
+        3
+      ],
+      "text": "O'zealot",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vojoSjcUhFApslCS",
+      "documentCollection": "Actor",
+      "documentId": "gN89zV1htUeZWel0",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Salamander_Standard.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Salamander",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "wrlGTOdUj6SaauJu",
+      "documentCollection": "Actor",
+      "documentId": "6b49UGpZQSWh3LAI",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Pyrefly_Standard.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Pyrefly",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Y6Rk3wHDLY4bOY8S",
+      "documentCollection": "Actor",
+      "documentId": "j6IpMoeBol2PprPp",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        2,
+        2
+      ],
+      "text": "O'lmek",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ypVatfphK4FzRxBx",
+      "documentCollection": "Actor",
+      "documentId": "7FB6x9kD38cX5SGB",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Centaurus_Standard.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Centuaros",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

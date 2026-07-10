@@ -5079,7 +5079,18 @@
       "mimic": false,
       "minimum_critical_dice": 6,
       "name": "Hako",
-      "normal_spell_list": {},
+      "normal_spell_list": {
+        "7IBdWHGWsYr1ImY4": {
+          "cost": "10 x T MP",
+          "duration": "-",
+          "id": "${item.id}",
+          "name": "Heal",
+          "roll": "",
+          "spell_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+          "spell_target": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.7IBdWHGWsYr1ImY4"
+        }
+      },
       "npc_rank": "champion",
       "override_all_damage_type": "None",
       "override_attack_damage_type": "None",

@@ -1,0 +1,135 @@
+{
+  "_id": "uy9NYXCJlJftNUhl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783661974908,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "9LaJVdEJbCUtGA5b",
+  "formula": "1d7",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
+  "name": "Ancient Temple - Accessory",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "7VNVLsQIq2KaJcTq",
+      "documentCollection": "Item",
+      "documentId": "6vnqLdS9ER3gWiSc",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Bandit_Gloves.webp",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Bandit Gloves",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "kn7nS9IPGNi7Lbiz",
+      "documentCollection": "Item",
+      "documentId": "eeg3n5d911imUDE0",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fantasy%20Life%20I/Armor/Pino%2527s_Hat.webp",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Pointy Yellow Hat",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "PiqT4GW18wpqUONz",
+      "documentCollection": "Item",
+      "documentId": "Zh2QWeG9EeU9hA9V",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Topaz Pendant",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pWEV1hpLZYtblKUy",
+      "documentCollection": "Item",
+      "documentId": "y8noOLFXVNhH9Ubp",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Ring of the Pupil",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vaY32IOCNSCYxDhF",
+      "documentCollection": "Item",
+      "documentId": "STVIwh32AbLJ1SDA",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/borb.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Magician Necklace",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vQ9nGoPMGu6p5TRF",
+      "documentCollection": "Item",
+      "documentId": "XvIFVYaPoF31ImhK",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Wind Glider",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "WIZcZPR5mwallPtz",
+      "documentCollection": "Item",
+      "documentId": "48SlaL7ni6ozRo8E",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2443.gif",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Combat Boots",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

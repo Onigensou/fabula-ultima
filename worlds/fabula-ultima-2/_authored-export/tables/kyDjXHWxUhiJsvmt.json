@@ -1,0 +1,138 @@
+{
+  "_id": "kyDjXHWxUhiJsvmt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783661974995,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "You catch a glittering light amidst your peripheral vision. Whatever could it be....?",
+  "displayRoll": true,
+  "flags": {},
+  "folder": "9LaJVdEJbCUtGA5b",
+  "formula": "1d15",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+  "name": "Ancient Temple - Item",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "2f6kNUKKEBytPBP0",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        11,
+        13
+      ],
+      "text": "Moderate amount of Supply! (+3 IP)",
+      "type": "text",
+      "weight": 3
+    },
+    {
+      "_id": "D4eMvIrkt94B1p0w",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/doom.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "It's Empty (...just like your soul)",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "FrQetc8Iz3Kg8ZEA",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "A large amount of Supply! (+5 IP)",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "lbIIOn8OmfyNeZ3P",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Mountains of Supply! (Refill all IP to full)",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "maM5xzgjx1O8tNbA",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/prin.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Junk",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "NKyODDKemgbIsCbS",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        1,
+        3
+      ],
+      "text": "A bit of Supply (+2 IP)",
+      "type": "text",
+      "weight": 3
+    },
+    {
+      "_id": "WgfmPRngtXL6nXAs",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        8,
+        10
+      ],
+      "text": "Small amount of Supply... (+1 IP)",
+      "type": "text",
+      "weight": 3
+    },
+    {
+      "_id": "xR0pGynd5PwmLcIJ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "range": [
+        4,
+        5
+      ],
+      "text": "A lot of Supply! (+4 IP)",
+      "type": "text",
+      "weight": 2
+    }
+  ],
+  "sort": 0
+}

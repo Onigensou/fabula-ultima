@@ -1,0 +1,19 @@
+{
+  "_id": "EJXucYZiBl1yo4ih",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783661974611,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "OeC0hsLCW5zTWD6w",
+  "name": "Ancient Temple",
+  "sort": 0,
+  "sorting": "a",
+  "type": "RollTable"
+}

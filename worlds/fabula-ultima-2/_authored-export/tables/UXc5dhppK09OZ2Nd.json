@@ -1,0 +1,146 @@
+{
+  "_id": "UXc5dhppK09OZ2Nd",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783661975133,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {},
+  "folder": "9LaJVdEJbCUtGA5b",
+  "formula": "1d8",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
+  "name": "Ancient Temple - Treasure",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "05enx6wvNaTrGpa1",
+      "documentCollection": "Item",
+      "documentId": "Rnfh1rjtjSQyRUem",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1724.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Frozen Envy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "0hggvndYFtaCAN8n",
+      "documentCollection": "Item",
+      "documentId": "Ujk1ocZwtp6B5kuy",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bra.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Bikini Armor",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "9AX3qDHY0ZerO2a2",
+      "documentCollection": "Item",
+      "documentId": "1AlaqnS5xWU1oa5p",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1648.gif",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Desperatus",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "El9Xa960K7tsDgmK",
+      "documentCollection": "Item",
+      "documentId": "xktj2JJX7QZ5z6jA",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
+      "range": [
+        5,
+        5
+      ],
+      "text": "The Tormentor",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "rnNG4y1A4RbIvTOt",
+      "documentCollection": "Item",
+      "documentId": "vifu2MB7Q9daEa8I",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1231.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Hornet",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "tL2hWCbYEI8BGeVC",
+      "documentCollection": "Item",
+      "documentId": "9BKhWjQctWsHbrie",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Winter Kolossus",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vJCBg5Czldc7wYm7",
+      "documentCollection": "Item",
+      "documentId": "8mXI5OJRvKbBpmsm",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1626.gif",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Arch Ice Wand",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Ync5ypEMXa8iqE3f",
+      "documentCollection": "Item",
+      "documentId": "LVLxu1HPQNbpB0Hx",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Dark Orbit",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}
