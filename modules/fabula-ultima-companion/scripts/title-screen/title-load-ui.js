@@ -113,6 +113,13 @@
       this._proceeded      = false;
     }
 
+    // Mirrors _mayVote() in title-socket.js: an empty roster means the party
+    // could not be resolved, in which case everyone votes rather than nobody.
+    _mayVote() {
+      if (!this._eligible?.length) return true;
+      return this._eligible.includes(game.user?.id);
+    }
+
     // ── Open: wire into SS.UI ────────────────────────────────────────────────────
 
     open() {
@@ -131,6 +138,11 @@
       // Roster may have changed since ready (someone joined, a party member was
       // swapped). No-op off the primary GM; the result reaches us by broadcast.
       TS.Socket.refreshRoster();
+
+      // Non-voters (co-GM, spectators) watch the ready-check but never get a
+      // slot picker. Handing them one would be a dead control: their vote is
+      // dropped by the aggregator and they would sit in the wait panel forever.
+      if (!this._mayVote()) { this._showSpectate(); return; }
 
       SS.UI.openInMode("load");
       // Lift the file selector above Foundry app windows (menu stays at z-index 60)
@@ -184,20 +196,32 @@
 
     // ── Waiting panel ────────────────────────────────────────────────────────────
 
-    _showWait(conflictMsg = null) {
+    // Spectator view of the ready-check: same panel, live dots and counter, but
+    // no slot label and no controls beyond leaving.
+    _showSpectate() {
+      this._showWait(null, { spectating: true });
+    }
+
+    _showWait(conflictMsg = null, { spectating = false } = {}) {
       _injectWaitCSS();
       if (this._waitEl) this._waitEl.remove();
 
       const SS  = globalThis.SaveSystem;
       const d   = this._sel ? SS?.Storage?.getSlot?.(this._sel) : null;
-      const lbl = d?.label ?? `Slot ${this._sel ?? "?"}`;
+      const lbl = spectating ? "SPECTATING" : (d?.label ?? `Slot ${this._sel ?? "?"}`);
 
       const dots = this._renderDots();
 
-      const body = conflictMsg
-        ? `<div class="ts-conflict-msg ss-breathe">${conflictMsg}</div>`
-        : `<div class="ts-wait-msg ss-breathe">Waiting for other players…</div>
-           <button class="ss-back-btn" id="ts-wait-cancel" style="width:100%;margin-top:4px;">◄ CHANGE CHOICE</button>`;
+      let body;
+      if (conflictMsg) {
+        body = `<div class="ts-conflict-msg ss-breathe">${conflictMsg}</div>`;
+      } else if (spectating) {
+        body = `<div class="ts-wait-msg ss-breathe">The party is choosing a file…</div>
+                <button class="ss-back-btn" id="ts-wait-leave" style="width:100%;margin-top:4px;">◄ BACK</button>`;
+      } else {
+        body = `<div class="ts-wait-msg ss-breathe">Waiting for other players…</div>
+                <button class="ss-back-btn" id="ts-wait-cancel" style="width:100%;margin-top:4px;">◄ CHANGE CHOICE</button>`;
+      }
 
       this._waitEl = document.createElement("div");
       this._waitEl.id = "ts-wait-overlay";
@@ -218,6 +242,12 @@
         TS.Socket.emitCancel();
         this._closeWait();
         this.open();
+      });
+
+      // Spectators never voted, so there is nothing to cancel — just leave.
+      document.getElementById("ts-wait-leave")?.addEventListener("click", () => {
+        sfx("cancel");
+        this._closeWait();
       });
     }
 
