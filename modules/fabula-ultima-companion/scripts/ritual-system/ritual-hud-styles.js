@@ -109,13 +109,16 @@ export function injectRitualStyles() {
 .oni-ritual-disc .arrow:hover { opacity: 1; color: var(--rt-wood-3); }
 .oni-ritual-disc.solo .arrow { visibility: hidden; }
 .disc-viewport { flex: 1; overflow: hidden; min-width: 0; }
-/* All THREE slots share the viewport, a third each, so the neighbours are on
-   screen either side of the current one. (A 300%-wide track offset by -100%
-   also centres the current slot, but parks the neighbours exactly off-stage.)
-   One scroll step therefore slides the track by a third of its own width. */
+/* FIVE slots of a third of the viewport each, so three are on screen and one
+   waits just off each edge. Those two are what slide IN during a scroll; with
+   only three slots the vacated end position stayed empty for the whole slide
+   and the arriving neighbour could not appear until the rebuild.
+   Track = 5/3 of the viewport, pulled left by one slot so slot 2 is centred.
+   One scroll step is therefore 20% of the track's own width. */
 .disc-track {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  width: 100%; transform: translate3d(0,0,0);
+  display: grid; grid-template-columns: repeat(5, 20%);
+  width: 166.6667%; margin-left: -33.3333%;
+  transform: translate3d(0,0,0);
   backface-visibility: hidden;   /* keeps the promoted layer off the fractional-pixel path */
 }
 /* Every slot is built at the SAME type size and differentiated by scale, so the
@@ -153,14 +156,25 @@ export function injectRitualStyles() {
    The width:auto below is load-bearing: Foundry's core stylesheet sets
    button { width: 100% }, which stretched this to the full row and shoved
    Group Check off the right edge of the frame. flex:none does not stop it. */
+/* Every knob below is a CSS variable with an inline fallback, and NOTHING
+   declares them. That is deliberate: the live tuner
+   (FUCompanion.api.ritual.tuner.material()) sets them on document.documentElement,
+   and an inherited root variable only wins if no closer rule declares one. */
 .oni-ritual-mat {
   width: auto; flex: 0 0 auto;
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  border: 2px solid #ffd84d; border-radius: 9px;
-  background: linear-gradient(180deg, #7d3428 0%, #57231b 100%);
-  color: #3b2a19; font: 900 14.5px "Signika", sans-serif; letter-spacing: .3px;
-  padding: 6px 14px; cursor: pointer; min-height: 36px; line-height: 1;
-  box-shadow: 0 3px 0 #3a1712, 0 5px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10);
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--rm-gap, 8px);
+  border: var(--rm-border-w, 2px) solid var(--rm-border, #ffd84d);
+  border-radius: var(--rm-radius, 9px);
+  background: linear-gradient(180deg, var(--rm-fill-1, #7d3428) 0%, var(--rm-fill-2, #57231b) 100%);
+  color: var(--rm-text, #3b2a19);
+  font-family: "Signika", sans-serif;
+  font-weight: var(--rm-weight, 900);
+  font-size: var(--rm-size, 14.5px);
+  letter-spacing: var(--rm-letter, .3px);
+  padding: var(--rm-pad-y, 6px) var(--rm-pad-x, 14px);
+  cursor: pointer; min-height: var(--rm-min-h, 36px); line-height: 1;
+  box-shadow: 0 3px 0 var(--rm-lip, #3a1712), 0 5px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10);
   transition: transform .1s ease, box-shadow .12s ease;
 }
 /* Dark brown on dark red only separates BECAUSE of the yellow edge, so thinning
@@ -171,17 +185,22 @@ export function injectRitualStyles() {
    lift the whole word off the red. Shadow order matters: the fattening offsets
    are listed first so they paint above the glow. */
 .oni-ritual-mat span {
-  -webkit-text-stroke: 0.12px #ffe14d; paint-order: stroke fill;
-  font-weight: 900;
+  -webkit-text-stroke: var(--rm-stroke-w, 0.12px) var(--rm-stroke, #ffe14d);
+  paint-order: stroke fill;
+  font-weight: var(--rm-weight, 900);
   text-shadow:
-    0.45px 0 0 currentColor, -0.45px 0 0 currentColor,
-    0 0.45px 0 currentColor, 0 -0.45px 0 currentColor,
-    0 0 5px rgba(255,225,77,.95), 0 0 11px rgba(255,216,77,.6);
+    var(--rm-fat, 0.45px) 0 0 currentColor, calc(-1 * var(--rm-fat, 0.45px)) 0 0 currentColor,
+    0 var(--rm-fat, 0.45px) 0 currentColor, 0 calc(-1 * var(--rm-fat, 0.45px)) 0 currentColor,
+    0 0 var(--rm-glow-1, 5px) var(--rm-glow-c1, rgba(255,225,77,.95)),
+    0 0 var(--rm-glow-2, 11px) var(--rm-glow-c2, rgba(255,216,77,.6));
 }
 .oni-ritual-mat:hover { box-shadow: 0 3px 0 #3a1712, 0 0 14px var(--rt-glow); }
 .oni-ritual-mat:active { transform: translateY(2px); box-shadow: 0 1px 0 #3a1712; }
 .oni-ritual-mat.offered { background: linear-gradient(180deg, #8d4a24 0%, #6b3218 100%); }
-.oni-ritual-mat .mat-crystal { width: 22px; height: 22px; object-fit: contain; flex: none; }
+.oni-ritual-mat .mat-crystal {
+  width: var(--rm-icon, 22px); height: var(--rm-icon, 22px);
+  object-fit: contain; flex: none;
+}
 .oni-ritual-mat .mat-off {
   margin-left: 7px; font-weight: 900; color: #bff5c2; -webkit-text-stroke: 0.4px #14421a;
 }

@@ -66,6 +66,14 @@ const SLIDE_MS = 200;
 const DISC_SLIDE_MS = 280;
 const ROLL_MS = 260;
 
+// The carousel renders FIVE slots but shows three. The two off-stage slots are
+// what slide in from behind the arrows: with only prev/cur/next, the position
+// vacated by the incoming neighbour is empty for the whole slide, so the new
+// neighbour could only appear at the rebuild — it snapped.
+const DISC_SLOTS = 5;
+const DISC_CENTER = 2;            // index of the current slot
+const DISC_STEP_PCT = 100 / DISC_SLOTS;   // one slot, as a % of the track's own width
+
 const RitualHUD = {
   _root: null,
   _performer: null,
@@ -416,8 +424,8 @@ const RitualHUD = {
     // Swapping the classes after the rebuild is what made the label pop to full
     // size the instant it landed.
     const slots = track.children;
-    slots[1]?.classList.replace("cur", "side");
-    slots[1 + dir]?.classList.replace("side", "cur");
+    slots[DISC_CENTER]?.classList.replace("cur", "side");
+    slots[DISC_CENTER + dir]?.classList.replace("side", "cur");
 
     // Promote to its own layer before animating, and move on the compositor:
     // translate3d avoids the per-frame layout+repaint that plain translateX on
@@ -427,7 +435,7 @@ const RitualHUD = {
     // first animated frame is also the frame that uploads the new layer.
     requestAnimationFrame(() => {
       track.style.transition = `transform ${DISC_SLIDE_MS}ms cubic-bezier(0.33, 0.0, 0.15, 1.0)`;
-      track.style.transform = `translate3d(${-dir * (100 / 3)}%, 0, 0)`;
+      track.style.transform = `translate3d(${-dir * DISC_STEP_PCT}%, 0, 0)`;
     });
   },
 
@@ -444,14 +452,18 @@ const RitualHUD = {
     const ids = this._disciplines.map((d) => d.id);
     const i = ids.indexOf(this._spec.discipline);
     const n = ids.length;
-    const prev = n > 1 ? ids[(i - 1 + n) % n] : null;
-    const next = n > 1 ? ids[(i + 1) % n] : null;
 
+    // Five slots centred on the current one, wrapping. With n < 5 the outer
+    // slots legitimately repeat an id already on screen — that is what a short
+    // reel looks like, and it is only ever visible mid-slide anyway.
     const track = this._root.querySelector("[data-disc-track]");
-    track.innerHTML =
-      this._discSlotHtml(prev, "side") +
-      this._discSlotHtml(ids[i], "cur") +
-      this._discSlotHtml(next, "side");
+    let html = "";
+    for (let s = 0; s < DISC_SLOTS; s++) {
+      const offset = s - DISC_CENTER;
+      const id = (n > 1 || offset === 0) ? ids[((i + offset) % n + n) % n] : null;
+      html += this._discSlotHtml(id, s === DISC_CENTER ? "cur" : "side");
+    }
+    track.innerHTML = html;
 
     const d = disciplineById(this._spec.discipline);
     const rowEl = this._root.querySelector('[data-row="discipline"]');

@@ -23,6 +23,7 @@ import { wireRitualSocket } from "./ritual-socket.js";
 import { performCast } from "./ritual-cast.js";
 import { RitualFeedback } from "./ritual-feedback.js";
 import { gatherOfferableMaterials } from "./ritual-materials.js";
+import { openMatTuner, applyStoredMatTuning } from "./ritual-mat-tuner.js";
 import { canOpenRitual, blockedReason, resolvePerformer, disciplinesForActor } from "./ritual-actor.js";
 
 const api = {
@@ -44,6 +45,8 @@ const api = {
   materials(actor) { return gatherOfferableMaterials(actor); },
   /** Spectator banner — `.feedback._test()` to preview it locally. */
   feedback: RitualFeedback,
+  /** Live style tuners (local, never written to the world). */
+  tuner: { material: () => openMatTuner() },
   /** GM-authoritative cast. Exported for the deferred in-conflict flow. */
   performCast,
   /** Direct handle (advanced / debugging). */
@@ -65,6 +68,7 @@ function ensureGlobalApi() {
 Hooks.once("ready", () => {
   try {
     wireRitualSocket();
+    applyStoredMatTuning();   // restore a tuned Offer Material look before any window opens
     const m = ensureModuleApi(); if (m) m.ritual = api;
     ensureGlobalApi().ritual = api;
     console.debug(RITUAL_TAG, "Ritual system ready — FUCompanion.api.ritual.open()");
