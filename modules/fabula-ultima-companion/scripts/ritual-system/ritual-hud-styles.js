@@ -84,6 +84,9 @@ export function injectRitualStyles() {
   font-size: 13px; color: var(--rt-wood-2); padding: 0 4px; opacity: .75;
 }
 .oni-ritual-scroll .arrow:hover { opacity: 1; color: var(--rt-wood-3); }
+/* Potency and Area clamp at their ends; the dead arrow says so. */
+.oni-ritual-scroll .arrow.spent { opacity: .18; cursor: default; }
+.oni-ritual-scroll .arrow.spent:hover { opacity: .18; color: var(--rt-wood-2); }
 /* The value host clips its two sliding layers. */
 .oni-ritual-scroll .val {
   flex: 1; position: relative; height: 23px; overflow: hidden;

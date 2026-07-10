@@ -310,6 +310,12 @@ const RitualHUD = {
     if (!dir) return;
     const wrap = (list, cur) => list[(list.indexOf(cur) + dir + list.length) % list.length];
 
+    // Potency and Area are ORDERED scales — minor…extreme, individual…huge — so
+    // they clamp at the ends rather than wrapping. Rolling from Extreme back to
+    // Minor on one more nudge is how you overshoot a 200 MP ritual by accident.
+    // The discipline reel is an unordered set, so it still wraps.
+    const clamp = (list, cur) => list[Math.min(list.length - 1, Math.max(0, list.indexOf(cur) + dir))];
+
     // The discipline reel has its own voice; potency and area keep the generic
     // cursor-scroll cue. Early returns above the SFX are deliberate — a scroll
     // that did not happen must not make a sound.
@@ -318,12 +324,12 @@ const RitualHUD = {
       const ids = this._disciplines.map((d) => d.id);
       this._slideDiscipline(wrap(ids, this._spec.discipline), dir);
       playRitualSfx("DISCIPLINE");
-    } else if (row === "potency") {
-      this._spec.potency = wrap([...POTENCY_ORDER], this._spec.potency);
-      this._renderPotencyArea(dir);
-      playRitualSfx("SCROLL");
-    } else if (row === "area") {
-      this._spec.area = wrap([...AREA_ORDER], this._spec.area);
+    } else if (row === "potency" || row === "area") {
+      const key = row === "potency" ? "potency" : "area";
+      const list = row === "potency" ? [...POTENCY_ORDER] : [...AREA_ORDER];
+      const next = clamp(list, this._spec[key]);
+      if (next === this._spec[key]) { playRitualSfx("DENY"); return; }   // already at an end
+      this._spec[key] = next;
       this._renderPotencyArea(dir);
       playRitualSfx("SCROLL");
     } else {
@@ -520,6 +526,18 @@ const RitualHUD = {
     if (this._liveLayerText(aHost) !== a.label) this._swapValue(aHost, a.label, dir);
     pHost.closest(".oni-ritual-scroll").title = p.example;
     aHost.closest(".oni-ritual-scroll").title = a.example;
+
+    // Grey the arrow that no longer leads anywhere, so the clamp is visible
+    // before it is heard.
+    this._markEnds("potency", POTENCY_ORDER, this._spec.potency);
+    this._markEnds("area", AREA_ORDER, this._spec.area);
+  },
+
+  _markEnds(row, order, current) {
+    const el = this._root.querySelector(`[data-row="${row}"]`);
+    const i = order.indexOf(current);
+    el.querySelector('.arrow[data-dir="-1"]').classList.toggle("spent", i <= 0);
+    el.querySelector('.arrow[data-dir="1"]').classList.toggle("spent", i >= order.length - 1);
   },
 
   _renderMaterial() {
