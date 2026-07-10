@@ -78,7 +78,7 @@ function ensureGlobalApi() {
 Hooks.once("ready", () => {
   try {
     wireRitualSocket();
-    wireRitualPips();         // GM-only: the attend-pip stack (no-op for players)
+    wireRitualPips();         // attend-pip stack — every client can spectate
     applyStoredMatTuning();   // restore a tuned Offer Material look before any window opens
     const m = ensureModuleApi(); if (m) m.ritual = api;
     ensureGlobalApi().ritual = api;

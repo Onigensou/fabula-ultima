@@ -1,14 +1,21 @@
 // ============================================================================
-// Ritual System — GM attend-pip (v1.5).
+// Ritual System — attend-pip (v1.5, opened to all clients in v1.5.1).
 //
-// A persistent chip, GM-only, that appears while a player is preparing a
-// ritual: portrait, name, "is preparing a Ritual", 🕯️. Clicking it opens a
-// live read-only mirror of that player's window (ritual-hud-app.js spectate
+// A persistent chip that appears on EVERY other client while someone is
+// preparing a ritual: portrait, name, "is preparing a Ritual", 🕯️. Clicking it
+// opens a live read-only mirror of that window (ritual-hud-app.js spectate
 // mode). One chip per live session; they stack.
+//
+// Originally GM-only; now shown to players too, so the rest of the table can
+// watch a ritual come together and learn the system by seeing it set up. A
+// spectator can never edit — the mirror is display-only — so there is nothing
+// to gate on role. The performer never sees a pip for their own ritual: a
+// socket broadcast doesn't echo to its sender, so their client never registers
+// its own session.
 //
 // Deliberately NOT anchored to the docked ritual button in dp-scan-mode.js —
 // that button only exists in dungeon/exploration/theatre scene modes, so a pip
-// hung off it would vanish exactly when the GM is looking at something else.
+// hung off it would vanish exactly when the viewer is looking at something else.
 // This is a plain fixed-position stack that is always reachable.
 // ============================================================================
 
@@ -125,9 +132,9 @@ function attend(sessionId) {
 
 let _wired = false;
 
-/** GM-only. Wire the pip stack to session lifecycle. */
+/** Wire the pip stack to session lifecycle. Runs on every client. */
 export function wireRitualPips() {
-  if (_wired || !game.user?.isGM) return;
+  if (_wired) return;
   _wired = true;
 
   subscribeSessions((event, session) => {
