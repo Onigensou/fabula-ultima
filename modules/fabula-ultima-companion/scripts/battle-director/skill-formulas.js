@@ -1,8 +1,9 @@
 // Re-export sentinel — bumped whenever a new identifier ships so
 // reload-aware callers can verify they have a fresh enough module.
-// Currently 3 (added pow() math function, ALL_TARGETS_HIT identifier).
+// Currently 4 (added TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT identifiers;
+// prev: pow() math function, ALL_TARGETS_HIT identifier).
 // Not load-bearing; diagnostic only.
-export const SKILL_FORMULAS_SCHEMA = 3;
+export const SKILL_FORMULAS_SCHEMA = 4;
 
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
@@ -460,6 +461,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // skills that scale on the caster's overall power (Heal's
       // "Skill Enhancement Lv. 20 → 50 / Lv. 40 → 60" tiers, e.g.).
       case "CHAR_LEVEL": return Number(actor?.system?.props?.level ?? actor?.system?.level ?? 0) || 0;
+      // Number of DISTINCT classes the caster owns — reads the CSB `class_list`
+      // dynamic table (rows { $deleted, class_name, level }), unioning class_name
+      // case-insensitively. Backs Ring of Onions ("+2 max HP/MP per distinct
+      // class"). 0 if the actor carries no class_list.
+      case "CLASS_COUNT": return countDistinctClasses(actor);
       // Invoker wellsprings — is the given element's wellspring present on the scene?
       // 1 = available (gate passes), 0 = not. Reads the combat/active scene flag
       // `flags.fabula-ultima-companion.oniFabula.wellsprings`; UNSET → all available
@@ -577,6 +583,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // enemy is bloodied). Crisis = the canonical "Crisis" AE (crisis-reactor).
       case "ENEMY_IN_CRISIS":
       case "ANY_ENEMY_IN_CRISIS": return anyEnemyInCrisis(actor) ? 1 : 0;
+      // Number of ENEMY creatures on the scene relative to the reactor — the
+      // plain head-count behind Army Wrecker's Overflow ("+1 Accuracy per
+      // enemy"). Same enemy enumeration as ENEMY_DISTINCT_STATUS_COUNT /
+      // ENEMY_IN_CRISIS (enemyActorsOf: combat roster, canvas-token fallback).
+      // 0 out of combat.
+      case "ENEMY_COUNT": return enemyActorsOf(actor).length;
       // 1 if an ALLY who is THIS actor's focus (carries a Focus AE — status
       // fud-focus — that this actor applied) is currently in Crisis, else 0.
       // Life Transference's eligibility half: "you may heal yourself or an ALLY
@@ -764,6 +776,20 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (!subjectUuid) return 0;
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
+      }
+      // Magic Defense (derived) of the trigger's SUBJECT creature (the current
+      // target). Twin of TARGET_MAX_HP (same subjectActorUuid resolve), reading
+      // the derived magic_defense prop (fallback current_mdef/mdef — the same
+      // read order action-execution-core / the director test-harness use).
+      // Powers Witchbane's "×2 damage vs a target whose MDEF > 12" gate
+      // (TARGET_MDEF > 12). 0 when no subject is threaded.
+      case "TARGET_MDEF": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        if (!subject) return 0;
+        const p = subject?.system?.props ?? {};
+        return Number(p.magic_defense ?? p.current_mdef ?? p.mdef ?? 0) || 0;
       }
       // 1 iff the trigger's SUBJECT creature is Champion-rank (NPC rank lives at
       // system.props.npc_rank — soldier/elite/champion/companion). Twin of
@@ -1565,6 +1591,23 @@ function hasNamedSkill(actor, wantedLower) {
 function readProp(actor, key) {
   const v = actor?.system?.props?.[key];
   return Number.isFinite(Number(v)) ? Number(v) : 0;
+}
+
+// Distinct class identities the actor owns — reads the CSB `class_list`
+// dynamic table (each row { $deleted, class_name, level }), unioning
+// class_name case-insensitively and skipping deleted / blank rows. Backs
+// CLASS_COUNT (Ring of Onions). Mirrors camp-constants.actorHasClass's read of
+// the same table.
+function countDistinctClasses(actor) {
+  const list = actor?.system?.props?.class_list;
+  if (!list || typeof list !== "object") return 0;
+  const seen = new Set();
+  for (const row of Object.values(list)) {
+    if (!row || row.$deleted) continue;
+    const name = String(row.class_name ?? "").trim().toLowerCase();
+    if (name) seen.add(name);
+  }
+  return seen.size;
 }
 
 // True if the actor has any EQUIPPED weapon of the given `weaponType`.
