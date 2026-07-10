@@ -209,7 +209,7 @@ const RitualHUD = {
           <div class="oni-ritual-actions">
             <button class="oni-ritual-mat oni-ritual-focusable" data-row="material" tabindex="-1">
               <img class="mat-crystal" src="${escapeHtml(RITUAL_MATERIAL_ICON)}" />
-              <span data-mat-label>Offer Material</span>
+              <span data-mat-label data-text="Offer Material">Offer Material</span>
             </button>
             <div class="oni-ritual-group oni-ritual-focusable" data-row="group" tabindex="-1">
               <span class="tg-label">Group Check</span>
@@ -503,6 +503,9 @@ const RitualHUD = {
     if (!m) {
       crystal.src = RITUAL_MATERIAL_ICON;
       label.textContent = "Offer Material";
+      // The outline is a ::before copy of this attribute — keep it in sync or
+      // the label loses its stroke.
+      label.dataset.text = "Offer Material";
       btn.title = "Offer a rare or powerful ingredient to reduce the cost.";
       return;
     }
@@ -510,6 +513,7 @@ const RitualHUD = {
     // and a generic crystal would read as two separate ingredients.
     crystal.src = m.img;
     label.innerHTML = `${escapeHtml(m.name)}<span class="mat-off">−${Math.round(m.discount * 100)}%</span>`;
+    label.dataset.text = m.name;
     btn.title = `${m.name} (${m.rarity}) — click to change or clear`;
   },
 

@@ -184,13 +184,44 @@ export function injectRitualStyles() {
    letter counters stay open, and a tight yellow glow sits behind everything to
    lift the whole word off the red. Shadow order matters: the fattening offsets
    are listed first so they paint above the glow. */
-.oni-ritual-mat span {
-  -webkit-text-stroke: var(--rm-stroke-w, 0.12px) var(--rm-stroke, #ffe14d);
-  paint-order: stroke fill;
+/* ── The outline sits OUTSIDE the glyph, never inside it ─────────────────────
+   -webkit-text-stroke centres its stroke on the glyph outline: half grows
+   outward, half eats inward, so raising the width visibly thins the letters.
+   paint-order: stroke fill is the spec's answer, but this is Chromium 122
+   (Electron 29), where paint-order applies to SVG text only and is ignored for
+   HTML text — it computes, and does nothing.
+
+   So we draw the word twice. ::before is a stroked, transparent-filled copy
+   sitting one layer BEHIND; the solid fill on top covers the stroke's inner
+   half, leaving only its outer half visible. The stroke is therefore doubled,
+   because the user only ever sees half of it — --rm-stroke-w means "outside
+   width" and the maths keeps that promise.
+
+   The copy is driven by data-text, so ritual-hud-app.js must keep that
+   attribute in sync with the label. */
+/* Direct child only: when a material is offered the label also contains a
+   .mat-off span, which must not sprout an outline layer of its own.
+   (NB: never use backticks in this stylesheet — it is a template literal.) */
+.oni-ritual-mat > span {
+  position: relative; z-index: 0;
+  display: inline-flex; align-items: center;
   font-weight: var(--rm-weight, 900);
+  /* Faux-bold: Signika stops at 900, so four hairline same-colour offsets
+     thicken the glyph. Fill only — the outline layer must not be fattened. */
   text-shadow:
     var(--rm-fat, 0.45px) 0 0 currentColor, calc(-1 * var(--rm-fat, 0.45px)) 0 0 currentColor,
-    0 var(--rm-fat, 0.45px) 0 currentColor, 0 calc(-1 * var(--rm-fat, 0.45px)) 0 currentColor,
+    0 var(--rm-fat, 0.45px) 0 currentColor, 0 calc(-1 * var(--rm-fat, 0.45px)) 0 currentColor;
+}
+.oni-ritual-mat > span::before {
+  content: attr(data-text);
+  position: absolute; inset: 0; z-index: -1;
+  display: flex; align-items: center; justify-content: flex-start;
+  white-space: nowrap; pointer-events: none;
+  font: inherit; letter-spacing: inherit;
+  color: transparent;                       /* only the stroke of this copy shows */
+  -webkit-text-stroke: calc(var(--rm-stroke-w, 0.5px) * 2) var(--rm-stroke, #ffe14d);
+  /* The glow belongs on the layer behind the fill, or it washes the letters out. */
+  text-shadow:
     0 0 var(--rm-glow-1, 5px) var(--rm-glow-c1, rgba(255,225,77,.95)),
     0 0 var(--rm-glow-2, 11px) var(--rm-glow-c2, rgba(255,216,77,.6));
 }

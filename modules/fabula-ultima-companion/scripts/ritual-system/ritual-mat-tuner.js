@@ -37,7 +37,9 @@ const KNOBS = [
   { k: "--rm-glow-c1", label: "Glow (inner)",    type: "color",  def: "#ffe14d" },
   { k: "--rm-glow-c2", label: "Glow (outer)",    type: "color",  def: "#ffd84d" },
 
-  { k: "--rm-stroke-w", label: "Stroke width",   type: "range",  def: 0.12, min: 0,  max: 2,  step: 0.01, unit: "px" },
+  // "Outline" is the width VISIBLE OUTSIDE the glyph. The stylesheet doubles it,
+  // because the fill hides the inner half of the stroke it is drawn from.
+  { k: "--rm-stroke-w", label: "Outline (outer)", type: "range", def: 0.5,  min: 0,  max: 3,  step: 0.05, unit: "px" },
   { k: "--rm-fat",      label: "Glyph fatten",   type: "range",  def: 0.45, min: 0,  max: 1.5, step: 0.05, unit: "px" },
   { k: "--rm-glow-1",   label: "Glow inner blur",type: "range",  def: 5,    min: 0,  max: 20, step: 1,    unit: "px" },
   { k: "--rm-glow-2",   label: "Glow outer blur",type: "range",  def: 11,   min: 0,  max: 40, step: 1,    unit: "px" },
@@ -168,7 +170,7 @@ export function openMatTuner() {
     <div class="rmt-preview">
       <button class="oni-ritual-mat" data-preview>
         <img class="mat-crystal" src="${RITUAL_MATERIAL_ICON}" />
-        <span>Offer Material</span>
+        <span data-text="Offer Material">Offer Material</span>
       </button>
     </div>
     <div class="rmt-body">
