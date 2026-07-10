@@ -19,8 +19,13 @@
   Hooks.once("ready", () => {
     // Install socket listener for all clients (GM aggregator runs inside it).
     TS.Socket.setup();
+    TS.Socket.refreshRoster();
     console.log(TAG, "Ready.");
   });
+
+  // Keep the voter roster (and therefore the quorum) in step with who is
+  // actually connected. No-op on every client except the primary GM.
+  Hooks.on("userConnected", () => TS.Socket.refreshRoster());
 
   Hooks.on("canvasReady", () => {
     if (_isTitleScene(canvas?.scene)) {

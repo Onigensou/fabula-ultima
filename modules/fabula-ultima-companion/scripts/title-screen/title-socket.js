@@ -37,11 +37,67 @@
   // _evaluate() and both reach quorum.
   let _evaluating = false;
 
+  // ── Voter roster ─────────────────────────────────────────────────────────────
+  //
+  // Who gets a say: the primary GM, plus every ACTIVE user who owns one of the
+  // current party's member actors. Spectators and the co-GM watch the lobby but
+  // do not vote — otherwise a spectator can stall the ready-check forever, or
+  // five players can quorum and trigger a load with no GM consent at all.
+  //
+  // Recomputed on lobby open and on connect/disconnect (see title-bootstrap).
+  // Cached as a Set because _voteState()/_evaluate() need it synchronously.
+
+  let _eligible = new Set();
+
+  async function _computeEligible() {
+    const ids = new Set();
+
+    const gm = globalThis.FUCompanion?.primaryGM?.();
+    if (gm) ids.add(gm.id);
+
+    const ctx = await globalThis.SaveSystem?.Core?.buildContext?.();
+    for (const uuid of ctx?.memberUuids ?? []) {
+      const actor = game.actors.get(uuid.startsWith("Actor.") ? uuid.slice(6) : uuid);
+      if (!actor) continue;
+      for (const user of game.users.contents) {
+        if (!user.active || user.isGM) continue;
+        if (actor.testUserPermission(user, "OWNER")) ids.add(user.id);
+      }
+    }
+    return ids;
+  }
+
+  async function _refreshEligible() {
+    if (!isPrimaryGM()) return;
+    try {
+      _eligible = await _computeEligible();
+      console.log(TAG, `Eligible voters (${_eligible.size}):`,
+        [..._eligible].map(id => game.users.get(id)?.name ?? id).join(", "));
+    } catch (e) {
+      console.error(TAG, "Failed to compute eligible voters; falling back to REQUIRED_PLAYERS.", e);
+      _eligible = new Set();
+    }
+
+    // A voter who dropped mid-lobby leaves a ghost vote behind. Drop it, or the
+    // count can sit at quorum with nobody there to have cast it.
+    for (const userId of Object.keys(_votes)) {
+      if (!_mayVote(userId)) delete _votes[userId];
+    }
+    _publishVotes();
+
+    // Deliberately no _evaluate() here. A disconnect shrinks `required`, and
+    // evaluating on that would let someone dropping out fire the load before
+    // the remaining table has finished choosing. Quorum is only ever tested in
+    // response to an actual vote.
+  }
+
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
-  // Total votes needed before the ready-check evaluates.
+  // Total votes needed before the ready-check evaluates. Falls back to the
+  // hardcoded headcount if the party could not be resolved — a wrong number is
+  // recoverable, a lobby that can never reach quorum is not.
   function _requiredVoters() {
-    return TS.REQUIRED_PLAYERS;
+    return _eligible.size || TS.REQUIRED_PLAYERS;
   }
 
   function _broadcast(type, payload = {}) {
@@ -53,7 +109,14 @@
       votes:    { ..._votes },
       count:    Object.keys(_votes).length,
       required: _requiredVoters(),
+      eligible: [..._eligible],   // drives the dot row on every client
     };
+  }
+
+  // Ignore votes from users outside the roster. An empty roster means the party
+  // could not be resolved; accept everyone rather than deadlock the lobby.
+  function _mayVote(userId) {
+    return _eligible.size === 0 || _eligible.has(userId);
   }
 
   // Push the vote table to every client, then to our own UI — the socket does
@@ -71,6 +134,10 @@
 
   async function _onVote({ userId, slotId } = {}) {
     if (!isPrimaryGM() || !userId || !slotId) return;
+    if (!_mayVote(userId)) {
+      console.debug(TAG, `Ignoring vote from non-roster user ${game.users.get(userId)?.name ?? userId}`);
+      return;
+    }
     _votes[userId] = slotId;
     _publishVotes();
     await _evaluate();
@@ -178,6 +245,12 @@
       });
 
       console.log(TAG, "Socket listener installed.", isPrimaryGM() ? "(vote aggregator)" : "(client)");
+    },
+
+    // Recompute the voter roster (primary GM + active party-member owners).
+    // Called on lobby open and on connect/disconnect. No-op off the primary GM.
+    refreshRoster() {
+      return _refreshEligible();
     },
 
     // Reset vote table — called when title screen is closed mid-vote.

@@ -100,8 +100,9 @@
       this._waitEl         = null;
       this._sel            = null;
       this._count          = 0;
-      this._required       = TS.REQUIRED_PLAYERS;
+      this._required       = this._eligible?.length || TS.REQUIRED_PLAYERS;
       this._votes          = {};   // { userId: slotId } — mirrors GM's vote table
+      this._eligible       = [];   // userIds allowed to vote — mirrors GM's roster
       this._progressRaf    = 0;
       this._progress       = 0;
       // True while the success message is showing — prevents canvas hooks from
@@ -122,10 +123,14 @@
       _injectWaitCSS();
       this._sel            = null;
       this._count          = 0;
-      this._required       = TS.REQUIRED_PLAYERS;
+      this._required       = this._eligible?.length || TS.REQUIRED_PLAYERS;
       this._votes          = {};
       this._showingSuccess = false;
       this._proceeded      = false;
+
+      // Roster may have changed since ready (someone joined, a party member was
+      // swapped). No-op off the primary GM; the result reaches us by broadcast.
+      TS.Socket.refreshRoster();
 
       SS.UI.openInMode("load");
       // Lift the file selector above Foundry app windows (menu stays at z-index 60)
@@ -201,7 +206,7 @@
           <div class="ts-wait-title">✦  READY CHECK  ✦</div>
           <div class="ts-wait-slot">${lbl}</div>
           <div class="ts-wait-counter">${this._count} / ${this._required}</div>
-          <div class="ts-wait-dots">${dots}</div>
+          ${dots}
           ${body}
         </div>`;
       document.body.appendChild(this._waitEl);
@@ -222,24 +227,32 @@
       this._waitEl = null;
     }
 
+    // One dot per eligible voter, GM first, labelled with who it is — so a
+    // table waiting on a ready-check can see WHICH seat is still out.
+    // Falls back to anonymous P1..Pn when no roster has arrived yet.
     _renderDots() {
-      const gmVoted = Object.keys(this._votes).some(uid => game.users.get(uid)?.isGM);
-      const playerVoteCount = Object.keys(this._votes).filter(uid => !game.users.get(uid)?.isGM).length;
-      const playerSlots = this._required - 1;
-
-      const gmDot = `<div class="ts-dot-group">
-        <div class="ts-wait-dot ts-wait-dot-gm${gmVoted ? " ready" : ""}"></div>
-        <div class="ts-dot-label">GM</div>
-      </div>`;
-
-      const playerDots = Array.from({ length: playerSlots }, (_, i) =>
+      const dot = (voted, isGM, label) =>
         `<div class="ts-dot-group">
-          <div class="ts-wait-dot${i < playerVoteCount ? " ready" : ""}"></div>
-          <div class="ts-dot-label">P${i + 1}</div>
-        </div>`
-      ).join("");
+          <div class="ts-wait-dot${isGM ? " ts-wait-dot-gm" : ""}${voted ? " ready" : ""}"></div>
+          <div class="ts-dot-label">${label}</div>
+        </div>`;
 
-      return `<div class="ts-wait-dots">${gmDot}${playerDots}</div>`;
+      let dots;
+      if (this._eligible?.length) {
+        const users = this._eligible
+          .map(id => game.users.get(id))
+          .filter(Boolean)
+          .sort((a, b) => (b.isGM - a.isGM) || a.name.localeCompare(b.name));
+        dots = users.map(u => dot(u.id in this._votes, u.isGM, u.isGM ? "GM" : u.name)).join("");
+      } else {
+        const gmVoted    = Object.keys(this._votes).some(uid => game.users.get(uid)?.isGM);
+        const playerVotes = Object.keys(this._votes).filter(uid => !game.users.get(uid)?.isGM).length;
+        dots = dot(gmVoted, true, "GM") +
+          Array.from({ length: Math.max(0, this._required - 1) },
+            (_, i) => dot(i < playerVotes, false, `P${i + 1}`)).join("");
+      }
+
+      return `<div class="ts-wait-dots">${dots}</div>`;
     }
 
     _refreshWait() {
@@ -251,7 +264,10 @@
 
     // ── Socket event handlers ────────────────────────────────────────────────────
 
-    onVotesUpdate({ votes, count, required } = {}) {
+    onVotesUpdate({ votes, count, required, eligible } = {}) {
+      // The roster is worth keeping even with no wait panel up — it is
+      // broadcast on connect/disconnect, not just while someone is voting.
+      this._eligible = eligible ?? this._eligible;
       if (!this._waitEl) return;
       this._votes    = votes    ?? this._votes;
       this._count    = count    ?? this._count;
