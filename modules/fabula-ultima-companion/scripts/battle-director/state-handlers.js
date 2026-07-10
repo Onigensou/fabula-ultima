@@ -12,7 +12,7 @@ import { log, warn, err } from "./logger.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, resolvePrimaryAttackWeapon, captureSubjectSnapshot } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -3217,6 +3217,26 @@ const Target = {
         ? `${attackerSnap.name}: randomizing target for ${skill.name}`
         : _isAutoSkillPick ? null
         : `${attackerSnap.name}: pick target for ${skill.name}`;
+      // Per-candidate eligibility filter on the GM-side picker — the SAME
+      // top-level `target_eligibility` column compose-action.js honors on the
+      // player client, wired here so a GM-side / pre-composed resolve gates
+      // identically (e.g. Unicorn Dance: "BONDED_TO_SOURCE >= 1" → only allies
+      // Bonded to you; the caster fails its own bond test, so self drops too).
+      // Empty by default → zero change for every existing skill.
+      const _tgtEligibility = String(skill.system?.props?.target_eligibility ?? "").trim();
+      const _tgtFilterFn = _tgtEligibility
+        ? (pool) => pool.filter((e) => {
+            const cand = game.actors?.get?.(e.actorId) ?? null;
+            if (!cand) return false;
+            const resolver = buildSkillResolver({
+              actor: cand,
+              payload: { sourceActorUuid: attackerActor.uuid },
+              skill,
+              round: director.dCombat?.round ?? 0,
+            });
+            return Number(evaluateFormula(_tgtEligibility, resolver, 0)) > 0;
+          })
+        : null;
       const skillTargeting = await resolveActionTargets(director, attackerSnap, {
         skillTargetText,
         attackerActor,
@@ -3224,6 +3244,7 @@ const Target = {
         usingPreComposed:    usingPreComposed,
         composedTargetUuids: composedSpell?.targetUuids,
         titleText:           _skillTitle,
+        eligiblePostFilter:  _tgtFilterFn,
       });
       if (!skillTargeting.ok) {
         director.dispatch({ type: (skillTargeting.cancelled || skillTargeting.reason === "no_eligible") ? INTENTS.TARGET_BACK : INTENTS.ABORT });
@@ -3338,6 +3359,21 @@ const Target = {
       if (vismagusHpPaid) {
         const hpPaid = Number(costMap.get?.("hp") ?? costMap.hp ?? 0) || 0;
         if (hpPaid > 0) displayCost = `${hpPaid} HP · Vismagus`;
+      }
+      // If the skill's own cost is blank because a `creature_performs_action`
+      // self-reaction bills it (base Dance charges its "managed" dances via
+      // bd_cost), estimate that reaction's cost from config so the card shows a
+      // real number (10 / 5) instead of "Free". DISPLAY-ONLY — the reaction does
+      // the real debit at its own fire, so this must NOT touch costMap / the
+      // costSerialized that RESOLVE re-debits (else double-charge).
+      if (!displayCost) {
+        try {
+          const est = SE().estimatePerformReactionCost(attackerActor, skill);
+          const parts = Object.entries(est)
+            .filter(([, amt]) => Number(amt) > 0)
+            .map(([res, amt]) => `${amt} ${res.toUpperCase()}`);
+          if (parts.length) displayCost = parts.join(" · ");
+        } catch (e) { warn("perform-reaction cost estimate threw", e); }
       }
 
       // Weapon-based skills ("perform a jab with your weapon"): any skill prop
@@ -4402,9 +4438,11 @@ const Confirm = {
         // on SKILL_HAS_TAG_<X> — Maid Cap's craft discount. ar.skillUuid is the
         // activation skill for both create and use.
         let usedSkillTags = "";
+        let usedSkillDuration = "";
         try {
           const usedSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
           usedSkillTags = String(usedSkill?.system?.props?.skill_tags ?? "");
+          usedSkillDuration = String(usedSkill?.system?.props?.duration ?? "");
         } catch (_) { /* noop */ }
         const itemCands = await findPassiveCandidates({
           casterActor: attackerActor,
@@ -4421,6 +4459,7 @@ const Confirm = {
             itemMode: ar.itemSelection?.mode ?? null,
             skillUuid: ar.skillUuid ?? null,
             skillTags: usedSkillTags,
+            skillDuration: usedSkillDuration,
           },
         });
         for (const cand of itemCands ?? []) prePassives.push(cand);
@@ -4593,10 +4632,15 @@ const Confirm = {
         // The acting skill's free-form `skill_tags` so a performer-side reaction
         // can gate on SKILL_HAS_TAG_<X> (Quick-change: "after you perform a dance"
         // → SKILL_HAS_TAG_DANCE). Mirrors the creature_uses_item skillTags forward.
+        // Also forward the acting skill's `duration` so ACTION_DURATION can rank how
+        // long the action's effect lasts (Follow my lead shares a dance's benefit
+        // only when ACTION_DURATION >= 1, i.e. non-instant dances).
         let performSkillTags = "";
+        let performSkillDuration = "";
         try {
           const actingSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
           performSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
+          performSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
         } catch (_) { /* noop */ }
         const performPayload = {
             sourceActorUuid: ar.attackerActorRef,
@@ -4619,6 +4663,9 @@ const Confirm = {
             costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
             // Acting skill's tags (SKILL_HAS_TAG_<X> reads payload.skillTags).
             skillTags: performSkillTags,
+            // Acting skill's duration string (ACTION_DURATION ranks it: 0 instant,
+            // 1 until-next-turn, 2 scene+). Follow my lead gates share on >= 1.
+            skillDuration: performSkillDuration,
             // Did this action roll a Check (accuracy/magic check)? An "offensive
             // spell" in FU is precisely a Spell with a Check (⚡ icon); buff/heal
             // spells are isCheck:false. ACTION_IS_OFFENSIVE_SPELL gates on this
@@ -4885,6 +4932,21 @@ const Confirm = {
             weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
             weaponType: ar.weapon?.weaponType ?? null,
             damageType: ar.damageType ?? ar.damage?.element ?? null,
+            // Which Defense this action's accuracy Check resolves against —
+            // "def" (strike) | "mdef" (magic) | null (no Check / auto-hit).
+            // SAME resolution the hit test + card labels use
+            // (resolvesVsMagicDefense: explicit per-item defense_target_type
+            // wins, else Spell → MDEF), gated on `ar.canMiss` so a no-Check
+            // action reads null. Read by ATTACK_VS_DEF / ATTACK_VS_MDEF so a
+            // Defense-specific reaction fires only on attacks it can mitigate
+            // — Verónica's +2 DEF gates on ATTACK_VS_DEF == 1 (skips offensive
+            // spells + mdef-tagged weapon Attacks its DEF wouldn't touch).
+            defenseResolved: ar.canMiss
+              ? (resolvesVsMagicDefense({
+                  defenseTargetType: ar.defenseTargetType,
+                  isSpell: String(ar.skillType ?? "").toLowerCase() === "spell",
+                }) ? "mdef" : "def")
+              : null,
           };
 
           for (const reactor of reactorActors.values()) {
