@@ -589,6 +589,7 @@
                 <option value="dungeon">Dungeon (Tile-Based Movement)</option>
                 <option value="camp">Camp (Camp Activity System)</option>
                 <option value="title">Title (Video Game Title Screen)</option>
+                <option value="theatre">Theatre (Visual-Novel Roleplaying)</option>
                 <option value="conflict">Conflict (WIP)</option>
               </select>
             </div>
@@ -596,7 +597,8 @@
               <b>None</b> — standard Foundry V12 token movement.<br>
               <b>Exploration</b> — camera locks and follows the party token; right-click to walk.<br>
               <b>Dungeon</b> — tile-based movement: click highlighted tiles to move the party token along the laid-out path.<br>
-              <b>Title</b> — full-screen title screen shown to all players at session start; provides Press Any Key → New Game / Load Game / Options / Quit.
+              <b>Title</b> — full-screen title screen shown to all players at session start; provides Press Any Key → New Game / Load Game / Options / Quit.<br>
+              <b>Theatre</b> — visual-novel style scene for roleplaying: background only, no pathing. Presentation is not yet implemented; the mode currently hosts the Ritual button.
             </p>
           </div>
 
@@ -863,7 +865,7 @@
       if (sel) {
         // Read new sceneMode value, or migrate from legacy cameraFollowToken boolean
         let mode = safeGet(fabulaData, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
-        if (!mode || !["none", "exploration", "dungeon", "camp", "title", "conflict"].includes(mode)) {
+        if (!mode || !["none", "exploration", "dungeon", "camp", "title", "conflict", "theatre"].includes(mode)) {
           const legacy = safeGet(fabulaData, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
           mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
         }
@@ -1211,7 +1213,7 @@
       readGeneral(scene = canvas.scene) {
         const fabula = readFabulaData(scene);
         let mode = safeGet(fabula, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
-        if (!mode || !["none", "exploration", "dungeon", "camp", "title", "conflict"].includes(mode)) {
+        if (!mode || !["none", "exploration", "dungeon", "camp", "title", "conflict", "theatre"].includes(mode)) {
           const legacy = safeGet(fabula, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
           mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
         }

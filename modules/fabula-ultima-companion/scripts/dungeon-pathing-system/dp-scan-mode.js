@@ -69,6 +69,12 @@
   opacity: 1;
   transform: scale(1) translateY(0);
 }
+.oni-dp-mode-btn.dp-btn-disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  filter: grayscale(0.85);
+}
+.oni-dp-mode-btn.dp-btn-disabled.dp-scan-visible { opacity: 0.42; }
 .oni-dp-mode-btn.dp-scan-active {
   background: radial-gradient(circle at 40% 35%,
     rgba(30,70,150,0.93) 0%,
@@ -93,6 +99,8 @@
   let _travelBtn        = null;   // scene travel DOM element
   let _travelBtnMode    = null;   // "dungeon" | "exploration"
   let _healBtn          = null;   // ❤️ out-of-combat healing DOM element
+  let _ritualBtn        = null;   // 🕯️ ritual setup DOM element
+  let _ritualCtrlHook   = null;   // controlToken hook id — regreys the ritual button
   let _scanning         = false;
   let _cameraSettled    = false;  // true once pivot is within 1wu of token and no pan needed
   let _tickerFn         = null;
@@ -115,6 +123,19 @@
   }
   function cfgTravel() {
     return DP.UI?.SCENE_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 242, LEFT_NO_FT: 168, LEFT_SOLO: 20, FONT_SIZE: "28px" };
+  }
+  function cfgRitual() {
+    return DP.UI?.RITUAL_BUTTON
+      ?? { SIZE: 64, BOTTOM: 80, LEFT: 390, LEFT_NO_FT: 316, LEFT_EXPLORATION: 168, LEFT_SOLO: 20, FONT_SIZE: "28px" };
+  }
+
+  // The ritual button is the rightmost of the row, so its slot depends on how
+  // many buttons the current mode docked to its left.
+  function getRitualLeft(mode) {
+    const c = cfgRitual();
+    if (mode === "theatre") return c.LEFT_SOLO;            // only button on screen
+    if (mode === "exploration") return c.LEFT_EXPLORATION; // travel(20) + heal(94)
+    return isFtEnabled() ? c.LEFT : c.LEFT_NO_FT;          // dungeon: FT may be hidden
   }
 
   function isFtEnabled() {
@@ -414,6 +435,72 @@
     _healBtn = null;
   }
 
+  // ── Ritual button (dungeon + exploration + theatre) ─────────────────────────
+  //
+  // Greys out when this client has no performer. For a player that means no
+  // character is assigned to their user; for a GM it means no token is
+  // selected, so the button re-greys on every controlToken.
+  function ritualApi() {
+    return globalThis.FUCompanion?.api?.ritual
+      ?? game.modules?.get("fabula-ultima-companion")?.api?.ritual;
+  }
+
+  function syncRitualBtn() {
+    if (!_ritualBtn) return;
+    const api = ritualApi();
+    const enabled = Boolean(api?.canOpen?.());
+    _ritualBtn.classList.toggle("dp-btn-disabled", !enabled);
+    _ritualBtn.title = enabled
+      ? "Ritual — perform a Ritual"
+      : (api?.blockedReason?.() ?? "Ritual — unavailable");
+  }
+
+  /** Show the ritual button. mode: "dungeon" | "exploration" | "theatre" */
+  function showRitualBtn(mode = "dungeon") {
+    injectStyles();
+    const c = cfgRitual();
+    const left = getRitualLeft(mode);
+
+    if (_ritualBtn) {
+      _ritualBtn.style.left = `${left}px`;
+      syncRitualBtn();
+      return;
+    }
+
+    _ritualBtn = makeBtn(
+      "oni-dp-ritual-btn",
+      "🕯️",
+      "Ritual — perform a Ritual",
+      { ...c, LEFT: left },
+      () => {
+        const api = ritualApi();
+        if (!api?.open) { ui.notifications?.warn("Ritual system not available."); return; }
+        if (!api.canOpen()) {
+          ui.notifications?.warn((api.blockedReason?.() ?? "Ritual unavailable.").replace(/^Ritual — /, "Ritual: "));
+          return;
+        }
+        if (api.isOpen) api.close();
+        else api.open();
+      },
+    );
+    document.body.appendChild(_ritualBtn);
+    syncRitualBtn();
+
+    // A GM's eligibility changes with their token selection, not with the scene.
+    if (!_ritualCtrlHook) _ritualCtrlHook = Hooks.on("controlToken", () => syncRitualBtn());
+
+    requestAnimationFrame(() => _ritualBtn?.classList.add("dp-scan-visible"));
+  }
+
+  function hideRitualBtn() {
+    if (_ritualCtrlHook) { Hooks.off("controlToken", _ritualCtrlHook); _ritualCtrlHook = null; }
+    if (!_ritualBtn) return;
+    _ritualBtn.classList.remove("dp-scan-visible");
+    const btn = _ritualBtn;
+    setTimeout(() => btn.remove(), 280);
+    _ritualBtn = null;
+  }
+
   function hide() {
     if (_scanning) {
       _scanning = false;
@@ -463,6 +550,9 @@
       // FT enabled while dungeon mode is active — ensure travel button is shown/repositioned
       showTravelBtn("dungeon");
     }
+
+    // The ritual button docks to the right of them all, so toggling FT slides it.
+    if (_ritualBtn) _ritualBtn.style.left = `${getRitualLeft("dungeon")}px`;
   }
 
   // Show the scene travel button (called from bootstrap for dungeon + exploration modes).
@@ -528,5 +618,11 @@
     showHealBtn,
     /** Hide the healing HUD button. */
     hideHealBtn,
+    /** Show the ritual button. mode: "dungeon" | "exploration" | "theatre" */
+    showRitualBtn,
+    /** Hide the ritual button. */
+    hideRitualBtn,
+    /** Re-grey the ritual button after an external performer-eligibility change. */
+    syncRitualBtn,
   };
 })();

@@ -376,6 +376,7 @@
     "scripts/refinement-system/refineWindow-app.js",
     "scripts/refinement-system/refineOpen-bootstrap.js",
     "scripts/healing-system/healing-api.js",
+    "scripts/ritual-system/ritual-api.js",
     "scripts/clock-system/clock-api.js",
     "scripts/clock-system/clock-ui-bar.js",
     "scripts/clock-system/clock-manager-app.js",
