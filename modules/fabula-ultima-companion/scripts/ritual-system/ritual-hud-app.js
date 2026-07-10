@@ -54,6 +54,10 @@ const ROWS = ["discipline", "potency", "area", "material", "group", "intent", "c
 // and ←/→ moves between the pair instead of scrolling.
 const ROW_PAIRS = { potency: "area", area: "potency", material: "group", group: "material" };
 
+// Rows whose value is changed by scrolling, and which therefore must be ENGAGED
+// with Z before ←/→ will move that value rather than move between rows.
+const SCROLL_ROWS = new Set(["discipline", "potency", "area"]);
+
 // Slide/roll timings. SLIDE_MS must match the CSS transition on .v-layer, or a
 // rebuild lands mid-animation and the value visibly jumps. The carousel runs a
 // touch longer and drives itself off `transitionend`, so it has no such
@@ -73,6 +77,7 @@ const RitualHUD = {
   _cursorReady: false,
   _keyHandler: null,
   _pickerOpen: false,
+  _engaged: false,        // a scroll row is "entered": ←/→ change its VALUE
   _discAnim: false,       // guards the carousel against a mid-slide re-entry
   _shown: { mp: null, dl: null },   // last painted numbers, for the roll animation
 
@@ -109,6 +114,7 @@ const RitualHUD = {
     };
     this._casting = false;
     this._row = "discipline";
+    this._engaged = false;
     this._cursorReady = false;
     this._discAnim = false;
     this._shown = { mp: null, dl: null };
@@ -339,14 +345,23 @@ const RitualHUD = {
     next.style.transform = `translateX(${dir * 60}%)`;
     next.style.opacity = "0";
     host.appendChild(next);
-    requestAnimationFrame(() => {
-      next.style.transform = "translateX(0)";
-      next.style.opacity = "1";
-      for (const old of olds) {
-        old.style.transform = `translateX(${-dir * 60}%)`;
-        old.style.opacity = "0";
-      }
-    });
+
+    // Commit the starting style with a forced reflow, THEN set the end style.
+    //
+    // requestAnimationFrame is not enough: rAF callbacks run before the frame's
+    // style recalc, so when a wheel burst delivers two events inside one frame
+    // the browser sees only the final transform and paints no transition — the
+    // incoming label snapped into place while the outgoing one still slid away.
+    // Clicks and keys fire one per frame, which is why they never showed it.
+    // Reading offsetWidth flushes layout and pins the start of the transition.
+    void next.offsetWidth;
+
+    next.style.transform = "translateX(0)";
+    next.style.opacity = "1";
+    for (const old of olds) {
+      old.style.transform = `translateX(${-dir * 60}%)`;
+      old.style.opacity = "0";
+    }
     for (const old of olds) {
       old.classList.add("exit");
       setTimeout(() => old.remove(), SLIDE_MS + 40);
@@ -389,9 +404,20 @@ const RitualHUD = {
         this._discAnim = false;
       });
     };
-    const onEnd = (ev) => { if (ev.propertyName === "transform") settle(); };
+    // Only the TRACK's own transform ends the slide. The slots are scaling at
+    // the same time and bubble their own transform transitionend events, which
+    // would settle the carousel early.
+    const onEnd = (ev) => { if (ev.target === track && ev.propertyName === "transform") settle(); };
     track.addEventListener("transitionend", onEnd);
     setTimeout(settle, DISC_SLIDE_MS + 120);
+
+    // Hand the "current" crown to the incoming slot NOW, so it grows and the
+    // outgoing one shrinks across the same 280ms the track is travelling.
+    // Swapping the classes after the rebuild is what made the label pop to full
+    // size the instant it landed.
+    const slots = track.children;
+    slots[1]?.classList.replace("cur", "side");
+    slots[1 + dir]?.classList.replace("side", "cur");
 
     // Promote to its own layer before animating, and move on the compositor:
     // translate3d avoids the per-frame layout+repaint that plain translateX on
@@ -562,11 +588,24 @@ const RitualHUD = {
       : "Perform";
   },
 
-  // ── Focus + feather cursor ───────────────────────────────────────────────
+  // ── Focus + engagement + feather cursor ──────────────────────────────────
+
+  /** Enter or leave a scroll row. Only scroll rows can be engaged. */
+  _setEngaged(on) {
+    const next = Boolean(on) && SCROLL_ROWS.has(this._row);
+    this._engaged = next;
+    for (const el of this._root.querySelectorAll(".oni-ritual-focusable")) {
+      el.classList.toggle("engaged", next && el.dataset.row === this._row);
+    }
+  },
+
   _focus(row, { silent = false, noFocusSteal = false } = {}) {
     if (!ROWS.includes(row)) return;
     const changed = this._row !== row;
     this._row = row;
+    // Moving off a row always releases it; an engaged row you are no longer
+    // standing on would keep eating ←/→.
+    if (changed) this._setEngaged(false);
     if (changed && !silent) playRitualSfx("MOVE");
 
     for (const el of this._root.querySelectorAll(".oni-ritual-focusable")) {
@@ -609,6 +648,30 @@ const RitualHUD = {
 
       const idx = ROWS.indexOf(this._row);
 
+      // ── Engaged: the row owns ←/→, and Z/X hand it back ──────────────────
+      //
+      // A scroll row must be entered before its value moves. Otherwise ←/→ is
+      // overloaded — it would both walk between Potency and Area and change
+      // whichever one you were standing on, and there is no way to reach Area
+      // from Potency with the keyboard at all.
+      if (this._engaged) {
+        if (keyMatch(ev, RITUAL_KEYS.LEFT) || keyMatch(ev, RITUAL_KEYS.RIGHT)) {
+          ev.preventDefault(); ev.stopPropagation();
+          this._cycle(this._row, keyMatch(ev, RITUAL_KEYS.RIGHT) ? 1 : -1);
+          return;
+        }
+        if (keyMatch(ev, RITUAL_KEYS.CONFIRM) || keyMatch(ev, RITUAL_KEYS.CANCEL)) {
+          ev.preventDefault(); ev.stopPropagation();
+          this._setEngaged(false);
+          playRitualSfx(keyMatch(ev, RITUAL_KEYS.CONFIRM) ? "SELECT" : "CANCEL");
+          return;
+        }
+        if (keyMatch(ev, RITUAL_KEYS.UP) || keyMatch(ev, RITUAL_KEYS.DOWN)) {
+          // Leaving the row vertically releases it rather than trapping the user.
+          this._setEngaged(false);
+        }
+      }
+
       if (keyMatch(ev, RITUAL_KEYS.CANCEL)) { ev.preventDefault(); ev.stopPropagation(); this.close(); return; }
 
       if (keyMatch(ev, RITUAL_KEYS.UP) || keyMatch(ev, RITUAL_KEYS.DOWN)) {
@@ -624,21 +687,19 @@ const RitualHUD = {
 
       if (keyMatch(ev, RITUAL_KEYS.LEFT) || keyMatch(ev, RITUAL_KEYS.RIGHT)) {
         ev.preventDefault(); ev.stopPropagation();
-        const dir = keyMatch(ev, RITUAL_KEYS.RIGHT) ? 1 : -1;
+        // Disengaged, ←/→ always walks sideways — never changes a value.
         const partner = ROW_PAIRS[this._row];
-        // On a paired row, ←/→ crosses to the partner unless this row scrolls.
-        if (this._row === "potency" || this._row === "area" || this._row === "discipline") this._cycle(this._row, dir);
-        else if (partner) this._focus(partner);
+        if (partner) this._focus(partner);
         return;
       }
 
       if (keyMatch(ev, RITUAL_KEYS.CONFIRM)) {
         ev.preventDefault(); ev.stopPropagation();
-        if (this._row === "confirm") this._cast();
+        if (SCROLL_ROWS.has(this._row)) { this._setEngaged(true); playRitualSfx("SELECT"); }
+        else if (this._row === "confirm") this._cast();
         else if (this._row === "material") this._openMaterialPicker();
         else if (this._row === "group") this._toggleGroup();
         else if (this._row === "intent") this._root.querySelector('[data-field="description"]').focus();
-        else this._cycle(this._row, 1);   // Z nudges a scroll row forward
         return;
       }
     };

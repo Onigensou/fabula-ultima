@@ -61,6 +61,14 @@ export function injectRitualStyles() {
 /* ── Focus ring + feather anchor ────────────────────────────────────────── */
 .oni-ritual-focusable { outline: none; transition: box-shadow .12s ease, border-color .12s ease; }
 .oni-ritual-focusable.focused { border-color: var(--rt-wood-3) !important; box-shadow: 0 0 0 2px var(--rt-gold-2), 0 0 12px var(--rt-glow); }
+/* ENGAGED: this row has taken ←/→ and is now changing its own value. A hotter
+   ring plus solid arrows is the only cue that the keys mean something different. */
+.oni-ritual-focusable.engaged {
+  box-shadow: 0 0 0 2px var(--rt-wood-3), 0 0 16px rgba(250,220,120,.85);
+  background: var(--rt-gold-1);
+}
+.oni-ritual-focusable.engaged .arrow { opacity: 1; color: var(--rt-wood-3); transform: scale(1.15); }
+.oni-ritual-scroll .arrow, .oni-ritual-disc .arrow { transition: opacity .12s ease, transform .12s ease; }
 
 /* ── Scroll label (potency / area) ──────────────────────────────────────── */
 .oni-ritual-scroll {
@@ -110,21 +118,28 @@ export function injectRitualStyles() {
   width: 100%; transform: translate3d(0,0,0);
   backface-visibility: hidden;   /* keeps the promoted layer off the fractional-pixel path */
 }
+/* Every slot is built at the SAME type size and differentiated by scale, so the
+   size change can tween across the slide instead of popping at the end. Animating
+   font-size would relayout each frame; scale rides the compositor. */
 .disc-slot {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  min-width: 0; padding: 2px 4px;
+  min-width: 0; padding: 2px 4px; overflow: hidden;
+  transform: scale(.74); opacity: .34; filter: grayscale(.55);
+  transition: transform 280ms cubic-bezier(0.33, 0.0, 0.15, 1.0),
+              opacity 280ms ease, filter 280ms ease;
+  will-change: transform, opacity;
 }
+.disc-slot.cur { transform: scale(1); opacity: 1; filter: none; }
 .disc-slot .disc-icon { width: 30px; height: 30px; object-fit: contain; flex: none; }
 .disc-slot .disc-name {
   font-size: 21px; font-weight: 800; letter-spacing: .4px; color: var(--rt-ink);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   -webkit-text-stroke: 0.6px #fff6c9;
   text-shadow: 0 0 5px rgba(255,244,190,.8), 0 1px 1px rgba(0,0,0,.25);
+  transition: text-shadow 280ms ease;
 }
-/* Neighbours: smaller, washed out, and unreadable enough not to compete. */
-.disc-slot.side { opacity: .34; filter: grayscale(.55); }
-.disc-slot.side .disc-name { font-size: 16px; -webkit-text-stroke: 0; text-shadow: none; }
-.disc-slot.side .disc-icon { width: 20px; height: 20px; }
+/* Neighbours drop the glow, but keep the stroke so it does not flash on arrival. */
+.disc-slot.side .disc-name { text-shadow: none; }
 .oni-ritual-disc.solo .disc-slot.side { visibility: hidden; }
 
 .oni-ritual-alt { font-size: 12px; display: flex; align-items: center; gap: 8px; padding-left: 4px; }
@@ -149,13 +164,19 @@ export function injectRitualStyles() {
   transition: transform .1s ease, box-shadow .12s ease;
 }
 /* Dark brown on dark red only separates BECAUSE of the yellow edge, so thinning
-   the stroke has to buy the contrast back somewhere. A hairline stroke keeps the
-   letter counters open, and a tight yellow glow restores the edge the stroke
-   used to provide. */
+   the stroke has to buy the contrast back somewhere.
+   The glyph is fattened by four hairline same-colour shadows (a faux-bold that
+   Signika has no heavier weight for), the yellow rim is cut to a whisker so the
+   letter counters stay open, and a tight yellow glow sits behind everything to
+   lift the whole word off the red. Shadow order matters: the fattening offsets
+   are listed first so they paint above the glow. */
 .oni-ritual-mat span {
-  -webkit-text-stroke: 0.25px #ffe14d; paint-order: stroke fill;
+  -webkit-text-stroke: 0.12px #ffe14d; paint-order: stroke fill;
   font-weight: 900;
-  text-shadow: 0 0 3px rgba(255,225,77,.75), 0 0 6px rgba(255,216,77,.45);
+  text-shadow:
+    0.45px 0 0 currentColor, -0.45px 0 0 currentColor,
+    0 0.45px 0 currentColor, 0 -0.45px 0 currentColor,
+    0 0 5px rgba(255,225,77,.95), 0 0 11px rgba(255,216,77,.6);
 }
 .oni-ritual-mat:hover { box-shadow: 0 3px 0 #3a1712, 0 0 14px var(--rt-glow); }
 .oni-ritual-mat:active { transform: translateY(2px); box-shadow: 0 1px 0 #3a1712; }
