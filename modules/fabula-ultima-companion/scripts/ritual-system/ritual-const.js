@@ -28,12 +28,29 @@ export const RITUAL_TAG = "[FU][Ritual]";
 // FEEDBACK is operator → every OTHER client: the ritual window is local, so the
 // rest of the table needs to see that someone is mid-ritual. Four players and
 // no visual would make a long setup read as a stalled session.
+// ── Shared-window (v1.5) topics ─────────────────────────────────────────────
+// The performer's window is the sole source of truth. It announces its draft
+// (SESSION_OPEN), streams every edit (SESSION_PATCH) and its end
+// (SESSION_CLOSE); a GM who attends late asks for the current state
+// (SESSION_SYNC_REQ) and the performer replies with a full snapshot
+// (SESSION_SYNC). Nothing here is writable by the spectator, so — unlike
+// CAST_REQ — none of these are activeGM-gated: every GM keeps its own mirror.
 export const RITUAL_CHANNEL = `module.${RITUAL_MODULE_ID}`;
 export const RITUAL_SOCKET = Object.freeze({
   CAST_REQ: "ritual.cast.req",
   REFUSED:  "ritual.cast.refused",
   FEEDBACK: "ritual.feedback",
+
+  SESSION_OPEN:     "ritual.session.open",
+  SESSION_PATCH:    "ritual.session.patch",
+  SESSION_CLOSE:    "ritual.session.close",
+  SESSION_SYNC_REQ: "ritual.session.syncreq",
+  SESSION_SYNC:     "ritual.session.sync",
 });
+
+// Trailing throttle on SESSION_PATCH. The intent textarea fires one patch per
+// keystroke and is the only high-frequency source; everything else is a click.
+export const RITUAL_PATCH_THROTTLE_MS = 150;
 
 // CSB resource property, matching healing-const.js's HEAL_RESOURCE.mp.
 // CSB stores current_* as STRINGS — always coerce with Number().

@@ -40,6 +40,10 @@ import { injectRitualStyles } from "./ritual-hud-styles.js";
 import { requestCast } from "./ritual-socket.js";
 import { broadcastFeedback } from "./ritual-feedback.js";
 import { openMaterialPicker } from "./ritual-material-picker.js";
+import {
+  openLocalSession, patchLocalSession, closeLocalSession,
+  setLocalStateAccessor, subscribeSessions,
+} from "./ritual-session.js";
 
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
@@ -91,10 +95,23 @@ const RitualHUD = {
   _discAnim: false,       // guards the carousel against a mid-slide re-entry
   _shown: { mp: null, dl: null },   // last painted numbers, for the roll animation
 
+  // ── Shared-window (v1.5) ────────────────────────────────────────────────
+  _mode: "perform",       // "perform" (this client edits) | "spectate" (mirror)
+  _sessionId: null,       // our published session, when performing
+  _spectateId: null,      // the session we are mirroring, when spectating
+  _specUnsub: null,       // session-subscription teardown, spectate only
+
   get isOpen() { return Boolean(this._root); },
+
+  /** Emit the current draft to any attached spectators. Perform mode only. */
+  _publish(dir = 0) {
+    if (this._mode !== "perform" || !this._sessionId) return;
+    patchLocalSession({ spec: this._spec, row: this._row, casting: this._casting, dir });
+  },
 
   open() {
     if (this._root) this.close({ silent: true });
+    this._mode = "perform";
 
     const performer = resolvePerformer();
     if (!performer) {
@@ -137,10 +154,101 @@ const RitualHUD = {
     // four-player game otherwise reads as a stalled session.
     broadcastFeedback({ kind: "open", performerName: performer.name });
 
+    // Publish this draft so a GM can attend (v1.5). The accessor lets a late
+    // joiner's sync request read the exact live state, not a stale copy.
+    this._sessionId = foundry.utils.randomID();
+    setLocalStateAccessor(() => ({ spec: this._spec, row: this._row, casting: this._casting }));
+    openLocalSession({
+      sessionId: this._sessionId,
+      performerUuid: performer.uuid,
+      performerName: performer.name,
+      performerImg: performer.img,
+      spec: this._spec,
+      row: this._row,
+    });
+
     requestAnimationFrame(() => {
       this._root?.classList.add("visible");
       this._updateCursor();
     });
+  },
+
+  // ── Spectate: a live read-only mirror of another client's window ──────────
+  //
+  // Same DOM and same render path as perform mode, so the GM sees the identical
+  // carousel, count-up and value slides — but no keyboard, no edit listeners,
+  // and a ghost cursor that follows the PERFORMER's focused row from patches.
+  spectate(session) {
+    if (!session?.sessionId) return;
+    if (this._root) this.close({ silent: true });
+    this._mode = "spectate";
+    this._spectateId = session.sessionId;
+
+    injectRitualStyles();
+
+    // Resolve the performer's actor for the live MP readout. fromUuidSync
+    // handles both a Token uuid (GM performer) and an Actor uuid (player).
+    const doc = (() => { try { return fromUuidSync(session.performerUuid); } catch { return null; } })();
+    const actor = doc?.actor ?? (doc?.documentName === "Actor" ? doc : null);
+    this._performer = {
+      actor,
+      uuid: session.performerUuid,
+      name: session.performerName,
+      img: session.performerImg,
+    };
+    this._spec = { ...session.spec };
+    this._casting = Boolean(session.casting);
+    this._row = session.row ?? "discipline";
+    this._engaged = false;
+    this._cursorReady = false;
+    this._discAnim = false;
+    this._shown = { mp: null, dl: null };
+    this._ensureSpectateDisciplines();
+
+    this._build();
+    this._installSpectateKeyboard();
+
+    // React to the performer's patches and their close.
+    this._specUnsub = subscribeSessions((event, s) => {
+      if (s?.sessionId !== this._spectateId) return;
+      if (event === "close") { this.close({ silent: true }); return; }
+      this._applyPatch(s);
+    });
+
+    requestAnimationFrame(() => {
+      this._root?.classList.add("visible");
+      this._updateCursor();
+    });
+  },
+
+  /** Guarantee `_disciplines` contains the spec's discipline so the carousel paints. */
+  _ensureSpectateDisciplines() {
+    let list = this._performer?.actor ? disciplinesForActor(this._performer.actor) : [];
+    if (!list.some((d) => d.id === this._spec.discipline)) {
+      const d = disciplineById(this._spec.discipline);
+      list = d ? [{ id: d.id, label: d.label }] : list;
+    }
+    this._disciplines = list;
+  },
+
+  /** Fold an incoming session snapshot into the mirror. Spectate only. */
+  _applyPatch(session) {
+    if (this._mode !== "spectate" || !this._root || !session?.spec) return;
+    const prevDisc = this._spec.discipline;
+    this._spec = { ...session.spec };
+    this._casting = Boolean(session.casting);
+
+    if (this._spec.discipline !== prevDisc) { this._ensureSpectateDisciplines(); this._paintDiscipline(); }
+    this._renderPotencyArea(session.dir ?? 0);
+    this._renderMaterial();
+    this._renderGroup();
+    this._renderAltAttrs();
+    this._refreshFinalize();
+
+    // Ghost cursor + focus ring track the performer's focused row. `_focus` is
+    // silent here, so it never chirps on the spectator (SFX is perform-only).
+    if (session.row) this._focus(session.row, { silent: true });
+    else this._updateCursor();
   },
 
   /** `silent` skips the cancel banner + SFX (used when re-opening over itself). */
@@ -148,9 +256,26 @@ const RitualHUD = {
     if (!this._root) return;
     if (this._keyHandler) { window.removeEventListener("keydown", this._keyHandler, true); this._keyHandler = null; }
 
-    if (!silent && !this._casting) {
-      playRitualSfx("EXIT");
-      broadcastFeedback({ kind: "cancel", performerName: this._performer?.name });
+    if (this._mode === "spectate") {
+      // A mirror closing is not an abandonment — no banner, no SFX either way.
+      if (this._specUnsub) { this._specUnsub(); this._specUnsub = null; }
+      this._spectateId = null;
+      // Let the pip drop its "attending…" highlight now that we've left.
+      Hooks.callAll("fu-ritual-spectate-end");
+    } else {
+      if (!silent && !this._casting) {
+        playRitualSfx("EXIT");
+        broadcastFeedback({ kind: "cancel", performerName: this._performer?.name });
+      }
+      // Retract the published session. A performance suppresses the cancel
+      // banner above and closes with "perform" so the mirror knows not to read
+      // it as an abandonment; a re-open over ourselves closes with "replace".
+      if (this._sessionId) {
+        const reason = silent ? "replace" : (this._casting ? "perform" : "cancel");
+        closeLocalSession(reason);
+        setLocalStateAccessor(null);
+        this._sessionId = null;
+      }
     }
 
     this._cursorEl?.remove(); this._cursorEl = null; this._cursorReady = false;
@@ -162,13 +287,14 @@ const RitualHUD = {
 
   // ── DOM ──────────────────────────────────────────────────────────────────
   _build() {
+    const spectating = this._mode === "spectate";
     const root = document.createElement("div");
     root.className = "oni-ritual-overlay";
     root.innerHTML = `
-      <div class="oni-ritual-frame">
+      <div class="oni-ritual-frame${spectating ? " spectating" : ""}">
         <div class="oni-ritual-header">
           <img src="${escapeHtml(this._performer.img)}" />
-          <div class="title">Ritual</div>
+          <div class="title">${spectating ? "Watching" : "Ritual"}</div>
           <div class="performer"><b>${escapeHtml(this._performer.name)}</b> · <span data-mp></span> MP</div>
           <div class="oni-ritual-close" title="Close (X)">✕</div>
         </div>
@@ -234,8 +360,10 @@ const RitualHUD = {
         </div>
 
         <div class="oni-ritual-footer">
-          <button class="oni-ritual-btn" data-act="cast">Perform</button>
-          <button class="oni-ritual-btn ghost" data-act="cancel">Cancel</button>
+          ${spectating
+            ? `<div class="oni-ritual-watchnote">read-only · ${escapeHtml(this._performer.name)} is setting up</div>`
+            : `<button class="oni-ritual-btn" data-act="cast">Perform</button>`}
+          <button class="oni-ritual-btn ghost" data-act="cancel">${spectating ? "Close" : "Cancel"}</button>
         </div>
       </div>`;
 
@@ -245,12 +373,26 @@ const RitualHUD = {
     this._cursorEl = document.createElement("img");
     this._cursorEl.id = "oni-ritual-cursor";
     this._cursorEl.src = RITUAL_CURSOR_SRC;
+    if (spectating) this._cursorEl.classList.add("ghost");
     document.body.appendChild(this._cursorEl);
 
+    // Close/cancel/backdrop work in BOTH modes; a spectator "Close" just drops
+    // the mirror. Everything below this block is editing, and is perform-only.
     root.querySelector(".oni-ritual-close").addEventListener("click", () => this.close());
     root.querySelector('[data-act="cancel"]').addEventListener("click", () => this.close());
-    root.querySelector('[data-act="cast"]').addEventListener("click", () => this._cast());
     root.addEventListener("click", (ev) => { if (ev.target === root) this.close(); });
+
+    if (spectating) {
+      this._paintDiscipline();
+      this._renderPotencyArea();
+      this._renderMaterial();
+      this._renderGroup();
+      this._refreshFinalize();
+      this._focus(this._row, { silent: true });
+      return;
+    }
+
+    root.querySelector('[data-act="cast"]').addEventListener("click", () => this._cast());
 
     // Scroll rows: arrows, wheel, click-to-focus. The discipline carousel is a
     // different element but takes exactly the same interactions.
@@ -286,7 +428,7 @@ const RitualHUD = {
     root.querySelector('[data-row="confirm"]').addEventListener("click", () => this._focus("confirm"));
 
     const ta = root.querySelector('[data-field="description"]');
-    ta.addEventListener("input", () => { this._spec.description = ta.value; });
+    ta.addEventListener("input", () => { this._spec.description = ta.value; this._publish(); });
     ta.addEventListener("focus", () => this._focus("intent", { silent: true, noFocusSteal: true }));
     // Esc inside the box returns to navigation rather than closing the window.
     ta.addEventListener("keydown", (ev) => {
@@ -332,6 +474,7 @@ const RitualHUD = {
       this._spec[key] = next;
       this._renderPotencyArea(dir);
       playRitualSfx("SCROLL");
+      this._publish(dir);
     } else {
       return;
     }
@@ -417,6 +560,9 @@ const RitualHUD = {
       track.style.transition = "none";
       track.style.transform = "translate3d(0,0,0)";
       this._paintDiscipline();
+      // Publish only once the reel has settled on the new discipline — a patch
+      // mid-slide would ship a discipline the spectator can't resolve yet.
+      this._publish(dir);
       // Re-enable the transition only after the snap has been painted, or the
       // browser animates the snap itself and the carousel jitters backwards.
       requestAnimationFrame(() => {
@@ -509,6 +655,7 @@ const RitualHUD = {
     this._spec.useAltAttrs = !this._spec.useAltAttrs;
     this._renderAltAttrs();
     playRitualSfx("SELECT");
+    this._publish();
   },
 
   /** The value currently ARRIVING in a host — never one that is on its way out. */
@@ -571,6 +718,7 @@ const RitualHUD = {
     this._spec.groupCheck = !this._spec.groupCheck;
     this._renderGroup();
     playRitualSfx("SELECT");
+    this._publish();
   },
 
   async _openMaterialPicker() {
@@ -586,6 +734,7 @@ const RitualHUD = {
         this._spec.material = picked;
         this._renderMaterial();
         this._refreshFinalize();
+        this._publish();
       }
     } finally {
       this._pickerOpen = false;
@@ -643,11 +792,14 @@ const RitualHUD = {
     else if (cost.saved > 0) note.textContent = `${cost.saved} MP saved by the offering`;
     else note.textContent = "";
 
+    // Absent in spectate mode — the mirror has no Perform button.
     const castBtn = this._root.querySelector('[data-act="cast"]');
-    castBtn.disabled = this._casting || (!affordable && !game.user?.isGM);
-    castBtn.textContent = this._casting ? "Performing…"
-      : (!affordable && game.user?.isGM) ? "Perform Anyway"
-      : "Perform";
+    if (castBtn) {
+      castBtn.disabled = this._casting || (!affordable && !game.user?.isGM);
+      castBtn.textContent = this._casting ? "Performing…"
+        : (!affordable && game.user?.isGM) ? "Perform Anyway"
+        : "Perform";
+    }
   },
 
   // ── Focus + engagement + feather cursor ──────────────────────────────────
@@ -682,6 +834,9 @@ const RitualHUD = {
     // Leaving the intent box must drop DOM focus, or the key handler stays down.
     if (row !== "intent" && !noFocusSteal) this._root.querySelector('[data-field="description"]')?.blur();
     this._updateCursor();
+    // A focus move is a spectatable event — the whole point of sending `row` is
+    // to let a GM watch the performer's cursor walk the window.
+    if (changed && this._mode === "perform") this._publish();
   },
 
   // Feather cursor — same mechanism as the Healing HUD: absolute placement from
@@ -705,6 +860,20 @@ const RitualHUD = {
   },
 
   // ── Keyboard ─────────────────────────────────────────────────────────────
+
+  // Spectate has no editing keys — only X/Esc closes the mirror, so an
+  // attending GM can dismiss it the same way they dismiss their own window.
+  _installSpectateKeyboard() {
+    this._keyHandler = (ev) => {
+      if (!this._root) return;
+      if (keyMatch(ev, RITUAL_KEYS.CANCEL)) {
+        ev.preventDefault(); ev.stopPropagation();
+        this.close();
+      }
+    };
+    window.addEventListener("keydown", this._keyHandler, true);
+  },
+
   _installKeyboard() {
     this._keyHandler = (ev) => {
       if (!this._root) return;

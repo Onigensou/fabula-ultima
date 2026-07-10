@@ -344,6 +344,32 @@ export function injectRitualStyles() {
   50%       { transform: translate(-88%, -50%) scale(-1, 1) rotate(20deg) translateX(6px); }
 }
 
+/* Ghost cursor — the mirror shows the PERFORMER's feather, dimmed, so a GM can
+   see it walk the window without mistaking it for their own pointer. */
+#oni-ritual-cursor.ghost { opacity: 0; filter: drop-shadow(0 2px 3px rgba(0,0,0,.5)) saturate(.4) brightness(1.3); }
+#oni-ritual-cursor.ghost.is-visible { opacity: .6; }
+
+/* ── Spectate (v1.5): a live read-only mirror ────────────────────────────── */
+/* A cool violet cast + an inert body make it unmistakable that this window is
+   being WATCHED, not driven. Every control is display-only here. */
+.oni-ritual-frame.spectating {
+  border-color: #7e63b4;
+  box-shadow: 0 18px 48px rgba(0,0,0,.55), 0 0 0 1px #3a2c5e inset, 0 0 22px rgba(126,99,180,.4);
+}
+.oni-ritual-frame.spectating .oni-ritual-header {
+  background: linear-gradient(180deg, #4a3a72, #2c2145);
+  border-bottom-color: #7e63b4;
+}
+.oni-ritual-frame.spectating .oni-ritual-header .title::before { content: "👁 "; font-size: 14px; }
+/* Controls stay lit (the GM must read them) but don't invite a click. */
+.oni-ritual-frame.spectating .oni-ritual-body { pointer-events: none; }
+.oni-ritual-frame.spectating .oni-ritual-focusable { cursor: default; }
+.oni-ritual-frame.spectating .arrow { opacity: .5; }
+.oni-ritual-frame.spectating textarea { opacity: .85; }
+.oni-ritual-watchnote {
+  margin-right: auto; font-size: 12px; font-style: italic; opacity: .75; color: var(--rt-wood-3);
+}
+
 /* ── Material picker ────────────────────────────────────────────────────── */
 .oni-rmp-frame {
   width: min(460px, 90vw); max-height: 74vh; display: flex; flex-direction: column;

@@ -25,6 +25,8 @@ import { RitualFeedback } from "./ritual-feedback.js";
 import { gatherOfferableMaterials } from "./ritual-materials.js";
 import { openMatTuner, applyStoredMatTuning } from "./ritual-mat-tuner.js";
 import { canOpenRitual, blockedReason, resolvePerformer, disciplinesForActor } from "./ritual-actor.js";
+import { wireRitualPips } from "./ritual-pip.js";
+import { getSessions } from "./ritual-session.js";
 
 const api = {
   /** Open the local Ritual window. */
@@ -49,6 +51,14 @@ const api = {
   tuner: { material: () => openMatTuner() },
   /** GM-authoritative cast. Exported for the deferred in-conflict flow. */
   performCast,
+  /** Attend a live session as a read-only spectator (GM pip calls this). */
+  spectate(sessionId) {
+    const s = getSessions().find((x) => x.sessionId === sessionId);
+    if (s) RitualHUD.spectate(s);
+    return RitualHUD;
+  },
+  /** Live shared-window sessions on this client (debugging). */
+  sessions() { return getSessions(); },
   /** Direct handle (advanced / debugging). */
   HUD: RitualHUD,
 };
@@ -68,6 +78,7 @@ function ensureGlobalApi() {
 Hooks.once("ready", () => {
   try {
     wireRitualSocket();
+    wireRitualPips();         // GM-only: the attend-pip stack (no-op for players)
     applyStoredMatTuning();   // restore a tuned Offer Material look before any window opens
     const m = ensureModuleApi(); if (m) m.ritual = api;
     ensureGlobalApi().ritual = api;

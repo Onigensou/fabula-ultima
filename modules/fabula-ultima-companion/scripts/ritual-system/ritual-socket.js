@@ -14,6 +14,10 @@
 import { RITUAL_TAG, RITUAL_CHANNEL, RITUAL_SOCKET } from "./ritual-const.js";
 import { performCast } from "./ritual-cast.js";
 import { RitualFeedback, broadcastFeedback } from "./ritual-feedback.js";
+import {
+  handleSessionOpen, handleSessionPatch, handleSessionClose,
+  handleSessionSyncReq, handleSessionSync,
+} from "./ritual-session.js";
 
 let _wired = false;
 
@@ -67,6 +71,17 @@ export function wireRitualSocket() {
     if (msg.type === RITUAL_SOCKET.FEEDBACK) {
       RitualFeedback.enqueue(msg.payload ?? {});
       return;
+    }
+
+    // Shared-window sessions (v1.5). Read-only for spectators, so NONE of these
+    // is activeGM-gated: every client keeps its own registry, and only the
+    // performer of a given session answers a sync request for it.
+    switch (msg.type) {
+      case RITUAL_SOCKET.SESSION_OPEN:     handleSessionOpen(msg.payload ?? {});     return;
+      case RITUAL_SOCKET.SESSION_PATCH:    handleSessionPatch(msg.payload ?? {});    return;
+      case RITUAL_SOCKET.SESSION_CLOSE:    handleSessionClose(msg.payload ?? {});    return;
+      case RITUAL_SOCKET.SESSION_SYNC_REQ: handleSessionSyncReq(msg.payload ?? {});  return;
+      case RITUAL_SOCKET.SESSION_SYNC:     handleSessionSync(msg.payload ?? {});     return;
     }
 
     if (msg.type === RITUAL_SOCKET.CAST_REQ) {
