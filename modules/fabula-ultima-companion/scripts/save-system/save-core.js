@@ -181,6 +181,8 @@
 
       console.log(TAG, `Loading slot ${slotId}: "${blob.label}"…`);
       const ctx = await buildContext();
+      SS._diffReport = []; // per-actor embed diff summaries, filled during apply
+      const loadStart = performance.now();
 
       // Load-wide suppression of "does not exist" delete errors. applyActorEmbeds
       // deletes each actor's items en masse; CSB's CustomItem._preDelete then
@@ -232,11 +234,54 @@
       } else {
         ui.notifications?.info?.(`[Save System] Loaded Slot ${slotId}: "${blob.label}"`);
       }
+      _reportDiff(slotId, blob.label, Math.round(performance.now() - loadStart));
       console.log(TAG, `Loaded slot ${slotId}`);
       return { ok: true, label: blob.label, warnings: failedCosmetic };
     } finally {
       _inFlight = null;
     }
+  }
+
+  // ── Load observability ──────────────────────────────────────────────────────
+  // Print a readable per-actor embed-diff summary and stash the full report on
+  // SS._lastLoadReport so it can be inspected programmatically (test bridge). This
+  // is the debug surface for the diff-based apply: at a glance you see how many
+  // items/effects were updated/created/deleted vs left untouched, and which ones.
+  function _reportDiff(slotId, label, totalMs) {
+    const report = SS._diffReport ?? [];
+    const sum = (sel) => report.reduce((n, r) => n + sel(r), 0);
+    const totals = {
+      itemUpdate: sum(r => r.item.update),   itemCreate: sum(r => r.item.create),
+      itemDelete: sum(r => r.item.delete),   itemSkip:   sum(r => r.item.skip),
+      fxUpdate:   sum(r => r.effect.update), fxCreate:   sum(r => r.effect.create),
+      fxDelete:   sum(r => r.effect.delete), fxSkip:     sum(r => r.effect.skip),
+    };
+    SS._lastLoadReport = { slotId, label, totalMs, actors: report, totals };
+
+    try {
+      console.groupCollapsed(
+        `%c[SaveSystem][Diff] slot ${slotId} — ${totals.itemUpdate + totals.itemCreate + totals.itemDelete} item writes, ` +
+        `${totals.fxUpdate + totals.fxCreate + totals.fxDelete} effect writes ` +
+        `(${totals.itemSkip} items untouched) in ${totalMs}ms`,
+        "color:#c9a22a;font-weight:bold"
+      );
+      for (const r of report) {
+        const i = r.item, e = r.effect, n = i.nested ?? { update: 0, create: 0, delete: 0 };
+        console.log(
+          `%c${r.actor}%c  items: ${i.skip} skip / ${i.update} upd / ${i.create} new / ${i.delete} del` +
+          `   item-fx: ${n.update} upd / ${n.create} new / ${n.delete} del` +
+          `   actor-fx: ${e.skip} skip / ${e.update} upd / ${e.create} new / ${e.delete} del   (${r.ms}ms)`,
+          "font-weight:bold", "color:inherit"
+        );
+        if (i.updated.length) console.log(`    item upd: ${i.updated.join(", ")}`);
+        if (i.created.length) console.log(`    item new: ${i.created.join(", ")}`);
+        if (i.deleted.length) console.log(`    item del: ${i.deleted.join(", ")}`);
+        if (e.updated.length) console.log(`    actor-fx upd: ${e.updated.join(", ")}`);
+        if (e.deleted.length) console.log(`    actor-fx del: ${e.deleted.join(", ")}`);
+      }
+      console.log("Full report → SaveSystem._lastLoadReport");
+      console.groupEnd();
+    } catch { /* console grouping is best-effort */ }
   }
 
   // Temporarily filter "does not exist" out of ui.notifications.error for the
