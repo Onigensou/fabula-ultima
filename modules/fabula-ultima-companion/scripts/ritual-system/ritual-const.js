@@ -67,14 +67,19 @@ export const RITUAL_KEYS = Object.freeze({
 });
 
 // ── Local SFX ───────────────────────────────────────────────────────────────
-// Same sound set as the Healing HUD; SCROLL is Check Roller's attribute-cycle
-// sound, since the potency/area pickers are that control.
+// Cursor movement and the generic cues come from the Healing HUD, so the two
+// menus feel like one game. Three sounds are the Ritual's own voice: OPEN,
+// DISCIPLINE (the reel of schools — deliberately NOT the sound the potency and
+// area pickers use), and PERFORM.
 const _SND_BASE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 
 export const RITUAL_SFX = Object.freeze({
-  OPEN:   { src: `${_SND_BASE}bond_create.wav`,      volume: 0.6 },
+  OPEN:       { src: `${_SND_BASE}ritual_start.wav`,             volume: 0.6 },
+  PERFORM:    { src: `${_SND_BASE}ritual_perform.wav`,           volume: 0.7 },
+  DISCIPLINE: { src: `${_SND_BASE}ritual_discipline_option.wav`, volume: 0.55 },
+
   MOVE:   { src: `${_SND_BASE}BattleCursor_4.wav`,   volume: 0.45 },
-  SCROLL: { src: `${_SND_BASE}BattleCursor_1.wav`,   volume: 0.45 },
+  SCROLL: { src: `${_SND_BASE}BattleCursor_1.wav`,   volume: 0.45 },  // potency + area only
   SELECT: { src: `${_SND_BASE}BattleCursor_2.wav`,   volume: 0.55 },
   ARM:    { src: `${_SND_BASE}check_ready.wav`,      volume: 0.6 },
   CANCEL: { src: `${_SND_BASE}BattleCursor_2.wav`,   volume: 0.4 },

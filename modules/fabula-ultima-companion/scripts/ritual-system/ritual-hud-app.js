@@ -310,20 +310,25 @@ const RitualHUD = {
     if (!dir) return;
     const wrap = (list, cur) => list[(list.indexOf(cur) + dir + list.length) % list.length];
 
+    // The discipline reel has its own voice; potency and area keep the generic
+    // cursor-scroll cue. Early returns above the SFX are deliberate — a scroll
+    // that did not happen must not make a sound.
     if (row === "discipline") {
       if (this._discAnim || this._disciplines.length < 2) return;
       const ids = this._disciplines.map((d) => d.id);
       this._slideDiscipline(wrap(ids, this._spec.discipline), dir);
+      playRitualSfx("DISCIPLINE");
     } else if (row === "potency") {
       this._spec.potency = wrap([...POTENCY_ORDER], this._spec.potency);
       this._renderPotencyArea(dir);
+      playRitualSfx("SCROLL");
     } else if (row === "area") {
       this._spec.area = wrap([...AREA_ORDER], this._spec.area);
       this._renderPotencyArea(dir);
+      playRitualSfx("SCROLL");
     } else {
       return;
     }
-    playRitualSfx("SCROLL");
     this._refreshFinalize();
   },
 
@@ -767,7 +772,8 @@ const RitualHUD = {
 
     this._casting = true;
     this._refreshFinalize();
-    playRitualSfx("ARM");
+    // Only once the cast is actually committed — a DENY above returns first.
+    playRitualSfx("PERFORM");
 
     const spec = {
       ...this._spec,
