@@ -1,0 +1,2164 @@
+{
+  "sceneId": "sXL1FpzT6KOUndYk",
+  "name": "Vastwind_Field010",
+  "tokens": [
+    {
+      "name": "Dragonslayer Party",
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "actorLink": true
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "Dragonslayer Party",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The Legend of Dragonslayer/Image/Overworld Tokens/Hina Party/Keren_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": -1.14,
+        "scaleY": 1.14,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Overworld%20Tokens/Hina%20Party/Hina_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "monks-active-tiles": {}
+      },
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "hidden": false,
+      "sort": 0,
+      "_id": "u6Fnqta4bMvfJnnk",
+      "x": 549,
+      "y": 518,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "kDLQAtLMd1Bf6Ull"
+      ]
+    }
+  ],
+  "notes": [],
+  "tileCount": 5,
+  "full": {
+    "folder": "eKKKCVEi4gxD6LdA",
+    "name": "Vastwind_Field010",
+    "active": false,
+    "navigation": false,
+    "navOrder": 0,
+    "navName": "Vastwind_Riverside",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Vastwind_Map013.png",
+      "anchorX": 0,
+      "anchorY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "fit": "fill",
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/3f7f0e90b54bcb494ec02f27903ed6a0.webp",
+    "width": 1064,
+    "height": 3798,
+    "padding": 0,
+    "initial": {
+      "x": 555,
+      "y": 3431,
+      "scale": 1.729946773637863
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 110,
+      "style": "solidLines",
+      "thickness": 1,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m"
+    },
+    "tokenVision": false,
+    "fog": {
+      "exploration": false,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "environment": {
+      "darknessLevel": 0.25,
+      "darknessLock": false,
+      "globalLight": {
+        "enabled": false,
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "luminosity": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "playlist": "RQCAKkv2ZbCCuyzP",
+    "playlistSound": "C0hI2I09YgRrsVvO",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 0,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": []
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "oniFabula": {
+          "general": {
+            "cameraFollowToken": true
+          },
+          "sceneNetwork": "[]"
+        },
+        "oniDungeon": {
+          "encounterTable": "RollTable.hCjFqMk8dQ0hLALZ",
+          "enemiesTable": "RollTable.L1w8IX58F6whkxly",
+          "battleMap": "Scene.kF0FvWefb8chuJ8u",
+          "battleBGM": "DRG_Battle",
+          "bossBGM": "DRG_Boss",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "zenit": "",
+            "treasure": ""
+          }
+        }
+      },
+      "LockView": {
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "collapse",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": false,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "fxmaster": {
+        "effects": {}
+      },
+      "world": {
+        "battleInit": {},
+        "battleEnd": {}
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": "Scene.XppcrC9KMwiCzxR7",
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1770830742903,
+      "modifiedTime": 1781425605440,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "_id": "sXL1FpzT6KOUndYk",
+    "lights": [
+      {
+        "_id": "0ZevvXIICJwJ5CPw",
+        "x": 553,
+        "y": 1617,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.55,
+          "angle": 360,
+          "bright": 4.17,
+          "color": "#669fdb",
+          "coloration": 1,
+          "dim": 8.35,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "fog",
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        }
+      },
+      {
+        "x": 552,
+        "y": 1528,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.6,
+          "angle": 360,
+          "bright": 3.33,
+          "color": "#e4c249",
+          "coloration": 1,
+          "dim": 6.65,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "dome",
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "4YVECjs5FYBXZ6pI"
+      },
+      {
+        "x": 757,
+        "y": 2773,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.25,
+          "angle": 360,
+          "bright": 3.33,
+          "color": "#dcb62e",
+          "coloration": 1,
+          "dim": 6.65,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": null,
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "BsExA8naI7xSnfjZ"
+      },
+      {
+        "_id": "J28fqgIslBe7jHto",
+        "x": 521,
+        "y": 848,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.2,
+          "angle": 360,
+          "bright": 3.36,
+          "color": "#8f5728",
+          "coloration": 1,
+          "dim": 6.71,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "fog",
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        }
+      },
+      {
+        "x": 576,
+        "y": 2268,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.25,
+          "angle": 360,
+          "bright": 3.33,
+          "color": "#dcb62e",
+          "coloration": 1,
+          "dim": 6.65,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": null,
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "KtY3gX5cMiSHmUNi"
+      },
+      {
+        "_id": "cz0wZb60VsJp8XpY",
+        "x": 395,
+        "y": 3338,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.25,
+          "angle": 360,
+          "bright": 3.33,
+          "color": "#dcb62e",
+          "coloration": 1,
+          "dim": 6.65,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": null,
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        }
+      },
+      {
+        "x": 153,
+        "y": 2597,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.55,
+          "angle": 360,
+          "bright": 4.17,
+          "color": "#669fdb",
+          "coloration": 1,
+          "dim": 8.35,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "fog",
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "zruvkEBBoKHXxyna"
+      }
+    ],
+    "regions": [
+      {
+        "name": "Water",
+        "_id": "QbMZBmHtx92Wxew9",
+        "color": "#1fdbb5",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              277.85964803419256,
+              1508.5438851489744,
+              247.57066787048666,
+              1680.1814394099747,
+              169.3241357809129,
+              1733.1871546964599,
+              323.2931182797515,
+              1907.348790637769,
+              621.1347565561932,
+              1942.6859341620925,
+              795.2963924975024,
+              1854.343075351284,
+              946.7412933160317,
+              1720.566746294916,
+              949.2653749963406,
+              1644.844295885651,
+              744.8147588913257,
+              1453.01408818218,
+              651.4237367198989,
+              1437.869598100327,
+              646.3755733592816,
+              1263.707962159018,
+              406.5878137299428,
+              1276.3283705605622,
+              386.3951602874722,
+              1490.8753133868126,
+              333.3894450009868,
+              1508.5438851489744
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              -24.329226216571897,
+              2196.762499991006,
+              238.17526853554614,
+              2282.581277121506,
+              137.21200132319314,
+              2423.9298512188006,
+              270.98833037956115,
+              2537.5135268326976,
+              167.50098148689926,
+              2661.19352916783,
+              273.51241205987003,
+              2714.1992444543157,
+              177.59730820813434,
+              2850.4996551909926,
+              258.36792197801674,
+              2923.6980239199484,
+              -1.6124910937924142,
+              3090.287414820331,
+              -74.8108598227484,
+              3107.9559865824926
+            ],
+            "hole": false
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.kyCFucvT7HsnPQks",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.331",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": 1770832399179,
+              "modifiedTime": 1770832399179,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            },
+            "_id": "yDrVZTBk20RNhtmV"
+          }
+        ]
+      },
+      {
+        "name": "Ground",
+        "color": "#cc7228",
+        "shapes": [
+          {
+            "type": "rectangle",
+            "x": -75.50319150079258,
+            "y": 1235.1163419265315,
+            "width": 1225.3145577176006,
+            "height": 2628.2109353942733,
+            "rotation": 0,
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              165.60624461281054,
+              1748.0756730733942,
+              329.67155383288446,
+              1919.7132273343946,
+              561.8870684212966,
+              1950.0022074981002,
+              723.4282959610614,
+              1922.2373090147034,
+              932.927075426694,
+              1750.599754753703,
+              968.2642189510179,
+              1654.6846509019674,
+              849.6323799765028,
+              1538.5768936077616,
+              756.2413578050764,
+              1447.7099531166436,
+              672.9466623548851,
+              1427.517299674173,
+              660.3262539533407,
+              1265.976072134408,
+              387.7254324799874,
+              1268.500153814717,
+              395.297677520914,
+              1488.0952600015848,
+              269.09359350547265,
+              1508.2879134440554,
+              238.80461334176653,
+              1669.8291409838205,
+              175.70257133404584,
+              1715.2626112293794
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              -20.366805935588218,
+              2194.2213855386276,
+              269.90258729992684,
+              2277.516080988819,
+              161.3670750466472,
+              2418.864655086113,
+              274.9507506605446,
+              2527.400167339393,
+              179.03564680880936,
+              2663.7005780760696,
+              307.7638125045596,
+              2716.706293362555,
+              189.13197353004443,
+              2853.0067040992317,
+              290.09524074239744,
+              2943.8736445903496,
+              60.403807834294184,
+              3070.077728605791,
+              -45.60762273867658,
+              3095.318545408879,
+              -93.5651746645442,
+              3092.79446372857
+            ],
+            "hole": true
+          },
+          {
+            "type": "rectangle",
+            "x": -74.41919069321648,
+            "y": -52.41980733637001,
+            "width": 1186.318389745149,
+            "height": 1065.1624690903254,
+            "rotation": 0,
+            "hole": false
+          }
+        ],
+        "_id": "kDLQAtLMd1Bf6Ull",
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.v6CQ0x21Egd7LmcG",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.331",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": 1770832399169,
+              "modifiedTime": 1770832399169,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            },
+            "_id": "dFeRiy8UGwuhse25"
+          }
+        ]
+      }
+    ],
+    "sounds": [
+      {
+        "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/River.ogg",
+        "x": 542,
+        "y": 1775,
+        "radius": 11,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "elevation": 0,
+        "volume": 0.5,
+        "easing": true,
+        "hidden": true,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        },
+        "_id": "BProMeoCNO35bXcb",
+        "repeat": false
+      },
+      {
+        "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/River.ogg",
+        "x": 535,
+        "y": 487,
+        "radius": 12,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "elevation": 0,
+        "volume": 0.2,
+        "easing": true,
+        "hidden": true,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        },
+        "repeat": false,
+        "_id": "TP5TEtcsgjAEFGbv"
+      }
+    ],
+    "walls": [
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          110,
+          2145,
+          28,
+          2104
+        ],
+        "_id": "0RnlaDZjO6j32iTn",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          798,
+          1004,
+          1100,
+          1004
+        ],
+        "_id": "2fF9MGfvzkbYdVLR",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          770,
+          3795,
+          1059,
+          3616
+        ],
+        "_id": "3kgLh5LDOswHQI6x",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          28,
+          2104,
+          14,
+          3410
+        ],
+        "_id": "3kwbNEEbMmhdzngt",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          124,
+          1678,
+          28,
+          1678
+        ],
+        "_id": "43tLJ1o439bVYVX8",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          921,
+          2901,
+          853,
+          3025
+        ],
+        "_id": "4kpoZDXmxr2HKz7R",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          949,
+          2681,
+          935,
+          2819
+        ],
+        "_id": "661dpyH7VVBonFgh",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          963,
+          1513,
+          1045,
+          1595
+        ],
+        "_id": "8X8kLKflOyQJDWnt",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          248,
+          3011,
+          234,
+          2805
+        ],
+        "_id": "A7iZL0JYoUhHCnSZ",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          1031,
+          2283,
+          866,
+          2351
+        ],
+        "_id": "At8LZQOZGA3mN77S",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          839,
+          2888,
+          921,
+          2901
+        ],
+        "_id": "B3MVAVMQzq4JzfqH",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          14,
+          3795,
+          1073,
+          3809
+        ],
+        "_id": "BAMM6scB6PNSzrdX",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          330,
+          1403,
+          248,
+          1458
+        ],
+        "_id": "BaZgC0Hcvzl9dmeA",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          770,
+          1444,
+          825,
+          1499
+        ],
+        "_id": "EJzIpGsZMWrBbbcE",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          234,
+          2805,
+          261,
+          2723
+        ],
+        "_id": "Een6schlfchsXXNE",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          1059,
+          3795,
+          770,
+          3795
+        ],
+        "_id": "GlmoQrOfyFaMCvWE",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          275,
+          2186,
+          193,
+          2131
+        ],
+        "_id": "HMPGpSNEZRtF1NVW",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          206,
+          2626,
+          289,
+          2516
+        ],
+        "_id": "HP3JzcJif1kNWKZM",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          330,
+          1251,
+          330,
+          1403
+        ],
+        "_id": "HZ0oUZDQXdHgVYEr",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          839,
+          2888,
+          935,
+          2819
+        ],
+        "_id": "L7hVA0uZdkbkEbdu",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          1045,
+          1595,
+          1045,
+          1251
+        ],
+        "_id": "PVVtZFKUWeSHmecy",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          0,
+          990,
+          316,
+          1004
+        ],
+        "_id": "PoUjQJuC7n1ZiUtU",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          28,
+          3259,
+          124,
+          3163
+        ],
+        "_id": "Q6GdAACW7x6cjAqE",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          316,
+          1128,
+          798,
+          1128
+        ],
+        "_id": "QTTXpyfubemajYxl",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          28,
+          1251,
+          14,
+          3795
+        ],
+        "_id": "QqlqBj8Ho2yGleOP",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1100,
+          1004,
+          1086,
+          -41
+        ],
+        "_id": "R8HLHHGmBjleGQ1e",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          853,
+          3025,
+          1059,
+          2929
+        ],
+        "_id": "Ry0U2y9BuXClppC8",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          866,
+          2516,
+          949,
+          2681
+        ],
+        "_id": "SA766ejNo9avwl3v",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          798,
+          1128,
+          798,
+          1004
+        ],
+        "_id": "TZFW040pejTGG6Yl",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          0,
+          -14,
+          0,
+          990
+        ],
+        "_id": "TtsK4TPFaV5YjKPu",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          756,
+          2365,
+          866,
+          2516
+        ],
+        "_id": "U5N75RPrli2iFtTQ",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          124,
+          3163,
+          248,
+          3011
+        ],
+        "_id": "UmX7gTIyLeOu0q5N",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          289,
+          2516,
+          220,
+          2448
+        ],
+        "_id": "VeT0FOR2Sp0OrMqs",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          770,
+          1265,
+          770,
+          1444
+        ],
+        "_id": "W7fwnwBS6I5mkofT",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1073,
+          3809,
+          1045,
+          1251
+        ],
+        "_id": "XENMbDme42Ao5Na1",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          165,
+          1581,
+          124,
+          1678
+        ],
+        "_id": "cjVZmahzBRXxwSKM",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          28,
+          1678,
+          28,
+          1251
+        ],
+        "_id": "cpnkeTto6d3Q6Plx",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          28,
+          1251,
+          330,
+          1251
+        ],
+        "_id": "dWOoSn3gjqrnDeCr",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          193,
+          2131,
+          110,
+          2145
+        ],
+        "_id": "fOSuxaIeG2pKdESH",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          220,
+          2448,
+          220,
+          2296
+        ],
+        "_id": "jPrxVwAZEhVtl6Zn",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          770,
+          1251,
+          770,
+          1265
+        ],
+        "_id": "k9clwimV8UOjvCbH",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          1059,
+          3053,
+          1045,
+          3245
+        ],
+        "_id": "liPY5Cm7hJS4KDtk",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          853,
+          3176,
+          1059,
+          3053
+        ],
+        "_id": "msLBB6b7dYBVW7IK",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          316,
+          1004,
+          316,
+          1128
+        ],
+        "_id": "ngWq9fU78tvgpwhZ",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          1045,
+          3245,
+          853,
+          3176
+        ],
+        "_id": "oOhlO0yNnw7epOjz",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          825,
+          1499,
+          963,
+          1513
+        ],
+        "_id": "ol31le1Sd1poe9fJ",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1045,
+          1251,
+          28,
+          1251
+        ],
+        "_id": "psgzo4LARhmHVgzB",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          866,
+          2351,
+          756,
+          2365
+        ],
+        "_id": "q1GMwJ6wgdWaRcHH",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          1059,
+          2929,
+          1031,
+          2283
+        ],
+        "_id": "qg5oy7vXucp2PTiO",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          110,
+          3328,
+          28,
+          3259
+        ],
+        "_id": "rQRBHDTWJXjL4KN5",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          1059,
+          3616,
+          1059,
+          3795
+        ],
+        "_id": "rUCq4ISsO8EY2yok",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          220,
+          2296,
+          275,
+          2186
+        ],
+        "_id": "rg5iiCVYlKOgwnka",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          14,
+          3410,
+          110,
+          3328
+        ],
+        "_id": "sHrCZyViz3Ab5qNB",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          1045,
+          1251,
+          770,
+          1251
+        ],
+        "_id": "udIqMeCJLxVA9Hmf",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          248,
+          1458,
+          165,
+          1581
+        ],
+        "_id": "wK4Wcj2xhqRFXFSi",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          261,
+          2723,
+          206,
+          2626
+        ],
+        "_id": "wSeXQqelk8HrgwRS",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1086,
+          -41,
+          0,
+          -41
+        ],
+        "_id": "zAfLZL1g7020ZTcd",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      }
+    ]
+  }
+}

@@ -267,7 +267,7 @@
             "weapon": "RollTable.8zdktLBCbkf2u8RM",
             "armor": "RollTable.eXxNIQ3UcglIdF7F",
             "accessory": "RollTable.CRGj5HutohiPQnl1",
-            "consumable": "RollTable.5XUe06fGWEn90St1",
+            "consumable": "RollTable.r1RCffEXmNdKe9lu",
             "item": "RollTable.6P0CB87nx5yZZQa2",
             "zenit": "RollTable.5zFaLHS36v9rL0OG",
             "treasure": "RollTable.hS4XNu1vLtWbPSne"
@@ -602,7 +602,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780453399403,
-      "modifiedTime": 1783195167900,
+      "modifiedTime": 1783664892877,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

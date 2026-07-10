@@ -1,0 +1,256 @@
+{
+  "sceneId": "P5yHZSuyn6nCrTO9",
+  "name": "Introduction",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 0,
+  "full": {
+    "folder": "7YQ4ZWxpYvijJPmb",
+    "name": "Introduction",
+    "active": false,
+    "navigation": false,
+    "navOrder": 1200000,
+    "navName": "Introduction Mural",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Scene/Intro_Scene001.png",
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "anchorX": 0,
+      "anchorY": 0,
+      "fit": "fill",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/fd82ac3c4f6feac846ce40073db5490c.webp",
+    "width": 1682,
+    "height": 788,
+    "padding": 0,
+    "initial": {
+      "x": 808,
+      "y": 396,
+      "scale": 1.1985731272294886
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 100,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m",
+      "style": "solidLines",
+      "thickness": 1
+    },
+    "tokenVision": false,
+    "playlist": null,
+    "playlistSound": null,
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 200000,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "smalltime": {
+        "darkness-link": true,
+        "player-vis": "2",
+        "moonlight": false
+      },
+      "LockView": {
+        "lockPan": true,
+        "lockPanInit": true,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": true,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": false,
+          "hotbar": false,
+          "logo": false,
+          "navigation": false,
+          "players": false,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "fxmaster": {
+        "filters": {
+          "core_predator": {
+            "type": "predator",
+            "options": {
+              "noise": 0,
+              "period": 0,
+              "lineWidth": 0.1
+            }
+          }
+        },
+        "effects": {}
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": true,
+        "sequence": [
+          {
+            "id": "BYbDV1tVdL9Nrhgo",
+            "type": "linearwipe",
+            "duration": 7000,
+            "easing": "slow",
+            "direction": "top",
+            "version": "1.1.6",
+            "bgSizingMode": "stretch",
+            "backgroundType": "color",
+            "backgroundImage": "",
+            "backgroundColor": "#00000000",
+            "label": ""
+          }
+        ]
+      },
+      "levels": {
+        "backgroundElevation": 0,
+        "lightMasking": true,
+        "weatherElevation": null
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "oniDungeon": {
+          "encounterTable": "",
+          "enemiesTable": "",
+          "battleMap": "",
+          "battleBGM": "",
+          "bossBGM": "",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "treasure": "",
+            "zenit": ""
+          }
+        },
+        "oniFabula": {
+          "sceneNetwork": "[{\"name\":\"Highroad\",\"id\":\"Scene.ISkBhUVkKnbbXJfN\"}]",
+          "general": {
+            "cameraFollowToken": false
+          }
+        }
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": "Scene.RDgq3mH0KOVAGPPf",
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.4",
+      "createdTime": 1767599868381,
+      "modifiedTime": 1781425620923,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "environment": {
+      "globalLight": {
+        "luminosity": 0,
+        "enabled": false,
+        "darkness": {
+          "max": 1,
+          "min": 0
+        },
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0
+      },
+      "darknessLevel": 0.2,
+      "darknessLock": false,
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "fog": {
+      "exploration": true,
+      "reset": 1704291191736,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "_id": "P5yHZSuyn6nCrTO9",
+    "lights": [
+      {
+        "_id": "n4somHWijCx3Txrh",
+        "x": 647,
+        "y": 363,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.4,
+          "angle": 360,
+          "bright": 3,
+          "color": "#eec249",
+          "coloration": 1,
+          "dim": 13,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "torch",
+            "speed": 8,
+            "intensity": 2,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,463 @@
+{
+  "sceneId": "pUnXd1fJPC3wnVMB",
+  "name": "Eisendrache Castle",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 0,
+  "full": {
+    "folder": "7YQ4ZWxpYvijJPmb",
+    "name": "Eisendrache Castle",
+    "active": false,
+    "navigation": false,
+    "navOrder": 1200000,
+    "navName": "Eisendrache",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Scene/Eisendrache_Scene004.png",
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "anchorX": 0,
+      "anchorY": 0,
+      "fit": "fill",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/72bb0e9e77fa2603fabb3eb8b16bb3ac.webp",
+    "width": 1682,
+    "height": 788,
+    "padding": 0,
+    "initial": {
+      "x": 808,
+      "y": 396,
+      "scale": 1.1985731272294886
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 100,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m",
+      "style": "solidLines",
+      "thickness": 1
+    },
+    "tokenVision": false,
+    "playlist": "VrpdABUTSoREMDR5",
+    "playlistSound": "BR2cnoyk48unTodY",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 200000,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "smalltime": {
+        "darkness-link": true,
+        "player-vis": "2",
+        "moonlight": false
+      },
+      "LockView": {
+        "lockPan": true,
+        "lockPanInit": true,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": true,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": false,
+          "hotbar": false,
+          "logo": false,
+          "navigation": false,
+          "players": false,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "fxmaster": {
+        "filters": {
+          "core_predator": {
+            "type": "predator",
+            "options": {
+              "noise": 0,
+              "period": 0,
+              "lineWidth": 0.1
+            }
+          }
+        },
+        "effects": {}
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": [],
+        "isTriggered": false
+      },
+      "levels": {
+        "backgroundElevation": 0,
+        "lightMasking": true,
+        "weatherElevation": null
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "oniDungeon": {
+          "encounterTable": "",
+          "enemiesTable": "",
+          "battleMap": "",
+          "battleBGM": "",
+          "bossBGM": "",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "treasure": "",
+            "zenit": ""
+          },
+          "threatLevel": "medium"
+        },
+        "oniFabula": {
+          "sceneNetwork": "[{\"name\":\"Eisendrache Castle - Hall\",\"id\":\"Scene.Hg2uMkxwMVBz2XD0\"},{\"name\":\"Eisendrache Castle - Courtyard\",\"id\":\"Scene.vfpS5zFzjW6ygEJu\"},{\"name\":\"Eisendrache Castle - Library\",\"id\":\"Scene.JFewEPdldTnVO3HK\"},{\"name\":\"Eisendrache Castle - Kitchen\",\"id\":\"Scene.iS2Jhy69P1KUXYfM\"},{\"name\":\"Eisendrache Castle - Throneroom\",\"id\":\"Scene.FAsgNrS2ICl9yZmj\"}]",
+          "general": {
+            "cameraFollowToken": false,
+            "sceneMode": "none",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "sceneVisited": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
+          }
+        },
+        "campSceneUuid": ""
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": "Scene.RDgq3mH0KOVAGPPf",
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.4",
+      "createdTime": 1767937826697,
+      "modifiedTime": 1783184733021,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "environment": {
+      "globalLight": {
+        "luminosity": 0,
+        "enabled": false,
+        "darkness": {
+          "max": 1,
+          "min": 0
+        },
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0
+      },
+      "darknessLevel": 0.35,
+      "darknessLock": false,
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "fog": {
+      "exploration": true,
+      "reset": 1704291191736,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "_id": "pUnXd1fJPC3wnVMB",
+    "drawings": [
+      {
+        "_id": "O1Jmy942RaRa6wdZ",
+        "author": "JQGNzKpDPHJmcUIW",
+        "shape": {
+          "type": "p",
+          "width": 263,
+          "height": 30,
+          "radius": null,
+          "points": [
+            233.6111111111111,
+            10.846230158730151,
+            179.37996031746036,
+            12.514880952380935,
+            73.42063492063494,
+            15.85218253968253,
+            90.94146825396825,
+            11.680555555555543,
+            171.03670634920638,
+            11.680555555555543,
+            133.4920634920635,
+            13.349206349206355,
+            36.71031746031747,
+            0,
+            147.6755952380953,
+            11.680555555555543,
+            53.39682539682536,
+            13.349206349206355,
+            96.78174603174602,
+            5.8402777777777715,
+            124.3144841269841,
+            12.514880952380935,
+            69.24900793650795,
+            10.846230158730151,
+            152.6815476190476,
+            15.017857142857139,
+            54.231150793650784,
+            13.349206349206355,
+            57.56845238095235,
+            11.680555555555543,
+            182.71726190476193,
+            9.177579365079367,
+            262.8125,
+            9.177579365079367,
+            236.94841269841277,
+            12.514880952380935,
+            102.6220238095238,
+            13.349206349206355,
+            88.43849206349205,
+            13.349206349206355,
+            199.40376984126988,
+            13.349206349206355,
+            109.29662698412699,
+            15.85218253968253,
+            0,
+            5.00595238095238,
+            120.14285714285717,
+            10.01190476190476,
+            75.08928571428572,
+            18.355158730158735,
+            22.526785714285722,
+            16.686507936507923,
+            156.85317460317458,
+            11.680555555555543,
+            80.09523809523807,
+            21.692460317460302,
+            55.89980158730157,
+            15.85218253968253,
+            218.59325396825398,
+            20.85813492063491,
+            154.35019841269843,
+            30.035714285714278,
+            99.28472222222223,
+            15.017857142857139,
+            216.09027777777783,
+            14.183531746031747,
+            114.30257936507934,
+            16.686507936507923,
+            81.76388888888886,
+            3.337301587301596,
+            228.6051587301588,
+            10.01190476190476,
+            101.78769841269843,
+            16.686507936507923,
+            75.92361111111109,
+            2.5029761904761756,
+            231.10813492063494,
+            15.017857142857139,
+            120.14285714285717,
+            19.189484126984127,
+            35.04166666666663,
+            0,
+            230.27380952380952,
+            14.183531746031747,
+            167.69940476190482,
+            22.526785714285722,
+            94.27876984126982,
+            7.508928571428555,
+            95.9474206349206,
+            6.674603174603163
+          ]
+        },
+        "x": 104.32741568961018,
+        "y": 79.91165209968766,
+        "elevation": 0,
+        "sort": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "fillType": 0,
+        "fillColor": "#ffffff",
+        "fillAlpha": 1,
+        "strokeWidth": 5,
+        "strokeColor": "#ffffff",
+        "strokeAlpha": 0.6,
+        "texture": null,
+        "text": "",
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1,
+        "hidden": false,
+        "locked": false,
+        "interface": false,
+        "flags": {}
+      }
+    ],
+    "lights": [
+      {
+        "x": 765,
+        "y": 100,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.3,
+          "angle": 360,
+          "bright": 2.26,
+          "color": "#d38922",
+          "coloration": 1,
+          "dim": 4.51,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "flame",
+            "speed": 4,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "5fjkKzMcW3uxIy0a"
+      },
+      {
+        "_id": "MAIcwKWHYvcqTsQa",
+        "x": 513,
+        "y": 411,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.35,
+          "angle": 360,
+          "bright": 2.26,
+          "color": "#d38922",
+          "coloration": 1,
+          "dim": 4.51,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "flame",
+            "speed": 4,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        }
+      },
+      {
+        "x": 964,
+        "y": 414,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.35,
+          "angle": 360,
+          "bright": 2.26,
+          "color": "#d38922",
+          "coloration": 1,
+          "dim": 4.51,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "flame",
+            "speed": 4,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "WjnzOH3TGA0ewQ3N"
+      }
+    ]
+  }
+}

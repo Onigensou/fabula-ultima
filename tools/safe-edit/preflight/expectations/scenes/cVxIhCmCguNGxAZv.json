@@ -1,0 +1,247 @@
+{
+  "sceneId": "cVxIhCmCguNGxAZv",
+  "name": "Loading Screen",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 2,
+  "full": {
+    "folder": null,
+    "name": "Loading Screen",
+    "active": true,
+    "navigation": true,
+    "navOrder": 1200000,
+    "navName": "Loading",
+    "background": {
+      "src": null,
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "anchorX": 0,
+      "anchorY": 0,
+      "fit": "fill",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/e8904fac09e5866aeebc7634ff434758.webp",
+    "width": 1682,
+    "height": 788,
+    "padding": 0,
+    "initial": {
+      "x": 808,
+      "y": 396,
+      "scale": 1.1985731272294886
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 100,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m",
+      "style": "solidLines",
+      "thickness": 1
+    },
+    "tokenVision": false,
+    "playlist": null,
+    "playlistSound": null,
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 400000,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "smalltime": {
+        "darkness-link": true,
+        "player-vis": "2",
+        "moonlight": false
+      },
+      "LockView": {
+        "lockPan": true,
+        "lockPanInit": true,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": true,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": false,
+          "hotbar": false,
+          "logo": false,
+          "navigation": false,
+          "players": false,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "fxmaster": {
+        "filters": {
+          "core_predator": {
+            "type": "predator",
+            "options": {
+              "noise": 0,
+              "period": 0.001,
+              "lineWidth": 1.5,
+              "belowTokens": false
+            }
+          }
+        },
+        "effects": {}
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": [
+          {
+            "id": "UatuuTK40pQiD6CF",
+            "type": "fade",
+            "duration": 1000,
+            "version": "1.1.6",
+            "bgSizingMode": "stretch",
+            "backgroundType": "color",
+            "backgroundColor": "#00000000",
+            "easing": "none",
+            "label": "",
+            "backgroundImage": ""
+          }
+        ]
+      },
+      "levels": {
+        "backgroundElevation": 0,
+        "lightMasking": true,
+        "weatherElevation": null
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "oniDungeon": {
+          "encounterTable": "",
+          "enemiesTable": "",
+          "battleMap": "",
+          "battleBGM": "",
+          "bossBGM": "",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "treasure": "",
+            "zenit": ""
+          },
+          "threatLevel": "medium"
+        },
+        "oniFabula": {
+          "sceneNetwork": "[{\"name\":\"Eisendrache Map\",\"id\":\"Scene.bshIjNx79K5z2BXv\"},{\"name\":\"Overworld\",\"id\":\"Scene.ozujmDgZuATRvJXh\"},{\"name\":\"Intro Scene\",\"id\":\"Scene.P5yHZSuyn6nCrTO9\"}]",
+          "general": {
+            "cameraFollowToken": false,
+            "sceneMode": "none",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "sceneVisited": false
+          }
+        },
+        "campSceneUuid": "",
+        "dungeonPathing": {
+          "tileStates": {
+            "kWpVJuuqEwL1Mhne": {
+              "initialType": "gusty",
+              "currentType": "gusty",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gusty_Tile.png"
+            }
+          }
+        }
+      },
+      "world": {
+        "battleInit": {
+          "promptMarker": {
+            "status": "cancelled",
+            "at": "2026-06-14T09:02:33.429Z",
+            "runId": "bi_prompt_1781427750177_3oh1xd",
+            "sceneId": "cVxIhCmCguNGxAZv",
+            "sceneName": "Loading Screen",
+            "via": "close-x"
+          }
+        }
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": "Scene.RDgq3mH0KOVAGPPf",
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.4",
+      "createdTime": 1767961551046,
+      "modifiedTime": 1783665033987,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "environment": {
+      "globalLight": {
+        "luminosity": 0,
+        "enabled": false,
+        "darkness": {
+          "max": 1,
+          "min": 0
+        },
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0
+      },
+      "darknessLevel": 0,
+      "darknessLock": false,
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "fog": {
+      "exploration": false,
+      "reset": 1704291191736,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "_id": "cVxIhCmCguNGxAZv"
+  }
+}

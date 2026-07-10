@@ -1,0 +1,698 @@
+{
+  "sceneId": "tTfLiliP8s0fssJm",
+  "name": "Vastwind_Field009",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 1,
+  "full": {
+    "folder": "eKKKCVEi4gxD6LdA",
+    "name": "Vastwind_Field009",
+    "active": false,
+    "navigation": false,
+    "navOrder": 0,
+    "navName": "Vastwind_Camp",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Vastwind_Map009.png",
+      "anchorX": 0,
+      "anchorY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "fit": "fill",
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/810c20f56f1d0d0370878a2959d5e503.webp",
+    "width": 1024,
+    "height": 1024,
+    "padding": 0,
+    "initial": {
+      "x": 510,
+      "y": 392,
+      "scale": 1.8563810966169385
+    },
+    "backgroundColor": "#01111b",
+    "grid": {
+      "type": 0,
+      "size": 105,
+      "style": "solidLines",
+      "thickness": 1,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m"
+    },
+    "tokenVision": false,
+    "fog": {
+      "exploration": false,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "environment": {
+      "darknessLevel": 0.05,
+      "darknessLock": false,
+      "globalLight": {
+        "enabled": false,
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "luminosity": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "playlist": "POV9fioQ0Kkj7hKC",
+    "playlistSound": "npKhehNDuBVwo2Fn",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 0,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": [],
+        "isTriggered": false
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "oniFabula": {
+          "general": {
+            "cameraFollowToken": false
+          },
+          "sceneNetwork": "[]"
+        },
+        "oniDungeon": {
+          "encounterTable": "",
+          "enemiesTable": "",
+          "battleMap": "",
+          "battleBGM": "",
+          "bossBGM": "",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "zenit": "",
+            "treasure": ""
+          }
+        }
+      },
+      "LockView": {
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "collapse",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": true,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "fxmaster": {
+        "effects": {
+          "core_clouds": {
+            "type": "clouds",
+            "options": {
+              "belowTokens": false,
+              "tint": {
+                "apply": false,
+                "value": "#FFFFFF"
+              },
+              "scale": 0.9,
+              "direction": 205,
+              "speed": 0.8,
+              "lifetime": 1.3,
+              "density": 0.016,
+              "alpha": 0.2,
+              "dropShadow": false,
+              "shadowOnly": false,
+              "shadowRotation": 315,
+              "shadowDistance": 70,
+              "shadowBlur": 2,
+              "shadowOpacity": 1
+            }
+          }
+        },
+        "filters": {}
+      },
+      "world": {
+        "battleInit": {
+          "promptMarker": {
+            "status": "cancelled",
+            "at": "2026-02-28T17:42:46.287Z",
+            "runId": "bi_prompt_1772300559888_h46lzj",
+            "sceneId": "tTfLiliP8s0fssJm",
+            "sceneName": "Vastwind_Field009",
+            "via": "close-x"
+          }
+        }
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": "Scene.gOMONWrZocqACmMz",
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1769681335795,
+      "modifiedTime": 1781425605428,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "_id": "tTfLiliP8s0fssJm",
+    "lights": [
+      {
+        "_id": "DNVg7dWLN8Kivh7y",
+        "x": 506,
+        "y": 436,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.25,
+          "angle": 360,
+          "bright": 4.01,
+          "color": "#e48807",
+          "coloration": 1,
+          "dim": 8.03,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "flame",
+            "speed": 2,
+            "intensity": 3,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": true,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        }
+      }
+    ],
+    "regions": [
+      {
+        "name": "Grass",
+        "color": "#28cc33",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              211.17591318003906,
+              1012.8773357718529,
+              191.34170591941347,
+              985.9594830610039,
+              160.1736659384303,
+              960.4583594401994,
+              265.01161860173727,
+              909.4561121985906,
+              435.0191094071,
+              855.6204067768923,
+              252.26105679133502,
+              750.7824541135855,
+              283.4290967723182,
+              688.4463741516191,
+              481.77116937857477,
+              668.6121668909934,
+              391.1005076157146,
+              607.6928160190718,
+              606.4433293025073,
+              558.1072978675077,
+              633.3611820133566,
+              491.5210306354072,
+              759.4500710273338,
+              471.6868233747816,
+              1025.7951399557355,
+              522.6890706163904,
+              1021.5449526856015,
+              1021.3777103121212,
+              1021.5449526856015,
+              1022.7944394021657,
+              1015.8780363254226,
+              1018.5442521320316
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              568.1916438713007,
+              1000.1267739614508,
+              470.4373366582172,
+              942.0408812696186,
+              568.1916438713007,
+              869.7876976773392,
+              359.93246763473144,
+              752.1991832036301,
+              491.68827300888756,
+              728.1147886728704,
+              565.3581856912114,
+              730.9482468529598,
+              688.6136165250995,
+              701.1969359620213,
+              691.4470747051888,
+              653.0281469005018,
+              755.1998837571997,
+              586.4418796684014,
+              814.7025055390767,
+              609.1095451091164,
+              806.2021309988087,
+              675.6958123412169,
+              780.7010073780042,
+              689.8631032416638,
+              817.535963719166,
+              725.281330492781,
+              620.6106202029542,
+              783.3672231846133,
+              857.2043782404174,
+              1018.5442521320316
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              484.6046275586641,
+              943.4576103596631,
+              614.9437038427756,
+              1036.9617303026125,
+              840.2036291598812,
+              1039.7951884827019,
+              833.1199837096577,
+              1000.1267739614508,
+              673.0295965346078,
+              937.7906939994845
+            ],
+            "hole": true
+          }
+        ],
+        "_id": "551DxFhpmBDrp14u",
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.CRagAwYLpsANGP9h",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.331",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            },
+            "_id": "6AwHD6FOVxxYLOK3"
+          }
+        ]
+      },
+      {
+        "name": "Ground",
+        "color": "#cc7228",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              595.10949658215,
+              1010.0438775917636,
+              494.521731188977,
+              943.4576103596631,
+              586.6091220418817,
+              866.9542394972499,
+              376.9332167152677,
+              750.7824541135855,
+              495.93846027902157,
+              735.1984341230939,
+              614.9437038427756,
+              732.3649759430044,
+              705.6143656056357,
+              698.3634777819319,
+              698.5307201554123,
+              654.4448759905465,
+              755.1998837571997,
+              594.9422542086696,
+              800.5352146386298,
+              607.6928160190718,
+              800.5352146386298,
+              665.7787087109041,
+              766.5337164775573,
+              681.3627287013957,
+              797.7017564585404,
+              711.114039592334,
+              605.0266002124628,
+              777.7003068244345,
+              845.8705455200599,
+              1015.7107939519423
+            ],
+            "hole": false
+          }
+        ],
+        "_id": "OrQQboa2C5GKoIyv",
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.v6CQ0x21Egd7LmcG",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.331",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            },
+            "_id": "Uj9M4WwNsB8yE4oo"
+          }
+        ]
+      }
+    ],
+    "walls": [
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          866,
+          223,
+          893
+        ],
+        "_id": "3vvGc6Y24646rowf",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          223,
+          893,
+          368,
+          971
+        ],
+        "_id": "4HFB11scyTlRIzJW",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          1024,
+          1037,
+          1011,
+          0
+        ],
+        "_id": "G2I7m3mZdbdNVYhO",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          249,
+          617,
+          0,
+          735
+        ],
+        "_id": "GnVW8e8ajX8aOamM",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          735,
+          0,
+          866
+        ],
+        "_id": "Gqbvk4HHD6aKrnQm",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          13,
+          0,
+          591
+        ],
+        "_id": "InDT7Zy61Ia0ghXb",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          1011,
+          0,
+          0,
+          0
+        ],
+        "_id": "JRsMYdVbubnx8KBs",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          381,
+          1024,
+          1024,
+          1037
+        ],
+        "_id": "i2tXGgUxPYKc64XY",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          591,
+          249,
+          617
+        ],
+        "_id": "ij0gF8LsSs32l1wk",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          368,
+          971,
+          381,
+          1024
+        ],
+        "_id": "thNEQwHrTD2hiecV",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      }
+    ]
+  }
+}

@@ -1,0 +1,3771 @@
+{
+  "sceneId": "GCu1w3E2HM4rlf6p",
+  "name": "Ruhig_Village001",
+  "tokens": [
+    {
+      "name": "Albero",
+      "actorId": "9olYMzELv0sPERYu",
+      "actorLink": true
+    },
+    {
+      "name": "Zarg",
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "actorLink": true
+    },
+    {
+      "name": "Villager I",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Villager G",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Villager H",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Villager F",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Villager B",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Villager J",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "Villager I",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/NPCs/4W_KID.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 0.92,
+        "scaleY": 0.92,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": false,
+      "sort": 2,
+      "x": 1071,
+      "y": 706,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "PEEsF8qdbCcC0PLN"
+      ],
+      "_id": "1Z7pTqOySjyzpdnq"
+    },
+    {
+      "name": "Villager G",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/NPCs/1_M_02.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": false,
+      "sort": 2,
+      "_id": "2sqdrLFSAZGfoMsx",
+      "x": 1132,
+      "y": 695,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "PEEsF8qdbCcC0PLN"
+      ]
+    },
+    {
+      "name": "Albero",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Albero/Albero_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.16,
+        "scaleY": 1.16,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "9olYMzELv0sPERYu",
+      "hidden": true,
+      "sort": 2,
+      "_id": "EAG78VHwmOF8AIXJ",
+      "x": 525,
+      "y": 381,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "PEEsF8qdbCcC0PLN"
+      ]
+    },
+    {
+      "name": "Villager H",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/NPCs/4_F_04.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 0.92,
+        "scaleY": 0.92,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": false,
+      "sort": 2,
+      "_id": "FrfAixOIDzptLQc1",
+      "x": 742,
+      "y": 926,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "PEEsF8qdbCcC0PLN"
+      ]
+    },
+    {
+      "name": "Zarg",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": -1.14,
+        "scaleY": 1.14,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.15,
+        "angle": 360,
+        "bright": 1,
+        "color": "#eea149",
+        "coloration": 1,
+        "dim": 0.5,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": "flame",
+          "speed": 2,
+          "intensity": 4,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 5,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Overworld%20Tokens/Hina%20Party/Hina_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "hidden": false,
+      "sort": 1,
+      "_id": "PHkckO9WL7OSTZqM",
+      "x": 514,
+      "y": 598,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "PEEsF8qdbCcC0PLN"
+      ]
+    },
+    {
+      "name": "Villager F",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/NPCs/1_F_ORIENT_04.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 0.99,
+        "scaleY": 0.99,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": false,
+      "sort": 2,
+      "_id": "Yhx4lzBHb5HRubR7",
+      "x": 1231,
+      "y": 415,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "PEEsF8qdbCcC0PLN"
+      ]
+    },
+    {
+      "name": "Villager B",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/NPCs/4_F_01.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.02,
+        "scaleY": 1.02,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": false,
+      "sort": 0,
+      "_id": "sAXSwNFxmlvWFrjf",
+      "x": 222,
+      "y": 774,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "PEEsF8qdbCcC0PLN"
+      ]
+    },
+    {
+      "name": "Villager J",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/NPCs/2_M_PHARMACIST.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.06,
+        "scaleY": 1.06,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": false,
+      "sort": 2,
+      "x": 713,
+      "y": 900,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "xs7N7PR8T1KpxOsi"
+      ],
+      "_id": "wMKmwxJcI747vOog"
+    }
+  ],
+  "notes": [],
+  "tileCount": 15,
+  "full": {
+    "folder": "oXoLCnRRoVwg6GJw",
+    "name": "Ruhig_Village001",
+    "_id": "GCu1w3E2HM4rlf6p",
+    "active": false,
+    "navigation": false,
+    "navOrder": 0,
+    "navName": "Ruhig Village",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Ruhig_Map001.png",
+      "anchorX": 0,
+      "anchorY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "fit": "fill",
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/b7cbd61d50f5b6c8da270f7846fd5241.webp",
+    "width": 1318,
+    "height": 1063,
+    "padding": 0,
+    "initial": {
+      "x": 1073,
+      "y": 875,
+      "scale": 2.8075162985432516
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 60,
+      "style": "solidLines",
+      "thickness": 1,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m"
+    },
+    "tokenVision": false,
+    "fog": {
+      "exploration": false,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "environment": {
+      "darknessLevel": 0,
+      "darknessLock": false,
+      "globalLight": {
+        "enabled": false,
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "luminosity": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "playlist": "VrpdABUTSoREMDR5",
+    "playlistSound": "XWrEwaBTIwJqtuNb",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 0,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": []
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "oniFabula": {
+          "general": {
+            "cameraFollowToken": true,
+            "spawnPoint": {
+              "x": 1066,
+              "y": 936
+            },
+            "sceneMode": "exploration",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "isOverworld": false,
+            "isTown": true,
+            "isDungeon": false,
+            "sceneVisited": true,
+            "navigationName": "Ruhig Village",
+            "disableTransition": false
+          },
+          "sceneNetwork": "[{\"name\":\"Ruhig Scene\",\"id\":\"Scene.pXQinfu0BH9GPw7i\"}]"
+        },
+        "oniDungeon": {
+          "encounterTable": "RollTable.LZRvL9Ja8fpWII78",
+          "enemiesTable": "RollTable.2KuNpkuRwMgWoLln",
+          "battleMap": "Scene.NHYPGoAsaZPQPyRa",
+          "battleBGM": "DRG_Battle",
+          "bossBGM": "Draconic Battle",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "zenit": "",
+            "treasure": ""
+          },
+          "threatLevel": "medium"
+        },
+        "campSceneUuid": ""
+      },
+      "LockView": {
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": false,
+        "lockZoomInit": false,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": false,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "fxmaster": {
+        "filters": {}
+      },
+      "world": {
+        "battleInit": {
+          "latestPayload": {
+            "meta": {
+              "schemaVersion": 1,
+              "battleId": "feftjZQpGx5wYiPm",
+              "createdAt": "2026-06-20T09:50:57.313Z",
+              "debug": {
+                "enabled": true,
+                "trace": [
+                  {
+                    "phase": "prompt",
+                    "at": "2026-06-20T09:50:57.313Z",
+                    "note": "Created initial BattlePayload from GM prompt."
+                  },
+                  {
+                    "phase": "prompt",
+                    "at": "2026-06-20T09:50:57.313Z",
+                    "note": "Clear Battle Log: ok"
+                  }
+                ]
+              }
+            },
+            "context": {
+              "sourceSceneUuid": "Scene.GCu1w3E2HM4rlf6p",
+              "sourceSceneId": "GCu1w3E2HM4rlf6p",
+              "sourceSceneName": "Ruhig_Village001",
+              "battleSceneUuid": "Scene.NHYPGoAsaZPQPyRa",
+              "return": {
+                "enabled": true
+              },
+              "lean": false
+            },
+            "battleConfig": {
+              "encounterTableUuid": "RollTable.LZRvL9Ja8fpWII78",
+              "enemiesTableUuid": "RollTable.2KuNpkuRwMgWoLln",
+              "battleSceneUuid": "Scene.NHYPGoAsaZPQPyRa",
+              "bgm": "DRG_Battle"
+            },
+            "battleConfigDefaults": {
+              "encounterTableUuidDefault": "RollTable.LZRvL9Ja8fpWII78",
+              "enemiesTableUuidDefault": "RollTable.2KuNpkuRwMgWoLln",
+              "battleSceneUuidDefault": "Scene.NHYPGoAsaZPQPyRa",
+              "battleBgmDefault": "DRG_Battle",
+              "bossBgmDefault": "Draconic Battle"
+            },
+            "party": {
+              "mode": "dbPartyMembers",
+              "source": {
+                "gameName": "The Legend of Dragonslayer",
+                "resolvedAt": "2026-06-20T09:50:46.579Z"
+              },
+              "members": [
+                {
+                  "slot": 1,
+                  "actorUuid": "Actor.dafTLBUscCDNgq8H",
+                  "actorId": "dafTLBUscCDNgq8H",
+                  "name": "Hina",
+                  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/h1.png"
+                },
+                {
+                  "slot": 2,
+                  "actorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+                  "actorId": "gdJZ1L1kv5mjTTMr",
+                  "name": "Keren",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Portrait/Keren_Portrait001.png"
+                },
+                {
+                  "slot": 3,
+                  "actorUuid": "Actor.uJFaNQCSvwwsr2AW",
+                  "actorId": "uJFaNQCSvwwsr2AW",
+                  "name": "Blanche",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Portrait/Blanche_Portrait001.png"
+                },
+                {
+                  "slot": 4,
+                  "actorUuid": "Actor.Z4CFy505cD3nzl1W",
+                  "actorId": "Z4CFy505cD3nzl1W",
+                  "name": "Zarg",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Portrait/Zarg_Portrait.png"
+                }
+              ],
+              "missing": []
+            },
+            "battlePlan": {
+              "type": "default",
+              "randomChancePercent": 12,
+              "isBoss": false
+            },
+            "encounterPlan": {
+              "mode": "manual",
+              "difficultyTag": null,
+              "isBoss": false,
+              "manualPicks": [
+                {
+                  "name": "⭐️ Fafnir",
+                  "quantity": 1,
+                  "actorUuid": "Actor.P1uCkpNnxLRBNqZr"
+                }
+              ],
+              "roll": {}
+            },
+            "encounterResolved": {
+              "enemies": []
+            },
+            "options": {
+              "battleLog": {
+                "clearOnCreate": true,
+                "report": {
+                  "ok": true,
+                  "dbName": "EXFURSION Party"
+                }
+              },
+              "animations": {
+                "enabled": true
+              },
+              "combat": {
+                "autoStart": true
+              },
+              "unleash": {
+                "enabled": true
+              },
+              "battleSystem": "director",
+              "devMode": false
+            },
+            "layout": {
+              "preset": "party_line__enemy_rows",
+              "spawnZones": {},
+              "placements": {}
+            },
+            "spawnResult": {
+              "partyTokenIds": [],
+              "enemyTokenIds": [],
+              "tokenIdByActorUuid": {}
+            },
+            "combat": {
+              "combatId": null,
+              "combatUuid": null,
+              "started": false
+            },
+            "unleash": {
+              "checked": false,
+              "triggers": []
+            },
+            "rewards": {
+              "exp": {
+                "total": 0,
+                "byEnemy": []
+              },
+              "notes": []
+            },
+            "phases": {
+              "prompt": {
+                "status": "ok",
+                "at": "2026-06-20T09:50:57.313Z"
+              },
+              "directorManager": {
+                "status": "ok",
+                "at": "2026-06-20T09:51:04.485Z",
+                "initialState": "STANDALONE_REACTION_WINDOW",
+                "note": "PREP runs asynchronously after this; check FUCompanion.api.experimental.battleDirector.status() for progress."
+              }
+            },
+            "manager": {
+              "status": "ok",
+              "stoppedAt": "2026-06-20T09:51:04.485Z"
+            }
+          }
+        }
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": null,
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1773641643533,
+      "modifiedTime": 1782268079451,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "regions": [
+      {
+        "name": "Grass",
+        "_id": "PEEsF8qdbCcC0PLN",
+        "color": "#3ccc28",
+        "shapes": [
+          {
+            "type": "rectangle",
+            "x": 2.059119085396219,
+            "y": 2.03032969614236,
+            "width": 1315.7654838235103,
+            "height": 1058.2683925322574,
+            "rotation": 0,
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              1308.8103533996402,
+              988.0373581520105,
+              1269.119086919293,
+              954.0162725974274,
+              1223.757639513182,
+              958.2689082917502,
+              1110.3540209979042,
+              911.4899156541981,
+              995.5328572511855,
+              929.9180036629307,
+              918.9854147533731,
+              945.5110012087814,
+              794.2414343865676,
+              992.2899938463336,
+              743.2098060546925,
+              973.861905837601,
+              743.2098060546925,
+              954.0162725974274,
+              792.8238891551266,
+              919.995187042844,
+              746.0448965175744,
+              915.7425513485209,
+              712.0238109629911,
+              937.0057298201357,
+              628.3886423079739,
+              890.2267371825835,
+              605.7079186049182,
+              843.4477445450315,
+              628.3886423079739,
+              795.2512066760385,
+              676.5851801769668,
+              768.31784727866,
+              663.8272730939982,
+              714.4511284839031,
+              757.3852583691023,
+              669.089681077792,
+              782.9010725350397,
+              649.2440478376183,
+              709.1887205001092,
+              649.2440478376183,
+              612.7956447621232,
+              700.2756761694933,
+              594.3675567533905,
+              663.419500152028,
+              672.3325444826439,
+              582.6194219598926,
+              693.5957229542585,
+              550.0158816367504,
+              727.6168085088418,
+              538.6755197852225,
+              741.7922608232516,
+              513.159705619285,
+              628.3886423079739,
+              523.0825222393719,
+              612.7956447621232,
+              572.6966053398058,
+              544.7534736529565,
+              639.3212312175315,
+              537.6657474957516,
+              698.8581309380523,
+              600.0377376791544,
+              749.8897592699274,
+              564.59910689313,
+              810.8442042218891,
+              495.1393905525225,
+              816.514385147653,
+              412.92176712894616,
+              781.0757543616287,
+              402.99895050885937,
+              742.8020331127225,
+              418.59194805471,
+              714.4511284839031,
+              327.8690532424878,
+              619.4755979773579,
+              322.19887231672396,
+              654.9142287633822,
+              383.15331726868567,
+              718.7037641782259,
+              366.142774491394,
+              752.7248497328093,
+              394.4936791202135,
+              790.9985709817155,
+              292.4304224564635,
+              827.8547469991807,
+              221.55316088441498,
+              802.3389328332432,
+              190.36716579271354,
+              815.096839916212,
+              291.0128772250225,
+              877.4688300996148,
+              329.28659847392873,
+              844.8652897764724,
+              417.174402823269,
+              817.931930379094,
+              524.9078404127829,
+              842.0301993135905,
+              634.0588232337377,
+              929.9180036629307,
+              733.2869894346056,
+              1024.8935341694757,
+              751.7150774433385,
+              1036.2338960210036,
+              893.4696005874355,
+              980.9496319948057,
+              1091.9259329891715,
+              951.1811821345452,
+              1212.4172776616542,
+              993.7075390777745,
+              1291.7998106223486,
+              1022.0584437065938,
+              1308.8103533996402,
+              1036.2338960210036
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              337.7573951625461,
+              635.3262485444753,
+              283.8906763677892,
+              592.7998916012461,
+              205.9256886385358,
+              561.6138965095448,
+              221.5186861843864,
+              602.7227082213329,
+              344.845121319751,
+              660.8420627104127
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              156.31160553810173,
+              565.8665322038677,
+              113.78524859487254,
+              506.3296324833468,
+              146.38878891801494,
+              460.9681850772357,
+              221.5186861843864,
+              381.5856521165414,
+              167.65196738962948,
+              329.1364785532254,
+              170.4870578525115,
+              295.11539299864205,
+              249.86959081320583,
+              256.84167174973584,
+              215.8485052586226,
+              238.41358374100318,
+              268.29767882193846,
+              218.56795050082954,
+              313.65912622804956,
+              258.2592169811768,
+              264.0450431276156,
+              296.532938230083,
+              220.10114095294546,
+              320.63120716457956,
+              276.8029502105843,
+              378.75056165365936,
+              215.8485052586226,
+              446.79273276282606,
+              166.23442215818852,
+              493.5717254003781,
+              173.3221483153934,
+              533.2629918807253,
+              198.83796248133092,
+              557.3612608152218
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              638.4765745966189,
+              550.5280123779653,
+              553.4238607101606,
+              492.40865788888544,
+              552.0063154787196,
+              452.7173914085383,
+              482.546599138112,
+              417.27876062251397,
+              523.6554108499001,
+              414.44367015963206,
+              574.687039181775,
+              441.37702955701053,
+              634.223938902296,
+              390.3454012251355,
+              648.3993912167058,
+              364.829587059198,
+              645.5643007538237,
+              308.12777780155915,
+              671.0801149197613,
+              306.7102325701182,
+              598.7853081162717,
+              213.15224729501404,
+              669.6625696883203,
+              132.35216910287863,
+              605.8730342734765,
+              65.72754322515294,
+              577.5221296446572,
+              6.190643504632135,
+              628.553757976532,
+              -6.567263578336622,
+              644.1467555223827,
+              48.71700044786127,
+              733.452105103164,
+              109.67144539982309,
+              644.1467555223827,
+              207.48206636925016,
+              656.9046626053515,
+              254.2610590068022,
+              716.4415623258723,
+              288.28214456138556,
+              706.5187457057856,
+              340.73131812470143,
+              679.585386308407,
+              364.829587059198,
+              672.4976601512022,
+              408.77348923386813,
+              590.2800367276258,
+              456.97002710286114,
+              621.4660318193272,
+              495.24374835176735,
+              662.5748435311153,
+              530.6823791377917
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              839.7679974612369,
+              439.95948432556946,
+              807.1644571380945,
+              403.1033083081042,
+              865.2838116271743,
+              367.6646775220799,
+              825.5925451468271,
+              357.7418609019931,
+              797.2416405180078,
+              377.5874941421667,
+              740.5398312603689,
+              354.9067704391112,
+              743.3749217232508,
+              393.1804916880174,
+              809.9995476009764,
+              459.80511756574316,
+              809.9995476009764,
+              461.2226627971841
+            ],
+            "hole": true
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.CRagAwYLpsANGP9h",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": 1773654381982,
+              "modifiedTime": 1773654381982,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            },
+            "_id": "g7FlcpqXPU4GUdpH"
+          }
+        ]
+      },
+      {
+        "name": "Ground",
+        "_id": "xs7N7PR8T1KpxOsi",
+        "color": "#ea6d1a",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              591.6975819590667,
+              6.190643504632135,
+              597.3677628848308,
+              45.88190998497936,
+              673.9152053826432,
+              111.08899063126404,
+              658.3222078367925,
+              166.37325465746193,
+              604.4554890420355,
+              213.15224729501404,
+              645.5643007538237,
+              261.3487851640071,
+              651.2344816795877,
+              200.39434021204528,
+              733.452105103164,
+              105.41880970550017,
+              641.3116650595008,
+              54.3871813736252,
+              625.7186675136501,
+              -5.149718346895611
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              218.88318609009127,
+              238.6680614609515,
+              259.9919978018794,
+              223.07506391510083,
+              305.3534452079905,
+              257.0961494696841,
+              201.8726433127996,
+              320.88568488452785,
+              271.33235965340725,
+              377.5874941421667,
+              223.13582178441413,
+              434.28930339980565,
+              160.76383160101136,
+              499.4963840460903,
+              180.60946484118506,
+              546.2753766836424,
+              291.17799289358084,
+              601.5596407098403,
+              377.64825201148005,
+              673.8544475133299,
+              414.5044280289453,
+              709.2930782993542,
+              391.8237043258898,
+              740.4790733910554,
+              413.08688279750436,
+              783.0054303342847,
+              532.160682238546,
+              825.5317872775138,
+              615.7958508935634,
+              774.5001589456388,
+              574.687039181775,
+              722.0509853823228,
+              539.2484083957509,
+              683.7772641334166,
+              587.4449462647439,
+              612.900002561368,
+              635.641484133737,
+              551.9455576094063,
+              573.2694939503342,
+              492.40865788888544,
+              557.6764964044835,
+              482.48584126879865,
+              564.7642225616884,
+              452.7173914085383,
+              491.05187052675785,
+              421.53139631683683,
+              517.9852299241363,
+              415.861215391073,
+              560.5115868673654,
+              438.5419390941285,
+              598.7853081162717,
+              431.4542129369236,
+              652.6520269110287,
+              373.3348584478438,
+              652.6520269110287,
+              310.96286826444106,
+              672.4976601512022,
+              306.7102325701182,
+              634.223938902296,
+              244.33824238671542,
+              703.6836552429037,
+              278.3593279412988,
+              706.5187457057856,
+              344.9839538190244,
+              672.4976601512022,
+              363.41204182775704,
+              666.8274792254384,
+              403.1033083081042,
+              583.192310570421,
+              455.5524818714202,
+              651.2344816795877,
+              526.4297434434689,
+              749.0451026490147,
+              513.6718363605,
+              712.1889266315494,
+              543.4402862207605,
+              673.9152053826432,
+              566.121009923816,
+              624.3011222822091,
+              625.6579096443368,
+              584.609855801862,
+              663.931630893243,
+              611.5432151992405,
+              702.2053521421492,
+              709.3538361686675,
+              668.1842665875661,
+              740.5398312603689,
+              654.0088142731563,
+              783.066188203598,
+              651.1737238102744,
+              656.9046626053515,
+              713.545713993677,
+              671.0801149197613,
+              758.907161399788,
+              620.0484865878863,
+              788.6756112600485,
+              594.5326724219489,
+              851.0476014434512,
+              681.002931539848,
+              931.8476796355867,
+              715.0240170944313,
+              934.6827700984686,
+              775.9784620463932,
+              900.6616845438853,
+              798.6591857494487,
+              907.74941070109,
+              730.617014640282,
+              958.781039032965,
+              758.9679192691016,
+              992.8021245875484,
+              844.0206331555597,
+              987.1319436617846,
+              963.0944325966015,
+              943.1880414871143,
+              1109.1015914350214,
+              910.5845011639722,
+              1150.2104031468098,
+              933.2652248670277,
+              1238.0982074961498,
+              965.86876519017,
+              1277.789473976497,
+              965.86876519017,
+              1313.2281047625215,
+              1002.7249412076353,
+              1317.4807404568442,
+              1038.1635719936596,
+              1187.066579164275,
+              981.4617627360208,
+              1072.2454154175562,
+              941.7704962556734,
+              961.6768873651605,
+              957.3634938015241,
+              739.122286028928,
+              1035.3284815307775,
+              617.2133961250044,
+              910.5845011639722,
+              543.5010440900738,
+              836.8721491290416,
+              415.92197326038627,
+              807.1036992687812,
+              316.69380705951835,
+              848.2125109805693,
+              284.09026673637595,
+              875.1458703779479,
+              201.8726433127996,
+              814.1914254259859,
+              224.5533670158551,
+              805.6861540373402,
+              275.5849953477301,
+              828.3668777403957,
+              349.29734738266063,
+              825.5317872775138,
+              397.49388525165364,
+              790.0931564914895,
+              360.6377092341884,
+              751.8194352425833,
+              398.9114304830947,
+              710.7106235307951,
+              316.69380705951835,
+              627.0754548757777,
+              231.64109317305997,
+              604.3947311727222,
+              208.96036947000448,
+              560.4508289980522,
+              152.25856021236552,
+              556.1981933037291,
+              118.23747465778229,
+              499.4963840460903,
+              237.3112740988239,
+              388.92785599369455,
+              173.52173868398017,
+              320.88568488452785,
+              172.10419345253922,
+              295.36987071859033,
+              265.6621787276433,
+              257.0961494696841
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              749.0451026490147,
+              363.41204182775704,
+              787.3188238979209,
+              383.2576750679306,
+              836.932906998355,
+              359.15940613343406,
+              859.6136307014104,
+              364.829587059198,
+              797.2416405180078,
+              398.85067261378134,
+              835.515361766914,
+              439.95948432556946,
+              808.5820023695354,
+              449.88230094565625,
+              760.3854645005425,
+              400.2682178452223,
+              746.2100121861328,
+              396.01558215089943,
+              746.2100121861328,
+              371.9173132164029
+            ],
+            "hole": false
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "FootstepGround",
+            "type": "executeMacro",
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.v6CQ0x21Egd7LmcG",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": 1773654381985,
+              "modifiedTime": 1773654381985,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            },
+            "_id": "h6QjOFqFqMC5H5P9"
+          }
+        ]
+      }
+    ],
+    "walls": [
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1000,
+          350,
+          1063,
+          325
+        ],
+        "_id": "0qruwvj8sbrOETc6",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          925,
+          500,
+          900,
+          438
+        ],
+        "_id": "0xugzXLpP5F1dQZy",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          438,
+          363,
+          638,
+          313
+        ],
+        "_id": "1pEDnrclBg7rIR4g",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          63,
+          163,
+          25,
+          188
+        ],
+        "_id": "1xJdESZweD5ct04U",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          413,
+          950,
+          413,
+          1013
+        ],
+        "_id": "2mNG7YRvrWSmOpLa",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          213,
+          163,
+          175,
+          200
+        ],
+        "_id": "3N6SrBlu2WQt2dcD",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          788,
+          725,
+          738,
+          825
+        ],
+        "_id": "4LNz5A94EblIxgzA",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          600,
+          1013,
+          600,
+          950
+        ],
+        "_id": "4tZ5J3tCVBrzLXMM",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          838,
+          638,
+          863,
+          638
+        ],
+        "_id": "4yohVqryHR95z5ys",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          63,
+          125,
+          63,
+          163
+        ],
+        "_id": "6GMLoBwsbBeZ5shz",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          413,
+          1013,
+          513,
+          1050
+        ],
+        "_id": "6TS9aCDT1HUqDMlP",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          175,
+          200,
+          100,
+          175
+        ],
+        "_id": "7Zp29urwggweycg4",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1038,
+          238,
+          1013,
+          250
+        ],
+        "_id": "8B1B9kD983LFHa63",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          825,
+          838,
+          825,
+          888
+        ],
+        "_id": "8iV1pbCAEo6taEnS",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          413,
+          1013,
+          138,
+          913
+        ],
+        "_id": "8shEE4pZCAWXfBub",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          100,
+          50,
+          63,
+          125
+        ],
+        "_id": "9QUa39kskdPThMEa",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          513,
+          1050,
+          600,
+          1013
+        ],
+        "_id": "9yVc3PESdoi8IA4c",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          800,
+          838,
+          825,
+          838
+        ],
+        "_id": "AEuNOxyZrj7n9coi",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1063,
+          288,
+          1038,
+          238
+        ],
+        "_id": "CTxkstFCIEup6MRi",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          925,
+          100,
+          800,
+          138
+        ],
+        "_id": "DT4sorbnT9YQue5B",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          263,
+          150,
+          263,
+          125
+        ],
+        "_id": "ELoGw4id3jikxjh4",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1225,
+          563,
+          1313,
+          525
+        ],
+        "_id": "EqDhk9fSCw2QO9p6",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          0,
+          0,
+          0,
+          1063
+        ],
+        "_id": "FKzzT7dW0pNY0o9U",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          838,
+          563,
+          838,
+          638
+        ],
+        "_id": "Fb0IKqGaCq0b34cy",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1013,
+          250,
+          925,
+          100
+        ],
+        "_id": "G5bPnLDTB65sHyRV",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          963,
+          988,
+          1150,
+          1063
+        ],
+        "_id": "HUBkvXK2c40hd2ip",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          25,
+          188,
+          25,
+          213
+        ],
+        "_id": "IMAEKBOOUSUKRezK",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          738,
+          825,
+          800,
+          838
+        ],
+        "_id": "Kw0IBOt2wFMvg1Vu",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          200,
+          575,
+          250,
+          675
+        ],
+        "_id": "MEeUVmZo8FIyV5S6",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          638,
+          288,
+          588,
+          225
+        ],
+        "_id": "NX9OX53OzUHyPtBL",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          800,
+          463,
+          750,
+          525
+        ],
+        "_id": "OIqBIoMAZsrCei5v",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          38,
+          738,
+          38,
+          675
+        ],
+        "_id": "OLUXML05c39ryV2Z",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          938,
+          325,
+          1000,
+          350
+        ],
+        "_id": "PFZXQSDAAONx1vmY",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          988,
+          538,
+          925,
+          500
+        ],
+        "_id": "Pzhl4sPNU1Qced1C",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          900,
+          613,
+          988,
+          650
+        ],
+        "_id": "RZcMkpbZ7JGxAwa2",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          600,
+          950,
+          550,
+          900
+        ],
+        "_id": "SEKZ2CEXHfIwBTAx",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          863,
+          638,
+          900,
+          613
+        ],
+        "_id": "TpuWaPk54OQ27mkf",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          838,
+          263,
+          838,
+          338
+        ],
+        "_id": "VYCtJi8BBjenoMHO",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          913,
+          850,
+          913,
+          788
+        ],
+        "_id": "W8IIgjAxZUwR4Odp",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          588,
+          225,
+          463,
+          163
+        ],
+        "_id": "WXbYB5Z9qYEwaCk7",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          138,
+          738,
+          138,
+          788
+        ],
+        "_id": "WlWPHnRjXeQeVFNl",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          838,
+          338,
+          875,
+          350
+        ],
+        "_id": "XAJnFRuhiO1g170j",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          100,
+          175,
+          25,
+          213
+        ],
+        "_id": "XszHdALXMzffgaKA",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          400,
+          188,
+          338,
+          300
+        ],
+        "_id": "Zlo8vatBHAZqss9i",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          425,
+          200,
+          400,
+          188
+        ],
+        "_id": "bVff2ytetPdgColO",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          638,
+          313,
+          638,
+          288
+        ],
+        "_id": "bd7zEnZQZwv6NUOQ",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          438,
+          400,
+          438,
+          363
+        ],
+        "_id": "biIfd1IitbNIwCne",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          825,
+          888,
+          913,
+          850
+        ],
+        "_id": "bjzMf3cIF5WO5W7K",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          213,
+          75,
+          100,
+          50
+        ],
+        "_id": "c0sE8MiVWz3njpOG",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          913,
+          788,
+          875,
+          750
+        ],
+        "_id": "ckykQHfbjXocEqcn",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          750,
+          525,
+          775,
+          550
+        ],
+        "_id": "eWn76FJXnymmOroG",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          450,
+          875,
+          413,
+          950
+        ],
+        "_id": "ed9DHI0liTUiPLzX",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          138,
+          913,
+          0,
+          825
+        ],
+        "_id": "fmSuY3AD5kImlDrH",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          888,
+          1025,
+          825,
+          1063
+        ],
+        "_id": "gSAxE0TKj9V73DcH",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          213,
+          163,
+          263,
+          150
+        ],
+        "_id": "gj5pLfzjRMrxv6bQ",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          988,
+          650,
+          1050,
+          613
+        ],
+        "_id": "hA4cJu3LtUtWQ3U2",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          463,
+          163,
+          425,
+          200
+        ],
+        "_id": "hnf3dKfZtcgrCTQZ",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          900,
+          438,
+          800,
+          463
+        ],
+        "_id": "jk6x3nb0iScILYt3",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          800,
+          138,
+          750,
+          238
+        ],
+        "_id": "lG3MzBykPyq31e9n",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          363,
+          313,
+          363,
+          363
+        ],
+        "_id": "lM4ks9Pb502Kv0eu",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          875,
+          350,
+          938,
+          325
+        ],
+        "_id": "licvppgPXTqAQpwF",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          0,
+          1063,
+          1313,
+          1063
+        ],
+        "_id": "nQb8J51IR2NgZj4f",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1050,
+          588,
+          988,
+          538
+        ],
+        "_id": "nbmH6qvyguNyGuSb",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          363,
+          363,
+          438,
+          400
+        ],
+        "_id": "oTYFDifXCtcgs4kh",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          263,
+          125,
+          213,
+          75
+        ],
+        "_id": "qJU8cSquAkKntb70",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          775,
+          550,
+          838,
+          563
+        ],
+        "_id": "qa9wJQbJsTljyTTp",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          75,
+          625,
+          200,
+          575
+        ],
+        "_id": "qxcK72dHOMwUMmXl",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          550,
+          900,
+          450,
+          875
+        ],
+        "_id": "rIDJ08qLR2ACp5Nh",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          38,
+          675,
+          75,
+          625
+        ],
+        "_id": "rl8f6pFoEiDMzNc5",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          750,
+          238,
+          838,
+          263
+        ],
+        "_id": "s9J2TaX93G5ZOzEj",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          138,
+          788,
+          38,
+          738
+        ],
+        "_id": "smxzjRvDYndF44v9",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          875,
+          750,
+          788,
+          725
+        ],
+        "_id": "tf9FT9t0hX9oMCBM",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          888,
+          1025,
+          963,
+          988
+        ],
+        "_id": "twXHBw8KWPsGLVjK",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          338,
+          300,
+          363,
+          313
+        ],
+        "_id": "uQYDHKspjAFEswCb",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1313,
+          1063,
+          1313,
+          0
+        ],
+        "_id": "vzqjUwSQUkyOFRd8",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1050,
+          613,
+          1050,
+          588
+        ],
+        "_id": "yOTQNFATJB45G58Z",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1063,
+          325,
+          1063,
+          288
+        ],
+        "_id": "yRPqATIQiTZeZNRf",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          250,
+          675,
+          138,
+          738
+        ],
+        "_id": "yUFthZjSmKP8g6Vp",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 20,
+        "sight": 20,
+        "sound": 20,
+        "move": 20,
+        "c": [
+          1313,
+          0,
+          0,
+          0
+        ],
+        "_id": "zXMEgrkbbBuw6qUW",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      }
+    ]
+  }
+}

@@ -64,9 +64,17 @@ const ALIAS = {
   "triplenortheast": FORCE, "triplenorthwest": FORCE, "triplesoutheast": FORCE, "triplesouthwest": FORCE,
 };
 
+// A tile's display name is NOT a TileDocument schema field — Monk's Active Tiles
+// serves it from flags["monks-active-tiles"].name via a runtime getter. Offline we
+// read the raw doc, so `tileDoc.name` is always undefined and the name-first rule
+// below would silently degrade to texture-only matching.
+function tileName(tileDoc) {
+  return tileDoc?.flags?.["monks-active-tiles"]?.name ?? tileDoc?.name ?? "";
+}
+
 // Resolve a tile's type from its name + texture (exact mirror of inferType).
 function inferType(tileDoc) {
-  const name = String(tileDoc?.name ?? "").toLowerCase();
+  const name = String(tileName(tileDoc)).toLowerCase();
   const texSrc = String(tileDoc?.texture?.src ?? "");
   let texBase = "";
   try {

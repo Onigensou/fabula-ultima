@@ -283,12 +283,12 @@
       "hidden": true,
       "sort": 1,
       "_id": "78wFnVJGYdydtvLn",
-      "x": 803,
-      "y": 638,
+      "x": 743,
+      "y": 597,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "ucGUuFGzQMMmBGKE"
+        "DUDni5mv8nYw4ocg"
       ]
     },
     {
@@ -417,12 +417,12 @@
       "actorId": "LnlydRl7Ed7agd1g",
       "hidden": false,
       "sort": 2,
-      "x": 952,
-      "y": 416,
+      "x": 971,
+      "y": 876,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "DUDni5mv8nYw4ocg"
+        "ucGUuFGzQMMmBGKE"
       ],
       "_id": "82T7KWaUUkTIlq9O"
     },
@@ -629,11 +629,13 @@
       "hidden": false,
       "sort": 2,
       "_id": "a9kkj1PG9W5P2w1b",
-      "x": 638,
-      "y": 655,
+      "x": 987,
+      "y": 821,
       "elevation": 0,
       "locked": false,
-      "_regions": []
+      "_regions": [
+        "DUDni5mv8nYw4ocg"
+      ]
     },
     {
       "name": "Keren",
@@ -838,8 +840,8 @@
       "hidden": false,
       "sort": 2,
       "_id": "aQquAyHmURTP3G4B",
-      "x": 673,
-      "y": 715,
+      "x": 880,
+      "y": 852,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -964,8 +966,8 @@
       "hidden": false,
       "sort": 2,
       "_id": "bOAymRFO7pT1Z2TQ",
-      "x": 606,
-      "y": 711,
+      "x": 1203,
+      "y": 544,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -1175,12 +1177,12 @@
       "hidden": false,
       "sort": 2,
       "_id": "hvkV9H4CQUq0vZGR",
-      "x": 629,
-      "y": 613,
+      "x": 929,
+      "y": 814,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "DUDni5mv8nYw4ocg"
+        "ucGUuFGzQMMmBGKE"
       ]
     },
     {
@@ -1301,12 +1303,12 @@
       "hidden": false,
       "sort": 1,
       "_id": "tYUsYV6GmXAskLXp",
-      "x": 1094,
-      "y": 724,
+      "x": 532,
+      "y": 638,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "DUDni5mv8nYw4ocg"
+        "ucGUuFGzQMMmBGKE"
       ]
     },
     {
@@ -1436,12 +1438,12 @@
       "hidden": true,
       "sort": 1,
       "_id": "wcak0UGcSpkRKiFI",
-      "x": 718,
-      "y": 683,
+      "x": 678,
+      "y": 569,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "ucGUuFGzQMMmBGKE"
+        "DUDni5mv8nYw4ocg"
       ]
     }
   ],
@@ -1668,7 +1670,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780669400384,
-      "modifiedTime": 1783189346946,
+      "modifiedTime": 1783664982672,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

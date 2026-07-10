@@ -1,0 +1,1295 @@
+{
+  "sceneId": "eqTTEoLmYnUIOlfg",
+  "name": "Ruhig_Battlemap002",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 0,
+  "full": {
+    "folder": "cZFr8Jrws41eCfyO",
+    "name": "Ruhig_Battlemap002",
+    "active": false,
+    "navigation": false,
+    "navOrder": 1000000,
+    "navName": "Ruhig Village - Misty Field (Battle)",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Battlemap/Ruhig_Battlemap002.png",
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "anchorX": 0,
+      "anchorY": 0,
+      "fit": "fill",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 999,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/44f9773d26f710160a51aa16649c8169.webp",
+    "width": 1682,
+    "height": 788,
+    "padding": 0,
+    "initial": {
+      "x": 766,
+      "y": 391,
+      "scale": 1.3
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 110,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m",
+      "style": "solidLines",
+      "thickness": 1
+    },
+    "tokenVision": false,
+    "playlist": null,
+    "playlistSound": null,
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 100000,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "smalltime": {
+        "darkness-link": false,
+        "player-vis": "0",
+        "moonlight": false
+      },
+      "fxmaster": {
+        "effects": {
+          "core_clouds": {
+            "type": "clouds",
+            "options": {
+              "belowTokens": false,
+              "tint": {
+                "apply": false,
+                "value": "#FFFFFF"
+              },
+              "scale": 0.6,
+              "direction": 110,
+              "speed": 0.4,
+              "lifetime": 1.3,
+              "density": 0.032,
+              "alpha": 0.2,
+              "dropShadow": false,
+              "shadowOnly": false,
+              "shadowRotation": 315,
+              "shadowDistance": 70,
+              "shadowBlur": 2,
+              "shadowOpacity": 1
+            }
+          }
+        },
+        "filters": {},
+        "invert": true
+      },
+      "LockView": {
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": false,
+        "lockZoomInit": false,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": true,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "levels": {
+        "backgroundElevation": 0,
+        "lightMasking": true,
+        "weatherElevation": null,
+        "sceneLevels": []
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": []
+      },
+      "sequencer": {
+        "effects": []
+      },
+      "world": {
+        "pocSharedWindow": {
+          "counter": 0,
+          "lastBy": "Onigensou",
+          "lastAt": 1764728709780
+        },
+        "oniTradeSessions": {
+          "m94iY7TIiJ5VEUNN": {
+            "requestId": "m94iY7TIiJ5VEUNN",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": true,
+            "cancelledBySide": "initiator"
+          },
+          "2WBUszdb02KEuCMd": {
+            "requestId": "2WBUszdb02KEuCMd",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [],
+            "offerTarget": []
+          },
+          "pP5zT1yHMkUD6mWZ": {
+            "requestId": "pP5zT1yHMkUD6mWZ",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": []
+          },
+          "3RdEzUKAEFXa6JQD": {
+            "requestId": "3RdEzUKAEFXa6JQD",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "target",
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": []
+          },
+          "n1XJUUJp26YpWeZZ": {
+            "requestId": "n1XJUUJp26YpWeZZ",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "initiator",
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": []
+          },
+          "hqjsHMX2U6FIru5t": {
+            "requestId": "hqjsHMX2U6FIru5t",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": false,
+            "offerInitiator": [
+              {
+                "itemUuid": "Item.2dTUIP5vUweRF9ir",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Item.2dTUIP5vUweRF9ir",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Item.2dTUIP5vUweRF9ir",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Item.2dTUIP5vUweRF9ir",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Item.2dTUIP5vUweRF9ir",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Item.2dTUIP5vUweRF9ir",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              }
+            ],
+            "offerTarget": []
+          },
+          "oPJFziJ31h8CmA3Q": {
+            "requestId": "oPJFziJ31h8CmA3Q",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "target",
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": []
+          },
+          "6GxElTH0fD1xlFHi": {
+            "requestId": "6GxElTH0fD1xlFHi",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": false,
+            "offerInitiator": [
+              {
+                "itemUuid": "Item.2dTUIP5vUweRF9ir",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Item.2dTUIP5vUweRF9ir",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Item.2dTUIP5vUweRF9ir",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Item.2dTUIP5vUweRF9ir",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              }
+            ],
+            "offerTarget": []
+          },
+          "CW74BxtEwvueGQfK": {
+            "requestId": "CW74BxtEwvueGQfK",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": []
+          },
+          "UnvAG6CQPB0xsCG8": {
+            "requestId": "UnvAG6CQPB0xsCG8",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "target",
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": []
+          },
+          "kMz9CndYW1m74vTM": {
+            "requestId": "kMz9CndYW1m74vTM",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              }
+            ],
+            "offerTarget": []
+          },
+          "JRlXK097UHkhZxnn": {
+            "requestId": "JRlXK097UHkhZxnn",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              }
+            ],
+            "offerTarget": []
+          },
+          "B0WwB61mju2C6K10": {
+            "requestId": "B0WwB61mju2C6K10",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              }
+            ],
+            "offerTarget": []
+          },
+          "nle5Ug8dChAIUH1S": {
+            "requestId": "nle5Ug8dChAIUH1S",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.bzCRdAWbFufjwsgq",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png"
+              },
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              }
+            ],
+            "offerTarget": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              }
+            ]
+          },
+          "VxXN1qqPGSI1Couz": {
+            "requestId": "VxXN1qqPGSI1Couz",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [],
+            "offerTarget": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.VJviexPuMRFCLX3L",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png"
+              }
+            ],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 10
+          },
+          "gh1LOYPcMHTtX2yE": {
+            "requestId": "gh1LOYPcMHTtX2yE",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "initiator",
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "oU0i5b0ySZWwMVMj": {
+            "requestId": "oU0i5b0ySZWwMVMj",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "initiator",
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "r8hrszoJFVyBW0Gp": {
+            "requestId": "r8hrszoJFVyBW0Gp",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": true,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "target",
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": [],
+            "zenitOfferInitiator": 10,
+            "zenitOfferTarget": 0
+          },
+          "9sNIXEsWciU2wRBK": {
+            "requestId": "9sNIXEsWciU2wRBK",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "initiator",
+            "settled": false,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              },
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp"
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "XFBR7HsXtIpyR02x": {
+            "requestId": "XFBR7HsXtIpyR02x",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "pIv1ip6ArIMfNiy8": {
+            "requestId": "pIv1ip6ArIMfNiy8",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+                "quantity": 2
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "YQL3V4Poh3iQAT3j": {
+            "requestId": "YQL3V4Poh3iQAT3j",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+                "quantity": 2
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "5SjbHSFzOvD3fGCw": {
+            "requestId": "5SjbHSFzOvD3fGCw",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "ZpUsrVsQjBP5AgQE": {
+            "requestId": "ZpUsrVsQjBP5AgQE",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "HDAjPQLbvpoekt4A": {
+            "requestId": "HDAjPQLbvpoekt4A",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.bzCRdAWbFufjwsgq",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "xGQGS3wpMVvkmCsQ": {
+            "requestId": "xGQGS3wpMVvkmCsQ",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "initiator",
+            "settled": false,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.bzCRdAWbFufjwsgq",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 4
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "2WP5BMT5018y5jaY": {
+            "requestId": "2WP5BMT5018y5jaY",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.bzCRdAWbFufjwsgq",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 2
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "xPLCIcJVH43IIHrY": {
+            "requestId": "xPLCIcJVH43IIHrY",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+                "quantity": 1
+              },
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.bzCRdAWbFufjwsgq",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "04LUGhwKcpNrPIHR": {
+            "requestId": "04LUGhwKcpNrPIHR",
+            "createdAt": 1766646101943,
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "offers": {
+              "initiator": [],
+              "target": []
+            },
+            "zenit": {
+              "initiator": 0,
+              "target": 0
+            },
+            "confirmed": {
+              "initiator": false,
+              "target": false
+            },
+            "cancelledBy": null,
+            "settled": false
+          },
+          "oIfwBcP3MMpQCFv3": {
+            "requestId": "oIfwBcP3MMpQCFv3",
+            "createdAt": 1766646900317,
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "offers": {
+              "initiator": [],
+              "target": []
+            },
+            "zenit": {
+              "initiator": 0,
+              "target": 0
+            },
+            "confirmed": {
+              "initiator": false,
+              "target": false
+            },
+            "cancelledBy": null,
+            "settled": false
+          },
+          "psjrh9N7X5f0h0r3": {
+            "requestId": "psjrh9N7X5f0h0r3",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [],
+            "offerTarget": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+                "quantity": 2
+              },
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.VJviexPuMRFCLX3L",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 2
+              }
+            ],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "SPyP2ftyQyerWRkC": {
+            "requestId": "SPyP2ftyQyerWRkC",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [],
+            "offerTarget": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+                "quantity": 2
+              },
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.VJviexPuMRFCLX3L",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 2
+              }
+            ],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "oQvIamnsqrsCYBXy": {
+            "requestId": "oQvIamnsqrsCYBXy",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [],
+            "offerTarget": [],
+            "zenitOfferInitiator": 5,
+            "zenitOfferTarget": 0
+          },
+          "EeYw7N1hOvvQP00J": {
+            "requestId": "EeYw7N1hOvvQP00J",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 5
+          }
+        },
+        "pocSharedDropWindow": {
+          "items": [
+            {
+              "uuid": "Item.2dTUIP5vUweRF9ir",
+              "name": "Adrenaline Potion",
+              "typeLabel": "Item",
+              "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+              "droppedBy": "GM",
+              "droppedAt": 1764798247510
+            },
+            {
+              "uuid": "Item.2dTUIP5vUweRF9ir",
+              "name": "Adrenaline Potion",
+              "typeLabel": "Item",
+              "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+              "droppedBy": "GM",
+              "droppedAt": 1764798250098
+            },
+            {
+              "uuid": "Item.2dTUIP5vUweRF9ir",
+              "name": "Adrenaline Potion",
+              "typeLabel": "Item",
+              "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+              "droppedBy": "Okine",
+              "droppedAt": 1764798257878
+            },
+            {
+              "uuid": "Item.0QiniCtRtk5J0IvL",
+              "name": "Barrier Sphere",
+              "typeLabel": "Item",
+              "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/saturn.png",
+              "droppedBy": "Okine",
+              "droppedAt": 1764798260963
+            }
+          ]
+        },
+        "battleInit": {
+          "entrance": {
+            "broadcast": {
+              "runId": "bi_entrance_1771077821236_8cna85",
+              "battleSceneId": "kF0FvWefb8chuJ8u",
+              "partyTokenIds": [
+                "eJTImlK5qZlesafJ"
+              ],
+              "enemyTokenIds": [
+                "ZKpMmOI58ivePShB"
+              ],
+              "config": {
+                "partyRunMs": 650,
+                "enemyFadeMs": 550,
+                "partyStartOffsetX": 650
+              },
+              "startedAtMs": 1771077821236,
+              "expiresAtMs": 1771077830592
+            }
+          }
+        },
+        "battleEnd": {
+          "fx": {
+            "broadcast": {
+              "runId": "battleend_fx_1766913481951_iwpezo",
+              "sentAtIso": "2025-12-28T09:18:01.951Z",
+              "text": "BattleEnd FX camera broadcast",
+              "sceneId": "jvvy4FvYYmCJtLoz",
+              "action": {
+                "type": "PAN_CAMERA",
+                "lockId": "battleend_fx_1766913481951_iwpezo",
+                "durationMs": 3200,
+                "holdMs": 500,
+                "target": {
+                  "x": 873,
+                  "y": 292,
+                  "scale": 1.7
+                },
+                "token": {
+                  "id": "OZHsDAYhwy4GqDS6",
+                  "name": "Koshka"
+                }
+              },
+              "expiresAtMs": 1766910982466
+            }
+          }
+        }
+      },
+      "fabula-ultima-companion": {
+        "oniDungeon": {
+          "encounterTable": "",
+          "enemiesTable": "",
+          "battleMap": "",
+          "battleBGM": "",
+          "bossBGM": "",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "treasure": "",
+            "zenit": ""
+          },
+          "threatLevel": "medium"
+        },
+        "oniFabula": {
+          "general": {
+            "cameraFollowToken": false,
+            "sceneMode": "none",
+            "scanRadius": null,
+            "fastTravelEnabled": false,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "sceneVisited": false
+          },
+          "sceneNetwork": "[]"
+        },
+        "campSceneUuid": ""
+      },
+      "custom-system-builder": {},
+      "1000-fish": {},
+      "JB2A_DnD5e": {},
+      "_CodeMirror": {},
+      "_chatcommands": {},
+      "afk-ready-check": {},
+      "animated-spell-effects": {},
+      "barbrawl": {},
+      "better-rolltables": {},
+      "boss-loot-assets-free": {},
+      "chat-images": {},
+      "chat-portrait": {},
+      "color-picker": {},
+      "colorsettings": {},
+      "combat-chat": {},
+      "cursor-hider": {},
+      "curtain-animations": {},
+      "custom-css": {},
+      "df-architect": {}
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": "Scene.kF0FvWefb8chuJ8u",
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1781948044651,
+      "modifiedTime": 1781948625607,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "environment": {
+      "globalLight": {
+        "luminosity": 0,
+        "enabled": true,
+        "darkness": {
+          "max": 0,
+          "min": 0
+        },
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0
+      },
+      "darknessLevel": 0.15,
+      "darknessLock": false,
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0.05,
+        "saturation": 0.05,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "fog": {
+      "exploration": true,
+      "reset": 1704027409584,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "_id": "eqTTEoLmYnUIOlfg",
+    "lights": [
+      {
+        "_id": "w3rTh82k6LuPHUZG",
+        "x": 760,
+        "y": 441,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.25,
+          "angle": 360,
+          "bright": 4.03,
+          "color": "#729097",
+          "coloration": 1,
+          "dim": 8.05,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "fog",
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        }
+      }
+    ],
+    "walls": [
+      {
+        "_id": "8MJltmpO9zlEHR2S",
+        "c": [
+          12,
+          775,
+          1337,
+          775
+        ],
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "flags": {},
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "_id": "BFnqmt1VqoZeG2Gz",
+        "c": [
+          12,
+          12,
+          1337,
+          12
+        ],
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "flags": {},
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "_id": "IX3O3xHxuCdksEmd",
+        "c": [
+          1337,
+          12,
+          1337,
+          775
+        ],
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "flags": {},
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "_id": "JwdSrwRrkGnm3FqZ",
+        "c": [
+          12,
+          775,
+          12,
+          12
+        ],
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "flags": {},
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      }
+    ]
+  }
+}

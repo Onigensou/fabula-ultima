@@ -1,0 +1,302 @@
+{
+  "sceneId": "2kf6YmAKvAsOcmfi",
+  "name": "Eisendrache Burning",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 2,
+  "full": {
+    "folder": "7YQ4ZWxpYvijJPmb",
+    "name": "Eisendrache Burning",
+    "active": false,
+    "navigation": false,
+    "navOrder": 1200000,
+    "navName": "Eisendrache Burning",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Scene/Eisendrache_Scene003.png",
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "anchorX": 0,
+      "anchorY": 0,
+      "fit": "fill",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 999,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/ae651901a4bdd0e3c9c49c518a91b065.webp",
+    "width": 1682,
+    "height": 788,
+    "padding": 0,
+    "initial": {
+      "x": 808,
+      "y": 396,
+      "scale": 1.1985731272294886
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 100,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m",
+      "style": "solidLines",
+      "thickness": 1
+    },
+    "tokenVision": false,
+    "playlist": "POV9fioQ0Kkj7hKC",
+    "playlistSound": "BRdiTesv5j1lMqAN",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 200000,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "smalltime": {
+        "darkness-link": true,
+        "player-vis": "2",
+        "moonlight": false
+      },
+      "LockView": {
+        "lockPan": true,
+        "lockPanInit": true,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": true,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": false,
+          "hotbar": false,
+          "logo": false,
+          "navigation": false,
+          "players": false,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "fxmaster": {
+        "filters": {
+          "core_predator": {
+            "type": "predator",
+            "options": {
+              "noise": 0,
+              "period": 0,
+              "lineWidth": 0.1
+            }
+          }
+        },
+        "effects": {
+          "core_snowstorm": {
+            "type": "snowstorm",
+            "options": {
+              "scale": 0.5,
+              "direction": 215,
+              "speed": 0.6,
+              "lifetime": 1,
+              "density": 0.6,
+              "alpha": 0.3,
+              "tint": {
+                "apply": true,
+                "value": "#eabb39"
+              }
+            }
+          }
+        }
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": []
+      },
+      "levels": {
+        "backgroundElevation": 0,
+        "lightMasking": true,
+        "weatherElevation": null,
+        "sceneLevels": []
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fabula-ultima-companion": {
+        "oniDungeon": {
+          "encounterTable": "RollTable.4a7zHxWJgzlB8YZk",
+          "enemiesTable": "RollTable.TjiTEPcFQ4esnpCr",
+          "battleMap": "Scene.0cGatQVzULogtnYi",
+          "battleBGM": "DangerA",
+          "bossBGM": "Draconic Battle",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "treasure": "",
+            "zenit": ""
+          }
+        },
+        "oniFabula": {
+          "sceneNetwork": "[{\"name\":\"Eisendrache Map\",\"id\":\"Scene.bshIjNx79K5z2BXv\"},{\"name\":\"Eisendrache Inn\",\"id\":\"Scene.EHE80uBM54kYBgGm\"}]",
+          "general": {
+            "cameraFollowToken": false
+          }
+        }
+      },
+      "world": {
+        "battleInit": {},
+        "battleEnd": {}
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": "Scene.RDgq3mH0KOVAGPPf",
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.4",
+      "createdTime": 1767658159086,
+      "modifiedTime": 1781425619345,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "environment": {
+      "globalLight": {
+        "luminosity": 0,
+        "enabled": false,
+        "darkness": {
+          "max": 1,
+          "min": 0
+        },
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0
+      },
+      "darknessLevel": 0,
+      "darknessLock": false,
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "fog": {
+      "exploration": true,
+      "reset": 1704291191736,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "_id": "2kf6YmAKvAsOcmfi",
+    "lights": [
+      {
+        "x": 1081,
+        "y": 292,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.2,
+          "angle": 360,
+          "bright": 2,
+          "color": "#da8610",
+          "coloration": 1,
+          "dim": 5,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "flame",
+            "speed": 7,
+            "intensity": 3,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "9r1LyhUY0irZCVw2"
+      },
+      {
+        "_id": "xL2UODm50iVR9FhL",
+        "x": 231,
+        "y": 499,
+        "elevation": 0,
+        "rotation": 0,
+        "vision": false,
+        "config": {
+          "negative": false,
+          "priority": 0,
+          "alpha": 0.2,
+          "angle": 360,
+          "bright": 2,
+          "color": "#da8610",
+          "coloration": 1,
+          "dim": 5,
+          "attenuation": 0.5,
+          "luminosity": 0.5,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "animation": {
+            "type": "flame",
+            "speed": 7,
+            "intensity": 3,
+            "reverse": false
+          },
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "hidden": false,
+        "flags": {
+          "levels": {
+            "rangeTop": null
+          }
+        }
+      }
+    ]
+  }
+}

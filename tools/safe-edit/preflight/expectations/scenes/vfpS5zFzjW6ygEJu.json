@@ -1,0 +1,2113 @@
+{
+  "sceneId": "vfpS5zFzjW6ygEJu",
+  "name": "Eisendrache_Map008",
+  "tokens": [
+    {
+      "name": "Eidrachian Knight A",
+      "actorId": "N4hYREOor4xOIaT1",
+      "actorLink": false
+    },
+    {
+      "name": "Eidrachian Knight B",
+      "actorId": "N4hYREOor4xOIaT1",
+      "actorLink": false
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "Eidrachian Knight A",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Eidrachian%20Knights/EidrachianKnight_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": -1.28,
+        "scaleY": 1.28,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 0.9,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "N4hYREOor4xOIaT1",
+      "hidden": false,
+      "sort": 0,
+      "_id": "H7vU8uit00DVumWR",
+      "x": 185,
+      "y": 208,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "JxqaSIS2kSs3sOk5"
+      ]
+    },
+    {
+      "name": "Eidrachian Knight B",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Eidrachian%20Knights/EidrachianKnight_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.28,
+        "scaleY": 1.28,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 0.9,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "N4hYREOor4xOIaT1",
+      "hidden": false,
+      "sort": 0,
+      "x": 293,
+      "y": 212,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "JxqaSIS2kSs3sOk5"
+      ],
+      "_id": "JOZnFPDryGtqsTEj"
+    }
+  ],
+  "notes": [],
+  "tileCount": 2,
+  "full": {
+    "folder": "W6amZLAXw1nGn4gs",
+    "name": "Eisendrache_Map008",
+    "active": false,
+    "navigation": false,
+    "navOrder": 0,
+    "navName": "EIS_CastleGarden",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Eisendrache_Map_007.png",
+      "anchorX": 0,
+      "anchorY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "fit": "fill",
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/6b27a448f6750cd70b9d3ef6f94366ee.webp",
+    "width": 535,
+    "height": 810,
+    "padding": 0,
+    "initial": {
+      "x": 286,
+      "y": 512,
+      "scale": 3
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 50,
+      "style": "solidLines",
+      "thickness": 1,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m"
+    },
+    "tokenVision": false,
+    "fog": {
+      "exploration": false,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "environment": {
+      "darknessLevel": 0,
+      "darknessLock": false,
+      "globalLight": {
+        "enabled": false,
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "luminosity": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "playlist": "VrpdABUTSoREMDR5",
+    "playlistSound": "BR2cnoyk48unTodY",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 0,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": []
+      },
+      "levels": {
+        "backgroundElevation": 0,
+        "lightMasking": false,
+        "weatherElevation": null
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "LockView": {
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": false,
+        "editViewbox": false,
+        "forceInit": false,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        }
+      },
+      "fabula-ultima-companion": {
+        "oniFabula": {
+          "general": {
+            "cameraFollowToken": true
+          },
+          "sceneNetwork": "[{\"name\":\"Eisendrache Castle\",\"id\":\"Scene.pUnXd1fJPC3wnVMB\"}]"
+        },
+        "oniDungeon": {
+          "encounterTable": "",
+          "enemiesTable": "",
+          "battleMap": "",
+          "battleBGM": "",
+          "bossBGM": "",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "treasure": "",
+            "zenit": ""
+          }
+        }
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": "Scene.kaGY8DrtnCvzwLy4",
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.4",
+      "createdTime": 1766124303277,
+      "modifiedTime": 1781425619761,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "_id": "vfpS5zFzjW6ygEJu",
+    "regions": [
+      {
+        "name": "Water",
+        "color": "#28b9cc",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              69.61185437434955,
+              247.83990361155483,
+              52.6827324202153,
+              262.26100749841,
+              57.07176403795381,
+              281.0711430030036,
+              85.91397181166406,
+              291.73021978894,
+              120.3992202367524,
+              291.73021978894,
+              147.3604144600033,
+              271.039070733887,
+              141.7173738086252,
+              253.48294426293293,
+              127.92327443858989,
+              240.94285392653717,
+              90.30300342940257,
+              239.0618403760778,
+              72.11987244162873,
+              244.70488102745588
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              399.4162302215582,
+              280.4441384861838,
+              386.8761398851624,
+              292.98422882257955,
+              363.0499682460104,
+              292.98422882257955,
+              361.7959592123708,
+              309.91335077671386,
+              380.60609471696455,
+              309.91335077671386,
+              395.02719860381967,
+              324.9614591803888,
+              432.0204650961872,
+              329.9774953149471,
+              463.3706909371765,
+              321.82643659628985,
+              477.1647903072119,
+              307.40533270943473,
+              461.4896773867172,
+              286.7141836543817,
+              435.78249219710585,
+              280.4441384861838
+            ],
+            "hole": false
+          }
+        ],
+        "_id": "9t5mhXp4RD3P6e2C",
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "Execute Macro",
+            "type": "executeMacro",
+            "_id": "sb7z8RU5jfniPBi4",
+            "system": {
+              "events": [
+                "tokenMove"
+              ],
+              "uuid": "Macro.kyCFucvT7HsnPQks",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.331",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.4",
+              "createdTime": 1766196073353,
+              "modifiedTime": 1766196084863,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Grass",
+        "_id": "F0EzzXl4rDVYjnyF",
+        "color": "#98cc28",
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              0.20199912834453926,
+              139.99109698980652,
+              26.084812030666626,
+              169.40338437880894,
+              79.61517507865096,
+              142.34407998092672,
+              80.79166657421104,
+              115.28477558304452,
+              133.73378387441534,
+              117.63775857416472,
+              143.14571583889614,
+              169.40338437880894,
+              161.38133402007765,
+              191.75672279445075,
+              203.73502786024102,
+              183.52128232553008,
+              210.79397683360156,
+              245.2870858424351,
+              190.2053756612999,
+              254.69901780691583,
+              157.85185953339732,
+              251.16954332023556,
+              119.6158859276942,
+              229.99269640015385,
+              113.73342844989372,
+              216.46304420121274,
+              101.96851349429278,
+              211.1688324711923,
+              100.20377625095261,
+              185.87426531665025,
+              91.96833578203194,
+              211.75707821897237,
+              71.96798035751033,
+              222.3455016790132,
+              70.20324311417022,
+              233.52217088683412,
+              29.026040769566862,
+              258.2284922935961,
+              10.790422588385411,
+              275.8758647269975,
+              -3.3274753583357892,
+              278.2288477181177
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              -1.562738114995625,
+              291.1702541692788,
+              23.731829039546426,
+              291.7584999170588,
+              59.61481965412935,
+              323.5237702971814,
+              93.73307302537211,
+              328.8179820272018,
+              92.55658152981204,
+              370.5834301195852,
+              115.49816569323389,
+              406.46642073416814,
+              154.91063079449708,
+              418.8195814375491,
+              180.20519794903913,
+              422.3490559242294,
+              176.6757234623588,
+              452.9378348087919,
+              196.67607888688048,
+              457.05555504325224,
+              201.38204486912088,
+              497.6445116400755,
+              170.79326598455833,
+              494.70328290117527,
+              160.20484252451746,
+              463.52625826883275,
+              146.08694457779637,
+              451.1730975654517,
+              130.20430938773507,
+              471.1734529899734,
+              127.85132639661487,
+              493.52679140561514,
+              124.3218519099346,
+              501.1739861267558,
+              46.08516745518824,
+              519.4096043079373,
+              33.73200675180726,
+              498.23275738785554,
+              21.378846048426226,
+              516.4683755690371,
+              -18.03361905283697,
+              515.2918840734769,
+              -0.9744923672155892,
+              451.7613433132318,
+              63.14429414080962,
+              447.64362307877144,
+              59.61481965412935,
+              421.76081017644935,
+              29.026040769566862,
+              417.05484419420895,
+              24.908320535106554,
+              380.583607831846,
+              -8.033441340576132,
+              377.64237909294576
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              306.5575758606428,
+              254.5155152517907,
+              311.2635418428832,
+              363.34097859109954,
+              336.5581089974253,
+              377.4588765378207,
+              360.08793890862717,
+              396.87098621456227,
+              338.32284624076544,
+              415.69485014352375,
+              288.9102034272414,
+              434.5187140724853,
+              291.85143216614165,
+              504.519958058311,
+              360.08793890862717,
+              505.108203806091,
+              361.26443040418724,
+              486.28433987712947,
+              449.5012925711944,
+              480.401882399329,
+              473.6193682301764,
+              459.2250354792473,
+              486.5607746813374,
+              482.16661964266916,
+              508.91411309697924,
+              496.87276333717034,
+              508.32586734919914,
+              377.4588765378207,
+              540.6793834771019,
+              377.4588765378207,
+              541.2676292248818,
+              140.9840859302415,
+              525.9732397826007,
+              145.69005191248186,
+              506.5611301058591,
+              173.92584780592415,
+              476.56059696907664,
+              178.63181378816455,
+              448.32480107563435,
+              162.1609328503232,
+              448.32480107563435,
+              112.16004428901915,
+              389.5002262976295,
+              113.33653578457924,
+              388.32373480206945,
+              179.22005953594459,
+              359.4996931608472,
+              187.45550000486526,
+              333.61688025852504,
+              179.80830528372462,
+              323.61670254626426,
+              199.2204149604662,
+              324.79319404182434,
+              255.69200674735077
+            ],
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              399.4162302215582,
+              276.0551068684453,
+              378.7250811665051,
+              291.73021978894,
+              358.6609366282719,
+              294.23823785621914,
+              359.9149456619115,
+              306.15132367579514,
+              378.7250811665051,
+              316.81040046173155,
+              413.21032959159345,
+              329.3504907981273,
+              439.5445192980246,
+              330.6044998317669,
+              464.6246999708161,
+              321.19943207947006,
+              479.67280837449107,
+              306.77832819261494,
+              457.10064576897867,
+              281.6981475198234
+            ],
+            "hole": true
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "Execute Macro",
+            "type": "executeMacro",
+            "_id": "PaIgmH9Iq9RKWZN4",
+            "system": {
+              "events": [
+                "tokenMove"
+              ],
+              "uuid": "Macro.CRagAwYLpsANGP9h",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.331",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.4",
+              "createdTime": 1766195217107,
+              "modifiedTime": 1766195226295,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Ground",
+        "color": "#cc8028",
+        "shapes": [
+          {
+            "type": "rectangle",
+            "x": -2.403335165353667,
+            "y": -1.1076857364431163,
+            "width": 543.226991220627,
+            "height": 618.5416478205369,
+            "rotation": 0,
+            "hole": false
+          },
+          {
+            "type": "polygon",
+            "points": [
+              174.6490132413677,
+              288.67671422216534,
+              223.4272581731832,
+              289.9950451662685,
+              223.4272581731832,
+              365.79907445219783,
+              189.8098190985536,
+              387.5515350298993,
+              173.33068229726462,
+              401.39400994298205,
+              141.0315741667382,
+              397.4390171106727,
+              119.27911358903674,
+              385.5740386137446,
+              109.39163150826334,
+              362.50324709194007,
+              114.66495528467578,
+              327.5674770732074,
+              151.5782217195632,
+              314.3841676321762,
+              171.35318588111,
+              292.6317070544747
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              92.91249470697431,
+              324.93081518500117,
+              64.56837940875727,
+              320.3166568806402,
+              23.700120141560546,
+              289.3358796942169,
+              -1.3481677963987408,
+              289.3358796942169,
+              -2.666498740501879,
+              384.9148731416931,
+              25.018451085663685,
+              387.5515350298993,
+              25.018451085663685,
+              421.82813957658044,
+              61.27255204849945,
+              423.8056359927351,
+              63.25004846465413,
+              415.8956503281164,
+              72.47836507337598,
+              411.94065749580705,
+              75.1150269615822,
+              397.4390171106727,
+              84.34334357030406,
+              390.8473623901571,
+              95.54915659518059,
+              411.2814920237555,
+              106.09580414800553,
+              435.6706144896632,
+              106.75496962005707,
+              446.8764275145397,
+              85.0025090423556,
+              455.44557865121,
+              67.86420676901503,
+              450.8314203468491,
+              51.385069967726054,
+              444.89893109838505,
+              46.770911663365155,
+              436.32977996171473,
+              46.770911663365155,
+              447.53559298659127,
+              32.9284367502824,
+              444.23976562633345,
+              26.995947501818364,
+              447.53559298659127,
+              -2.666498740501879,
+              451.4905858189006,
+              -0.6890023243472001,
+              524.6579532166237,
+              19.085961837199648,
+              524.6579532166237,
+              23.040954669509006,
+              506.86048547123164,
+              35.56509863848862,
+              501.5871616948192,
+              49.407573551571375,
+              517.4071330240566,
+              87.63917093056182,
+              512.1338092476441,
+              126.52993378160386,
+              501.5871616948192,
+              123.2341064213461,
+              475.8797082848083,
+              150.91905624751155,
+              450.1722548747975,
+              166.07986210469744,
+              473.90221186865364,
+              170.69402040905834,
+              498.9504998066129,
+              201.67479759548166,
+              499.6096652786645,
+              200.35646665137858,
+              470.6063845083959,
+              187.83232268239897,
+              452.14975129095217,
+              177.94484060162551,
+              453.4680822350553,
+              176.62650965752243,
+              418.5323122163226,
+              138.39491227853193,
+              420.5098086324773,
+              111.36912792441802,
+              406.66733371939455,
+              92.91249470697431,
+              386.89236955784776,
+              90.2758328187681,
+              364.48074350809475
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              290.00297085039074,
+              429.73812524119916,
+              291.3213017944938,
+              517.4071330240566,
+              293.9579636827001,
+              517.4071330240566,
+              294.61712915475164,
+              502.9054926389223,
+              309.77793501193753,
+              501.5871616948192,
+              313.7329278442469,
+              544.4329173781705,
+              327.5754027573296,
+              543.1145864340674,
+              350.6461942791342,
+              535.8637662415002,
+              378.3311441052997,
+              529.9312769930362,
+              377.0128131611966,
+              516.0888020799534,
+              358.5561799437529,
+              499.6096652786645,
+              371.7394893847842,
+              487.7446867817364,
+              410.6302522358262,
+              481.81219753327235,
+              409.97108676377457,
+              455.44557865121,
+              365.8070001363201,
+              446.8764275145397,
+              349.98702880708265,
+              429.73812524119916,
+              317.68792067655625,
+              421.1689741045289
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              307.14127312373125,
+              251.10428231522644,
+              309.118769539886,
+              362.50324709194007,
+              342.7362086145155,
+              385.5740386137446,
+              352.62369069528893,
+              397.4390171106727,
+              324.2795753970719,
+              411.2814920237555,
+              313.07376237219535,
+              423.8056359927351,
+              371.7394893847842,
+              465.9922262040349,
+              409.97108676377457,
+              467.9697226201896,
+              440.29269847814635,
+              488.403852253788,
+              462.0451590558479,
+              475.2205428127568,
+              467.97764830431186,
+              458.7414060114678,
+              481.82012321739467,
+              475.8797082848083,
+              504.8909147391993,
+              498.9504998066129,
+              511.4825694597148,
+              504.88298905507696,
+              511.4825694597148,
+              382.27821125348686,
+              540.4858502299835,
+              382.27821125348686,
+              539.8266847579318,
+              157.50278528390493,
+              541.145015702035,
+              141.6828139546675,
+              528.6208717330554,
+              143.0011448987706,
+              518.0742241802304,
+              170.68609472493614,
+              497.6400945466321,
+              182.55107322186421,
+              466.6593173602088,
+              179.91441133365797,
+              454.7943388632807,
+              167.39026736467832,
+              455.45350433533224,
+              126.52200809748163,
+              448.8618496148166,
+              114.65702960055353,
+              390.1961226022278,
+              113.99786412850199,
+              391.51445354633097,
+              182.55107322186421,
+              367.12533108042317,
+              192.4385553026376,
+              338.1220503101546,
+              185.846900582122,
+              330.8712301175874,
+              187.16523152622514,
+              323.6204099250202,
+              206.28103021572036,
+              325.59790634117496,
+              253.74094420343266
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              205.67239888390435,
+              187.84549029338234,
+              208.30906077211063,
+              229.3729150326306,
+              203.69490246774973,
+              251.78454108238364,
+              178.64661452979038,
+              255.08036844264146,
+              152.27999564772796,
+              244.53372088981646,
+              123.93588034951091,
+              233.32790786493996,
+              114.70756374078911,
+              226.0770876723728,
+              102.1834197718095,
+              212.8937782313416,
+              97.5692614674486,
+              199.05130331825885,
+              97.5692614674486,
+              189.82298670953702,
+              91.6367722189845,
+              212.23461275929006,
+              79.77179372205643,
+              218.82626747980567,
+              81.74929013821111,
+              229.3729150326306,
+              64.61098786487054,
+              240.5787280575071,
+              34.94854162255035,
+              249.80704466622896,
+              9.900253684591064,
+              259.0353612749508,
+              2.6494334920239453,
+              282.76531826880694,
+              -17.125530669522846,
+              278.15115996444604,
+              -5.919717644646369,
+              123.90643950438103,
+              23.083563125622277,
+              166.7521951877324,
+              58.01933314435496,
+              162.1380368833715,
+              80.43095919410797,
+              143.68140366592783,
+              74.49846994564393,
+              117.97395025591699,
+              135.80085884643898,
+              116.65561931181385,
+              139.75585167874834,
+              157.52387857901059,
+              148.98416828747025,
+              187.18632482133077,
+              167.44080150491385,
+              194.43714501389795,
+              189.19326208261538,
+              189.82298670953702
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              72.74687695844852,
+              246.58589457791527,
+              53.30973693703504,
+              259.7529894311308,
+              55.19075048749443,
+              278.56312493572443,
+              80.27093116028595,
+              288.59519720484104,
+              107.85912990035666,
+              294.86524237303894,
+              143.59838735908454,
+              274.8010978348057,
+              142.344378325445,
+              254.10994877975273,
+              126.6692654049503,
+              242.19686296017676
+            ],
+            "hole": true
+          },
+          {
+            "type": "polygon",
+            "points": [
+              401.2972437720175,
+              276.0551068684453,
+              373.70904503194686,
+              291.1032152721202,
+              362.42296372919066,
+              292.3572243057598,
+              363.0499682460104,
+              306.15132367579514,
+              376.21706309922604,
+              306.15132367579514,
+              405.686275389756,
+              330.6044998317669,
+              434.52848316346626,
+              331.23150434858667,
+              460.86267286989744,
+              321.19943207947006,
+              477.1647903072119,
+              303.01630109169616,
+              451.45760511760056,
+              281.6981475198234
+            ],
+            "hole": true
+          }
+        ],
+        "_id": "JxqaSIS2kSs3sOk5",
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "visibility": 0,
+        "locked": false,
+        "flags": {},
+        "behaviors": [
+          {
+            "name": "Execute Macro",
+            "type": "executeMacro",
+            "_id": "PehAPe6Nvnb5aCfw",
+            "system": {
+              "events": [
+                "tokenMove"
+              ],
+              "uuid": "Macro.v6CQ0x21Egd7LmcG",
+              "everyone": false
+            },
+            "disabled": false,
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.331",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.4",
+              "createdTime": 1766194967425,
+              "modifiedTime": 1766194977026,
+              "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+            }
+          }
+        ]
+      }
+    ],
+    "walls": [
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          438,
+          184,
+          411,
+          193
+        ],
+        "_id": "2AY1eDZ8j1XNduHT",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          333,
+          184,
+          368,
+          184
+        ],
+        "_id": "4x7CqjLXF8Wki1lw",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          166,
+          508,
+          149,
+          464
+        ],
+        "_id": "6VvG9jsj457y0WB5",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          149,
+          193,
+          193,
+          184
+        ],
+        "_id": "EUKlOlKXw24OWJ60",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          166,
+          543,
+          166,
+          508
+        ],
+        "_id": "FLpc6G5Q961qclfi",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          551,
+          26,
+          551
+        ],
+        "_id": "Fy5thKY8Rw1B2bhk",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          446,
+          499,
+          446,
+          551
+        ],
+        "_id": "G4vsQ1q5fCPP24yl",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          368,
+          184,
+          411,
+          149
+        ],
+        "_id": "JZiVZZAvrWDtPrni",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          534,
+          551,
+          306,
+          551
+        ],
+        "_id": "Nf0vzYmpVGpShyZv",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          473,
+          175,
+          543,
+          149
+        ],
+        "_id": "P9DUaPYsspsPFr0v",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          306,
+          525,
+          306,
+          586
+        ],
+        "_id": "PqP2M7wKSGvNrC6n",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          499,
+          499,
+          473,
+          473
+        ],
+        "_id": "RRNUAITpnYAjoEIA",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          201,
+          586,
+          201,
+          525
+        ],
+        "_id": "S0w2alFO5nDNVEtK",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          228,
+          114,
+          306,
+          114
+        ],
+        "_id": "T0kA7MfFW5sx5PV9",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          306,
+          114,
+          306,
+          184
+        ],
+        "_id": "TAT8MbzFWMADtSCv",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          473,
+          473,
+          446,
+          499
+        ],
+        "_id": "TUNbwOkNkQ9dYGeY",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          193,
+          184,
+          210,
+          175
+        ],
+        "_id": "UY1rsj559ZcmMIXy",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          446,
+          551,
+          499,
+          551
+        ],
+        "_id": "UzpovIurhOJvYpP1",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          131,
+          490,
+          131,
+          543
+        ],
+        "_id": "VsKRAGpSQHUBvwS2",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          70,
+          175,
+          105,
+          149
+        ],
+        "_id": "Y8TTCcCdfewjlbpP",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          201,
+          543,
+          166,
+          543
+        ],
+        "_id": "akla75j4G7zVJEKp",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          499,
+          551,
+          499,
+          499
+        ],
+        "_id": "btT1Lc1dkb08LPwR",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          473,
+          245,
+          473,
+          193
+        ],
+        "_id": "cOz5rZSuQfmjvddX",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          411,
+          149,
+          446,
+          149
+        ],
+        "_id": "czSdLv1FP5mHZO3t",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          210,
+          175,
+          228,
+          175
+        ],
+        "_id": "gYyUUvKew6ryIaRM",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          131,
+          543,
+          166,
+          543
+        ],
+        "_id": "geg2dw876IaThsHb",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          543,
+          149,
+          534,
+          551
+        ],
+        "_id": "ie1xoBz6H9aOa5zM",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          473,
+          193,
+          438,
+          184
+        ],
+        "_id": "k74x8GuOYxoAwXiG",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          105,
+          149,
+          140,
+          149
+        ],
+        "_id": "kWhC3Q552cLbVH3P",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          411,
+          193,
+          411,
+          245
+        ],
+        "_id": "oR20zI9Gmw6ZFiZa",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          140,
+          149,
+          149,
+          193
+        ],
+        "_id": "rZHkFAtAossnELgs",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          228,
+          175,
+          228,
+          114
+        ],
+        "_id": "sKoHnHEmdzUm7a5m",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          219,
+          0,
+          551
+        ],
+        "_id": "uUhtXmcoaHEtdeJC",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          306,
+          551,
+          306,
+          586
+        ],
+        "_id": "w9gF3xHkIVq61erE",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          149,
+          481,
+          131,
+          490
+        ],
+        "_id": "x6pkYE4ICdNybu7F",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          166,
+          543,
+          26,
+          551
+        ],
+        "_id": "xXtKGtxEREGijVwc",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          411,
+          245,
+          429,
+          254
+        ],
+        "_id": "yA6DjIjmCkJNNOk5",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          429,
+          254,
+          473,
+          245
+        ],
+        "_id": "ySkv51vCZZbiiYwH",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          446,
+          149,
+          473,
+          175
+        ],
+        "_id": "yuybTjnOrOFi6Fzg",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          306,
+          184,
+          333,
+          184
+        ],
+        "_id": "zBT6h8BtgtrGDA42",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          0,
+          219,
+          70,
+          175
+        ],
+        "_id": "zfg1LI5pQuOnS45X",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "light": 0,
+        "sight": 0,
+        "sound": 0,
+        "move": 20,
+        "c": [
+          149,
+          464,
+          149,
+          481
+        ],
+        "_id": "zhVVGDD9I2AojEBw",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      }
+    ]
+  }
+}

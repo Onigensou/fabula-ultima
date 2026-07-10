@@ -1,0 +1,921 @@
+{
+  "sceneId": "T0Eo2forSEruOgO0",
+  "name": "Dragonslayer Title",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 1,
+  "full": {
+    "folder": "SPvX0PiXpGCzQ7YQ",
+    "name": "Dragonslayer Title",
+    "active": false,
+    "navigation": true,
+    "navOrder": 1100000,
+    "navName": "Title",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Title.png",
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "anchorX": 0,
+      "anchorY": 0,
+      "fit": "fill",
+      "alphaThreshold": 0
+    },
+    "foreground": null,
+    "foregroundElevation": 999,
+    "thumb": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/base64data/Scene/42564f4081013c432bcd0d7d09636d55.webp",
+    "width": 1682,
+    "height": 788,
+    "padding": 0,
+    "initial": {
+      "x": 764,
+      "y": 386,
+      "scale": 1.27
+    },
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 100,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m",
+      "style": "solidLines",
+      "thickness": 1
+    },
+    "tokenVision": false,
+    "playlist": "VrpdABUTSoREMDR5",
+    "playlistSound": "G7YMGjDtEfqDEV0I",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 100000,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "flags": {
+      "smalltime": {
+        "darkness-link": true,
+        "player-vis": "2",
+        "moonlight": false
+      },
+      "LockView": {
+        "lockPan": true,
+        "lockPanInit": true,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "collapse",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": true,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": false,
+          "hotbar": false,
+          "logo": false,
+          "navigation": false,
+          "players": false,
+          "sidebar": false
+        },
+        "editViewbox": false
+      },
+      "fxmaster": {
+        "invert": false,
+        "filters": {
+          "core_lightning": {
+            "type": "lightning",
+            "options": {
+              "frequency": 1645,
+              "spark_duration": 1310,
+              "brightness": 1.3
+            }
+          },
+          "core_predator": {
+            "type": "predator",
+            "options": {
+              "belowTokens": false,
+              "noise": 0,
+              "period": 0,
+              "lineWidth": 2
+            }
+          }
+        },
+        "effects": {}
+      },
+      "sequencer": {
+        "effects": []
+      },
+      "levels": {
+        "lightMasking": false,
+        "sceneLevels": [],
+        "backgroundElevation": 0,
+        "weatherElevation": null
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": []
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "world": {
+        "oniTradeSessions": {
+          "4t0BrKorA1pPMzXM": {
+            "requestId": "4t0BrKorA1pPMzXM",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.bzCRdAWbFufjwsgq",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "zlQXa0S3OMqUedTG": {
+            "requestId": "zlQXa0S3OMqUedTG",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.VJviexPuMRFCLX3L",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "SgVWlMwqOTTwOi5D": {
+            "requestId": "SgVWlMwqOTTwOi5D",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.VJviexPuMRFCLX3L",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 2
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "xbeSnyVTqkkbHOG7": {
+            "requestId": "xbeSnyVTqkkbHOG7",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.bzCRdAWbFufjwsgq",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 2
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "p5nBITx3tyX2qoMK": {
+            "requestId": "p5nBITx3tyX2qoMK",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+                "quantity": 2
+              },
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.bzCRdAWbFufjwsgq",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 2
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "7KaYFZFiBDUR1Xlr": {
+            "requestId": "7KaYFZFiBDUR1Xlr",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [],
+            "offerTarget": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.VJviexPuMRFCLX3L",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 1
+              }
+            ],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "SwY939aIzIHlX3cJ": {
+            "requestId": "SwY939aIzIHlX3cJ",
+            "initiatorUserId": "7hKw8KGsimboeDif",
+            "targetUserId": "eGu3tuw7HwJd2bpx",
+            "initiatorName": "Onigensou",
+            "targetName": "Okine",
+            "initiatorActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "targetActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.VJviexPuMRFCLX3L",
+                "name": "Elemental Shard",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+                "quantity": 2
+              },
+              {
+                "itemUuid": "Actor.XLS7jIqK8iAToGYM.Item.O1Jv9eU18oOLAYkF",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "CarHCOCJ6TT7Z87f": {
+            "requestId": "CarHCOCJ6TT7Z87f",
+            "initiatorUserId": "eGu3tuw7HwJd2bpx",
+            "targetUserId": "7hKw8KGsimboeDif",
+            "initiatorName": "Okine",
+            "targetName": "Onigensou",
+            "initiatorActorUuid": "Actor.EHyFlGpLQLriK65C",
+            "targetActorUuid": "Actor.XLS7jIqK8iAToGYM",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.EHyFlGpLQLriK65C.Item.wfTXdE64mFWcPFXm",
+                "name": "Adrenaline Potion",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Potion_of_Harmony_from_Final_Fantasy_XIV_icon.webp",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "WaOEtED8WBviz0FE": {
+            "requestId": "WaOEtED8WBviz0FE",
+            "initiatorUserId": "JQGNzKpDPHJmcUIW",
+            "targetUserId": "2vy7wrEUqBy0kzsU",
+            "initiatorName": "GM",
+            "targetName": "Blumairwen",
+            "initiatorActorUuid": null,
+            "targetActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "confirmInitiator": true,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "initiator",
+            "settled": false,
+            "offerInitiator": [],
+            "offerTarget": [],
+            "zenitOfferInitiator": 1000,
+            "zenitOfferTarget": 0
+          },
+          "wi2nv7Q2baT85zku": {
+            "requestId": "wi2nv7Q2baT85zku",
+            "initiatorUserId": "yL2PQxh3R9ddt0te",
+            "targetUserId": "2vy7wrEUqBy0kzsU",
+            "initiatorName": "Rinri",
+            "targetName": "Blumairwen",
+            "initiatorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "targetActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.dafTLBUscCDNgq8H.Item.SPgbsI7LijRor4gi",
+                "name": "Sage Robe",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "CLkV6dip4RzJBlgX": {
+            "requestId": "CLkV6dip4RzJBlgX",
+            "initiatorUserId": "yL2PQxh3R9ddt0te",
+            "targetUserId": "2vy7wrEUqBy0kzsU",
+            "initiatorName": "Rinri",
+            "targetName": "Blumairwen",
+            "initiatorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "targetActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.dafTLBUscCDNgq8H.Item.SPgbsI7LijRor4gi",
+                "name": "Sage Robe",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "hZLNIfbcy1IP7KIm": {
+            "requestId": "hZLNIfbcy1IP7KIm",
+            "initiatorUserId": "2vy7wrEUqBy0kzsU",
+            "targetUserId": "yL2PQxh3R9ddt0te",
+            "initiatorName": "Blumairwen",
+            "targetName": "Rinri",
+            "initiatorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "targetActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.HDkeIlGTkvlDBJXZ",
+                "name": "Sage Robe",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "5Tpm3UONTDZTcco6": {
+            "requestId": "5Tpm3UONTDZTcco6",
+            "initiatorUserId": "yL2PQxh3R9ddt0te",
+            "targetUserId": "2vy7wrEUqBy0kzsU",
+            "initiatorName": "Rinri",
+            "targetName": "Blumairwen",
+            "initiatorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "targetActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.dafTLBUscCDNgq8H.Item.SPgbsI7LijRor4gi",
+                "name": "Sage Robe",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "1PnEXEqplXGrO7jt": {
+            "requestId": "1PnEXEqplXGrO7jt",
+            "initiatorUserId": "2vy7wrEUqBy0kzsU",
+            "targetUserId": "yL2PQxh3R9ddt0te",
+            "initiatorName": "Blumairwen",
+            "targetName": "Rinri",
+            "initiatorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "targetActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.S2j0P5PUHsl2Aif5",
+                "name": "Sage Robe",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "8Nhn1Vdx0YTCRlOY": {
+            "requestId": "8Nhn1Vdx0YTCRlOY",
+            "initiatorUserId": "2vy7wrEUqBy0kzsU",
+            "targetUserId": "yL2PQxh3R9ddt0te",
+            "initiatorName": "Blumairwen",
+            "targetName": "Rinri",
+            "initiatorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "targetActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [],
+            "offerTarget": [
+              {
+                "itemUuid": "Actor.dafTLBUscCDNgq8H.Item.k9ZohfB9Cmv7OmNT",
+                "name": "Sage Robe",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+                "quantity": 1
+              }
+            ],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "V8Y5zpRol0hEF7d5": {
+            "requestId": "V8Y5zpRol0hEF7d5",
+            "initiatorUserId": "2vy7wrEUqBy0kzsU",
+            "targetUserId": "yL2PQxh3R9ddt0te",
+            "initiatorName": "Blumairwen",
+            "targetName": "Rinri",
+            "initiatorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "targetActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.uFaMRyFDRm3Bos9e",
+                "name": "Sage Robe",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "fuhXFua53JoflXxu": {
+            "requestId": "fuhXFua53JoflXxu",
+            "initiatorUserId": "yL2PQxh3R9ddt0te",
+            "targetUserId": "iLeUVmwqnze8ulOI",
+            "initiatorName": "Rinri",
+            "targetName": "Trinio",
+            "initiatorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "targetActorUuid": "Actor.Z4CFy505cD3nzl1W",
+            "confirmInitiator": false,
+            "confirmTarget": false,
+            "cancelled": true,
+            "cancelledBySide": "initiator",
+            "settled": false,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.dafTLBUscCDNgq8H.Item.hxPlRSwOxHShzdRK",
+                "name": "Dragonskull Helm",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          },
+          "UHTT4Zx2PKGjHjBf": {
+            "requestId": "UHTT4Zx2PKGjHjBf",
+            "initiatorUserId": "yL2PQxh3R9ddt0te",
+            "targetUserId": "iLeUVmwqnze8ulOI",
+            "initiatorName": "Rinri",
+            "targetName": "Trinio",
+            "initiatorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "targetActorUuid": "Actor.Z4CFy505cD3nzl1W",
+            "confirmInitiator": true,
+            "confirmTarget": true,
+            "cancelled": false,
+            "cancelledBySide": null,
+            "settled": true,
+            "offerInitiator": [
+              {
+                "itemUuid": "Actor.dafTLBUscCDNgq8H.Item.irzhS1BV9TsO7xlb",
+                "name": "Grape Juice",
+                "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/533.png",
+                "quantity": 1
+              }
+            ],
+            "offerTarget": [],
+            "zenitOfferInitiator": 0,
+            "zenitOfferTarget": 0
+          }
+        },
+        "oniDungeon": {
+          "encounterTable": "RollTable.WBYcvdriYPRoshtr",
+          "battleMap": "Scene.BjxSuUsGscBZHhwO",
+          "battleBGM": "",
+          "bossBGM": "",
+          "loot": {
+            "weapon": "RollTable.rdsLI2kvRL6HJG6l",
+            "armor": "RollTable.GIh8KVe3VKOcTWpw",
+            "accessory": "RollTable.lSwChlXZhqlOW1KZ",
+            "consumable": "RollTable.2uvaapXKSrc4kzS2",
+            "item": "RollTable.PlsNScUufsjaVA0q",
+            "treasure": "RollTable.lUQpCp5nSB0Ke3ns"
+          },
+          "enemiesTable": "RollTable.WBYcvdriYPRoshtr",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          }
+        },
+        "battleInit": {
+          "entrance": {
+            "broadcast": {
+              "runId": "bi_entrance_1778549276754_jj6o22",
+              "battleSceneId": "T0Eo2forSEruOgO0",
+              "partyTokenIds": [
+                "V2poY8NztFxRwBqE",
+                "VkquDFbRlE6Pj4l1",
+                "UYNUFVBEvblfH39O",
+                "vo5O2cj51O67KT4q"
+              ],
+              "enemyTokenIds": [
+                "IljOhjK3VAf7UNSI"
+              ],
+              "config": {
+                "partyRunMs": 650,
+                "enemyFadeMs": 550,
+                "partyStartOffsetX": 650
+              },
+              "startedAtMs": 1778549276754,
+              "expiresAtMs": 1778549278288
+            }
+          },
+          "latestPayload": {
+            "meta": {
+              "schemaVersion": 1,
+              "battleId": "Eb8JDYEgrLORnUPh",
+              "createdAt": "2026-07-10T03:36:58.312Z",
+              "debug": {
+                "enabled": true,
+                "trace": [
+                  {
+                    "phase": "prompt",
+                    "at": "2026-07-10T03:36:58.312Z",
+                    "note": "Created initial BattlePayload from GM prompt."
+                  },
+                  {
+                    "phase": "prompt",
+                    "at": "2026-07-10T03:36:58.312Z",
+                    "note": "Clear Battle Log: ok"
+                  }
+                ]
+              }
+            },
+            "context": {
+              "sourceSceneUuid": "Scene.T0Eo2forSEruOgO0",
+              "sourceSceneId": "T0Eo2forSEruOgO0",
+              "sourceSceneName": "Dragonslayer Title",
+              "battleSceneUuid": "Scene.jvvy4FvYYmCJtLoz",
+              "return": {
+                "enabled": true
+              },
+              "lean": false
+            },
+            "battleConfig": {
+              "encounterTableUuid": "RollTable.dVTBvuqiiIbsydxt",
+              "enemiesTableUuid": "RollTable.EggrsY05k3rIY9iS",
+              "battleSceneUuid": "Scene.jvvy4FvYYmCJtLoz",
+              "bgm": "DRG_Battle"
+            },
+            "battleConfigDefaults": {
+              "encounterTableUuidDefault": "RollTable.dVTBvuqiiIbsydxt",
+              "enemiesTableUuidDefault": "RollTable.EggrsY05k3rIY9iS",
+              "battleSceneUuidDefault": "Scene.jvvy4FvYYmCJtLoz",
+              "battleBgmDefault": "DRG_Battle",
+              "bossBgmDefault": "DRG_Boss"
+            },
+            "party": {
+              "mode": "dbPartyMembers",
+              "source": {
+                "gameName": "The Legend of Dragonslayer",
+                "resolvedAt": "2026-07-10T03:36:50.418Z"
+              },
+              "members": [
+                {
+                  "slot": 1,
+                  "actorUuid": "Actor.dafTLBUscCDNgq8H",
+                  "actorId": "dafTLBUscCDNgq8H",
+                  "name": "Hina",
+                  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/h1.png"
+                },
+                {
+                  "slot": 2,
+                  "actorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+                  "actorId": "gdJZ1L1kv5mjTTMr",
+                  "name": "Keren",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Portrait/Keren_Portrait001.png"
+                },
+                {
+                  "slot": 3,
+                  "actorUuid": "Actor.uJFaNQCSvwwsr2AW",
+                  "actorId": "uJFaNQCSvwwsr2AW",
+                  "name": "Blanche",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Portrait/Blanche_Portrait001.png"
+                },
+                {
+                  "slot": 4,
+                  "actorUuid": "Actor.Z4CFy505cD3nzl1W",
+                  "actorId": "Z4CFy505cD3nzl1W",
+                  "name": "Zarg",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Portrait/Zarg_Portrait.png"
+                }
+              ],
+              "missing": []
+            },
+            "battlePlan": {
+              "type": "default",
+              "randomChancePercent": 25,
+              "isBoss": false,
+              "initiativeMode": "rolled",
+              "engagement": "normal"
+            },
+            "encounterPlan": {
+              "mode": "rollRevealTable",
+              "difficultyTag": null,
+              "isBoss": false,
+              "manualPicks": [],
+              "roll": {}
+            },
+            "encounterResolved": {
+              "enemies": []
+            },
+            "options": {
+              "battleLog": {
+                "clearOnCreate": true,
+                "report": {
+                  "ok": true,
+                  "dbName": "EXFURSION Party"
+                }
+              },
+              "animations": {
+                "enabled": true
+              },
+              "combat": {
+                "autoStart": true
+              },
+              "unleash": {
+                "enabled": true
+              },
+              "battleSystem": "director",
+              "devMode": false
+            },
+            "layout": {
+              "preset": "party_line__enemy_rows",
+              "spawnZones": {},
+              "placements": {}
+            },
+            "spawnResult": {
+              "partyTokenIds": [],
+              "enemyTokenIds": [],
+              "tokenIdByActorUuid": {}
+            },
+            "combat": {
+              "combatId": null,
+              "combatUuid": null,
+              "started": false
+            },
+            "unleash": {
+              "checked": false,
+              "triggers": []
+            },
+            "rewards": {
+              "exp": {
+                "total": 0,
+                "byEnemy": []
+              },
+              "notes": []
+            },
+            "phases": {
+              "prompt": {
+                "status": "ok",
+                "at": "2026-07-10T03:36:58.312Z"
+              },
+              "directorManager": {
+                "status": "ok",
+                "at": "2026-07-10T03:37:28.257Z",
+                "initialState": "STANDALONE_REACTION_WINDOW",
+                "note": "PREP runs asynchronously after this; check FUCompanion.api.experimental.battleDirector.status() for progress."
+              }
+            },
+            "manager": {
+              "status": "ok",
+              "stoppedAt": "2026-07-10T03:37:28.257Z"
+            }
+          }
+        },
+        "battleEnd": {},
+        "oniMCTest": {
+          "runId": "mc_1766904168322_fdif9u",
+          "text": "Hello from GM \"GM\" → Scene \"Dragonslayer Title\"",
+          "sentAtMs": 1766904168322,
+          "sentAtIso": "2025-12-28T06:42:48.322Z"
+        },
+        "pocSharedWindow": {
+          "counter": 0,
+          "lastBy": "GM II",
+          "lastAt": 1771949992441
+        }
+      },
+      "oniDungeon": {
+        "encounterTable": "RollTable.WBYcvdriYPRoshtr",
+        "battleMap": "Scene.BjxSuUsGscBZHhwO",
+        "battleBGM": "",
+        "bossBGM": "",
+        "loot": {
+          "weapon": "RollTable.rdsLI2kvRL6HJG6l",
+          "armor": "RollTable.GIh8KVe3VKOcTWpw",
+          "accessory": "RollTable.lSwChlXZhqlOW1KZ",
+          "consumable": "RollTable.2uvaapXKSrc4kzS2",
+          "item": "RollTable.PlsNScUufsjaVA0q",
+          "treasure": "RollTable.lUQpCp5nSB0Ke3ns"
+        }
+      },
+      "fabula-ultima-companion": {
+        "oniDungeon": {
+          "encounterTable": "RollTable.dVTBvuqiiIbsydxt",
+          "enemiesTable": "RollTable.EggrsY05k3rIY9iS",
+          "battleMap": "Scene.jvvy4FvYYmCJtLoz",
+          "battleBGM": "DRG_Battle",
+          "bossBGM": "DRG_Boss",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "RollTable.rdsLI2kvRL6HJG6l",
+            "armor": "RollTable.GIh8KVe3VKOcTWpw",
+            "accessory": "RollTable.lSwChlXZhqlOW1KZ",
+            "consumable": "RollTable.2uvaapXKSrc4kzS2",
+            "item": "RollTable.PlsNScUufsjaVA0q",
+            "treasure": "RollTable.lUQpCp5nSB0Ke3ns",
+            "zenit": ""
+          },
+          "threatLevel": "medium"
+        },
+        "oniFabula": {
+          "sceneNetwork": "[{\"name\":\"World Map\",\"id\":\"Scene.ozujmDgZuATRvJXh\"},{\"name\":\"Intro\",\"id\":\"Scene.P5yHZSuyn6nCrTO9\"},{\"name\":\"Loading Screen\",\"id\":\"Scene.cVxIhCmCguNGxAZv\"}]",
+          "general": {
+            "cameraFollowToken": false,
+            "sceneMode": "title",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "sceneVisited": true,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
+          }
+        },
+        "campSceneUuid": ""
+      }
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": "Scene.7hHr7agaAmpJtPDt",
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.4",
+      "createdTime": 1762704862129,
+      "modifiedTime": 1783656563016,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "environment": {
+      "globalLight": {
+        "luminosity": 0,
+        "enabled": false,
+        "darkness": {
+          "max": 0.85,
+          "min": 0
+        },
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0
+      },
+      "darknessLevel": 0,
+      "darknessLock": false,
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "fog": {
+      "exploration": true,
+      "reset": 1704291191736,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "_id": "T0Eo2forSEruOgO0"
+  }
+}
