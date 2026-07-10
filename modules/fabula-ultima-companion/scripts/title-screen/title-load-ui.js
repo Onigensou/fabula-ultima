@@ -100,13 +100,24 @@
       this._waitEl         = null;
       this._sel            = null;
       this._count          = 0;
-      this._required       = TS.REQUIRED_PLAYERS;
+      this._required       = this._eligible?.length || TS.REQUIRED_PLAYERS;
       this._votes          = {};   // { userId: slotId } — mirrors GM's vote table
+      this._eligible       = [];   // userIds allowed to vote — mirrors GM's roster
       this._progressRaf    = 0;
       this._progress       = 0;
       // True while the success message is showing — prevents canvas hooks from
       // closing the overlay before the 3-second hold completes.
       this._showingSuccess = false;
+      // Latches on the first PROCEED so a duplicate broadcast can't restart the
+      // success hold (or race _closeWait against it).
+      this._proceeded      = false;
+    }
+
+    // Mirrors _mayVote() in title-socket.js: an empty roster means the party
+    // could not be resolved, in which case everyone votes rather than nobody.
+    _mayVote() {
+      if (!this._eligible?.length) return true;
+      return this._eligible.includes(game.user?.id);
     }
 
     // ── Open: wire into SS.UI ────────────────────────────────────────────────────
@@ -119,9 +130,19 @@
       _injectWaitCSS();
       this._sel            = null;
       this._count          = 0;
-      this._required       = TS.REQUIRED_PLAYERS;
+      this._required       = this._eligible?.length || TS.REQUIRED_PLAYERS;
       this._votes          = {};
       this._showingSuccess = false;
+      this._proceeded      = false;
+
+      // Roster may have changed since ready (someone joined, a party member was
+      // swapped). No-op off the primary GM; the result reaches us by broadcast.
+      TS.Socket.refreshRoster();
+
+      // Non-voters (co-GM, spectators) watch the ready-check but never get a
+      // slot picker. Handing them one would be a dead control: their vote is
+      // dropped by the aggregator and they would sit in the wait panel forever.
+      if (!this._mayVote()) { this._showSpectate(); return; }
 
       SS.UI.openInMode("load");
       // Lift the file selector above Foundry app windows (menu stays at z-index 60)
@@ -175,20 +196,32 @@
 
     // ── Waiting panel ────────────────────────────────────────────────────────────
 
-    _showWait(conflictMsg = null) {
+    // Spectator view of the ready-check: same panel, live dots and counter, but
+    // no slot label and no controls beyond leaving.
+    _showSpectate() {
+      this._showWait(null, { spectating: true });
+    }
+
+    _showWait(conflictMsg = null, { spectating = false } = {}) {
       _injectWaitCSS();
       if (this._waitEl) this._waitEl.remove();
 
       const SS  = globalThis.SaveSystem;
       const d   = this._sel ? SS?.Storage?.getSlot?.(this._sel) : null;
-      const lbl = d?.label ?? `Slot ${this._sel ?? "?"}`;
+      const lbl = spectating ? "SPECTATING" : (d?.label ?? `Slot ${this._sel ?? "?"}`);
 
       const dots = this._renderDots();
 
-      const body = conflictMsg
-        ? `<div class="ts-conflict-msg ss-breathe">${conflictMsg}</div>`
-        : `<div class="ts-wait-msg ss-breathe">Waiting for other players…</div>
-           <button class="ss-back-btn" id="ts-wait-cancel" style="width:100%;margin-top:4px;">◄ CHANGE CHOICE</button>`;
+      let body;
+      if (conflictMsg) {
+        body = `<div class="ts-conflict-msg ss-breathe">${conflictMsg}</div>`;
+      } else if (spectating) {
+        body = `<div class="ts-wait-msg ss-breathe">The party is choosing a file…</div>
+                <button class="ss-back-btn" id="ts-wait-leave" style="width:100%;margin-top:4px;">◄ BACK</button>`;
+      } else {
+        body = `<div class="ts-wait-msg ss-breathe">Waiting for other players…</div>
+                <button class="ss-back-btn" id="ts-wait-cancel" style="width:100%;margin-top:4px;">◄ CHANGE CHOICE</button>`;
+      }
 
       this._waitEl = document.createElement("div");
       this._waitEl.id = "ts-wait-overlay";
@@ -197,7 +230,7 @@
           <div class="ts-wait-title">✦  READY CHECK  ✦</div>
           <div class="ts-wait-slot">${lbl}</div>
           <div class="ts-wait-counter">${this._count} / ${this._required}</div>
-          <div class="ts-wait-dots">${dots}</div>
+          ${dots}
           ${body}
         </div>`;
       document.body.appendChild(this._waitEl);
@@ -210,6 +243,12 @@
         this._closeWait();
         this.open();
       });
+
+      // Spectators never voted, so there is nothing to cancel — just leave.
+      document.getElementById("ts-wait-leave")?.addEventListener("click", () => {
+        sfx("cancel");
+        this._closeWait();
+      });
     }
 
     _closeWait() {
@@ -218,24 +257,32 @@
       this._waitEl = null;
     }
 
+    // One dot per eligible voter, GM first, labelled with who it is — so a
+    // table waiting on a ready-check can see WHICH seat is still out.
+    // Falls back to anonymous P1..Pn when no roster has arrived yet.
     _renderDots() {
-      const gmVoted = Object.keys(this._votes).some(uid => game.users.get(uid)?.isGM);
-      const playerVoteCount = Object.keys(this._votes).filter(uid => !game.users.get(uid)?.isGM).length;
-      const playerSlots = this._required - 1;
-
-      const gmDot = `<div class="ts-dot-group">
-        <div class="ts-wait-dot ts-wait-dot-gm${gmVoted ? " ready" : ""}"></div>
-        <div class="ts-dot-label">GM</div>
-      </div>`;
-
-      const playerDots = Array.from({ length: playerSlots }, (_, i) =>
+      const dot = (voted, isGM, label) =>
         `<div class="ts-dot-group">
-          <div class="ts-wait-dot${i < playerVoteCount ? " ready" : ""}"></div>
-          <div class="ts-dot-label">P${i + 1}</div>
-        </div>`
-      ).join("");
+          <div class="ts-wait-dot${isGM ? " ts-wait-dot-gm" : ""}${voted ? " ready" : ""}"></div>
+          <div class="ts-dot-label">${label}</div>
+        </div>`;
 
-      return `<div class="ts-wait-dots">${gmDot}${playerDots}</div>`;
+      let dots;
+      if (this._eligible?.length) {
+        const users = this._eligible
+          .map(id => game.users.get(id))
+          .filter(Boolean)
+          .sort((a, b) => (b.isGM - a.isGM) || a.name.localeCompare(b.name));
+        dots = users.map(u => dot(u.id in this._votes, u.isGM, u.isGM ? "GM" : u.name)).join("");
+      } else {
+        const gmVoted    = Object.keys(this._votes).some(uid => game.users.get(uid)?.isGM);
+        const playerVotes = Object.keys(this._votes).filter(uid => !game.users.get(uid)?.isGM).length;
+        dots = dot(gmVoted, true, "GM") +
+          Array.from({ length: Math.max(0, this._required - 1) },
+            (_, i) => dot(i < playerVotes, false, `P${i + 1}`)).join("");
+      }
+
+      return `<div class="ts-wait-dots">${dots}</div>`;
     }
 
     _refreshWait() {
@@ -247,7 +294,10 @@
 
     // ── Socket event handlers ────────────────────────────────────────────────────
 
-    onVotesUpdate({ votes, count, required } = {}) {
+    onVotesUpdate({ votes, count, required, eligible } = {}) {
+      // The roster is worth keeping even with no wait panel up — it is
+      // broadcast on connect/disconnect, not just while someone is voting.
+      this._eligible = eligible ?? this._eligible;
       if (!this._waitEl) return;
       this._votes    = votes    ?? this._votes;
       this._count    = count    ?? this._count;
@@ -270,6 +320,9 @@
     }
 
     async onProceed(_payload) {
+      if (this._proceeded) return;
+      this._proceeded = true;
+
       await this._finishProgress();
 
       // Show success message and hold for 3 seconds
@@ -287,17 +340,27 @@
       this._closeWait();
     }
 
-    onConflict(_payload) {
+    // Serves two distinct failures. A vote disagreement carries `votes`; a
+    // failed load carries `error` — say which, rather than telling the table
+    // they disagreed when the save actually failed to apply.
+    onConflict({ error } = {}) {
       sfx("fail");
       cancelAnimationFrame(this._progressRaf);
-      this._progress = 0;
-      this._sel      = null;
-      this._showWait("PLAYERS CHOSE DIFFERENT FILES!<br>PLEASE CHOOSE AGAIN.");
+      this._progress  = 0;
+      this._sel       = null;
+      this._proceeded = false;
+
+      const msg = error
+        ? `LOAD FAILED!<br>${String(error).toUpperCase()}`
+        : "PLAYERS CHOSE DIFFERENT FILES!<br>PLEASE CHOOSE AGAIN.";
+      this._showWait(msg);
+
+      // Hold a real error on screen longer — it names the domain that failed.
       setTimeout(() => {
         if (!this._waitEl) return;
         this._closeWait();
         this.open();
-      }, 2500);
+      }, error ? 6000 : 2500);
     }
 
     // ── Progress bar (mirrors save-ui PS1 pattern) ───────────────────────────────

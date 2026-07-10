@@ -8,8 +8,10 @@
   TS.SOCKET_CH  = `module.${TS.MODULE_ID}`;
   TS.SCENE_MODE = "title";
 
-  // Total votes required before the ready-check evaluates — includes players AND GM.
-  // Default: 4 players + 1 GM = 5. Adjust to match your session headcount.
+  // FALLBACK ONLY. The real quorum is derived at runtime by title-socket.js —
+  // the primary GM plus every active user who owns a party-member actor. This
+  // number is used only when that roster cannot be resolved (no party actor),
+  // where a wrong count beats a lobby that can never reach quorum.
   TS.REQUIRED_PLAYERS = 5;
 
   TS.MSG = Object.freeze({
