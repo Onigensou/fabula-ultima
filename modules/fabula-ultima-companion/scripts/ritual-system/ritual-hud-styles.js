@@ -221,7 +221,7 @@ export function injectRitualStyles() {
   white-space: nowrap; pointer-events: none;
   font: inherit; letter-spacing: inherit;
   color: transparent;                       /* only the stroke of this copy shows */
-  -webkit-text-stroke: calc(var(--rm-stroke-w, 1.3px) * 2) var(--rm-stroke, #ffe14d);
+  -webkit-text-stroke: calc(var(--rm-stroke-w, 1px) * 2) var(--rm-stroke, #ffe14d);
   /* The glow belongs on the layer behind the fill, or it washes the letters out.
      The inner blur is tight so it reads as a rim light on the outline rather
      than a haze around the word. */

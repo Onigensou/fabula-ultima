@@ -39,7 +39,7 @@ const KNOBS = [
 
   // "Outline" is the width VISIBLE OUTSIDE the glyph. The stylesheet doubles it,
   // because the fill hides the inner half of the stroke it is drawn from.
-  { k: "--rm-stroke-w", label: "Outline (outer)", type: "range", def: 1.3,  min: 0,  max: 3,  step: 0.05, unit: "px" },
+  { k: "--rm-stroke-w", label: "Outline (outer)", type: "range", def: 1,    min: 0,  max: 3,  step: 0.05, unit: "px" },
   { k: "--rm-fat",      label: "Glyph fatten",   type: "range",  def: 0,    min: 0,  max: 1.5, step: 0.05, unit: "px" },
   { k: "--rm-glow-1",   label: "Glow inner blur",type: "range",  def: 2,    min: 0,  max: 20, step: 1,    unit: "px" },
   { k: "--rm-glow-2",   label: "Glow outer blur",type: "range",  def: 11,   min: 0,  max: 40, step: 1,    unit: "px" },
