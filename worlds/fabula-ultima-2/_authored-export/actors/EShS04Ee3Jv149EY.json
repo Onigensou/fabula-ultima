@@ -274,7 +274,7 @@
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
+          "animation_script": "<p>// @desc Spear: caster lunges/thrusts toward target and snaps back (melee, oni)</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    reachFrac: 0.62,    // how far toward the target the thrust travels</p><p>    outMs: 150,         // lunge-out (fast)</p><p>    holdMs: 70,         // pause at extension</p><p>    backMs: 200,        // recover</p><p>    sparkSize: 130,     // impact spark px</p><p>    sparkColor: \"#ffffff\",</p><p>    shakeMs: 160,</p><p>    shakeIntensity: 5,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const caster = oni.caster;</p><p>    const target = oni.targets[0] || null;</p><p>    if (!caster || !target) { oni.fireDone(); return; }</p><p></p><p>    const layer = oni.layer({ zIndex: 95000 });</p><p>    const clone = oni.cloneToken(caster, { parent: layer });</p><p>    if (!clone) { oni.fireDone(); return; }</p><p>    oni.hideToken(caster);</p><p></p><p>    const home = { x: caster.center.x, y: caster.center.y };</p><p>    const dx = target.center.x - home.x, dy = target.center.y - home.y;</p><p>    const dist = Math.hypot(dx, dy) || 1;</p><p>    const ux = dx / dist, uy = dy / dist;</p><p>    const reach = Math.max(0, Math.min(dist * cfg.reachFrac, dist - caster.w * 0.4));</p><p></p><p>    await oni.tween({</p><p>      duration: cfg.outMs, ease: oni.EASE.inQuad,</p><p>      onUpdate: (v) =&gt; clone.position.set(home.x + ux * reach * v, home.y + uy * reach * v),</p><p>    });</p><p></p><p>    const spark = new PIXI.Sprite(oni.radialTexture(cfg.sparkColor, 'rgba(0,0,0,0)', { size: 128 }));</p><p>    spark.anchor.set(0.5);</p><p>    spark.blendMode = PIXI.BLEND_MODES.ADD;</p><p>    spark.position.set(home.x + ux * reach, home.y + uy * reach);</p><p>    layer.addChild(spark);</p><p>    oni.screenshake({ duration: cfg.shakeMs, intensity: cfg.shakeIntensity });</p><p>    oni.fireDone();</p><p>    oni.tween({ from: 0, to: 1, duration: 240, ease: oni.EASE.outCubic,</p><p>      onUpdate: (v) =&gt; { spark.width = spark.height = cfg.sparkSize * (0.4 + v); spark.alpha = 1 - v; } });</p><p></p><p>    await oni.wait(cfg.holdMs);</p><p>    await oni.tween({</p><p>      duration: cfg.backMs, ease: oni.EASE.outCubic,</p><p>      onUpdate: (v) =&gt; clone.position.set(home.x + ux * reach * (1 - v), home.y + uy * reach * (1 - v)),</p><p>    });</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/ozealot-spear\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.outMs + 4000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
           "check_bonus": "5",
           "class": "NPC",
           "cost": "-",
@@ -401,6 +401,80 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "PjjEzucfLoxYb3TX",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783733814111,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "2"
+            },
+            {
+              "key": "magic_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "2"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "PjjEzucfLoxYb3TX",
+              "originalParentId": "yQKwY825PAWNZjEQ",
+              "originalUuid": "Actor.EShS04Ee3Jv149EY.Item.yQKwY825PAWNZjEQ.ActiveEffect.PjjEzucfLoxYb3TX"
+            },
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png",
+          "name": "Flying",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
+          "system": {
+            "tags": [
+              "flying"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -419,7 +493,7 @@
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
+          "animation_script": "<p>// @desc Jump: squash + leap off the top of the screen; token goes invisible with a</p><p>//       ground shadow, held until Flying is removed (Stoneshatter Dive / lose Flying). (oni)</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    squashMs: 130, squashAmt: 0.34,</p><p>    leapMs: 360, riseFrac: 1.45, stretch: 0.28,</p><p>    shadowScaleX: 1.0, shadowScaleY: 0.52, shadowAlpha: 0.45,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  const tdoc = casterUuid ? await fromUuid(casterUuid) : null;</p><p>  const token = tdoc?.object ?? null;</p><p></p><p>  // Register the Flying-removal come-down hook ONCE (GM-only; this outer runs on GM).</p><p>  if (globalThis.__ozealotAirborneHook == null) {</p><p>    globalThis.__ozealotAirborneHook = Hooks.on(\"deleteActiveEffect\", async (effect) =&gt; {</p><p>      try {</p><p>        if (effect?.name !== \"Flying\") return;</p><p>        if (globalThis.__ozealotDiving) return; // Dive owns its own visual restore</p><p>        const actor = effect.parent;</p><p>        for (const t of (canvas.tokens?.placeables ?? [])) {</p><p>          const flag = t.document.getFlag(\"world\", \"ozealotAirborne\");</p><p>          if (!flag) continue;</p><p>          if (t.actor !== actor &amp;&amp; t.document.actorId !== actor?.id) continue;</p><p>          await t.document.update({ alpha: 1 });</p><p>          try {</p><p>            const sc = game.scenes.get(flag.sceneId) ?? canvas.scene;</p><p>            if (flag.drawingId &amp;&amp; sc) await sc.deleteEmbeddedDocuments(\"Drawing\", [flag.drawingId]);</p><p>          } catch (e) {}</p><p>          await t.document.unsetFlag(\"world\", \"ozealotAirborne\");</p><p>        }</p><p>      } catch (e) { console.warn(\"[ozealot] come-down failed\", e); }</p><p>    });</p><p>  }</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const caster = oni.caster;</p><p>    if (!caster) { oni.fireDone(); return; }</p><p>    const layer = oni.layer({ zIndex: 95000 });</p><p>    const clone = oni.cloneToken(caster, { parent: layer });</p><p>    if (!clone) { oni.fireDone(); return; }</p><p>    oni.hideToken(caster);</p><p></p><p>    const home = { x: caster.center.x, y: caster.center.y };</p><p>    const baseSX = clone.scale.x, baseSY = clone.scale.y;</p><p></p><p>    await oni.tween({</p><p>      duration: cfg.squashMs, ease: oni.EASE.outQuad,</p><p>      onUpdate: (v) =&gt; {</p><p>        clone.scale.y = baseSY * (1 - cfg.squashAmt * v);</p><p>        clone.scale.x = baseSX * (1 + cfg.squashAmt * 0.6 * v);</p><p>      },</p><p>    });</p><p></p><p>    const s = oni.screen();</p><p>    const rise = s.hPx(cfg.riseFrac);</p><p>    oni.fireDone();</p><p>    await oni.tween({</p><p>      duration: cfg.leapMs, ease: oni.EASE.inCubic,</p><p>      onUpdate: (v) =&gt; {</p><p>        clone.position.set(home.x, home.y - rise * v);</p><p>        clone.scale.y = baseSY * (1 - cfg.squashAmt + (cfg.stretch + cfg.squashAmt) * v);</p><p>        clone.scale.x = baseSX * (1 - cfg.stretch * 0.4 * v);</p><p>        clone.alpha = 1 - Math.max(0, v - 0.5) / 0.5;</p><p>      },</p><p>    });</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/ozealot-jump\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: [],</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.squashMs + CFG.leapMs + 4000);</p><p></p><p>  // Persistent airborne state (GM): shadow drawing + invisible token + flag.</p><p>  if (token &amp;&amp; tdoc) {</p><p>    try {</p><p>      const shadowW = token.w * CFG.shadowScaleX, shadowH = token.h * CFG.shadowScaleY;</p><p>      const created = await canvas.scene.createEmbeddedDocuments(\"Drawing\", [{</p><p>        author: game.user.id,</p><p>        x: token.center.x - shadowW / 2,</p><p>        y: token.center.y - shadowH / 2,</p><p>        shape: { type: \"e\", width: shadowW, height: shadowH },</p><p>        fillType: 1, fillColor: \"#000000\", fillAlpha: CFG.shadowAlpha,</p><p>        strokeWidth: 0, strokeAlpha: 0, hidden: false, locked: false,</p><p>      }]);</p><p>      const drawingId = created?.[0]?.id ?? null;</p><p>      await tdoc.update({ alpha: 0 });</p><p>      await tdoc.setFlag(\"world\", \"ozealotAirborne\", { drawingId, sceneId: canvas.scene.id });</p><p>    } catch (e) { console.warn(\"[ozealot] jump state failed\", e); }</p><p>  }</p><p></p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
           "check_bonus": "0",
           "class": "NPC",
           "cost": "10 MP",
@@ -428,7 +502,15 @@
           "description": "<p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a></p>",
           "details_roller": "Show",
           "duration": "Special",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Flying",
+              "effect_kind": "apply_ae",
+              "effect_label": "jump_fly",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "id": "yQKwY825PAWNZjEQ",
           "ignore_hr": false,
@@ -442,7 +524,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Jump",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "jump_fly",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -610,7 +692,7 @@
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
+          "animation_script": "<p>// @desc Stoneshatter Dive: plunge from above onto the target, impact (webm + earth sfx +</p><p>//       screenshake), then arc back to home and restore the token. (oni)</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    startFrac: 1.35,    // clone start height above target (screen-height fractions)</p><p>    diveMs: 340,        // plunge (slow -&gt; slam via inCubic)</p><p>    impactHoldMs: 120,</p><p>    returnMs: 320,</p><p>    hopFrac: 0.20,      // arc height on the way home</p><p>    impactUrl: \"modules/JB2A_DnD5e/Library/Generic/Impact/Impact_02_Regular_Blue_400x400.webm\",</p><p>    impactScale: 2.1,   // impact webm size = target width * this</p><p>    impactSfx: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Earth5.ogg\",</p><p>    volume: 0.85,</p><p>    shakeMs: 430, shakeIntensity: 9,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p>  const returnHook = \"oni:return:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  const tdoc = casterUuid ? await fromUuid(casterUuid) : null;</p><p></p><p>  // Suppress the Flying-removal come-down hook while WE own the visual restore.</p><p>  globalThis.__ozealotDiving = true;</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const caster = oni.caster;</p><p>    const target = oni.targets[0] || null;</p><p>    if (!caster || !target) { oni.fireDone(); Hooks.callAll(ctx.params.returnHook); return; }</p><p></p><p>    const layer = oni.layer({ zIndex: 96000 });</p><p>    oni.hideToken(caster);</p><p>    const clone = oni.cloneToken(caster, { parent: layer });</p><p>    if (!clone) { oni.fireDone(); Hooks.callAll(ctx.params.returnHook); return; }</p><p></p><p>    const s = oni.screen();</p><p>    const rise = s.hPx(cfg.startFrac);</p><p>    const home = { x: caster.center.x, y: caster.center.y };</p><p>    const tgt = { x: target.center.x, y: target.center.y };</p><p>    clone.alpha = 1;</p><p>    clone.position.set(tgt.x, tgt.y - rise);</p><p></p><p>    await oni.tween({</p><p>      duration: cfg.diveMs, ease: oni.EASE.inCubic,</p><p>      onUpdate: (v) =&gt; clone.position.set(tgt.x, (tgt.y - rise) + rise * v),</p><p>    });</p><p></p><p>    const impact = oni.webmSprite(cfg.impactUrl, { parent: layer });</p><p>    impact.sprite.position.set(tgt.x, tgt.y);</p><p>    impact.sprite.width = impact.sprite.height = target.w * cfg.impactScale;</p><p>    oni.sfx(cfg.impactSfx, { volume: cfg.volume });</p><p>    oni.screenshake({ duration: cfg.shakeMs, intensity: cfg.shakeIntensity });</p><p>    oni.fireDone();</p><p></p><p>    await oni.wait(cfg.impactHoldMs);</p><p></p><p>    const hop = s.hPx(cfg.hopFrac);</p><p>    await oni.tween({</p><p>      duration: cfg.returnMs, ease: oni.EASE.outCubic,</p><p>      onUpdate: (v) =&gt; clone.position.set(</p><p>        tgt.x + (home.x - tgt.x) * v,</p><p>        tgt.y + (home.y - tgt.y) * v - Math.sin(Math.PI * v) * hop</p><p>      ),</p><p>    });</p><p>    Hooks.callAll(ctx.params.returnHook);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/ozealot-dive\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, returnHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.diveMs + 4000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p></p><p>  // Wait for the clone to land back home, then do OUR come-down (restore token,</p><p>  // remove the shadow, clear the airborne flag). Guarded so the Flying-removal</p><p>  // hook (which fires when Dive's on_activate removes Flying) does not double it.</p><p>  await onceHook(returnHook, CFG.impactHoldMs + CFG.returnMs + 4000);</p><p>  if (tdoc) {</p><p>    try {</p><p>      const flag = tdoc.getFlag(\"world\", \"ozealotAirborne\");</p><p>      await tdoc.update({ alpha: 1 });</p><p>      if (flag) {</p><p>        try {</p><p>          const sc = game.scenes.get(flag.sceneId) ?? canvas.scene;</p><p>          if (flag.drawingId &amp;&amp; sc) await sc.deleteEmbeddedDocuments(\"Drawing\", [flag.drawingId]);</p><p>        } catch (e) {}</p><p>        await tdoc.unsetFlag(\"world\", \"ozealotAirborne\");</p><p>      }</p><p>    } catch (e) { console.warn(\"[ozealot] dive come-down failed\", e); }</p><p>  }</p><p>  globalThis.__ozealotDiving = false;</p><p>})();</p><p></p>",
           "check_bonus": "10",
           "class": "NPC",
           "cost": "-",
@@ -619,7 +701,22 @@
           "description": "<p>Deal heavy <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\">Physical</a>&nbsp;damage to a target, This skill deal 200% damage to <a class=\"content-link\" data-uuid=\"JournalEntry.thBevyZDOURijH8I\" data-id=\"thBevyZDOURijH8I\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Petrify</a>&nbsp;target. Only usable if this creature is <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a>, which it <strong>lands </strong>after the skill resolved.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "damage_amount": "2",
+              "damage_operation": "multiply",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "dive_double"
+            },
+            "1": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "dive_land",
+              "filter_tag": "flying",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "id": "ZhTHSF0NcnWVC4mg",
           "ignore_hr": false,
@@ -633,9 +730,17 @@
           "level": "1",
           "max_level": "1",
           "name": "Stoneshatter Dive",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "dive_land",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TARGET_AE_CHARGES_PETRIFY > 0",
+              "reaction_effect_ref": "dive_double",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
           "skill_animation_default": "",

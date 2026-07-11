@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 7,
   "full": {
     "name": "AncientTemple_Map001",
     "navName": "Ancient Temple",
@@ -129,7 +129,8 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": []
+        "sequence": [],
+        "isTriggered": false
       },
       "fxmaster": {
         "effects": {
@@ -157,7 +158,7 @@
         "campSceneUuid": "",
         "oniFabula": {
           "general": {
-            "sceneMode": "none",
+            "sceneMode": "exploration",
             "scanRadius": null,
             "fastTravelEnabled": true,
             "disableTransition": false,
@@ -165,7 +166,12 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false
+            "sceneVisited": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
           },
           "sceneNetwork": "[]"
         },
@@ -202,7 +208,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398835916,
-      "modifiedTime": 1783664892788,
+      "modifiedTime": 1783738395671,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

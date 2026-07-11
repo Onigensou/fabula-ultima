@@ -137,7 +137,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 1,
   "full": {
     "name": "AncientTemple_Map006",
     "navName": "Ancient Temple - Item Shop",
@@ -265,7 +265,8 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": []
+        "sequence": [],
+        "isTriggered": false
       },
       "wall-height": {
         "advancedVision": true
@@ -274,7 +275,7 @@
         "campSceneUuid": "",
         "oniFabula": {
           "general": {
-            "sceneMode": "none",
+            "sceneMode": "exploration",
             "scanRadius": null,
             "fastTravelEnabled": true,
             "disableTransition": false,
@@ -282,7 +283,12 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false
+            "sceneVisited": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
           },
           "sceneNetwork": "[]"
         },
@@ -316,7 +322,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398847633,
-      "modifiedTime": 1783664892852,
+      "modifiedTime": 1783738419137,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

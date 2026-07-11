@@ -233,7 +233,7 @@
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
+          "animation_script": "<p>// @desc Laser Eyes: red laser beam from caster to each target (up to 2) + laser sfx (oni)</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    beamUrl: \"modules/JB2A_DnD5e/Library/Generic/Weapon_Attacks/Ranged/LaserShot_01_Regular_Red_30ft_1600x400.webm\",</p><p>    fireSfx: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Laser1.ogg\",</p><p>    volume: 0.8,</p><p>    thickness: 0.7,     // beam height as a fraction of caster token height</p><p>    hitDelayMs: 260,    // when the beam \"lands\" (fire the damage gate)</p><p>    tailMs: 650,        // let the beam finish visually after impact</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const caster = oni.caster;</p><p>    const targets = oni.targets || [];</p><p>    if (!caster || !targets.length) { oni.fireDone(); return; }</p><p></p><p>    const layer = oni.layer({ zIndex: 95000 });</p><p>    oni.sfx(cfg.fireSfx, { volume: cfg.volume });</p><p></p><p>    for (const target of targets) {</p><p>      const dx = target.center.x - caster.center.x;</p><p>      const dy = target.center.y - caster.center.y;</p><p>      const dist = Math.hypot(dx, dy) || 1;</p><p>      const ang = Math.atan2(dy, dx);</p><p>      const media = oni.webmSprite(cfg.beamUrl, { parent: layer });</p><p>      const spr = media.sprite;</p><p>      spr.anchor.set(0.02, 0.5);</p><p>      spr.position.set(caster.center.x, caster.center.y);</p><p>      spr.rotation = ang;</p><p>      spr.width = dist;</p><p>      spr.height = Math.max(56, caster.h * cfg.thickness);</p><p>    }</p><p></p><p>    await oni.wait(cfg.hitDelayMs);</p><p>    oni.fireDone();</p><p>    await oni.wait(cfg.tailMs);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/olmek-laser-eyes\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.hitDelayMs + 4000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
           "check_bonus": "7",
           "class": "NPC",
           "cost": "-",
@@ -242,7 +242,15 @@
           "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\">Light</a>&nbsp;damage to up to two targets. 50% chance to inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a></p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "laser_burn",
+              "target_ref": "hit_action_targets"
+            }
+          },
           "heroic_requirement": "",
           "id": "EEx3KGlLGAuRqpJT",
           "ignore_hr": false,
@@ -258,7 +266,15 @@
           "name": "Laser Eyes",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "chance(50)",
+              "reaction_effect_ref": "laser_burn",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
           "skill_animation_default": "",
@@ -288,6 +304,68 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "zOZZ6m0YOuWtCCmq",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783733813795,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "zOZZ6m0YOuWtCCmq",
+              "originalParentId": "fndVDNqXrGB9D6ho",
+              "originalUuid": "Actor.j6IpMoeBol2PprPp.Item.fndVDNqXrGB9D6ho.ActiveEffect.zOZZ6m0YOuWtCCmq"
+            },
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/peripheral_synthesis.png",
+          "name": "Petrify",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "qePlOECBTS0Dftgc"
+          ],
+          "system": {
+            "tags": [
+              "debuff",
+              "petrify"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -329,7 +407,7 @@
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
+          "animation_script": "<p>// @desc Stone Gaze: large dark-green eye overlay at screen center + darkness sfx (oni)</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    eyeUrl: \"modules/JB2A_DnD5e/Library/Generic/Eyes/Eyes_Single01_03_Dark_Green_300x300.webm\",</p><p>    sfx: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Darkness3.ogg\",</p><p>    volume: 0.85,</p><p>    sizeFrac: 0.66,   // eye size as a fraction of screen height (large)</p><p>    fadeInMs: 340,</p><p>    holdMs: 620,</p><p>    fadeOutMs: 360,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const layer = oni.layer({ zIndex: 97000 });</p><p>    const s = oni.screen();</p><p>    const media = oni.webmSprite(cfg.eyeUrl, { parent: layer });</p><p>    const spr = media.sprite;</p><p>    const c = s.S2W(0.5, 0.5);</p><p>    spr.position.set(c.x, c.y);</p><p>    spr.width = spr.height = s.hPx(cfg.sizeFrac);</p><p>    spr.alpha = 0;</p><p></p><p>    oni.sfx(cfg.sfx, { volume: cfg.volume });</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.fadeInMs, ease: oni.EASE.outQuad, onUpdate: (v) =&gt; (spr.alpha = v) });</p><p>    oni.fireDone();</p><p>    await oni.wait(cfg.holdMs);</p><p>    await oni.tween({ from: 1, to: 0, duration: cfg.fadeOutMs, ease: oni.EASE.inQuad, onUpdate: (v) =&gt; (spr.alpha = v) });</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/olmek-stone-gaze\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.fadeInMs + 4000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
           "check_bonus": "0",
           "class": "NPC",
           "cost": "30 MP",
@@ -338,7 +416,29 @@
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Overflow</a></p></li></ul><p>All enemy roll a <strong>DL 11</strong> <strong>【DEX】+【INS】check, </strong>On a failure, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.thBevyZDOURijH8I\" data-id=\"thBevyZDOURijH8I\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Petrify</a></p>",
           "details_roller": "Show",
           "duration": "3 Rounds",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "chain_steps": "stone_gaze_save,stone_gaze_petrify",
+              "effect_kind": "chain",
+              "effect_label": "stone_gaze_chain"
+            },
+            "1": {
+              "effect_kind": "save_check",
+              "effect_label": "stone_gaze_save",
+              "save_attr1": "dex",
+              "save_attr2": "ins",
+              "save_dl": "11",
+              "save_mode": "interactive",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Petrify",
+              "effect_kind": "apply_ae",
+              "effect_label": "stone_gaze_petrify",
+              "target_ref": "save_failed_targets"
+            }
+          },
           "heroic_requirement": "",
           "id": "fndVDNqXrGB9D6ho",
           "ignore_hr": false,
@@ -352,7 +452,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Stone Gaze",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "stone_gaze_chain",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -546,7 +646,7 @@
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
+          "animation_script": "<p>// @desc Shatter: shrapnel burst on each PETRIFIED target + earth sfx (oni)</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    burstUrl: \"modules/JB2A_DnD5e/Library/Generic/Explosion/ShrapnelBomb01_01_Regular_Black_800x800.webm\",</p><p>    sfx: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Earth1.ogg\",</p><p>    volume: 0.85,</p><p>    scale: 2.0,        // burst size = target width * this</p><p>    petrifyStatusId: \"qePlOECBTS0Dftgc\",</p><p>    hitDelayMs: 240,   // when the shatter \"lands\" (fire the execute)</p><p>    shakeMs: 360, shakeIntensity: 8,</p><p>    tailMs: 700,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const targets = oni.targets || [];</p><p>    const layer = oni.layer({ zIndex: 96000 });</p><p></p><p>    const isPetrified = (t) =&gt; {</p><p>      const a = t.actor; if (!a) return false;</p><p>      try { if (a.statuses &amp;&amp; a.statuses.has(cfg.petrifyStatusId)) return true; } catch (e) {}</p><p>      try { for (const e of a.effects) if (e.name === 'Petrify') return true; } catch (e) {}</p><p>      return false;</p><p>    };</p><p>    const petr = targets.filter(isPetrified);</p><p>    if (!petr.length) { oni.fireDone(); return; }</p><p></p><p>    oni.sfx(cfg.sfx, { volume: cfg.volume });</p><p>    for (const t of petr) {</p><p>      const media = oni.webmSprite(cfg.burstUrl, { parent: layer });</p><p>      media.sprite.position.set(t.center.x, t.center.y);</p><p>      media.sprite.width = media.sprite.height = t.w * cfg.scale;</p><p>    }</p><p>    oni.screenshake({ duration: cfg.shakeMs, intensity: cfg.shakeIntensity });</p><p></p><p>    await oni.wait(cfg.hitDelayMs);</p><p>    oni.fireDone();</p><p>    await oni.wait(cfg.tailMs);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/olmek-shatter\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.hitDelayMs + 4000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
           "check_bonus": "0",
           "class": "NPC",
           "cost": "30 MP",
@@ -555,7 +655,18 @@
           "description": "<p>Reduce all creature inflicts with <a class=\"content-link\" data-uuid=\"JournalEntry.thBevyZDOURijH8I\" data-id=\"thBevyZDOURijH8I\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Petrify</a>&nbsp;to <strong>0 HP</strong></p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "attacker_name": "Shatter",
+              "damage_amount": "(AE_CHARGES_PETRIFY > 0) * CUR_HP",
+              "damage_cause": "damage",
+              "damage_element": "elementless",
+              "damage_ignore_affinity": true,
+              "effect_kind": "deal_damage",
+              "effect_label": "shatter_exec",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "id": "SY4gKcchvUw2fjl5",
           "ignore_hr": false,
@@ -569,7 +680,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Shatter",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "shatter_exec",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",

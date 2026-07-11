@@ -2659,7 +2659,7 @@
       "icon_offset_y": "",
       "icon_scale": "",
       "id": "8ZKo5tt90i1Tdtr5",
-      "img": "icons/svg/mystery-man.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Shopkeeper%20Shade/NPCShade_Standard.png",
       "init": "6",
       "ins_base": "6",
       "ins_current": 6,
@@ -2805,7 +2805,7 @@
       "shop_icon_offset_x": "0",
       "shop_icon_offset_y": "0",
       "shop_name": "🏷️Bygone Forgery",
-      "shop_portrait": "icons/svg/mystery-man.svg",
+      "shop_portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Shopkeeper%20Shade/NPCShade_Standard.png",
       "shop_shield_list": {
         "1X93myZ3GBXdA4Bk": {
           "id": "${item.id}",
