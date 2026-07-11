@@ -3,7 +3,7 @@
 // Currently 4 (added TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT identifiers;
 // prev: pow() math function, ALL_TARGETS_HIT identifier).
 // Not load-bearing; diagnostic only.
-export const SKILL_FORMULAS_SCHEMA = 6;
+export const SKILL_FORMULAS_SCHEMA = 7;
 
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
@@ -756,6 +756,23 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           .filter(Boolean).map((n) => String(n).toLowerCase());
         return slots.some((s) =>
           myNames.includes(String(s.name).toLowerCase()) && s.emotions.includes("hatred")
+        ) ? 1 : 0;
+      }
+      // Like SOURCE_BONDED_TO_ME but only counts a bond that carries the
+      // AFFECTION emotion (mirror of SOURCE_HATRED_BOND_TO_ME). Follow my lead's
+      // ally picker uses "SOURCE_AFFECTION_BOND_TO_ME >= 1" for the RAW "choose
+      // one ally you can see towards whom you have a Bond of affection".
+      case "SOURCE_AFFECTION_BOND_TO_ME": {
+        if (!actor) return 0;
+        const srcRef = payload?.sourceActorUuid ?? payload?.subjectActorUuid ?? null;
+        const src = srcRef ? _resolveActorByUuidSync(String(srcRef)) : null;
+        if (!src) return 0;
+        const slots = getBondSlots(src);
+        if (!slots.length) return 0;
+        const myNames = [actor.name, actor.token?.name, actor.prototypeToken?.name]
+          .filter(Boolean).map((n) => String(n).toLowerCase());
+        return slots.some((s) =>
+          myNames.includes(String(s.name).toLowerCase()) && s.emotions.includes("affection")
         ) ? 1 : 0;
       }
       // Damage-card payload reads (per-target — payload is per-event)
