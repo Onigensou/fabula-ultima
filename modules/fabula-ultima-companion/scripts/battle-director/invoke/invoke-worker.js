@@ -33,7 +33,7 @@ function ensureOwner(actor, ar, what = "this action") {
 
 // ── Recompute actionResult fields after the roll changes ──────────────────────
 
-function recomputeArAfterInvoke(ar, newRoll) {
+async function recomputeArAfterInvoke(ar, newRoll) {
   // Study: no per-target/damage surfaces — the check total maps to the
   // encyclopedia tier. Re-derive tier + improved from the new total (a Bond bonus
   // or Trait reroll can cross a tier threshold) so the card + RESOLVE agree.
@@ -44,21 +44,49 @@ function recomputeArAfterInvoke(ar, newRoll) {
     return freezeActionResult({ ...ar, roll: newRoll, tier, improved });
   }
 
-  // Per-target results: recalculate hit/miss with new total.
-  const newPerTarget = (ar.perTargetResults ?? []).map((r) => {
-    const def = r.defense ?? 0;
-    const hit = newRoll.isCrit || (!newRoll.isFumble && newRoll.total >= def);
-    return { ...r, isCrit: newRoll.isCrit, isFumble: newRoll.isFumble, hit };
-  });
+  // Route the recompute through the SAME shared profile pass adjust_accuracy uses
+  // (recomputeActionProfile) so EVERY per-target row is fully re-derived — hit AND
+  // damage / crit / accuracyBlocked — not just the hit flag. The old hand-rolled pass
+  // only flipped `hit`, so a miss→hit target kept the miss row's `damage: 0`: the
+  // label flipped but the outcome stayed inert. `ar` already carries the invoke
+  // change — Trait's rerolled dice on `roll`, Bond's flat bonus on `invokeCheckBonus`
+  // (folded into the total by computeCheck) — so the recompute honors it by
+  // construction, and it survives the CONFIRM reaction reconciliation for the same
+  // reason (that reconciliation runs this identical recompute off the committed ar).
+  const arForRecompute = freezeActionResult({ ...ar, roll: newRoll });
+  let perTargetResults = null;
+  let roll = newRoll;
+  let hitTokenUuids = ar.hitTokenUuids ?? null;
+  try {
+    const { recomputeActionProfile } = await import("../action-profile.js");
+    const delta = await recomputeActionProfile({ ar: arForRecompute, targets: ar.targets ?? null, round: ar.round ?? 0 });
+    if (Array.isArray(delta?.perTargetResults) && delta.perTargetResults.length) {
+      perTargetResults = delta.perTargetResults;
+      if (delta.roll) roll = delta.roll;
+      if (Array.isArray(delta.hitTokenUuids)) hitTokenUuids = delta.hitTokenUuids;
+    }
+  } catch (e) {
+    warn("[BD][Invoke] recomputeActionProfile threw — falling back to hit-flip recompute", e);
+  }
+  // Fallback (recompute unavailable/empty): flip hit from the new total only. Better
+  // than a stale result, but damage on a flipped row won't follow — the primary path
+  // above is the correct one.
+  if (!perTargetResults) {
+    perTargetResults = (ar.perTargetResults ?? []).map((r) => {
+      const def = r.defense ?? 0;
+      const hit = newRoll.isCrit || (!newRoll.isFumble && newRoll.total >= def);
+      return { ...r, isCrit: newRoll.isCrit, isFumble: newRoll.isFumble, hit };
+    });
+  }
 
-  // Damage: HR changes on a trait reroll, so finalIfHit changes when HR is used.
+  // Headline damage: finalIfHit follows HR (a Trait reroll can change HR).
   let newDamage = ar.damage ?? null;
   if (newDamage && !newDamage.ignoreHR && !newDamage.isHealing && !newDamage.declaresHealing) {
     const base = Number(newDamage.base ?? 0) || 0;
-    newDamage = { ...newDamage, finalIfHit: base + newRoll.hr };
+    newDamage = { ...newDamage, finalIfHit: base + (Number(roll?.hr) || 0) };
   }
 
-  return freezeActionResult({ ...ar, roll: newRoll, damage: newDamage, perTargetResults: newPerTarget });
+  return freezeActionResult({ ...ar, roll, damage: newDamage, perTargetResults, hitTokenUuids });
 }
 
 // ── DOM patch ─────────────────────────────────────────────────────────────────
@@ -232,7 +260,7 @@ export async function handleInvokeTrait({ director, ar, root, invokeState, prePi
     ? { ...ar, attacker: { ...ar.attacker, invokePointCount: spend.cur } }
     : ar;
   const newRoll  = await rerollDice({ roll: ar.roll, choice, actor: attacker });
-  const newAr    = recomputeArAfterInvoke(arAfterPay, newRoll);
+  const newAr    = await recomputeArAfterInvoke(arAfterPay, newRoll);
 
   invokeState.trait            = true;
   // Stamp the result onto the per-card invokeState so the caller can sync its
@@ -313,7 +341,12 @@ export async function handleInvokeBond({ director, ar, root, invokeState, prePic
     ? { ...ar, attacker: { ...ar.attacker, invokePointCount: spend.cur } }
     : ar;
   const newRoll = applyBondBonus({ roll: ar.roll, bonus: chosen.bonus });
-  const newAr   = recomputeArAfterInvoke(arAfterPay, newRoll);
+  // Persist the flat Bond bonus on the actionResult so the shared recompute folds it
+  // into the total (computeCheck ignores roll.checkBonus) — this is what lets an
+  // invoked Bond survive the CONFIRM reaction reconciliation, mirroring adjust_accuracy.
+  // Cumulative in case a Bond is invoked across multiple cards (defensive; ≤1/action).
+  const arWithInvoke = { ...arAfterPay, invokeCheckBonus: (Number(ar.invokeCheckBonus) || 0) + Number(chosen.bonus || 0) };
+  const newAr   = await recomputeArAfterInvoke(arWithInvoke, newRoll);
 
   invokeState.bond             = true;
   invokeState.bondInfo         = { index: chosen.index, name: chosen.name, bonus: chosen.bonus };
