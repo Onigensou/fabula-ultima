@@ -103,7 +103,7 @@ function expandEffectChain(effectTable, startLabel) {
 // reachable at the card-mutation phase — used to fold an overcharge tier's
 // adjust_cost into the spell's cost (Cataclysm). With no picks it descends into
 // no menus, so the menu-only rows are exactly the chosen option's chain.
-function expandEffectChainWithPicks(effectTable, startLabel, picks) {
+function expandEffectChainWithPicks(effectTable, startLabel, picks, resolveLabel = null) {
   const out = [];
   const byLabel = new Map();
   for (const r of Object.values(effectTable ?? {})) {
@@ -134,7 +134,21 @@ function expandEffectChainWithPicks(effectTable, startLabel, picks) {
         const orow = byLabel.get(oref);
         const lbl = (optLabels[oi] && optLabels[oi] !== "")
           ? optLabels[oi] : String(orow?.menu_label ?? orow?.effect_label ?? oref);
-        labelToRef.set(String(lbl).trim().toLowerCase(), oref);
+        const rawKey = String(lbl).trim().toLowerCase();
+        labelToRef.set(rawKey, oref);
+        // `chosenMenuPicks` stores the DISPLAYED label, which buildMenuOptions
+        // INTERPOLATES (`${...}` → live values), but `menu_option_labels` here is the
+        // RAW template — so a dynamic-label option (Lucky Seven's "First die (DEX):
+        // 3 → 7") never matched → its set_check_die/adjust_cost silently no-oped. Also
+        // key on the interpolated label when the caller supplies a resolver built from
+        // the SAME reaction context the menu used. Static labels are unaffected
+        // (interp == raw); no-resolver callers keep the raw-only behavior.
+        if (typeof resolveLabel === "function") {
+          try {
+            const interpKey = String(resolveLabel(lbl) ?? "").trim().toLowerCase();
+            if (interpKey && interpKey !== rawKey) labelToRef.set(interpKey, oref);
+          } catch (_e) { /* keep raw key only */ }
+        }
       }
       for (const pk of pickSet) {
         const oref = labelToRef.get(pk);
@@ -1696,7 +1710,23 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     const effectTable = await readEffectTableForCandidate(cand);
     if (!effectTable) continue;
     const plainLabels = new Set(expandEffectChain(effectTable, cand.ref).map((r) => r.effect_label));
-    const rows = expandEffectChainWithPicks(effectTable, cand.ref, cand.chosenMenuPicks);
+    // Menu picks are stored as the INTERPOLATED display label, so the matcher must
+    // interpolate the raw `${...}` option templates with the SAME context the menu
+    // was built from (the reaction's reactor + payloadAtFire) — else a dynamic-label
+    // option (Lucky Seven) never matches and its set_check_die silently no-ops.
+    let resolveLabel = null;
+    try {
+      const { interpolateMenuText } = await import("./skill-effects.js");
+      const { reactor, skill } = await resolveReactionReactorSkill(ctx, cand);
+      const interpCtx = {
+        reactorActor: reactor,
+        payload: cand.payloadAtFire ?? null,
+        skill,
+        dCombat: ctx.dCombat ?? { round: ctx.ar?.round ?? 0 },
+      };
+      resolveLabel = (raw) => interpolateMenuText(raw, interpCtx);
+    } catch (e) { warn("card-mutations Phase 2b: menu-label interp ctx build failed — falling back to raw match", e); }
+    const rows = expandEffectChainWithPicks(effectTable, cand.ref, cand.chosenMenuPicks, resolveLabel);
     for (const row of rows) {
       if (plainLabels.has(row.effect_label)) continue;   // already handled in Phase 2
       const kind = String(row.effect_kind ?? "").trim().toLowerCase();
