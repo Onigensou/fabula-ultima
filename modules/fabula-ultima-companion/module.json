@@ -178,6 +178,8 @@
     "scripts/dungeon-pathing-system/tile-events/tile-event-dirt.js",
     "scripts/dungeon-pathing-system/tile-events/fishing-lobby.js",
     "scripts/dungeon-pathing-system/tile-events/tile-event-fishing.js",
+    "scripts/dungeon-pathing-system/tile-events/gathering-summary-ui.js",
+    "scripts/dungeon-pathing-system/tile-events/tile-event-gathering.js",
     "scripts/dungeon-pathing-system/dp-tile-effect-engine.js",
     "scripts/dungeon-pathing-system/dp-tile-config.js",
     "scripts/dungeon-pathing-system/dp-tile-effect-config.js",
