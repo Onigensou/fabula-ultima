@@ -205,6 +205,11 @@ export async function composeAction({
         result = await composeSkill({
           director, snap, eligible, cancelSentinel,
           isSpell: command === "Spell",
+          // Thread the resolved grant (already prefers the broadcast
+          // freeActionGrant over the GM-only local registry) so the Spell/Skill
+          // sub-picker applies the free-action cap + allow-list on the PLAYER's
+          // compose chain too — the local registry is empty on a player client.
+          freeActionGrant: grant,
         });
         break;
       case "Item":
@@ -721,7 +726,7 @@ async function composeHinder({ director, snap, eligible, cancelSentinel }) {
 // so the Item action targets identically. Returns { cancelled, targetUuids,
 // reason }. `actor` is the caster doc (for SL/HAS_SKILL formula identifiers in
 // the target-count resolver). `eligible` = { allies, enemies }.
-export async function resolveTargetsForSource({ director, snap, actor, eligible, source, cancelSentinel }) {
+export async function resolveTargetsForSource({ director, snap, actor, eligible, source, cancelSentinel, maxMpCost = null }) {
   // target_sequence skills do their multi-step picking at the TARGET phase
   // (state-handlers resolveActionTargets), NOT here in the compose pre-target.
   // Defer with empty targets so TARGET doesn't see pre-composed uuids and runs
@@ -802,6 +807,9 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   const plan = resolveTargetPlan({
     actor, skill: source, skillTargetText,
     eligibleCount: targetList.length, round: director?.dCombat?.round ?? 0,
+    // Free-action MP cap (Bimagus / Acceleration) — clamps a free ×T spell's
+    // up-to-N target count so its printed MP fits the cap. Null on a normal cast.
+    maxMpCost,
   });
   if (plan.mode === "random") return { cancelled: false, targetUuids: [] };
   if (plan.mode === "all") {
@@ -902,7 +910,7 @@ async function composeItem({ director, snap, eligible, cancelSentinel }) {
   };
 }
 
-async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell }) {
+async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell, freeActionGrant = null }) {
   // Resolve actor doc. Player has read access to their own PC's data.
   let actor = null;
   try { actor = await fromUuid(snap.actorUuid); } catch {}
@@ -919,7 +927,13 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
   // compose is running inside a free action whose grant carries allowedSkillRefs,
   // restrict the menu to those skills (matched by name OR uuid). Null on a normal
   // turn or an unrestricted free action.
-  const grant = freeActions.get(snap.actorId);
+  // Prefer the grant threaded down from composeAction — on a PLAYER's compose
+  // chain the local `freeActions` registry is empty (GM-side singleton), so the
+  // broadcast grant is the ONLY source of maxMpCost / allowedSkillRefs. Falling
+  // back to freeActions.get keeps the GM-local path identical. Without this, a
+  // player-cast free-action spell (Bimagus, Acceleration) lost its MP cap +
+  // allow-list on the client — the picker showed every spell uncapped.
+  const grant = freeActionGrant ?? freeActions.get(snap.actorId);
   const allowedRefs = grant?.allowedSkillRefs ?? null;
   // Free-action MP cap (Acceleration → spells ≤ 10 MP). Spell-only: a Skill/Active
   // free action carries no spell-cost cap. Null on a normal turn or uncapped grant.
@@ -955,7 +969,9 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
   // Step 3: targeting — shared with the Item action via resolveTargetsForSource
   // (classify skill_target → eligible pool → picker). Identical behavior to the
   // prior inline block, now reused so Item targets exactly like Skill.
-  const tr = await resolveTargetsForSource({ director, snap, actor, eligible, source: skill, cancelSentinel });
+  // Pass the free-action MP cap (isSpell-gated, same as the picker) so a free ×T
+  // spell auto-clamps its target count to fit the cap during targeting.
+  const tr = await resolveTargetsForSource({ director, snap, actor, eligible, source: skill, cancelSentinel, maxMpCost });
   if (tr.cancelled) {
     return { cancelled: true, reason: tr.reason ?? "target-cancelled" };
   }
