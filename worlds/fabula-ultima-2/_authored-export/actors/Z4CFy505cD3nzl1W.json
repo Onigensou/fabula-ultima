@@ -360,7 +360,7 @@
               "menu_label": "",
               "mode": "exact",
               "skip_when_passive": false,
-              "target_filter": "SOURCE_BONDED_TO_ME >= 1",
+              "target_filter": "SOURCE_AFFECTION_BOND_TO_ME >= 1",
               "target_prompt": "",
               "to_resource": ""
             }

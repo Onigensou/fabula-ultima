@@ -205,6 +205,16 @@
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
           "duration": "Instnataneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "megaremedy_heal",
+              "grant_amount": "100",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
