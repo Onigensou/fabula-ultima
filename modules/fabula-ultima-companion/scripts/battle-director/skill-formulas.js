@@ -1,8 +1,9 @@
 // Re-export sentinel — bumped whenever a new identifier ships so
 // reload-aware callers can verify they have a fresh enough module.
-// Currently 3 (added pow() math function, ALL_TARGETS_HIT identifier).
+// Currently 4 (added TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT identifiers;
+// prev: pow() math function, ALL_TARGETS_HIT identifier).
 // Not load-bearing; diagnostic only.
-export const SKILL_FORMULAS_SCHEMA = 3;
+export const SKILL_FORMULAS_SCHEMA = 6;
 
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
@@ -33,6 +34,7 @@ const T_OP     = "op";
 const T_LPAREN = "(";
 const T_RPAREN = ")";
 const T_COMMA  = ",";
+const T_STRING = "str";
 const T_END    = "$";
 
 function tokenize(src) {
@@ -45,6 +47,20 @@ function tokenize(src) {
     if (ch === "(") { tokens.push({ type: T_LPAREN }); i++; continue; }
     if (ch === ")") { tokens.push({ type: T_RPAREN }); i++; continue; }
     if (ch === ",") { tokens.push({ type: T_COMMA }); i++; continue; }
+    // String literals — single- or double-quoted. Enables string equality in
+    // formulas (e.g. `PERFORMED_SKILL == "Golem Dance"`, or comparing two
+    // string accessors like `AE_FLAG(...) != PERFORMED_SKILL`). No escapes —
+    // a literal is everything up to the matching closing quote.
+    if (ch === "'" || ch === '"') {
+      const quote = ch;
+      let j = i + 1;
+      let str = "";
+      while (j < s.length && s[j] !== quote) { str += s[j]; j++; }
+      if (j >= s.length) throw new Error(`tokenize: unterminated string literal in "${s}"`);
+      tokens.push({ type: T_STRING, value: str });
+      i = j + 1;
+      continue;
+    }
     // Numbers (integer or decimal)
     if (/[0-9.]/.test(ch)) {
       let j = i;
@@ -172,6 +188,7 @@ function parse(tokens) {
   function parsePrimary() {
     const t = peek();
     if (t.type === T_NUMBER) { eat(); return { kind: "num", value: t.value }; }
+    if (t.type === T_STRING) { eat(); return { kind: "str", value: t.value }; }
     if (t.type === T_LPAREN) {
       eat();
       const inner = parseOr();
@@ -254,16 +271,26 @@ function warnUnknownIdentifier(name) {
 function evalNode(node, resolver) {
   switch (node.kind) {
     case "num":   return node.value;
+    case "str":   return node.value;
     case "ident": {
       const v = resolver(node.name);
       // Unresolved → 0 (matches schema doc "all return 0 if unresolvable").
-      return (v === null || v === undefined || Number.isNaN(v)) ? 0 : Number(v);
+      // String-valued identifiers (e.g. PERFORMED_SKILL) pass through unchanged
+      // so == / != can compare them as strings; everything else coerces numeric.
+      if (v === null || v === undefined) return 0;
+      if (typeof v === "string") return v;
+      const n = Number(v);
+      return Number.isNaN(n) ? 0 : n;
     }
     case "call": {
-      const fn = FUNCTIONS[node.name];
-      if (!fn) throw new Error(`unknown function: ${node.name}`);
       const args = node.args.map((a) => evalNode(a, resolver));
-      return fn(...args);
+      const fn = FUNCTIONS[node.name];
+      if (fn) return fn(...args);
+      // Resolver-aware accessor (e.g. AE_FLAG(name, key)) — reads richer context
+      // than a bare identifier and MAY return a string. Unknown names fold to 0
+      // (fail-open) via the resolver's default, matching the identifier path.
+      const v = resolver(node.name, args);
+      return (v === null || v === undefined) ? 0 : v;
     }
     case "un": {
       const v = evalNode(node.expr, resolver);
@@ -426,7 +453,7 @@ function creaturePresentOnScene(needle) {
 }
 
 export function buildSkillResolver({ actor = null, payload = null, skill = null, round = 0, vars = null } = {}) {
-  return (name) => {
+  return (name, args = null) => {
     // Harness override hook — when `runDirectorSkillSimulate` was called
     // with `override: { SL, CHAR_LEVEL, BOND_COUNT, BOND_STRENGTH }`, the
     // harness stamps those values into a global registry that this resolver
@@ -451,6 +478,30 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       if (Number.isFinite(n)) return n;
     }
     switch (name) {
+      // ── String-valued accessors ─────────────────────────────────────────
+      // These return STRINGS (evalNode passes them through uncoerced); use them
+      // only with == / != (numeric ops on a string are author error → NaN-safe
+      // fold). General building blocks for identity checks against AE-stored data.
+      //
+      // PERFORMED_SKILL — name of the action currently being performed
+      // (payload.sourceSkillName). Present on creature_performs_action / *_uses_item
+      // payloads. Pairs with AE_FLAG for "is this the same thing a marker recorded".
+      case "PERFORMED_SKILL": return String(payload?.sourceSkillName ?? "");
+      // AE_FLAG(aeName, flagKey) — the `fabula-ultima-companion` flag `flagKey`
+      // off the FIRST non-disabled AE named `aeName` on the actor, as a STRING
+      // ("" if the AE or flag is absent). General reader for AE-stored data —
+      // e.g. base Dance's repeat-discount compares the single "Dancing" marker's
+      // `rememberedAction` (stamped by apply_ae `ae_remember_action`) to the dance
+      // being performed now:
+      //   AE_FLAG("Dancing","rememberedAction") != PERFORMED_SKILL   → 1 if a DIFFERENT dance.
+      case "AE_FLAG": {
+        const aeName = String(args?.[0] ?? "").trim().toLowerCase();
+        const key = String(args?.[1] ?? "").trim();
+        if (!aeName || !key) return "";
+        const effects = actor?.effects?.contents ?? Array.from(actor?.effects ?? []);
+        const hit = effects.find((e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === aeName);
+        return String(hit?.flags?.["fabula-ultima-companion"]?.[key] ?? "");
+      }
       // Skill level — base level + any RUNTIME boost (gear/effects that raise a
       // skill's EFFECTIVE level without persistently mutating system.level; see
       // skillLevelBonus). Floored at 1 like the bare base read.
@@ -460,6 +511,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // skills that scale on the caster's overall power (Heal's
       // "Skill Enhancement Lv. 20 → 50 / Lv. 40 → 60" tiers, e.g.).
       case "CHAR_LEVEL": return Number(actor?.system?.props?.level ?? actor?.system?.level ?? 0) || 0;
+      // Number of DISTINCT classes the caster owns — reads the CSB `class_list`
+      // dynamic table (rows { $deleted, class_name, level }), unioning class_name
+      // case-insensitively. Backs Ring of Onions ("+2 max HP/MP per distinct
+      // class"). 0 if the actor carries no class_list.
+      case "CLASS_COUNT": return countDistinctClasses(actor);
       // Invoker wellsprings — is the given element's wellspring present on the scene?
       // 1 = available (gate passes), 0 = not. Reads the combat/active scene flag
       // `flags.fabula-ultima-companion.oniFabula.wellsprings`; UNSET → all available
@@ -577,6 +633,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // enemy is bloodied). Crisis = the canonical "Crisis" AE (crisis-reactor).
       case "ENEMY_IN_CRISIS":
       case "ANY_ENEMY_IN_CRISIS": return anyEnemyInCrisis(actor) ? 1 : 0;
+      // Number of ENEMY creatures on the scene relative to the reactor — the
+      // plain head-count behind Army Wrecker's Overflow ("+1 Accuracy per
+      // enemy"). Same enemy enumeration as ENEMY_DISTINCT_STATUS_COUNT /
+      // ENEMY_IN_CRISIS (enemyActorsOf: combat roster, canvas-token fallback).
+      // 0 out of combat.
+      case "ENEMY_COUNT": return enemyActorsOf(actor).length;
       // 1 if an ALLY who is THIS actor's focus (carries a Focus AE — status
       // fud-focus — that this actor applied) is currently in Crisis, else 0.
       // Life Transference's eligibility half: "you may heal yourself or an ALLY
@@ -657,6 +719,25 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const myNames = [actor.name, actor.token?.name, actor.prototypeToken?.name]
           .filter(Boolean).map((n) => String(n).toLowerCase());
         return slots.some((s) => myNames.includes(String(s.name).toLowerCase())) ? 1 : 0;
+      }
+      // 1 if THIS candidate (`actor`) holds a Bond toward the ACTING creature
+      // (payload source — the caster). Exact MIRROR of SOURCE_BONDED_TO_ME with
+      // the bond DIRECTION reversed: SOURCE_BONDED_TO_ME asks "does the caster's
+      // bond list name this candidate", BONDED_TO_SOURCE asks "does THIS
+      // candidate's bond list name the caster". Reads authored prop bonds + AE
+      // bonds via getBondSlots. Designed for a `target_filter` on an ally pick —
+      // the RAW "choose an ally that has a Bond towards you" (Unicorn Dance):
+      // "BONDED_TO_SOURCE >= 1".
+      case "BONDED_TO_SOURCE": {
+        if (!actor) return 0;
+        const srcRef = payload?.sourceActorUuid ?? payload?.subjectActorUuid ?? null;
+        const src = srcRef ? _resolveActorByUuidSync(String(srcRef)) : null;
+        if (!src) return 0;
+        const slots = getBondSlots(actor);
+        if (!slots.length) return 0;
+        const srcNames = [src.name, src.token?.name, src.prototypeToken?.name]
+          .filter(Boolean).map((n) => String(n).toLowerCase());
+        return slots.some((s) => srcNames.includes(String(s.name).toLowerCase())) ? 1 : 0;
       }
       // Like SOURCE_BONDED_TO_ME but only counts a bond that ALREADY carries the
       // HATRED emotion (honoring getBondSlots' AE-override). Heart of Darkness's
@@ -765,6 +846,20 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
       }
+      // Magic Defense (derived) of the trigger's SUBJECT creature (the current
+      // target). Twin of TARGET_MAX_HP (same subjectActorUuid resolve), reading
+      // the derived magic_defense prop (fallback current_mdef/mdef — the same
+      // read order action-execution-core / the director test-harness use).
+      // Powers Witchbane's "×2 damage vs a target whose MDEF > 12" gate
+      // (TARGET_MDEF > 12). 0 when no subject is threaded.
+      case "TARGET_MDEF": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        if (!subject) return 0;
+        const p = subject?.system?.props ?? {};
+        return Number(p.magic_defense ?? p.current_mdef ?? p.mdef ?? 0) || 0;
+      }
       // 1 iff the trigger's SUBJECT creature is Champion-rank (NPC rank lives at
       // system.props.npc_rank — soldier/elite/champion/companion). Twin of
       // TARGET_CURRENT_HP (same subjectActorUuid resolve). Used by The Tormentor's
@@ -860,6 +955,22 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const st = String(payload?.actionSkillType ?? "").toLowerCase();
         const isSpell = (k === "spell" || st === "spell");
         return (isSpell && payload?.actionIsCheck === true) ? 1 : 0;
+      }
+      // Ordinal RANK of how long the acting skill's effect lasts, read from the
+      // skill's free-form `duration` string (forwarded as payload.skillDuration by
+      // the creature_performs_action / creature_uses_item payload builders):
+      //   0 = Instantaneous / none / "-"
+      //   1 = lasts into a later turn ("Until the start of your next turn", etc.)
+      //   2 = Scene-or-longer (scene / rest / session)
+      // A general "how persistent is this action" gate — compare with >= so longer
+      // scopes can be added later without touching call sites. Dances are only ever
+      // Instantaneous (0) or Until-start-of-next-turn (1); Follow my lead shares a
+      // dance's lasting benefit only when ACTION_DURATION >= 1 (RAW: non-instant only).
+      case "ACTION_DURATION": {
+        const d = String(payload?.skillDuration ?? "").toLowerCase().trim();
+        if (!d || d === "-" || d.includes("instant")) return 0;
+        if (d.includes("scene") || d.includes("rest") || d.includes("session")) return 2;
+        return 1;
       }
       // 1 if the action ROLLS ACCURACY — an attack OR a check (the canonical
       // `ar.canMiss` capability, stamped as payload.actionCanMiss on the
@@ -1002,6 +1113,17 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "MISS_MARGIN": return Number(payload?.missMargin ?? 0) || 0;
       // ARCANE is a weapon FAMILY (not a range), so it correctly reads weaponType.
       case "ATTACK_IS_ARCANE": return String(payload?.weaponType ?? "").toLowerCase() === "arcane" ? 1 : 0;
+      // Which Defense the in-flight attack's Check resolves against — the
+      // "strike" (vs DEF) vs "magic" (vs MDEF) axis the damage engine + card
+      // labels use, threaded onto the creature_targeted_by_action payload as
+      // `defenseResolved` ("def" | "mdef" | null). Lets a Defense-specific
+      // reaction gate to attacks it can actually mitigate: Verónica's +2 DEF
+      // fires on ATTACK_VS_DEF == 1, skipping offensive spells / mdef-tagged
+      // weapon Attacks (Arc Wand) that resolve vs Magic Defense. BOTH read 0
+      // when no accuracy Check was rolled (auto-hit / non-Check action, where
+      // defenseResolved is null) → a `== 1` gate fails closed.
+      case "ATTACK_VS_DEF":  return payload?.defenseResolved === "def"  ? 1 : 0;
+      case "ATTACK_VS_MDEF": return payload?.defenseResolved === "mdef" ? 1 : 0;
       // The in-flight action's Accuracy Check total Result (post-roll). Threaded
       // onto the creature_targeted_by_action payload at CONFIRM so a reaction to
       // an incoming attack can scale by it — Crossfire spends MP equal to the
@@ -1565,6 +1687,23 @@ function hasNamedSkill(actor, wantedLower) {
 function readProp(actor, key) {
   const v = actor?.system?.props?.[key];
   return Number.isFinite(Number(v)) ? Number(v) : 0;
+}
+
+// Distinct class identities the actor owns — reads the CSB `class_list`
+// dynamic table (each row { $deleted, class_name, level }), unioning
+// class_name case-insensitively and skipping deleted / blank rows. Backs
+// CLASS_COUNT (Ring of Onions). Mirrors camp-constants.actorHasClass's read of
+// the same table.
+function countDistinctClasses(actor) {
+  const list = actor?.system?.props?.class_list;
+  if (!list || typeof list !== "object") return 0;
+  const seen = new Set();
+  for (const row of Object.values(list)) {
+    if (!row || row.$deleted) continue;
+    const name = String(row.class_name ?? "").trim().toLowerCase();
+    if (name) seen.add(name);
+  }
+  return seen.size;
 }
 
 // True if the actor has any EQUIPPED weapon of the given `weaponType`.

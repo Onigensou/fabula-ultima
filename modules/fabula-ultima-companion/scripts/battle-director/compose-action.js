@@ -780,7 +780,11 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     for (const cand of targetList) {
       let candActor = null;
       try { candActor = (await fromUuid(cand.tokenUuid))?.actor ?? null; } catch { /* unresolved → drop */ }
-      const r = buildSkillResolver({ actor: candActor, payload: null, skill: source, round: director?.dCombat?.round ?? 0 });
+      // Inject the CASTER as the payload source so caster-relative per-candidate
+      // predicates resolve (e.g. BONDED_TO_SOURCE — "this ally is Bonded to you").
+      // Caster-agnostic checks (SPECIES_IS_*, RANK_IS_*) ignore payload, so this
+      // is backward-compatible with the existing Love Potion filter.
+      const r = buildSkillResolver({ actor: candActor, payload: { sourceActorUuid: actor?.uuid ?? snap?.actorUuid ?? null }, skill: source, round: director?.dCombat?.round ?? 0 });
       if (Number(evaluateFormula(targetFilter, r, 0)) > 0) kept.push(cand);
     }
     targetList = kept;

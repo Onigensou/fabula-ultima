@@ -322,6 +322,55 @@ Hooks.once("ready", () => {
     return n;
   }
 
+  // Distinct class identities the reactor owns — reads the CSB `class_list`
+  // dynamic table (rows { $deleted, class_name, level }), unioning class_name
+  // case-insensitively and skipping deleted / blank rows. Backs CLASS_COUNT
+  // (Ring of Onions). Mirrors skill-formulas.js countDistinctClasses so both
+  // evaluators agree.
+  function _countDistinctClasses(reactorActor) {
+    const list = reactorActor?.system?.props?.class_list;
+    if (!list || typeof list !== "object") return 0;
+    const seen = new Set();
+    for (const row of Object.values(list)) {
+      if (!row || row.$deleted) continue;
+      const name = _norm(row.class_name);
+      if (name) seen.add(name);
+    }
+    return seen.size;
+  }
+
+  // Number of ENEMY creatures on the scene relative to the reactor — enemy =
+  // opposite disposition sign. Mirrors skill-formulas.js enemyActorsOf: prefers
+  // the combat roster, falls back to canvas tokens (the Battle Director often
+  // leaves game.combat null mid-battle). 0 with no reactor disposition. Backs
+  // ENEMY_COUNT (Army Wrecker's Overflow "+1 Accuracy per enemy").
+  function _countEnemies(reactorActor, reactorToken, combat) {
+    const myDisp = Number(
+      reactorToken?.document?.disposition
+      ?? reactorToken?.disposition
+      ?? combat?.combatants?.find?.((c) => c.actor === reactorActor)?.token?.disposition
+      ?? reactorActor?.prototypeToken?.disposition
+    );
+    if (!Number.isFinite(myDisp) || myDisp === 0) return 0;
+    const seen = new Set();
+    let n = 0;
+    const consider = (a, disp) => {
+      if (!a || a === reactorActor || seen.has(a)) return;
+      const d = Number(disp);
+      if (!Number.isFinite(d) || d * myDisp >= 0) return; // not an enemy
+      seen.add(a); n++;
+    };
+    const roster = (combat ?? game.combat)?.combatants;
+    if (roster && (roster.size || roster.length)) {
+      for (const c of roster) consider(c.actor, c.token?.disposition ?? c.actor?.prototypeToken?.disposition);
+      return n;
+    }
+    for (const t of (globalThis.canvas?.tokens?.placeables ?? [])) {
+      consider(t?.actor, t.document?.disposition ?? t.disposition);
+    }
+    return n;
+  }
+
   function _countBondsWithEmotion(reactorActor, emotion) {
     const pair = EMOTION_PAIR[_norm(emotion)];
     if (!pair) return 0;
@@ -407,6 +456,24 @@ Hooks.once("ready", () => {
         return _bondStrength(bond);
       }
       case "BOND_COUNT": return _countBondsAny(reactorActor);
+      // Number of DISTINCT classes the reactor owns — reads the CSB class_list
+      // dynamic table (rows { $deleted, class_name, level }), unioning
+      // class_name case-insensitively. Backs Ring of Onions ("+2 max HP/MP per
+      // distinct class"). 0 if the actor carries no class_list.
+      case "CLASS_COUNT": return _countDistinctClasses(reactorActor);
+      // Magic Defense (derived) of the trigger's SUBJECT creature (the current
+      // target). Reads the subject token's derived magic_defense prop (fallback
+      // current_mdef/mdef). Powers Witchbane's "×2 damage vs MDEF > 12" gate
+      // (TARGET_MDEF > 12). 0 when no subject token is threaded.
+      case "TARGET_MDEF": {
+        const p = subjectToken?.actor?.system?.props ?? {};
+        return Number(p.magic_defense ?? p.current_mdef ?? p.mdef ?? 0) || 0;
+      }
+      // Number of ENEMY creatures on the scene relative to the reactor — enemy
+      // = opposite disposition sign; combat roster preferred, canvas-token
+      // fallback. Backs Army Wrecker's Overflow ("+1 Accuracy per enemy").
+      // 0 out of combat / no reactor token.
+      case "ENEMY_COUNT": return _countEnemies(reactorActor, ctx.reactorToken ?? null, combat);
       // Status effects suffered by the reactor (debuff-classified, non-disabled,
       // non-suppressed). Delegates classification to the AEM registry's
       // inferCategory() so a single source of truth governs what counts as a
@@ -489,6 +556,9 @@ Hooks.once("ready", () => {
       { name: "BOND_COUNT",        description: "Total non-empty bond slots on the reactor." },
       { name: "BOND_COUNT_<EMOTION>", description: "Count of reactor's bonds with a specific emotion. Replace <EMOTION> with one of ADMIRATION / INFERIORITY / LOYALTY / MISTRUST / AFFECTION / HATRED." },
       { name: "STATUS_COUNT",      description: "Count of debuff-classified active effects on the reactor (non-disabled, non-suppressed). Uses the AEM registry's inferCategory() classifier — same source of truth as the reaction debuff_count filter." },
+      { name: "CLASS_COUNT",       description: "Number of distinct classes the reactor owns (CSB class_list table, class_name unioned case-insensitively). Backs Ring of Onions." },
+      { name: "TARGET_MDEF",       description: "Magic Defense (derived) of the trigger's subject creature (the current target). 0 when no subject token is threaded. Backs Witchbane." },
+      { name: "ENEMY_COUNT",       description: "Number of enemy creatures on the scene relative to the reactor (opposite disposition; combat roster preferred, canvas-token fallback). 0 out of combat. Backs Army Wrecker." },
       { name: "DAMAGE_DEALT",  description: "Damage value from the triggering event's payload (post-affinity). Each affected target gets its own event with its own value." },
       { name: "HP_DEALT",      description: "Same but 0 unless the event's valueType is hp." },
       { name: "MP_DEALT",      description: "Same but 0 unless the event's valueType is mp." },

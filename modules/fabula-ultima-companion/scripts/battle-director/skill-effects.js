@@ -955,7 +955,47 @@ function ipReducedAmount(amount, actor) {
   return amount > 0 ? Math.max(1, amount - actorIpReduction(actor)) : amount;
 }
 
-export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
+// Estimate the resource cost a `creature_performs_action` SELF-reaction will
+// charge when `skill` is performed — so a card can DISPLAY that cost even when
+// the skill's own native `cost` is blank because the charge lives on a reaction.
+// (The base Dance skill bills its "managed" dances via a `bd_cost`
+// consume_resource, so each dance is itself cost-less.) DISPLAY-ONLY: the
+// reaction performs the real debit at its own fire, so callers must NOT fold this
+// into the action's costSerialized (that path is debited again at RESOLVE →
+// double-charge). Returns a resource→amount map (e.g. { mp: 10 }). Each reaction's
+// condition_formula + cost formulas evaluate against a payload describing THIS
+// skill, so dynamic costs (the dance repeat-discount reading PERFORMED_SKILL /
+// AE_FLAG) resolve to the real 10 vs 5.
+export function estimatePerformReactionCost(attackerActor, skill) {
+  const out = {};
+  if (!attackerActor?.items || !skill) return out;
+  const payload = {
+    sourceSkillName: skill.name,
+    skillTags: String(skill.system?.props?.skill_tags ?? ""),
+  };
+  const resolver = buildSkillResolver({ actor: attackerActor, payload, skill, round: 0 });
+  for (const item of attackerActor.items) {
+    const rct = item.system?.props?.reaction_config_table;
+    const et = item.system?.props?.effect_table;
+    if (!rct || !et) continue;
+    for (const row of Object.values(rct)) {
+      if (!row || row.$deleted) continue;
+      if (String(row.reaction_trigger ?? "").trim() !== "creature_performs_action") continue;
+      if (String(row.reaction_source ?? "self").trim() !== "self") continue;
+      const cond = String(row.condition_formula ?? "").trim();
+      if (cond && !(Number(evaluateFormula(cond, resolver, 0)) || 0)) continue;
+      const ref = String(row.reaction_effect_ref ?? "").trim();
+      if (!ref) continue;
+      const { debit } = analyzeChainCost(et, ref, attackerActor, item, payload);
+      for (const [res, amt] of Object.entries(debit ?? {})) {
+        if (amt > 0) out[res] = (out[res] ?? 0) + amt;
+      }
+    }
+  }
+  return out;
+}
+
+export function analyzeChainCost(effectTable, startLabel, actor, skill = null, payload = {}) {
   const out = {
     ok: false, debit: {}, chargeDebit: {}, variable: false,
     sufficient: true, shortfalls: [], badge: null,
@@ -969,7 +1009,7 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
   }
   if (!byLabel.has(startLabel)) return out;
 
-  const resolver = buildSkillResolver({ actor, payload: {}, skill, round: 0 });
+  const resolver = buildSkillResolver({ actor, payload, skill, round: 0 });
   const seen = new Set();
   const debit = {};
   const chargeDebit = {};
@@ -5617,6 +5657,17 @@ async function applyApplyAeEffect(row, ctx) {
     if (row?.target_ref === "cover_target" && ctx.reactorActor?.uuid) {
       data.flags[FLAG_NS].guardCoverBy = ctx.reactorActor.uuid;
     }
+    // Action-memory marker (opt-in via `ae_remember_action`). Stamps the NAME of
+    // the action whose performance triggered this apply (payload.sourceSkillName)
+    // onto the AE as `rememberedAction`. A later formula reads it back with the
+    // general `AE_FLAG("<name>","rememberedAction")` accessor and compares to
+    // `PERFORMED_SKILL` (string ==/!=), e.g. base Dance's single "Dancing" marker
+    // records which dance, so re-dancing the SAME dance is full price while a
+    // different dance earns the repeat-discount. General "marker remembers what
+    // created it" — reusable for cooldowns-per-skill, combo/echo detection, etc.
+    if (row?.ae_remember_action) {
+      data.flags[FLAG_NS].rememberedAction = String(ctx.payload?.sourceSkillName ?? "");
+    }
     // Affinity-override protection: an AE that OVERRIDES element-affinity props
     // (affinity_1..9 — e.g. Guard's "Resistance to all") must NOT downgrade an
     // element the target is natively Immune/Absorbing to. Drop those specific
@@ -7065,8 +7116,29 @@ async function applyFreeActionEffect(row, ctx) {
     return { ok: false, kind: "free_action", reason: "no-reactor" };
   }
 
+  // performer_ref — the ACTOR that performs the granted free action. Default =
+  // the reactor (the reaction's bearer). When set, the free action is granted to
+  // a RESOLVED ally instead (Glowstick: "an ally other than yourself performs a
+  // free Magichant/Dance"). Re-points the enqueued request's reactor fields + the
+  // skill resolver + the compose picker's candidate list (which reads the enqueued
+  // reactorActor's items). The free-action queue/window drain by request, not by
+  // whose turn it is, so an off-turn ally performs it just like a Counterattacker.
+  let performer = reactor;
+  let performerToken = ctx.reactorToken ?? null;
+  const performerRefRaw = String(row.performer_ref ?? "").trim();
+  if (performerRefRaw) {
+    try {
+      const pr = await resolveTargetRef(performerRefRaw, ctx);
+      const tok = pr.ok ? pr.tokens?.[0] : null;
+      const tokDoc = tok?.document ?? tok ?? null;
+      const pActor = tokDoc?.actor ?? tok?.actor ?? null;
+      if (pActor) { performer = pActor; performerToken = tokDoc; }
+      else warn(`skill-effects.free_action: performer_ref "${performerRefRaw}" resolved no actor — defaulting to reactor`);
+    } catch (e) { warn(`skill-effects.free_action: performer_ref "${performerRefRaw}" resolve threw`, e); }
+  }
+
   const resolver = buildSkillResolver({
-    actor: reactor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+    actor: performer, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
   });
   const checkBonus  = evaluateFormula(row.check_bonus_formula  ?? "", resolver, 0) || 0;
   const damageBonus = evaluateFormula(row.damage_bonus_formula ?? "", resolver, 0) || 0;
@@ -7113,8 +7185,8 @@ async function applyFreeActionEffect(row, ctx) {
     } else {
       // Skill-name path — find the named item on the reactor.
       const wanted = parts[0].toLowerCase();
-      presetItem = (reactor.items?.find?.((i) => String(i.name ?? "").trim().toLowerCase() === wanted)) ?? null;
-      if (!presetItem) warn(`skill-effects.free_action: action_ref "${parts[0]}" — no matching item on ${reactor.name}`);
+      presetItem = (performer.items?.find?.((i) => String(i.name ?? "").trim().toLowerCase() === wanted)) ?? null;
+      if (!presetItem) warn(`skill-effects.free_action: action_ref "${parts[0]}" — no matching item on ${performer.name}`);
     }
   }
 
@@ -7180,9 +7252,9 @@ async function applyFreeActionEffect(row, ctx) {
 
   const sourceLabel = ctx.skill?.name ?? row.effect_label ?? "Free Action";
   freeActionQueue.enqueue({
-    reactorActorId:   reactor.id,
-    reactorActorUuid: reactor.uuid,
-    reactorTokenUuid: ctx.reactorToken?.uuid ?? null,
+    reactorActorId:   performer.id,
+    reactorActorUuid: performer.uuid,
+    reactorTokenUuid: performerToken?.uuid ?? ctx.reactorToken?.uuid ?? null,
     enabledLabels, checkBonus, damageBonus, hrAsZero, freeOfCost,
     sourceLabel,
     sourceItemUuid: ctx.skill?.uuid ?? null,
@@ -7203,8 +7275,8 @@ async function applyFreeActionEffect(row, ctx) {
     // Chain N attack). freeActions.get/set honor this flag. Default false.
     chain: row.chain === true || String(row.chain ?? "").trim().toLowerCase() === "true",
   });
-  log(`free_action: enqueued "${sourceLabel}" for ${reactor.name} — ${preset ? `preset ${preset.command} (${presetItem?.name})` : `compose [${enabledLabels.join(", ") || "any"}]`} (+${checkBonus} check / +${damageBonus} dmg)`);
-  return { ok: true, kind: "free_action", queued: true, freeMode: true, applied: [{ actor: reactor.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus, preset: preset ? preset.command : null }] };
+  log(`free_action: enqueued "${sourceLabel}" for ${performer.name} — ${preset ? `preset ${preset.command} (${presetItem?.name})` : `compose [${enabledLabels.join(", ") || "any"}]`} (+${checkBonus} check / +${damageBonus} dmg)`);
+  return { ok: true, kind: "free_action", queued: true, freeMode: true, applied: [{ actor: performer.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus, preset: preset ? preset.command : null }] };
 }
 
 // ── save_check ──────────────────────────────────────────────────────────────

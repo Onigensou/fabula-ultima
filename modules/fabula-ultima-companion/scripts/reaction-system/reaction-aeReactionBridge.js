@@ -85,12 +85,23 @@
         if (doc?.documentName === "Item") {
           const tmplEffects = doc.effects?.contents ?? [];
           const newName = (effect.name ?? "").toString();
-          let tmpl = tmplEffects.find(e =>
-            e?.flags?.[MODULE_ID]?.reactionConfig && (e.name ?? "") === newName
-          );
-          if (!tmpl) {
-            tmpl = tmplEffects.find(e => e?.flags?.[MODULE_ID]?.reactionConfig);
+          // Prefer the SAME-NAMED template on the source item.
+          const byName = tmplEffects.find(e => (e.name ?? "") === newName);
+          if (byName) {
+            // A template with this exact name exists — honor ITS reactionConfig,
+            // or its DELIBERATE absence. Do NOT fall back to a sibling's config, or
+            // a clean benefit AE would wrongly inherit a sibling's reaction. Items
+            // can carry several benefit AEs, only some reaction-bearing — e.g. Golem
+            // Dance's "Bolt Resist" (clean, affinity only) vs "Bolt Element" (carries
+            // the change_damage_element override). The old greedy fallback smeared
+            // Bolt Element's override onto Bolt Resist (the long-standing leak).
+            return byName.flags?.[MODULE_ID]?.reactionConfig
+              ? { tmpl: byName, sourceItem: doc }
+              : null;
           }
+          // No same-named template — legacy single-reaction-AE items whose applied
+          // AE was renamed on copy: fall back to the item's sole reaction template.
+          const tmpl = tmplEffects.find(e => e?.flags?.[MODULE_ID]?.reactionConfig);
           if (tmpl) return { tmpl, sourceItem: doc };
         }
       } catch (_) { /* fall through */ }

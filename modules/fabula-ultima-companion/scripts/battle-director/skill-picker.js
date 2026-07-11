@@ -12,7 +12,7 @@
 import { log, warn } from "./logger.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
-import { analyzeChainCost } from "./skill-effects.js";
+import { analyzeChainCost, estimatePerformReactionCost } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { getMaxActionTargets, skillTargetIsMulti } from "./snapshot.js";
@@ -128,6 +128,27 @@ function hasActiveBody(p) {
 // fires in response to a trigger, never as a turn-action.
 export function isReactionOnlySkill(p) {
   return hasReactionRows(p?.reaction_config_table) && !hasActiveBody(p);
+}
+
+// Tags whose skills are "sub-action only" — castable ONLY through a granting
+// free action's allow-list (e.g. Dancer's dances, reached via the Dance free
+// action's `tag:dance` grant), never as a standalone turn-action. Extensible
+// registry: add a family's tag here (or set `menu_hidden: true` on the individual
+// skill) as new sub-action families ship. Keeps the engine general — no per-skill
+// wiring needed for a whole tagged family.
+const MENU_HIDDEN_TAGS = new Set(["dance"]);
+
+// True when a skill should be HIDDEN from the UNRESTRICTED (standalone) action
+// menu — either an explicit `menu_hidden` prop or membership in a
+// MENU_HIDDEN_TAGS family. A free action whose allowedRefs positively matches it
+// (by name / uuid / tag) still surfaces it; the hide only applies to the
+// no-allow-list menu (see pickSkill's `hasAllowList` branch).
+export function isMenuHiddenSkill(p) {
+  const flag = p?.menu_hidden;
+  if (flag === true || String(flag ?? "").trim().toLowerCase() === "true") return true;
+  const tags = String(p?.skill_tags ?? "")
+    .split(/[\s,]+/).map((t) => t.trim().toLowerCase()).filter(Boolean);
+  return tags.some((t) => MENU_HIDDEN_TAGS.has(t));
 }
 
 function stripHtml(html) {
@@ -295,6 +316,19 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
       }
     } catch (e) { warn("skill-picker: analyzeChainCost threw", e); }
   }
+  // Reaction-billed cost — some skills are charged not by their own native cost
+  // or on_activate chain but by a `creature_performs_action` SELF-reaction that
+  // fires when they're performed (the base Dance skill bills its "managed" dances
+  // via bd_cost, so each dance is itself cost-less). Fold that estimate into the
+  // config debit so the picker shows a real cost (10 / 5) + gates affordability
+  // instead of reading "Free". Display + affordability only here (the picker never
+  // charges), so — unlike the action card — merging into costMap is safe.
+  try {
+    const perfCost = estimatePerformReactionCost(actor, skill);
+    for (const [res, amt] of Object.entries(perfCost)) {
+      if (Number(amt) > 0) configDebit.set(res, (configDebit.get(res) ?? 0) + Number(amt));
+    }
+  } catch (e) { warn("skill-picker: estimatePerformReactionCost threw", e); }
   // Affordability gate = string + config merged (display keeps them separate).
   const costMap = new Map(stringCostMap);
   for (const [res, amt] of configDebit) costMap.set(res, (costMap.get(res) ?? 0) + amt);
@@ -353,6 +387,9 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
     // Reaction-only items (reaction rows, no active body) never act as a
     // turn-action — the picker filters them out so they don't leak into the menu.
     isReactionOnly: isReactionOnlySkill(p),
+    // Sub-action-only (menu_hidden / MENU_HIDDEN_TAGS, e.g. dances) — dropped from
+    // the unrestricted menu but kept when a free action's allowedRefs matches it.
+    menuHidden: isMenuHiddenSkill(p),
     rolledA1: String(p.rolled_atr1 ?? "").trim(),
     rolledA2: String(p.rolled_atr2 ?? "").trim(),
     rawCost,
@@ -488,7 +525,15 @@ export async function pickSkill({
   // body), so they aren't turn-actions and would be a no-op if picked.
   let candidates = filterBySkillTypes(all, allowedSkillTypes)
     .filter((c) => !c.isReactionOnly);
-  if (Array.isArray(allowedRefs) && allowedRefs.length) {
+  const hasAllowList = Array.isArray(allowedRefs) && allowedRefs.length > 0;
+  // Sub-action-only skills (menu_hidden / dance-tagged) are hidden from the
+  // UNRESTRICTED menu. A free action carries an allowedRefs allow-list and still
+  // surfaces them via the name/uuid/tag match below — so the drop is scoped to the
+  // no-allow-list (normal turn) menu only.
+  if (!hasAllowList) {
+    candidates = candidates.filter((c) => !c.menuHidden);
+  }
+  if (hasAllowList) {
     // Entries are NAMES / UUIDs, plus an optional `tag:<t>` form matched against
     // the candidate's `skill_tags` (Dancer's free dance action → `tag:dance`, so
     // every dance-tagged skill qualifies without listing each by name).
