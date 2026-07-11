@@ -266,7 +266,62 @@
           "description": "<p>When you perform a <strong>dance</strong> with a duration of “Until the start of your next turn,” you may spend 10 additional Mind Points. If you do, choose one ally you can see towards whom you have a Bond of affection: apply the benefits of the <strong>dance</strong> to that ally as well as yourself (the benefits still last until the start of your next turn).</p>\n",
           "details_roller": "Show",
           "duration": "",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "chain_steps": "fml_add, fml_cost",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "fml_do",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "1": {
+              "consume_self": false,
+              "effect_kind": "add_target",
+              "effect_label": "fml_add",
+              "from_resource": "",
+              "menu_description": "Spend 10 MP to share this dance's benefit with a bonded ally.",
+              "menu_label": "Follow my lead",
+              "target_ref": "fml_pick",
+              "to_resource": ""
+            },
+            "2": {
+              "consume_amount": "10",
+              "consume_resource": "mp",
+              "consume_self": false,
+              "effect_kind": "consume_resource",
+              "effect_label": "fml_cost",
+              "from_resource": "",
+              "menu_label": "",
+              "on_empty": "abort",
+              "target_ref": "self",
+              "to_resource": ""
+            },
+            "3": {
+              "allow_empty": false,
+              "auto_confirm_when_obvious": false,
+              "auto_target": false,
+              "candidate_source": "combat",
+              "category": "ally",
+              "category_": "",
+              "consume_self": false,
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "fml_pick",
+              "exclude": "",
+              "exclude_action_targets": true,
+              "exclude_self": true,
+              "from_resource": "",
+              "iteration_mode": "together",
+              "menu_label": "",
+              "mode": "exact",
+              "skip_when_passive": false,
+              "target_filter": "SOURCE_AFFECTION_BOND_TO_ME >= 1",
+              "target_prompt": "",
+              "to_resource": ""
+            }
+          },
           "gadget_alchemy_tier": "",
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
@@ -8005,37 +8060,6 @@
           "duration": "Until the start of your next turn",
           "effect_table": {
             "0": {
-              "allow_empty": false,
-              "auto_confirm_when_obvious": true,
-              "auto_target": true,
-              "candidate_source": "self",
-              "category": "",
-              "consume_self": false,
-              "count": "1",
-              "effect_kind": "targeting",
-              "effect_label": "d_self",
-              "exclude": "",
-              "exclude_action_targets": false,
-              "exclude_self": false,
-              "from_resource": "",
-              "iteration_mode": "together",
-              "menu_label": "",
-              "mode": "exact",
-              "skip_when_passive": true,
-              "target_filter": "",
-              "target_prompt": "",
-              "to_resource": ""
-            },
-            "1": {
-              "chain_steps": "golem_pick",
-              "consume_self": false,
-              "effect_kind": "chain",
-              "effect_label": "d_root",
-              "from_resource": "",
-              "menu_label": "",
-              "to_resource": ""
-            },
-            "2": {
               "allowed_types": "",
               "check_bonus_formula": "",
               "consume_self": false,
@@ -8053,14 +8077,14 @@
               "menu_option_descriptions": "",
               "menu_option_icons": "",
               "menu_option_labels": "Gain Resistance to Bolt|All your damage becomes Bolt",
-              "menu_option_refs": "golem_resist_self, golem_element_self",
+              "menu_option_refs": "golem_resist, golem_element",
               "menu_pick_count": "",
               "menu_subtitle": "Choose one benefit (until the start of your next turn).",
               "menu_title": "Golem Dance",
               "target_ref": "",
               "to_resource": ""
             },
-            "3": {
+            "1": {
               "ae_duplicate_mode": "replace_family",
               "ae_family": "dance",
               "ae_initial_charges": "",
@@ -8068,13 +8092,13 @@
               "ae_template_ref": "Golem Dance (Bolt Resist)",
               "consume_self": false,
               "effect_kind": "apply_ae",
-              "effect_label": "golem_resist_self",
+              "effect_label": "golem_resist",
               "from_resource": "",
               "menu_label": "",
-              "target_ref": "d_self",
+              "target_ref": "action_targets",
               "to_resource": ""
             },
-            "4": {
+            "2": {
               "ae_duplicate_mode": "replace_family",
               "ae_family": "dance",
               "ae_initial_charges": "",
@@ -8082,10 +8106,10 @@
               "ae_template_ref": "Golem Dance (Bolt Element)",
               "consume_self": false,
               "effect_kind": "apply_ae",
-              "effect_label": "golem_element_self",
+              "effect_label": "golem_element",
               "from_resource": "",
               "menu_label": "",
-              "target_ref": "d_self",
+              "target_ref": "action_targets",
               "to_resource": ""
             }
           },

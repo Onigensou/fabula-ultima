@@ -185,37 +185,6 @@
       "duration": "Until the start of your next turn",
       "effect_table": {
         "0": {
-          "allow_empty": false,
-          "auto_confirm_when_obvious": true,
-          "auto_target": true,
-          "candidate_source": "self",
-          "category": "",
-          "consume_self": false,
-          "count": "1",
-          "effect_kind": "targeting",
-          "effect_label": "d_self",
-          "exclude": "",
-          "exclude_action_targets": false,
-          "exclude_self": false,
-          "from_resource": "",
-          "iteration_mode": "together",
-          "menu_label": "",
-          "mode": "exact",
-          "skip_when_passive": true,
-          "target_filter": "",
-          "target_prompt": "",
-          "to_resource": ""
-        },
-        "1": {
-          "chain_steps": "golem_pick",
-          "consume_self": false,
-          "effect_kind": "chain",
-          "effect_label": "d_root",
-          "from_resource": "",
-          "menu_label": "",
-          "to_resource": ""
-        },
-        "2": {
           "allowed_types": "",
           "check_bonus_formula": "",
           "consume_self": false,
@@ -233,14 +202,14 @@
           "menu_option_descriptions": "",
           "menu_option_icons": "",
           "menu_option_labels": "Gain Resistance to Bolt|All your damage becomes Bolt",
-          "menu_option_refs": "golem_resist_self, golem_element_self",
+          "menu_option_refs": "golem_resist, golem_element",
           "menu_pick_count": "",
           "menu_subtitle": "Choose one benefit (until the start of your next turn).",
           "menu_title": "Golem Dance",
           "target_ref": "",
           "to_resource": ""
         },
-        "3": {
+        "1": {
           "ae_duplicate_mode": "replace_family",
           "ae_family": "dance",
           "ae_initial_charges": "",
@@ -248,13 +217,13 @@
           "ae_template_ref": "Golem Dance (Bolt Resist)",
           "consume_self": false,
           "effect_kind": "apply_ae",
-          "effect_label": "golem_resist_self",
+          "effect_label": "golem_resist",
           "from_resource": "",
           "menu_label": "",
-          "target_ref": "d_self",
+          "target_ref": "action_targets",
           "to_resource": ""
         },
-        "4": {
+        "2": {
           "ae_duplicate_mode": "replace_family",
           "ae_family": "dance",
           "ae_initial_charges": "",
@@ -262,10 +231,10 @@
           "ae_template_ref": "Golem Dance (Bolt Element)",
           "consume_self": false,
           "effect_kind": "apply_ae",
-          "effect_label": "golem_element_self",
+          "effect_label": "golem_element",
           "from_resource": "",
           "menu_label": "",
-          "target_ref": "d_self",
+          "target_ref": "action_targets",
           "to_resource": ""
         }
       },

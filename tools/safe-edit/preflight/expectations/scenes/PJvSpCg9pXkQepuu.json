@@ -3,14 +3,14 @@
   "name": "AncientTemple_Map004",
   "tokens": [
     {
-      "name": "Blacksmith Shade A",
+      "name": "Blacksmith Shade",
       "actorId": "8ZKo5tt90i1Tdtr5",
       "actorLink": true
     }
   ],
   "tokensFull": [
     {
-      "name": "Blacksmith Shade A",
+      "name": "Blacksmith Shade",
       "displayName": 0,
       "actorLink": true,
       "appendNumber": false,
@@ -24,8 +24,8 @@
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": 1.1,
-        "scaleY": 1.1,
+        "scaleX": 1,
+        "scaleY": 1,
         "rotation": 0,
         "tint": "#ffffff",
         "alphaThreshold": 0.75
@@ -33,7 +33,7 @@
       "hexagonalShape": 0,
       "lockRotation": false,
       "rotation": 0,
-      "alpha": 0.8,
+      "alpha": 1,
       "disposition": 0,
       "displayBars": 50,
       "bar1": {
@@ -116,19 +116,15 @@
           "dominanceCrestOffset": {
             "x": 0,
             "y": 0
-          },
-          "idleAnimToken": {
-            "float": false,
-            "bounce": false
           }
         }
       },
       "actorId": "8ZKo5tt90i1Tdtr5",
       "hidden": true,
-      "sort": 0,
-      "_id": "WKcSgSUj2krz2fXy",
-      "x": 266,
-      "y": 140,
+      "sort": 1,
+      "_id": "WqVP4R05yMvridN0",
+      "x": 239,
+      "y": 267,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -181,7 +177,7 @@
       "y": 448,
       "scale": 3
     },
-    "tokenVision": true,
+    "tokenVision": false,
     "fog": {
       "exploration": true,
       "overlay": null,
@@ -262,8 +258,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "core": {
         "forceInitialView": true
@@ -283,7 +278,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
             "wellspring_fire": true,
@@ -323,7 +318,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398842978,
-      "modifiedTime": 1783752102149,
+      "modifiedTime": 1783794538983,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

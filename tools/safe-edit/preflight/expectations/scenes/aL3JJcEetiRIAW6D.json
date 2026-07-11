@@ -190,7 +190,7 @@
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": 1.14,
+        "scaleX": -1.14,
         "scaleY": 1.14,
         "rotation": 0,
         "tint": "#ffffff",
@@ -280,15 +280,15 @@
         }
       },
       "actorId": "t6E3CQ0pGxwLgXrn",
-      "hidden": true,
+      "hidden": false,
       "sort": 1,
       "_id": "78wFnVJGYdydtvLn",
-      "x": 743,
-      "y": 597,
+      "x": 753,
+      "y": 62,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "DUDni5mv8nYw4ocg"
+        "ucGUuFGzQMMmBGKE"
       ]
     },
     {
@@ -315,7 +315,7 @@
       "hexagonalShape": 0,
       "lockRotation": false,
       "rotation": 0,
-      "alpha": 0.65,
+      "alpha": 0.8,
       "disposition": 1,
       "displayBars": 50,
       "bar1": {
@@ -415,14 +415,14 @@
         }
       },
       "actorId": "LnlydRl7Ed7agd1g",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
-      "x": 971,
-      "y": 876,
+      "x": 1040,
+      "y": 691,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "ucGUuFGzQMMmBGKE"
+        "DUDni5mv8nYw4ocg"
       ],
       "_id": "82T7KWaUUkTIlq9O"
     },
@@ -626,15 +626,15 @@
         }
       },
       "actorId": "dafTLBUscCDNgq8H",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "_id": "a9kkj1PG9W5P2w1b",
-      "x": 987,
-      "y": 821,
+      "x": 803,
+      "y": 671,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "DUDni5mv8nYw4ocg"
+        "ucGUuFGzQMMmBGKE"
       ]
     },
     {
@@ -652,7 +652,7 @@
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": -1.1,
+        "scaleX": 1.1,
         "scaleY": 1.1,
         "rotation": 0,
         "tint": "#ffffff",
@@ -837,15 +837,15 @@
         }
       },
       "actorId": "gdJZ1L1kv5mjTTMr",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "_id": "aQquAyHmURTP3G4B",
-      "x": 880,
-      "y": 852,
+      "x": 941,
+      "y": 703,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "ucGUuFGzQMMmBGKE"
+        "DUDni5mv8nYw4ocg"
       ]
     },
     {
@@ -863,7 +863,7 @@
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": -1.09,
+        "scaleX": 1.09,
         "scaleY": 1.09,
         "rotation": 0,
         "tint": "#ffffff",
@@ -963,11 +963,11 @@
         }
       },
       "actorId": "Z4CFy505cD3nzl1W",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "_id": "bOAymRFO7pT1Z2TQ",
-      "x": 1159,
-      "y": 530,
+      "x": 813,
+      "y": 671,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -1174,11 +1174,11 @@
         }
       },
       "actorId": "uJFaNQCSvwwsr2AW",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "_id": "hvkV9H4CQUq0vZGR",
-      "x": 929,
-      "y": 814,
+      "x": 805,
+      "y": 675,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -1194,7 +1194,7 @@
       "width": 1,
       "height": 1,
       "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The Legend of Dragonslayer/Image/NPCs/Geist/Geist_Onsen.png",
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The Legend of Dragonslayer/Image/NPCs/Geist/Geist_Standard.png",
         "anchorX": 0.5,
         "anchorY": 0.5,
         "offsetX": 0,
@@ -1300,15 +1300,15 @@
         }
       },
       "actorId": "UYAabJiUZJ1uKers",
-      "hidden": false,
+      "hidden": true,
       "sort": 1,
       "_id": "t6bKtpRETMO9ByHs",
-      "x": 539,
-      "y": 641,
+      "x": 676,
+      "y": 402,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "ucGUuFGzQMMmBGKE"
+        "DUDni5mv8nYw4ocg"
       ]
     },
     {
@@ -1438,12 +1438,12 @@
       "hidden": true,
       "sort": 1,
       "_id": "wcak0UGcSpkRKiFI",
-      "x": 678,
-      "y": 569,
+      "x": 698,
+      "y": 24,
       "elevation": 0,
       "locked": false,
       "_regions": [
-        "DUDni5mv8nYw4ocg"
+        "ucGUuFGzQMMmBGKE"
       ]
     }
   ],
@@ -1671,8 +1671,8 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780669400384,
-      "modifiedTime": 1783773851332,
-      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+      "modifiedTime": 1783778913669,
+      "lastModifiedBy": "WQGFvLStTZeWGpak"
     },
     "regions": [
       {

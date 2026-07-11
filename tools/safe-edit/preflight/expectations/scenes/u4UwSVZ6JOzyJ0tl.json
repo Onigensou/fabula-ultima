@@ -105,8 +105,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "levels": {
         "backgroundElevation": 0,
@@ -150,7 +149,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
             "wellspring_fire": true,
@@ -180,7 +179,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780539632143,
-      "modifiedTime": 1783691611319,
+      "modifiedTime": 1783791121753,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

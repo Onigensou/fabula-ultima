@@ -1,129 +1,8 @@
 {
   "sceneId": "CSHtuv28fdkgZf3P",
   "name": "Wyrmwood_Map005",
-  "tokens": [
-    {
-      "name": "Hina",
-      "actorId": "t6E3CQ0pGxwLgXrn",
-      "actorLink": true
-    }
-  ],
-  "tokensFull": [
-    {
-      "name": "Hina",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": 1.14,
-        "scaleY": 1.14,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": null
-      },
-      "bar2": {
-        "attribute": null
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.15,
-        "angle": 360,
-        "bright": 0,
-        "color": "#eea149",
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": "flame",
-          "speed": 2,
-          "intensity": 4,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 5,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {}
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Overworld%20Tokens/Hina%20Party/Hina_Standard.png",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": true
-        }
-      },
-      "actorId": "t6E3CQ0pGxwLgXrn",
-      "x": 198,
-      "y": 492,
-      "_id": "hLgHsTyMnAg7VTi5",
-      "elevation": 0,
-      "sort": 0,
-      "locked": false,
-      "hidden": false,
-      "_regions": []
-    }
-  ],
+  "tokens": [],
+  "tokensFull": [],
   "notes": [],
   "tileCount": 21,
   "full": {
@@ -226,8 +105,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -363,7 +241,7 @@
             },
             "Q3jwWYJtPp6am8ah": {
               "initialType": "skill_check",
-              "currentType": "skill_check",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
             },
             "m7cMFeaXUTM7ddvy": {
@@ -393,7 +271,7 @@
             },
             "Q7DrBvUtTZDzZl99": {
               "initialType": "gathering",
-              "currentType": "gathering",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
             },
             "LO9P5woSUjiTM1TZ": {
@@ -408,19 +286,36 @@
             },
             "BylLEBDraAIeeQVS": {
               "initialType": "fishing",
-              "currentType": "fishing",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fishing_Tile.png"
             },
             "Mw0LZSDg3az0C9Jd": {
               "initialType": "gathering",
-              "currentType": "gathering",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gathering_Tile.png"
             }
           },
           "visitedTiles": {
             "nAjOSzuKMHRC3IDi": true,
             "VQxV5vy2ygh1QCmZ": true,
-            "rYQthCRsEuHwsWue": true
+            "rYQthCRsEuHwsWue": true,
+            "tNMx6hpOEpyva0hf": true,
+            "Q7DrBvUtTZDzZl99": true,
+            "7PNAepO11mDeWgia": true,
+            "RjurWG6OWiClQZ1J": true,
+            "GovEiNKzRBXZceL7": true,
+            "SzkaV4nVNFAKOjvF": true,
+            "cpZ54QTsMeyLwMwc": true,
+            "BylLEBDraAIeeQVS": true,
+            "LO9P5woSUjiTM1TZ": true,
+            "YlBoHHl4UMuDPdy0": true,
+            "2zbtcR9U25DXHxwG": true,
+            "Mw0LZSDg3az0C9Jd": true,
+            "Q3jwWYJtPp6am8ah": true,
+            "m7cMFeaXUTM7ddvy": true,
+            "oHbs1SnZsa5vBC9j": true,
+            "d487PFdWg7QPaUJ1": true,
+            "ITCwg7NBgsx0z4OC": true
           }
         }
       },
@@ -445,6 +340,172 @@
       },
       "core": {
         "forceInitialView": true
+      },
+      "world": {
+        "battleInit": {
+          "latestPayload": {
+            "meta": {
+              "schemaVersion": 1,
+              "battleId": "u0gkKDvAuCb9A62N",
+              "createdAt": "2026-07-11T15:49:36.132Z",
+              "debug": {
+                "enabled": true,
+                "trace": [
+                  {
+                    "phase": "prompt",
+                    "at": "2026-07-11T15:49:36.132Z",
+                    "note": "Created initial BattlePayload from GM prompt."
+                  },
+                  {
+                    "phase": "prompt",
+                    "at": "2026-07-11T15:49:36.132Z",
+                    "note": "Clear Battle Log: ok"
+                  }
+                ]
+              }
+            },
+            "context": {
+              "sourceSceneUuid": "Scene.CSHtuv28fdkgZf3P",
+              "sourceSceneId": "CSHtuv28fdkgZf3P",
+              "sourceSceneName": "Wyrmwood_Map005",
+              "battleSceneUuid": "Scene.OzZIYbff6H0Drj8r",
+              "return": {
+                "enabled": true
+              },
+              "lean": false
+            },
+            "battleConfig": {
+              "encounterTableUuid": "RollTable.dVTBvuqiiIbsydxt",
+              "enemiesTableUuid": "RollTable.EggrsY05k3rIY9iS",
+              "battleSceneUuid": "Scene.OzZIYbff6H0Drj8r",
+              "bgm": "DRG_Battle"
+            },
+            "battleConfigDefaults": {
+              "encounterTableUuidDefault": "RollTable.dVTBvuqiiIbsydxt",
+              "enemiesTableUuidDefault": "RollTable.EggrsY05k3rIY9iS",
+              "battleSceneUuidDefault": "Scene.OzZIYbff6H0Drj8r",
+              "battleBgmDefault": "DRG_Battle",
+              "bossBgmDefault": "DRG_Boss"
+            },
+            "party": {
+              "mode": "dbPartyMembers",
+              "source": {
+                "gameName": "The Legend of Dragonslayer",
+                "resolvedAt": "2026-07-11T15:49:30.238Z"
+              },
+              "members": [
+                {
+                  "slot": 1,
+                  "actorUuid": "Actor.dafTLBUscCDNgq8H",
+                  "actorId": "dafTLBUscCDNgq8H",
+                  "name": "Hina",
+                  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/h1.png"
+                },
+                {
+                  "slot": 2,
+                  "actorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+                  "actorId": "gdJZ1L1kv5mjTTMr",
+                  "name": "Keren",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Portrait/Keren_Portrait001.png"
+                },
+                {
+                  "slot": 3,
+                  "actorUuid": "Actor.uJFaNQCSvwwsr2AW",
+                  "actorId": "uJFaNQCSvwwsr2AW",
+                  "name": "Blanche",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Portrait/Blanche_Portrait001.png"
+                },
+                {
+                  "slot": 4,
+                  "actorUuid": "Actor.Z4CFy505cD3nzl1W",
+                  "actorId": "Z4CFy505cD3nzl1W",
+                  "name": "Zarg",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Portrait/Zarg_Portrait.png"
+                }
+              ],
+              "missing": []
+            },
+            "battlePlan": {
+              "type": "default",
+              "randomChancePercent": 21,
+              "isBoss": false,
+              "initiativeMode": "rolled",
+              "engagement": "normal"
+            },
+            "encounterPlan": {
+              "mode": "rollRevealTable",
+              "difficultyTag": null,
+              "isBoss": false,
+              "manualPicks": [],
+              "roll": {}
+            },
+            "encounterResolved": {
+              "enemies": []
+            },
+            "options": {
+              "battleLog": {
+                "clearOnCreate": true,
+                "report": {
+                  "ok": true,
+                  "dbName": "EXFURSION Party"
+                }
+              },
+              "animations": {
+                "enabled": true
+              },
+              "combat": {
+                "autoStart": true
+              },
+              "unleash": {
+                "enabled": true
+              },
+              "battleSystem": "director",
+              "devMode": false
+            },
+            "layout": {
+              "preset": "party_line__enemy_rows",
+              "spawnZones": {},
+              "placements": {}
+            },
+            "spawnResult": {
+              "partyTokenIds": [],
+              "enemyTokenIds": [],
+              "tokenIdByActorUuid": {}
+            },
+            "combat": {
+              "combatId": null,
+              "combatUuid": null,
+              "started": false
+            },
+            "unleash": {
+              "checked": false,
+              "triggers": []
+            },
+            "rewards": {
+              "exp": {
+                "total": 0,
+                "byEnemy": []
+              },
+              "notes": []
+            },
+            "phases": {
+              "prompt": {
+                "status": "ok",
+                "at": "2026-07-11T15:49:36.132Z"
+              },
+              "directorManager": {
+                "status": "ok",
+                "at": "2026-07-11T15:49:54.533Z",
+                "initialState": "STANDALONE_REACTION_WINDOW",
+                "note": "PREP runs asynchronously after this; check FUCompanion.api.experimental.battleDirector.status() for progress."
+              }
+            },
+            "manager": {
+              "status": "ok",
+              "stoppedAt": "2026-07-11T15:49:54.533Z"
+            }
+          }
+        }
       }
     },
     "_stats": {
@@ -454,7 +515,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396670285,
-      "modifiedTime": 1783772970315,
+      "modifiedTime": 1783786086731,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

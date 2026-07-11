@@ -217,8 +217,8 @@
       "hidden": false,
       "sort": 0,
       "_id": "3zVUu4RRZIvy6Sj1",
-      "x": 412,
-      "y": 292,
+      "x": 597,
+      "y": 152,
       "elevation": 0,
       "locked": false,
       "_regions": []
@@ -416,8 +416,8 @@
       "hidden": false,
       "sort": 1,
       "_id": "CwdbMyZRnealMKhA",
-      "x": 432,
-      "y": 382,
+      "x": 487,
+      "y": 231,
       "elevation": 0,
       "locked": false,
       "_regions": []
@@ -615,8 +615,8 @@
       "hidden": false,
       "sort": 1,
       "_id": "QJO49LaK7MhjjCER",
-      "x": 319,
-      "y": 305,
+      "x": 318,
+      "y": 214,
       "elevation": 0,
       "locked": false,
       "_regions": []
@@ -814,8 +814,8 @@
       "hidden": false,
       "sort": 2,
       "_id": "TOiS2BCXOJobYIZk",
-      "x": 320,
-      "y": 382,
+      "x": 204,
+      "y": 393,
       "elevation": 0,
       "locked": false,
       "_regions": []
@@ -866,7 +866,7 @@
       "y": 451,
       "scale": 3
     },
-    "tokenVision": true,
+    "tokenVision": false,
     "fog": {
       "exploration": true,
       "overlay": null,
@@ -947,8 +947,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "core": {
         "forceInitialView": true
@@ -968,7 +967,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
             "wellspring_fire": true,
@@ -1027,8 +1026,8 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398840576,
-      "modifiedTime": 1783771060210,
-      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+      "modifiedTime": 1783801444843,
+      "lastModifiedBy": "WQGFvLStTZeWGpak"
     },
     "walls": [
       {

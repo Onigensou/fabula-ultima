@@ -181,7 +181,7 @@
       "y": 453,
       "scale": 3
     },
-    "tokenVision": true,
+    "tokenVision": false,
     "fog": {
       "exploration": true,
       "overlay": null,
@@ -283,7 +283,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
             "wellspring_fire": true,
@@ -323,7 +323,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398847633,
-      "modifiedTime": 1783752102164,
+      "modifiedTime": 1783792510013,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

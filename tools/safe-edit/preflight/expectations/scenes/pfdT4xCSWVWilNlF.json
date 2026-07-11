@@ -137,7 +137,7 @@
         }
       },
       "actorId": "HMVout7kK8udbjEi",
-      "hidden": true,
+      "hidden": false,
       "sort": 0,
       "_id": "WOYpAmaxYu5JLy0D",
       "x": 268,
@@ -194,7 +194,7 @@
       "y": 452,
       "scale": 3
     },
-    "tokenVision": true,
+    "tokenVision": false,
     "fog": {
       "exploration": true,
       "overlay": null,
@@ -296,7 +296,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
             "wellspring_fire": true,
@@ -336,7 +336,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398845317,
-      "modifiedTime": 1783752102157,
+      "modifiedTime": 1783794584618,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [
