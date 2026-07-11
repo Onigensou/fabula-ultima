@@ -295,6 +295,16 @@ function computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice,
     }
   }
 
+  // Invoke Bond — a flat accuracy bonus the player spent an Invoke Point on, stored
+  // on the actionResult (`ar.invokeCheckBonus`). Fold it into the computed total the
+  // same way the free-action grant above does, so EVERY recompute re-applies it by
+  // construction: the CONFIRM reaction reconciliation (which rebuilds the total from
+  // dice + bonusParts and IGNORES `roll.checkBonus`) would otherwise drop it, making
+  // an invoked Bond "update the number but not the result". 0 at COMPUTE (no invoke
+  // yet) and on the Attack path where `ar` is null.
+  const invokeBonus = Number(ar?.invokeCheckBonus) || 0;
+  if (invokeBonus !== 0) { bonusParts.push({ source: "Invoke: Bond", amount: invokeBonus }); baseBonus += invokeBonus; }
+
   const check = {
     required, mode, attrs: { A1, A2, dA, dB }, bonusParts,
     rA: null, rB: null, hr: null, total: null, isCrit: false, isFumble: false,
