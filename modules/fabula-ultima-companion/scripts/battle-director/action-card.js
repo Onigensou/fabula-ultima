@@ -6645,6 +6645,11 @@ let _mirrorCleanup = null;
 // (BEFORE running any secondary picker), so a legitimately slow resolution —
 // e.g. the player is still choosing a Protect target — does NOT trip this.
 const REACTION_SUBMIT_TIMEOUT_MS = 8000;
+// After the GM acks a Confirm/Cancel it normally follows with the card-close that
+// tears the player's mirror down. If the host dies / refreshes MID-processing, that
+// close never arrives — so the ack re-arms this longer completion fallback (instead
+// of standing the safety net down entirely) to restore the buttons for a retry.
+const CONFIRM_COMPLETION_TIMEOUT_MS = 20000;
 
 // Restore a reaction pill from its in-flight "submitting" state back to
 // actionable (pending, buttons live). Shared by the GM-broadcast "revert" path
@@ -6940,8 +6945,23 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (!menuSpec || menuSpec.kind !== "action-card-confirm-ack") return;
     const wrapper = document.getElementById(MIRROR_ROOT_ID);
     if (!wrapper) return;
-    if (wrapper._fudConfirmTimer) { try { clearTimeout(wrapper._fudConfirmTimer); } catch {} wrapper._fudConfirmTimer = null; }
-    delete wrapper.dataset.fudConfirmSubmitting;
+    const action = wrapper.dataset.fudConfirmSubmitting;
+    if (!action) return; // nothing pending to reconcile
+    // DON'T stand the safety net down entirely: the ack means the GM received our
+    // click, but if the host dies / refreshes mid-processing the card-close never
+    // arrives and the greyed buttons would stay stuck forever. Swap the short
+    // no-response timer for a longer COMPLETION fallback that restores the buttons
+    // (retryable) if the close doesn't come. The normal card-close disconnects this
+    // wrapper first, so the fallback then bails harmlessly on !isConnected.
+    if (wrapper._fudConfirmTimer) { try { clearTimeout(wrapper._fudConfirmTimer); } catch {} }
+    wrapper._fudConfirmTimer = setTimeout(() => {
+      wrapper._fudConfirmTimer = null;
+      if (!wrapper.isConnected) return;
+      if (wrapper.dataset.fudConfirmSubmitting !== action) return; // superseded / closed
+      delete wrapper.dataset.fudConfirmSubmitting;
+      for (const b of wrapper.querySelectorAll(".fud-btn")) b.classList.remove("is-resolved");
+      try { ui.notifications?.warn("The host hasn't finished this action — tap the button again."); } catch {}
+    }, CONFIRM_COMPLETION_TIMEOUT_MS);
   });
 
   const offOpen = channel.onMenuOpen((menuSpec) => {
