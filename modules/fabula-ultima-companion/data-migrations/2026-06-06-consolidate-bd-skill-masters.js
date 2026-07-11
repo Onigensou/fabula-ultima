@@ -34,9 +34,9 @@
  * template-version surgery is required.
  *
  * ⚠ LIVE-APPLY FOLLOW-UPS (see migration summary / PR notes):
- *   1. Regenerate `_bd-skills-snapshot.json` (export-bd-skills.mjs) AFTER this
- *      runs — for root-linked skills we delete the migration-created BD master,
- *      and the create-if-missing restore migration would otherwise re-add it.
+ *   1. (OBSOLETE 2026-07-11) The `_bd-skills-snapshot.json` restore was retired
+ *      to a no-op and the snapshot + exporter removed — content now ships via
+ *      world-data push, so there is no snapshot to regenerate here anymore.
  *   2. Review the SKIPPED (no-BD-master) skills and file them by hand.
  *   3. Legacy duplicate AEs (e.g. Hawkeye's) are left in place by design.
  */
