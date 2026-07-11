@@ -248,6 +248,56 @@ function evaluateActiveEffectCondition(context, row) {
   };
 }
 
+/* Passes if the PERFORMER itself carries the named status. */
+function evaluateSelfHasStatus(context, row) {
+  const actor = getActor(context);
+  const statusName = AR.toString(row?.stringRaw, "").trim();
+  const label = "Self Has Status";
+
+  if (!actor) {
+    return { passed: false, conditionKey: "self_has_status", conditionLabel: label,
+      reason: "No actor found for Self Has Status check.", details: { statusName } };
+  }
+  if (!statusName) {
+    return { passed: false, conditionKey: "self_has_status", conditionLabel: label,
+      reason: "No status name entered in the row string field.", details: {} };
+  }
+
+  const passed = AR.actorHasEffectByName(actor, statusName);
+  return {
+    passed,
+    conditionKey: "self_has_status",
+    conditionLabel: label,
+    reason: passed ? `Self has "${statusName}".` : `Self does not have "${statusName}".`,
+    details: { statusName }
+  };
+}
+
+/* Passes if the PERFORMER itself does NOT carry the named status. */
+function evaluateSelfLacksStatus(context, row) {
+  const actor = getActor(context);
+  const statusName = AR.toString(row?.stringRaw, "").trim();
+  const label = "Self Lacks Status";
+
+  if (!actor) {
+    return { passed: false, conditionKey: "self_lacks_status", conditionLabel: label,
+      reason: "No actor found for Self Lacks Status check.", details: { statusName } };
+  }
+  if (!statusName) {
+    return { passed: false, conditionKey: "self_lacks_status", conditionLabel: label,
+      reason: "No status name entered in the row string field.", details: {} };
+  }
+
+  const passed = !AR.actorHasEffectByName(actor, statusName);
+  return {
+    passed,
+    conditionKey: "self_lacks_status",
+    conditionLabel: label,
+    reason: passed ? `Self does not have "${statusName}" (pass).` : `Self has "${statusName}" (fail).`,
+    details: { statusName }
+  };
+}
+
 function getPerformerTokenDoc(context) {
   return context?.performer?.tokenDocument ?? context?.actorData?.tokenDocument ?? null;
 }
@@ -455,6 +505,12 @@ function evaluateOneCondition(context, row, options = {}) {
 
     case "active_effect":
       return evaluateActiveEffectCondition(context, row);
+
+    case "self_has_status":
+      return evaluateSelfHasStatus(context, row);
+
+    case "self_lacks_status":
+      return evaluateSelfLacksStatus(context, row);
 
     case "enemy_count":
       return evaluateCountCondition(context, row, "enemy", "Enemy Count");

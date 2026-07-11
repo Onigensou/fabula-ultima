@@ -56,6 +56,12 @@ const CONDITION_ALIASES = Object.freeze({
   active_effect: "active_effect",
   "active effect": "active_effect",
 
+  self_has_status: "self_has_status",
+  "self has status": "self_has_status",
+
+  self_lacks_status: "self_lacks_status",
+  "self lacks status": "self_lacks_status",
+
   enemy_count: "enemy_count",
   "enemy count": "enemy_count",
 
@@ -110,6 +116,8 @@ function getConditionLabel(conditionKey) {
     case "resource2": return "Resource 2";
     case "resource3": return "Resource 3";
     case "active_effect": return "Active Effect";
+    case "self_has_status": return "Self Has Status";
+    case "self_lacks_status": return "Self Lacks Status";
     case "enemy_count": return "Enemy Count";
     case "ally_count": return "Ally Count";
     case "enemy_has_status": return "Enemy Has Status";
