@@ -344,11 +344,25 @@
               "target_filter": "AE_CHARGES_BURN >= 10"
             },
             "3": {
-              "effect_kind": "set_resource",
+              "damage_amount": "99999",
+              "damage_cause": "hazard",
+              "damage_element": "elementless",
+              "damage_ignore_affinity": true,
+              "effect_kind": "deal_damage",
               "effect_label": "pyre_selfko",
-              "grant_amount": "0",
-              "grant_resource": "hp",
               "target_ref": "self"
+            },
+            "4": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "pyre_burnwipe",
+              "filter_tag": "burn",
+              "target_ref": "action_targets"
+            },
+            "5": {
+              "chain_steps": "pyre_burnwipe,pyre_selfko",
+              "effect_kind": "chain",
+              "effect_label": "pyre_onuse"
             }
           },
           "heroic_requirement": "",
@@ -364,7 +378,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Funeral Pyre",
-          "on_activate_effect_ref": "pyre_selfko",
+          "on_activate_effect_ref": "pyre_onuse",
           "optional_params": {},
           "reaction_config_table": {
             "0": {

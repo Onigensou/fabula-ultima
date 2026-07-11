@@ -2236,6 +2236,7 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Each time you take this Skill, you learn a <strong>dance</strong> (see Facet).</p><p>On your turn during a conflict scene, if you have no martial armor equipped, you may spend 10 Mind Points to perform a <strong>dance</strong> you have learned. This doesn’t require an action, but it can only be done before or after an action, and only once per turn. If you already performed a different dance during your previous turn in this scene, the cost of the new dance is reduced to 5 Mind Points.</p><p>Some dances are instantaneous and resolve immediately, while others have effects that last until the start of your next turn.</p>",
+          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -2291,7 +2292,9 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "B5EA1iq4j0wYzpo5",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_step.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -2389,7 +2392,8 @@
           "skill_type": "Other",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -8218,7 +8222,7 @@
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
       "current_hp": "106",
-      "current_ip": 4,
+      "current_ip": "4",
       "current_mp": "76",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",

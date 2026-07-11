@@ -1042,7 +1042,7 @@
           "cost": "10 MP",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>Possessed the target's Shadow, During this round, if the target performs a 【⚔️Attack】,&nbsp;【💥Skill】 or&nbsp;【📕Spell】action, <strong>Negate </strong>it and inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+          "description": "<p>It steps into your shadow and folds its hands over your own. Whatever you meant to do, it has already unmade.</p>",
           "duration": "One Round",
           "effect_table": {
             "0": {
@@ -1414,6 +1414,17 @@
           "action_pattern_target_focus": "highest_hp",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "random",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Shadow Sneak",
+          "action_pattern_priority": "10",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "lowest_hp",
+          "action_pattern_value_1": "15",
+          "action_pattern_value_2": "0"
         }
       },
       "activation": "1",
@@ -1649,7 +1660,7 @@
       "skill_active_list": {
         "nfgaJsrDB7MzmoI7": {
           "active_cost": "10 MP",
-          "active_description": "<p>Possessed the target's Shadow, During this round, if the target performs a 【⚔️Attack】,&nbsp;【💥Skill】 or&nbsp;【📕Spell】action, <strong>Negate </strong>it and inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+          "active_description": "<p>It steps into your shadow and folds its hands over your own. Whatever you meant to do, it has already unmade.</p>",
           "active_duration": "One Round",
           "active_target": "All Enemy",
           "id": "${item.id}",
