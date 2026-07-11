@@ -26,7 +26,11 @@
       "damage_taken_increased_light": 0,
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
-      "damage_taken_mult": 1
+      "damage_taken_mult": 1,
+      "idleAnimation": {
+        "bounce": false,
+        "float": false
+      }
     },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Portrait/Geist_Portrait.png",
@@ -713,13 +717,19 @@
           }
         }
       },
+      "fabula-ultima-companion": {
+        "dominanceCrestOffset": {
+          "x": 0,
+          "y": 0
+        }
+      },
       "hex-size-support": {
         "hideBorder": true,
         "hideFill": true
       },
       "token-variants": {
         "disableHUDButton": false,
-        "randomImgDefault": ""
+        "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Standard.png"
       },
       "token-z": {
         "zIndex": 0
@@ -761,7 +771,7 @@
       "radius": 0
     },
     "prependAdjective": false,
-    "randomImg": false,
+    "randomImg": true,
     "ring": {
       "colors": {
         "background": null,
@@ -796,7 +806,7 @@
       "rotation": 0,
       "scaleX": 1.17,
       "scaleY": 1.17,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Standard.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/*",
       "tint": "#ffffff"
     },
     "width": 1

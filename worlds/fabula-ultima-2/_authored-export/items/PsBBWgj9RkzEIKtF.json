@@ -8,6 +8,69 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "4tvWv0UjgikUEvLl",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783769200695,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_6",
+          "mode": 5,
+          "priority": 20,
+          "value": "AB"
+        },
+        {
+          "key": "affinity_7",
+          "mode": 5,
+          "priority": 20,
+          "value": "VU"
+        }
+      ],
+      "description": "",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "4tvWv0UjgikUEvLl",
+          "originalParentId": "PsBBWgj9RkzEIKtF",
+          "originalUuid": "Item.PsBBWgj9RkzEIKtF.ActiveEffect.4tvWv0UjgikUEvLl"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2640.gif",
+      "name": "Ring of Magma",
+      "origin": "Item.PsBBWgj9RkzEIKtF",
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
@@ -73,7 +136,6 @@
       "beast_ef": "100",
       "category": "Arcane",
       "celestial_ef": "100",
-      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "0",
@@ -92,8 +154,6 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "id": "PsBBWgj9RkzEIKtF",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2640.gif",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
@@ -126,7 +186,6 @@
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
-      "uuid": "Item.PsBBWgj9RkzEIKtF",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },

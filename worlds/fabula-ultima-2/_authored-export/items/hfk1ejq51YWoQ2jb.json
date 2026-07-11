@@ -32,7 +32,6 @@
       "damage_bonus": "",
       "defense_target_type": "def",
       "description": "<p>When a creature target you with an <strong>【⚔️Attack】</strong>, <strong>【💥Skill】</strong> or <strong>【📕Spell】</strong>, as a reaction, you may increase your <strong>Defense </strong>score by 2 for that action.</p>",
-      "details_roller": "Show",
       "duration": "Instantaneous",
       "effect_table": {
         "0": {
@@ -71,9 +70,7 @@
       "gadget_infusion_tier": "",
       "gadget_magitech_tier": "",
       "heroic_requirement": "",
-      "id": "t778u8UkNMDq5a4E",
       "ignore_hr": false,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215902.695.png",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
@@ -88,8 +85,8 @@
       "pre_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {
-          "condition_formula": "",
-          "reaction_action_intent": "",
+          "condition_formula": "ATTACK_VS_DEF == 1",
+          "reaction_action_intent": "harmful",
           "reaction_action_kind": "Attack,Spell,Skill",
           "reaction_action_target": "",
           "reaction_cause_filter": "",
@@ -122,8 +119,7 @@
       "skill_target": "Self",
       "skill_type": "Active",
       "type_damage": "",
-      "use_optional_params": false,
-      "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.t778u8UkNMDq5a4E"
+      "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

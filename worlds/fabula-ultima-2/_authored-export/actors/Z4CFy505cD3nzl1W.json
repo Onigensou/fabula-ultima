@@ -2206,6 +2206,61 @@
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
+        },
+        {
+          "_id": "pDX5hwJQGmlXWvaV",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783769337950,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "pDX5hwJQGmlXWvaV",
+              "originalParentId": "B5EA1iq4j0wYzpo5",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5.ActiveEffect.pDX5hwJQGmlXWvaV"
+            },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/aura.svg",
+          "name": "Dancing",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -2286,6 +2341,33 @@
               "from_resource": "",
               "menu_label": "",
               "to_resource": ""
+            },
+            "3": {
+              "chain_steps": "bd_cost, bd_untoken, bd_mark",
+              "effect_kind": "chain",
+              "effect_label": "bd_perform"
+            },
+            "4": {
+              "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_FLAG('Dancing', 'rememberedAction') != PERFORMED_SKILL)",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "bd_cost",
+              "target_ref": "self"
+            },
+            "5": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "bd_untoken",
+              "filter_tag": "dance-token",
+              "target_ref": "self"
+            },
+            "6": {
+              "ae_duplicate_mode": "replace",
+              "ae_remember_action": true,
+              "ae_template_ref": "Dancing",
+              "effect_kind": "apply_ae",
+              "effect_label": "bd_mark",
+              "target_ref": "self"
             }
           },
           "gadget_alchemy_tier": "",
@@ -2379,6 +2461,13 @@
               "reaction_subject_kind": "",
               "reaction_trigger": "turn_end",
               "requires_skill": ""
+            },
+            "3": {
+              "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && SKILL_HAS_TAG_MANAGED == 1",
+              "reaction_effect_ref": "bd_perform",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
             }
           },
           "rolled_atr1": "-",
@@ -2412,116 +2501,6 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "GwrycLOSNJ4EAog2",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": 2,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "GwrycLOSNJ4EAog2",
-              "originalParentId": "eAUaGhDdy3uogln7",
-              "originalUuid": "Item.eAUaGhDdy3uogln7.ActiveEffect.GwrycLOSNJ4EAog2"
-            },
-            "fabula-ultima-companion": {
-              "category": "Other",
-              "lifetimeMode": "target_turn_end"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/upgrade.svg",
-          "name": "Dancing Ouroboros Dance",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "X0JJtVvBjfSJ3Cjg",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": 2,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "X0JJtVvBjfSJ3Cjg",
-              "originalParentId": "eAUaGhDdy3uogln7",
-              "originalUuid": "Item.eAUaGhDdy3uogln7.ActiveEffect.X0JJtVvBjfSJ3Cjg"
-            },
-            "fabula-ultima-companion": {
-              "category": "Other",
-              "lifetimeMode": "target_turn_end"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/upgrade.svg",
-          "name": "Dancing",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
       "flags": {
         "core": {
           "sourceId": "Item.eAUaGhDdy3uogln7"
@@ -2552,13 +2531,15 @@
           "effect_table": {
             "0": {
               "candidate_source": "self",
-              "effect_kind": "targeting",
-              "effect_label": "d_self"
+              "chain_steps": "ouro_turn",
+              "effect_kind": "chain",
+              "effect_label": "d_root"
             },
             "1": {
               "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn",
-              "effect_kind": "chain",
-              "effect_label": "d_root"
+              "effect_kind": "take_turn_next",
+              "effect_label": "ouro_turn",
+              "target_ref": "action_targets"
             },
             "2": {
               "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0)",
@@ -2614,7 +2595,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
-          "skill_tags": "dance",
+          "skill_tags": "dance, managed",
           "skill_target": "One ally",
           "skill_type": "Active",
           "type_damage": "",
@@ -4307,12 +4288,32 @@
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Choose an ally that is able to see you and has a Bond towards you: you and that ally both recover an amount of Hit Points equal to your current <strong>Dexterity</strong> die size.</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The restored amount increases by 5 Hit Points.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The restored amount increases by 10 Hit Points.</p>\n",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "chain_steps": "uni_heal_ally, uni_heal_self",
+              "effect_kind": "chain",
+              "effect_label": "d_root"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "uni_heal_ally",
+              "grant_amount": "DEX_CURRENT_DIE + 5 * (CHAR_LEVEL >= 20) + 5 * (CHAR_LEVEL >= 40)",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "uni_heal_self",
+              "grant_amount": "DEX_CURRENT_DIE + 5 * (CHAR_LEVEL >= 20) + 5 * (CHAR_LEVEL >= 40)",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -4324,15 +4325,17 @@
           "level": "1",
           "max_level": "1",
           "name": "Unicorn Dance",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "d_root",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "One ally",
           "skill_type": "Active",
+          "target_eligibility": "BONDED_TO_SOURCE >= 1",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -5892,116 +5895,6 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "A5bqABLKrPtqXZz8",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": 2,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "A5bqABLKrPtqXZz8",
-              "originalParentId": "MEdEKpPNgKTtkE7Z",
-              "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.A5bqABLKrPtqXZz8"
-            },
-            "fabula-ultima-companion": {
-              "category": "Other",
-              "lifetimeMode": "target_turn_end"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/upgrade.svg",
-          "name": "Dancing Lion Dance",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "Th5PekSE1nFdUUhi",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": 2,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "Th5PekSE1nFdUUhi",
-              "originalParentId": "MEdEKpPNgKTtkE7Z",
-              "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.Th5PekSE1nFdUUhi"
-            },
-            "fabula-ultima-companion": {
-              "category": "Other",
-              "lifetimeMode": "target_turn_end"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/upgrade.svg",
-          "name": "Dancing",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
       "flags": {
         "core": {
           "sourceId": "Item.MEdEKpPNgKTtkE7Z"
@@ -6032,13 +5925,19 @@
           "effect_table": {
             "0": {
               "candidate_source": "self",
-              "effect_kind": "targeting",
-              "effect_label": "d_self"
+              "chain_steps": "lion_cleanse",
+              "effect_kind": "chain",
+              "effect_label": "d_root"
             },
             "1": {
               "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse",
-              "effect_kind": "chain",
-              "effect_label": "d_root"
+              "count": 1,
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "lion_cleanse",
+              "filter_tag": "debuff",
+              "menu_subtitle": "Recover from one status effect.",
+              "menu_title": "Lion Dance",
+              "target_ref": "self"
             },
             "2": {
               "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0)",
@@ -6098,7 +5997,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
-          "skill_tags": "dance",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
@@ -7186,6 +7085,154 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "10JgNhEzaSqe0Mwi",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783769342321,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "Until the start of your next turn, you have Resistance to bolt damage.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "10JgNhEzaSqe0Mwi",
+              "originalParentId": "w8lI13Gc2aisTVes",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.w8lI13Gc2aisTVes.ActiveEffect.10JgNhEzaSqe0Mwi"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Golem Dance (Bolt Resist)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-golem-dance-bolt"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "7i97MkMo2CZhFCbf",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783769342321,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "Until the start of your next turn, all damage from your attacks and spells becomes bolt.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "7i97MkMo2CZhFCbf",
+              "originalParentId": "w8lI13Gc2aisTVes",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.w8lI13Gc2aisTVes.ActiveEffect.7i97MkMo2CZhFCbf"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "change_element": "bolt",
+                    "effect_kind": "change_damage_element",
+                    "effect_label": "golem_bolt_override"
+                  }
+                },
+                "name": "Golem Dance (Bolt)",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                    "reaction_effect_ref": "golem_bolt_override",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-sparks-blue.webp",
+          "name": "Golem Dance (Bolt Element)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-golem-dance-bolt"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -7202,28 +7249,136 @@
       "sort": 0,
       "system": {
         "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li></ul>",
+          "details_roller": "Show",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "allow_empty": false,
+              "auto_confirm_when_obvious": true,
+              "auto_target": true,
+              "candidate_source": "self",
+              "category": "",
+              "consume_self": false,
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "d_self",
+              "exclude": "",
+              "exclude_action_targets": false,
+              "exclude_self": false,
+              "from_resource": "",
+              "iteration_mode": "together",
+              "menu_label": "",
+              "mode": "exact",
+              "skip_when_passive": true,
+              "target_filter": "",
+              "target_prompt": "",
+              "to_resource": ""
+            },
+            "1": {
+              "chain_steps": "golem_pick",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "d_root",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "2": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "golem_pick",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Gain Resistance to Bolt|All your damage becomes Bolt",
+              "menu_option_refs": "golem_resist_self, golem_element_self",
+              "menu_pick_count": "",
+              "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+              "menu_title": "Golem Dance",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "3": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Golem Dance (Bolt Resist)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "golem_resist_self",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "d_self",
+              "to_resource": ""
+            },
+            "4": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Golem Dance (Bolt Element)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "golem_element_self",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "d_self",
+              "to_resource": ""
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "w8lI13Gc2aisTVes",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
           "name": "Golem Dance",
+          "on_activate_effect_ref": "d_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.w8lI13Gc2aisTVes"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,

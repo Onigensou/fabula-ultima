@@ -4262,7 +4262,7 @@
         "id": "8lF3aCEt5wsYxleL",
         "name": "Dance",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 2
       },
       {
         "id": "DP1wXzT66WXAe4sO",
@@ -5723,6 +5723,12 @@
         "effects": 0
       },
       {
+        "id": "Ymvl5y6DJMEUTzv1",
+        "name": "Glowstick (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "L7YujoBx3UvUt5LF",
         "name": "God Hand",
         "type": "equippableItem",
@@ -5768,7 +5774,7 @@
         "id": "ggpg4xjPbAMOISIB",
         "name": "Golem Dance",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "t2hmo5SnPi9LCcdZ",
@@ -9410,7 +9416,7 @@
         "id": "PsBBWgj9RkzEIKtF",
         "name": "Ring of Magma",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "rp6c8fADXzWLAt68",
@@ -9919,6 +9925,12 @@
       {
         "id": "sHMfimeSyKQcj8bM",
         "name": "Shield of Rejuvenation",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "dLnk3JUUeBISkOmp",
+        "name": "Shield of Rejuvenation (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -16801,6 +16813,10 @@
             "name": "Glowstick"
           },
           {
+            "id": "vSYxbtOX3DNTnl2X",
+            "name": "Glowstick (Passive)"
+          },
+          {
             "id": "4GzzwpTJyf7iyOtq",
             "name": "Golden Apple"
           },
@@ -16903,6 +16919,10 @@
           {
             "id": "9GquE1k7ZaVvMLfS",
             "name": "Shield of Rejuvenation"
+          },
+          {
+            "id": "ftTbURtcbfwCg8CT",
+            "name": "Shield of Rejuvenation (Passive)"
           },
           {
             "id": "uK8MN1c3SDjR2Pgs",
@@ -22152,7 +22172,7 @@
       {
         "id": "ZE2BWLTbKDOb2IZG",
         "name": "Oathsworn Paladin",
-        "results": 3
+        "results": 6
       },
       {
         "id": "YrnoWmGa1FLR2PV0",

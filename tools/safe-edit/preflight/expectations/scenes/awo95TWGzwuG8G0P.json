@@ -287,6 +287,11 @@
               "initialType": "door",
               "currentType": "door",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "HJpr12ZhJNjdCdef": {
+              "initialType": "gathering",
+              "currentType": "gathering",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gathering_Tile.png"
             }
           }
         }
@@ -299,7 +304,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398852837,
-      "modifiedTime": 1783752673037,
+      "modifiedTime": 1783770528237,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

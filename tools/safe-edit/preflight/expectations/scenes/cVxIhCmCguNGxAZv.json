@@ -8,7 +8,7 @@
   "full": {
     "folder": null,
     "name": "Loading Screen",
-    "active": true,
+    "active": false,
     "navigation": true,
     "navOrder": 1200000,
     "navName": "Loading",

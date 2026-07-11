@@ -64,6 +64,61 @@
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
+    },
+    {
+      "_id": "mA8eiM8xjMsdMkYI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783769200611,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 2,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "mA8eiM8xjMsdMkYI",
+          "originalParentId": "8lF3aCEt5wsYxleL",
+          "originalUuid": "Item.8lF3aCEt5wsYxleL.ActiveEffect.mA8eiM8xjMsdMkYI"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Dancing",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "dance-effect"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
     }
   ],
   "flags": {
@@ -102,6 +157,33 @@
           "allowed_skill_refs": "tag:dance",
           "effect_kind": "free_action",
           "effect_label": "dance_free"
+        },
+        "3": {
+          "chain_steps": "bd_cost, bd_untoken, bd_mark",
+          "effect_kind": "chain",
+          "effect_label": "bd_perform"
+        },
+        "4": {
+          "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_FLAG('Dancing', 'rememberedAction') != PERFORMED_SKILL)",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "bd_cost",
+          "target_ref": "self"
+        },
+        "5": {
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "bd_untoken",
+          "filter_tag": "dance-token",
+          "target_ref": "self"
+        },
+        "6": {
+          "ae_duplicate_mode": "replace",
+          "ae_remember_action": true,
+          "ae_template_ref": "Dancing",
+          "effect_kind": "apply_ae",
+          "effect_label": "bd_mark",
+          "target_ref": "self"
         }
       },
       "level": "1",
@@ -127,6 +209,13 @@
           "reaction_passive_mode": "ask",
           "reaction_source": "self",
           "reaction_trigger": "turn_end"
+        },
+        "3": {
+          "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && SKILL_HAS_TAG_MANAGED == 1",
+          "reaction_effect_ref": "bd_perform",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
         }
       },
       "skill_target": "",

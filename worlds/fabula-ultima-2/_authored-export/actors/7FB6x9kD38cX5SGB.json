@@ -1176,14 +1176,14 @@
         },
         "2": {
           "$deleted": false,
-          "action_pattern_condition": "mp",
+          "action_pattern_condition": "enemy_has_status",
           "action_pattern_cooldown": "0",
           "action_pattern_name": "Fiery Onslaught",
           "action_pattern_priority": "4",
-          "action_pattern_string": "",
+          "action_pattern_string": "Burn",
           "action_pattern_target_focus": "by_affinity",
-          "action_pattern_value_1": "40",
-          "action_pattern_value_2": "100"
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "0"
         }
       },
       "activation": "1",

@@ -410,6 +410,11 @@
               "initialType": "fishing",
               "currentType": "fishing",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fishing_Tile.png"
+            },
+            "Mw0LZSDg3az0C9Jd": {
+              "initialType": "gathering",
+              "currentType": "gathering",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gathering_Tile.png"
             }
           },
           "visitedTiles": {
@@ -449,7 +454,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396670285,
-      "modifiedTime": 1783752673295,
+      "modifiedTime": 1783770422274,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

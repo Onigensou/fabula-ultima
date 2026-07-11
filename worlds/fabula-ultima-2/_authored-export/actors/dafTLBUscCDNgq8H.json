@@ -1428,6 +1428,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -1435,6 +1436,7 @@
           "demon_ef": "100",
           "description": "<ul>\n<li>Once per round, when you&nbsp;<strong>hit&nbsp;</strong>one or more creature with this weapon, you may have it deal <strong>0</strong> damage, if you do, choose an ally other than yourself who have the <strong>Chanter </strong>or <strong>Dancer</strong>&nbsp;class, that ally perform a&nbsp;<strong>Free Action,&nbsp;</strong>that action must be used to perform a&nbsp;<strong>Magichant </strong>or<strong> Dance.</strong></li>\n</ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -1446,6 +1448,10 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "5S2EaoKlYMGW2WMw",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -1463,20 +1469,46 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "vSYxbtOX3DNTnl2X": {
+              "id": "${item.id}",
+              "name": "Glowstick (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.vSYxbtOX3DNTnl2X"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Glowstick",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "vSYxbtOX3DNTnl2X": {
+              "id": "${item.id}",
+              "name": "Glowstick (Passive)",
+              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.vSYxbtOX3DNTnl2X"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "WLP",
           "set_name": "",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.5S2EaoKlYMGW2WMw",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3565,6 +3597,88 @@
       "type": "equippableItem"
     },
     {
+      "_id": "ftTbURtcbfwCg8CT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783769380138,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Shield of Rejuvenation (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": "9GquE1k7ZaVvMLfS",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "",
+              "effect_kind": "grant",
+              "effect_label": "shield_regen",
+              "grant_amount": "floor(MAX_HP / 10)",
+              "grant_resource": "hp",
+              "target_ref": "sr_self"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "sr_self",
+              "exclude_self": false,
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            }
+          },
+          "isCheck": false,
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Shield of Rejuvenation (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_action_intent": "",
+              "reaction_effect_ref": "shield_regen",
+              "reaction_passive_mode": "on",
+              "reaction_passive_target": "self",
+              "reaction_requires_weapon_used": false,
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "WNWoQrisHlUuxSny"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "gbwC7vk4bsQ56Knr",
       "_stats": {
         "compendiumSource": null,
@@ -4336,6 +4450,69 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "BxvOHbgK6VkWV48S",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783769381830,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 20,
+              "value": "AB"
+            },
+            {
+              "key": "affinity_7",
+              "mode": 5,
+              "priority": 20,
+              "value": "VU"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "BxvOHbgK6VkWV48S",
+              "originalParentId": "gMHVtSecAgiriC6S",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.gMHVtSecAgiriC6S.ActiveEffect.BxvOHbgK6VkWV48S"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2640.gif",
+          "name": "Ring of Magma",
+          "origin": "Actor.dafTLBUscCDNgq8H.Item.gMHVtSecAgiriC6S",
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
@@ -9343,6 +9520,100 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "KnKIXdPq6wjaFnCK"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "vSYxbtOX3DNTnl2X",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783769380138,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Glowstick (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": "5S2EaoKlYMGW2WMw",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "glowstick_ally,glowstick_zero,glowstick_grant",
+              "effect_kind": "chain",
+              "effect_label": "glowstick_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": false,
+              "candidate_source": "combat",
+              "category": "ally",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "glowstick_ally",
+              "exclude_self": true,
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": false
+            },
+            "2": {
+              "$deleted": false,
+              "damage_amount": "0",
+              "damage_operation": "set",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "glowstick_zero"
+            },
+            "3": {
+              "$deleted": false,
+              "action_ref": "Skill",
+              "allowed_skill_refs": "tag:dance,tag:chant",
+              "effect_kind": "free_action",
+              "effect_label": "glowstick_grant",
+              "performer_ref": "glowstick_ally"
+            }
+          },
+          "isCheck": false,
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dragontrap Bow (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_effect_ref": "glowstick_chain",
+              "reaction_max_per_round": "1",
+              "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "skill_description": "<ul><li>Once per round, when you <strong>hit</strong> one or more creatures with this weapon, you may have it deal <strong>0</strong> damage; if you do, choose an ally with the Chanter or Dancer class to perform a <strong>Free Action</strong> used for a <strong>Magichant</strong> or <strong>Dance</strong>.</li></ul>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "WNWoQrisHlUuxSny"
       },
       "type": "equippableItem"
     },

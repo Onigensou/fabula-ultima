@@ -139,13 +139,19 @@
       "effect_table": {
         "0": {
           "candidate_source": "self",
-          "effect_kind": "targeting",
-          "effect_label": "d_self"
+          "chain_steps": "lion_cleanse",
+          "effect_kind": "chain",
+          "effect_label": "d_root"
         },
         "1": {
           "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse",
-          "effect_kind": "chain",
-          "effect_label": "d_root"
+          "count": 1,
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "lion_cleanse",
+          "filter_tag": "debuff",
+          "menu_subtitle": "Recover from one status effect.",
+          "menu_title": "Lion Dance",
+          "target_ref": "self"
         },
         "2": {
           "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0)",
@@ -191,7 +197,7 @@
       "name": "Lion Dance",
       "on_activate_effect_ref": "d_root",
       "reaction_config_table": {},
-      "skill_tags": "dance",
+      "skill_tags": "dance, managed",
       "skill_target": "Self",
       "skill_type": "Active"
     },

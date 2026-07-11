@@ -16,8 +16,8 @@
     }
   },
   "folder": "QGWhvmRAHt4ibvnG",
-  "formula": "",
-  "img": "icons/svg/d20-grey.svg",
+  "formula": "1d6",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1137.gif",
   "name": "Oathsworn Paladin",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -25,6 +25,51 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "CboRHEh8fCDwmxPp",
+      "documentCollection": "Item",
+      "documentId": "I8wXcpGE6TGCM87B",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Maid Uniform",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "eFnPtVagIHk1wVAI",
+      "documentCollection": "Item",
+      "documentId": "ZZG5sHvIc3GH26w7",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Headgear/2215.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Maid cap",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "mVnk4qDBaIC4fnuY",
+      "documentCollection": "Item",
+      "documentId": "2qY1KhC6cpihpdZY",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1228.gif",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Silver Knives",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "PyMpUxUfBt1v0wdF",
       "documentCollection": "Item",

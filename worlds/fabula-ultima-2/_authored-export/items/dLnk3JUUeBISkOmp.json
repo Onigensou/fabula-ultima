@@ -1,0 +1,82 @@
+{
+  "_id": "dLnk3JUUeBISkOmp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783769201755,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+  "name": "Shield of Rejuvenation (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": "sHMfimeSyKQcj8bM",
+    "props": {
+      "cost": "",
+      "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_template_ref": "",
+          "effect_kind": "grant",
+          "effect_label": "shield_regen",
+          "grant_amount": "floor(MAX_HP / 10)",
+          "grant_resource": "hp",
+          "target_ref": "sr_self"
+        },
+        "1": {
+          "$deleted": false,
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "category": "",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "sr_self",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        }
+      },
+      "isCheck": false,
+      "isReaction": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Shield of Rejuvenation (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_effect_ref": "shield_regen",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "dLnk3JUUeBISkOmp"
+  },
+  "type": "equippableItem"
+}

@@ -966,8 +966,8 @@
       "hidden": false,
       "sort": 2,
       "_id": "bOAymRFO7pT1Z2TQ",
-      "x": 1203,
-      "y": 544,
+      "x": 1415,
+      "y": 643,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -1194,14 +1194,14 @@
       "width": 1,
       "height": 1,
       "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Onsen.png",
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The Legend of Dragonslayer/Image/NPCs/Geist/Geist_Onsen.png",
         "anchorX": 0.5,
         "anchorY": 0.5,
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": 1.11,
-        "scaleY": 1.11,
+        "scaleX": 1.08,
+        "scaleY": 1.08,
         "rotation": 0,
         "tint": "#ffffff",
         "alphaThreshold": 0.75
@@ -1209,7 +1209,7 @@
       "hexagonalShape": 0,
       "lockRotation": false,
       "rotation": 0,
-      "alpha": 0.65,
+      "alpha": 1,
       "disposition": 0,
       "displayBars": 50,
       "bar1": {
@@ -1281,7 +1281,7 @@
           "zIndex": 0
         },
         "token-variants": {
-          "randomImgDefault": "",
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Standard.png",
           "disableHUDButton": false
         },
         "hex-size-support": {
@@ -1302,9 +1302,9 @@
       "actorId": "UYAabJiUZJ1uKers",
       "hidden": false,
       "sort": 1,
-      "_id": "tYUsYV6GmXAskLXp",
-      "x": 532,
-      "y": 638,
+      "_id": "t6bKtpRETMO9ByHs",
+      "x": 539,
+      "y": 641,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -1671,7 +1671,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780669400384,
-      "modifiedTime": 1783752677403,
+      "modifiedTime": 1783771077509,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

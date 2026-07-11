@@ -1565,8 +1565,8 @@
           "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
-              "condition_formula": "",
-              "reaction_action_intent": "",
+              "condition_formula": "ATTACK_VS_DEF == 1",
+              "reaction_action_intent": "harmful",
               "reaction_action_kind": "Attack,Spell,Skill",
               "reaction_action_target": "",
               "reaction_cause_filter": "",
