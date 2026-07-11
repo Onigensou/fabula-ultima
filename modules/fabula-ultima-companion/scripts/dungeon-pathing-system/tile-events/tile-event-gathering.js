@@ -30,6 +30,11 @@
 
   const RESOURCEFUL_ID = "EO5v5UChnByyIVGp";   // Item.EO5v5UChnByyIVGp
 
+  // Zenit no longer drops on a flat chance — instead each of these "scavenger"
+  // classes a member has adds +5% to their chance of finding money (0% if none).
+  const ZENIT_CLASSES      = ["Merchant", "Wayfarer", "Pirate", "Gourmet", "Hunter", "Rogue"];
+  const ZENIT_PER_CLASS    = 0.05;
+
   if (!DP?.TileEventRegistry) {
     console.warn(TAG, "TileEventRegistry not ready.");
     return;
@@ -82,6 +87,19 @@
     let c = 1;
     if (total >= 10) c += 1 + Math.floor((total - 10) / 5);
     return c;
+  }
+
+  // Zenit proc chance = 5% per eligible "scavenger" class the member has (0 if none).
+  function zenitChance(actor) {
+    const classList = actor?.system?.props?.class_list ?? {};
+    const have = new Set(
+      Object.values(classList)
+        .filter(r => !r?.$deleted)
+        .map(r => String(r.class_name ?? "").toLowerCase().trim())
+    );
+    let n = 0;
+    for (const c of ZENIT_CLASSES) if (have.has(c.toLowerCase())) n++;
+    return n * ZENIT_PER_CLASS;
   }
 
   // ── Material Table resolution (scene oniDungeon.loot.material) ──────────────
@@ -223,7 +241,7 @@
         }
 
         let zenit = 0;
-        if (Math.random() < 0.15) {
+        if (Math.random() < zenitChance(member)) {
           zenit = randInt(25, 250);
           await itc.adjustZenit({
             actorUuid:         member.uuid,

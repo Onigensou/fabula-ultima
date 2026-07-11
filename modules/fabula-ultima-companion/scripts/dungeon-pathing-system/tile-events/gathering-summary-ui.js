@@ -32,10 +32,30 @@
   const ZENIT_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/barg.png";
   const IP_ICON    = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png";
 
+  const STYLE_ID = "oni-gathering-summary-style";
+
   const _wait = ms => new Promise(r => setTimeout(r, ms));
   const esc = s => String(s ?? "")
     .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+  // Full-screen dim backdrop that centers the panel (mirrors #oni-camp-overlay).
+  // campFadeIn / campFadeOut keyframes are defined globally in camp-styles.js.
+  function ensureStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+    const s = document.createElement("style");
+    s.id = STYLE_ID;
+    s.textContent = `
+      #${OVL_ID} {
+        position: fixed; inset: 0; z-index: 1200;
+        background: rgba(18, 10, 5, 0.72);
+        display: flex; align-items: center; justify-content: center;
+        animation: campFadeIn .35s ease both;
+      }
+      #${OVL_ID}.out { animation: campFadeOut .25s ease both; }
+    `;
+    document.head.appendChild(s);
+  }
 
   // Camp sound helpers (bond-summary chimes). Degrades silently if camp not loaded.
   const CAMP = () => globalThis.CampSystem ?? null;
@@ -125,6 +145,7 @@
 
   // ── Overlay ─────────────────────────────────────────────────────────────────
   function _buildOverlay(summary) {
+    ensureStyles();
     document.getElementById(OVL_ID)?.remove();
 
     const groupsHTML = (summary ?? []).length
