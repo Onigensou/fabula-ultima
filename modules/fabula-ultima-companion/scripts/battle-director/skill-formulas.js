@@ -1294,17 +1294,37 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // only when COMBAT_MAX_AE_CHARGES_BURN >= 10. Sync (combatants + their
         // actors are in-memory). Must be tested before AE_CHARGES_ below, but the
         // COMBAT_ prefix already disambiguates.
+        //
+        // Combatant SOURCE: a Battle Director fight runs its OWN combat model
+        // (director.dCombat) and does NOT populate Foundry's `game.combat` — so
+        // reading `game.combat.combatants` returns 0 in every BD battle (the
+        // original bug: this gate never passed under BD). Prefer the active
+        // director's dCombat.combatants; fall back to `game.combat` for the
+        // legacy / non-BD path. DirectorCombatant exposes the live actor as
+        // `.actor` / `.actorDoc`; a core Combatant exposes `.actor` / `.token.actor`.
         if (name.startsWith("COMBAT_MAX_AE_CHARGES_")) {
           const needle = name
             .slice("COMBAT_MAX_AE_CHARGES_".length)
             .replace(/_/g, " ")
             .toLowerCase()
             .trim();
-          const combatants = game?.combat?.combatants?.contents
-            ?? Array.from(game?.combat?.combatants ?? []);
+          let combatants = [];
+          try {
+            const dc = globalThis?.FUCompanion?.api?.experimental?.battleDirector
+              ?.getActiveDirector?.()?.dCombat;
+            if (dc?.combatants) {
+              combatants = Array.isArray(dc.combatants)
+                ? dc.combatants
+                : Object.values(dc.combatants);
+            }
+          } catch (_) { /* no director / API — fall through to core combat */ }
+          if (!combatants.length) {
+            combatants = game?.combat?.combatants?.contents
+              ?? Array.from(game?.combat?.combatants ?? []);
+          }
           let best = 0;
           for (const c of combatants) {
-            const a = c?.actor ?? c?.token?.actor ?? null;
+            const a = c?.actor ?? c?.actorDoc ?? c?.token?.actor ?? null;
             if (!a) continue;
             const effects = a?.effects?.contents ?? Array.from(a?.effects ?? []);
             const total = effects
