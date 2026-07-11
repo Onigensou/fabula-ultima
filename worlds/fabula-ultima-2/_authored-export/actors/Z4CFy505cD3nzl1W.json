@@ -102,7 +102,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.MaBjT5FHGUpSEo0s",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.mRRpFaL23lQolzGE",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },
@@ -125,70 +125,6 @@
         "fud-emergency-item-ready"
       ],
       "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "fBubgQed7JuQduZR",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783720989192,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "bvcEIFX8gLRDL1aq",
-          "originalParentId": "8lF3aCEt5wsYxleL",
-          "originalUuid": "Item.8lF3aCEt5wsYxleL.ActiveEffect.bvcEIFX8gLRDL1aq"
-        },
-        "fabula-ultima-companion": {
-          "category": "Other",
-          "directorAppliedBy": {
-            "appliedAtRound": 16,
-            "effectLabel": "dance_apply",
-            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.MaBjT5FHGUpSEo0s",
-            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
-            "turnsRemaining": null
-          },
-          "directorPermanent": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/svg/upgrade.svg",
-      "name": "Dance",
-      "origin": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "dance-token"
-        ]
-      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -373,6 +309,62 @@
           "damage_bonus": "0",
           "description": "<p>When you perform a <strong>dance</strong> with a duration of “Until the start of your next turn,” you may spend 10 additional Mind Points. If you do, choose one ally you can see towards whom you have a Bond of affection: apply the benefits of the <strong>dance</strong> to that ally as well as yourself (the benefits still last until the start of your next turn).</p>\n",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "chain_steps": "fml_add, fml_cost",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "fml_do",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "1": {
+              "consume_self": false,
+              "effect_kind": "add_target",
+              "effect_label": "fml_add",
+              "from_resource": "",
+              "menu_description": "Spend 10 MP to share this dance's benefit with a bonded ally.",
+              "menu_label": "Follow my lead",
+              "target_ref": "fml_pick",
+              "to_resource": ""
+            },
+            "2": {
+              "consume_amount": "10",
+              "consume_resource": "mp",
+              "consume_self": false,
+              "effect_kind": "consume_resource",
+              "effect_label": "fml_cost",
+              "from_resource": "",
+              "menu_label": "",
+              "on_empty": "abort",
+              "target_ref": "self",
+              "to_resource": ""
+            },
+            "3": {
+              "allow_empty": false,
+              "auto_confirm_when_obvious": false,
+              "auto_target": false,
+              "candidate_source": "combat",
+              "category": "ally",
+              "category_": "",
+              "consume_self": false,
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "fml_pick",
+              "exclude": "",
+              "exclude_action_targets": true,
+              "exclude_self": true,
+              "from_resource": "",
+              "iteration_mode": "together",
+              "menu_label": "",
+              "mode": "exact",
+              "skip_when_passive": false,
+              "target_filter": "SOURCE_BONDED_TO_ME >= 1",
+              "target_prompt": "",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
@@ -382,6 +374,32 @@
           "max_level": "1",
           "name": "Follow my lead",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && ACTION_DURATION >= 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "fml_do",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_performs_action",
+              "requires_skill": ""
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_mode": "default",
@@ -7173,37 +7191,6 @@
           "duration": "Until the start of your next turn",
           "effect_table": {
             "0": {
-              "allow_empty": false,
-              "auto_confirm_when_obvious": true,
-              "auto_target": true,
-              "candidate_source": "self",
-              "category": "",
-              "consume_self": false,
-              "count": "1",
-              "effect_kind": "targeting",
-              "effect_label": "d_self",
-              "exclude": "",
-              "exclude_action_targets": false,
-              "exclude_self": false,
-              "from_resource": "",
-              "iteration_mode": "together",
-              "menu_label": "",
-              "mode": "exact",
-              "skip_when_passive": true,
-              "target_filter": "",
-              "target_prompt": "",
-              "to_resource": ""
-            },
-            "1": {
-              "chain_steps": "golem_pick",
-              "consume_self": false,
-              "effect_kind": "chain",
-              "effect_label": "d_root",
-              "from_resource": "",
-              "menu_label": "",
-              "to_resource": ""
-            },
-            "2": {
               "allowed_types": "",
               "check_bonus_formula": "",
               "consume_self": false,
@@ -7221,14 +7208,14 @@
               "menu_option_descriptions": "",
               "menu_option_icons": "",
               "menu_option_labels": "Gain Resistance to Bolt|All your damage becomes Bolt",
-              "menu_option_refs": "golem_resist_self, golem_element_self",
+              "menu_option_refs": "golem_resist, golem_element",
               "menu_pick_count": "",
               "menu_subtitle": "Choose one benefit (until the start of your next turn).",
               "menu_title": "Golem Dance",
               "target_ref": "",
               "to_resource": ""
             },
-            "3": {
+            "1": {
               "ae_duplicate_mode": "replace_family",
               "ae_family": "dance",
               "ae_initial_charges": "",
@@ -7236,13 +7223,13 @@
               "ae_template_ref": "Golem Dance (Bolt Resist)",
               "consume_self": false,
               "effect_kind": "apply_ae",
-              "effect_label": "golem_resist_self",
+              "effect_label": "golem_resist",
               "from_resource": "",
               "menu_label": "",
-              "target_ref": "d_self",
+              "target_ref": "action_targets",
               "to_resource": ""
             },
-            "4": {
+            "2": {
               "ae_duplicate_mode": "replace_family",
               "ae_family": "dance",
               "ae_initial_charges": "",
@@ -7250,10 +7237,10 @@
               "ae_template_ref": "Golem Dance (Bolt Element)",
               "consume_self": false,
               "effect_kind": "apply_ae",
-              "effect_label": "golem_element_self",
+              "effect_label": "golem_element",
               "from_resource": "",
               "menu_label": "",
-              "target_ref": "d_self",
+              "target_ref": "action_targets",
               "to_resource": ""
             }
           },
@@ -7273,9 +7260,9 @@
           "level": "1",
           "max_level": "1",
           "name": "Golem Dance",
-          "on_activate_effect_ref": "d_root",
+          "on_activate_effect_ref": "golem_pick",
           "optional_params": {},
-          "pre_activate_effect_ref": "",
+          "pre_activate_effect_ref": "golem_pick",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
@@ -7992,7 +7979,7 @@
       "activation": 1,
       "affinity_1": "NA",
       "affinity_2": "NA",
-      "affinity_3": "RS",
+      "affinity_3": "NA",
       "affinity_4": "NA",
       "affinity_5": "NA",
       "affinity_6": "RS",
@@ -8289,7 +8276,7 @@
       "critical_dice_range": 0,
       "current_hp": "106",
       "current_ip": "4",
-      "current_mp": 0,
+      "current_mp": "76",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",
@@ -9309,7 +9296,7 @@
         },
         "lpl9N7ToR7d52GZB": {
           "active_class": "Dancer",
-          "active_cost": "10 MP",
+          "active_cost": "",
           "active_description": "<p>Choose an ally that is able to see you and has a Bond towards you: you and that ally both recover an amount of Hit Points equal to your current <strong>Dexterity</strong> die size.</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The restored amount increases by 5 Hit Points.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The restored amount increases by 10 Hit Points.</p>\n",
           "active_duration": "Instantaneous",
           "active_level": 1,

@@ -8,136 +8,6 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
-  "effects": [
-    {
-      "_id": "I1cyjtuAYyoE8SLj",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783717506663,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Protect:</em> Once per turn. Take an ally's incoming attack or status instead.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "wzbHa8YwfDRdSWZF",
-          "originalParentId": "0bJVBvEP9ESLcbxs",
-          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.0bJVBvEP9ESLcbxs.ActiveEffect.wzbHa8YwfDRdSWZF"
-        },
-        "fabula-ultima-companion": {
-          "chargeKey": "protect",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 16,
-            "effectLabel": "protect_refill",
-            "reactorActorUuid": "Actor.uJFaNQCSvwwsr2AW",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.S664uKrv5hVpr7xr",
-            "skillUuid": "Actor.uJFaNQCSvwwsr2AW.Item.0bJVBvEP9ESLcbxs",
-            "turnsRemaining": 2
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
-      "name": "Protect",
-      "origin": "Actor.uJFaNQCSvwwsr2AW.Item.0bJVBvEP9ESLcbxs",
-      "sort": 0,
-      "statuses": [
-        "fud-protect-ready"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "lAWTCxDD2sH3b2bD",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783717517057,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Counter Pass:</em> ready to counter a missed attack this round.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "shlfp8LFBBHH9oZn",
-          "originalParentId": "r4G9YFC4MXYL8lC3",
-          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.r4G9YFC4MXYL8lC3.ActiveEffect.shlfp8LFBBHH9oZn"
-        },
-        "fabula-ultima-companion": {
-          "chargeKey": "counterpass",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 16,
-            "effectLabel": "cp_refresh",
-            "lifetimeMode": "on_activation",
-            "reactorActorUuid": "Actor.uJFaNQCSvwwsr2AW",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.S664uKrv5hVpr7xr",
-            "skillUuid": "Actor.uJFaNQCSvwwsr2AW.Item.r4G9YFC4MXYL8lC3",
-            "turnsRemaining": null
-          },
-          "lifetimeMode": "on_activation"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/svg/upgrade.svg",
-      "name": "Counter Pass",
-      "origin": "Actor.uJFaNQCSvwwsr2AW.Item.r4G9YFC4MXYL8lC3",
-      "sort": 0,
-      "statuses": [
-        "fud-counter-pass-ready"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    }
-  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.4"
@@ -7687,7 +7557,7 @@
       "backstory": "",
       "bane_status": 0,
       "base_defense": 12,
-      "base_magic_defense": 4,
+      "base_magic_defense": 6,
       "battle_facing_direction": "left",
       "berserk_status": 0,
       "bleed_status": 0,
@@ -7702,7 +7572,7 @@
       "bonus_defense": 7,
       "bonus_dex": 0,
       "bonus_hp": 5,
-      "bonus_ins": -2,
+      "bonus_ins": 0,
       "bonus_magic_defense": 2,
       "bonus_mig": 0,
       "bonus_mp": 5,
@@ -7871,9 +7741,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 156,
-      "current_ip": 8,
-      "current_mp": 56,
+      "current_hp": "156",
+      "current_ip": "8",
+      "current_mp": "71",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Blanche_Cut-in002.png",
       "cut_in_fumble": "",
@@ -7982,7 +7852,7 @@
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Portrait/Blanche_Portrait001.png",
       "init_penalty": "0",
       "ins_base": "6",
-      "ins_current": 4,
+      "ins_current": 6,
       "inventory_label": "💼 Inventory",
       "inventory_list": {},
       "ip_reduction_value": 0,
@@ -8384,7 +8254,7 @@
       "level": "36",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
-      "magic_defense": 6,
+      "magic_defense": 8,
       "magic_defense_mod": "0",
       "main_attrib_1": "SHI",
       "main_attrib_2": "SHI",
