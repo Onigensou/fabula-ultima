@@ -17,18 +17,31 @@
       "damage_dealt_mult_attack": 1,
       "damage_dealt_mult_skill": 1,
       "damage_dealt_mult_spell": 1,
-      "damage_taken_mult": 1
+      "damage_taken_increased_air": 0,
+      "damage_taken_increased_bolt": 0,
+      "damage_taken_increased_dark": 0,
+      "damage_taken_increased_earth": 0,
+      "damage_taken_increased_fire": 0,
+      "damage_taken_increased_ice": 0,
+      "damage_taken_increased_light": 0,
+      "damage_taken_increased_physical": 0,
+      "damage_taken_increased_poison": 0,
+      "damage_taken_mult": 1,
+      "idleAnimation": {
+        "bounce": false,
+        "float": false
+      }
     }
   },
   "folder": "MJiFIdO1Fzd4tOu2",
-  "img": "icons/svg/mystery-man.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Shopkeeper%20Shade/NPCShade_Standard.png",
   "items": [
     {
       "_id": "1X93myZ3GBXdA4Bk",
       "_stats": {
         "compendiumSource": "Item.o24tseu8UsnGuo3m",
         "coreVersion": "12.343",
-        "createdTime": 1783664369537,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -340,7 +353,7 @@
       "_stats": {
         "compendiumSource": "Item.VXGW0EAulcUnmnZd",
         "coreVersion": "12.343",
-        "createdTime": 1783663544707,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -449,7 +462,7 @@
       "_stats": {
         "compendiumSource": "Item.fySvxC4T3Gwta6Ze",
         "coreVersion": "12.343",
-        "createdTime": 1783664266172,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -835,7 +848,7 @@
       "_stats": {
         "compendiumSource": "Item.TxC7ejI4tGsfjPSh",
         "coreVersion": "12.343",
-        "createdTime": 1783664357702,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1147,7 +1160,7 @@
       "_stats": {
         "compendiumSource": "Item.yRFtbBM2vEm1Rua9",
         "coreVersion": "12.343",
-        "createdTime": 1783663475664,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1256,7 +1269,7 @@
       "_stats": {
         "compendiumSource": "Item.X9qkNvXgrWuhPh0n",
         "coreVersion": "12.343",
-        "createdTime": 1783663399467,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1365,7 +1378,7 @@
       "_stats": {
         "compendiumSource": "Item.i4oM2NTWVz9lRIZz",
         "coreVersion": "12.343",
-        "createdTime": 1783663466669,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1474,7 +1487,7 @@
       "_stats": {
         "compendiumSource": "Item.lry58VKdGBa1kPHm",
         "coreVersion": "12.343",
-        "createdTime": 1783663565796,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1583,7 +1596,7 @@
       "_stats": {
         "compendiumSource": "Item.AA4Q5zF1fnkriTFk",
         "coreVersion": "12.343",
-        "createdTime": 1783664135651,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1709,7 +1722,7 @@
       "_stats": {
         "compendiumSource": "Item.ANpvrkYYhdlEjgHl",
         "coreVersion": "12.343",
-        "createdTime": 1783664179373,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2096,7 +2109,7 @@
       "_stats": {
         "compendiumSource": "Item.TNFpY2ncBnYuN7ek",
         "coreVersion": "12.343",
-        "createdTime": 1783664293600,
+        "createdTime": 1783717372432,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2410,107 +2423,42 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorLink": false,
+    "actorLink": true,
     "alpha": 1,
     "appendNumber": false,
     "bar1": {
-      "attribute": "attributeBar.current_hp"
+      "attribute": null
     },
     "bar2": {
-      "attribute": "attributeBar.current_mp"
+      "attribute": null
     },
     "detectionModes": [],
     "displayBars": 50,
     "displayName": 0,
-    "disposition": -1,
+    "disposition": 0,
     "flags": {
       "barbrawl": {
-        "resourceBars": {
-          "bar1": {
-            "attribute": "attributeBar.current_hp",
-            "bgImage": "",
-            "fgImage": "",
-            "gmVisibility": -1,
-            "hideCombat": false,
-            "hideEmpty": false,
-            "hideFull": false,
-            "hideHud": false,
-            "hideNoCombat": false,
-            "id": "bar1",
-            "indentLeft": null,
-            "indentRight": null,
-            "invert": false,
-            "invertDirection": false,
-            "label": "HP",
-            "maxcolor": "#80FF00",
-            "mincolor": "#FF0000",
-            "opacity": null,
-            "order": 1,
-            "otherVisibility": 0,
-            "ownerVisibility": 50,
-            "position": "bottom-inner",
-            "shareHeight": false,
-            "style": "fraction",
-            "subdivisions": null,
-            "subdivisionsOwner": false
-          },
-          "bar2": {
-            "attribute": "attributeBar.current_mp",
-            "bgImage": "",
-            "fgImage": "",
-            "gmVisibility": -1,
-            "hideCombat": false,
-            "hideEmpty": false,
-            "hideFull": false,
-            "hideHud": false,
-            "hideNoCombat": false,
-            "id": "bar2",
-            "indentLeft": null,
-            "indentRight": null,
-            "invert": false,
-            "invertDirection": false,
-            "label": "MP",
-            "maxcolor": "#80B3FF",
-            "mincolor": "#000080",
-            "opacity": null,
-            "order": 0,
-            "otherVisibility": 0,
-            "ownerVisibility": 50,
-            "position": "bottom-inner",
-            "shareHeight": false,
-            "style": "fraction",
-            "subdivisions": null,
-            "subdivisionsOwner": false
-          },
-          "bar3": {
-            "attribute": "attributeBar.shield_value",
-            "bgImage": "",
-            "fgImage": "",
-            "gmVisibility": -1,
-            "hideCombat": false,
-            "hideEmpty": true,
-            "hideFull": false,
-            "hideHud": false,
-            "hideNoCombat": false,
-            "id": "bar3",
-            "indentLeft": null,
-            "indentRight": null,
-            "invert": false,
-            "invertDirection": false,
-            "label": "",
-            "maxcolor": "#FFFFFF",
-            "mincolor": "#000000",
-            "opacity": null,
-            "order": 2,
-            "otherVisibility": 50,
-            "ownerVisibility": 50,
-            "position": "bottom-inner",
-            "shareHeight": false,
-            "style": "fraction",
-            "subdivisions": null,
-            "subdivisionsOwner": false
-          }
+        "resourceBars": {}
+      },
+      "fabula-ultima-companion": {
+        "dominanceCrestOffset": {
+          "x": 0,
+          "y": 0
         }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Shopkeeper%20Shade/NPCShade_Standard.png"
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
       }
     },
     "height": 1,
@@ -2546,13 +2494,13 @@
       "radius": 0
     },
     "prependAdjective": false,
-    "randomImg": false,
+    "randomImg": true,
     "ring": {
       "colors": {
         "background": null,
         "ring": null
       },
-      "effects": 1,
+      "effects": 0,
       "enabled": false,
       "subject": {
         "scale": 1,
@@ -2581,7 +2529,7 @@
       "rotation": 0,
       "scaleX": 1,
       "scaleY": 1,
-      "src": "icons/svg/mystery-man.svg",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Shopkeeper%20Shade/*",
       "tint": "#ffffff"
     },
     "width": 1

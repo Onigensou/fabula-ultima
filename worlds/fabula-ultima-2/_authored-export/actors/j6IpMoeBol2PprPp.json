@@ -11,11 +11,200 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "idleAnimation": {
+        "bounce": false,
+        "float": false
+      }
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
-  "img": "icons/svg/mystery-man.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/O%27lmek_Standard.png",
   "items": [
+    {
+      "_id": "Ae2njyJ0ZfsGFzZd",
+      "_stats": {
+        "compendiumSource": "Item.eOIDEWQsP31F4If4",
+        "coreVersion": "12.343",
+        "createdTime": 1783721425813,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "eOIDEWQsP31F4If4",
+            "itemName": "Earthmate Shovel",
+            "pickedOldProps": {
+              "cost": "1500",
+              "martial": false
+            },
+            "ts": 1769647042024
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/tools/hand/shovel-trowel-steel-black.webp",
+      "name": "Earthmate Shovel",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 700000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Dagger",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "5",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p>When performing <strong>Graft </strong>(<strong>Floralist</strong>)<strong>, </strong>you may <strong>fill </strong>section from your <strong>Growth Clock</strong>. If you do, you cannot use this effect again until your <strong>Growth Clock </strong>has become completely empty.</p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "eOIDEWQsP31F4If4",
+          "img": "icons/tools/hand/shovel-trowel-steel-black.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Earthmate Shovel",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Earth",
+          "undead_ef": "100",
+          "uuid": "Item.eOIDEWQsP31F4If4",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "eOIDEWQsP31F4If4"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "cikpjS54FeWj7JU3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783721252018,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral2.png",
+      "name": "Golem Soulstone",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "TRuS4cO7pYl6asrd",
+        "props": {
+          "cost": "-",
+          "description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "set_resource",
+              "effect_label": "golemstone_shield",
+              "grant_amount": "10",
+              "grant_resource": "shield",
+              "target_ref": "action_targets"
+            }
+          },
+          "isCheck": false,
+          "on_activate_effect_ref": "golemstone_shield",
+          "skill_target": "One Ally",
+          "skill_type": "Item",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "HBZ3kC5M0froQyCl"
+      },
+      "type": "equippableItem"
+    },
     {
       "_id": "EEx3KGlLGAuRqpJT",
       "_stats": {
@@ -186,6 +375,127 @@
       "type": "equippableItem"
     },
     {
+      "_id": "shuzhQCDpfStBdnl",
+      "_stats": {
+        "compendiumSource": "Item.QD5q9qkMu11On4UP",
+        "coreVersion": "12.343",
+        "createdTime": 1783721243881,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/953.gif",
+      "name": "Golem Heart",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p>A heart made of stone, a core material in creating a golem</p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "QD5q9qkMu11On4UP",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/953.gif",
+          "ingredient_taste": "salty",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "200",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Golem Heart",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.QD5q9qkMu11On4UP",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "QD5q9qkMu11On4UP"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "SY4gKcchvUw2fjl5",
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
@@ -280,6 +590,128 @@
         "uniqueId": "mJuSEmMc3A0HrqNO"
       },
       "type": "equippableItem"
+    },
+    {
+      "_id": "TRuS4cO7pYl6asrd",
+      "_stats": {
+        "compendiumSource": "Item.B1s2K9VLjc4XF4GB",
+        "coreVersion": "12.343",
+        "createdTime": 1783721252018,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral2.png",
+      "name": "Golem Soulstone",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 1000000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Target creature gain <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span>, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 10 instead.</p></li></ul>",
+          "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "effect_kind": "set_resource",
+              "effect_label": "golemstone_shield",
+              "grant_amount": "10",
+              "grant_resource": "shield",
+              "target_ref": "action_targets"
+            }
+          },
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "50",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Golem Soulstone",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_target": "One Ally",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "B1s2K9VLjc4XF4GB"
+      },
+      "type": "equippableItem"
     }
   ],
   "name": "O'lmek",
@@ -299,7 +731,7 @@
     },
     "detectionModes": [],
     "displayBars": 50,
-    "displayName": 0,
+    "displayName": 50,
     "disposition": -1,
     "flags": {
       "barbrawl": {
@@ -389,6 +821,26 @@
             "subdivisionsOwner": false
           }
         }
+      },
+      "fabula-ultima-companion": {
+        "dominanceCrestOffset": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
       }
     },
     "height": 1,
@@ -419,7 +871,7 @@
       "shadows": 0
     },
     "lockRotation": false,
-    "name": "Olmec",
+    "name": "O'lmek",
     "occludable": {
       "radius": 0
     },
@@ -430,7 +882,7 @@
         "background": null,
         "ring": null
       },
-      "effects": 1,
+      "effects": 0,
       "enabled": false,
       "subject": {
         "scale": 1,
@@ -457,9 +909,9 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1,
-      "scaleY": 1,
-      "src": "icons/svg/mystery-man.svg",
+      "scaleX": 2.13,
+      "scaleY": 2.13,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/O%27lmek_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -468,7 +920,41 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "action_pattern_table": {},
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "mp",
+          "action_pattern_cooldown": "2",
+          "action_pattern_name": "Stone Gaze",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "5",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "enemy_has_status",
+          "action_pattern_cooldown": "1",
+          "action_pattern_name": "Shatter",
+          "action_pattern_priority": "7",
+          "action_pattern_string": "Petrify",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "0"
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Laser Eyes",
+          "action_pattern_priority": "4",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "by_affinity",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
       "activation": "1",
       "affinity_1": "NA",
       "affinity_2": "RS",
@@ -494,15 +980,11 @@
         }
       },
       "attribute": "EARTH",
-      "battle_facing_direction": "left",
+      "battle_facing_direction": "right",
       "bonus_hp": 0,
       "bonus_mp": 0,
       "bow_ef": "25",
       "brawling_ef": "25",
-      "check_mod_all": 0,
-      "check_mod_magic": 0,
-      "check_mod_melee": 0,
-      "check_mod_ranged": 0,
       "condition_anomaly": "NA",
       "condition_bane": "NA",
       "condition_berserk": "NA",
@@ -540,9 +1022,6 @@
       "condition_wet": "NA",
       "condition_wither": "NA",
       "condition_zombie": "IM",
-      "critical_damage_bonus": 0,
-      "critical_damage_multiplier": 1,
-      "critical_dice_range": 0,
       "current_hp": "210",
       "current_ip": "0",
       "current_mp": "90",
@@ -551,48 +1030,10 @@
       "cut_in_offset_y": "",
       "cut_in_zero_power": "",
       "dagger_ef": "25",
-      "damage_receiving_mod_air": 0,
-      "damage_receiving_mod_all": 0,
-      "damage_receiving_mod_bolt": 0,
-      "damage_receiving_mod_dark": 0,
-      "damage_receiving_mod_earth": 0,
-      "damage_receiving_mod_fire": 0,
-      "damage_receiving_mod_ice": 0,
-      "damage_receiving_mod_light": 0,
-      "damage_receiving_mod_melee": 0,
-      "damage_receiving_mod_physical": 0,
-      "damage_receiving_mod_poison": 0,
-      "damage_receiving_mod_range": 0,
       "def_mod": "+9",
-      "default_facing_direction": "right",
-      "defense": 15,
+      "default_facing_direction": "left",
       "dex_base": "6",
-      "dex_current": 6,
-      "enmity": 100,
       "event_timeline_table": {},
-      "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 0,
-      "extra_damage_mod_arcane": 0,
-      "extra_damage_mod_bolt": 0,
-      "extra_damage_mod_bow": 0,
-      "extra_damage_mod_brawling": 0,
-      "extra_damage_mod_dagger": 0,
-      "extra_damage_mod_dark": 0,
-      "extra_damage_mod_earth": 0,
-      "extra_damage_mod_fire": 0,
-      "extra_damage_mod_firearm": 0,
-      "extra_damage_mod_flail": 0,
-      "extra_damage_mod_heavy": 0,
-      "extra_damage_mod_ice": 0,
-      "extra_damage_mod_light": 0,
-      "extra_damage_mod_melee": 0,
-      "extra_damage_mod_physical": 0,
-      "extra_damage_mod_poison": 0,
-      "extra_damage_mod_ranged": 0,
-      "extra_damage_mod_spear": 0,
-      "extra_damage_mod_spell": 0,
-      "extra_damage_mod_sword": 0,
-      "extra_damage_mod_thrown": 0,
       "firearm_ef": "25",
       "flail_ef": "25",
       "gorger": false,
@@ -600,11 +1041,8 @@
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
-      "id": "j6IpMoeBol2PprPp",
-      "img": "icons/svg/mystery-man.svg",
       "init": "6",
       "ins_base": "6",
-      "ins_current": 6,
       "isAlmighty": false,
       "isAwake": false,
       "isBlacksmith": false,
@@ -630,20 +1068,13 @@
       "isVillain": false,
       "isWeak": false,
       "level": "38",
-      "lifesteal_percentage": 0,
-      "lifesteal_value": 0,
-      "magic_defense": 8,
-      "manadrain_percentage": 0,
-      "manadrain_value": 0,
       "max_hp": "210",
       "max_ip": "0",
       "max_mp": "90",
       "max_zero": "6",
       "mdef_mod": "+2",
       "mig_base": "12",
-      "mig_current": 12,
       "mimic": false,
-      "minimum_critical_dice": 6,
       "name": "O'lmek",
       "normal_spell_list": {
         "SY4gKcchvUw2fjl5": {
@@ -670,7 +1101,6 @@
       "npc_rank": "elite",
       "override_all_damage_type": "None",
       "override_attack_damage_type": "None",
-      "override_damage_type": "None",
       "override_spell_damage_type": "None",
       "rare": false,
       "resource_maxValue_1": "0",
@@ -683,14 +1113,84 @@
       "rolled_atr2": "DEX",
       "shield_type": "PHYSICAL",
       "shield_value": "0",
+      "shop_consumable_list": {
+        "TRuS4cO7pYl6asrd": {
+          "consumable_buy": "",
+          "consumable_cost": 50,
+          "consumable_descriptions": "<ul><li><p>Target creature gain <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span>, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 10 instead.</p></li></ul>",
+          "consumable_quantity": 1,
+          "id": "${item.id}",
+          "name": "Golem Soulstone",
+          "uuid": "Actor.j6IpMoeBol2PprPp.Item.TRuS4cO7pYl6asrd"
+        }
+      },
+      "shop_weapon_list": {
+        "Ae2njyJ0ZfsGFzZd": {
+          "id": "${item.id}",
+          "name": "Earthmate Shovel",
+          "uuid": "Actor.j6IpMoeBol2PprPp.Item.Ae2njyJ0ZfsGFzZd",
+          "weapon_buy": "",
+          "weapon_category": "Dagger",
+          "weapon_cost": 1500,
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><p>When performing <strong>Graft </strong>(<strong>Floralist</strong>)<strong>, </strong>you may <strong>fill </strong>section from your <strong>Growth Clock</strong>. If you do, you cannot use this effect again until your <strong>Growth Clock </strong>has become completely empty.</p></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
+        }
+      },
       "showMacro": false,
       "spear_ef": "25",
       "species": "CONSTRUCT",
       "sprite_battle": "",
       "sprite_standard": "",
-      "steal_percentage_table": {},
-      "study_text": "",
-      "subtype": "Sub-Type",
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "loot_id": "(Empty)",
+          "loot_percentage": "48"
+        },
+        "1": {
+          "$deleted": false,
+          "loot_id": "Golem Heart",
+          "loot_percentage": "32"
+        },
+        "2": {
+          "$deleted": false,
+          "loot_id": "Golem Soulstone",
+          "loot_percentage": "14"
+        },
+        "3": {
+          "$deleted": false,
+          "loot_id": "Earthmate Shovel",
+          "loot_percentage": "6"
+        }
+      },
+      "stealable_loot": {
+        "Ae2njyJ0ZfsGFzZd": {
+          "id": "${item.id}",
+          "loot_description": "<p>When performing <strong>Graft </strong>(<strong>Floralist</strong>)<strong>, </strong>you may <strong>fill </strong>section from your <strong>Growth Clock</strong>. If you do, you cannot use this effect again until your <strong>Growth Clock </strong>has become completely empty.</p>",
+          "name": "Earthmate Shovel",
+          "roll": "",
+          "uuid": "Actor.j6IpMoeBol2PprPp.Item.Ae2njyJ0ZfsGFzZd"
+        },
+        "TRuS4cO7pYl6asrd": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Target creature gain <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span>, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 10 instead.</p></li></ul>",
+          "name": "Golem Soulstone",
+          "roll": "",
+          "uuid": "Actor.j6IpMoeBol2PprPp.Item.TRuS4cO7pYl6asrd"
+        },
+        "shuzhQCDpfStBdnl": {
+          "id": "${item.id}",
+          "loot_description": "<p>A heart made of stone, a core material in creating a golem</p>",
+          "name": "Golem Heart",
+          "roll": "",
+          "uuid": "Actor.j6IpMoeBol2PprPp.Item.shuzhQCDpfStBdnl"
+        }
+      },
+      "study_text": "<p>A colossal head of black basalt, carved by a people long since turned to dust, its heavy-lidded eyes still lit with a warden’s spite. Chisel and arrow only chip its brow — but the old sorcery packed into its stone was never meant to weather raw <strong>magic</strong>. Turn away before its gaze finishes the prayer.</p>",
       "subtype_list": "GOLEM",
       "sword_ef": "25",
       "tactic_notes": "",
@@ -699,9 +1199,7 @@
       "traits": "Ancient stone statue of bygone civilization",
       "ultima_point": "0",
       "unique": false,
-      "uuid": "Actor.j6IpMoeBol2PprPp",
       "wlp_base": "6",
-      "wlp_current": 6,
       "zenit_reward_max": "120",
       "zenit_reward_min": "75",
       "zero_power_value": ""

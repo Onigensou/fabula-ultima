@@ -17,6 +17,15 @@
       "damage_dealt_mult_attack": 1,
       "damage_dealt_mult_skill": 1,
       "damage_dealt_mult_spell": 1,
+      "damage_taken_increased_air": 0,
+      "damage_taken_increased_bolt": 0,
+      "damage_taken_increased_dark": 0,
+      "damage_taken_increased_earth": 0,
+      "damage_taken_increased_fire": 0,
+      "damage_taken_increased_ice": 0,
+      "damage_taken_increased_light": 0,
+      "damage_taken_increased_physical": 0,
+      "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
       "idleAnimation": {
         "bounce": false,
@@ -42,7 +51,7 @@
       "_stats": {
         "compendiumSource": "Item.VKB7qLNF1XBdN7yX",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -382,7 +391,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -486,7 +495,7 @@
       "_stats": {
         "compendiumSource": "Item.BykEf2Th3dTmg02o",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -589,7 +598,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -721,7 +730,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -757,9 +766,53 @@
       "system": {
         "container": null,
         "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
           "description": "<p>Target creature recovers 50 Mind Points.</p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "AcMJCQfYI0ZH76h6",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
           "ip_cost": "3",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
           "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
           "item_skill_active": {
             "bSw96nwIhn8sDO2A": {
               "id": "${item.id}",
@@ -783,11 +836,20 @@
               "skill_cost": "-",
               "skill_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
               "skill_maxLevel": 1,
-              "uuid": ""
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.rEEtv35hOJCY48R4"
             }
           },
           "item_type": "recipe",
+          "mimic_ef": "100",
+          "monster_ef": "100",
           "name": "Elixir",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
           "related_item_list": {
             "bSw96nwIhn8sDO2A": {
               "id": "${item.id}",
@@ -805,9 +867,22 @@
               "id": "${item.id}",
               "name": "Elixir",
               "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
-              "uuid": ""
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.rEEtv35hOJCY48R4"
             }
-          }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.AcMJCQfYI0ZH76h6",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 987283856,
@@ -821,7 +896,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -929,7 +1004,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1020,7 +1095,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1146,7 +1221,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1236,7 +1311,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1344,7 +1419,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1454,7 +1529,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1568,7 +1643,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1604,9 +1679,53 @@
       "system": {
         "container": null,
         "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
           "description": "<p>Target creature recovers 50 Hit Points.</p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "ERZjg9YBPVLk6nsc",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
           "ip_cost": "3",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
           "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
           "item_skill_active": {
             "jNN7WCFgjvU9wXr4": {
               "id": "${item.id}",
@@ -1622,7 +1741,7 @@
               "skill_cost": "-",
               "skill_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
               "skill_maxLevel": 1,
-              "uuid": ""
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.tvHxQ2h9j1KuwlIO"
             },
             "up1sbEZUSPX4kxID": {
               "id": "${item.id}",
@@ -1634,7 +1753,16 @@
             }
           },
           "item_type": "recipe",
+          "mimic_ef": "100",
+          "monster_ef": "100",
           "name": "Remedy",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
           "related_item_list": {
             "jNN7WCFgjvU9wXr4": {
               "id": "${item.id}",
@@ -1646,7 +1774,7 @@
               "id": "${item.id}",
               "name": "Remedy",
               "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
-              "uuid": ""
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.tvHxQ2h9j1KuwlIO"
             },
             "up1sbEZUSPX4kxID": {
               "id": "${item.id}",
@@ -1654,7 +1782,20 @@
               "related_item_description": "<p>Target creature recovers 50 Hit Points.</p>",
               "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.up1sbEZUSPX4kxID"
             }
-          }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ERZjg9YBPVLk6nsc",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 987283856,
@@ -1668,7 +1809,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1758,7 +1899,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1889,7 +2030,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2013,7 +2154,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2145,7 +2286,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2235,7 +2376,7 @@
       "_stats": {
         "compendiumSource": "Item.uNsw1vWtAssZo4Bz",
         "coreVersion": "12.343",
-        "createdTime": 1783193526349,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2532,7 +2673,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783172928883,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2688,7 +2829,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2805,7 +2946,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2918,7 +3059,7 @@
       "_stats": {
         "compendiumSource": "Item.Hwc20u1gKTj1foQz",
         "coreVersion": "12.343",
-        "createdTime": 1783193527793,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3031,7 +3172,7 @@
       "_stats": {
         "compendiumSource": "Item.2dTUIP5vUweRF9ir",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3184,7 +3325,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3247,7 +3388,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783172930225,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3336,7 +3477,7 @@
       "_stats": {
         "compendiumSource": "Item.a9elI6g2FZ6qPY51",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3425,7 +3566,7 @@
       "_stats": {
         "compendiumSource": "Item.yVFJkol5V9OWvceZ",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3514,7 +3655,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783621013836,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3569,7 +3710,7 @@
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3646,7 +3787,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3738,7 +3879,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4120,7 +4261,7 @@
       "_stats": {
         "compendiumSource": "Actor.gdJZ1L1kv5mjTTMr.Item.BCi3qBRNrg0GWQf6",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4224,7 +4365,7 @@
       "_stats": {
         "compendiumSource": "Item.Qex8FZz4dvDcBmlz",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4354,7 +4495,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4464,7 +4605,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4554,7 +4695,7 @@
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1783620130771,
+        "createdTime": 1783717278397,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4565,7 +4706,7 @@
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
       "name": "Elixir",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -4585,17 +4726,23 @@
           "damage_bonus": "50",
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
+          "effect_table": {},
           "heroic_requirement": "",
           "id": "rEEtv35hOJCY48R4",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
           "name": "Elixir",
+          "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -4622,7 +4769,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4658,9 +4805,53 @@
       "system": {
         "container": null,
         "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
           "description": "<p>One creature recovers from a single status effect.</p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "rsQehCmVCCnx0J3G",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Annoyntment_Icon_HD.webp",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
           "ip_cost": "2",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
           "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
           "item_skill_active": {
             "SbfpCwjsp0dq8squ": {
               "id": "${item.id}",
@@ -4672,7 +4863,16 @@
             }
           },
           "item_type": "recipe",
+          "mimic_ef": "100",
+          "monster_ef": "100",
           "name": "Tonic",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
           "related_item_list": {
             "SbfpCwjsp0dq8squ": {
               "id": "${item.id}",
@@ -4680,7 +4880,20 @@
               "related_item_description": "<p>One creature recovers from a single status effect.</p>",
               "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.SbfpCwjsp0dq8squ"
             }
-          }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.rsQehCmVCCnx0J3G",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 987283856,
@@ -4694,7 +4907,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4785,7 +4998,7 @@
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4865,7 +5078,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4937,7 +5150,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5069,7 +5282,7 @@
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1783620130771,
+        "createdTime": 1783717278397,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5080,7 +5293,7 @@
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
       "name": "Remedy",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -5100,17 +5313,23 @@
           "damage_bonus": "50",
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
+          "details_roller": "Show",
           "duration": "Instnataneous",
+          "effect_table": {},
           "heroic_requirement": "",
           "id": "tvHxQ2h9j1KuwlIO",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
           "name": "Remedy",
+          "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -5137,7 +5356,7 @@
       "_stats": {
         "compendiumSource": "Item.4qXalxoKZVy8h2wD",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5240,7 +5459,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5356,7 +5575,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": "Item.QvUsAoeaebjrKAHi",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5491,7 +5710,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5613,7 +5832,7 @@
       "_stats": {
         "compendiumSource": "Item.clx7re0RW1nsaQN0",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5772,7 +5991,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783193502033,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5901,7 +6120,7 @@
       "_stats": {
         "compendiumSource": "Item.lqIjqJNa8wCrWW0p",
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6017,7 +6236,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148578466,
+        "createdTime": 1783717278397,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6237,7 +6456,7 @@
       "rotation": 0,
       "scaleX": 1.14,
       "scaleY": 1.14,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -6262,69 +6481,8 @@
       "away_name_3": "",
       "away_name_4": "",
       "battle_bgm": "Fabula Battle Theme",
-      "battle_log": "[\n  {\n    \"ts\": \"2026-07-10T04:15:43.085Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 111,\n        \"to\": 99\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-10T04:16:04.611Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 99,\n        \"to\": 87\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-10T04:16:36.520Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 87,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-10T04:16:56.598Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 63\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  }\n]",
-      "battle_log_table": [
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        }
-      ],
+      "battle_log": "[]",
+      "battle_log_table": {},
       "battle_tile_percentage": "0",
       "bench_currenthp_1": "0",
       "bench_currenthp_2": "0",
@@ -7061,18 +7219,18 @@
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.zwKM2ITKA19U0coI"
         }
       },
-      "member_currenthp_1": "88",
-      "member_currenthp_2": "77",
-      "member_currenthp_3": "151",
-      "member_currenthp_4": "88",
+      "member_currenthp_1": "83",
+      "member_currenthp_2": "91",
+      "member_currenthp_3": "156",
+      "member_currenthp_4": "106",
       "member_currentip_1": "3",
-      "member_currentip_2": "5",
+      "member_currentip_2": "8",
       "member_currentip_3": "8",
-      "member_currentip_4": "7",
-      "member_currentmp_1": "71",
-      "member_currentmp_2": "81",
-      "member_currentmp_3": "66",
-      "member_currentmp_4": "56",
+      "member_currentip_4": "4",
+      "member_currentmp_1": "111",
+      "member_currentmp_2": "106",
+      "member_currentmp_3": "56",
+      "member_currentmp_4": "76",
       "member_currentzp_1": "4",
       "member_currentzp_2": "6",
       "member_currentzp_3": "0",
@@ -7089,17 +7247,17 @@
       "member_level_2": "36",
       "member_level_3": "36",
       "member_level_4": "36",
-      "member_maxhp_1": "88",
+      "member_maxhp_1": "83",
       "member_maxhp_2": "91",
-      "member_maxhp_3": "151",
+      "member_maxhp_3": "156",
       "member_maxhp_4": "106",
       "member_maxip_1": "6",
       "member_maxip_2": "8",
-      "member_maxip_3": "8",
+      "member_maxip_3": "10",
       "member_maxip_4": "10",
       "member_maxmp_1": "111",
       "member_maxmp_2": "106",
-      "member_maxmp_3": "66",
+      "member_maxmp_3": "71",
       "member_maxmp_4": "76",
       "member_maxzp_1": "6",
       "member_maxzp_2": "6",
@@ -7114,7 +7272,7 @@
       "member_sprite_3": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Portrait/Blanche_Portrait001.png",
       "member_sprite_4": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Portrait/Zarg_Portrait.png",
       "member_zenit_1": "5519",
-      "member_zenit_2": "8303",
+      "member_zenit_2": "7503",
       "member_zenit_3": "3027",
       "member_zenit_4": "243",
       "minimum_encounter_percenter": "25",
@@ -7213,7 +7371,7 @@
       "smugglerport_fish_meter": 6,
       "status_tile_percentage": "15",
       "title_scene_id": "",
-      "total_zenit": "19067",
+      "total_zenit": "18267",
       "trap_tile_percentage": "30",
       "treasure_tile_percentage": "1",
       "up2_tile_percentage": "0",
@@ -7319,6 +7477,18 @@
           "weapon_description": "<p><p>No Quality.</p></p>",
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
+          "weapon_range": "Melee"
+        },
+        "Iu4LG8jvhKjhn9uU": {
+          "id": "${item.id}",
+          "name": "Swordbreaker",
+          "quantity": "",
+          "roll": "",
+          "type": "Dagger",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.Iu4LG8jvhKjhn9uU",
+          "weapon_description": "<p><ul><li><p>When a creature 【⚔️Attack】you and <strong>missed, </strong>there's a chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the attacker</p></li><li><p>You may perform the skill 【💥Weapon Break】</p></li></ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
           "weapon_range": "Melee"
         },
         "J130USK66jOmIVdk": {
@@ -7643,6 +7813,18 @@
           "weapon_description": "<p><ul><li>You may perform the skill 【💥Bandit Raid】</li></ul></p>",
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
+          "weapon_range": "Melee"
+        },
+        "xKB174OGzyfeque1": {
+          "id": "${item.id}",
+          "name": "Hornet",
+          "quantity": "",
+          "roll": "",
+          "type": "Dagger",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.xKB174OGzyfeque1",
+          "weapon_description": "<p><ul><li><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></li></ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
           "weapon_range": "Melee"
         },
         "xM3js8SJeUsXDA5N": {

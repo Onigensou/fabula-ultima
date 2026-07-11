@@ -8,7 +8,7 @@
   "full": {
     "folder": null,
     "name": "Loading Screen",
-    "active": true,
+    "active": false,
     "navigation": true,
     "navOrder": 1200000,
     "navName": "Loading",
@@ -118,7 +118,8 @@
             "label": "",
             "backgroundImage": ""
           }
-        ]
+        ],
+        "isTriggered": false
       },
       "levels": {
         "backgroundElevation": 0,
@@ -162,7 +163,12 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false
+            "sceneVisited": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
           }
         },
         "campSceneUuid": "",
@@ -196,7 +202,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1767961551046,
-      "modifiedTime": 1783665033987,
+      "modifiedTime": 1783704720666,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

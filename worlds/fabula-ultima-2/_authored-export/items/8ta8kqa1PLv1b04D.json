@@ -90,19 +90,24 @@
       "damage_bonus": "",
       "defense_target_type": "def",
       "description": "<p>At the start of your turn during a conflict, you may choose one ally who is able to hear you or one enemy you can see that is suffering from <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span>, <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span>, and/or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span>. Until the start of your next turn, the chosen creature becomes your <strong>focus</strong>.</p><p>You gain a bonus equal to <strong>【SL】</strong> to <strong>Checks</strong> you perform to examine your <strong>focus</strong>, as well as to your <strong>Accuracy Checks</strong> and <strong>Magic Checks</strong> for 【⚔️Attack】 and 【⚡Offensive Spell】 that include your <strong>focus</strong> among the targets. When you cause your <strong>focus</strong> to recover <strong>Hit Points</strong> and/or <strong>Mind Points</strong>, they recover <strong>【SL × 2】</strong> additional <strong>HP</strong> and/or <strong>MP</strong>, respectively.</p>",
+      "details_roller": "Show",
       "duration": "",
       "effect_table": {
         "0": {
           "$deleted": false,
+          "auto_confirm_when_obvious": true,
           "auto_target": "confirm",
           "candidate_source": "combat",
-          "count": 1,
+          "category": "",
+          "count": "1",
           "effect_kind": "targeting",
           "effect_label": "cf_pick",
           "exclude_self": true,
+          "iteration_mode": "together",
           "mode": "exact",
           "skip_when_passive": false,
-          "target_filter": "IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED + HAS_STATUS_SHAKEN)"
+          "target_filter": "IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED + HAS_STATUS_SHAKEN)",
+          "target_prompt": ""
         },
         "1": {
           "$deleted": false,
@@ -116,20 +121,22 @@
           "$deleted": false,
           "accuracy_amount": "SL",
           "accuracy_operation": "add",
-          "effect_kind": "adjust_accuracy",
+          "effect_kind": "grant",
           "effect_label": "cf_acc"
         },
         "3": {
           "$deleted": false,
           "condition_formula": "TARGET_HAS_MY_FOCUS == 1",
-          "effect_kind": "adjust_grant",
+          "effect_kind": "grant",
           "effect_label": "cf_heal",
           "grant_amount": "SL * 2",
           "grant_operation": "add"
         }
       },
       "heroic_requirement": "",
+      "id": "8ta8kqa1PLv1b04D",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/OvermindMaster1.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -139,42 +146,64 @@
       "level": "1",
       "max_level": "5",
       "name": "Cognitive Focus",
+      "on_activate_effect_ref": "",
       "optional_params": {},
       "passive_logic_action": "<p>[{\"id\":\"focus-outgoing-bonus\",\"label\":\"Cognitive Focus\",\"when\":{\"all\":[{\"actor\":{\"flagEquals\":{\"ns\":\"oni\",\"key\":\"focus.active\",\"equals\":true}}}]},\"effects\":[{\"type\":\"percent\",\"scope\":\"outgoing\",\"element\":\"all\",\"amount\":0.25}],\"options\":{\"recalcOnConfirm\":\"ifElementUnknown\"}}]</p>",
       "reaction_config_table": {
         "0": {
           "$deleted": false,
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_action_target": "",
           "reaction_damage_amount": "",
+          "reaction_damage_source": "",
           "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
           "reaction_effect_ref": "cf_apply",
+          "reaction_ownership": "",
           "reaction_passive_mode": "ask",
           "reaction_passive_target": "",
           "reaction_source": "self",
-          "reaction_trigger": "turn_start"
+          "reaction_subject_kind": "",
+          "reaction_trigger": "turn_start",
+          "requires_skill": ""
         },
         "1": {
           "$deleted": false,
           "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1",
+          "reaction_action_intent": "",
           "reaction_action_kind": "Attack,Spell,Skill",
+          "reaction_action_target": "",
           "reaction_damage_amount": "",
+          "reaction_damage_source": "",
           "reaction_damage_type": "",
           "reaction_effect_ref": "cf_acc",
+          "reaction_ownership": "",
           "reaction_passive_mode": "force",
           "reaction_passive_target": "",
           "reaction_source": "self",
-          "reaction_trigger": "creature_performs_action"
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_performs_action",
+          "requires_skill": ""
         },
         "2": {
           "$deleted": false,
           "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1",
+          "reaction_action_intent": "",
           "reaction_action_kind": "Item",
+          "reaction_action_target": "",
           "reaction_damage_amount": "",
+          "reaction_damage_source": "",
           "reaction_damage_type": "",
           "reaction_effect_ref": "cf_heal",
+          "reaction_ownership": "",
           "reaction_passive_mode": "force",
           "reaction_passive_target": "",
           "reaction_source": "self",
-          "reaction_trigger": "creature_performs_action"
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_performs_action",
+          "requires_skill": ""
         }
       },
       "rolled_atr1": "-",
@@ -186,7 +215,8 @@
       "skill_target": "",
       "skill_type": "Passive",
       "type_damage": "",
-      "use_optional_params": false
+      "use_optional_params": false,
+      "uuid": "Item.8ta8kqa1PLv1b04D"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

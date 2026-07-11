@@ -17,18 +17,31 @@
       "damage_dealt_mult_attack": 1,
       "damage_dealt_mult_skill": 1,
       "damage_dealt_mult_spell": 1,
-      "damage_taken_mult": 1
+      "damage_taken_increased_air": 0,
+      "damage_taken_increased_bolt": 0,
+      "damage_taken_increased_dark": 0,
+      "damage_taken_increased_earth": 0,
+      "damage_taken_increased_fire": 0,
+      "damage_taken_increased_ice": 0,
+      "damage_taken_increased_light": 0,
+      "damage_taken_increased_physical": 0,
+      "damage_taken_increased_poison": 0,
+      "damage_taken_mult": 1,
+      "idleAnimation": {
+        "bounce": false,
+        "float": false
+      }
     }
   },
   "folder": "MJiFIdO1Fzd4tOu2",
-  "img": "icons/svg/mystery-man.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Shopkeeper%20Shade/NPCShade_Standard.png",
   "items": [
     {
       "_id": "bNkNrpohezxyBvm7",
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1783663716558,
+        "createdTime": 1783717373198,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -94,7 +107,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783662990880,
+        "createdTime": 1783717373198,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -245,7 +258,7 @@
       "_stats": {
         "compendiumSource": "Item.9vM7Xu5q3cj7EFQt",
         "coreVersion": "12.343",
-        "createdTime": 1783663716558,
+        "createdTime": 1783717373198,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -379,7 +392,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783662991332,
+        "createdTime": 1783717373198,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -434,7 +447,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783662990970,
+        "createdTime": 1783717373198,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -583,7 +596,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783662991041,
+        "createdTime": 1783717373198,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -634,7 +647,7 @@
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1783662990922,
+        "createdTime": 1783717373198,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -700,7 +713,7 @@
       "_stats": {
         "compendiumSource": "Item.1cajyF04dx07aGEU",
         "coreVersion": "12.343",
-        "createdTime": 1783663686648,
+        "createdTime": 1783717373198,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -819,7 +832,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783662991168,
+        "createdTime": 1783717373198,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -941,107 +954,42 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorLink": false,
+    "actorLink": true,
     "alpha": 1,
     "appendNumber": false,
     "bar1": {
-      "attribute": "attributeBar.current_hp"
+      "attribute": null
     },
     "bar2": {
-      "attribute": "attributeBar.current_mp"
+      "attribute": null
     },
     "detectionModes": [],
     "displayBars": 50,
     "displayName": 0,
-    "disposition": -1,
+    "disposition": 0,
     "flags": {
       "barbrawl": {
-        "resourceBars": {
-          "bar1": {
-            "attribute": "attributeBar.current_hp",
-            "bgImage": "",
-            "fgImage": "",
-            "gmVisibility": -1,
-            "hideCombat": false,
-            "hideEmpty": false,
-            "hideFull": false,
-            "hideHud": false,
-            "hideNoCombat": false,
-            "id": "bar1",
-            "indentLeft": null,
-            "indentRight": null,
-            "invert": false,
-            "invertDirection": false,
-            "label": "HP",
-            "maxcolor": "#80FF00",
-            "mincolor": "#FF0000",
-            "opacity": null,
-            "order": 1,
-            "otherVisibility": 0,
-            "ownerVisibility": 50,
-            "position": "bottom-inner",
-            "shareHeight": false,
-            "style": "fraction",
-            "subdivisions": null,
-            "subdivisionsOwner": false
-          },
-          "bar2": {
-            "attribute": "attributeBar.current_mp",
-            "bgImage": "",
-            "fgImage": "",
-            "gmVisibility": -1,
-            "hideCombat": false,
-            "hideEmpty": false,
-            "hideFull": false,
-            "hideHud": false,
-            "hideNoCombat": false,
-            "id": "bar2",
-            "indentLeft": null,
-            "indentRight": null,
-            "invert": false,
-            "invertDirection": false,
-            "label": "MP",
-            "maxcolor": "#80B3FF",
-            "mincolor": "#000080",
-            "opacity": null,
-            "order": 0,
-            "otherVisibility": 0,
-            "ownerVisibility": 50,
-            "position": "bottom-inner",
-            "shareHeight": false,
-            "style": "fraction",
-            "subdivisions": null,
-            "subdivisionsOwner": false
-          },
-          "bar3": {
-            "attribute": "attributeBar.shield_value",
-            "bgImage": "",
-            "fgImage": "",
-            "gmVisibility": -1,
-            "hideCombat": false,
-            "hideEmpty": true,
-            "hideFull": false,
-            "hideHud": false,
-            "hideNoCombat": false,
-            "id": "bar3",
-            "indentLeft": null,
-            "indentRight": null,
-            "invert": false,
-            "invertDirection": false,
-            "label": "",
-            "maxcolor": "#FFFFFF",
-            "mincolor": "#000000",
-            "opacity": null,
-            "order": 2,
-            "otherVisibility": 50,
-            "ownerVisibility": 50,
-            "position": "bottom-inner",
-            "shareHeight": false,
-            "style": "fraction",
-            "subdivisions": null,
-            "subdivisionsOwner": false
-          }
+        "resourceBars": {}
+      },
+      "fabula-ultima-companion": {
+        "dominanceCrestOffset": {
+          "x": 0,
+          "y": 0
         }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Shopkeeper%20Shade/NPCShade_Standard.png"
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
       }
     },
     "height": 1,
@@ -1077,13 +1025,13 @@
       "radius": 0
     },
     "prependAdjective": false,
-    "randomImg": false,
+    "randomImg": true,
     "ring": {
       "colors": {
         "background": null,
         "ring": null
       },
-      "effects": 1,
+      "effects": 0,
       "enabled": false,
       "subject": {
         "scale": 1,
@@ -1112,7 +1060,7 @@
       "rotation": 0,
       "scaleX": 1,
       "scaleY": 1,
-      "src": "icons/svg/mystery-man.svg",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Shopkeeper%20Shade/*",
       "tint": "#ffffff"
     },
     "width": 1

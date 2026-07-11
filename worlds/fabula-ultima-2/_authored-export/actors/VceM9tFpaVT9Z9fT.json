@@ -17,6 +17,15 @@
       "damage_dealt_mult_attack": 1,
       "damage_dealt_mult_skill": 1,
       "damage_dealt_mult_spell": 1,
+      "damage_taken_increased_air": 0,
+      "damage_taken_increased_bolt": 0,
+      "damage_taken_increased_dark": 0,
+      "damage_taken_increased_earth": 0,
+      "damage_taken_increased_fire": 0,
+      "damage_taken_increased_ice": 0,
+      "damage_taken_increased_light": 0,
+      "damage_taken_increased_physical": 0,
+      "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
       "idleAnimation": {
         "bounce": false,
@@ -32,7 +41,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -97,7 +106,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -162,7 +171,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -306,7 +315,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -371,7 +380,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -513,7 +522,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -655,7 +664,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -720,7 +729,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -785,7 +794,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -928,7 +937,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -993,7 +1002,7 @@
       "_stats": {
         "compendiumSource": "Item.1pmPZ8EheBcL0EQt",
         "coreVersion": "12.343",
-        "createdTime": 1783148672249,
+        "createdTime": 1783717366454,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

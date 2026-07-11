@@ -142,7 +142,7 @@
           "sceneNetwork": "[{\"name\":\"Wyrmwood - Entrance\",\"id\":\"WTYzSEb84rUiZ9Z2\"},{\"name\":\"Wyrmwood - Forest Path 1\",\"id\":\"0JcIojCGQhNZ0T1j\"},{\"name\":\"Wyrmwood - Forest Path 2\",\"id\":\"SIkQUHF2WNT6ZfAg\"},{\"name\":\"Wyrmwood - Forest Path 3\",\"id\":\"wkdzuO0tBlSOtQiW\"},{\"name\":\"Wyrmwood - Pond\",\"id\":\"CSHtuv28fdkgZf3P\"},{\"name\":\"Wyrmwood - Exit\",\"id\":\"kMy1SUlXdIiBIqXK\"},{\"name\":\"Wyrmwood - Temple Path\",\"id\":\"eTcAzbSagAqMI7eM\"},{\"name\":\"Wyrmwood - River\",\"id\":\"lxPMqzqHMXiqiwF7\"},{\"name\":\"Wyrmwood - Clearing\",\"id\":\"76krJ47cgwZauvXc\"},{\"name\":\"Camp\",\"id\":\"rCtVwyNpf4i0TQZI\"},{\"name\":\"Wyrmwood - Wyrm Skeleton\",\"id\":\"lDrc77y6qLmRvCgL\"},{\"name\":\"Wyrmwood_Hot Spring\",\"id\":\"aL3JJcEetiRIAW6D\"}]",
           "general": {
             "cameraFollowToken": false,
-            "sceneMode": "none",
+            "sceneMode": "theatre",
             "scanRadius": null,
             "fastTravelEnabled": true,
             "disableTransition": false,
@@ -180,7 +180,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780539632143,
-      "modifiedTime": 1783184757182,
+      "modifiedTime": 1783691611319,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

@@ -8,7 +8,7 @@
   "full": {
     "folder": "SPvX0PiXpGCzQ7YQ",
     "name": "Dragonslayer Title",
-    "active": false,
+    "active": true,
     "navigation": true,
     "navOrder": 1100000,
     "navName": "Title",
@@ -631,19 +631,19 @@
           "latestPayload": {
             "meta": {
               "schemaVersion": 1,
-              "battleId": "Eb8JDYEgrLORnUPh",
-              "createdAt": "2026-07-10T03:36:58.312Z",
+              "battleId": "NUfMMn3817vEJX3n",
+              "createdAt": "2026-07-10T14:27:06.377Z",
               "debug": {
                 "enabled": true,
                 "trace": [
                   {
                     "phase": "prompt",
-                    "at": "2026-07-10T03:36:58.312Z",
+                    "at": "2026-07-10T14:27:06.377Z",
                     "note": "Created initial BattlePayload from GM prompt."
                   },
                   {
                     "phase": "prompt",
-                    "at": "2026-07-10T03:36:58.312Z",
+                    "at": "2026-07-10T14:27:06.377Z",
                     "note": "Clear Battle Log: ok"
                   }
                 ]
@@ -676,7 +676,7 @@
               "mode": "dbPartyMembers",
               "source": {
                 "gameName": "The Legend of Dragonslayer",
-                "resolvedAt": "2026-07-10T03:36:50.418Z"
+                "resolvedAt": "2026-07-10T14:26:56.992Z"
               },
               "members": [
                 {
@@ -776,18 +776,18 @@
             "phases": {
               "prompt": {
                 "status": "ok",
-                "at": "2026-07-10T03:36:58.312Z"
+                "at": "2026-07-10T14:27:06.377Z"
               },
               "directorManager": {
                 "status": "ok",
-                "at": "2026-07-10T03:37:28.257Z",
+                "at": "2026-07-10T14:27:35.041Z",
                 "initialState": "STANDALONE_REACTION_WINDOW",
                 "note": "PREP runs asynchronously after this; check FUCompanion.api.experimental.battleDirector.status() for progress."
               }
             },
             "manager": {
               "status": "ok",
-              "stoppedAt": "2026-07-10T03:37:28.257Z"
+              "stoppedAt": "2026-07-10T14:27:35.041Z"
             }
           }
         },
@@ -870,7 +870,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1762704862129,
-      "modifiedTime": 1783656563016,
+      "modifiedTime": 1783729835337,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

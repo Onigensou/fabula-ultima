@@ -17426,6 +17426,13 @@
         "effects": 0
       },
       {
+        "id": "9FM2UddgOdcbHvVR",
+        "name": "Innkeeper Shade",
+        "type": "character",
+        "items": [],
+        "effects": 0
+      },
+      {
         "id": "V9geXDcQmBrjsnfF",
         "name": "Invoker",
         "type": "character",
@@ -18762,6 +18769,22 @@
         "type": "character",
         "items": [
           {
+            "id": "Ae2njyJ0ZfsGFzZd",
+            "name": "Earthmate Shovel"
+          },
+          {
+            "id": "shuzhQCDpfStBdnl",
+            "name": "Golem Heart"
+          },
+          {
+            "id": "cikpjS54FeWj7JU3",
+            "name": "Golem Soulstone"
+          },
+          {
+            "id": "TRuS4cO7pYl6asrd",
+            "name": "Golem Soulstone"
+          },
+          {
             "id": "EEx3KGlLGAuRqpJT",
             "name": "Laser Eyes"
           },
@@ -18781,6 +18804,18 @@
         "name": "O'zealot",
         "type": "character",
         "items": [
+          {
+            "id": "Z2fyYlDAaRTRbNyV",
+            "name": "Golem Fragment"
+          },
+          {
+            "id": "fPhcZmTJCf9UuXzR",
+            "name": "Golem Heart"
+          },
+          {
+            "id": "aEwMZe1thnOf3vDf",
+            "name": "Ignition Spear"
+          },
           {
             "id": "yQKwY825PAWNZjEQ",
             "name": "Jump"
