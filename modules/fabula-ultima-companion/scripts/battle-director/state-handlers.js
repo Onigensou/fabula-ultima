@@ -4721,7 +4721,12 @@ const Confirm = {
             const isAttack = ar.kind === "Attack";
             const isHealSpread = ar.kind === "Item" && !!ar.hasHealing
               && (ar.targets?.length ?? 0) === 1;
-            if (!isAttack && !isHealSpread) continue;
+            // Buff-spread (Follow my lead): a beneficial, non-damaging,
+            // non-healing action with no accuracy roll (a self-buff "dance")
+            // may share its benefit with an added ally. Pairs with the
+            // buff-spread branch in onAddTargetApply.
+            const isBuffSpread = !ar.roll && !ar.hasDamage && !ar.hasHealing;
+            if (!isAttack && !isHealSpread && !isBuffSpread) continue;
             // Two-weapon attacks (Double Arrow's double shot, classic TWF) lose
             // the multi property and CANNOT gain it (RAW Two-Weapon Fighting).
             // Block EVERY add_target reaction on a two-weapon pass — generic, so
@@ -5209,6 +5214,72 @@ const Confirm = {
                   tokenImg: s.tokenImg, disposition: s.disposition,
                 })),
               };
+            }
+
+            // ── Buff-spread variant (Follow my lead) ────────────────────────
+            // A beneficial, non-damaging / non-healing action (a self-buff
+            // "dance") whose add_target reaction shares the buff with a picked
+            // ally. Unlike the attack/heal branches there is no accuracy roll
+            // and no amount to project — just splice the picked target(s) into
+            // the roster so the performed skill's RESOLVE-time apply_ae
+            // (target_ref action_targets) applies its AE to them too. Cost is
+            // charged inside the chain (cost-last), so cancel / unaffordable →
+            // nothing spent, pill stays live.
+            const baseArB = director.ctx.actionResult ?? ar;
+            const isBuffSpread = !baseArB.roll && !baseArB.hasDamage && !baseArB.hasHealing;
+            if (isBuffSpread) {
+              const bAttacker = director.ctx.turnSnapshot;
+              if (!bAttacker) {
+                warn("CONFIRM onAddTargetApply(buff): missing attacker — pill stays pending");
+                return { ok: false };
+              }
+              const existingB = new Set((baseArB.targets ?? []).map((t) => t.tokenUuid));
+              const sinkB = { addedTokenUuids: [] };
+              const probeB = {
+                sourceActorUuid: bAttacker.actorUuid, subjectActorUuid: bAttacker.actorUuid,
+                sourceTokenUuid: bAttacker.tokenUuid ?? null,
+                targets: [...existingB], targetTokenUuids: [...existingB],
+                actionIntent: "beneficial", actionKind: "Skill",
+                actionName: baseArB.skillName ?? "Skill", _preRoll: sinkB,
+              };
+              const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
+              let resB = null;
+              try { resB = await firePreAcceptedCandidate({ director, casterActor: attackerActor, candidate: cand, payload: probeB, remotePrompt }); }
+              catch (e) { warn("CONFIRM onAddTargetApply(buff): chain threw", e); return { ok: false }; }
+              if (!resB?.ok) {
+                log(`CONFIRM onAddTargetApply(buff): chain ${resB?.cancelled ? "cancelled" : "returned not-ok"} — pill stays pending`);
+                return { ok: false, cancelled: !!resB?.cancelled };
+              }
+              // Resolve the picked target(s) into snapshots from an any-side pool
+              // (the reaction's own targeting row scopes who's eligible).
+              const eligibleB = director.dCombat
+                ? snapshotEligibleTargetsFromDCombat(director.dCombat, bAttacker, { category: "any" })
+                : snapshotEligibleTargets(director.combat, bAttacker, { category: "any" });
+              const newSnapsB = [];
+              for (const u of sinkB.addedTokenUuids) {
+                if (existingB.has(u)) continue;
+                const snap = eligibleB.find((e) => e.tokenUuid === u);
+                if (snap && !newSnapsB.includes(snap)) newSnapsB.push(snap);
+              }
+              if (!newSnapsB.length) {
+                log(`CONFIRM onAddTargetApply(buff): no new targets resolved from picks [${sinkB.addedTokenUuids.join(", ")}] — pill stays pending`);
+                return { ok: false, cancelled: true };
+              }
+              // Minimal auto-hit rows (no accuracy / no amount) so the card
+              // appends target rows; RESOLVE applies the AE off ar.targets.
+              const addedRowsB = newSnapsB.map((s) => ({
+                name: s.name, tokenUuid: s.tokenUuid, actorUuid: s.actorUuid,
+                tokenImg: s.tokenImg, disposition: s.disposition,
+                defense: 0, hit: true, crit: false, affinity: "NE", studied: true,
+              }));
+              director.ctx.actionResult = freezeActionResult({
+                ...baseArB,
+                targets: [...(baseArB.targets ?? []), ...newSnapsB],
+                perTargetResults: [...(baseArB.perTargetResults ?? []), ...addedRowsB],
+                hitTokenUuids: [...(baseArB.hitTokenUuids ?? []), ...newSnapsB.map((s) => s.tokenUuid)],
+              });
+              log(`CONFIRM onAddTargetApply(buff): spread +${newSnapsB.length} target(s) for ${baseArB.skillName ?? "buff"}`);
+              return { ok: true, addedRows: addedRowsB };
             }
 
             const fullAttacker = director.ctx.turnSnapshot;
