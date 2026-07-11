@@ -4581,53 +4581,67 @@ export async function postActionCard({ director, kind, payload }) {
     const finish = (outcome, extras = {}) => {
       if (resolved) return;
       resolved = true;
-      // Abort the unused remote awaits so they don't linger and steal
-      // the next turn's matching intent. Defined below in this Promise
-      // constructor; safe to reference via closure hoisting.
-      try { abortPendingAwaits?.(); } catch {}
-      // Tell all non-primary clients (players + secondary GMs) to close
-      // their mirror cards. GM-side DOM despawns via the timeout below.
+      // CRITICAL: everything between here and resolve() below can throw — DOM ops
+      // on a torn-down card, or a malformed reaction-decision snapshot. If it does,
+      // we MUST still call resolve(), or Confirm.onEnter's `await postActionCard`
+      // hangs and the FSM parks in CONFIRM forever (the `.catch` on the remote
+      // await is silenced once `resolved` is true, so the throw is invisible). Wrap
+      // the whole body and resolve in a `finally`-style tail regardless of outcome.
+      let reactionDecisions = [];
       try {
-        const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
-        for (const u of onlineNonPrimary) {
-          try {
-            director.intentChannel?.broadcastMenuClose({
-              targetUserId: u.id,
-              kind: "action-card",
-              reason: `card-${outcome}`,
-            });
-          } catch {}
+        // Abort the unused remote awaits so they don't linger and steal
+        // the next turn's matching intent. Defined below in this Promise
+        // constructor; safe to reference via closure hoisting.
+        try { abortPendingAwaits?.(); } catch {}
+        // Tell all non-primary clients (players + secondary GMs) to close
+        // their mirror cards. GM-side DOM despawns via the timeout below.
+        try {
+          const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+          for (const u of onlineNonPrimary) {
+            try {
+              director.intentChannel?.broadcastMenuClose({
+                targetUserId: u.id,
+                kind: "action-card",
+                reason: `card-${outcome}`,
+              });
+            } catch {}
+          }
+        } catch {}
+
+        for (const b of root.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
+
+        root.classList.remove("is-visible");
+        root.classList.add("is-resolving");
+        const fadeMs = outcome === "confirm" ? 480 : 240;
+        despawnTid = setTimeout(() => {
+          try { root.remove(); } catch {}
+          try { descTip?.remove(); } catch {}
+          descTip = null;
+          _overlays.delete(director.combatId);
+        }, fadeMs);
+
+        if (keyListener) {
+          try { window.removeEventListener("keydown", keyListener, true); } catch {}
+          keyListener = null;
         }
-      } catch {}
 
-      for (const b of root.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
+        // Defensive: kill any pending tooltip work so a dwell timer or rAF
+        // that hasn't fired yet doesn't surface a ghost tooltip on top of
+        // the (already dismissed) card.
+        try { hideDescTip(); } catch {}
 
-      root.classList.remove("is-visible");
-      root.classList.add("is-resolving");
-      const fadeMs = outcome === "confirm" ? 480 : 240;
-      despawnTid = setTimeout(() => {
-        try { root.remove(); } catch {}
-        try { descTip?.remove(); } catch {}
-        descTip = null;
-        _overlays.delete(director.combatId);
-      }, fadeMs);
-
-      if (keyListener) {
-        try { window.removeEventListener("keydown", keyListener, true); } catch {}
-        keyListener = null;
+        // Reaction-pill decisions so resolve can apply pre-accepted passives.
+        reactionDecisions = snapshotReactionDecisions();
+      } catch (e) {
+        warn("postActionCard.finish: threw before resolve — resolving anyway to keep the FSM alive", e);
       }
 
-      // Defensive: kill any pending tooltip work so a dwell timer or rAF
-      // that hasn't fired yet doesn't surface a ghost tooltip on top of
-      // the (already dismissed) card.
-      try { hideDescTip(); } catch {}
-
-      // Pass any caller-supplied button data (e.g. status pick on Hinder)
-      // back to Confirm. Currently used for `statusValue`. Also tack on
-      // reaction-pill decisions so resolve can apply pre-accepted passives.
+      // Pass any caller-supplied button data (e.g. status pick on Hinder) back to
+      // Confirm alongside the reaction-pill decisions. ALWAYS runs, even if the
+      // body above threw — a partial teardown must never hang the turn.
       resolve({
         confirmed: outcome === "confirm",
-        reactionDecisions: snapshotReactionDecisions(),
+        reactionDecisions,
         ...extras,
       });
     };
@@ -5970,15 +5984,30 @@ export async function postActionCard({ director, kind, payload }) {
         cancelAwait = director.intentChannel.awaitIntent(INTENTS.CANCEL_ACTION, {
           timeoutMs: 30 * 60 * 1000,
         });
+        // Acknowledge a remote Confirm/Cancel the INSTANT it lands (before running
+        // the action) so the sender's mirror can stand down its no-response retry
+        // timer — mirrors the reaction-pill "ack" contract. finish() then
+        // broadcasts the card-close that tears their mirror down.
+        const sendConfirmAck = (fromUid) => {
+          if (!fromUid || fromUid === game.user?.id) return;
+          try {
+            director.intentChannel.broadcastMenuOpen({
+              targetUserId: fromUid,
+              menuSpec: { kind: "action-card-confirm-ack", combatId: director.combatId },
+            });
+          } catch (e) { warn("postActionCard: confirm-ack broadcast threw", e); }
+        };
         confirmAwait.then((intent) => {
           log("postActionCard: remote CONFIRM_ACTION received");
+          sendConfirmAck(intent?.fromUserId ?? null);
           const extras = intent?.body ?? {};
           finish("confirm", extras);
         }).catch((e) => {
           if (!resolved) warn("postActionCard: CONFIRM_ACTION await failed", e?.message);
         });
-        cancelAwait.then(() => {
+        cancelAwait.then((intent) => {
           log("postActionCard: remote CANCEL_ACTION received");
+          sendConfirmAck(intent?.fromUserId ?? null);
           finish("cancel");
         }).catch((e) => {
           if (!resolved) warn("postActionCard: CANCEL_ACTION await failed", e?.message);
@@ -6746,6 +6775,9 @@ function cleanupMirror() {
   // (no-ops if none is up). Covers card replace AND card close.
   import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ cancelled: true })).catch(() => {});
   const existing = document.getElementById(MIRROR_ROOT_ID);
+  // Stand down any pending Confirm/Cancel no-response timer so a card close/replace
+  // can't fire a stray "tap again" toast after the mirror is gone.
+  if (existing?._fudConfirmTimer) { try { clearTimeout(existing._fudConfirmTimer); } catch {} existing._fudConfirmTimer = null; }
   if (existing) try { existing.remove(); } catch {}
 }
 
@@ -6899,6 +6931,17 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (!wrapper || !menuSpec.bodyHtml) return;
     const bodyEl = wrapper.querySelector(".fud-bf-body");
     if (bodyEl) bodyEl.innerHTML = menuSpec.bodyHtml;
+  });
+
+  // Confirm/Cancel ack — the GM received our Confirm/Cancel intent and is running
+  // the action. Stand down the no-response retry timer; the card-close broadcast
+  // that follows tears the mirror down. Symmetric with offPillUpdate's "ack".
+  const offConfirmAck = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "action-card-confirm-ack") return;
+    const wrapper = document.getElementById(MIRROR_ROOT_ID);
+    if (!wrapper) return;
+    if (wrapper._fudConfirmTimer) { try { clearTimeout(wrapper._fudConfirmTimer); } catch {} wrapper._fudConfirmTimer = null; }
+    delete wrapper.dataset.fudConfirmSubmitting;
   });
 
   const offOpen = channel.onMenuOpen((menuSpec) => {
@@ -7365,20 +7408,31 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
             cost: Number(cardEl.dataset.fudItemCost || 0) || 0,
           };
         }
-        if (action === "confirm") {
+        if (action === "confirm" || action === "cancel") {
+          // Connection safety net — mirror the reaction-pill Apply/Skip contract:
+          // grey the buttons (submitting), arm a no-response timer, THEN emit. If
+          // the GM never acknowledges the click within the window (dropped socket /
+          // desync), the buttons would otherwise stay greyed forever and the only
+          // recovery was a refresh. The GM's "confirm-ack" (sent the instant it
+          // receives the intent, before running the action) clears the timer; the
+          // card-close broadcast that follows tears the mirror down. On timeout we
+          // restore the buttons so the player can just click again.
+          for (const b of wrapper.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
+          wrapper.dataset.fudConfirmSubmitting = action;
+          if (wrapper._fudConfirmTimer) { try { clearTimeout(wrapper._fudConfirmTimer); } catch {} }
+          wrapper._fudConfirmTimer = setTimeout(() => {
+            wrapper._fudConfirmTimer = null;
+            if (!wrapper.isConnected) return;
+            if (wrapper.dataset.fudConfirmSubmitting !== action) return; // acked / closed
+            delete wrapper.dataset.fudConfirmSubmitting;
+            for (const b of wrapper.querySelectorAll(".fud-btn")) b.classList.remove("is-resolved");
+            try { ui.notifications?.warn("No response from the host — tap the button again."); } catch {}
+          }, REACTION_SUBMIT_TIMEOUT_MS);
           channel.emit({
-            type: INTENTS.CONFIRM_ACTION,
-            body: extras,
+            type: action === "confirm" ? INTENTS.CONFIRM_ACTION : INTENTS.CANCEL_ACTION,
+            body: action === "confirm" ? extras : {},
             combatId: menuSpec.combatId,
           });
-          for (const b of wrapper.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
-        } else if (action === "cancel") {
-          channel.emit({
-            type: INTENTS.CANCEL_ACTION,
-            body: {},
-            combatId: menuSpec.combatId,
-          });
-          for (const b of wrapper.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
         }
       };
       wrapper.addEventListener("click", onClick);
@@ -7524,6 +7578,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
   return () => {
     try { offOpen?.(); } catch {}
     try { offClose?.(); } catch {}
+    try { offConfirmAck?.(); } catch {}
     try { offPillUpdate?.(); } catch {}
     try { offTargetMutation?.(); } catch {}
     try { offBodyUpdate?.(); } catch {}
