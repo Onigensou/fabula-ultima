@@ -280,3 +280,31 @@ export function affordableTargetCount(actor, costString, requestedCount) {
   }
   return out;
 }
+
+// Free-action MP-cap target clamp — the analog of affordableTargetCount for the
+// Bimagus / Acceleration free-action `maxMpCost` cap. Clamps the up-to-N target
+// count on a ×T scaling-cost spell so its RESOLVED (printed) MP stays within the
+// cap. A freeOfCost free spell pays nothing, so affordableTargetCount never
+// clamps it — this is the gate that keeps a free ×T spell's target count under
+// the printed-cost cap, mirroring how affordability clamps a normal ×T spell.
+// Returns `{ count, capped }`. No-op (requested unchanged) when: no cap, requested
+// ≤ 1, the cost has no tokens, or the cost does NOT scale with target count.
+// General over the ×T grammar; no per-skill logic.
+export function mpCapTargetCount(actor, costString, maxMpCost, requestedCount) {
+  const out = { count: requestedCount, capped: false };
+  if (maxMpCost == null || !Number.isFinite(Number(maxMpCost))) return out;
+  if (!(Number(requestedCount) > 1)) return out;
+  const parsed = parseSkillCost(String(costString ?? ""));
+  if (!parsed.tokens.length) return out;
+  const c1 = resolveCost(parsed, { actor, targetCount: 1 });
+  const c2 = resolveCost(parsed, { actor, targetCount: 2 });
+  if (!((c2.get("mp") ?? 0) > (c1.get("mp") ?? 0))) return out; // MP doesn't scale
+  const cap = Number(maxMpCost);
+  let fit = 0;
+  for (let t = 1; t <= requestedCount; t++) {
+    const mp = Number(resolveCost(parsed, { actor, targetCount: t }).get("mp") ?? 0) || 0;
+    if (mp <= cap) fit = t; else break;
+  }
+  if (fit >= 1 && fit < requestedCount) return { count: fit, capped: true };
+  return out;
+}

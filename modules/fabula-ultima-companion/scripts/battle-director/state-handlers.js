@@ -36,7 +36,7 @@ import { ListPicker } from "./list-picker.js";
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { getInvokeCapability } from "./invoke/invoke-core.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
-import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTargetCount } from "./skill-cost.js";
+import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTargetCount, mpCapTargetCount } from "./skill-cost.js";
 // COMPUTE-side damage/accuracy helpers (resolveAccuracyParts, resolveOutgoingDamageParts,
 // isCriticalHit, applyCritDamage, resolveIncomingReduction, buildDamageBonusParts,
 // resolveDamageElementOverride) moved to action-profile.js (single-source COMPUTE).
@@ -1333,7 +1333,7 @@ export function extractTargetCountFromText(text, { isUpTo, resolver }) {
 // caller hasn't built it yet). The affordability cap fires only for the
 // player-choice variable modes; "can't afford even one" is left to the
 // confirm-time gate (which surfaces the precise shortfall).
-export function resolveTargetPlan({ actor, skill, skillTargetText, eligibleCount = Infinity, round = 0 }) {
+export function resolveTargetPlan({ actor, skill, skillTargetText, eligibleCount = Infinity, round = 0, maxMpCost = null }) {
   const text = String(skillTargetText ?? "").trim();
   // Build the count resolver from the ACTOR alone — a backing skill Item is NOT
   // required. Literal/word counts ("Up to two creatures") and actor-derived
@@ -1382,6 +1382,19 @@ export function resolveTargetPlan({ actor, skill, skillTargetText, eligibleCount
       capped = true;
       const resTxt = (cap.missing ?? []).map((m) => m.label).join("/") || "resources";
       capNote = `${skill?.name ?? "Action"}: only enough ${resTxt} for ${count} target${count === 1 ? "" : "s"} — capped.`;
+    }
+    // Free-action MP-cap clamp (Bimagus / Acceleration) — a freeOfCost ×T spell
+    // pays nothing, so the affordability cap above never clamps it. Clamp the
+    // up-to-N count so the spell's printed MP stays within the grant cap, so a
+    // free ×T spell auto-fits the cap during targeting instead of over-picking
+    // and getting bounced by COMPUTE's re-check. Same variable-count gate.
+    if (maxMpCost != null && count > 1) {
+      const mpCap = mpCapTargetCount(actor, skill?.system?.props?.cost, maxMpCost, count);
+      if (mpCap.capped) {
+        count = mpCap.count;
+        capped = true;
+        capNote = `${skill?.name ?? "Action"}: capped to ${count} target${count === 1 ? "" : "s"} to fit the ${Math.floor(Number(maxMpCost))} MP free-action limit.`;
+      }
     }
   }
   return { mode, count, randomize, capped, capNote };
