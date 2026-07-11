@@ -1520,7 +1520,8 @@
             "consumable": "RollTable.r1RCffEXmNdKe9lu",
             "item": "RollTable.6P0CB87nx5yZZQa2",
             "zenit": "RollTable.5zFaLHS36v9rL0OG",
-            "treasure": "RollTable.hS4XNu1vLtWbPSne"
+            "treasure": "RollTable.hS4XNu1vLtWbPSne",
+            "material": "RollTable.aCK7rDJ2A21ZWfcj"
           }
         }
       },
@@ -1670,7 +1671,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780669400384,
-      "modifiedTime": 1783738521576,
+      "modifiedTime": 1783752677403,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

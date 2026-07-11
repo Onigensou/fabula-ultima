@@ -487,7 +487,8 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": []
+        "sequence": [],
+        "isTriggered": false
       },
       "wall-height": {
         "advancedVision": true
@@ -509,7 +510,12 @@
             "isDungeon": false,
             "sceneVisited": true,
             "navigationName": "Bandits Hideout",
-            "disableTransition": false
+            "disableTransition": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
           },
           "sceneNetwork": "[{\"name\":\"Bandits Hideout Scene\",\"id\":\"Scene.9yADUFveStIW8WtE\"},{\"name\":\"Camp\",\"id\":\"Scene.BvDE2jU77Ut3YJrB\"}]"
         },
@@ -530,7 +536,8 @@
             "consumable": "RollTable.5XUe06fGWEn90St1",
             "item": "RollTable.scss9vwAOPcEarWf",
             "zenit": "RollTable.kDjxoeSbJMMkqtFd",
-            "treasure": "RollTable.xcvyadSZsEqYvjJA"
+            "treasure": "RollTable.xcvyadSZsEqYvjJA",
+            "material": "RollTable.aCK7rDJ2A21ZWfcj"
           },
           "threatLevel": "medium"
         },
@@ -2188,7 +2195,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1773847209650,
-      "modifiedTime": 1783719329441,
+      "modifiedTime": 1783752673130,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "QqHxDWBnWBLXsNYN",

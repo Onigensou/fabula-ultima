@@ -1,0 +1,210 @@
+{
+  "_id": "aCK7rDJ2A21ZWfcj",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783752102080,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "Materials gathered on Gathering tiles in the Wyrmwood &amp; Ancient Temple.",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "DAg9RfuNcR9huljS",
+  "formula": "1d12",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Red%20Berry.png",
+  "name": "Wyrmwood & Ancient Temple — Material",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "1jiyLTHJe9qfpndL",
+      "documentCollection": "Item",
+      "documentId": "D1UEXDIcjCsAs85o",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Illusory_Leafcoil.webp",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Regret",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "1SPQPLfs5R08bD2v",
+      "documentCollection": "Item",
+      "documentId": "QD5q9qkMu11On4UP",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/953.gif",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Golem Heart",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "A4Aohg9iBJKDcl0B",
+      "documentCollection": "Item",
+      "documentId": "L1ki1clOnOhpl7wN",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/909.gif",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Jellopy",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "dJyqnNAbfAyopMzT",
+      "documentCollection": "Item",
+      "documentId": "IXjVrp7Lp60nMmAR",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/939.gif",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Insect Stinger",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "EWSoirmtxb353nGj",
+      "documentCollection": "Item",
+      "documentId": "oAP85eeLJCliYm2E",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7172.gif",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Animal Fang",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "FfVcqFiT31flRP9k",
+      "documentCollection": "Item",
+      "documentId": "4Ew4B2v0hxhzGnpE",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7458.gif",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Charred Bone",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "gxopDVCpivLiLYUW",
+      "documentCollection": "Item",
+      "documentId": "SkgnxeQnq4DVhVVU",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7835.gif",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Flame Essence",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "N6Gj9jFFonD4WOcy",
+      "documentCollection": "Item",
+      "documentId": "QeylCRYlLepwPTaJ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7124.gif",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Ash",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ocK6b0XXISoIDsD1",
+      "documentCollection": "Item",
+      "documentId": "UI9WP1hyxQomHxJb",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/4cf9a65cd38218340be2753675d98da5_1405866062245277046.webp",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Ember Petal",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "owU5NGhiiOE9cx5H",
+      "documentCollection": "Item",
+      "documentId": "GrqpyWbTlji23uD5",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/1012.gif",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Frill",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "p6wlQknYWrs5rekp",
+      "documentCollection": "Item",
+      "documentId": "zF6faTFO5nlTBVt8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Sunsettia.webp",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Starfruit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vtCEuwcoQPWbqZOp",
+      "documentCollection": "Item",
+      "documentId": "OfQc5hgDif7XsRH8",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/914.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Animal Fur",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 200000
+}

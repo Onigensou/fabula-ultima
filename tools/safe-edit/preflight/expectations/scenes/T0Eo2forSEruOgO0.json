@@ -8,7 +8,7 @@
   "full": {
     "folder": "SPvX0PiXpGCzQ7YQ",
     "name": "Dragonslayer Title",
-    "active": true,
+    "active": false,
     "navigation": true,
     "navOrder": 1100000,
     "navName": "Title",
@@ -789,6 +789,14 @@
               "status": "ok",
               "stoppedAt": "2026-07-10T14:27:35.041Z"
             }
+          },
+          "promptMarker": {
+            "status": "cancelled",
+            "at": "2026-07-11T05:35:43.674Z",
+            "runId": "bi_prompt_1783748142435_bxuelc",
+            "sceneId": "T0Eo2forSEruOgO0",
+            "sceneName": "Dragonslayer Title",
+            "via": "close-x"
           }
         },
         "battleEnd": {},
@@ -870,7 +878,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1762704862129,
-      "modifiedTime": 1783738551624,
+      "modifiedTime": 1783752739364,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

@@ -106,10 +106,10 @@
         "editViewbox": false,
         "lockPan": false,
         "lockPanInit": false,
-        "lockZoom": false,
-        "lockZoomInit": false,
-        "boundingBox": false,
-        "boundingBoxInit": false,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
         "autoScale": "0",
         "rotation": "0",
         "sidebar": "noChange",
@@ -177,7 +177,8 @@
             "consumable": "RollTable.oPbo24YWiSscsOnW",
             "item": "RollTable.kyDjXHWxUhiJsvmt",
             "zenit": "RollTable.0kvKZTVDBmXUHrCx",
-            "treasure": "RollTable.UXc5dhppK09OZ2Nd"
+            "treasure": "RollTable.UXc5dhppK09OZ2Nd",
+            "material": "RollTable.aCK7rDJ2A21ZWfcj"
           }
         },
         "dungeonPathing": {
@@ -273,7 +274,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398854849,
-      "modifiedTime": 1783738438137,
+      "modifiedTime": 1783752673060,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

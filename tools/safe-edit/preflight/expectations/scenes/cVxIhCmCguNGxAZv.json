@@ -8,7 +8,7 @@
   "full": {
     "folder": null,
     "name": "Loading Screen",
-    "active": false,
+    "active": true,
     "navigation": true,
     "navOrder": 1200000,
     "navName": "Loading",
@@ -118,8 +118,7 @@
             "label": "",
             "backgroundImage": ""
           }
-        ],
-        "isTriggered": false
+        ]
       },
       "levels": {
         "backgroundElevation": 0,
@@ -202,7 +201,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1767961551046,
-      "modifiedTime": 1783704720666,
+      "modifiedTime": 1783752834162,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

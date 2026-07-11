@@ -4,7 +4,7 @@
   "tokens": [],
   "tokensFull": [],
   "notes": [],
-  "tileCount": 7,
+  "tileCount": 8,
   "full": {
     "name": "AncientTemple_Map001",
     "navName": "Ancient Temple",
@@ -44,9 +44,9 @@
     "foregroundElevation": 8,
     "thumb": "worlds/fabula-ultima-2/assets/scenes/Ccwl5Tc7xYkGZtYp-thumb.webp",
     "initial": {
-      "x": 1004,
-      "y": 2195,
-      "scale": 2.8499999999999996
+      "x": 1005,
+      "y": 2089,
+      "scale": 2.1400195397692796
     },
     "tokenVision": true,
     "fog": {
@@ -106,10 +106,10 @@
         "editViewbox": false,
         "lockPan": false,
         "lockPanInit": false,
-        "lockZoom": false,
-        "lockZoomInit": false,
-        "boundingBox": false,
-        "boundingBoxInit": false,
+        "lockZoom": true,
+        "lockZoomInit": true,
+        "boundingBox": true,
+        "boundingBoxInit": true,
         "autoScale": "0",
         "rotation": "0",
         "sidebar": "noChange",
@@ -193,7 +193,8 @@
             "consumable": "RollTable.oPbo24YWiSscsOnW",
             "item": "RollTable.kyDjXHWxUhiJsvmt",
             "zenit": "RollTable.0kvKZTVDBmXUHrCx",
-            "treasure": "RollTable.UXc5dhppK09OZ2Nd"
+            "treasure": "RollTable.UXc5dhppK09OZ2Nd",
+            "material": "RollTable.aCK7rDJ2A21ZWfcj"
           }
         }
       },
@@ -208,7 +209,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398835916,
-      "modifiedTime": 1783738395671,
+      "modifiedTime": 1783752102116,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

@@ -1,0 +1,19 @@
+{
+  "_id": "L89A9WZ7pzYN9Wup",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783750897376,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Xm2UmDrxO6gJdChA",
+  "name": "Ancient Temple",
+  "sort": 0,
+  "sorting": "a",
+  "type": "JournalEntry"
+}

@@ -123,6 +123,12 @@
         "parent": "OeC0hsLCW5zTWD6w"
       },
       {
+        "id": "L89A9WZ7pzYN9Wup",
+        "name": "Ancient Temple",
+        "type": "JournalEntry",
+        "parent": "Xm2UmDrxO6gJdChA"
+      },
+      {
         "id": "1FOcwV6lQYuv1PRt",
         "name": "Arcane",
         "type": "Item",
@@ -22241,7 +22247,7 @@
       {
         "id": "EggrsY05k3rIY9iS",
         "name": "The Wyrmwood - Enemies",
-        "results": 12
+        "results": 11
       },
       {
         "id": "Y8CVycHKYKQYOf7v",
@@ -22352,6 +22358,11 @@
         "id": "oIdlLAgL2CDmemCw",
         "name": "Vastwind Field (Lower Road) - Encounter",
         "results": 20
+      },
+      {
+        "id": "aCK7rDJ2A21ZWfcj",
+        "name": "Wyrmwood & Ancient Temple — Material",
+        "results": 12
       }
     ],
     "playlists": [

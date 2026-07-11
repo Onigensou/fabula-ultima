@@ -189,21 +189,6 @@
       "text": "Marigold",
       "type": "document",
       "weight": 1
-    },
-    {
-      "_id": "u2YQLGSsqa0v53aE",
-      "documentCollection": "Actor",
-      "documentId": "5m6jyFCVzfBSzJvN",
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Creeps_Standard.png",
-      "range": [
-        5,
-        5
-      ],
-      "text": "Creeps",
-      "type": "document",
-      "weight": 1
     }
   ],
   "sort": 0
