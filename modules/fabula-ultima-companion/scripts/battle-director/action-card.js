@@ -2259,7 +2259,7 @@ function appendTargetRow(root, r, kind, payload) {
   } catch (e) { warn("appendTargetRow threw", e); }
 }
 
-function buildButtonsHTML({ isFumble = false, hasRoll = true, invokeCapability = "full", invokePointCount = null }) {
+function buildButtonsHTML({ isFumble = false, hasRoll = true, invokeCapability = "full", invokePointCount = null, confirmLabel = "Confirm" }) {
   // Invoke buttons: locked on Fumble, locked by actor rank (none/trait-only), or active.
   // For no-Check skills the row is hidden — no roll = nothing to invoke.
   const mkInvokeBtn = (type, icon, label) => {
@@ -2302,7 +2302,7 @@ function buildButtonsHTML({ isFumble = false, hasRoll = true, invokeCapability =
   return `
     ${invokeRow}
     <div class="fud-bf-btn-row">
-      <div class="fud-btn fud-btn-confirm" data-fud-action="confirm" role="button" tabindex="0">Confirm</div>
+      <div class="fud-btn fud-btn-confirm" data-fud-action="confirm" role="button" tabindex="0">${escapeHtml(confirmLabel)}</div>
     </div>
   `;
 }
@@ -2718,6 +2718,15 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     const accTotal = rootEl.querySelector(".fud-bf-acc .total");
     if (accTotal && rollTotal != null) accTotal.textContent = String(rollTotal);
   }
+  // Study cards have no per-target/damage surfaces — a check-adjusting reaction
+  // (Divination reroll / Lucky Seven die-set) changes the total, which changes the
+  // encyclopedia tier reached. Repaint the Tier Reached fieldset from the new roll.
+  if (delta.study && delta.accuracyRoll) {
+    const newRoll = delta.accuracyRoll;
+    const tier = classifyStudyTierDisplay(newRoll.total, { isCrit: !!newRoll.isCrit, isFumble: !!newRoll.isFumble });
+    const improved = !newRoll.isFumble && (tier.effective ?? newRoll.total) > (Number(delta.study.previousBest) || 0);
+    patchStudyTierFieldset(rootEl, { roll: newRoll, tier, previousBest: delta.study.previousBest ?? 0, improved });
+  }
   rootEl.querySelector(".fud-bf-acc")?.classList.remove("is-blocked");
   rootEl.querySelector(".fud-bf-dmg")?.classList.remove("is-blocked-dmg");
   const negated = !!delta.negated || !!delta.accuracyOverride?.blocked;
@@ -2931,20 +2940,34 @@ function tierNameForBest(best) {
   return "None";
 }
 
-function buildStudyCard({ attacker, target, roll, tier, previousBest, improved }) {
-  // Portrait slots: studier on the player side, target on the enemy side.
-  // Reuse pickPortraitSlots by handing it a synthetic per-target list.
-  const targetForPortraits = target
-    ? [{ tokenImg: target.tokenImg, name: target.name, disposition: target.disposition }]
-    : [];
+// Re-derive the Study tier from a (possibly modified) check total. The encyclopedia
+// module owns the authoritative ladder (crit-aware floor to Details); this mirrors
+// computeStudy's own resolution so an Invoke/Divination/Lucky-Seven roll change can
+// repaint the tier without a full card rebuild. Falls back to the inline ladder if
+// the API isn't reachable (defensive — it always is at runtime).
+export function classifyStudyTierDisplay(total, { isCrit = false, isFumble = false } = {}) {
+  const t = Number(total) || 0;
+  const enc = globalThis.FUCompanion?.api?.encyclopedia;
+  if (enc?.classifyStudyTotal) {
+    try { return enc.classifyStudyTotal(t, { isCrit, isFumble }); } catch { /* fall through */ }
+  }
+  if (isFumble) return { name: "None", threshold: 0, fumbled: true, effective: t };
+  const eff = isCrit ? Math.max(t, 13) : t;
+  if (eff >= 13) return { name: "Details",  threshold: 13, fumbled: false, effective: eff };
+  if (eff >= 8)  return { name: "Stats",    threshold: 8,  fumbled: false, effective: eff };
+  if (eff >= 7)  return { name: "Identity", threshold: 7,  fumbled: false, effective: eff };
+  return { name: "None", threshold: 0, fumbled: false, effective: eff };
+}
 
+// The "Tier Reached" fieldset — factored out of buildStudyCard so a post-roll
+// intervention (Invoke Trait/Bond, Divination reroll, Lucky Seven die-set) can
+// repaint just this section from the new total via patchStudyTierFieldset.
+function buildStudyTierFieldsetHTML({ roll, tier, previousBest }) {
   const tierName = tier?.name ?? "None";
   const tierColor = STUDY_TIER_COLOR[tierName] ?? STUDY_TIER_COLOR.None;
   const previousTierName = tierNameForBest(previousBest ?? 0);
-  // "New tier unlocked" should only celebrate an actual tier crossing —
-  // e.g. None → Identity, Identity → Stats, Stats → Details. A roll that
-  // improved the best-result number but stayed inside the same tier
-  // reveals no new info to the player, so we treat it as "no new info."
+  // "New tier unlocked" celebrates only an actual tier crossing — a roll that
+  // bumped the best number but stayed in the same tier reveals no new info.
   const tierAdvanced = !roll?.isFumble && tierName !== previousTierName && tierName !== "None";
   const tierLine = roll?.isFumble
     ? `<span style="color:#9a4a4a;">Fumble — no information gained.</span>`
@@ -2953,6 +2976,40 @@ function buildStudyCard({ attacker, target, roll, tier, previousBest, improved }
           ? `First tier unlocked: <em>${escapeHtml(tierName)}</em>.`
           : `New tier unlocked: <em>${escapeHtml(tierName)}</em> (was <em>${escapeHtml(previousTierName)}</em>).`)
       : `Already known to <em>${escapeHtml(previousTierName)}</em> tier — no new info.`;
+  return `
+      <fieldset class="fud-bf-section fud-bf-study-tier">
+        <legend>Tier Reached</legend>
+        <div style="font-size:18px; font-weight:900; color:${tierColor}; text-align:center; letter-spacing:0.5px;">
+          ${escapeHtml(tierName)}${tier?.threshold ? ` <span style="font-size:12px; opacity:0.7; font-weight:700;">(≥ ${tier.threshold})</span>` : ""}
+        </div>
+        <div style="font-size:12px; text-align:center; opacity:0.85; margin-top:4px;">
+          ${tierLine}
+        </div>
+      </fieldset>
+    `;
+}
+
+// Repaint the live Study card's Tier Reached fieldset (and the Confirm/Record
+// label) after a roll-changing intervention. Runs on the GM card AND every mirror
+// (invoke's patchCardDom broadcast + the mutation delta broadcast both reach here).
+export function patchStudyTierFieldset(rootEl, { roll, tier, previousBest, improved }) {
+  if (!rootEl) return;
+  try {
+    const fieldset = rootEl.querySelector(".fud-bf-study-tier");
+    if (fieldset) fieldset.outerHTML = buildStudyTierFieldsetHTML({ roll, tier, previousBest });
+    // The Confirm button reads "Record Study" only when this Study improved on the
+    // target's best-known tier; a reroll that changes that must relabel it.
+    const confirmBtn = rootEl.querySelector(".fud-btn-confirm");
+    if (confirmBtn) confirmBtn.textContent = (improved && !roll?.isFumble) ? "Record Study" : "Confirm";
+  } catch (e) { warn("patchStudyTierFieldset threw", e); }
+}
+
+function buildStudyCard({ attacker, target, roll, tier, previousBest, improved }) {
+  // Portrait slots: studier on the player side, target on the enemy side.
+  // Reuse pickPortraitSlots by handing it a synthetic per-target list.
+  const targetForPortraits = target
+    ? [{ tokenImg: target.tokenImg, name: target.name, disposition: target.disposition }]
+    : [];
 
   return {
     titleIcon: target?.tokenImg && safeImgUrl(target.tokenImg)
@@ -2971,21 +3028,18 @@ function buildStudyCard({ attacker, target, roll, tier, previousBest, improved }
         </div>
       </fieldset>
       ${tryBuild("studyAccuracy", () => buildAccuracyHTML({ roll, hideDefenseIcon: true, legendOverride: "Open Check" }))}
-      <fieldset class="fud-bf-section">
-        <legend>Tier Reached</legend>
-        <div style="font-size:18px; font-weight:900; color:${tierColor}; text-align:center; letter-spacing:0.5px;">
-          ${escapeHtml(tierName)}${tier?.threshold ? ` <span style="font-size:12px; opacity:0.7; font-weight:700;">(≥ ${tier.threshold})</span>` : ""}
-        </div>
-        <div style="font-size:12px; text-align:center; opacity:0.85; margin-top:4px;">
-          ${tierLine}
-        </div>
-      </fieldset>
+      ${tryBuild("studyTier", () => buildStudyTierFieldsetHTML({ roll, tier, previousBest }))}
     `,
-    buttons: `
-      <div class="fud-bf-btn-row">
-        <div class="fud-btn fud-btn-confirm" data-fud-action="confirm" role="button" tabindex="0">${improved && !roll?.isFumble ? "Record Study" : "Confirm"}</div>
-      </div>
-    `,
+    // Invoke Trait/Bond apply to the Study's open Check the same way they apply to
+    // an attack roll — a reroll or flat bond bonus raises the total, which raises
+    // the encyclopedia tier reached. Locked on a Fumble (RAW) and by actor rank.
+    buttons: buildButtonsHTML({
+      isFumble: !!roll?.isFumble,
+      hasRoll: !!roll,
+      invokeCapability: attacker?.invokeCapability ?? "full",
+      invokePointCount: attacker?.invokePointCount ?? null,
+      confirmLabel: (improved && !roll?.isFumble) ? "Record Study" : "Confirm",
+    }),
   };
 }
 
@@ -5422,6 +5476,12 @@ export async function postActionCard({ director, kind, payload }) {
             grantHeadline,
             healHeadlineObj: (grantHeadline != null && payload?.damage) ? payload.damage : null,
             healHeadlineRoll: (grantHeadline != null && payload?.roll) ? payload.roll : null,
+            // Study: carry the target's best-known result so the shared delta
+            // patcher (GM + mirror) can re-derive + repaint the Tier Reached
+            // fieldset from the mutated roll total. Serializable plain data.
+            study: String(arSnapshot.kind ?? "") === "Study"
+              ? { previousBest: Number(arSnapshot.previousBest) || 0 }
+              : null,
           };
           applyCardTargetMutationDelta(root, delta);
 

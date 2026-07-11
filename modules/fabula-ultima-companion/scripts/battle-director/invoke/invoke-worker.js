@@ -12,7 +12,7 @@ import {
   canPay, payPoint, readActorBonds,
   rerollDice, applyBondBonus,
 } from "./invoke-core.js";
-import { resultLabelFor, resultClsFor } from "../action-card.js";
+import { resultLabelFor, resultClsFor, classifyStudyTierDisplay, patchStudyTierFieldset } from "../action-card.js";
 
 function _getStampedCapability(ar) {
   return ar?.attacker?.invokeCapability ?? "full";
@@ -34,6 +34,16 @@ function ensureOwner(actor, ar, what = "this action") {
 // ── Recompute actionResult fields after the roll changes ──────────────────────
 
 function recomputeArAfterInvoke(ar, newRoll) {
+  // Study: no per-target/damage surfaces — the check total maps to the
+  // encyclopedia tier. Re-derive tier + improved from the new total (a Bond bonus
+  // or Trait reroll can cross a tier threshold) so the card + RESOLVE agree.
+  if (String(ar.kind ?? "") === "Study") {
+    const tier = classifyStudyTierDisplay(newRoll.total, { isCrit: !!newRoll.isCrit, isFumble: !!newRoll.isFumble });
+    const previousBest = Number(ar.previousBest) || 0;
+    const improved = !newRoll.isFumble && (tier.effective ?? newRoll.total) > previousBest;
+    return freezeActionResult({ ...ar, roll: newRoll, tier, improved });
+  }
+
   // Per-target results: recalculate hit/miss with new total.
   const newPerTarget = (ar.perTargetResults ?? []).map((r) => {
     const def = r.defense ?? 0;
@@ -156,6 +166,13 @@ export function patchCardDom(root, newAr, invokeState) {
     const counterVal = root.querySelector("[data-fud-invoke-counter] .fud-invoke-count");
     if (counterVal && newAr.attacker?.invokePointCount != null) {
       counterVal.textContent = String(newAr.attacker.invokePointCount);
+    }
+
+    // ── Study: repaint the Tier Reached fieldset from the new total ───────────
+    // (Study has no damage/per-target surfaces; recomputeArAfterInvoke already
+    // re-derived newAr.tier/improved, so this is a pure presentational repaint.)
+    if (String(newAr.kind ?? "") === "Study") {
+      patchStudyTierFieldset(root, { roll, tier: newAr.tier, previousBest: newAr.previousBest ?? 0, improved: newAr.improved });
     }
   } catch (e) {
     warn("[BD][Invoke] patchCardDom threw", e);

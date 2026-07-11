@@ -3937,6 +3937,14 @@ async function computeStudy(director, { attacker, tokenUuids }) {
 
   director.ctx.actionResult = freezeActionResult({
     kind: "Study",
+    // Study rolls a Check → mark it so `freezeActionResult` derives canMiss/
+    // rollsAccuracy=true (its single-source capability axis). That lights up
+    // ACTION_ROLLS_ACCURACY==1 for the CONFIRM reaction scans, so the same
+    // check-adjusting reactions that fire on an attack roll (Lucky Seven self /
+    // Divination observer, and future check_reroll/set_check_die skills) are
+    // offered on the Study's open check too. Study carries no perTargetResults,
+    // so the canMiss-gated per-target miss/VFX blocks stay dormant.
+    isCheck: true,
     attacker,
     attackerActorRef: attacker.actorUuid,
     target: targetSnap,
@@ -5418,12 +5426,30 @@ const Confirm = {
           .map((e) => String(e.element).toLowerCase());
         if (hitEls.length && hitEls.every((e) => e === hitEls[0])) newDamageType = hitEls[0];
       } catch { /* non-fatal */ }
+      // Study: a check-adjusting reaction (Divination reroll / Lucky Seven die-set)
+      // changed the total → re-derive the encyclopedia tier + improved flag so a
+      // full re-render (F5 resume / rewind) shows the mutated tier. RESOLVE reads
+      // roll.total directly, so the recorded result already follows the new roll.
+      let studyTierPatch = null;
+      if (String(ar.kind ?? "") === "Study" && recomputedRoll) {
+        try {
+          const encApi = globalThis.FUCompanion?.api?.encyclopedia;
+          const tier = encApi?.classifyStudyTotal
+            ? encApi.classifyStudyTotal(recomputedRoll.total, { isCrit: !!recomputedRoll.isCrit, isFumble: !!recomputedRoll.isFumble })
+            : null;
+          if (tier) {
+            const previousBest = Number(ar.previousBest) || 0;
+            studyTierPatch = { tier, improved: !recomputedRoll.isFumble && (tier.effective ?? recomputedRoll.total) > previousBest };
+          }
+        } catch (e) { warn("CONFIRM: Study tier recompute threw", e); }
+      }
       director.ctx.actionResult = freezeActionResult({
         ...director.ctx.actionResult,
         targets: mutatedTargets,
         perTargetResults: recomputedPerTargets,
         hitTokenUuids: recomputedHitTokenUuids,
         roll: recomputedRoll,
+        ...(studyTierPatch ? studyTierPatch : {}),
         ...(recomputedHeadlineDamage ? { damage: recomputedHeadlineDamage } : {}),
         ...(newDamageType ? { damageType: newDamageType } : {}),
         acceptedPrePassives: applied,
