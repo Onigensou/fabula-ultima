@@ -13,6 +13,11 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "iconFocus": {
+        "x": 50,
+        "y": 0,
+        "zoom": 1
+      },
       "idleAnimation": {
         "bounce": false,
         "float": false
@@ -1314,7 +1319,7 @@
       "icon_scale": "",
       "id": "STmBv9N66tZxSNCx",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Hellhound_Standard.png",
-      "init": "6",
+      "init": "8",
       "ins_base": "8",
       "ins_current": 8,
       "isAlmighty": false,

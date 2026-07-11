@@ -631,19 +631,19 @@
           "latestPayload": {
             "meta": {
               "schemaVersion": 1,
-              "battleId": "NUfMMn3817vEJX3n",
-              "createdAt": "2026-07-10T14:27:06.377Z",
+              "battleId": "rjObIvVeDoBJ9dip",
+              "createdAt": "2026-07-11T12:24:35.137Z",
               "debug": {
                 "enabled": true,
                 "trace": [
                   {
                     "phase": "prompt",
-                    "at": "2026-07-10T14:27:06.377Z",
+                    "at": "2026-07-11T12:24:35.137Z",
                     "note": "Created initial BattlePayload from GM prompt."
                   },
                   {
                     "phase": "prompt",
-                    "at": "2026-07-10T14:27:06.377Z",
+                    "at": "2026-07-11T12:24:35.137Z",
                     "note": "Clear Battle Log: ok"
                   }
                 ]
@@ -676,7 +676,7 @@
               "mode": "dbPartyMembers",
               "source": {
                 "gameName": "The Legend of Dragonslayer",
-                "resolvedAt": "2026-07-10T14:26:56.992Z"
+                "resolvedAt": "2026-07-11T12:24:28.701Z"
               },
               "members": [
                 {
@@ -776,27 +776,19 @@
             "phases": {
               "prompt": {
                 "status": "ok",
-                "at": "2026-07-10T14:27:06.377Z"
+                "at": "2026-07-11T12:24:35.137Z"
               },
               "directorManager": {
                 "status": "ok",
-                "at": "2026-07-10T14:27:35.041Z",
+                "at": "2026-07-11T12:25:02.640Z",
                 "initialState": "STANDALONE_REACTION_WINDOW",
                 "note": "PREP runs asynchronously after this; check FUCompanion.api.experimental.battleDirector.status() for progress."
               }
             },
             "manager": {
               "status": "ok",
-              "stoppedAt": "2026-07-10T14:27:35.041Z"
+              "stoppedAt": "2026-07-11T12:25:02.640Z"
             }
-          },
-          "promptMarker": {
-            "status": "cancelled",
-            "at": "2026-07-11T05:35:43.674Z",
-            "runId": "bi_prompt_1783748142435_bxuelc",
-            "sceneId": "T0Eo2forSEruOgO0",
-            "sceneName": "Dragonslayer Title",
-            "via": "close-x"
           }
         },
         "battleEnd": {},
@@ -878,7 +870,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1762704862129,
-      "modifiedTime": 1783771341310,
+      "modifiedTime": 1783773872745,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

@@ -19,7 +19,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 422,
+  "seed": 399,
   "sort": 200000,
   "sorting": "a",
   "sounds": [
@@ -501,7 +501,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/OH%20MY%20GOD.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.09
+      "volume": 0.3
     },
     {
       "_id": "jz78noSOcJ1wA1q4",
@@ -853,7 +853,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Goofy%20Moments.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.13
+      "volume": 0.25
     }
   ]
 }

@@ -36,7 +36,7 @@
         "bounce": false,
         "float": false
       },
-      "skill_level_bonus_provoke": 3
+      "skill_level_bonus_provoke": 5
     },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/5faea496f17c50c47382d838/Blanche%201.png",
@@ -157,7 +157,7 @@
       "name": "",
       "optalign": "top",
       "settings": {
-        "emote": "panic",
+        "emote": "dizzy",
         "textcolor": null,
         "textflyin": "typewriter",
         "textfont": null,
@@ -1120,264 +1120,49 @@
       "type": "equippableItem"
     },
     {
-      "_id": "cXbX8RdGLCiQ5V1d",
+      "_id": "CMeAGFkIizTUlysk",
       "_stats": {
-        "compendiumSource": "Item.qyvHeUWIvWGFSiEg",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717334531,
+        "createdTime": 1783788198821,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "FMOnTdIPYra9QIAB",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "bonus_defense",
-              "mode": 2,
-              "priority": 2,
-              "value": "${isEquipped ? (item_def_bonus * 1) : 0}$"
-            }
-          ],
-          "description": "",
-          "disabled": true,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "core": {
-              "overlay": false
-            },
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "isPredefined": true,
-              "originalId": "83eTxDPjJ8Hh9IfC",
-              "originalParentId": "0gIBYzSpjdXS6f25",
-              "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
-            },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "def-up",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
-          "name": "DEF UP",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        },
-        {
-          "_id": "VrfSdv1SO6efqIAE",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "system.props.damage_receiving_mod_physical",
-              "mode": 2,
-              "priority": 20,
-              "value": "5"
-            }
-          ],
-          "description": "Boost Physical damage reduction",
-          "disabled": true,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "VrfSdv1SO6efqIAE",
-              "originalParentId": "cXbX8RdGLCiQ5V1d",
-              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.cXbX8RdGLCiQ5V1d.ActiveEffect.VrfSdv1SO6efqIAE"
-            },
-            "fabula-ultima-companion": {
-              "refinementBonus": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
-          "name": "Shield Refinement",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {},
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        },
-        {
-          "_id": "z77kNS51NeuKpNYx",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "bonus_magic_defense",
-              "mode": 2,
-              "priority": 2,
-              "value": "${isEquipped ? (item_mdef_bonus * 1) : 0}$"
-            }
-          ],
-          "description": "",
-          "disabled": true,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "core": {
-              "overlay": false
-            },
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "isPredefined": true,
-              "originalId": "83eTxDPjJ8Hh9IfC",
-              "originalParentId": "0gIBYzSpjdXS6f25",
-              "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
-            },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "ce-mdef-up",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
-          "name": "MDEF UP",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fabula-ultima-companion": {
-          "defUpMdefUpHelperKeyPatchBackup_v1": {
-            "createdAt": 1777708858409,
-            "effects": [
-              {
-                "changes": [
-                  {
-                    "key": "defense",
-                    "mode": 2,
-                    "priority": 3,
-                    "value": "${isEquipped ? item_def_bonus : 0}$"
-                  }
-                ],
-                "id": "FMOnTdIPYra9QIAB",
-                "name": "DEF UP"
-              },
-              {
-                "changes": [
-                  {
-                    "key": "magic_defense",
-                    "mode": 2,
-                    "priority": 1,
-                    "value": "${isEquipped ? item_mdef_bonus : 0}$"
-                  }
-                ],
-                "id": "z77kNS51NeuKpNYx",
-                "name": "MDEF UP"
-              }
-            ],
-            "itemId": "cXbX8RdGLCiQ5V1d",
-            "itemName": "Runic Shield",
-            "itemType": "shield",
-            "itemUuid": "Actor.uJFaNQCSvwwsr2AW.Item.cXbX8RdGLCiQ5V1d",
-            "owner": {
-              "actor": "Blanche",
-              "actorUuid": "Actor.uJFaNQCSvwwsr2AW",
-              "source": "Actor-owned Item"
-            }
-          }
+          "version": "4.8.5"
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mirror%20Shield.gif",
-      "name": "+5 Runic Shield",
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7172.gif",
+      "name": "Animal Fang",
       "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
       },
       "sort": 0,
       "system": {
@@ -1389,12 +1174,13 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -1406,128 +1192,51 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "oAP85eeLJCliYm2E",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7172.gif",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
-          "isIngredient": false,
+          "isIngredient": true,
           "isKey": false,
-          "isMartial": true,
+          "isMartial": false,
           "isModule": false,
           "isRelatedItem": false,
           "isSet": false,
           "isUnique": false,
           "item_baseDef": "0",
           "item_baseMdef": "0",
-          "item_cost": "150",
-          "item_def_bonus": "2",
-          "item_mdef_bonus": "2",
-          "item_quantity": "1",
+          "item_cost": "100",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
           "item_rarity": "Common",
-          "item_type": "shield",
+          "item_type": "material",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "+5 Runic Shield",
+          "name": "Animal Fang",
           "optional_params": {},
           "plant_ef": "100",
-          "refine_count": 12,
-          "refine_level": 5,
+          "refine_count": "0",
+          "refine_level": "0",
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
-          "set_description": "<p><strong>【Set Bonus】</strong></p>",
-          "set_name": "",
-          "skill_tags": "",
+          "set_name": "<Set Name>",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Item.oAP85eeLJCliYm2E",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
-        "uniqueId": "qyvHeUWIvWGFSiEg"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "dRcIZVwyNg8wx56q",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783717334531,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
-      "name": "Muscly Arm (Passive)",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "zRnplMHtTwTQOsbg",
-        "props": {
-          "cost": "",
-          "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "ae_template_ref": "Stagger",
-              "effect_kind": "apply_ae",
-              "effect_label": "ma_stagger",
-              "target_ref": "trigger_subject"
-            },
-            "1": {
-              "$deleted": false,
-              "ae_template_ref": "Frightened",
-              "effect_kind": "apply_ae",
-              "effect_label": "ma_fright",
-              "target_ref": "trigger_subject"
-            }
-          },
-          "isCheck": false,
-          "name": "Muscly Arm (Passive)",
-          "on_activate_effect_ref": "",
-          "reaction_config_table": {
-            "0": {
-              "$deleted": false,
-              "condition_formula": "HIT_MARGIN >= 5",
-              "reaction_action_intent": "",
-              "reaction_effect_ref": "ma_stagger",
-              "reaction_passive_mode": "force",
-              "reaction_requires_weapon_used": true,
-              "reaction_source": "self",
-              "reaction_trigger": "creature_deals_damage"
-            },
-            "1": {
-              "$deleted": false,
-              "condition_formula": "HIT_MARGIN >= 8",
-              "reaction_action_intent": "",
-              "reaction_effect_ref": "ma_fright",
-              "reaction_passive_mode": "force",
-              "reaction_requires_weapon_used": true,
-              "reaction_source": "self",
-              "reaction_trigger": "creature_deals_damage"
-            }
-          },
-          "skill_target": "Self",
-          "skill_type": "Passive",
-          "type_damage": ""
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "AQqb37jPpVi1h6j6"
+        "uniqueId": "oAP85eeLJCliYm2E"
       },
       "type": "equippableItem"
     },
@@ -2892,6 +2601,132 @@
       "type": "equippableItem"
     },
     {
+      "_id": "lBjoxCeeS0JmOVhb",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783791766151,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/939.gif",
+      "name": "Insect Stinger",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A barbed stinger pried from a giant insect, its needle tip still beaded with a glistening drop of venom.</em></p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "IXjVrp7Lp60nMmAR",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/939.gif",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "50",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Insect Stinger",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.IXjVrp7Lp60nMmAR",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "IXjVrp7Lp60nMmAR"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "LMnXdh32LS4ZRCn5",
       "_stats": {
         "compendiumSource": null,
@@ -3340,6 +3175,132 @@
       "type": "equippableItem"
     },
     {
+      "_id": "OReN1ugfRh5MmdXU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783779576517,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/909.gif",
+      "name": "Jellopy",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p>A small crystallization created by some monsters.</p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "L1ki1clOnOhpl7wN",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/909.gif",
+          "ingredient_taste": "sweet",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "3",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Jellopy",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.L1ki1clOnOhpl7wN",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "L1ki1clOnOhpl7wN"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "r4G9YFC4MXYL8lC3",
       "_stats": {
         "compendiumSource": "Item.kS8rEaApk4J1WvjU",
@@ -3520,448 +3481,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "EvDNQE5Ym7pfBAkt"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "rcyOz2H1OGzvSE0P",
-      "_stats": {
-        "compendiumSource": "Item.79TTBHuBvD7ysgZQ",
-        "coreVersion": "12.343",
-        "createdTime": 1783717334531,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "effects": [
-        {
-          "_id": "AhnaJYsMj5fSrvqB",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "base_defense",
-              "mode": 4,
-              "priority": 1,
-              "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
-            },
-            {
-              "key": "bonus_defense",
-              "mode": 2,
-              "priority": 2,
-              "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
-            }
-          ],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "core": {
-              "overlay": false
-            },
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "AhnaJYsMj5fSrvqB",
-              "originalParentId": "79TTBHuBvD7ysgZQ",
-              "originalUuid": "Item.79TTBHuBvD7ysgZQ.ActiveEffect.AhnaJYsMj5fSrvqB"
-            },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "ce-def-up",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
-          "name": "Armor DEF",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        },
-        {
-          "_id": "jIABnsa0Azilk9Mr",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "base_magic_defense",
-              "mode": 4,
-              "priority": 1,
-              "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
-            },
-            {
-              "key": "bonus_magic_defense",
-              "mode": 2,
-              "priority": 2,
-              "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
-            }
-          ],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "core": {
-              "overlay": false
-            },
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "jIABnsa0Azilk9Mr",
-              "originalParentId": "79TTBHuBvD7ysgZQ",
-              "originalUuid": "Item.79TTBHuBvD7ysgZQ.ActiveEffect.jIABnsa0Azilk9Mr"
-            },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "ce-mdef-up",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
-          "name": "Armor MDEF",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        },
-        {
-          "_id": "LkGnSh7BDdISOS73",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "system.props.max_hp",
-              "mode": 2,
-              "priority": 20,
-              "value": "20"
-            }
-          ],
-          "description": "Increase Max HP",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "LkGnSh7BDdISOS73",
-              "originalParentId": "496ucagjQZ6jaTQ3",
-              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.496ucagjQZ6jaTQ3.ActiveEffect.LkGnSh7BDdISOS73"
-            },
-            "fabula-ultima-companion": {
-              "refinementBonus": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
-          "name": "Armor Refinement",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {},
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fabula-ultima-companion": {
-          "armorDefMdefAeMassPatchBackup_v1": {
-            "createdAt": 1777705757124,
-            "effects": [
-              {
-                "changes": [
-                  {
-                    "key": "defense",
-                    "mode": 2,
-                    "priority": 1,
-                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
-                  },
-                  {
-                    "key": "defense",
-                    "mode": 4,
-                    "priority": 2,
-                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
-                  }
-                ],
-                "id": "AhnaJYsMj5fSrvqB",
-                "name": "Armor DEF"
-              },
-              {
-                "changes": [
-                  {
-                    "key": "magic_defense",
-                    "mode": 2,
-                    "priority": 1,
-                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
-                  },
-                  {
-                    "key": "magic_defense",
-                    "mode": 4,
-                    "priority": 2,
-                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
-                  }
-                ],
-                "id": "jIABnsa0Azilk9Mr",
-                "name": "Armor MDEF"
-              }
-            ],
-            "itemName": "Ardent Yoroi",
-            "itemUuid": "Actor.uJFaNQCSvwwsr2AW.Item.kW12WGgIOK3KzsRi",
-            "parentName": "Blanche",
-            "parentType": "Actor"
-          },
-          "defMdefHelperKeyPatchBackup_v1": {
-            "createdAt": 1777708467042,
-            "effects": [
-              {
-                "changes": [
-                  {
-                    "key": "defense",
-                    "mode": 2,
-                    "priority": 1,
-                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
-                  },
-                  {
-                    "key": "defense",
-                    "mode": 4,
-                    "priority": 2,
-                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
-                  }
-                ],
-                "id": "AhnaJYsMj5fSrvqB",
-                "name": "Armor DEF"
-              },
-              {
-                "changes": [
-                  {
-                    "key": "magic_defense",
-                    "mode": 2,
-                    "priority": 1,
-                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
-                  },
-                  {
-                    "key": "magic_defense",
-                    "mode": 4,
-                    "priority": 2,
-                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
-                  }
-                ],
-                "id": "jIABnsa0Azilk9Mr",
-                "name": "Armor MDEF"
-              }
-            ],
-            "itemId": "kW12WGgIOK3KzsRi",
-            "itemName": "Ardent Yoroi",
-            "itemType": "armor",
-            "itemUuid": "Actor.uJFaNQCSvwwsr2AW.Item.kW12WGgIOK3KzsRi",
-            "owner": {
-              "actor": "Blanche",
-              "actorUuid": "Actor.uJFaNQCSvwwsr2AW",
-              "source": "Actor-owned Item"
-            }
-          }
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "armor",
-            "fromTemplate": "5Z0gKtN5R51ebJOa",
-            "itemId": "79TTBHuBvD7ysgZQ",
-            "itemName": "Ardent Yoroi",
-            "pickedOldProps": {
-              "cost": "1300",
-              "def_bonus": "",
-              "defense": "12",
-              "defense_include_dex": false,
-              "initiative": "-4",
-              "magic_defense": "0",
-              "magic_defense_include_ins": true,
-              "martial": true,
-              "mdef_bonus": "",
-              "shield": false
-            },
-            "ts": 1769647435130
-          }
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/brom.png",
-      "name": "+4 Ardent Yoroi",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 500000,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul>\n<li>You gain a +1 bonus to your <strong>Accuracy Checks</strong>.</li>\n</ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": true,
-          "isIngredient": false,
-          "isKey": false,
-          "isMartial": true,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "12",
-          "item_baseMdef": "0",
-          "item_cost": "1300",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_type": "armor",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "+4 Ardent Yoroi",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": 4,
-          "refine_level": 4,
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "skill_tags": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "79TTBHuBvD7ysgZQ"
       },
       "type": "equippableItem"
     },
@@ -4231,6 +3750,109 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": ""
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "s7GhfXoC9ZMy71wM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783791766859,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Sunsettia.webp",
+      "name": "Starfruit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "The dried peel of a starfruit — intensely tart, prized by travelling chefs.",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "zF6faTFO5nlTBVt8",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Sunsettia.webp",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "0",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Starfruit",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.zF6faTFO5nlTBVt8",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "zF6faTFO5nlTBVt8"
       },
       "type": "equippableItem"
     },
@@ -4627,141 +4249,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "TNcJSsr962JEcZBL",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783717334531,
-        "duplicateSource": "Item.QvUsAoeaebjrKAHi",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "accessory",
-            "fromTemplate": "r0yZpLPAK9VXhM2p",
-            "itemId": "QvUsAoeaebjrKAHi",
-            "itemName": "Amethyst Pendant",
-            "pickedOldProps": {
-              "cost": "350",
-              "def_bonus": "",
-              "defense": "0",
-              "defense_include_dex": false,
-              "initiative": "0",
-              "magic_defense": "0",
-              "magic_defense_include_ins": false,
-              "mdef_bonus": ""
-            },
-            "ts": 1769647435106
-          }
-        }
-      },
-      "folder": "5uQIy5BCy7UEVfcT",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
-      "name": "Ring of the Pupil",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 3450000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li>As long as you have at least two <strong>Bonds of admiration</strong>, you gain a +1 bonus to both your <strong>Defense</strong> and <strong>Magic Defense</strong>.</li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>Worn by devoted students, this ring shines brightest in the presence of cherished ideals.</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Uncommon",
-          "item_type": "accessory",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Ring of the Pupil",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "KoC4PHdQrp7r4rM9"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "tz01urf7nuJsZDRE",
       "_stats": {
         "compendiumSource": "Item.fJshVRdauYDSTAop",
@@ -4924,63 +4411,217 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>After an enemy you can see loses Hit Points due to damage dealt by one of your allies, if that damage was increased by one or more of your <strong>“hex” invocations</strong>, you may perform a <strong>free attack</strong> with a weapon you have equipped. This attack may only target that enemy, and receives a bonus equal to <strong>[SL]</strong> to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all <strong>“hex” invocations</strong> present on its target end immediately after the attack has been resolved.</p>\n<p>If two or more enemies trigger this Skill at the same time, you can perform a <strong>free attack</strong> against each of them, in whatever order you prefer.</p>\n",
+          "details_roller": "Show",
           "duration": "Instantanious",
-          "effect_table": [
-            {
+          "effect_table": {
+            "0": {
               "action_ref": "Attack",
+              "chain": false,
               "check_bonus_formula": "SL",
+              "consume_self": false,
               "effect_kind": "free_action",
               "effect_label": "ripple_strike",
               "element_override": "trigger_element",
+              "free_of_cost": false,
+              "from_resource": "",
+              "menu_label": "",
               "on_hit_effect_refs": "ripple_end_hex",
-              "target_ref": "trigger_subject"
+              "target_ref": "trigger_subject",
+              "to_resource": ""
             },
-            {
+            "1": {
+              "consume_self": false,
               "count": "all",
               "effect_kind": "remove_tagged_ae",
               "effect_label": "ripple_end_hex",
               "filter_tag": "hex",
-              "target_ref": "hit_action_targets"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
             }
-          ],
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "Uq2ImnVoeNW4gt88",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/dragon_kick.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
           "isZeroPower": false,
-          "level": "2",
+          "level": "5",
           "max_level": "5",
           "name": "Ripples",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": [
-            {
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
               "condition_formula": "AFFECTED_BY_HEX == 1",
+              "reaction_action_kind": "",
               "reaction_cause_filter": "damage",
               "reaction_damage_source": "ally",
               "reaction_effect_ref": "ripple_strike",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": false,
               "reaction_resource_filter": "hp",
+              "reaction_responder": "",
               "reaction_source": "enemy",
-              "reaction_trigger": "creature_lose_resource"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_lose_resource",
+              "requires_skill": ""
             }
-          ],
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Accuracy Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td></tr></tbody></table>",
           "skill_range": "Any",
+          "skill_tags": "",
           "skill_target": "Special",
           "skill_type": "Passive",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.Uq2ImnVoeNW4gt88"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "OFaq1NASo4uD8huP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uTYRq5srXMaXat5y",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783788199890,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/909.gif",
+      "name": "Jellopy",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p>A small crystallization created by some monsters.</p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "L1ki1clOnOhpl7wN",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/909.gif",
+          "ingredient_taste": "sweet",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "3",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Jellopy",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.L1ki1clOnOhpl7wN",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "L1ki1clOnOhpl7wN"
       },
       "type": "equippableItem"
     },
@@ -5089,6 +4730,483 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "4Qh8e8vVf8yOwaSg"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "vbpD1aMW4azWQSdn",
+      "_stats": {
+        "compendiumSource": "Item.oQuaoYmMq9vsbgUf",
+        "coreVersion": "12.343",
+        "createdTime": 1783778978517,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "1OqZv4wle56gNAsw",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_magic_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_magic_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "1OqZv4wle56gNAsw",
+              "originalParentId": "oQuaoYmMq9vsbgUf",
+              "originalUuid": "Item.oQuaoYmMq9vsbgUf.ActiveEffect.1OqZv4wle56gNAsw"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-mdef-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+          "name": "Armor MDEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "2VkD0bLVsIlNIbg9",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783793504564,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "system.props.max_hp",
+              "mode": 2,
+              "priority": 20,
+              "value": "25"
+            }
+          ],
+          "description": "Increase Max HP",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "2VkD0bLVsIlNIbg9",
+              "originalParentId": "vbpD1aMW4azWQSdn",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.vbpD1aMW4azWQSdn.ActiveEffect.2VkD0bLVsIlNIbg9"
+            },
+            "fabula-ultima-companion": {
+              "refinementBonus": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Armor Refinement",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "LnX0LB2cJc1wHCdw",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783780330793,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_4",
+              "mode": 5,
+              "priority": 20,
+              "value": "RS"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "LnX0LB2cJc1wHCdw",
+              "originalParentId": "vbpD1aMW4azWQSdn",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.vbpD1aMW4azWQSdn.ActiveEffect.LnX0LB2cJc1wHCdw"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/unholy/orb-glowing-purple.webp",
+          "name": "Dark Resistance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "ZfP5ryZkClvWJVfX",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ZfP5ryZkClvWJVfX",
+              "originalParentId": "oQuaoYmMq9vsbgUf",
+              "originalUuid": "Item.oQuaoYmMq9vsbgUf.ActiveEffect.ZfP5ryZkClvWJVfX"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-def-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Armor DEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "armorDefMdefAeMassPatchBackup_v1": {
+            "createdAt": 1777705756403,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "ZfP5ryZkClvWJVfX",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "1OqZv4wle56gNAsw",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemName": "Paladin Armor",
+            "itemUuid": "Item.oQuaoYmMq9vsbgUf",
+            "parentName": "",
+            "parentType": "World"
+          },
+          "defMdefHelperKeyPatchBackup_v1": {
+            "createdAt": 1777708466326,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "ZfP5ryZkClvWJVfX",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "1OqZv4wle56gNAsw",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemId": "oQuaoYmMq9vsbgUf",
+            "itemName": "Paladin Armor",
+            "itemType": "armor",
+            "itemUuid": "Item.oQuaoYmMq9vsbgUf",
+            "owner": {
+              "actor": "",
+              "actorUuid": "",
+              "source": "World Item"
+            }
+          }
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "armor",
+            "fromTemplate": "5Z0gKtN5R51ebJOa",
+            "itemId": "oQuaoYmMq9vsbgUf",
+            "itemName": "Paladin Armor",
+            "pickedOldProps": {
+              "cost": "2500",
+              "def_bonus": "",
+              "defense": "12",
+              "defense_include_dex": false,
+              "initiative": "-4",
+              "magic_defense": "14",
+              "magic_defense_include_ins": false,
+              "martial": true,
+              "mdef_bonus": "",
+              "shield": false
+            },
+            "ts": 1769647436155
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2368.gif",
+      "name": "+5 Paladin Armor",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 150000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>You have Resistance to<strong> dark</strong> damage.</li><li>When you <strong>Cover </strong>or <strong>Protect </strong>another creature, you may cast a <strong>non-offensive spell </strong>targeting that creature as a <strong>Free Action</strong></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "oQuaoYmMq9vsbgUf",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2368.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": true,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": true,
+          "isUnique": false,
+          "item_baseDef": "12",
+          "item_baseMdef": "13",
+          "item_cost": "2500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_type": "armor",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Paladin Armor",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": 11,
+          "refine_level": 5,
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2-Piece</strong></p><ul><li><p>You can perform the skill 💥<strong>Protect </strong>one additional time per round</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>You can spend <strong>1 Fabula Point </strong>to perform the skill 💥<strong>Protect </strong>when you are <strong>KO </strong><em>(other rules for KO still apply to you)</em></p></li></ul></li></ul>",
+          "set_name": "Oathsworn Paladin",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.oQuaoYmMq9vsbgUf",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "oQuaoYmMq9vsbgUf"
       },
       "type": "equippableItem"
     },
@@ -6812,6 +6930,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -6830,6 +6949,8 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "ya38b6iI7xoO4Jur",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Silverfish_icon1.png",
           "ingredient_taste": "sweet",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -6864,11 +6985,13 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "<Set Name>",
+          "skill_tags": "",
           "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.ya38b6iI7xoO4Jur",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -6876,141 +6999,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "czkjXYoh6vPaj5bQ"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "ZlQFTsfCPFJ7V1R7",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783717334531,
-        "duplicateSource": "Item.QvUsAoeaebjrKAHi",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "accessory",
-            "fromTemplate": "r0yZpLPAK9VXhM2p",
-            "itemId": "QvUsAoeaebjrKAHi",
-            "itemName": "Amethyst Pendant",
-            "pickedOldProps": {
-              "cost": "350",
-              "def_bonus": "",
-              "defense": "0",
-              "defense_include_dex": false,
-              "initiative": "0",
-              "magic_defense": "0",
-              "magic_defense_include_ins": false,
-              "mdef_bonus": ""
-            },
-            "ts": 1769647435106
-          }
-        }
-      },
-      "folder": "5uQIy5BCy7UEVfcT",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
-      "name": "Ring of the Pupil",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 3450000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li>As long as you have at least two <strong>Bonds of admiration</strong>, you gain a +1 bonus to both your <strong>Defense</strong> and <strong>Magic Defense</strong>.</li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>Worn by devoted students, this ring shines brightest in the presence of cherished ideals.</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Uncommon",
-          "item_type": "accessory",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Ring of the Pupil",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "KoC4PHdQrp7r4rM9"
       },
       "type": "equippableItem"
     },
@@ -7071,269 +7059,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "zgb1ZKLnw50WNjlG"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "zRnplMHtTwTQOsbg",
-      "_stats": {
-        "compendiumSource": "Item.KRD2oLQnj3dgVq0j",
-        "coreVersion": "12.343",
-        "createdTime": 1783717334531,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "effects": [
-        {
-          "_id": "F4Pi34YDXJtv8NWB",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "<p>Disable the <strong>Attack </strong>action</p>",
-          "disabled": true,
-          "duration": {
-            "combat": null,
-            "rounds": 3,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "core": {
-              "overlay": false
-            },
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "isPredefined": true,
-              "originalId": "y5YpJbxvkHnHA1Fc",
-              "originalParentId": "XVOWOq9oUmEECGrU",
-              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.y5YpJbxvkHnHA1Fc"
-            },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "ce-frightened",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Fear.png",
-          "name": "Frightened",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "v2vFlETIgMnff5o8"
-          ],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "XzUyioBYYsOZhCpI",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "<p>Disable the <strong>Guard </strong>action</p>",
-          "disabled": true,
-          "duration": {
-            "combat": null,
-            "rounds": 3,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "core": {
-              "overlay": false
-            },
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "isPredefined": true,
-              "originalId": "OYLYpaZMWDFRMPgk",
-              "originalParentId": "XVOWOq9oUmEECGrU",
-              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.OYLYpaZMWDFRMPgk"
-            },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "ce-stagger",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Dark.png",
-          "name": "Stagger",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "1QPHKNWo17z0bBmX"
-          ],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/asan.png",
-      "name": "Muscly Arm",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {
-            "0": {
-              "$deleted": false,
-              "active_effect_application": "add",
-              "active_effect_apply_mode": "conquer",
-              "active_effect_dice_1": "",
-              "active_effect_dice_2": "",
-              "active_effect_dl": "5",
-              "active_effect_id": "",
-              "active_effect_percent": "0",
-              "active_effect_target": "enemy",
-              "active_effect_trigger": "on_hit"
-            },
-            "1": {
-              "$deleted": false,
-              "active_effect_application": "add",
-              "active_effect_apply_mode": "conquer",
-              "active_effect_dice_1": "",
-              "active_effect_dice_2": "",
-              "active_effect_dl": "8",
-              "active_effect_id": "",
-              "active_effect_percent": "0",
-              "active_effect_target": "enemy",
-              "active_effect_trigger": "on_hit"
-            }
-          },
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Brawling",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "5",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Conquer</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;5 </span></strong></span></span>Inflicts<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.IBN7DtvWLFDo8jNh\" data-id=\"IBN7DtvWLFDo8jNh\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Stagger</span></strong></a></span></span> on the target</p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Conquer</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;8</span></strong></span></span> Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a></span></span> on the target</p></li><li><p>You gain +1 to all <strong>Checks</strong> that involve <strong>Intimidation</strong></p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>\"I'll do what I want, you have problem?!\"</em></p><p>  <em>―You, probably after equipping this weapon</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Rare",
-          "item_skill_passive": {
-            "dRcIZVwyNg8wx56q": {
-              "id": "${item.id}",
-              "name": "Muscly Arm (Passive)",
-              "skill_cost": "",
-              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.dRcIZVwyNg8wx56q"
-            }
-          },
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Muscly Arm",
-          "optional_params": {},
-          "plant_ef": "100",
-          "related_item_list": {
-            "dRcIZVwyNg8wx56q": {
-              "id": "${item.id}",
-              "name": "Muscly Arm (Passive)",
-              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-              "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.dRcIZVwyNg8wx56q"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "MIG",
-          "rolled_atr2": "MIG",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "KRD2oLQnj3dgVq0j"
       },
       "type": "equippableItem"
     }
@@ -7550,7 +7275,7 @@
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
-      "affinity_4": "NA",
+      "affinity_4": "RS",
       "affinity_5": "NA",
       "affinity_6": "RS",
       "affinity_7": "NA",
@@ -7560,13 +7285,13 @@
       "anomaly_status": 0,
       "arcane_ef": "100",
       "arcanism": false,
-      "armor_details": "<ul>\n<li>You gain a +1 bonus to your <strong>Accuracy Checks</strong>.</li>\n</ul>",
+      "armor_details": "<ul><li>You have Resistance to<strong> dark</strong> damage.</li><li>When you <strong>Cover </strong>or <strong>Protect </strong>another creature, you may cast a <strong>non-offensive spell </strong>targeting that creature as a <strong>Free Action</strong></li></ul>",
       "armor_mod": "12",
-      "armor_name": "Ardent Yoroi",
+      "armor_name": "Paladin Armor",
       "backstory": "",
       "bane_status": 0,
       "base_defense": 12,
-      "base_magic_defense": 4,
+      "base_magic_defense": 13,
       "battle_facing_direction": "left",
       "berserk_status": 0,
       "bleed_status": 0,
@@ -7581,7 +7306,7 @@
       "bonus_defense": 7,
       "bonus_dex": 0,
       "bonus_hp": 5,
-      "bonus_ins": -2,
+      "bonus_ins": 0,
       "bonus_magic_defense": 2,
       "bonus_mig": 0,
       "bonus_mp": 5,
@@ -7628,7 +7353,7 @@
           "$deleted": false,
           "benefit": "hp",
           "class_name": "Invoker",
-          "level": "6"
+          "level": "9"
         }
       },
       "clock_adoration": "0",
@@ -7750,9 +7475,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 156,
-      "current_ip": 8,
-      "current_mp": 56,
+      "current_hp": "164",
+      "current_ip": "10",
+      "current_mp": "74",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Blanche_Cut-in002.png",
       "cut_in_fumble": "",
@@ -7798,7 +7523,7 @@
       "emotion_1_3": "affection",
       "emotion_2_1": "admiration",
       "emotion_2_2": "loyalty",
-      "emotion_2_3": "",
+      "emotion_2_3": "affection",
       "emotion_3_1": "admiration",
       "emotion_3_2": "mistrust",
       "emotion_3_3": "hatred",
@@ -7818,8 +7543,8 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "6.12",
-      "experience": "6.12",
+      "exp_meter": "6.23",
+      "experience": "6.23",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 0,
@@ -7845,7 +7570,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "8",
+      "fabula_point": "9",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -7861,7 +7586,7 @@
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Portrait/Blanche_Portrait001.png",
       "init_penalty": "0",
       "ins_base": "6",
-      "ins_current": 4,
+      "ins_current": 6,
       "inventory_label": "💼 Inventory",
       "inventory_list": {},
       "ip_reduction_value": 0,
@@ -7963,6 +7688,14 @@
           "name": "+4 Ardent Yoroi",
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.rcyOz2H1OGzvSE0P"
+        },
+        "vbpD1aMW4azWQSdn": {
+          "armor_description": "<p><ul><li>You have Resistance to<strong> dark</strong> damage.</li><li>When you <strong>Cover </strong>or <strong>Protect </strong>another creature, you may cast a <strong>non-offensive spell </strong>targeting that creature as a <strong>Free Action</strong></li></ul></p>",
+          "armor_martial": "♦️",
+          "id": "${item.id}",
+          "name": "+5 Paladin Armor",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.vbpD1aMW4azWQSdn"
         },
         "wXCSc2PW2sSNtmw5": {
           "armor_description": "<p>ERROR</p>",
@@ -8260,11 +7993,11 @@
       },
       "item_restore_mod": 0,
       "key_list": {},
-      "level": "36",
+      "level": "39",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
-      "magic_defense": 6,
-      "magic_defense_mod": "0",
+      "magic_defense": 15,
+      "magic_defense_mod": "13",
       "main_attrib_1": "SHI",
       "main_attrib_2": "SHI",
       "main_details": "<ul><li><p>Your equipped weapon gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weighted</span></strong></a></span></p></li></ul>",
@@ -8273,6 +8006,48 @@
       "manadrain_percentage": 0,
       "manadrain_value": 0,
       "material_list": {
+        "CJoznRylkbyoIoVW": {
+          "id": "${item.id}",
+          "key_description": "<p><em>Essence that can be obtained from monsters in the flame area in the ecological environment.</em></p>",
+          "name": "Flame Essence",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.CJoznRylkbyoIoVW"
+        },
+        "CMeAGFkIizTUlysk": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
+          "name": "Animal Fang",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.CMeAGFkIizTUlysk"
+        },
+        "OReN1ugfRh5MmdXU": {
+          "id": "${item.id}",
+          "key_description": "<p>A small crystallization created by some monsters.</p>",
+          "name": "Jellopy",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.OReN1ugfRh5MmdXU"
+        },
+        "lBjoxCeeS0JmOVhb": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A barbed stinger pried from a giant insect, its needle tip still beaded with a glistening drop of venom.</em></p>",
+          "name": "Insect Stinger",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.lBjoxCeeS0JmOVhb"
+        },
+        "s7GhfXoC9ZMy71wM": {
+          "id": "${item.id}",
+          "key_description": "The dried peel of a starfruit — intensely tart, prized by travelling chefs.",
+          "name": "Starfruit",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.s7GhfXoC9ZMy71wM"
+        },
+        "uTYRq5srXMaXat5y": {
+          "id": "${item.id}",
+          "key_description": "<p>A small crystallization created by some monsters.</p>",
+          "name": "Jellopy",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.uTYRq5srXMaXat5y"
+        },
         "ya38b6iI7xoO4Jur": {
           "id": "${item.id}",
           "key_description": "A silver-scaled rarity that surfaces near dusk. Its flesh carries an unusual natural sweetness.",
@@ -8281,9 +8056,9 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.ya38b6iI7xoO4Jur"
         }
       },
-      "max_hp": 156,
+      "max_hp": 164,
       "max_ip": 10,
-      "max_mp": 71,
+      "max_mp": 74,
       "memories_list": {},
       "memory": "Memories",
       "mig_base": "12",
@@ -8633,7 +8408,7 @@
           "active_cost": "",
           "active_description": "<p>After an enemy you can see loses Hit Points due to damage dealt by one of your allies, if that damage was increased by one or more of your <strong>“hex” invocations</strong>, you may perform a <strong>free attack</strong> with a weapon you have equipped. This attack may only target that enemy, and receives a bonus equal to <strong>[SL]</strong> to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all <strong>“hex” invocations</strong> present on its target end immediately after the attack has been resolved.</p>\n<p>If two or more enemies trigger this Skill at the same time, you can perform a <strong>free attack</strong> against each of them, in whatever order you prefer.</p>\n",
           "active_duration": "Instantanious",
-          "active_level": 2,
+          "active_level": 5,
           "active_target": "Special",
           "id": "${item.id}",
           "name": "Ripples",
@@ -9080,13 +8855,13 @@
       "wlp_base": "6",
       "wlp_current": 6,
       "your_class_name": "Housekeeper",
-      "zenit": "3027",
+      "zenit": "66",
       "zero_label": "Zero Power",
       "zero_power_description": "<p>You and any number of allies you can see recover from all status effects and recover an amount of Hit Points equal to <strong>【40 + half your level】</strong></p>",
       "zero_power_macro": "",
       "zero_power_name": "Give me tips or 5stars.",
       "zero_power_showMacro": false,
-      "zero_power_value": "0",
+      "zero_power_value": "6",
       "zero_trigger_description": "<p>When an ally you can see unleashes their zero effect. Gain 6 Zero Power</p>",
       "zero_trigger_label": "Trigger",
       "zombie_status": 0

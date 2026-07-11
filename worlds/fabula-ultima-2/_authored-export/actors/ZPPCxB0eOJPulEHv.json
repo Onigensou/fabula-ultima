@@ -39,7 +39,7 @@
     },
     "theatre": {
       "settings": {
-        "emote": null,
+        "emote": "serious",
         "textcolor": null,
         "textflyin": "typewriter",
         "textfont": null,
@@ -541,7 +541,7 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "60",
+      "current_hp": "63",
       "current_ip": "0",
       "current_mp": "40",
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Crysta/Crysta_Standard001.png",
@@ -633,7 +633,7 @@
       "magic_defense": 12,
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": "60",
+      "max_hp": "63",
       "max_ip": "0",
       "max_mp": "40",
       "max_zero": "6",

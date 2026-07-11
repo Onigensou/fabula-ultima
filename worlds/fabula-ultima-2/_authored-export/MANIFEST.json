@@ -8468,7 +8468,7 @@
         "id": "oQuaoYmMq9vsbgUf",
         "name": "Paladin Armor",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "8xmL5DAYFpSozzhz",
@@ -13324,8 +13324,16 @@
         "type": "character",
         "items": [
           {
+            "id": "bqcqYeIr5fkzi4Xa",
+            "name": "Bandit King"
+          },
+          {
             "id": "eHZgjIMONjFv9B4d",
             "name": "Brave Glaive"
+          },
+          {
+            "id": "pZVUqZd4O9o3F9yd",
+            "name": "Derringer"
           },
           {
             "id": "vCfe08LDCBHL55oG",
@@ -13348,11 +13356,27 @@
             "name": "Memorialis"
           },
           {
+            "id": "Q6xWfI5ehBT3eoPj",
+            "name": "Muscly Arm"
+          },
+          {
+            "id": "NkaaATF1lHWD3znL",
+            "name": "Muscly Arm (Passive)"
+          },
+          {
+            "id": "4q7cZCCWtLrOg6R6",
+            "name": "RNGenerator"
+          },
+          {
             "id": "QTuszWnEw4W2uvRh",
             "name": "Rocinante"
           },
           {
             "id": "4Ahpybkum7HZJuN9",
+            "name": "Serpent Spear"
+          },
+          {
+            "id": "QvnvOmBqPMQXyWHk",
             "name": "Serpent Spear"
           },
           {
@@ -13362,6 +13386,10 @@
           {
             "id": "CR2n1tUFYgg2sm2B",
             "name": "Umbra Shield"
+          },
+          {
+            "id": "DVEjjuUxD4zIL6lU",
+            "name": "Valkyrie Wings"
           },
           {
             "id": "SG7t9PgyVSwtN61r",
@@ -13376,20 +13404,20 @@
         "type": "character",
         "items": [
           {
-            "id": "rcyOz2H1OGzvSE0P",
-            "name": "+4 Ardent Yoroi"
-          },
-          {
             "id": "oM6Bo3Hc4wV9ICa9",
             "name": "+4 Titanic Shield"
           },
           {
-            "id": "cXbX8RdGLCiQ5V1d",
-            "name": "+5 Runic Shield"
+            "id": "vbpD1aMW4azWQSdn",
+            "name": "+5 Paladin Armor"
           },
           {
             "id": "FJR1nkpCZNWfHH9v",
             "name": "Air Pendant"
+          },
+          {
+            "id": "CMeAGFkIizTUlysk",
+            "name": "Animal Fang"
           },
           {
             "id": "5eaTJGto8B0HIDhg",
@@ -13448,8 +13476,20 @@
             "name": "Hekat Shield"
           },
           {
+            "id": "lBjoxCeeS0JmOVhb",
+            "name": "Insect Stinger"
+          },
+          {
             "id": "wecgr398559brY1I",
             "name": "Invocation"
+          },
+          {
+            "id": "OReN1ugfRh5MmdXU",
+            "name": "Jellopy"
+          },
+          {
+            "id": "uTYRq5srXMaXat5y",
+            "name": "Jellopy"
           },
           {
             "id": "JT5pvl5buIjL9JHX",
@@ -13464,14 +13504,6 @@
             "name": "Muleta"
           },
           {
-            "id": "zRnplMHtTwTQOsbg",
-            "name": "Muscly Arm"
-          },
-          {
-            "id": "dRcIZVwyNg8wx56q",
-            "name": "Muscly Arm (Passive)"
-          },
-          {
             "id": "WBMByjJUKDlD8TmE",
             "name": "Pases"
           },
@@ -13484,20 +13516,16 @@
             "name": "Resourceful"
           },
           {
-            "id": "TNcJSsr962JEcZBL",
-            "name": "Ring of the Pupil"
-          },
-          {
-            "id": "ZlQFTsfCPFJ7V1R7",
-            "name": "Ring of the Pupil"
-          },
-          {
             "id": "Uq2ImnVoeNW4gt88",
             "name": "Ripples"
           },
           {
             "id": "XrwiCo9dqjD1UGJi",
             "name": "Ruby Pendant"
+          },
+          {
+            "id": "s7GhfXoC9ZMy71wM",
+            "name": "Starfruit"
           },
           {
             "id": "BXrs9fsYHnpaFTun",
@@ -14239,14 +14267,6 @@
           {
             "id": "dRI0Hi3D8YEQvOeV",
             "name": "Mega-Remedy Recipe"
-          },
-          {
-            "id": "ilXHEBQwqeYaQOub",
-            "name": "Phoenix Feather"
-          },
-          {
-            "id": "nLkSAFq6CBTuBdLq",
-            "name": "Phoenix Feather"
           }
         ],
         "effects": 0
@@ -15093,6 +15113,14 @@
         "type": "character",
         "items": [
           {
+            "id": "CIDgy97DxATGEzoS",
+            "name": "+4 Ardent Yoroi"
+          },
+          {
+            "id": "ctdc7Idc9ZtFfwsz",
+            "name": "+5 Runic Shield"
+          },
+          {
             "id": "JtHdr7yVmz1CC63W",
             "name": "Adrenaline Potion"
           },
@@ -15109,16 +15137,20 @@
             "name": "Apple Juice Recipe"
           },
           {
-            "id": "EPXbIUDimhOhWAiU",
-            "name": "Apple o' Archer"
-          },
-          {
-            "id": "xCskLjO3pJWiKp5f",
-            "name": "Bandit King"
+            "id": "0IxbfRYnSHIKvRuS",
+            "name": "Bandit Gloves"
           },
           {
             "id": "NCj1L7FcFxeZsc5k",
             "name": "Black Belt"
+          },
+          {
+            "id": "7CAujrbQFPCpfqDX",
+            "name": "Blazing Impact"
+          },
+          {
+            "id": "w0y1ZM62oTMtAKlE",
+            "name": "Blazing Sword"
           },
           {
             "id": "CNKnuIJzsIVPR0GD",
@@ -15141,12 +15173,12 @@
             "name": "Combat Tunic"
           },
           {
-            "id": "vJWs8recTv3mtfVG",
-            "name": "Deadly Premonition"
+            "id": "C0dAFeczpsVl7LDZ",
+            "name": "Dead Branch"
           },
           {
-            "id": "PVtCRQHVnat83dFp",
-            "name": "Derringer"
+            "id": "vJWs8recTv3mtfVG",
+            "name": "Deadly Premonition"
           },
           {
             "id": "wCSJTNqVjW9ZweJk",
@@ -15209,8 +15241,8 @@
             "name": "Invisibility Cloak"
           },
           {
-            "id": "EkHqkqyjuMSPAxq1",
-            "name": "Jetpack"
+            "id": "P4rafgBSVz3IuBL7",
+            "name": "Jumping Boots"
           },
           {
             "id": "dMjTZLwN6L1CD4TE",
@@ -15245,16 +15277,20 @@
             "name": "Revealing Lens"
           },
           {
+            "id": "BudKDkoE0hpl94Eb",
+            "name": "Ring of the Pupil"
+          },
+          {
+            "id": "vu3nuZReY0Bx2r5c",
+            "name": "Ring of the Pupil"
+          },
+          {
             "id": "VuEqfVKZJ3rU1ce9",
             "name": "Ring of the Pupil"
           },
           {
             "id": "KSepKK2J2itbHUUK",
             "name": "Scouter (Passive)"
-          },
-          {
-            "id": "2na6LT4hqNFM2hhJ",
-            "name": "Serpent Spear"
           },
           {
             "id": "pB5jPDL9EJDqFCTy",
@@ -15295,6 +15331,10 @@
           {
             "id": "EWreH8iAt272MOZZ",
             "name": "Wind Stone"
+          },
+          {
+            "id": "mf5Cc0hGzVW9yyrT",
+            "name": "Winter Kolossus"
           }
         ],
         "effects": 0
@@ -16666,7 +16706,11 @@
         "items": [
           {
             "id": "EhrhSD2uc4XZ3uGD",
-            "name": "+1 Full Plate"
+            "name": "+4 Full Plate"
+          },
+          {
+            "id": "9GquE1k7ZaVvMLfS",
+            "name": "+4 Shield of Rejuvenation"
           },
           {
             "id": "boDVDHvlhYwlW4hr",
@@ -16683,6 +16727,10 @@
           {
             "id": "frF0Jp6MkosRDglY",
             "name": "Agony"
+          },
+          {
+            "id": "N2LU8xcuzqMHsLup",
+            "name": "Animal Fang"
           },
           {
             "id": "0EA2ziqCOEmJWUCK",
@@ -16705,6 +16753,18 @@
             "name": "Arch Ice Wand"
           },
           {
+            "id": "cISBlNfKyKWkuBkY",
+            "name": "Ash"
+          },
+          {
+            "id": "finnYeBdJmxTMVmp",
+            "name": "Ash"
+          },
+          {
+            "id": "OCQPqSoXnu62MS5q",
+            "name": "Automaton Suit"
+          },
+          {
             "id": "H0DADhpEoUIbwhex",
             "name": "Bimagus"
           },
@@ -16719,6 +16779,10 @@
           {
             "id": "52nRuMN0X58BZCm9",
             "name": "Cataclysm"
+          },
+          {
+            "id": "SzMEB4panlh7XBF6",
+            "name": "Charred Bone"
           },
           {
             "id": "rOdq8hhYJpSutkre",
@@ -16771,6 +16835,14 @@
           {
             "id": "TPnGoyaq70WSBzmj",
             "name": "Elemental Weapon"
+          },
+          {
+            "id": "rUMhVvIctoWDowBh",
+            "name": "Ember Petal"
+          },
+          {
+            "id": "UZ4SrdfJoCexQWd4",
+            "name": "Emergency Arcanum"
           },
           {
             "id": "IJPsdKmEyzpLjJu6",
@@ -16841,8 +16913,16 @@
             "name": "Heart of Darkness"
           },
           {
+            "id": "2rMxW49Y5ZoD5jiY",
+            "name": "Icarus Wing"
+          },
+          {
             "id": "pcCBP65FqbsMOF0h",
             "name": "Iceberg"
+          },
+          {
+            "id": "qicvF0JiQQkBupVA",
+            "name": "Jetpack"
           },
           {
             "id": "wdkyWxt43rlxEtTO",
@@ -16885,6 +16965,10 @@
             "name": "Painful Lesson"
           },
           {
+            "id": "UTKq3Ydy8bawRUBi",
+            "name": "Poison"
+          },
+          {
             "id": "JKHCj8St8J207DMS",
             "name": "Polymorph Potion: Scaldra"
           },
@@ -16917,10 +17001,6 @@
             "name": "Scouter (Passive)"
           },
           {
-            "id": "9GquE1k7ZaVvMLfS",
-            "name": "Shield of Rejuvenation"
-          },
-          {
             "id": "ftTbURtcbfwCg8CT",
             "name": "Shield of Rejuvenation (Passive)"
           },
@@ -16939,6 +17019,14 @@
           {
             "id": "z1GsqcJC8bh4TOAs",
             "name": "Stop"
+          },
+          {
+            "id": "snNmx2IBNqTF9IAO",
+            "name": "Super Tonic"
+          },
+          {
+            "id": "XC42Ux911ac3auzE",
+            "name": "Support Magic"
           },
           {
             "id": "p7WldKGSMumLxC4p",
@@ -17667,16 +17755,8 @@
             "name": "Gorger Ward"
           },
           {
-            "id": "AsTycp3Y9S23tGJH",
-            "name": "Icarus Wing"
-          },
-          {
             "id": "Den3kU0k4CkleWGo",
             "name": "Ring of Defiance"
-          },
-          {
-            "id": "CMgIEaF2XorSgahW",
-            "name": "Ring of Regeneration"
           }
         ],
         "effects": 0
@@ -17748,11 +17828,27 @@
         "items": [
           {
             "id": "6Pry1DbGlFej0tVP",
-            "name": "+2 Ignis Shield"
+            "name": "+5 Ignis Shield"
           },
           {
             "id": "BRNmLkWm9FSqbXRK",
             "name": "+5 Swimsuit"
+          },
+          {
+            "id": "Ld4P1df4SK5zvtq6",
+            "name": "+6 Psychic Dagger"
+          },
+          {
+            "id": "xi7gKIguMDg3aAU3",
+            "name": "Animal Fang"
+          },
+          {
+            "id": "2dFj4PqZ98zfinr5",
+            "name": "Animal Fur"
+          },
+          {
+            "id": "IFdG44swurNul7ho",
+            "name": "Animal Fur"
           },
           {
             "id": "fFHKCwDndsOmUg0q",
@@ -17777,6 +17873,14 @@
           {
             "id": "rs7BtA731yHZPcDn",
             "name": "Charm"
+          },
+          {
+            "id": "ODJDn7QixISxmC0Y",
+            "name": "Charred Bone"
+          },
+          {
+            "id": "ySL1PCPzqmDYEaMn",
+            "name": "Charred Bone"
           },
           {
             "id": "l7hj0bWidYxltnI6",
@@ -17811,6 +17915,10 @@
             "name": "Diver Goggle"
           },
           {
+            "id": "NnSNV6Eta2BbDxm5",
+            "name": "Ember Petal"
+          },
+          {
             "id": "JOEi8X46SkQ5tRNG",
             "name": "Fairy Ring"
           },
@@ -17819,8 +17927,28 @@
             "name": "Fear Is the Key"
           },
           {
+            "id": "eiDBF9ItmrzqciKH",
+            "name": "Flame Essence"
+          },
+          {
+            "id": "v6ZJ1nNx0xCp82TH",
+            "name": "Flame Essence"
+          },
+          {
             "id": "rIL03M727EEzLUNf",
             "name": "For Whom the Bell Tolls"
+          },
+          {
+            "id": "etUcU0vA0DfE0YdG",
+            "name": "Frill"
+          },
+          {
+            "id": "NyzcbeaidAPGjll3",
+            "name": "Frill"
+          },
+          {
+            "id": "5zZBwJJrhmnUx79o",
+            "name": "Golem Heart"
           },
           {
             "id": "aBoK1AS1nb27Wwye",
@@ -17833,6 +17961,10 @@
           {
             "id": "zBJhr4X59vKtQlsh",
             "name": "Illusory Shield"
+          },
+          {
+            "id": "sCu9dnBvUe1qsY4v",
+            "name": "Jellopy"
           },
           {
             "id": "fWSnV0BKWLOPGZnq",
@@ -17851,8 +17983,12 @@
             "name": "Phantasmal Echo"
           },
           {
-            "id": "Ld4P1df4SK5zvtq6",
-            "name": "Psychic Dagger"
+            "id": "ll9wkUrPJay3Ah0l",
+            "name": "Phoenix Feather"
+          },
+          {
+            "id": "xRWHb1Ox5iZ1gEEp",
+            "name": "Phoenix Feather"
           },
           {
             "id": "hZF1clWz4uuZixDS",
@@ -17861,6 +17997,10 @@
           {
             "id": "njhAd6kpOwOKC5rh",
             "name": "Psychokinesis"
+          },
+          {
+            "id": "h2zke8eM3OaNV9Vh",
+            "name": "Ring of Regeneration"
           },
           {
             "id": "C2iRL9nans6BjliZ",
@@ -17877,6 +18017,14 @@
           {
             "id": "gTVVty4CEgxlH0J5",
             "name": "Sneaker (Passive)"
+          },
+          {
+            "id": "EkwslQzTlTIOfVTU",
+            "name": "Soul Steal"
+          },
+          {
+            "id": "7wfcJjtOohmga8n0",
+            "name": "Starfruit"
           },
           {
             "id": "RSnilc4zgPeVi4ib",
@@ -18787,6 +18935,10 @@
         "type": "character",
         "items": [
           {
+            "id": "2mDFN54V44UmlVOd",
+            "name": "(Empty)"
+          },
+          {
             "id": "Ae2njyJ0ZfsGFzZd",
             "name": "Earthmate Shovel"
           },
@@ -18822,6 +18974,10 @@
         "name": "O'zealot",
         "type": "character",
         "items": [
+          {
+            "id": "0aJHvQ91xETq3G9o",
+            "name": "(Empty)"
+          },
           {
             "id": "Z2fyYlDAaRTRbNyV",
             "name": "Golem Fragment"
@@ -21742,12 +21898,16 @@
         "type": "character",
         "items": [
           {
-            "id": "xEHcsYyJhPaTCGcJ",
-            "name": "+3 Zarg's Bow"
-          },
-          {
             "id": "AQprVL9AoxIbsz3D",
             "name": "+3 Zarg's Bow - Light"
+          },
+          {
+            "id": "9eWyiZCnRhC89Fsn",
+            "name": "+4 Combat Tunic"
+          },
+          {
+            "id": "xEHcsYyJhPaTCGcJ",
+            "name": "+5 Zarg's Bow"
           },
           {
             "id": "4HAJia1ADJ8RijE8",
@@ -21758,8 +21918,16 @@
             "name": "Apothecary Robes"
           },
           {
+            "id": "6ef3fWjmWMYTG9Kz",
+            "name": "Apple o' Archer"
+          },
+          {
             "id": "mv4dNcGM84BH46mZ",
             "name": "Barrage"
+          },
+          {
+            "id": "Q1cdHygweV51GezS",
+            "name": "Bat Dance"
           },
           {
             "id": "2vCRlHoLq2d8tTWn",
@@ -21774,12 +21942,12 @@
             "name": "Café au Lait"
           },
           {
-            "id": "PS5zlTZIJ2yXog8S",
-            "name": "Cheap Shot"
+            "id": "L9l5Wqh1mhLdLmmv",
+            "name": "Charred Bone"
           },
           {
-            "id": "9eWyiZCnRhC89Fsn",
-            "name": "Combat Tunic"
+            "id": "PS5zlTZIJ2yXog8S",
+            "name": "Cheap Shot"
           },
           {
             "id": "B5EA1iq4j0wYzpo5",
@@ -21806,8 +21974,16 @@
             "name": "Emergency Item"
           },
           {
+            "id": "5tDdAHyLCzGO91ti",
+            "name": "Flame Essence"
+          },
+          {
             "id": "2mUzQqk9EWEw45yl",
             "name": "Follow my lead"
+          },
+          {
+            "id": "eQ8sf4Ton4JJum2G",
+            "name": "Frill"
           },
           {
             "id": "H663NG14lmAbBtzp",
@@ -21826,6 +22002,10 @@
             "name": "Golem Soulstone"
           },
           {
+            "id": "AzCQXiZHS2rACuFN",
+            "name": "Griffin Dance"
+          },
+          {
             "id": "SP5BT5DfIbe2os5C",
             "name": "Hawkeye"
           },
@@ -21834,8 +22014,12 @@
             "name": "High Speed"
           },
           {
-            "id": "egnjUSks1QXUeorA",
-            "name": "Jumping Boots"
+            "id": "wx93KT48Ixf3JMCP",
+            "name": "Insect Stinger"
+          },
+          {
+            "id": "TkwC7gMFQ4DmHOiM",
+            "name": "Jellopy"
           },
           {
             "id": "VEPepE5ozQlm8sEZ",
@@ -21938,6 +22122,10 @@
             "name": "Spicy Cocktail"
           },
           {
+            "id": "cBWwDqoyt0WOga7k",
+            "name": "Starfruit"
+          },
+          {
             "id": "VJP2hrigNNHF1M9E",
             "name": "Teddy Bear"
           },
@@ -21962,7 +22150,7 @@
             "name": "Zero Trigger: Strategy"
           }
         ],
-        "effects": 3
+        "effects": 1
       },
       {
         "id": "eovuAdwJdbtn8rOr",

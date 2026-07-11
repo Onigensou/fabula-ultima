@@ -257,7 +257,7 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "condition_formula": "TARGET_CURRENT_HP <= 0 && AE_COUNT_VORACIOUS_ACTIVE == 0",
+              "condition_formula": "TARGET_CURRENT_HP <= 0 && TARGET_MAX_HP > 0 && AE_COUNT_VORACIOUS_ACTIVE == 0",
               "reaction_action_intent": "",
               "reaction_action_target": "",
               "reaction_damage_amount": "",

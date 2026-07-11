@@ -84,6 +84,61 @@
       "type": "base"
     },
     {
+      "_id": "HVbd3PLxWSIwYVth",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783780330223,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_4",
+          "mode": 5,
+          "priority": 20,
+          "value": "RS"
+        }
+      ],
+      "description": "",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "HVbd3PLxWSIwYVth",
+          "originalParentId": "oQuaoYmMq9vsbgUf",
+          "originalUuid": "Item.oQuaoYmMq9vsbgUf.ActiveEffect.HVbd3PLxWSIwYVth"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/orb-glowing-purple.webp",
+      "name": "Dark Resistance",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
       "_id": "ZfP5ryZkClvWJVfX",
       "_stats": {
         "compendiumSource": null,
@@ -307,6 +362,7 @@
       "demon_ef": "100",
       "description": "<ul><li>You have Resistance to<strong> dark</strong> damage.</li><li>When you <strong>Cover </strong>or <strong>Protect </strong>another creature, you may cast a <strong>non-offensive spell </strong>targeting that creature as a <strong>Free Action</strong></li></ul>",
       "dragon_ef": "100",
+      "effect_table": {},
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",
@@ -322,6 +378,7 @@
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
+      "isIngredient": false,
       "isKey": false,
       "isMartial": true,
       "isModule": false,
@@ -341,6 +398,7 @@
       "name": "Paladin Armor",
       "optional_params": {},
       "plant_ef": "100",
+      "reaction_config_table": {},
       "refine_count": "0",
       "refine_level": "0",
       "reptilian_ef": "100",
@@ -348,6 +406,8 @@
       "rolled_atr2": "DEX",
       "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2-Piece</strong></p><ul><li><p>You can perform the skill 💥<strong>Protect </strong>one additional time per round</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>You can spend <strong>1 Fabula Point </strong>to perform the skill 💥<strong>Protect </strong>when you are <strong>KO </strong><em>(other rules for KO still apply to you)</em></p></li></ul></li></ul>",
       "set_name": "Oathsworn Paladin",
+      "skill_tags": "",
+      "skill_target": "One Enemy",
       "soldier_ef": "100",
       "spirit_ef": "100",
       "type_damage": "Physical",
@@ -357,7 +417,7 @@
       "weapon_range": "Melee"
     },
     "template": "ZoiV53VaLzeRsEps",
-    "templateSystemUniqueVersion": 987283856,
+    "templateSystemUniqueVersion": 3202566307,
     "unique": false,
     "uniqueId": "oQuaoYmMq9vsbgUf"
   },

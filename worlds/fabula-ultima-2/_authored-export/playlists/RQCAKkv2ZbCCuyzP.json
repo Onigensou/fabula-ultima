@@ -23,7 +23,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 62,
+  "seed": 758,
   "sort": 100000,
   "sorting": "a",
   "sounds": [
@@ -73,7 +73,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/River.ogg",
       "repeat": true,
       "sort": 0,
-      "volume": 0.41
+      "volume": 0.21
     },
     {
       "_id": "e2A4e7o05Bxr3ECY",
@@ -105,7 +105,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/SE_Softwind_loop.wav",
       "repeat": true,
       "sort": 0,
-      "volume": 0.03
+      "volume": 0.01
     },
     {
       "_id": "Izs2ykIrWPWJZ1e1",

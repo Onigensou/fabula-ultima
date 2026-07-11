@@ -246,8 +246,11 @@
               "damage_amount": "AE_CHARGES_BURN * 10",
               "damage_operation": "add",
               "damage_stage": "outgoing",
-              "effect_kind": "adjust_damage",
-              "effect_label": "voracious_burn_bonus"
+              "effect_kind": "grant",
+              "effect_label": "voracious_burn_bonus",
+              "grant_amount": "",
+              "grant_resource": "",
+              "target_ref": ""
             }
           },
           "heroic_requirement": "",
@@ -258,7 +261,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
@@ -267,7 +270,7 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "condition_formula": "TARGET_CURRENT_HP <= 0 && AE_COUNT_VORACIOUS_ACTIVE == 0",
+              "condition_formula": "TARGET_CURRENT_HP <= 0 && TARGET_MAX_HP > 0 && AE_COUNT_VORACIOUS_ACTIVE == 0",
               "reaction_action_intent": "",
               "reaction_action_target": "",
               "reaction_damage_amount": "",
@@ -287,6 +290,7 @@
             "1": {
               "condition_formula": "",
               "reaction_effect_ref": "voracious_burn_bonus",
+              "reaction_isPassive": false,
               "reaction_passive_mode": "on",
               "reaction_source": "self",
               "reaction_source_skill": "",
@@ -1668,17 +1672,6 @@
           "action_pattern_target_focus": "by_affinity",
           "action_pattern_value_1": "40",
           "action_pattern_value_2": "100"
-        },
-        "3": {
-          "$deleted": false,
-          "action_pattern_condition": "ally_count",
-          "action_pattern_cooldown": "0",
-          "action_pattern_name": "Dead Branch",
-          "action_pattern_priority": "3",
-          "action_pattern_string": "",
-          "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "1",
-          "action_pattern_value_2": "1"
         }
       },
       "activation": "1",
@@ -1834,7 +1827,7 @@
       "icon_scale": "",
       "id": "zODzgQipiH3nsimr",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Inferex_Standard.png",
-      "init": "6",
+      "init": "10",
       "ins_base": "8",
       "ins_current": 8,
       "isAlmighty": false,

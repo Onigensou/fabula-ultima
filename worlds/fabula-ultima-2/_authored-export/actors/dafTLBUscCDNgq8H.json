@@ -10,6 +10,77 @@
   },
   "effects": [
     {
+      "_id": "bdDayp3hYqBF5nGZ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783795894759,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": null,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "bdDayp3hYqBF5nGZ",
+          "originalParentId": "dafTLBUscCDNgq8H",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.bdDayp3hYqBF5nGZ"
+        },
+        "fabula-ultima-companion": {
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "G0tvPWqwJHkdwoFQ",
+            "family": "sour",
+            "instant": {},
+            "tier": 1
+          },
+          "foodBuff": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
+      "name": "Tangy Trailside Skewer",
+      "origin": "Item.G0tvPWqwJHkdwoFQ",
+      "sort": 0,
+      "statuses": [
+        "permanent"
+      ],
+      "system": {
+        "tags": [
+          "food"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "Drm9IULS4IrA13Yd",
       "_stats": {
         "compendiumSource": null,
@@ -40,8 +111,9 @@
         },
         "fabula-ultima-companion": {
           "chargeKey": "lucky_number",
-          "charges": 7,
-          "chargesMax": 7,
+          "charges": 3,
+          "chargesMax": 12,
+          "crossScene": false,
           "directorAppliedBy": {
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
             "reactorTokenUuid": null,
@@ -49,7 +121,9 @@
             "turnsRemaining": null
           },
           "directorPermanent": true,
-          "lifetimeMode": "persistent_counter",
+          "hudResourceColor": "#ff6a00",
+          "lifetimeMode": "",
+          "luckySevenUsedScene": "isNns96tHEmlXfxi",
           "reactionConfig": {
             "effect_table": {
               "0": {
@@ -152,7 +226,9 @@
       "statuses": [
         "fud-lucky-number"
       ],
-      "system": {},
+      "system": {
+        "tags": []
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -293,7 +369,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.uaVqfnjGsSm8PFjh",
+            "reactorTokenUuid": "Scene.OzZIYbff6H0Drj8r.Token.pomflVSBXAQd6Ifd",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -314,61 +390,6 @@
       "sort": 0,
       "statuses": [
         "fud-heart-of-darkness-ready"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "WPEoRZOK1x4yTM3Q",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783752666455,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "WPEoRZOK1x4yTM3Q",
-          "originalParentId": "dafTLBUscCDNgq8H",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.WPEoRZOK1x4yTM3Q"
-        },
-        "fabula-ultima-companion": {
-          "campRestCharges": 0,
-          "curseCasterId": "dafTLBUscCDNgq8H",
-          "curseTier": "good"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/VoidPrincessPassive2.png",
-      "name": "Curse (Bad)",
-      "origin": "Actor.dafTLBUscCDNgq8H",
-      "sort": 0,
-      "statuses": [
-        "permanent"
       ],
       "system": {},
       "tint": "#ffffff",
@@ -544,7 +565,7 @@
       "name": "",
       "optalign": "top",
       "settings": {
-        "emote": "dizzy",
+        "emote": "happy",
         "textcolor": null,
         "textflyin": "typewriter",
         "textfont": null,
@@ -931,6 +952,143 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "tbtry6egID5MOcxv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "2rMxW49Y5ZoD5jiY",
+      "_stats": {
+        "compendiumSource": "Item.KtD7PgidI510dvHa",
+        "coreVersion": "12.343",
+        "createdTime": 1783795002933,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "KtD7PgidI510dvHa",
+            "itemName": "Icarus Wing",
+            "pickedOldProps": {
+              "cost": "900",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435805
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+      "name": "Icarus Wing",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 7500000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a><strong>&nbsp;</strong>damage</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "KtD7PgidI510dvHa",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "900",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Icarus Wing",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.KtD7PgidI510dvHa",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "KtD7PgidI510dvHa"
       },
       "type": "equippableItem"
     },
@@ -1893,6 +2051,66 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "TqrceDyIgoRcu6iV",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783793679116,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "system.props.damage_receiving_mod_physical",
+              "mode": 2,
+              "priority": 20,
+              "value": "4"
+            }
+          ],
+          "description": "Boost Physical damage reduction",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "TqrceDyIgoRcu6iV",
+              "originalParentId": "9GquE1k7ZaVvMLfS",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.9GquE1k7ZaVvMLfS.ActiveEffect.TqrceDyIgoRcu6iV"
+            },
+            "fabula-ultima-companion": {
+              "refinementBonus": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Shield Refinement",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.5"
@@ -1900,7 +2118,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2126.gif",
-      "name": "Shield of Rejuvenation",
+      "name": "+4 Shield of Rejuvenation",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "6DmgigM5jq76r0Gd": 3,
@@ -1984,8 +2202,8 @@
           "reaction_config_table": {},
           "recipe_dish_uuid": "",
           "recipe_kind": "",
-          "refine_count": "0",
-          "refine_level": "0",
+          "refine_count": 4,
+          "refine_level": 4,
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -2562,6 +2780,127 @@
       "type": "equippableItem"
     },
     {
+      "_id": "cISBlNfKyKWkuBkY",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783783886171,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7124.gif",
+      "name": "Ash",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A fine grey powder, all that lingers where a cinder-fae burned itself out. Still faintly warm to the touch.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "QeylCRYlLepwPTaJ",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7124.gif",
+          "ingredient_taste": "bitter",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "20",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Ash",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.QeylCRYlLepwPTaJ",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "QeylCRYlLepwPTaJ"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "EGYilCNAGvl2BldF",
       "_stats": {
         "compendiumSource": "Item.nkKJD5vo65EM887m",
@@ -2980,7 +3319,7 @@
               "key": "system.props.max_hp",
               "mode": 2,
               "priority": 20,
-              "value": "5"
+              "value": "20"
             }
           ],
           "description": "Increase Max HP",
@@ -3202,7 +3541,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2316.gif",
-      "name": "+1 Full Plate",
+      "name": "+4 Full Plate",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "6DmgigM5jq76r0Gd": 3,
@@ -3279,8 +3618,8 @@
           "name": "+1 Full Plate",
           "optional_params": {},
           "plant_ef": "100",
-          "refine_count": 1,
-          "refine_level": 1,
+          "refine_count": 4,
+          "refine_level": 4,
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -3478,6 +3817,127 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eTagzbuJWVfudChW"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "finnYeBdJmxTMVmp",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783779569283,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7124.gif",
+      "name": "Ash",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A fine grey powder, all that lingers where a cinder-fae burned itself out. Still faintly warm to the touch.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "QeylCRYlLepwPTaJ",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7124.gif",
+          "ingredient_taste": "bitter",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "20",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Ash",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.QeylCRYlLepwPTaJ",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "QeylCRYlLepwPTaJ"
       },
       "type": "equippableItem"
     },
@@ -5590,6 +6050,7 @@
           "damage_bonus": "15",
           "defense_target_type": "mdef",
           "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 20】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -5634,7 +6095,9 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "jb0jobWNa9rlKKjN",
           "ignore_hr": false,
+          "img": "icons/magic/death/hand-undead-skeleton-fire-pink.webp",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -5654,11 +6117,13 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
+          "skill_tags": "",
           "skill_target": "One creature",
           "skill_type": "Spell",
           "target_eligibility": "",
           "type_damage": "MP",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.jb0jobWNa9rlKKjN"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -7080,6 +7545,127 @@
       "type": "equippableItem"
     },
     {
+      "_id": "N2LU8xcuzqMHsLup",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783783885020,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7172.gif",
+      "name": "Animal Fang",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "oAP85eeLJCliYm2E",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7172.gif",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "100",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Animal Fang",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.oAP85eeLJCliYm2E",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "oAP85eeLJCliYm2E"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "nyEzzbUngB4BZ8Qw",
       "_stats": {
         "compendiumSource": null,
@@ -7113,47 +7699,68 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
+          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
+              "consume_self": false,
               "effect_kind": "grant",
               "effect_label": "healing_power_grant",
+              "from_resource": "",
               "grant_amount": "SL * BOND_COUNT",
+              "grant_operation": "",
               "grant_resource": "hp",
+              "grant_round": "",
               "menu_description": "",
               "menu_label": "",
-              "target_ref": "ally_action_targets"
+              "target_ref": "ally_action_targets",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "nyEzzbUngB4BZ8Qw",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_asylum.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": true,
           "isZeroPower": false,
-          "level": "1",
+          "level": "2",
           "max_level": "2",
           "name": "Healing Power",
           "on_activate_effect_ref": "",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
               "$deleted": false,
               "condition_formula": "HAS_ARCANE_WEAPON",
               "reaction_action_intent": "",
+              "reaction_action_kind": "",
               "reaction_action_target": "ally",
+              "reaction_cause_filter": "",
               "reaction_damage_amount": "",
               "reaction_damage_source": "",
               "reaction_damage_type": "",
               "reaction_debuff_count_min": "",
               "reaction_debuff_count_target": "",
               "reaction_effect_ref": "healing_power_grant",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_ownership": "",
               "reaction_passive_mode": "ask",
               "reaction_passive_target": "self",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
               "reaction_subject_kind": "",
               "reaction_trigger": "creature_completes_spell",
               "requires_skill": ""
@@ -7165,10 +7772,13 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "",
+          "skill_tags": "",
           "skill_target": "-",
           "skill_type": "Passive",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.nyEzzbUngB4BZ8Qw"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -7245,6 +7855,393 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "O7KjXoyMd4zoGh5c"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "OCQPqSoXnu62MS5q",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783790922827,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "0Iewmn519jvUEGgy",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "0Iewmn519jvUEGgy",
+              "originalParentId": "ALjvA9L7HbOEbuCS",
+              "originalUuid": "Item.ALjvA9L7HbOEbuCS.ActiveEffect.0Iewmn519jvUEGgy"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-def-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Armor DEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "0s6nmJpU7Hpq4q8C",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_magic_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_magic_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "0s6nmJpU7Hpq4q8C",
+              "originalParentId": "ALjvA9L7HbOEbuCS",
+              "originalUuid": "Item.ALjvA9L7HbOEbuCS.ActiveEffect.0s6nmJpU7Hpq4q8C"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-mdef-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+          "name": "Armor MDEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "armorDefMdefAeMassPatchBackup_v1": {
+            "createdAt": 1777705754908,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "0Iewmn519jvUEGgy",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "0s6nmJpU7Hpq4q8C",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemName": "Automaton Suit",
+            "itemUuid": "Item.ALjvA9L7HbOEbuCS",
+            "parentName": "",
+            "parentType": "World"
+          },
+          "defMdefHelperKeyPatchBackup_v1": {
+            "createdAt": 1777708464882,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "0Iewmn519jvUEGgy",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "0s6nmJpU7Hpq4q8C",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemId": "ALjvA9L7HbOEbuCS",
+            "itemName": "Automaton Suit",
+            "itemType": "armor",
+            "itemUuid": "Item.ALjvA9L7HbOEbuCS",
+            "owner": {
+              "actor": "",
+              "actorUuid": "",
+              "source": "World Item"
+            }
+          }
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "armor",
+            "fromTemplate": "5Z0gKtN5R51ebJOa",
+            "itemId": "ALjvA9L7HbOEbuCS",
+            "itemName": "Automaton Suit",
+            "pickedOldProps": {
+              "cost": "1250",
+              "def_bonus": "",
+              "defense": "11",
+              "defense_include_dex": false,
+              "initiative": "-3",
+              "magic_defense": "0",
+              "magic_defense_include_ins": true,
+              "martial": true,
+              "mdef_bonus": "+1",
+              "shield": false
+            },
+            "ts": 1769647435181
+          }
+        }
+      },
+      "folder": "cSLVeZ3TavIe40F1",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/armor.png",
+      "name": "Automaton Suit",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 700000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>You have Immunity to <strong>earth</strong> and <strong>poison</strong> damage, but Vulnerability to <strong>bolt</strong> damage</li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "ALjvA9L7HbOEbuCS",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/armor.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "11",
+          "item_baseMdef": "0",
+          "item_cost": "1250",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "+1",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "armor",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Automaton Suit",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.ALjvA9L7HbOEbuCS",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "ALjvA9L7HbOEbuCS"
       },
       "type": "equippableItem"
     },
@@ -7448,11 +8445,18 @@
           "class": "Elementalist",
           "cost": "20 MP",
           "damage_bonus": "25",
-          "defense_target_type": "def",
+          "defense_target_type": "mdef",
           "description": "<p>A pillar of ice magic envelops your foe, suddenly dropping their body temperature to a critical level. The target suffers <strong>【HR + 25】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage. </p><p>Damage dealt by this spell ignores Resistances.</p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
+          "effect_table": {},
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "pcCBP65FqbsMOF0h",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans6.png",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -7462,7 +8466,9 @@
           "level": "1",
           "max_level": "1",
           "name": "Iceberg",
+          "on_activate_effect_ref": "",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
@@ -7470,10 +8476,13 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
+          "skill_tags": "",
           "skill_target": "One creature",
           "skill_type": "Spell",
+          "target_eligibility": "",
           "type_damage": "Ice",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.pcCBP65FqbsMOF0h"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -7601,6 +8610,117 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "QjuNoo0rGl9iUWiO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "qicvF0JiQQkBupVA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783790196288,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "Ll5YDptyYjmwjuhW",
+            "itemName": "Jetpack",
+            "pickedOldProps": {
+              "cost": "800",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435832
+          }
+        }
+      },
+      "folder": "D1OgeGHLjJ9dSkxS",
+      "img": "https://cdna.artstation.com/p/assets/images/images/024/014/374/large/marko-bubalo-jetpack-novi2.jpg?1581033568",
+      "name": "Jetpack",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n    <li>\n        <p>While you have <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>you gain <strong>Swift </strong><em>(increase DEX die by one stage)</em></p>\n    </li>\n    <li>\n        <p>You may perform the skill 【💥<strong>Lift off</strong>】</p>\n    </li>\n</ul>\n<hr class=\"\">\n<details>\n    <summary><strong>💥 Lift off</strong></summary>\n    <p><strong>Cost:</strong> 1 IP</p>\n    <p><strong>Target:</strong> Self</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>You gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span></span> for 3 turns</p>\n    <p></p>\n</details>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Jetpack",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "Ll5YDptyYjmwjuhW"
       },
       "type": "equippableItem"
     },
@@ -7872,6 +8992,127 @@
       "type": "equippableItem"
     },
     {
+      "_id": "rUMhVvIctoWDowBh",
+      "_stats": {
+        "compendiumSource": "Item.oAP85eeLJCliYm2E",
+        "coreVersion": "12.343",
+        "createdTime": 1783779568281,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/4cf9a65cd38218340be2753675d98da5_1405866062245277046.webp",
+      "name": "Ember Petal",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A petal that smolders with quiet inner warmth, glowing faintly orange like a coal that refuses to fade.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "oAP85eeLJCliYm2E",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/4cf9a65cd38218340be2753675d98da5_1405866062245277046.webp",
+          "ingredient_taste": "sweet",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "55",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Ember Petal",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.oAP85eeLJCliYm2E",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "UI9WP1hyxQomHxJb"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "SAMjPDBx3kmr7zU4",
       "_stats": {
         "compendiumSource": "Item.YdYhFx1vrvod4P2Y",
@@ -8114,6 +9355,119 @@
       "type": "equippableItem"
     },
     {
+      "_id": "snNmx2IBNqTF9IAO",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783791916986,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+      "name": "Super Tonic",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 5100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>Cure all <strong>Debuff </strong>from target creature</li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Super Tonic",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "ky7HMdQIZBJxlPqx"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "sNQBVLstuZSz5EZC",
       "_stats": {
         "compendiumSource": null,
@@ -8231,6 +9585,132 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "JL9xPk3EXxh16ooY"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SzMEB4panlh7XBF6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783791759593,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7458.gif",
+      "name": "Charred Bone",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>Bone blackened and brittle from searing flame, still faintly warm and carrying the acrid scent of cinders.</em></p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "4Ew4B2v0hxhzGnpE",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7458.gif",
+          "ingredient_taste": "bitter",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "70",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Charred Bone",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.4Ew4B2v0hxhzGnpE",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "4Ew4B2v0hxhzGnpE"
       },
       "type": "equippableItem"
     },
@@ -9251,6 +10731,187 @@
       "type": "equippableItem"
     },
     {
+      "_id": "UTKq3Ydy8bawRUBi",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783784886664,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Hi-Potion_Icon_HD.webp",
+      "name": "Poison",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 1600000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span>on target creature</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "mw4wizzYTBtqsW8s",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Hi-Potion_Icon_HD.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "50",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Poison",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.mw4wizzYTBtqsW8s",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "mw4wizzYTBtqsW8s"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "UZ4SrdfJoCexQWd4",
+      "_stats": {
+        "compendiumSource": "Item.jdL4K9MGkt9tiVaN",
+        "coreVersion": "12.343",
+        "createdTime": 1783796467847,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/revelation.png",
+      "name": "Emergency Arcanum",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>As long as you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, the cost for summoning your Arcana is reduced by <strong>【SL × 5】</strong> Mind Points.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "0",
+          "max_level": "6",
+          "name": "Emergency Arcanum",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "jdL4K9MGkt9tiVaN"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "v56GvN63nvIYV4iJ",
       "_stats": {
         "compendiumSource": "Item.nf32D5apuWGo1rVV",
@@ -9961,6 +11622,212 @@
       "type": "equippableItem"
     },
     {
+      "_id": "XC42Ux911ac3auzE",
+      "_stats": {
+        "compendiumSource": "Actor.h6f2zG39e1ALpwvH.Item.uFF0quc2Mhr3xmRw",
+        "coreVersion": "12.343",
+        "createdTime": 1783796247300,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "v5fbELzWd3MrGEPb",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_check",
+              "mode": 2,
+              "priority": 20,
+              "value": "BOND_STRENGTH"
+            }
+          ],
+          "description": "<p>Bonus to next Check equal to the Spiritist's Bond strength toward this creature.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "1kYcwjLglF6tBQ9v",
+              "originalParentId": "9aOTCoRiI7e0FB04",
+              "originalUuid": "Item.9aOTCoRiI7e0FB04.ActiveEffect.1kYcwjLglF6tBQ9v"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "chargeKey": "support-magic",
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": true,
+              "lifetimeMode": "on_activation",
+              "reactionConfig": {
+                "effect_table": {},
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "",
+                    "reaction_passive_mode": "on",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_performs_check"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
+          "name": "Support Magic",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-support-magic"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
+      "name": "Support Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may choose one of those allies you have a Bond towards. That ally gains a bonus to their next Check during the current scene equal to the <strong>strength</strong> of your Bond toward them.</p>",
+          "details_roller": "Show",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Support Magic",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "support_magic_apply",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "ally_action_targets",
+              "to_resource": ""
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
+          "heroic_requirement": "",
+          "id": "uFF0quc2Mhr3xmRw",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Support Magic",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_ARCANE_WEAPON",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "ally",
+              "reaction_cause_filter": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "support_magic_apply",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_completes_spell",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_tags": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "target_eligibility": "",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.h6f2zG39e1ALpwvH.Item.uFF0quc2Mhr3xmRw"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "A2w8xO1DvldC53X6"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "xmLeuCQNdswv14Zi",
       "_stats": {
         "compendiumSource": "Item.IzAH4YAoK4vPt9MP",
@@ -10058,22 +11925,35 @@
           "class": "Elementalist",
           "cost": "10 x T MP",
           "damage_bonus": "15",
-          "defense_target_type": "def",
+          "defense_target_type": "mdef",
           "description": "<p>You coat your foes under a thick layer of frost. Each target hit by this spell suffers <strong>【HR + 15】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
               "ae_duplicate_mode": "replace_per_caster",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
               "ae_template_ref": "Slow",
               "condition_formula": "CRIT == 1",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "glacies_opportunity",
-              "target_ref": "hit_action_targets"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "yKqv5PofnFTTRRMI",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/AishaS9.png",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -10085,6 +11965,7 @@
           "name": "Glacies",
           "on_activate_effect_ref": "glacies_opportunity",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
@@ -10092,10 +11973,13 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
+          "skill_tags": "",
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
+          "target_eligibility": "",
           "type_damage": "Ice",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.yKqv5PofnFTTRRMI"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -10137,7 +12021,7 @@
               "active_effect_dice_1": "",
               "active_effect_dice_2": "",
               "active_effect_dl": "0",
-              "active_effect_id": "RaiGU66GPunSQO7j",
+              "active_effect_id": "",
               "active_effect_percent": "100",
               "active_effect_target": "enemy",
               "active_effect_trigger": "on_hit"
@@ -10153,19 +12037,29 @@
           "damage_bonus": "",
           "defense_target_type": "mdef",
           "description": "<p>You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn <em>(to a minimum of 0 actions).</em></p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
+              "consume_self": false,
               "effect_kind": "modify_turns",
               "effect_label": "stop_slow",
+              "from_resource": "",
+              "menu_label": "",
               "target_ref": "hit_action_targets",
+              "to_resource": "",
               "turns_delta": "-1",
               "turns_floor": "0"
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "z1GsqcJC8bh4TOAs",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DWTrans5.png",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -10177,6 +12071,7 @@
           "name": "Stop",
           "on_activate_effect_ref": "stop_slow",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
@@ -10184,10 +12079,13 @@
           "skill_animation_mode": "custom",
           "skill_information": "",
           "skill_range": "Range",
+          "skill_tags": "",
           "skill_target": "One creature",
           "skill_type": "Spell",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.z1GsqcJC8bh4TOAs"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -10628,8 +12526,8 @@
       "affinity_3": "NA",
       "affinity_4": "NA",
       "affinity_5": "NA",
-      "affinity_6": "NA",
-      "affinity_7": "NA",
+      "affinity_6": "AB",
+      "affinity_7": "VU",
       "affinity_8": "NA",
       "affinity_9": "NA",
       "animation_table": {},
@@ -10651,7 +12549,7 @@
       "bond_2": "Blanche",
       "bond_3": "Zarg",
       "bond_4": "Keren",
-      "bond_5": "",
+      "bond_5": "Wandering Flame",
       "bond_6": "",
       "bond_temp": "Wandering Flame",
       "bonus_defense": 0,
@@ -10706,7 +12604,7 @@
           "$deleted": false,
           "benefit": "mp",
           "class_name": "Spiritist",
-          "level": "4"
+          "level": "6"
         },
         "5": {
           "$deleted": false,
@@ -10718,7 +12616,7 @@
           "$deleted": false,
           "benefit": "mp",
           "class_name": "Arcanist",
-          "level": "1"
+          "level": "2"
         }
       },
       "clock_adoration": "0",
@@ -10852,6 +12750,14 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.Rpp0fjz62MvWXYte"
         },
+        "UTKq3Ydy8bawRUBi": {
+          "consume_description": "<ul><li><p>Inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span>on target creature</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Poison",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.UTKq3Ydy8bawRUBi"
+        },
         "YHzwC5F7KXvuaXAx": {
           "consume_description": "<ul><li><p>Target creature recovers <strong>20</strong> MP</p></li></ul>",
           "id": "${item.id}",
@@ -10980,6 +12886,14 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.skMT7xzYPFB1RTqW"
         },
+        "snNmx2IBNqTF9IAO": {
+          "consume_description": "<ul>\n<li>Cure all <strong>Debuff </strong>from target creature</li>\n</ul>",
+          "id": "${item.id}",
+          "name": "Super Tonic",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.snNmx2IBNqTF9IAO"
+        },
         "vzUZeaBv35uXZdMo": {
           "consume_description": "<ul><li><p>Give a chance to roll on <strong>Wondrous Gachapon</strong></p></li></ul>",
           "id": "${item.id}",
@@ -11024,9 +12938,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "83",
-      "current_ip": "3",
-      "current_mp": "111",
+      "current_hp": "86",
+      "current_ip": "2",
+      "current_mp": "114",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -11042,7 +12956,7 @@
       "damage_receiving_mod_ice": 0,
       "damage_receiving_mod_light": 0,
       "damage_receiving_mod_melee": 0,
-      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_physical": 4,
       "damage_receiving_mod_poison": 0,
       "damage_receiving_mod_range": 0,
       "damage_receiving_percentage_air": 0,
@@ -11080,7 +12994,7 @@
       "emotion_4_2": "mistrust",
       "emotion_4_3": "affection",
       "emotion_5_1": "",
-      "emotion_5_2": "",
+      "emotion_5_2": "mistrust",
       "emotion_5_3": "",
       "emotion_6_1": "",
       "emotion_6_2": "",
@@ -11092,11 +13006,11 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "6.12",
-      "experience": "6.12",
+      "exp_meter": "6.23",
+      "experience": "6.23",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 0,
+      "extra_damage_mod_all": 1,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
@@ -11119,7 +13033,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "5",
+      "fabula_point": "7",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -11218,7 +13132,7 @@
           "armor_description": "<p><ul><li><p><strong>+3 Damage Reduction</strong></p></li></ul></p>",
           "armor_martial": "♦️",
           "id": "${item.id}",
-          "name": "+1 Full Plate",
+          "name": "+4 Full Plate",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.EhrhSD2uc4XZ3uGD"
         },
@@ -11237,6 +13151,14 @@
           "name": "Apprentice Mage Robe",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.JF1s1lAw33VPCbMn"
+        },
+        "OCQPqSoXnu62MS5q": {
+          "armor_description": "<p><ul>\n<li>You have Immunity to <strong>earth</strong> and <strong>poison</strong> damage, but Vulnerability to <strong>bolt</strong> damage</li>\n</ul></p>",
+          "armor_martial": "♦️",
+          "id": "${item.id}",
+          "name": "Automaton Suit",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.OCQPqSoXnu62MS5q"
         },
         "OzmCdFtk7u0G1rBu": {
           "armor_description": "<p><ul><li><p><strong>+3 Damage Reduction</strong></p></li></ul></p>",
@@ -11390,6 +13312,14 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.pDEdEXPYgxoTQtkW"
         },
+        "qo96IvTv5H3wg8aF": {
+          "armor_description": "<p><ul>\n<li>When you cast the <strong>Soaring Strike</strong> spell, the MP cost is halved.</li>\n</ul></p>",
+          "armor_martial": "♦️",
+          "id": "${item.id}",
+          "name": "Valkyrie Wings",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.qo96IvTv5H3wg8aF"
+        },
         "riEv3BFzuYYd5r5Z": {
           "armor_description": "<p><ul><li><p><em>No Quality</em></p></li></ul></p>",
           "armor_martial": "",
@@ -11426,7 +13356,7 @@
       "itemContainer3": {
         "9GquE1k7ZaVvMLfS": {
           "id": "${item.id}",
-          "name": "Shield of Rejuvenation",
+          "name": "+4 Shield of Rejuvenation",
           "roll": "",
           "shield_description": "<ul><li><p>At the start of your turn, you recovers <strong>10%</strong> of your <strong>Max HP</strong></p></li></ul>",
           "shield_martial": "",
@@ -11478,6 +13408,13 @@
           "name": "Behemoth Horn",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.2iezjnMkfyt1LDRS"
+        },
+        "2rMxW49Y5ZoD5jiY": {
+          "acess_description": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a><strong>&nbsp;</strong>damage</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Icarus Wing",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY"
         },
         "3co1NkHP8lwBD0oo": {
           "acess_description": "<ul><li><p><strong>+50% Zenit Gain </strong>after conflict</p></li></ul>",
@@ -11745,6 +13682,13 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.qK30knMoMl1eqTTU"
         },
+        "qicvF0JiQQkBupVA": {
+          "acess_description": "<ul>\n    <li>\n        <p>While you have <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>you gain <strong>Swift </strong><em>(increase DEX die by one stage)</em></p>\n    </li>\n    <li>\n        <p>You may perform the skill 【💥<strong>Lift off</strong>】</p>\n    </li>\n</ul>\n<hr class=\"\">\n<details>\n    <summary><strong>💥 Lift off</strong></summary>\n    <p><strong>Cost:</strong> 1 IP</p>\n    <p><strong>Target:</strong> Self</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>You gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span></span> for 3 turns</p>\n    <p></p>\n</details>",
+          "id": "${item.id}",
+          "name": "Jetpack",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.qicvF0JiQQkBupVA"
+        },
         "sQtcQy6Wzx9BHuSb": {
           "acess_description": "<ul><li><p>+20 <strong>Max HP</strong></p></li><li>You can speak and communicate with creatures belonging to the <strong>Monster </strong>species.</li></ul>",
           "id": "${item.id}",
@@ -11840,7 +13784,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.ERBLg9oQAHRlJ8wZ"
         }
       },
-      "level": "36",
+      "level": "39",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 12,
@@ -11853,17 +13797,59 @@
       "manadrain_percentage": 0,
       "manadrain_value": 0,
       "material_list": {
+        "N2LU8xcuzqMHsLup": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
+          "name": "Animal Fang",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.N2LU8xcuzqMHsLup"
+        },
+        "QZmOHqLk8Zx9ePAk": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A fine grey powder, all that lingers where a cinder-fae burned itself out. Still faintly warm to the touch.</em></p>",
+          "name": "Ash",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.QZmOHqLk8Zx9ePAk"
+        },
+        "SzMEB4panlh7XBF6": {
+          "id": "${item.id}",
+          "key_description": "<p><em>Bone blackened and brittle from searing flame, still faintly warm and carrying the acrid scent of cinders.</em></p>",
+          "name": "Charred Bone",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.SzMEB4panlh7XBF6"
+        },
+        "cISBlNfKyKWkuBkY": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A fine grey powder, all that lingers where a cinder-fae burned itself out. Still faintly warm to the touch.</em></p>",
+          "name": "Ash",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.cISBlNfKyKWkuBkY"
+        },
+        "finnYeBdJmxTMVmp": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A fine grey powder, all that lingers where a cinder-fae burned itself out. Still faintly warm to the touch.</em></p>",
+          "name": "Ash",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.finnYeBdJmxTMVmp"
+        },
         "gRdBI4ejraL4eRnD": {
           "id": "${item.id}",
           "key_description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
           "name": "Animal Fang",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.gRdBI4ejraL4eRnD"
+        },
+        "rUMhVvIctoWDowBh": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A petal that smolders with quiet inner warmth, glowing faintly orange like a coal that refuses to fade.</em></p>",
+          "name": "Ember Petal",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.rUMhVvIctoWDowBh"
         }
       },
-      "max_hp": 83,
+      "max_hp": 86,
       "max_ip": 6,
-      "max_mp": 111,
+      "max_mp": 114,
       "memories_list": {
         "0": {
           "$deleted": false,
@@ -12303,7 +14289,7 @@
       "off_base_mod_1": "1",
       "off_base_mod_2": "0",
       "off_details": "<ul><li><p>At the start of your turn, you recovers <strong>10%</strong> of your <strong>Max HP</strong></p></li></ul>",
-      "off_hand": "Shield of Rejuvenation",
+      "off_hand": "+4 Shield of Rejuvenation",
       "off_hand_attack": "",
       "off_mod_1": 1,
       "off_mod_2": 0,
@@ -12891,6 +14877,18 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.U0TRvnt2nxWNMLys"
         },
+        "UZ4SrdfJoCexQWd4": {
+          "active_class": "Arcanist",
+          "active_cost": "",
+          "active_description": "<p>As long as you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, the cost for summoning your Arcana is reduced by <strong>【SL × 5】</strong> Mind Points.</p>",
+          "active_duration": "",
+          "active_level": 0,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Emergency Arcanum",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.UZ4SrdfJoCexQWd4"
+        },
         "V8AiiQ8vD4YIdMZY": {
           "active_class": "Darkblade",
           "active_cost": "",
@@ -12902,6 +14900,18 @@
           "name": "Painful Lesson",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.V8AiiQ8vD4YIdMZY"
+        },
+        "XC42Ux911ac3auzE": {
+          "active_class": "Spiritist",
+          "active_cost": "",
+          "active_description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may choose one of those allies you have a Bond towards. That ally gains a bonus to their next Check during the current scene equal to the <strong>strength</strong> of your Bond toward them.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Support Magic",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE"
         },
         "bILGSUlOEwzkZH6K": {
           "active_class": "",
@@ -13064,7 +15074,7 @@
           "active_cost": "",
           "active_description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
           "active_duration": "",
-          "active_level": 1,
+          "active_level": 2,
           "active_target": "-",
           "id": "${item.id}",
           "name": "Healing Power",
@@ -13241,6 +15251,18 @@
           "weapon_martial": "♦️",
           "weapon_range": "Ranged"
         },
+        "1CUTO0uSNtMDgKkQ": {
+          "id": "${item.id}",
+          "name": "RNGenerator",
+          "quantity": "",
+          "roll": "",
+          "type": "Thrown",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.1CUTO0uSNtMDgKkQ",
+          "weapon_description": "<p><ul>\n<li>When you cast the <strong>Gamble</strong> spell, if you have the <strong>Lucky Seven</strong> Skill, you can use it to replace one of the dice you have rolled. This counts as the use of <strong>Lucky Seven</strong> for the scene.</li>\n</ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_range": "Ranged"
+        },
         "1udDK6SOAD6DAF23": {
           "id": "${item.id}",
           "name": "Windpiercer",
@@ -13349,6 +15371,18 @@
           "weapon_martial": "",
           "weapon_range": "Melee"
         },
+        "55RM03AhTU0NHUdV": {
+          "id": "${item.id}",
+          "name": "Derringer",
+          "quantity": "",
+          "roll": "",
+          "type": "Firearm",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.55RM03AhTU0NHUdV",
+          "weapon_description": "<p><ul>\n<li>The first attack you perform with this weapon during each scene deals 5 extra damage.</li>\n</ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_range": "Ranged"
+        },
         "5POFjQFNrlB9yOah": {
           "id": "${item.id}",
           "name": "Morrigan",
@@ -13384,6 +15418,18 @@
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
           "weapon_range": "Ranged"
+        },
+        "5pTp7nPcgtMkNnc0": {
+          "id": "${item.id}",
+          "name": "Muscly Arm",
+          "quantity": "",
+          "roll": "",
+          "type": "Brawling",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.5pTp7nPcgtMkNnc0",
+          "weapon_description": "<p><ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Conquer</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;5 </span></strong></span></span>Inflicts<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.IBN7DtvWLFDo8jNh\" data-id=\"IBN7DtvWLFDo8jNh\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Stagger</span></strong></a></span></span> on the target</p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Conquer</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;8</span></strong></span></span> Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a></span></span> on the target</p></li><li><p>You gain +1 to all <strong>Checks</strong> that involve <strong>Intimidation</strong></p></li></ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_range": "Melee"
         },
         "720wa4E0ldJEqXG4": {
           "id": "${item.id}",
@@ -13455,6 +15501,18 @@
           "weapon_description": "<p><ul>\n<li>When you hit one or more creatures with this weapon, you may recover <strong>10</strong> Mind Points.</li>\n</ul></p>",
           "weapon_hand": "Two-handed",
           "weapon_martial": "",
+          "weapon_range": "Melee"
+        },
+        "DXJi21EVniDE1F4I": {
+          "id": "${item.id}",
+          "name": "Bandit King",
+          "quantity": "",
+          "roll": "",
+          "type": "Heavy",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.DXJi21EVniDE1F4I",
+          "weapon_description": "<p><ul><li>You may perform the skill 【💥Bandit Raid】</li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
           "weapon_range": "Melee"
         },
         "DprSxfeoAhbYoi9O": {
@@ -14177,6 +16235,18 @@
           "weapon_martial": "♦️",
           "weapon_range": "Ranged"
         },
+        "vrPlTyxq8wvyWu39": {
+          "id": "${item.id}",
+          "name": "Serpent Spear",
+          "quantity": "",
+          "roll": "",
+          "type": "Spear",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.vrPlTyxq8wvyWu39",
+          "weapon_description": "<p><ul>\n<li>Damage dealt by this weapon ignores <strong>Resistances</strong>.</li>\n</ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_range": "Melee"
+        },
         "w0WfSIFNpE4EQB5y": {
           "id": "${item.id}",
           "name": "Katana",
@@ -14315,7 +16385,7 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "Night Guidance",
-      "zenit": "5519",
+      "zenit": "9908",
       "zero_label": "Zero Power",
       "zero_power_description": "<p style=\"text-align: center\"><strong>Choose and trigger 3 oppertunity choice.</strong></p>",
       "zero_power_macro": "",

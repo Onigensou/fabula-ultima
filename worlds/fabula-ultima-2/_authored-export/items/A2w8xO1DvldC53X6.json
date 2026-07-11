@@ -114,6 +114,7 @@
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may choose one of those allies you have a Bond towards. That ally gains a bonus to their next Check during the current scene equal to the <strong>strength</strong> of your Bond toward them.</p>",
+      "details_roller": "Show",
       "duration": "",
       "effect_table": {
         "0": {
@@ -127,7 +128,9 @@
         }
       },
       "heroic_requirement": "",
+      "id": "A2w8xO1DvldC53X6",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -169,7 +172,8 @@
       "skill_target": "-",
       "skill_type": "Passive",
       "type_damage": "",
-      "use_optional_params": false
+      "use_optional_params": false,
+      "uuid": "Item.A2w8xO1DvldC53X6"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

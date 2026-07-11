@@ -11,6 +11,13 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "iconFocus": {
+        "x": 50,
+        "y": 0,
+        "zoom": 1
+      }
     }
   },
   "folder": "4gMC1IxdJlF59BSi",

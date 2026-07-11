@@ -387,58 +387,67 @@
       "type": "equippableItem"
     },
     {
-      "_id": "2na6LT4hqNFM2hhJ",
+      "_id": "0IxbfRYnSHIKvRuS",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717278397,
+        "createdTime": 1783780847182,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
         "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "weapon",
-            "fromTemplate": "gIRU9XGqYeMBwBN9",
-            "itemId": "VXGW0EAulcUnmnZd",
-            "itemName": "Serpent Spear",
-            "pickedOldProps": {
-              "cost": "800",
-              "martial": true
-            },
-            "ts": 1769647436432
-          }
+          "version": "4.8.5"
         }
       },
-      "folder": "j8Al1ueoAvP4x5QV",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
-      "name": "Serpent Spear",
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Bandit_Gloves.webp",
+      "name": "Bandit Gloves",
       "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
         "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
         "default": 3,
-        "yL2PQxh3R9ddt0te": 3
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
       },
       "sort": 0,
       "system": {
-        "container": null,
         "props": {
           "active_effect_config_table": {},
           "aquatic_ef": "100",
           "automaton_ef": "100",
           "avian_ef": "100",
           "beast_ef": "100",
-          "category": "Spear",
+          "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
-          "damage_bonus": "16",
+          "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul>\n<li>Damage dealt by this weapon ignores <strong>Resistances</strong>.</li>\n</ul>",
+          "description": "<ul><li><p>Whenever you perform the skill 【💥Soul Steal】You may perform a <strong>Free Attack </strong>on the target with a <strong>melee weapon</strong> you have equipped, Treat your <strong>HR </strong>as 0 when calculating damage dealt by this attack</p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -447,46 +456,51 @@
           "fungus_ef": "100",
           "golem_ef": "100",
           "gorger_ef": "100",
-          "hand_slots": "Two-handed",
+          "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "6vnqLdS9ER3gWiSc",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Bandit_Gloves.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
           "isKey": false,
-          "isMartial": true,
+          "isMartial": false,
           "isModule": false,
           "isRelatedItem": false,
           "isSet": false,
           "isUnique": false,
           "item_baseDef": "0",
           "item_baseMdef": "0",
-          "item_cost": "800",
+          "item_cost": "1500",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": "1",
+          "item_quantity": 1,
           "item_rarity": "Uncommon",
-          "item_type": "weapon",
+          "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Serpent Spear",
+          "name": "Bandit Gloves",
           "optional_params": {},
           "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
-          "rolled_atr2": "MIG",
-          "set_name": "",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Item.6vnqLdS9ER3gWiSc",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
-        "uniqueId": "VXGW0EAulcUnmnZd"
+        "uniqueId": "6vnqLdS9ER3gWiSc"
       },
       "type": "equippableItem"
     },
@@ -726,6 +740,97 @@
       "type": "equippableItem"
     },
     {
+      "_id": "7CAujrbQFPCpfqDX",
+      "_stats": {
+        "compendiumSource": "Item.A5Uc2KRktPiTg2h8",
+        "coreVersion": "12.343",
+        "createdTime": 1783779176167,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214329.834.png",
+      "name": "Blazing Impact",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": "w0y1ZM62oTMtAKlE",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>// ============================================================================</p><p>// ONI Custom Event Helper (emit) – minimal inline version</p><p>// This makes ONI.emit(eventName, payload) available if it isn't already.</p><p>// ============================================================================</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!ONI.emit) {</p><p>// Default: LOCAL ONLY (perfect for UI-ish things like animationStart/End)</p><p>ONI.emit = function(eventName, payload = {}, options = {}) {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, payload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload });</p><p>};</p><p>// When you REALLY want to broadcast something across all clients</p><p>// (e.g. game-state changes, global cutscene flags), use this:</p><p>ONI.emitWorld = function(eventName, payload = {}) {</p><p>Hooks.callAll(eventName, payload);</p><p>game.socket.emit(\"world\", { action: eventName, payload });</p><p>};</p><p>if (!ONI._worldRx) {</p><p>ONI._worldRx = (data) => {</p><p>if (!data?.action) return;</p><p>Hooks.callAll(data.action, data.payload);</p><p>};</p><p>game.socket.on(\"world\", ONI._worldRx);</p><p>}</p><p>console.log(\"[ONI Events] Helper installed.\");</p><p>}</p><p>/**</p><p>* JRPG Melee Attack Template – Foundry VTT v12 + Sequencer + JB2A</p><p>* (with oni:animationStart / oni:animationEnd events, and footsteps ON)</p><p>*/</p><p>// Foundry VTT v12 + Sequencer + JB2A</p><p>// Selected token runs near the targeted token, slashes with SFX, then runs back.</p><p>// Uses instant horizontal flip (doc.update + animate:false) with extra timing gaps.</p><p>// Now also shows a dummy floating damage number (9999) via Sequencer .scrollingText.</p><p>// ALSO: broadcasts oni:animationStart / oni:animationEnd via ONI.emit (LOCAL ONLY).</p><p>(async () => {</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>return ui.notifications.error(\"Sequencer module is not active.\");</p><p>}</p><p>const sourceToken = canvas.tokens.controlled[0];</p><p>const targetToken = Array.from(game.user.targets)[0];</p><p>if (!sourceToken) {</p><p>return ui.notifications.warn(\"Select a token first.\");</p><p>}</p><p>if (!targetToken) {</p><p>return ui.notifications.warn(\"Target a token first (use Foundry's targeting system).\");</p><p>}</p><p>// --- DEBUG: macro start --------------------------------------------------</p><p>console.log(</p><p>\"[ONI AttackDemo] START\",</p><p>\"source:\", sourceToken.name, `(${sourceToken.id})`,</p><p>\"target:\", targetToken.name, `(${targetToken.id})`,</p><p>\"time:\", new Date().toISOString()</p><p>);</p><p>// --- Broadcast: Animation START (LOCAL ONLY) ----------------------------</p><p>ONI.emit(\"oni:animationStart\", {</p><p>type: \"meleeAttack\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenId: targetToken.id,</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>// --- Tunables -----------------------------------------------------------</p><p>const runDuration = 500;</p><p>const gridSize = canvas.grid?.size ?? 115;</p><p>const stopOffset = gridSize * 0.8; // distance to stand from the target</p><p>const preReturnFlipDelay = 200; // ms after slash before first flip</p><p>const flipBackDelay = 500; // ms after arriving home before flipping back</p><p>const hitSound = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/HitSlashM.wav\";</p><p>const footstepSound = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_FootStepNormal_1.ogg\";</p><p>const jb2aFile = \"modules/JB2A_DnD5e/Library/Generic/Weapon_Attacks/Melee/Group02/TrailAttack02_01_02_Regular_OrangeRed_800x600.webm\";</p><p>// --- Helper: play looped footsteps for a certain duration ---------------</p><p>function playFootsteps(durationMs) {</p><p>const interval = 120; // time between steps (ms)</p><p>const maxSteps = Math.ceil(durationMs / interval);</p><p>let count = 0;</p><p>const timer = setInterval(() => {</p><p>if (count >= maxSteps) {</p><p>clearInterval(timer);</p><p>return;</p><p>}</p><p>AudioHelper.play(</p><p>{</p><p>src: footstepSound,</p><p>volume: 0.7,</p><p>autoplay: true,</p><p>loop: false</p><p>},</p><p>true // broadcast to all connected users</p><p>);</p><p>count++;</p><p>}, interval);</p><p>}</p><p>// --- Helper: instant horizontal flip using your document method ---------</p><p>async function flipTokenInstant(token) {</p><p>const doc = token.document;</p><p>const tex = doc.texture ?? {};</p><p>const currentScaleX = (typeof tex.scaleX === \"number\") ? tex.scaleX : 1;</p><p>const targetScaleX = -currentScaleX;</p><p>await doc.update(</p><p>{ \"texture.scaleX\": targetScaleX },</p><p>{ animate: false } // no tween; instant flip</p><p>);</p><p>}</p><p>// Remember original position (top-left doc coords so Sequencer can bring us back)</p><p>const originalPos = {</p><p>x: sourceToken.document.x,</p><p>y: sourceToken.document.y</p><p>};</p><p>const sourceCenter = sourceToken.center;</p><p>const targetCenter = targetToken.center;</p><p>// Decide which side to stand on: left or right of the target</p><p>const attackerIsLeft = sourceCenter.x < targetCenter.x;</p><p>const attackPos = {</p><p>x: targetCenter.x + (attackerIsLeft ? -stopOffset : stopOffset),</p><p>y: targetCenter.y</p><p>};</p><p>// --- DEBUG: before main Sequence ----------------------------------------</p><p>console.log(</p><p>\"[ONI AttackDemo] Playing main Sequence\",</p><p>\"JB2A file:\", jb2aFile,</p><p>\"runDuration:\", runDuration,</p><p>\"attackPos:\", attackPos,</p><p>\"time:\", new Date().toISOString()</p><p>);</p><p>// --- 1) Run forward + attack (with footsteps) ---------------------------</p><p>playFootsteps(runDuration);</p><p>await new Sequence()</p><p>// Run up to a position BESIDE the target (no rotation)</p><p>.animation()</p><p>.on(sourceToken)</p><p>.moveTowards(attackPos)</p><p>.duration(runDuration)</p><p>.snapToGrid()</p><p>.waitUntilFinished()</p><p>// Play hit SFX around the time of impact</p><p>.sound()</p><p>.file(hitSound)</p><p>.delay(500)</p><p>.volume(1)</p><p>// Dummy damage number \"9999\" using Sequencer's scrollingText</p><p>.scrollingText()</p><p>.delay(650)</p><p>.atLocation(targetToken, { randomOffset: false })</p><p>.text(\"9999\", {</p><p>fill: \"#FFFFFF\",</p><p>fontSize: 40,</p><p>fontWeight: \"bold\",</p><p>lineJoin: \"round\",</p><p>strokeThickness: 4,</p><p>stroke: \"#000000\"</p><p>})</p><p>.duration(1000)</p><p>// Slash effect on the target</p><p>.effect()</p><p>.file(jb2aFile)</p><p>.atLocation(targetToken)</p><p>.scale(0.5)</p><p>.rotate(90)</p><p>.waitUntilFinished()</p><p>.play();</p><p>// --- DEBUG: after main Sequence completes -------------------------------</p><p>console.log(</p><p>\"[ONI AttackDemo] Main Sequence complete for\",</p><p>sourceToken.name, \"->\", targetToken.name,</p><p>\"time:\", new Date().toISOString()</p><p>);</p><p>// --- 1.5) Small pause after the attack before flipping to \"run back\" ----</p><p>if (preReturnFlipDelay > 0) {</p><p>await new Promise(resolve => setTimeout(resolve, preReturnFlipDelay));</p><p>}</p><p>// --- 2) Instant flip BEFORE running back --------------------------------</p><p>await flipTokenInstant(sourceToken);</p><p>// --- 3) Run back (with footsteps) ---------------------------------------</p><p>playFootsteps(runDuration);</p><p>await new Sequence()</p><p>.animation()</p><p>.on(sourceToken)</p><p>.moveTowards(originalPos)</p><p>.duration(runDuration)</p><p>.snapToGrid()</p><p>.play();</p><p>// --- DEBUG: after return Sequence completes -----------------------------</p><p>console.log(</p><p>\"[ONI AttackDemo] Return Sequence complete for\",</p><p>sourceToken.name,</p><p>\"time:\", new Date().toISOString()</p><p>);</p><p>// --- 3.5) Pause on home tile before flipping back to idle facing --------</p><p>if (flipBackDelay > 0) {</p><p>await new Promise(resolve => setTimeout(resolve, flipBackDelay));</p><p>}</p><p>// --- 4) Instant flip again to restore original facing -------------------</p><p>await flipTokenInstant(sourceToken);</p><p>// --- Broadcast: Animation END (LOCAL ONLY) ------------------------------</p><p>ONI.emit(\"oni:animationEnd\", {</p><p>type: \"meleeAttack\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenId: targetToken.id,</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>// --- DEBUG: macro end ----------------------------------------------------</p><p>console.log(</p><p>\"[ONI AttackDemo] END\",</p><p>\"source:\", sourceToken.name,</p><p>\"time:\", new Date().toISOString()</p><p>);</p><p>})();</p>",
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "20 MP",
+          "damage_bonus": "30",
+          "defense_target_type": "def",
+          "description": "<p>You perform a fiery slash that cleave the enemy, Deals <strong>【HR + 30】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage. 50% chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Blazing Impact",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "fire",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "ZIjJBbllFdgcVjk2"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "AcMJCQfYI0ZH76h6",
       "_stats": {
         "compendiumSource": null,
@@ -924,6 +1029,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -941,9 +1047,12 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "AHy1tE6vcMJBxBlN",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion4.png",
           "insect_ef": "100",
           "ip_cost": "6",
           "isEquipped": false,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -955,7 +1064,7 @@
           "item_cost": "100",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": "1",
+          "item_quantity": "2",
           "item_rarity": "Common",
           "item_skill_active": {
             "Vt0MPszloAOQXcus": {
@@ -985,6 +1094,143 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
+          "skill_tags": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.AHy1tE6vcMJBxBlN",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "kMbhsJ2cDIFndrKy"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BudKDkoE0hpl94Eb",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783794272519,
+        "duplicateSource": "Item.QvUsAoeaebjrKAHi",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "QvUsAoeaebjrKAHi",
+            "itemName": "Amethyst Pendant",
+            "pickedOldProps": {
+              "cost": "350",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435106
+          }
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
+      "name": "Ring of the Pupil",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3450000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>As long as you have at least two <strong>Bonds of admiration</strong>, you gain a +1 bonus to both your <strong>Defense</strong> and <strong>Magic Defense</strong>.</li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>Worn by devoted students, this ring shines brightest in the presence of cherished ideals.</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Ring of the Pupil",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
@@ -995,7 +1241,568 @@
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
-        "uniqueId": "kMbhsJ2cDIFndrKy"
+        "uniqueId": "KoC4PHdQrp7r4rM9"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "C0dAFeczpsVl7LDZ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783792979932,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/604.gif",
+      "name": "Dead Branch",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Summon a <strong>random monster </strong>to the scene, this monster follows the <strong>companion rules </strong>and disappear at the end of the scene</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>A twig which contains the mysterious power of eternity. It can summon a living creature.</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "C0dAFeczpsVl7LDZ",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/604.gif",
+          "insect_ef": "100",
+          "ip_cost": "5",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Dead Branch",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.C0dAFeczpsVl7LDZ",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "1cajyF04dx07aGEU"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CIDgy97DxATGEzoS",
+      "_stats": {
+        "compendiumSource": "Item.79TTBHuBvD7ysgZQ",
+        "coreVersion": "12.343",
+        "createdTime": 1783794276702,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "AhnaJYsMj5fSrvqB",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "AhnaJYsMj5fSrvqB",
+              "originalParentId": "79TTBHuBvD7ysgZQ",
+              "originalUuid": "Item.79TTBHuBvD7ysgZQ.ActiveEffect.AhnaJYsMj5fSrvqB"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-def-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Armor DEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "jIABnsa0Azilk9Mr",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_magic_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_magic_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "jIABnsa0Azilk9Mr",
+              "originalParentId": "79TTBHuBvD7ysgZQ",
+              "originalUuid": "Item.79TTBHuBvD7ysgZQ.ActiveEffect.jIABnsa0Azilk9Mr"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-mdef-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+          "name": "Armor MDEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "LkGnSh7BDdISOS73",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "system.props.max_hp",
+              "mode": 2,
+              "priority": 20,
+              "value": "20"
+            }
+          ],
+          "description": "Increase Max HP",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "LkGnSh7BDdISOS73",
+              "originalParentId": "496ucagjQZ6jaTQ3",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.496ucagjQZ6jaTQ3.ActiveEffect.LkGnSh7BDdISOS73"
+            },
+            "fabula-ultima-companion": {
+              "refinementBonus": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Armor Refinement",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "armorDefMdefAeMassPatchBackup_v1": {
+            "createdAt": 1777705757124,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "AhnaJYsMj5fSrvqB",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "jIABnsa0Azilk9Mr",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemName": "Ardent Yoroi",
+            "itemUuid": "Actor.uJFaNQCSvwwsr2AW.Item.kW12WGgIOK3KzsRi",
+            "parentName": "Blanche",
+            "parentType": "Actor"
+          },
+          "defMdefHelperKeyPatchBackup_v1": {
+            "createdAt": 1777708467042,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "AhnaJYsMj5fSrvqB",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "jIABnsa0Azilk9Mr",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemId": "kW12WGgIOK3KzsRi",
+            "itemName": "Ardent Yoroi",
+            "itemType": "armor",
+            "itemUuid": "Actor.uJFaNQCSvwwsr2AW.Item.kW12WGgIOK3KzsRi",
+            "owner": {
+              "actor": "Blanche",
+              "actorUuid": "Actor.uJFaNQCSvwwsr2AW",
+              "source": "Actor-owned Item"
+            }
+          }
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "armor",
+            "fromTemplate": "5Z0gKtN5R51ebJOa",
+            "itemId": "79TTBHuBvD7ysgZQ",
+            "itemName": "Ardent Yoroi",
+            "pickedOldProps": {
+              "cost": "1300",
+              "def_bonus": "",
+              "defense": "12",
+              "defense_include_dex": false,
+              "initiative": "-4",
+              "magic_defense": "0",
+              "magic_defense_include_ins": true,
+              "martial": true,
+              "mdef_bonus": "",
+              "shield": false
+            },
+            "ts": 1769647435130
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/brom.png",
+      "name": "+4 Ardent Yoroi",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 500000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>You gain a +1 bonus to your <strong>Accuracy Checks</strong>.</li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "12",
+          "item_baseMdef": "0",
+          "item_cost": "1300",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "armor",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "+4 Ardent Yoroi",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": 4,
+          "refine_level": 4,
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_tags": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "79TTBHuBvD7ysgZQ"
       },
       "type": "equippableItem"
     },
@@ -1087,6 +1894,339 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "y61V2VLRAwlVDgcM"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ctdc7Idc9ZtFfwsz",
+      "_stats": {
+        "compendiumSource": "Item.qyvHeUWIvWGFSiEg",
+        "coreVersion": "12.343",
+        "createdTime": 1783794275695,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "FMOnTdIPYra9QIAB",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (item_def_bonus * 1) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "83eTxDPjJ8Hh9IfC",
+              "originalParentId": "0gIBYzSpjdXS6f25",
+              "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "def-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "DEF UP",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "VrfSdv1SO6efqIAE",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "system.props.damage_receiving_mod_physical",
+              "mode": 2,
+              "priority": 20,
+              "value": "5"
+            }
+          ],
+          "description": "Boost Physical damage reduction",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "VrfSdv1SO6efqIAE",
+              "originalParentId": "cXbX8RdGLCiQ5V1d",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.cXbX8RdGLCiQ5V1d.ActiveEffect.VrfSdv1SO6efqIAE"
+            },
+            "fabula-ultima-companion": {
+              "refinementBonus": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Shield Refinement",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "z77kNS51NeuKpNYx",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_magic_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (item_mdef_bonus * 1) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "83eTxDPjJ8Hh9IfC",
+              "originalParentId": "0gIBYzSpjdXS6f25",
+              "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-mdef-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+          "name": "MDEF UP",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "defUpMdefUpHelperKeyPatchBackup_v1": {
+            "createdAt": 1777708858409,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 3,
+                    "value": "${isEquipped ? item_def_bonus : 0}$"
+                  }
+                ],
+                "id": "FMOnTdIPYra9QIAB",
+                "name": "DEF UP"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? item_mdef_bonus : 0}$"
+                  }
+                ],
+                "id": "z77kNS51NeuKpNYx",
+                "name": "MDEF UP"
+              }
+            ],
+            "itemId": "cXbX8RdGLCiQ5V1d",
+            "itemName": "Runic Shield",
+            "itemType": "shield",
+            "itemUuid": "Actor.uJFaNQCSvwwsr2AW.Item.cXbX8RdGLCiQ5V1d",
+            "owner": {
+              "actor": "Blanche",
+              "actorUuid": "Actor.uJFaNQCSvwwsr2AW",
+              "source": "Actor-owned Item"
+            }
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mirror%20Shield.gif",
+      "name": "+5 Runic Shield",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "nSGZ1sz1rdKao0kz": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "2",
+          "item_mdef_bonus": "2",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "shield",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "+5 Runic Shield",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": 12,
+          "refine_level": 5,
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_description": "<p><strong>【Set Bonus】</strong></p>",
+          "set_name": "",
+          "skill_tags": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "qyvHeUWIvWGFSiEg"
       },
       "type": "equippableItem"
     },
@@ -1411,230 +2551,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "lBseodHWvi4UfGnw"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "EkHqkqyjuMSPAxq1",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783717278397,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.4.2"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "accessory",
-            "fromTemplate": "r0yZpLPAK9VXhM2p",
-            "itemId": "Ll5YDptyYjmwjuhW",
-            "itemName": "Jetpack",
-            "pickedOldProps": {
-              "cost": "800",
-              "def_bonus": "",
-              "defense": "0",
-              "defense_include_dex": false,
-              "initiative": "0",
-              "magic_defense": "0",
-              "magic_defense_include_ins": false,
-              "mdef_bonus": ""
-            },
-            "ts": 1769647435832
-          }
-        }
-      },
-      "folder": "D1OgeGHLjJ9dSkxS",
-      "img": "https://cdna.artstation.com/p/assets/images/images/024/014/374/large/marko-bubalo-jetpack-novi2.jpg?1581033568",
-      "name": "Jetpack",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul>\n    <li>\n        <p>While you have <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>you gain <strong>Swift </strong><em>(increase DEX die by one stage)</em></p>\n    </li>\n    <li>\n        <p>You may perform the skill 【💥<strong>Lift off</strong>】</p>\n    </li>\n</ul>\n<hr class=\"\">\n<details>\n    <summary><strong>💥 Lift off</strong></summary>\n    <p><strong>Cost:</strong> 1 IP</p>\n    <p><strong>Target:</strong> Self</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>You gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span></span> for 3 turns</p>\n    <p></p>\n</details>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "800",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Common",
-          "item_type": "accessory",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Jetpack",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "Ll5YDptyYjmwjuhW"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "EPXbIUDimhOhWAiU",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783717278397,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "5uQIy5BCy7UEVfcT",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Apple%20o%20Archer.gif",
-      "name": "Apple o' Archer",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 1000000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>Gain +3 to your Accuracy check</p></li><li><p>The first <strong>Range Attack on each round </strong>against your party must target you.</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>This apply is used by Archer as a test of courage to proof their accuracy</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "2800",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Rare",
-          "item_type": "accessory",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Apple o' Archer",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "dhGCKitpetFxtw3o"
       },
       "type": "equippableItem"
     },
@@ -2723,6 +3639,7 @@
           "beast_ef": "100",
           "category": "Flail",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "10",
@@ -2742,6 +3659,8 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "iWLAwSkmTqf8Zro9",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -2759,7 +3678,7 @@
           "item_cost": "2500",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": 1,
+          "item_quantity": "1",
           "item_rarity": "Uncommon",
           "item_skill_passive": {
             "MGaEsHxCdiE9FlIa": {
@@ -2814,6 +3733,7 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.iWLAwSkmTqf8Zro9",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3384,6 +4304,139 @@
       "type": "equippableItem"
     },
     {
+      "_id": "mf5Cc0hGzVW9yyrT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783781029372,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "9BKhWjQctWsHbrie",
+            "itemName": "Winter Kolossus",
+            "pickedOldProps": {
+              "cost": "2550",
+              "martial": true
+            },
+            "ts": 1769647436773
+          }
+        }
+      },
+      "folder": "9DMIQGfw5u0sBo5Q",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "name": "Winter Kolossus",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 2000000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Heavy",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "18",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>You gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong></li><li><p>You have <strong>immunity</strong> to <strong>@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia}&nbsp;</strong></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "9BKhWjQctWsHbrie",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2550",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Winter Kolossus",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Ice",
+          "undead_ef": "100",
+          "uuid": "Item.9BKhWjQctWsHbrie",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "9BKhWjQctWsHbrie"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "MGaEsHxCdiE9FlIa",
       "_stats": {
         "compendiumSource": null,
@@ -3779,6 +4832,154 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "dQq1DsQ1nkurbQlG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "P4rafgBSVz3IuBL7",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783793998808,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "Cs8gFyp1GuBJqvO9",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "can_target_flying_with",
+              "mode": 5,
+              "priority": 20,
+              "value": ""
+            }
+          ],
+          "description": "<p><em>Jumping Boots:</em> while equipped, you may target Flying creatures as though they do not have Flying.</p>",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Cs8gFyp1GuBJqvO9",
+              "originalParentId": "egnjUSks1QXUeorA",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.egnjUSks1QXUeorA.ActiveEffect.Cs8gFyp1GuBJqvO9"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/boot.png",
+          "name": "Jumping Boots",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/boot.png",
+      "name": "Jumping Boots",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "iLeUVmwqnze8ulOI": 3
+      },
+      "sort": 7800000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>You may target <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Flying</strong></a><strong>&nbsp;</strong>creatures as though they do not have <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Flying</strong></a></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "400",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Jumping Boots",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "yOJKXAQJq4R2mzCa"
       },
       "type": "equippableItem"
     },
@@ -4253,110 +5454,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "g0S7SNOw5EJcJd1T"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "PVtCRQHVnat83dFp",
-      "_stats": {
-        "compendiumSource": "Actor.gdJZ1L1kv5mjTTMr.Item.BCi3qBRNrg0GWQf6",
-        "coreVersion": "12.343",
-        "createdTime": 1783717278397,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "weapon",
-            "fromTemplate": "gIRU9XGqYeMBwBN9",
-            "itemId": "1wIUPlab2ewtnYe1",
-            "itemName": "Derringer",
-            "pickedOldProps": {
-              "cost": "800",
-              "martial": false
-            },
-            "ts": 1769647435482
-          }
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
-      "name": "Derringer",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "yL2PQxh3R9ddt0te": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Firearm",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "8",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul>\n<li>The first attack you perform with this weapon during each scene deals 5 extra damage.</li>\n</ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "800",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Common",
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Derringer",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "INS",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Ranged"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "1wIUPlab2ewtnYe1"
       },
       "type": "equippableItem"
     },
@@ -5571,6 +6668,141 @@
       "type": "equippableItem"
     },
     {
+      "_id": "vu3nuZReY0Bx2r5c",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783794273469,
+        "duplicateSource": "Item.QvUsAoeaebjrKAHi",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "QvUsAoeaebjrKAHi",
+            "itemName": "Amethyst Pendant",
+            "pickedOldProps": {
+              "cost": "350",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435106
+          }
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
+      "name": "Ring of the Pupil",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3450000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>As long as you have at least two <strong>Bonds of admiration</strong>, you gain a +1 bonus to both your <strong>Defense</strong> and <strong>Magic Defense</strong>.</li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>Worn by devoted students, this ring shines brightest in the presence of cherished ideals.</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Ring of the Pupil",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "KoC4PHdQrp7r4rM9"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "VuEqfVKZJ3rU1ce9",
       "_stats": {
         "compendiumSource": null,
@@ -5706,6 +6938,168 @@
       "type": "equippableItem"
     },
     {
+      "_id": "w0y1ZM62oTMtAKlE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783779175453,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "6FDc9xRcZzb5kyfK",
+            "itemName": "Blazing Sword",
+            "pickedOldProps": {
+              "cost": "2000",
+              "martial": false
+            },
+            "ts": 1769647435308
+          }
+        }
+      },
+      "folder": "xMVY94FXuACmcFkd",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Eiyuu%20Senki/029%253F%253F%253F%253F%253F%253F%253F.webp",
+      "name": "Blazing Sword",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Sword",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "15",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>When you <strong>hit </strong>a target with this weapon, if they are inflicted with <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>you may have it recovers from burn, if you do, this attack deal <strong>5 bonus damage</strong> and deal damage to creatures <strong>adjacent </strong>to the target. <em>(No additional attack roll needed)</em></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.A5Uc2KRktPiTg2h8]{Blazing Impact}</strong>】</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "w0y1ZM62oTMtAKlE",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Eiyuu%20Senki/029%253F%253F%253F%253F%253F%253F%253F.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": true,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_skill_active": {
+            "1Tk0vLOTMCsA532t": {
+              "id": "${item.id}",
+              "name": "Heal",
+              "skill_cost": "10 x T MP",
+              "skill_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.1Tk0vLOTMCsA532t"
+            },
+            "7CAujrbQFPCpfqDX": {
+              "id": "${item.id}",
+              "name": "Blazing Impact",
+              "skill_cost": "20 MP",
+              "skill_description": "<p>You perform a fiery slash that cleave the enemy, Deals <strong>【HR + 30】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage. 50% chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.7CAujrbQFPCpfqDX"
+            },
+            "ZIjJBbllFdgcVjk2": {
+              "id": "${item.id}",
+              "name": "Blazing Impact",
+              "skill_cost": "20 MP",
+              "skill_description": "<p>You perform a fiery slash that cleave the enemy, Deals <strong>【HR + 30】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage. 50% chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.ZIjJBbllFdgcVjk2"
+            }
+          },
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Blazing Sword",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "1Tk0vLOTMCsA532t": {
+              "id": "${item.id}",
+              "name": "Heal",
+              "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
+              "uuid": "Item.1Tk0vLOTMCsA532t"
+            },
+            "7CAujrbQFPCpfqDX": {
+              "id": "${item.id}",
+              "name": "Blazing Impact",
+              "related_item_description": "<p>You perform a fiery slash that cleave the enemy, Deals <strong>【HR + 30】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage. 50% chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.7CAujrbQFPCpfqDX"
+            },
+            "ZIjJBbllFdgcVjk2": {
+              "id": "${item.id}",
+              "name": "Blazing Impact",
+              "related_item_description": "<p>You perform a fiery slash that cleave the enemy, Deals <strong>【HR + 30】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage. 50% chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+              "uuid": "Item.ZIjJBbllFdgcVjk2"
+            },
+            "tI54hsy4b1v1HRcz": {
+              "id": "${item.id}",
+              "name": "Heal",
+              "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
+              "uuid": "Item.tI54hsy4b1v1HRcz"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Fire",
+          "undead_ef": "100",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.w0y1ZM62oTMtAKlE",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "6FDc9xRcZzb5kyfK"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "wCSJTNqVjW9ZweJk",
       "_stats": {
         "compendiumSource": null,
@@ -5824,165 +7218,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "37zrTkcEtdrwiIIF"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "xCskLjO3pJWiKp5f",
-      "_stats": {
-        "compendiumSource": "Item.clx7re0RW1nsaQN0",
-        "coreVersion": "12.343",
-        "createdTime": 1783717278397,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Axe/Icon-Viking_Axe.webp",
-      "name": "Bandit King",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Heavy",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "12",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li>You may perform the skill 【💥Bandit Raid】</li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "Two-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isIngredient": false,
-          "isKey": false,
-          "isMartial": true,
-          "isModule": false,
-          "isRelatedItem": true,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "3000",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Rare",
-          "item_skill_active": {
-            "7JG1Y8yyAdtlNm8P": {
-              "id": "${item.id}",
-              "name": "Bandit Raid",
-              "skill_cost": "2 IP",
-              "skill_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.vBUBQbu92bWBozgN\" data-id=\"vBUBQbu92bWBozgN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Blitz</span></strong></a></span></span></p></li></ul><p>Deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage base on the <strong>【Different between your IP and the target x 10】</strong></p>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.7JG1Y8yyAdtlNm8P"
-            },
-            "IrrLEuFEb0aJyYz6": {
-              "id": "${item.id}",
-              "name": "Bandit Raid",
-              "skill_cost": "3 IP",
-              "skill_description": "<p>Deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage base on the <strong>【Different between your IP and the target x 10】, </strong>When you reduce a target to <strong>0 HP</strong> with this skill, Gain <strong>2 IP</strong></p>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.Uegl7JU70tCX7mBs"
-            },
-            "hrR1sDfjvYTZmrZ3": {
-              "id": "${item.id}",
-              "name": "Bandit Raid",
-              "skill_cost": "3 IP",
-              "skill_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.vBUBQbu92bWBozgN\" data-id=\"vBUBQbu92bWBozgN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Blitz</span></strong></a></span></span></p></li></ul><p>Deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage base on the <strong>【Different between your IP and the target x 10】, </strong>When you reduce a target to <strong>0 HP</strong> with this skill, Gain <strong>2 IP</strong></p>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.hrR1sDfjvYTZmrZ3"
-            }
-          },
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Bandit King",
-          "optional_params": {},
-          "plant_ef": "100",
-          "related_item_list": {
-            "7JG1Y8yyAdtlNm8P": {
-              "id": "${item.id}",
-              "name": "Bandit Raid",
-              "related_item_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.vBUBQbu92bWBozgN\" data-id=\"vBUBQbu92bWBozgN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Blitz</span></strong></a></span></span></p></li></ul><p>Deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage base on the <strong>【Different between your IP and the target x 10】</strong></p>",
-              "uuid": "Item.7JG1Y8yyAdtlNm8P"
-            },
-            "IrrLEuFEb0aJyYz6": {
-              "id": "${item.id}",
-              "name": "Bandit Raid",
-              "related_item_description": "<p>Deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage base on the <strong>【Different between your IP and the target x 10】, </strong>When you reduce a target to <strong>0 HP</strong> with this skill, Gain <strong>2 IP</strong></p>",
-              "uuid": "Item.Uegl7JU70tCX7mBs"
-            },
-            "hrR1sDfjvYTZmrZ3": {
-              "id": "${item.id}",
-              "name": "Bandit Raid",
-              "related_item_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.vBUBQbu92bWBozgN\" data-id=\"vBUBQbu92bWBozgN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Blitz</span></strong></a></span></span></p></li></ul><p>Deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage base on the <strong>【Different between your IP and the target x 10】, </strong>When you reduce a target to <strong>0 HP</strong> with this skill, Gain <strong>2 IP</strong></p>",
-              "uuid": "Item.hrR1sDfjvYTZmrZ3"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "MIG",
-          "rolled_atr2": "MIG",
-          "set_name": "<Set Name>",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "clx7re0RW1nsaQN0"
       },
       "type": "equippableItem"
     },
@@ -6148,6 +7383,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -6166,6 +7402,8 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "ZbLoXQrkbqZIJkzr",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1916.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -6217,10 +7455,12 @@
           "rolled_atr1": "WLP",
           "rolled_atr2": "INS",
           "set_name": "<Set Name>",
+          "skill_tags": "",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Bolt",
           "undead_ef": "100",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ZbLoXQrkbqZIJkzr",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -6481,429 +7721,84 @@
       "away_name_3": "",
       "away_name_4": "",
       "battle_bgm": "Fabula Battle Theme",
-      "battle_log": "[\n  {\n    \"ts\": \"2026-07-11T01:57:21.195Z\",\n    \"accuracy\": \"23\",\n    \"dealer\": {\n      \"name\": \"O'zealot\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Physical\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 43,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 111,\n        \"to\": 68\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"O'zealot deals 43 Physical damage to BD Test — Ace of Cards [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T01:58:15.977Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Shatter\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 68,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 68,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Shatter deals 68 Null damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T02:24:12.894Z\",\n    \"accuracy\": \"19\",\n    \"dealer\": {\n      \"name\": \"O'zealot\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Physical\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 40,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 111,\n        \"to\": 71\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"O'zealot deals 40 Physical damage to BD Test — Ace of Cards [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T02:24:38.067Z\",\n    \"accuracy\": \"14\",\n    \"dealer\": {\n      \"name\": \"O'zealot\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Physical\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 39,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 71,\n        \"to\": 32\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"O'zealot deals 39 Physical damage to BD Test — Ace of Cards [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T02:25:25.051Z\",\n    \"accuracy\": \"14\",\n    \"dealer\": {\n      \"name\": \"O'lmek\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 23,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 111,\n        \"to\": 88\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"O'lmek deals 23 Null damage to BD Test — Ace of Cards [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T02:25:32.983Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"O'zealot\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 88,\n        \"to\": 63\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"O'zealot deals 25 Null damage to BD Test — Ace of Cards [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T02:25:35.856Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"O'lmek\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 63,\n        \"to\": 51\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"O'lmek deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T02:25:56.749Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"O'lmek\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 46,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 111,\n        \"to\": 65\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"O'lmek deals 46 Null damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T02:35:35.815Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Shatter\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 111,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 111,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Shatter deals 111 Null damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T04:56:45.880Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 4,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 61\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 4 Fire damage to Salamander [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T04:57:14.583Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 16,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 61,\n        \"to\": 45\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 16 Fire damage to Salamander [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T04:57:33.060Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 4,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 45,\n        \"to\": 41\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 4 Fire damage to Salamander [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T04:57:38.774Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 111,\n        \"to\": 99\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T04:57:56.850Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 4,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 41,\n        \"to\": 37\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 4 Fire damage to Salamander [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T04:58:09.467Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 99,\n        \"to\": 87\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T04:58:26.473Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 61,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 87,\n        \"to\": 26\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 61 Fire damage to BD Test — Ace of Cards [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T04:58:29.425Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 4,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 37,\n        \"to\": 33\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 4 Fire damage to Salamander [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T04:59:33.448Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 4,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 33,\n        \"to\": 29\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 4 Fire damage to Salamander [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T04:59:39.980Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 26,\n        \"to\": 14\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T05:15:54.690Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 14,\n        \"to\": 2\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T05:30:03.492Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Funeral Pyre\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 99999,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Funeral Pyre deals 99999 Null damage to Pyrefly [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T05:30:04.099Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 133,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 111,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 133 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T05:30:04.225Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 42,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 29,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 42 Fire damage to Salamander [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-11T05:34:34.716Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 111,\n        \"to\": 99\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T05:34:41.184Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 99,\n        \"to\": 87\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T05:34:52.566Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 87,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 12 Fire damage to BD Test — Ace of Cards [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T05:35:10.156Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Funeral Pyre\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 99999,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Funeral Pyre deals 99999 Null damage to Pyrefly [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T05:35:10.714Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Ace of Cards\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 78,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Pyrefly deals 78 Fire damage to BD Test — Ace of Cards [Resisted]\"\n  }\n]",
-      "battle_log_table": [
-        {
+      "battle_log": "[\n  {\n    \"ts\": \"2026-07-11T17:46:35.847Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"poison\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 58,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 7\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 58 Poison damage to Dryad [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:46:35.999Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"poison\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 58,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 7\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 58 Poison damage to Dryad [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:48:57.686Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 7,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 27 Null damage to Dryad [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:48:57.945Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 7,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 27 Null damage to Dryad [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:49:37.185Z\",\n    \"accuracy\": \"16\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 44,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 44 Ice damage to Pyrefly [Vulnerable]\"\n  }\n]",
+      "battle_log_table": {
+        "0": {
           "$deleted": false,
-          "accuracy": "23",
-          "affinity": "Resisted",
+          "accuracy": "17",
+          "affinity": "Vulnerable",
           "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "O'zealot",
-          "damage_type": "Physical",
+          "attack_target": "Dryad",
+          "attacker": "Zarg",
+          "damage_type": "Poison",
           "efficiency": "100%",
-          "range": "None",
-          "source_type": "Skill",
-          "value": "43",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Shatter",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "68",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "19",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "O'zealot",
-          "damage_type": "Physical",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Skill",
-          "value": "40",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "14",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "O'zealot",
-          "damage_type": "Physical",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Skill",
-          "value": "39",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "14",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "O'lmek",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "Range",
+          "range": "Ranged",
           "source_type": "Attack",
-          "value": "23",
+          "value": "58",
           "value_type": "HP",
-          "weapon_type": "—"
+          "weapon_type": "Bow"
         },
-        {
+        "1": {
           "$deleted": false,
-          "accuracy": "13",
-          "affinity": "Resisted",
+          "accuracy": "17",
+          "affinity": "Vulnerable",
           "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "O'zealot",
-          "damage_type": "Elementless",
+          "attack_target": "Dryad",
+          "attacker": "Zarg",
+          "damage_type": "Poison",
           "efficiency": "100%",
-          "range": "Melee",
+          "range": "Ranged",
           "source_type": "Attack",
-          "value": "25",
+          "value": "58",
           "value_type": "HP",
-          "weapon_type": "—"
+          "weapon_type": "Bow"
         },
-        {
+        "2": {
           "$deleted": false,
-          "accuracy": "-",
+          "accuracy": "17",
           "affinity": "Normal",
           "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "O'lmek",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "15",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "O'lmek",
+          "attack_target": "Dryad",
+          "attacker": "Zarg",
           "damage_type": "Elementless",
           "efficiency": "100%",
-          "range": "Range",
+          "range": "Ranged",
           "source_type": "Attack",
-          "value": "46",
+          "value": "27",
           "value_type": "HP",
-          "weapon_type": "—"
+          "weapon_type": "Bow"
         },
-        {
+        "3": {
           "$deleted": false,
-          "accuracy": "-",
+          "accuracy": "17",
           "affinity": "Normal",
           "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Shatter",
+          "attack_target": "Dryad",
+          "attacker": "Zarg",
           "damage_type": "Elementless",
           "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "111",
+          "range": "Ranged",
+          "source_type": "Attack",
+          "value": "27",
           "value_type": "HP",
-          "weapon_type": "—"
+          "weapon_type": "Bow"
         },
-        {
+        "4": {
           "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "Salamander",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "4",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "Salamander",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "16",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "Salamander",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "4",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "Salamander",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "4",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "61",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "Salamander",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "4",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "Salamander",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "4",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
+          "accuracy": "16",
+          "affinity": "Vulnerable",
           "apply_mode": "Damage",
           "attack_target": "Pyrefly",
-          "attacker": "Funeral Pyre",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "99999",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
+          "attacker": "Hina",
+          "damage_type": "Ice",
           "efficiency": "100%",
           "range": "None",
           "source_type": "Spell",
-          "value": "133",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "Salamander",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "42",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "Pyrefly",
-          "attacker": "Funeral Pyre",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "99999",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Ace of Cards",
-          "attacker": "Pyrefly",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "78",
+          "value": "44",
           "value_type": "HP",
           "weapon_type": "—"
         }
-      ],
+      },
       "battle_tile_percentage": "0",
       "bench_currenthp_1": "0",
       "bench_currenthp_2": "0",
@@ -7025,6 +7920,14 @@
           "quantity": 1,
           "roll": "",
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.AHy1tE6vcMJBxBlN"
+        },
+        "C0dAFeczpsVl7LDZ": {
+          "consume_description": "<ul><li><p>Summon a <strong>random monster </strong>to the scene, this monster follows the <strong>companion rules </strong>and disappear at the end of the scene</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Dead Branch",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.C0dAFeczpsVl7LDZ"
         },
         "CNKnuIJzsIVPR0GD": {
           "consume_description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong>&nbsp;die by 1 stage&nbsp;</em>(to a maximum for D12))<em>&nbsp;for the rest of the scene.</em></p></li></ul>",
@@ -7264,8 +8167,8 @@
       "fishing_exp": "0",
       "fishing_rank": "<span style=\"\n  font-size: 28px;          /* make it MUCH larger – adjust the number to taste */\n  font-weight: bold;        /* bold */\n font-style: italic;       /* italic */\n  text-decoration: underline;\n  color: #4087a8;           /* your teal */\n  text-shadow: 0 0 5px #99d4f0;\">\n  Rank&nbsp;C\n</span>",
       "freeze_tile_percentage": "0",
-      "gacha_banner": "Milky Holstein",
-      "gacha_pity": "12",
+      "gacha_banner": "Oathsworn Paladin",
+      "gacha_pity": "0",
       "gacha_rate": "Rate",
       "gacha_rate_junk": "85",
       "gacha_rate_medium": "12",
@@ -7370,6 +8273,13 @@
           "roll": "",
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.0HQAHVKq1PAlkJrA"
         },
+        "0IxbfRYnSHIKvRuS": {
+          "acess_description": "<ul><li><p>Whenever you perform the skill 【💥Soul Steal】You may perform a <strong>Free Attack </strong>on the target with a <strong>melee weapon</strong> you have equipped, Treat your <strong>HR </strong>as 0 when calculating damage dealt by this attack</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Bandit Gloves",
+          "roll": "",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.0IxbfRYnSHIKvRuS"
+        },
         "30XFxjdgGe0evpS4": {
           "acess_description": "<ul><li><p>+20 <strong>Max HP</strong></p></li><li>You can speak and communicate with creatures belonging to the <strong>Monster </strong>species.</li></ul>",
           "id": "${item.id}",
@@ -7467,6 +8377,13 @@
           "name": "Black Belt",
           "roll": "",
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.NCj1L7FcFxeZsc5k"
+        },
+        "P4rafgBSVz3IuBL7": {
+          "acess_description": "<ul><li><p>You may target <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Flying</strong></a><strong>&nbsp;</strong>creatures as though they do not have <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Flying</strong></a></p></li></ul>",
+          "id": "${item.id}",
+          "name": "Jumping Boots",
+          "roll": "",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.P4rafgBSVz3IuBL7"
         },
         "Tpuby64dnU76C0b9": {
           "acess_description": "<ul><li><p>You begin the battle with <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>,</p></li><li><p>When you perform an action that target an enemy, you lose the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span><span style=\"font-family: var(--font-primary)\"> granted by this accessory.</span></p></li></ul><p>&nbsp;</p>",
@@ -7640,46 +8557,46 @@
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.zwKM2ITKA19U0coI"
         }
       },
-      "member_currenthp_1": "83",
-      "member_currenthp_2": "91",
-      "member_currenthp_3": "156",
-      "member_currenthp_4": "106",
-      "member_currentip_1": "3",
+      "member_currenthp_1": "86",
+      "member_currenthp_2": "94",
+      "member_currenthp_3": "69",
+      "member_currenthp_4": "109",
+      "member_currentip_1": "2",
       "member_currentip_2": "8",
-      "member_currentip_3": "8",
-      "member_currentip_4": "4",
-      "member_currentmp_1": "111",
-      "member_currentmp_2": "106",
-      "member_currentmp_3": "56",
-      "member_currentmp_4": "76",
+      "member_currentip_3": "10",
+      "member_currentip_4": "7",
+      "member_currentmp_1": "69",
+      "member_currentmp_2": "105",
+      "member_currentmp_3": "51",
+      "member_currentmp_4": "59",
       "member_currentzp_1": "4",
-      "member_currentzp_2": "6",
-      "member_currentzp_3": "0",
+      "member_currentzp_2": "1",
+      "member_currentzp_3": "6",
       "member_currentzp_4": "6",
-      "member_exp_1": "6.12",
-      "member_exp_2": "6.01",
-      "member_exp_3": "6.12",
-      "member_exp_4": "6.12",
+      "member_exp_1": "6.23",
+      "member_exp_2": "6.23",
+      "member_exp_3": "6.23",
+      "member_exp_4": "6.23",
       "member_id_1": "dafTLBUscCDNgq8H",
       "member_id_2": "Actor.gdJZ1L1kv5mjTTMr",
       "member_id_3": "Actor.uJFaNQCSvwwsr2AW",
       "member_id_4": "Actor.Z4CFy505cD3nzl1W",
-      "member_level_1": "36",
-      "member_level_2": "36",
-      "member_level_3": "36",
-      "member_level_4": "36",
-      "member_maxhp_1": "83",
-      "member_maxhp_2": "91",
-      "member_maxhp_3": "156",
-      "member_maxhp_4": "106",
+      "member_level_1": "39",
+      "member_level_2": "39",
+      "member_level_3": "39",
+      "member_level_4": "39",
+      "member_maxhp_1": "86",
+      "member_maxhp_2": "94",
+      "member_maxhp_3": "164",
+      "member_maxhp_4": "129",
       "member_maxip_1": "6",
       "member_maxip_2": "8",
       "member_maxip_3": "10",
       "member_maxip_4": "10",
-      "member_maxmp_1": "111",
-      "member_maxmp_2": "106",
-      "member_maxmp_3": "71",
-      "member_maxmp_4": "76",
+      "member_maxmp_1": "114",
+      "member_maxmp_2": "109",
+      "member_maxmp_3": "74",
+      "member_maxmp_4": "79",
       "member_maxzp_1": "6",
       "member_maxzp_2": "6",
       "member_maxzp_3": "6",
@@ -7692,10 +8609,10 @@
       "member_sprite_2": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Portrait/Keren_Portrait001.png",
       "member_sprite_3": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Portrait/Blanche_Portrait001.png",
       "member_sprite_4": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Portrait/Zarg_Portrait.png",
-      "member_zenit_1": "5519",
-      "member_zenit_2": "7503",
-      "member_zenit_3": "3027",
-      "member_zenit_4": "243",
+      "member_zenit_1": "7008",
+      "member_zenit_2": "4389",
+      "member_zenit_3": "66",
+      "member_zenit_4": "50",
       "minimum_encounter_percenter": "25",
       "name": "EXFURSION Party",
       "normal_percentage": "80",
@@ -7717,7 +8634,7 @@
       "party_member_4": "",
       "party_update_macro": "Update",
       "poison_tile_percentage": "0",
-      "random_battle_percentage": "25",
+      "random_battle_percentage": "85",
       "random_battle_tile_percentage": "60",
       "recipe_list": {
         "32IdnR3tifOIbDCD": {
@@ -7792,7 +8709,7 @@
       "smugglerport_fish_meter": 6,
       "status_tile_percentage": "15",
       "title_scene_id": "",
-      "total_zenit": "18267",
+      "total_zenit": "11513",
       "trap_tile_percentage": "30",
       "treasure_tile_percentage": "1",
       "up2_tile_percentage": "0",
@@ -7885,6 +8802,18 @@
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.BMd8VQZlx52Tu4lG",
           "weapon_description": "<p><ul><li><p>No Quality.</p></li></ul></p>",
           "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_range": "Ranged"
+        },
+        "H9avAY6YnvsB4Z06": {
+          "id": "${item.id}",
+          "name": "RNGenerator",
+          "quantity": "",
+          "roll": "",
+          "type": "Thrown",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.H9avAY6YnvsB4Z06",
+          "weapon_description": "<p><ul>\n<li>When you cast the <strong>Gamble</strong> spell, if you have the <strong>Lucky Seven</strong> Skill, you can use it to replace one of the dice you have rolled. This counts as the use of <strong>Lucky Seven</strong> for the scene.</li>\n</ul></p>",
+          "weapon_hand": "One-handed",
           "weapon_martial": "",
           "weapon_range": "Ranged"
         },
@@ -8140,6 +9069,18 @@
           "weapon_martial": "",
           "weapon_range": "Ranged"
         },
+        "mf5Cc0hGzVW9yyrT": {
+          "id": "${item.id}",
+          "name": "Winter Kolossus",
+          "quantity": "",
+          "roll": "",
+          "type": "Heavy",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.mf5Cc0hGzVW9yyrT",
+          "weapon_description": "<p><ul><li>You gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong></li><li><p>You have <strong>immunity</strong> to <strong>@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia}&nbsp;</strong></p></li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_range": "Melee"
+        },
         "qr1ElGHgIp9933XQ": {
           "id": "${item.id}",
           "name": "Looting Bow",
@@ -8211,6 +9152,18 @@
           "weapon_hand": "One-handed",
           "weapon_martial": "",
           "weapon_range": "Ranged"
+        },
+        "w0y1ZM62oTMtAKlE": {
+          "id": "${item.id}",
+          "name": "Blazing Sword",
+          "quantity": "",
+          "roll": "",
+          "type": "Sword",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.w0y1ZM62oTMtAKlE",
+          "weapon_description": "<p><ul><li><p>When you <strong>hit </strong>a target with this weapon, if they are inflicted with <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>you may have it recovers from burn, if you do, this attack deal <strong>5 bonus damage</strong> and deal damage to creatures <strong>adjacent </strong>to the target. <em>(No additional attack roll needed)</em></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.A5Uc2KRktPiTg2h8]{Blazing Impact}</strong>】</p></li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_range": "Melee"
         },
         "wCSJTNqVjW9ZweJk": {
           "id": "${item.id}",
@@ -8286,7 +9239,7 @@
         }
       },
       "weapon_tile_percentage": "1",
-      "zenit": "1975",
+      "zenit": "2000",
       "zenit_global_multiplier": "1"
     },
     "statusEffects": {},
