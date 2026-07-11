@@ -8,6 +8,69 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "4tvWv0UjgikUEvLl",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783708148913,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_6",
+          "mode": 5,
+          "priority": 20,
+          "value": "AB"
+        },
+        {
+          "key": "affinity_7",
+          "mode": 5,
+          "priority": 20,
+          "value": "VU"
+        }
+      ],
+      "description": "",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "4tvWv0UjgikUEvLl",
+          "originalParentId": "PsBBWgj9RkzEIKtF",
+          "originalUuid": "Item.PsBBWgj9RkzEIKtF.ActiveEffect.4tvWv0UjgikUEvLl"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2640.gif",
+      "name": "Ring of Magma",
+      "origin": "Item.PsBBWgj9RkzEIKtF",
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"

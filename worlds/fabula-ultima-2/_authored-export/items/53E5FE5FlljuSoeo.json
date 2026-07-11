@@ -27,13 +27,33 @@
       "active_effect_config_table": {},
       "check_bonus": "0",
       "class": "Dancer",
-      "cost": "10 MP",
+      "cost": "",
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>Choose an ally that is able to see you and has a Bond towards you: you and that ally both recover an amount of Hit Points equal to your current <strong>Dexterity</strong> die size.</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The restored amount increases by 5 Hit Points.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The restored amount increases by 10 Hit Points.</p>\n",
       "details_roller": "Show",
       "duration": "Instantaneous",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "chain_steps": "uni_heal_ally, uni_heal_self",
+          "effect_kind": "chain",
+          "effect_label": "d_root"
+        },
+        "1": {
+          "effect_kind": "grant",
+          "effect_label": "uni_heal_ally",
+          "grant_amount": "DEX_CURRENT_DIE + 5 * (CHAR_LEVEL >= 20) + 5 * (CHAR_LEVEL >= 40)",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "effect_kind": "grant",
+          "effect_label": "uni_heal_self",
+          "grant_amount": "DEX_CURRENT_DIE + 5 * (CHAR_LEVEL >= 20) + 5 * (CHAR_LEVEL >= 40)",
+          "grant_resource": "hp",
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "",
       "id": "53E5FE5FlljuSoeo",
       "ignore_hr": false,
@@ -47,7 +67,7 @@
       "level": "1",
       "max_level": "1",
       "name": "Unicorn Dance",
-      "on_activate_effect_ref": "",
+      "on_activate_effect_ref": "d_root",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "-",
@@ -55,8 +75,10 @@
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Any",
+      "skill_tags": "dance, managed",
       "skill_target": "One ally",
       "skill_type": "Active",
+      "target_eligibility": "BONDED_TO_SOURCE >= 1",
       "type_damage": "",
       "use_optional_params": false,
       "uuid": "Item.53E5FE5FlljuSoeo"

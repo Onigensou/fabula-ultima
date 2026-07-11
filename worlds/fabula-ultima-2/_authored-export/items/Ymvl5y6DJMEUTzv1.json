@@ -1,0 +1,94 @@
+{
+  "_id": "Ymvl5y6DJMEUTzv1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783710223053,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+  "name": "Glowstick (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": "ul6xqem2wH1VnYQK",
+    "props": {
+      "cost": "",
+      "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "glowstick_ally,glowstick_zero,glowstick_grant",
+          "effect_kind": "chain",
+          "effect_label": "glowstick_chain"
+        },
+        "1": {
+          "$deleted": false,
+          "auto_confirm_when_obvious": false,
+          "candidate_source": "combat",
+          "category": "ally",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "glowstick_ally",
+          "exclude_self": true,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": false
+        },
+        "2": {
+          "$deleted": false,
+          "damage_amount": "0",
+          "damage_operation": "set",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "glowstick_zero"
+        },
+        "3": {
+          "$deleted": false,
+          "action_ref": "Skill",
+          "allowed_skill_refs": "tag:dance,tag:chant",
+          "effect_kind": "free_action",
+          "effect_label": "glowstick_grant",
+          "performer_ref": "glowstick_ally"
+        }
+      },
+      "isCheck": false,
+      "isReaction": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Dragontrap Bow (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_effect_ref": "glowstick_chain",
+          "reaction_max_per_round": "1",
+          "reaction_passive_mode": "ask",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li>Once per round, when you <strong>hit</strong> one or more creatures with this weapon, you may have it deal <strong>0</strong> damage; if you do, choose an ally with the Chanter or Dancer class to perform a <strong>Free Action</strong> used for a <strong>Magichant</strong> or <strong>Dance</strong>.</li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Ymvl5y6DJMEUTzv1"
+  },
+  "type": "equippableItem"
+}

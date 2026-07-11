@@ -14,7 +14,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717311898,
+        "createdTime": 1783398848430,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -162,7 +162,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717311898,
+        "createdTime": 1783431944233,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -260,7 +260,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717311898,
+        "createdTime": 1783431944233,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -293,7 +293,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.uaVqfnjGsSm8PFjh",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.V6qzOhxRLJ4e8tce",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -325,7 +325,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783752666455,
+        "createdTime": 1783191253206,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -381,21 +381,11 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
-      "affinity_class_strike": "IM",
       "damage_dealt_mult_all": 1,
       "damage_dealt_mult_attack": 1,
       "damage_dealt_mult_skill": 1,
       "damage_dealt_mult_spell": 1,
-      "damage_taken_increased_air": 0,
-      "damage_taken_increased_bolt": 0,
-      "damage_taken_increased_dark": 0,
-      "damage_taken_increased_earth": 0,
-      "damage_taken_increased_fire": 0,
-      "damage_taken_increased_ice": 0,
-      "damage_taken_increased_light": 0,
-      "damage_taken_increased_physical": 0,
-      "damage_taken_increased_poison": 0,
-      "damage_taken_mult": 2,
+      "damage_taken_mult": 1,
       "iconFocus": {
         "x": 50,
         "y": 19,
@@ -567,7 +557,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -620,7 +610,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783431873118,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -719,7 +709,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -873,7 +863,7 @@
       "_stats": {
         "compendiumSource": "Item.6HdBHEPiRoPMMydJ",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -939,7 +929,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -986,7 +976,7 @@
       "_stats": {
         "compendiumSource": "Item.XSy7MGgInDpsTwG5",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1051,7 +1041,7 @@
       "_stats": {
         "compendiumSource": "Item.wJBq8w0Xuh7suRqm",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1199,7 +1189,7 @@
       "_stats": {
         "compendiumSource": "Item.UCGtDYsRkyH4IqBs",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1364,7 +1354,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783189284691,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1428,6 +1418,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -1435,6 +1426,7 @@
           "demon_ef": "100",
           "description": "<ul>\n<li>Once per round, when you&nbsp;<strong>hit&nbsp;</strong>one or more creature with this weapon, you may have it deal <strong>0</strong> damage, if you do, choose an ally other than yourself who have the <strong>Chanter </strong>or <strong>Dancer</strong>&nbsp;class, that ally perform a&nbsp;<strong>Free Action,&nbsp;</strong>that action must be used to perform a&nbsp;<strong>Magichant </strong>or<strong> Dance.</strong></li>\n</ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -1446,6 +1438,10 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "5S2EaoKlYMGW2WMw",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -1463,20 +1459,46 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "vSYxbtOX3DNTnl2X": {
+              "id": "${item.id}",
+              "name": "Glowstick (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.vSYxbtOX3DNTnl2X"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Glowstick",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "vSYxbtOX3DNTnl2X": {
+              "id": "${item.id}",
+              "name": "Glowstick (Passive)",
+              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.vSYxbtOX3DNTnl2X"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "WLP",
           "set_name": "",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.5S2EaoKlYMGW2WMw",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1492,7 +1514,7 @@
       "_stats": {
         "compendiumSource": "Item.BykEf2Th3dTmg02o",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1599,7 +1621,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1730,7 +1752,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783185264238,
         "duplicateSource": "Item.MWH6Za46Bjii884i",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1856,7 +1878,7 @@
       "_stats": {
         "compendiumSource": "Item.sHMfimeSyKQcj8bM",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783189086411,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1978,7 +2000,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2189,7 +2211,7 @@
       "_stats": {
         "compendiumSource": "Item.OoVNUOIssIfwPo7H",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2266,7 +2288,7 @@
       "_stats": {
         "compendiumSource": "Item.pVs2sPd5o0XMbdah",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2408,7 +2430,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783172932431,
         "duplicateSource": "Item.MWH6Za46Bjii884i",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2534,7 +2556,7 @@
       "_stats": {
         "compendiumSource": "Item.nkKJD5vo65EM887m",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2784,7 +2806,7 @@
       "_stats": {
         "compendiumSource": "Item.U1WUGQw6hkUo1La7",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3272,7 +3294,7 @@
       "_stats": {
         "compendiumSource": "Item.BmgIHS4DdDAT1rUc",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3389,7 +3411,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You glimpse briefly into the future. Until this spell ends, after a creature you can see performs a Check, if it was not a <strong>fumble</strong> nor a <strong>critical success</strong>, you may force that creature to reroll both dice. Once you have forced <strong>two</strong> rerolls this way, this spell ends.</p>",
-          "details_roller": "Show",
           "duration": "Scene",
           "effect_table": {
             "0": {
@@ -3412,9 +3433,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "FBWC6v9hhDqMlIaZ",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/divination.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -3434,13 +3453,11 @@
           "skill_animation_mode": "custom",
           "skill_information": "",
           "skill_range": "Range",
-          "skill_tags": "",
           "skill_target": "Self",
           "skill_type": "Spell",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.FBWC6v9hhDqMlIaZ"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3454,7 +3471,7 @@
       "_stats": {
         "compendiumSource": "Item.rERGt9WNcSfYV31k",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3565,11 +3582,93 @@
       "type": "equippableItem"
     },
     {
+      "_id": "ftTbURtcbfwCg8CT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783707304559,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Shield of Rejuvenation (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": "9GquE1k7ZaVvMLfS",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "",
+              "effect_kind": "grant",
+              "effect_label": "shield_regen",
+              "grant_amount": "floor(MAX_HP / 10)",
+              "grant_resource": "hp",
+              "target_ref": "sr_self"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "sr_self",
+              "exclude_self": false,
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            }
+          },
+          "isCheck": false,
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Shield of Rejuvenation (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_action_intent": "",
+              "reaction_effect_ref": "shield_regen",
+              "reaction_passive_mode": "on",
+              "reaction_passive_target": "self",
+              "reaction_requires_weapon_used": false,
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "WNWoQrisHlUuxSny"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "gbwC7vk4bsQ56Knr",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3637,7 +3736,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783172931586,
         "duplicateSource": "Item.a7ZGvZGyPR5NZXOK",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3806,7 +3905,7 @@
       "_stats": {
         "compendiumSource": "Item.ROQw6telXF9qyZC8",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3982,7 +4081,7 @@
       "_stats": {
         "compendiumSource": "Item.Lmzs6VllFRo44jZq",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4331,11 +4430,74 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783188968355,
         "duplicateSource": "Item.QvUsAoeaebjrKAHi",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "BxvOHbgK6VkWV48S",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783706967563,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 20,
+              "value": "AB"
+            },
+            {
+              "key": "affinity_7",
+              "mode": 5,
+              "priority": 20,
+              "value": "VU"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "BxvOHbgK6VkWV48S",
+              "originalParentId": "gMHVtSecAgiriC6S",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.gMHVtSecAgiriC6S.ActiveEffect.BxvOHbgK6VkWV48S"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2640.gif",
+          "name": "Ring of Magma",
+          "origin": "Actor.dafTLBUscCDNgq8H.Item.gMHVtSecAgiriC6S",
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
@@ -4466,7 +4628,7 @@
       "_stats": {
         "compendiumSource": "Item.KnKIXdPq6wjaFnCK",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4550,7 +4712,7 @@
       "_stats": {
         "compendiumSource": "Item.ooo1vmilBi2YWAiH",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": "Item.IhVYx6OZYAUtd9s7",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4638,7 +4800,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4690,7 +4852,7 @@
       "_stats": {
         "compendiumSource": "Item.YpRxmj2S5mNfkal2",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5029,7 +5191,7 @@
       "_stats": {
         "compendiumSource": "Actor.t6E3CQ0pGxwLgXrn.Item.RZLJIWmPbTwQnAl2",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5192,7 +5354,7 @@
       "_stats": {
         "compendiumSource": "Item.WeoIipMyJ8Iq9jx4",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5380,7 +5542,7 @@
       "_stats": {
         "compendiumSource": "Item.fIMx7fleEq7LKXNE",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5495,7 +5657,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5558,7 +5720,7 @@
       "_stats": {
         "compendiumSource": "Item.cdsIDKSvSbnXzp7n",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5656,7 +5818,7 @@
       "_stats": {
         "compendiumSource": "Item.I8Nn2LBram2GzpJ5",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783178150679,
         "duplicateSource": "Item.I8Nn2LBram2GzpJ5",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5746,7 +5908,7 @@
       "_stats": {
         "compendiumSource": "Item.KZmKUTuRvlvw6svp",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5875,7 +6037,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5935,7 +6097,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6080,7 +6242,7 @@
       "_stats": {
         "compendiumSource": "Item.bUSzzJWSTpDdpf6S",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6208,7 +6370,7 @@
       "_stats": {
         "compendiumSource": "Item.oyoBGiPAlNfKoQc9",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6678,7 +6840,7 @@
       "_stats": {
         "compendiumSource": "Item.PPbGO3BZOBtULyxy",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6740,7 +6902,7 @@
       "_stats": {
         "compendiumSource": "Item.iFhrsC0cnyChDhgw",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6907,7 +7069,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783398784281,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7005,7 +7167,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7076,7 +7238,7 @@
       "_stats": {
         "compendiumSource": "Item.wXvaSpnM04KZ2QFA",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7155,7 +7317,7 @@
       "_stats": {
         "compendiumSource": "Item.wfvBxZq0qkwMMn1G",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": "Item.88RMlBlB3uXxvzOn",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7243,7 +7405,7 @@
       "_stats": {
         "compendiumSource": "Item.ahyRJYDdxMKqhWSm",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7310,7 +7472,7 @@
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7376,7 +7538,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7432,7 +7594,7 @@
       "_stats": {
         "compendiumSource": "Item.O5uVGKRfZCS4ufTp",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7559,7 +7721,7 @@
       "_stats": {
         "compendiumSource": "Item.u2lw7vPFH9QikB7X",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7636,7 +7798,7 @@
       "_stats": {
         "compendiumSource": "Item.i7XP3i8a8GM70yCF",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7699,7 +7861,7 @@
       "_stats": {
         "compendiumSource": "Item.YdYhFx1vrvod4P2Y",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7941,7 +8103,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7997,7 +8159,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783398784281,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -8062,7 +8224,7 @@
       "_stats": {
         "compendiumSource": "Actor.t6E3CQ0pGxwLgXrn.Item.9RzsCJ2bfZU0pmRo",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -8229,7 +8391,7 @@
       "_stats": {
         "compendiumSource": "Item.97wep1as6JfhC3M3",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -8734,7 +8896,7 @@
       "_stats": {
         "compendiumSource": "Item.Uml73l4MKy1gSJYU",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -8871,7 +9033,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783185262746,
         "duplicateSource": "Item.a7ZGvZGyPR5NZXOK",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9032,7 +9194,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783398784281,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9078,7 +9240,7 @@
       "_stats": {
         "compendiumSource": "Item.nf32D5apuWGo1rVV",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9166,16 +9328,13 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You have a <strong>lucky number</strong>; at the beginning of each session, that number is <strong>7</strong>. </p><p>Once per scene after you perform a Check, you may replace the value shown on one of the dice you rolled with your lucky number <em>(even if this would give an impossible Result, such as a value of 7 on a d6)</em>. </p><p>If you do, the replaced value becomes your <strong>new</strong> lucky number</p>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {},
           "gadget_alchemy_tier": "",
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "v56GvN63nvIYV4iJ",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Harpy/Draw.webp",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -9200,8 +9359,7 @@
           "skill_type": "Passive",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -9215,7 +9373,7 @@
       "_stats": {
         "compendiumSource": "Item.kMH1iSlYIZyXl8hV",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9299,7 +9457,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9347,11 +9505,105 @@
       "type": "equippableItem"
     },
     {
+      "_id": "vSYxbtOX3DNTnl2X",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783707914557,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Glowstick (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": "5S2EaoKlYMGW2WMw",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "glowstick_ally,glowstick_zero,glowstick_grant",
+              "effect_kind": "chain",
+              "effect_label": "glowstick_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": false,
+              "candidate_source": "combat",
+              "category": "ally",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "glowstick_ally",
+              "exclude_self": true,
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": false
+            },
+            "2": {
+              "$deleted": false,
+              "damage_amount": "0",
+              "damage_operation": "set",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "glowstick_zero"
+            },
+            "3": {
+              "$deleted": false,
+              "action_ref": "Skill",
+              "allowed_skill_refs": "tag:dance,tag:chant",
+              "effect_kind": "free_action",
+              "effect_label": "glowstick_grant",
+              "performer_ref": "glowstick_ally"
+            }
+          },
+          "isCheck": false,
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dragontrap Bow (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_effect_ref": "glowstick_chain",
+              "reaction_max_per_round": "1",
+              "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "skill_description": "<ul><li>Once per round, when you <strong>hit</strong> one or more creatures with this weapon, you may have it deal <strong>0</strong> damage; if you do, choose an ally with the Chanter or Dancer class to perform a <strong>Free Action</strong> used for a <strong>Magichant</strong> or <strong>Dance</strong>.</li></ul>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "WNWoQrisHlUuxSny"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "wdkyWxt43rlxEtTO",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9501,7 +9753,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9564,7 +9816,7 @@
       "_stats": {
         "compendiumSource": "Item.wPC22EqyPCSc20i0",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9642,7 +9894,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9694,7 +9946,7 @@
       "_stats": {
         "compendiumSource": "Item.IzAH4YAoK4vPt9MP",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9759,7 +10011,7 @@
       "_stats": {
         "compendiumSource": "Item.YxXwy2Giyln0kuLT",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9838,7 +10090,7 @@
       "_stats": {
         "compendiumSource": "Item.2Ncb8FEV4lynlsHH",
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -9930,7 +10182,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717308784,
+        "createdTime": 1783148616011,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -10357,8 +10609,8 @@
       "affinity_3": "NA",
       "affinity_4": "NA",
       "affinity_5": "NA",
-      "affinity_6": "NA",
-      "affinity_7": "NA",
+      "affinity_6": "AB",
+      "affinity_7": "VU",
       "affinity_8": "NA",
       "affinity_9": "NA",
       "animation_table": {},
@@ -11581,15 +11833,6 @@
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "material_list": {
-        "gRdBI4ejraL4eRnD": {
-          "id": "${item.id}",
-          "key_description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
-          "name": "Animal Fang",
-          "roll": "",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.gRdBI4ejraL4eRnD"
-        }
-      },
       "max_hp": 83,
       "max_ip": 6,
       "max_mp": 111,

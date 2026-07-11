@@ -14,7 +14,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783752670998,
+        "createdTime": 1783191346138,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -69,7 +69,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717355107,
+        "createdTime": 1783431871502,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -102,7 +102,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.SDbiBy1W9gWTVBFF",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.MaBjT5FHGUpSEo0s",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },
@@ -130,11 +130,11 @@
       "type": "base"
     },
     {
-      "_id": "zJEKRA0eIsXI6aj1",
+      "_id": "fBubgQed7JuQduZR",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717355107,
+        "createdTime": 1783720989192,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -161,10 +161,10 @@
         "fabula-ultima-companion": {
           "category": "Other",
           "directorAppliedBy": {
-            "appliedAtRound": 4,
+            "appliedAtRound": 16,
             "effectLabel": "dance_apply",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.I2LhAaYcs0bkHIFM",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.MaBjT5FHGUpSEo0s",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
             "turnsRemaining": null
           },
@@ -203,15 +203,6 @@
       "damage_dealt_mult_attack": 1,
       "damage_dealt_mult_skill": 1,
       "damage_dealt_mult_spell": 1,
-      "damage_taken_increased_air": 0,
-      "damage_taken_increased_bolt": 0,
-      "damage_taken_increased_dark": 0,
-      "damage_taken_increased_earth": 0,
-      "damage_taken_increased_fire": 0,
-      "damage_taken_increased_ice": 0,
-      "damage_taken_increased_light": 0,
-      "damage_taken_increased_physical": 0,
-      "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
       "iconFocus": {
         "x": 60,
@@ -355,7 +346,7 @@
       "_stats": {
         "compendiumSource": "Item.aP3bmiJNoOzRUBaB",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -412,7 +403,7 @@
       "_stats": {
         "compendiumSource": "Item.SzqIrFxP8JxjsmIK",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -583,7 +574,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -635,7 +626,7 @@
       "_stats": {
         "compendiumSource": "Item.oAP85eeLJCliYm2E",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -747,7 +738,7 @@
       "_stats": {
         "compendiumSource": "Item.UhJH8T9TEmsJnQVc",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -904,7 +895,7 @@
       "_stats": {
         "compendiumSource": "Item.SccgW4PlHy8m6ph5",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1016,7 +1007,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1068,7 +1059,7 @@
       "_stats": {
         "compendiumSource": "Item.QXgHt7VEXEaVdPz1",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1190,7 +1181,7 @@
       "_stats": {
         "compendiumSource": "Item.VKB7qLNF1XBdN7yX",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1276,7 +1267,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": null,
+            "createdTime": 1783173365809,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1615,7 +1606,7 @@
       "_stats": {
         "compendiumSource": "Item.22zoFt3zhXjelhsX",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1767,7 +1758,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1819,7 +1810,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1891,7 +1882,7 @@
       "_stats": {
         "compendiumSource": "Item.2mX266qZdTJYJXCy",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2013,7 +2004,7 @@
       "_stats": {
         "compendiumSource": "Item.bRbJl1AxELZ0TLLo",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2145,7 +2136,7 @@
       "_stats": {
         "compendiumSource": "Item.8lF3aCEt5wsYxleL",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2156,7 +2147,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": null,
+            "createdTime": 1783171487682,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -2206,6 +2197,61 @@
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
+        },
+        {
+          "_id": "pDX5hwJQGmlXWvaV",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783714295803,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "pDX5hwJQGmlXWvaV",
+              "originalParentId": "B5EA1iq4j0wYzpo5",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5.ActiveEffect.pDX5hwJQGmlXWvaV"
+            },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/aura.svg",
+          "name": "Dancing",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -2236,7 +2282,6 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Each time you take this Skill, you learn a <strong>dance</strong> (see Facet).</p><p>On your turn during a conflict scene, if you have no martial armor equipped, you may spend 10 Mind Points to perform a <strong>dance</strong> you have learned. This doesn’t require an action, but it can only be done before or after an action, and only once per turn. If you already performed a different dance during your previous turn in this scene, the cost of the new dance is reduced to 5 Mind Points.</p><p>Some dances are instantaneous and resolve immediately, while others have effects that last until the start of your next turn.</p>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -2286,15 +2331,40 @@
               "from_resource": "",
               "menu_label": "",
               "to_resource": ""
+            },
+            "3": {
+              "chain_steps": "bd_cost, bd_untoken, bd_mark",
+              "effect_kind": "chain",
+              "effect_label": "bd_perform"
+            },
+            "4": {
+              "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_FLAG('Dancing', 'rememberedAction') != PERFORMED_SKILL)",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "bd_cost",
+              "target_ref": "self"
+            },
+            "5": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "bd_untoken",
+              "filter_tag": "dance-token",
+              "target_ref": "self"
+            },
+            "6": {
+              "ae_duplicate_mode": "replace",
+              "ae_remember_action": true,
+              "ae_template_ref": "Dancing",
+              "effect_kind": "apply_ae",
+              "effect_label": "bd_mark",
+              "target_ref": "self"
             }
           },
           "gadget_alchemy_tier": "",
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "B5EA1iq4j0wYzpo5",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_step.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -2379,6 +2449,13 @@
               "reaction_subject_kind": "",
               "reaction_trigger": "turn_end",
               "requires_skill": ""
+            },
+            "3": {
+              "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && SKILL_HAS_TAG_MANAGED == 1",
+              "reaction_effect_ref": "bd_perform",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
             }
           },
           "rolled_atr1": "-",
@@ -2392,8 +2469,7 @@
           "skill_type": "Other",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -2407,121 +2483,11 @@
       "_stats": {
         "compendiumSource": "Item.eAUaGhDdy3uogln7",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "GwrycLOSNJ4EAog2",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": 2,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "GwrycLOSNJ4EAog2",
-              "originalParentId": "eAUaGhDdy3uogln7",
-              "originalUuid": "Item.eAUaGhDdy3uogln7.ActiveEffect.GwrycLOSNJ4EAog2"
-            },
-            "fabula-ultima-companion": {
-              "category": "Other",
-              "lifetimeMode": "target_turn_end"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/upgrade.svg",
-          "name": "Dancing Ouroboros Dance",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "X0JJtVvBjfSJ3Cjg",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": 2,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "X0JJtVvBjfSJ3Cjg",
-              "originalParentId": "eAUaGhDdy3uogln7",
-              "originalUuid": "Item.eAUaGhDdy3uogln7.ActiveEffect.X0JJtVvBjfSJ3Cjg"
-            },
-            "fabula-ultima-companion": {
-              "category": "Other",
-              "lifetimeMode": "target_turn_end"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/upgrade.svg",
-          "name": "Dancing",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
       "flags": {
         "core": {
           "sourceId": "Item.eAUaGhDdy3uogln7"
@@ -2551,45 +2517,11 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "candidate_source": "self",
-              "effect_kind": "targeting",
-              "effect_label": "d_self"
-            },
-            "1": {
-              "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn",
+              "chain_steps": "ouro_turn",
               "effect_kind": "chain",
               "effect_label": "d_root"
             },
-            "2": {
-              "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0)",
-              "consume_resource": "mp",
-              "effect_kind": "consume_resource",
-              "effect_label": "d_cost",
-              "on_empty": "abort",
-              "target_ref": "self"
-            },
-            "3": {
-              "count": "all",
-              "effect_kind": "remove_tagged_ae",
-              "effect_label": "d_untoken",
-              "filter_tag": "dance-token",
-              "target_ref": "self"
-            },
-            "4": {
-              "ae_duplicate_mode": "replace",
-              "ae_template_ref": "Dancing",
-              "effect_kind": "apply_ae",
-              "effect_label": "d_mark_gen",
-              "target_ref": "d_self"
-            },
-            "5": {
-              "ae_duplicate_mode": "replace",
-              "ae_template_ref": "Dancing Ouroboros Dance",
-              "effect_kind": "apply_ae",
-              "effect_label": "d_mark_self",
-              "target_ref": "d_self"
-            },
-            "7": {
+            "1": {
               "effect_kind": "take_turn_next",
               "effect_label": "ouro_turn",
               "target_ref": "action_targets"
@@ -2614,7 +2546,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
-          "skill_tags": "dance",
+          "skill_tags": "dance, managed",
           "skill_target": "One ally",
           "skill_type": "Active",
           "type_damage": "",
@@ -2632,7 +2564,7 @@
       "_stats": {
         "compendiumSource": "Item.pN90SZleopmB3PM1",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2725,7 +2657,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2917,7 +2849,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3065,7 +2997,7 @@
       "_stats": {
         "compendiumSource": "Item.dkCavl0YcUWMPkRj",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3161,7 +3093,7 @@
       "_stats": {
         "compendiumSource": "Item.5h2gvjbvw26dQSU4",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3309,7 +3241,7 @@
       "_stats": {
         "compendiumSource": "Item.5h2gvjbvw26dQSU4",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3437,7 +3369,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3715,7 +3647,7 @@
       "_stats": {
         "compendiumSource": "Item.psUl41nZsOWgzA0R",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3878,7 +3810,7 @@
       "_stats": {
         "compendiumSource": "Item.pGPOqWRyrAFLbHho",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4003,7 +3935,7 @@
       "_stats": {
         "compendiumSource": "Item.A68h8dHO8F75awX4",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4131,7 +4063,7 @@
       "_stats": {
         "compendiumSource": "Item.B1s2K9VLjc4XF4GB",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4283,7 +4215,7 @@
       "_stats": {
         "compendiumSource": "Item.53E5FE5FlljuSoeo",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783192087477,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4307,12 +4239,32 @@
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Choose an ally that is able to see you and has a Bond towards you: you and that ally both recover an amount of Hit Points equal to your current <strong>Dexterity</strong> die size.</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The restored amount increases by 5 Hit Points.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The restored amount increases by 10 Hit Points.</p>\n",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "chain_steps": "uni_heal_ally, uni_heal_self",
+              "effect_kind": "chain",
+              "effect_label": "d_root"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "uni_heal_ally",
+              "grant_amount": "DEX_CURRENT_DIE + 5 * (CHAR_LEVEL >= 20) + 5 * (CHAR_LEVEL >= 40)",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "uni_heal_self",
+              "grant_amount": "DEX_CURRENT_DIE + 5 * (CHAR_LEVEL >= 20) + 5 * (CHAR_LEVEL >= 40)",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -4324,15 +4276,17 @@
           "level": "1",
           "max_level": "1",
           "name": "Unicorn Dance",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "d_root",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "One ally",
           "skill_type": "Active",
+          "target_eligibility": "BONDED_TO_SOURCE >= 1",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -4348,7 +4302,7 @@
       "_stats": {
         "compendiumSource": "Item.P4dQ5Ms73YVs9gPv",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4476,7 +4430,7 @@
       "_stats": {
         "compendiumSource": "Item.wVVluaGNDUiNVLUw",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4583,7 +4537,7 @@
       "_stats": {
         "compendiumSource": "Item.vHU5RXkhcOoFrXtm",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4710,7 +4664,7 @@
       "_stats": {
         "compendiumSource": "Item.aITJntRz2m10Rgeo",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4853,7 +4807,7 @@
       "_stats": {
         "compendiumSource": "Item.NPmGcRRbc5IBeprB",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4995,7 +4949,7 @@
       "_stats": {
         "compendiumSource": "Item.F5TmgNnJPkCyvrrL",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783187827081,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5377,7 +5331,7 @@
       "_stats": {
         "compendiumSource": "Item.hEOGl2wmtgjJX8jt",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5454,7 +5408,7 @@
       "_stats": {
         "compendiumSource": "Item.MTu5qi3M3S9M0CJw",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5543,7 +5497,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5684,7 +5638,7 @@
       "_stats": {
         "compendiumSource": "Item.KnKIXdPq6wjaFnCK",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5768,7 +5722,7 @@
       "_stats": {
         "compendiumSource": "Item.u2tHLEanQ7gWP4BS",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5825,7 +5779,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5887,121 +5841,11 @@
       "_stats": {
         "compendiumSource": "Item.MEdEKpPNgKTtkE7Z",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "A5bqABLKrPtqXZz8",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": 2,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "A5bqABLKrPtqXZz8",
-              "originalParentId": "MEdEKpPNgKTtkE7Z",
-              "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.A5bqABLKrPtqXZz8"
-            },
-            "fabula-ultima-companion": {
-              "category": "Other",
-              "lifetimeMode": "target_turn_end"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/upgrade.svg",
-          "name": "Dancing Lion Dance",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "Th5PekSE1nFdUUhi",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": 2,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "Th5PekSE1nFdUUhi",
-              "originalParentId": "MEdEKpPNgKTtkE7Z",
-              "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.Th5PekSE1nFdUUhi"
-            },
-            "fabula-ultima-companion": {
-              "category": "Other",
-              "lifetimeMode": "target_turn_end"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/upgrade.svg",
-          "name": "Dancing",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
       "flags": {
         "core": {
           "sourceId": "Item.MEdEKpPNgKTtkE7Z"
@@ -6031,45 +5875,11 @@
           "duration": "instantaneous",
           "effect_table": {
             "0": {
-              "candidate_source": "self",
-              "effect_kind": "targeting",
-              "effect_label": "d_self"
-            },
-            "1": {
-              "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse",
+              "chain_steps": "lion_cleanse",
               "effect_kind": "chain",
               "effect_label": "d_root"
             },
-            "2": {
-              "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0)",
-              "consume_resource": "mp",
-              "effect_kind": "consume_resource",
-              "effect_label": "d_cost",
-              "on_empty": "abort",
-              "target_ref": "self"
-            },
-            "3": {
-              "count": "all",
-              "effect_kind": "remove_tagged_ae",
-              "effect_label": "d_untoken",
-              "filter_tag": "dance-token",
-              "target_ref": "self"
-            },
-            "4": {
-              "ae_duplicate_mode": "replace",
-              "ae_template_ref": "Dancing",
-              "effect_kind": "apply_ae",
-              "effect_label": "d_mark_gen",
-              "target_ref": "d_self"
-            },
-            "5": {
-              "ae_duplicate_mode": "replace",
-              "ae_template_ref": "Dancing Lion Dance",
-              "effect_kind": "apply_ae",
-              "effect_label": "d_mark_self",
-              "target_ref": "d_self"
-            },
-            "6": {
+            "1": {
               "count": 1,
               "effect_kind": "remove_tagged_ae",
               "effect_label": "lion_cleanse",
@@ -6098,7 +5908,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
-          "skill_tags": "dance",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
@@ -6116,7 +5926,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6168,7 +5978,7 @@
       "_stats": {
         "compendiumSource": "Item.e0jdBTIQ8BACGIph",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6261,7 +6071,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783431844252,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6404,7 +6214,7 @@
       "_stats": {
         "compendiumSource": "Item.VdzUY6OaTy7vncGT",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6614,7 +6424,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6812,7 +6622,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6863,7 +6673,7 @@
       "_stats": {
         "compendiumSource": "Item.71Rxh6OREMP3D84z",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7013,7 +6823,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7181,11 +6991,159 @@
       "_stats": {
         "compendiumSource": "Item.ggpg4xjPbAMOISIB",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783192508194,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "10JgNhEzaSqe0Mwi",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783708587546,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "Until the start of your next turn, you have Resistance to bolt damage.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "10JgNhEzaSqe0Mwi",
+              "originalParentId": "w8lI13Gc2aisTVes",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.w8lI13Gc2aisTVes.ActiveEffect.10JgNhEzaSqe0Mwi"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Golem Dance (Bolt Resist)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-golem-dance-bolt"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "7i97MkMo2CZhFCbf",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783708587546,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "Until the start of your next turn, all damage from your attacks and spells becomes bolt.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "7i97MkMo2CZhFCbf",
+              "originalParentId": "w8lI13Gc2aisTVes",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.w8lI13Gc2aisTVes.ActiveEffect.7i97MkMo2CZhFCbf"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "change_element": "bolt",
+                    "effect_kind": "change_damage_element",
+                    "effect_label": "golem_bolt_override"
+                  }
+                },
+                "name": "Golem Dance (Bolt)",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                    "reaction_effect_ref": "golem_bolt_override",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-sparks-blue.webp",
+          "name": "Golem Dance (Bolt Element)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-golem-dance-bolt"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -7202,28 +7160,136 @@
       "sort": 0,
       "system": {
         "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li></ul>",
+          "details_roller": "Show",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "allow_empty": false,
+              "auto_confirm_when_obvious": true,
+              "auto_target": true,
+              "candidate_source": "self",
+              "category": "",
+              "consume_self": false,
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "d_self",
+              "exclude": "",
+              "exclude_action_targets": false,
+              "exclude_self": false,
+              "from_resource": "",
+              "iteration_mode": "together",
+              "menu_label": "",
+              "mode": "exact",
+              "skip_when_passive": true,
+              "target_filter": "",
+              "target_prompt": "",
+              "to_resource": ""
+            },
+            "1": {
+              "chain_steps": "golem_pick",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "d_root",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "2": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "golem_pick",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Gain Resistance to Bolt|All your damage becomes Bolt",
+              "menu_option_refs": "golem_resist_self, golem_element_self",
+              "menu_pick_count": "",
+              "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+              "menu_title": "Golem Dance",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "3": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Golem Dance (Bolt Resist)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "golem_resist_self",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "d_self",
+              "to_resource": ""
+            },
+            "4": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Golem Dance (Bolt Element)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "golem_element_self",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "d_self",
+              "to_resource": ""
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "w8lI13Gc2aisTVes",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
           "name": "Golem Dance",
+          "on_activate_effect_ref": "d_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.w8lI13Gc2aisTVes"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -7237,7 +7303,7 @@
       "_stats": {
         "compendiumSource": "Item.uSfpUFshad2WnIiR",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7303,7 +7369,7 @@
       "_stats": {
         "compendiumSource": "Item.GYrsWYBQ6Hu7DnuA",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": "Item.2mX266qZdTJYJXCy",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7430,7 +7496,7 @@
       "_stats": {
         "compendiumSource": "Item.8aONdOoBQoSzz1wU",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7525,7 +7591,7 @@
       "_stats": {
         "compendiumSource": "Item.I8Nn2LBram2GzpJ5",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": "Item.sQf6CgTCaoIwHVUT",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7614,7 +7680,7 @@
       "_stats": {
         "compendiumSource": "Item.HnPrZDaSrXTKvkWv",
         "coreVersion": "12.343",
-        "createdTime": 1783717352696,
+        "createdTime": 1783148656957,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7926,7 +7992,7 @@
       "activation": 1,
       "affinity_1": "NA",
       "affinity_2": "NA",
-      "affinity_3": "NA",
+      "affinity_3": "RS",
       "affinity_4": "NA",
       "affinity_5": "NA",
       "affinity_6": "RS",
@@ -8223,7 +8289,7 @@
       "critical_dice_range": 0,
       "current_hp": "106",
       "current_ip": "4",
-      "current_mp": "76",
+      "current_mp": 0,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",
@@ -9351,7 +9417,7 @@
         },
         "w8lI13Gc2aisTVes": {
           "active_class": "Dancer",
-          "active_cost": "10 MP",
+          "active_cost": "",
           "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li></ul>",
           "active_duration": "Until the start of your next turn",
           "active_level": 1,
