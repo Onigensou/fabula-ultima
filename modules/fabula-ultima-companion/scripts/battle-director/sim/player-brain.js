@@ -24,7 +24,7 @@
 // See [[project_action_pattern_ai]] and [[project_enemy_autopilot]].
 
 import { log, warn } from "../logger.js";
-import { profileFor, mpItemPolicy, revivePolicy } from "./profiles.js";
+import { profileFor, mpItemPolicy, hpItemPolicy, revivePolicy } from "./profiles.js";
 import { SimMode } from "./sim-mode.js";
 import { canAffordItem } from "./cost.js";
 import { protectExhausted } from "./reaction-brain.js";
@@ -86,24 +86,42 @@ function isAugment(item) {
   return rows.some((r) => String(r?.reaction_trigger ?? "").trim() !== "");
 }
 
-// An MP-restoring consumable, identified by what it DOES, not what it's called.
-// Grape Juice's effect row is { effect_kind: "grant", grant_resource: "mp",
-// grant_amount: 20 } and an Elixir's looks the same — so match on that and the
-// list maintains itself.
-function findMpItemOn(actorDoc) {
+// ── Does this item restore <resource>? ───────────────────────────────────────
+// Identified by what it DOES, not what it's called — and the world uses TWO
+// authoring styles for the same idea, so both are checked:
+//
+//   A) an effect_table grant row   — Apple Juice: { grant_resource:"hp", amount:30 }
+//   B) type_damage names the pool  — Elixir: { type_damage:"MP", damage_bonus:50 }
+//
+// Matching on behaviour means Elixir, Grape Juice, Apple Juice and anything added
+// later are all found automatically, with no name list to fall out of date.
+function itemRestores(item, resource) {
+  const p = item?.system?.props ?? {};
+  const want = String(resource).toLowerCase();
+
+  const et = p.effect_table;
+  const rows = Array.isArray(et) ? et : Object.values(et ?? {});
+  const granted = rows.some((r) =>
+    String(r?.effect_kind ?? "").toLowerCase() === "grant"
+    && String(r?.grant_resource ?? "").toLowerCase() === want
+    && Number(r?.grant_amount ?? 0) > 0
+  );
+  if (granted) return true;
+
+  const td = String(p.type_damage ?? "").trim().toLowerCase();
+  if (want === "mp") return td === "mp";
+  if (want === "hp") return td === "hp" || td === "healing" || td === "heal";
+  return false;
+}
+
+// A CONSUMABLE the actor is carrying (classic JRPG style: stock-limited, and using
+// it spends one). Distinct from a CREATABLE, which anyone can conjure by paying IP.
+function findConsumableRestoring(actorDoc, resource) {
   for (const item of actorDoc?.items ?? []) {
     const p = item?.system?.props ?? {};
     if (String(p.item_type ?? "").toLowerCase() !== "consumable") continue;
     if (Number(p.item_quantity ?? p.quantity ?? 0) <= 0) continue;
-
-    const et = p.effect_table;
-    const rows = Array.isArray(et) ? et : Object.values(et ?? {});
-    const restoresMp = rows.some((r) =>
-      String(r?.effect_kind ?? "").toLowerCase() === "grant"
-      && String(r?.grant_resource ?? "").toLowerCase() === "mp"
-      && Number(r?.grant_amount ?? 0) > 0
-    );
-    if (restoresMp) return item;
+    if (itemRestores(item, resource)) return item;
   }
   return null;
 }
@@ -151,8 +169,44 @@ function castBundle(item, targetUuids) {
   return { command, skillUuid: item.uuid, sourceItemUuid: item.uuid, targetUuids, _name: item.name };
 }
 
+// ── Creatable items (the IP economy) ─────────────────────────────────────────
+// The other half of "using an item", and the half that matters most: EVERYONE can
+// spend IP to conjure Elixir / Remedy / Tonic / Apple Juice / Elemental Shard on
+// the spot. Unlike a consumable there is no stock to run out of — the limit is IP —
+// so this is the party's real answer to running dry, and it does not depend on who
+// happens to be carrying what.
+//
+// gatherCreatables is async and the policies are sync, so the list is fetched once
+// per turn and handed to them already resolved.
+async function fetchCreatables(actorDoc) {
+  try {
+    const { gatherCreatables } = await import("../item-resource.js");
+    const list = await gatherCreatables(actorDoc);
+    const out = [];
+    for (const c of list ?? []) {
+      if (!c?.itemUuid) continue;
+      const doc = await fromUuid(c.itemUuid).catch(() => null);
+      if (!doc) continue;
+      out.push({
+        key: c.key,
+        name: c.name,
+        ipCost: Number(c.ipCost ?? 0) || 0,
+        itemUuid: c.itemUuid,
+        doc,
+        // The consumable is just a carrier; its linked activation skill holds the
+        // real targeting/effect (composeItem resolves the same field).
+        linkedSkillUuid: doc.system?.props?.item_skill_active || null,
+      });
+    }
+    return out;
+  } catch (e) {
+    warn("[SIM] fetchCreatables threw", e);
+    return [];
+  }
+}
+
 // ── The policy API handed to profile.policy() ────────────────────────────────
-function makePolicyApi(director, snap, self) {
+function makePolicyApi(director, snap, self, creatables = []) {
   const { allies, foes } = sides(director, snap);
   return {
     self: self?.actorDoc ?? null,
@@ -196,16 +250,29 @@ function makePolicyApi(director, snap, self) {
       return false;
     },
 
-    // An MP-restoring consumable in MY inventory, found by EFFECT rather than by
-    // name — any consumable whose effect_table grants `mp` (Elixir, Grape Juice,
-    // whatever gets added later). Quantity must be > 0.
-    findMpItem() { return findMpItemOn(self?.actorDoc); },
-    allyHasMpItem(dc) { return !!findMpItemOn(dc?.actorDoc); },
+    // ── The two ways to use an item ────────────────────────────────────────
+    // CREATE: pay IP, conjure it now. Universal — everyone can do this, and there
+    // is no stock to exhaust. This is the party's real economy.
+    findCreatableRestoring(resource) {
+      const ip = Number(self?.actorDoc?.system?.props?.current_ip ?? 0) || 0;
+      return creatables
+        .filter((c) => c.ipCost <= ip && itemRestores(c.doc, resource))
+        .sort((a, b) => a.ipCost - b.ipCost)[0] ?? null;
+    },
+
+    // USE: spend one from the pack. Stock-limited, classic JRPG style.
+    findConsumableRestoring(resource) { return findConsumableRestoring(self?.actorDoc, resource); },
+    allyCanRestore(dc, resource) {
+      const ip = Number(dc?.actorDoc?.system?.props?.current_ip ?? 0) || 0;
+      // A rough read for "could they do this job?" — we only have OUR creatables
+      // list, but the recipe set is party-wide, so IP is the real gate.
+      return ip >= 2 || !!findConsumableRestoring(dc?.actorDoc, resource);
+    },
 
     // A consumable I hold, by name, with stock left. (Phoenix Feather — unlike an
     // MP potion there is no effect signature to match on, since "revive" is the
     // item's own logic, so this one is by name.)
-    findConsumable(re) {
+    findItemByName(re) {
       for (const item of self?.actorDoc?.items ?? []) {
         const p = item?.system?.props ?? {};
         if (String(p.item_type ?? "").toLowerCase() !== "consumable") continue;
@@ -224,8 +291,8 @@ function makePolicyApi(director, snap, self) {
       return (dc?.combatants ?? []).filter((c) => c.side === mine && c.isDefeatedLive?.());
     },
 
-    // Use a consumable. The Item bundle shape mirrors what the item-picker produces
-    // (compose-action's Item branch): mode "use", key = the item's id, cost 0.
+    // USE a consumable from the pack — it is spent. Mirrors the item-picker's "use"
+    // row: key = the item's id, cost 0.
     useItem(item, targetDcs) {
       const uuids = targetDcs.map(tokenUuidOf).filter(Boolean);
       if (!item || !uuids.length) return null;
@@ -233,12 +300,30 @@ function makePolicyApi(director, snap, self) {
         command: "Item",
         skillUuid: item.uuid,
         sourceItemUuid: item.uuid,
-        linkedSkillUuid: null,
+        linkedSkillUuid: item.system?.props?.item_skill_active || null,
         itemMode: "use",
         itemKey: item.id,
         itemCost: 0,
         targetUuids: uuids,
         _name: item.name,
+      };
+    },
+
+    // CREATE it on the spot, paying IP. Mirrors the item-picker's "create" row:
+    // key = the recipe key, cost = its IP price (state-handlers charges it).
+    createItem(candidate, targetDcs) {
+      const uuids = targetDcs.map(tokenUuidOf).filter(Boolean);
+      if (!candidate || !uuids.length) return null;
+      return {
+        command: "Item",
+        skillUuid: candidate.itemUuid,
+        sourceItemUuid: candidate.itemUuid,
+        linkedSkillUuid: candidate.linkedSkillUuid,
+        itemMode: "create",
+        itemKey: candidate.key,
+        itemCost: candidate.ipCost,
+        targetUuids: uuids,
+        _name: candidate.name,
       };
     },
 
@@ -347,32 +432,32 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), al
     : null;
   const permits = (cmd) => !allow || allow.has(String(cmd).trim().toLowerCase());
 
-  const policyApi = makePolicyApi(director, snap, self);
+  // The IP economy — what this character could CREATE right now. Fetched once per
+  // turn because the API is async and the policies are not.
+  const creatables = await fetchCreatables(actorDoc);
+  const policyApi = makePolicyApi(director, snap, self, creatables);
 
-  // 0a. Revive — a downed ally is a death spiral, so this outranks everything. It
-  //     abstains on its own when a LIVING ally is still in danger (stabilise first),
-  //     so putting it at the top doesn't make it reckless.
-  try {
-    const revive = revivePolicy(policyApi);
-    if (revive && !isBlocked(revive._name) && permits(revive.command)) {
-      SimMode.note("revive", `${snap?.name} → ${revive._name} on a downed ally`);
-      return revive;
-    }
-  } catch (e) {
-    warn(`[SIM] player-brain: revive policy threw`, e);
-  }
+  // The party's item economy, ahead of everybody's own plan. Each of these abstains
+  // on its own when it isn't the right call, so ordering them first doesn't make
+  // anyone reckless — it just means a party that is bleeding out, dry, or a member
+  // down deals with that before it thinks about damage.
+  const partyFirst = [
+    ["revive", revivePolicy],    // a downed ally is a death spiral
+    ["hp",     hpItemPolicy],    // somebody is about to join them
+    ["mp",     mpItemPolicy],    // the casters have run dry
+  ];
 
-  // 0. MP economy — party-wide, ahead of everyone's own plan. Late-game fights were
-  //    grinding to a halt because the casters ran dry and fell back to poking with
-  //    sticks; a real party spends a turn on a consumable instead.
-  try {
-    const potion = mpItemPolicy(policyApi);
-    if (potion && !isBlocked(potion._name) && permits(potion.command)) {
-      SimMode.note("mp", `${snap?.name} → ${potion._name} (party is out of MP)`);
-      return potion;
+  for (const [kind, policy] of partyFirst) {
+    try {
+      const bundle = policy(policyApi);
+      if (bundle && !isBlocked(bundle._name) && permits(bundle.command)) {
+        const how = bundle.itemMode === "create" ? `created for ${bundle.itemCost} IP` : "from the pack";
+        SimMode.note(kind, `${snap?.name} → ${bundle._name} (${how})`);
+        return bundle;
+      }
+    } catch (e) {
+      warn(`[SIM] player-brain: ${kind} policy threw`, e);
     }
-  } catch (e) {
-    warn(`[SIM] player-brain: MP-item policy threw`, e);
   }
 
   // 1. Policy — the things a rotation table cannot say (heal a dying ally).

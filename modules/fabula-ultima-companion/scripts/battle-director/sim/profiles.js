@@ -78,6 +78,7 @@ export const TUNING = {
   mpItemThreshold: 0.30,   // an ally under this much MP wants a top-up
   mpItemMinTargets: 1,     // how many must be dry before somebody spends a turn
   mpItemsPerRound: 1,      // at most one party member plays potion-caddy per round
+  hpItemsPerRound: 1,      // …and at most one emergency IP-bought heal
   // Who takes potion duty first. Zarg leads because Potion Rain makes his
   // consumables hit the whole party — one turn, everyone refilled.
   potionPriority: ["Zarg"],
@@ -209,7 +210,10 @@ export function revivePolicy(api) {
   );
   if (threatened) return null;   // heal first — a revive now just makes two casualties
 
-  const feather = api.findConsumable(TUNING.phoenixFeather);
+  // A revive is USE-only: it is a carried consumable with finite stock, and unlike
+  // an Elixir there is no IP recipe for one. This is exactly the distinction the
+  // sim now draws — you cannot conjure your way out of a death.
+  const feather = api.findItemByName(TUNING.phoenixFeather);
   if (!feather) return null;
 
   // Bring back whoever will survive the longest on a crisis-score revive (the item
@@ -236,34 +240,69 @@ export function revivePolicy(api) {
 // potion picks up the duty rather than letting the party grind to a halt.
 export function mpItemPolicy(api) {
   const round = api.round;
-  if (SimMode_spent(api, round) >= TUNING.mpItemsPerRound) return null;
+  if (api.budgetSpent(round, "mp-item") >= TUNING.mpItemsPerRound) return null;
 
   const dry = api.allies().filter(
     (dc) => pct(propNum(dc.actorDoc, "current_mp"), propNum(dc.actorDoc, "max_mp")) < TUNING.mpItemThreshold
   );
   if (dry.length < TUNING.mpItemMinTargets) return null;
 
-  const mine = api.findMpItem();
-  if (!mine) return null;
+  // CREATE beats USE. Paying IP for an Elixir is something ANYONE can do and costs
+  // no stock, whereas a carried consumable is finite and only whoever holds it can
+  // spend it. So reach for the IP first and keep the pack for what IP can't buy.
+  const recipe = api.findCreatableRestoring("mp");
+  const carried = recipe ? null : api.findConsumableRestoring("mp");
+  if (!recipe && !carried) return null;
 
-  // Defer to the designated potioneer while he can still do it better.
+  // Zarg still gets first refusal — Potion Rain turns his item into an area effect,
+  // so one turn from him refills everybody. Defer to him only while he can actually
+  // do it (has the IP or the item); otherwise whoever can, does.
   const preferred = TUNING.potionPriority.find((name) =>
-    api.allies().some((dc) => new RegExp(name, "i").test(dc.name ?? "") && api.allyHasMpItem(dc))
+    api.allies().some((dc) => new RegExp(name, "i").test(dc.name ?? "") && api.allyCanRestore(dc, "mp"))
   );
   const iAmPreferred = preferred && new RegExp(preferred, "i").test(api.self?.name ?? "");
   if (preferred && !iAmPreferred) return null;
 
   api.spendBudget(round, "mp-item");
-  // Target the driest ally. Potion Rain (if the user has it) spreads it anyway.
+
   const target = dry.sort(
     (a, b) => pct(propNum(a.actorDoc, "current_mp"), propNum(a.actorDoc, "max_mp"))
             - pct(propNum(b.actorDoc, "current_mp"), propNum(b.actorDoc, "max_mp"))
   )[0];
-  return api.useItem(mine, [target]);
+
+  return recipe ? api.createItem(recipe, [target]) : api.useItem(carried, [target]);
 }
 
-// Tiny indirection so profiles don't import SimMode directly.
-function SimMode_spent(api, round) { return api.budgetSpent(round, "mp-item"); }
+// Emergency HP, paid in IP. "Anyone can pay IP to restore HP or MP" — so a
+// character with no heal spell (or no MP left to cast one) is not helpless when an
+// ally is about to die: they can conjure an Apple Juice. Only fires when somebody is
+// genuinely at KO risk, so it never competes with putting damage out.
+export function hpItemPolicy(api) {
+  const round = api.round;
+  if (api.budgetSpent(round, "hp-item") >= TUNING.hpItemsPerRound) return null;
+
+  const dying = api.allies().filter(
+    (dc) => pct(propNum(dc.actorDoc, "current_hp"), propNum(dc.actorDoc, "max_hp")) <= TUNING.healKoRiskFraction
+  );
+  if (!dying.length) return null;
+
+  // If I can cast a real heal, do that instead — it heals more and up to three.
+  const heal = api.findItem("Heal");
+  if (heal && propNum(api.self, "current_mp") >= 10) return null;
+
+  const recipe = api.findCreatableRestoring("hp");
+  const carried = recipe ? null : api.findConsumableRestoring("hp");
+  if (!recipe && !carried) return null;
+
+  api.spendBudget(round, "hp-item");
+
+  const target = dying.sort(
+    (a, b) => pct(propNum(a.actorDoc, "current_hp"), propNum(a.actorDoc, "max_hp"))
+            - pct(propNum(b.actorDoc, "current_hp"), propNum(b.actorDoc, "max_hp"))
+  )[0];
+
+  return recipe ? api.createItem(recipe, [target]) : api.useItem(carried, [target]);
+}
 
 // ── Hina's turn ─────────────────────────────────────────────────────────────
 // Her whole turn is a judgement call, so none of it can live in a pattern row.
