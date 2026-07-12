@@ -1,86 +1,217 @@
-// Player Brain — decides a turn for a combatant that has no Action Pattern.
+// Player Brain — decides a turn for a combatant with no Action Pattern (the PCs).
 //
-// Enemies think with ActionReader ([[project_action_pattern_ai]]) because they
-// carry an `action_pattern_table` prop. PCs don't have one, so in a sim their
-// ActionReader run yields nothing and the autopilot would normally hand back to
-// the manual Octopath menu — which, with nobody at the keyboard, is a hang. This
-// module is what answers instead.
+// Enemies think with ActionReader because they carry an `action_pattern_table`
+// prop. PCs don't have one, so their ActionReader run yields nothing and the
+// autopilot would hand back to the manual menu — which, with nobody at the
+// keyboard, is a hang. This is what answers instead.
 //
-// PHASE 0 (this file): the dumbest defensible policy — swing your main weapon at
-// the enemy closest to dying. It exists to prove the FSM can run a fight
-// hands-free, NOT to model how your party actually plays. Any balance number
-// read off this brain is a FLOOR, not a forecast: a real party heals, spends MP,
-// exploits affinities, and picks better targets, so a fight this brain finds
-// hard is genuinely hard, while a fight it finds easy tells you very little.
+// The design: rather than write a bespoke AI, we feed the SAME ActionReader
+// pipeline a rotation table injected from a profile ([[profiles.js]]). The
+// injection point is `actorData.actionPatternRowsRaw` — the exact field
+// readPatternTable reads — so the party inherits cost feasibility, affinity
+// targeting, anti-repeat and debuff gating with ZERO changes to the action-reader.
 //
-// PHASE 2 replaces the guts here with per-PC profiles fed through ActionReader
-// itself (injected pattern table), so the party gets feasibility, affinity
-// targeting and anti-repeat for free. The signature below is the seam that
-// swap plugs into — keep it stable.
+// Decision order, each step falling through to the next:
+//   1. profile.policy()  — pre-emptive code decisions (heal a dying ally). The
+//                          rotation table cannot express these: every condition
+//                          the engine supports is self-referential, so "an ally is
+//                          hurt" is unsayable as a row.
+//   2. rotation          — the profile's rows, through ActionReader.
+//   3. basic attack      — affinity-aware: never swing an element the target
+//                          ABSORBS, prefer one it is VULNERABLE to.
+//   4. null              — caller (enemy-autopilot) terminally falls back to Guard.
+//
+// See [[project_action_pattern_ai]] and [[project_enemy_autopilot]].
 
-import { log } from "../logger.js";
+import { log, warn } from "../logger.js";
+import { profileFor } from "./profiles.js";
+import { SimMode } from "./sim-mode.js";
 
-// The acting combatant, from the director's authoritative model. The turnSnapshot
-// is frozen and carries only `actorUuid` (no live doc), so resolve the
-// DirectorCombatant — it holds live `actorDoc` / `tokenUuid` refs.
+import { ActionReaderCore as AR } from "../../action-reader/actionReader-core.js";
+import { resolveActionReaderPerformer } from "../../action-reader/actionReader-resolvePerformer.js";
+import { buildActionReaderContext } from "../../action-reader/actionReader-buildContext.js";
+import { readActionReaderPatternTable } from "../../action-reader/actionReader-readPatternTable.js";
+import { evaluateActionReaderConditions } from "../../action-reader/actionReader-evaluateConditions.js";
+import { matchAndPickActionReaderAction } from "../../action-reader/actionReader-matchAndPickAction.js";
+import { parseActionReaderTargetRule } from "../../action-reader/actionReader-parseTargetRule.js";
+import { buildAndPickActionReaderTargets } from "../../action-reader/actionReader-buildAndPickTargets.js";
+
+// ── Board access ────────────────────────────────────────────────────────────
 function selfCombatant(director, snap) {
   return director?.dCombat?.combatants?.find?.((c) => c.tokenId === snap?.tokenId) ?? null;
 }
 
-// Living opposing combatants, from the director's authoritative model.
-function livingOpponents(director, snap) {
+function sides(director, snap) {
   const dc = director?.dCombat;
-  if (!dc) return [];
-  const mySide = selfCombatant(director, snap)?.side ?? "party";
-  return (dc.combatants ?? []).filter((c) => c.side !== mySide && !c.isDefeatedLive?.());
+  const mine = selfCombatant(director, snap)?.side ?? "party";
+  const all = (dc?.combatants ?? []).filter((c) => !c.isDefeatedLive?.());
+  return {
+    allies: all.filter((c) => c.side === mine),
+    foes: all.filter((c) => c.side !== mine),
+  };
 }
 
-function readHp(actorDoc) {
-  const p = actorDoc?.system?.props ?? {};
-  const n = Number(p.current_hp);
-  return Number.isFinite(n) ? n : Infinity;
-}
+const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; };
+const hpOf = (dc) => num(dc?.actorDoc?.system?.props?.current_hp) ?? Infinity;
+const tokenUuidOf = (dc) => dc?.tokenUuid ?? dc?.tokenDoc?.uuid ?? null;
 
-// A PC can make a weapon Attack if it has something in its main hand. CSB stores
-// the equipped hand as a bare name on `main_hand`; an empty/SHI hand means no
-// usable weapon (see readWeapon in snapshot.js), and we'd rather Guard than emit
-// an Attack the TARGET stage can't resolve a weapon for.
+// CSB stores the equipped hand as a bare name; empty/SHI means nothing usable
+// (see readWeapon in snapshot.js). Better to Guard than to emit an Attack the
+// TARGET stage cannot resolve a weapon for.
 function hasMainWeapon(actorDoc) {
   const raw = String(actorDoc?.system?.props?.main_hand ?? "").trim();
   return raw !== "" && raw.toUpperCase() !== "SHI";
 }
 
-function tokenUuidOf(dc) {
-  return dc?.tokenUuid ?? dc?.tokenDoc?.uuid ?? null;
+// ── Affinity-aware target choice for the BASIC ATTACK ────────────────────────
+// The first live run had the party plinking a boss with no regard for what it was
+// immune to. A basic attack carries the weapon's damage type, so score every
+// living foe by how that element lands, and break ties by who is closest to dying.
+const AFFINITY_SCORE = { VU: 3, NA: 1, RS: 0.4, IM: 0, AB: -5 };
+
+function bestAttackTarget(actorDoc, foes) {
+  const element = String(actorDoc?.system?.props?.weapon1_damagetype ?? "").trim().toLowerCase();
+
+  const scored = foes.map((dc) => {
+    // getAffinityForType takes the ACTOR (it resolves the map itself) and
+    // normalizes the damage type for us.
+    let aff = "NA";
+    try {
+      if (element) aff = AR.getAffinityForType(dc.actorDoc, element) ?? "NA";
+    } catch { /* unknown element → treat as neutral */ }
+    const affScore = AFFINITY_SCORE[String(aff).toUpperCase()] ?? 1;
+    return { dc, aff, affScore, hp: hpOf(dc) };
+  });
+
+  // Prefer anything we don't actively feed. Only if EVERY foe absorbs/ignores our
+  // element do we accept the least-bad one — swinging is still better than idling.
+  const viable = scored.filter((s) => s.affScore > 0);
+  const pool = viable.length ? viable : scored;
+
+  pool.sort((a, b) => (b.affScore - a.affScore) || (a.hp - b.hp));
+  return pool[0] ?? null;
 }
 
-// Decide a turn. Returns a compose bundle (the same shape composeAction hands to
-// applyComposedBundleAndAdvance) or null to let the caller fall through to its
-// terminal Guard fallback.
-//
-// Attack bundle shape is the PC one — `attackMode: "main"`, no weapon uuid. The
-// TARGET stage derives the weapon from the attacker's equipped hand
-// (state-handlers' Attack branch), which is exactly what a human click produces.
+// ── Bundle builders (PC shapes) ──────────────────────────────────────────────
+// A PC weapon attack is `attackMode: "main"` with NO item uuid — TARGET derives
+// the weapon from the equipped hand. (An NPC attack is the other shape entirely:
+// attackMode "npc" + npcAttackItemUuid. Don't cross the two.)
+const attackBundle = (targetUuids) => ({ command: "Attack", attackMode: "main", targetUuids });
+
+function castBundle(item, targetUuids) {
+  const st = String(item?.system?.props?.skill_type ?? "").trim().toLowerCase();
+  const command = st === "spell" ? "Spell" : "Skill";
+  return { command, skillUuid: item.uuid, sourceItemUuid: item.uuid, targetUuids };
+}
+
+// ── The policy API handed to profile.policy() ────────────────────────────────
+function makePolicyApi(director, snap, self) {
+  const { allies, foes } = sides(director, snap);
+  return {
+    self: self?.actorDoc ?? null,
+    round: director?.dCombat?.round ?? 0,
+    allies: () => allies,
+    foes: () => foes,
+    findItem(name) {
+      const want = String(name).trim().toLowerCase();
+      return self?.actorDoc?.items?.find?.((i) => String(i.name).trim().toLowerCase() === want) ?? null;
+    },
+    castOn(item, targetDcs) {
+      const uuids = targetDcs.map(tokenUuidOf).filter(Boolean);
+      if (!item || !uuids.length) return null;
+      return castBundle(item, uuids);
+    },
+  };
+}
+
+// ── The rotation: profile rows through the real ActionReader ─────────────────
+async function runRotation({ token, combat, combatant, rows }) {
+  if (!rows?.length) return null;
+  try {
+    const ctx = AR.createBaseContext();
+
+    await resolveActionReaderPerformer(ctx, { token, combat, combatant });
+    if (!ctx.performer?.actor) return null;
+
+    await buildActionReaderContext(ctx);
+    if (!ctx.actorData) return null;
+
+    // THE INJECTION. readPatternTable reads exactly this field; a PC has no
+    // action_pattern_table prop, so we hand it the profile's rows instead. No
+    // action-reader edit, and every downstream stage behaves as it does for a
+    // monster.
+    ctx.actorData.actionPatternRowsRaw = rows;
+
+    await readActionReaderPatternTable(ctx);
+    await evaluateActionReaderConditions(ctx);
+    await matchAndPickActionReaderAction(ctx);
+    if (!ctx.chosenAction) return null;
+
+    await parseActionReaderTargetRule(ctx);
+    await buildAndPickActionReaderTargets(ctx);
+    if (!ctx.chosenTargets?.length) return null;
+
+    const item = ctx.chosenAction.item
+      ?? (ctx.chosenAction.itemSnapshot?.uuid ? await fromUuid(ctx.chosenAction.itemSnapshot.uuid) : null);
+    if (!item?.uuid) return null;
+
+    const uuids = ctx.chosenTargets.map((t) => t?.tokenDocument?.uuid ?? t?.uuid).filter(Boolean);
+    if (!uuids.length) return null;
+
+    return { bundle: castBundle(item, uuids), name: item.name };
+  } catch (e) {
+    warn("[SIM] player-brain: rotation threw", e);
+    return null;
+  }
+}
+
+// ── Public ───────────────────────────────────────────────────────────────────
+// Returns a compose bundle, or null to let the caller fall back to Guard.
 export async function decidePlayerAction(director, snap) {
-  const actorDoc = selfCombatant(director, snap)?.actorDoc ?? null;
+  const self = selfCombatant(director, snap);
+  const actorDoc = self?.actorDoc ?? null;
+  if (!actorDoc) return null;
 
+  const profile = profileFor(actorDoc.name);
+  const { foes } = sides(director, snap);
+
+  // 1. Policy — the things a rotation table cannot say (heal a dying ally).
+  if (typeof profile.policy === "function") {
+    try {
+      const bundle = profile.policy(makePolicyApi(director, snap, self));
+      if (bundle) {
+        SimMode.note("decide", `${snap?.name} → ${bundle.command} (policy)`);
+        return bundle;
+      }
+    } catch (e) {
+      warn(`[SIM] player-brain: ${actorDoc.name} policy threw — falling through`, e);
+    }
+  }
+
+  // 2. Rotation — the profile's rows, through the monsters' own AI engine.
+  const token = canvas?.tokens?.get(snap?.tokenId) ?? null;
+  const combat = director?.combat ?? game.combat ?? null;
+  const combatant = combat?.combatants?.find?.((c) => c.tokenId === snap?.tokenId) ?? null;
+
+  if (token) {
+    const picked = await runRotation({ token, combat, combatant, rows: profile.rows });
+    if (picked) {
+      SimMode.note("decide", `${snap?.name} → ${picked.bundle.command} "${picked.name}" (rotation)`);
+      return picked.bundle;
+    }
+  }
+
+  // 3. Basic attack, aimed with its head up.
   if (!hasMainWeapon(actorDoc)) {
-    log(`[SIM] player-brain: ${snap?.name} has no main-hand weapon — no attack available`);
+    log(`[SIM] player-brain: ${snap?.name} has no main-hand weapon`);
     return null;
   }
+  if (!foes.length) return null;
 
-  const foes = livingOpponents(director, snap);
-  if (!foes.length) {
-    log(`[SIM] player-brain: ${snap?.name} sees no living opponents`);
-    return null;
-  }
+  const pick = bestAttackTarget(actorDoc, foes);
+  const uuid = pick ? tokenUuidOf(pick.dc) : null;
+  if (!uuid) return null;
 
-  // Focus fire the closest-to-dead. Crude, but it's the one heuristic a real
-  // party reliably does apply, and it keeps the floor from being absurdly low.
-  const target = foes.slice().sort((a, b) => readHp(a.actorDoc) - readHp(b.actorDoc))[0];
-  const targetUuid = tokenUuidOf(target);
-  if (!targetUuid) return null;
-
-  log(`[SIM] player-brain: ${snap?.name} → Attack ${target.name} (hp ${readHp(target.actorDoc)})`);
-  return { command: "Attack", attackMode: "main", targetUuids: [targetUuid] };
+  SimMode.note("decide", `${snap?.name} → Attack ${pick.dc.name} [${pick.aff}] (basic)`);
+  return attackBundle([uuid]);
 }
