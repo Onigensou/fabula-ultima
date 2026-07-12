@@ -61,6 +61,7 @@ const _state = {
   budget: new Map(),    // `round:key` → times spent (Protect once/round, …)
   hint: null,           // next picker's answer, when a brain already knows it
   elementFallback: null, // card-scoped: best element vs the current target
+  focus: null,          // the party's called target (tokenUuid)
   blocked: new Map(),   // turnKey → Set<action name that bounced>
 };
 
@@ -145,6 +146,7 @@ export const SimMode = {
     _state.budget = new Map();
     _state.hint = null;
     _state.elementFallback = null;
+    _state.focus = null;
     _state.active = true;
 
     // Reactions ride the pre-existing harness override rather than a new
@@ -238,6 +240,17 @@ export const SimMode = {
   // persists for the whole card, because we don't know how many menus will open.
   setElementFallback(el) { _state.elementFallback = el ?? null; },
   elementFallback() { return _state.elementFallback ?? null; },
+
+  // ── Focus fire ────────────────────────────────────────────────────────────
+  // The party's called target, shared across all four brains. This is not the AI
+  // cheating — it is the single most ordinary thing that happens at a real table
+  // ("okay, everyone on the big one"), and the sim had no way to express it, so
+  // four characters each picked their own favourite and spread damage across the
+  // whole enemy line. Spread damage kills nothing; nothing dying means nobody stops
+  // acting; and that is a large part of why the AI takes 9 rounds where the table
+  // takes 3.
+  setFocus(tokenUuid) { _state.focus = tokenUuid ?? null; },
+  focus() { return _state.focus ?? null; },
 
   pace() {
     return PACE[_state.config.pace] ?? PACE.fast;

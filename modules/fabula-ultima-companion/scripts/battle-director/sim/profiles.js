@@ -24,6 +24,8 @@
 //   - Blanche's Adoration-cost skills are not cost-checked (feasibility only
 //     parses MP/IP), so her rotation stays deliberately thin
 
+import { SimMode } from "./sim-mode.js";
+
 // ── Tuning ──────────────────────────────────────────────────────────────────
 // The judgement calls, in one place, so they can be moved from what the fights
 // actually look like rather than from what anyone guessed up front. These are the
@@ -32,6 +34,10 @@ export const TUNING = {
   // What counts as a hit worth spending a defensive reaction on: this fraction of
   // the target's MAX hp, or lethal.
   strongHitFraction: 0.30,
+  // …and once it's down to the LAST enemy, the fight is won on action economy and
+  // the only way to lose it is to drop somebody. So Blanche stops saving Protect for
+  // a big hit that may never come and starts eating anything worth eating.
+  strongHitFractionEndgame: 0.12,
   // What counts as "she can take it": at most this fraction of HER max hp.
   safeDamageFraction: 0.10,
   // Blanche's Protect, per round.
@@ -86,6 +92,15 @@ export const TUNING = {
   // Revival. The count the party carries is set per RUN (the sim panel), because
   // it's a scenario variable, not a character trait.
   phoenixFeather: /phoenix\s*feather/i,
+
+  // ── Focus fire ────────────────────────────────────────────────────────────
+  // A wounded enemy is a magnet: below this fraction of max HP the party drops
+  // whatever it was doing and finishes them.
+  focusLowHpFraction: 0.40,
+  // Deviating from the called target is allowed only when the focus is a genuinely
+  // terrible target for THIS character (they'd feed an absorb). Otherwise everyone
+  // hits the same thing, because concentrated damage is what actually kills.
+  focusRespectAffinity: true,
 };
 
 // Build one pattern row in the raw shape readPatternTable expects
@@ -167,6 +182,13 @@ function hinaHealPolicy(api) {
   const atRisk = hurt.filter((a) => a.frac <= TUNING.healKoRiskFraction);
   const critical = hurt.some((a) => a.frac <= TUNING.healEmergencyFraction);
 
+  // ENDGAME. One enemy left means four actions against one — the fight is already
+  // won on economy, and all that remains is closing it out without losing anybody.
+  // So the pressure to keep pushing damage comes off: top the party up now rather
+  // than waiting for someone to nearly die. Racing a fight you have already won is
+  // how a clean victory turns into a casualty.
+  if (api.isEndgame()) return api.castOn(api.findItem("Heal"), hurt.slice(0, TUNING.healMaxTargets).map((a) => a.dc));
+
   // 1. Nobody is close to dying → keep casting Ice.
   if (!atRisk.length && !critical) return null;
 
@@ -190,6 +212,69 @@ function hinaHealPolicy(api) {
 }
 
 export const ELEMENTS = ["air", "bolt", "dark", "earth", "fire", "ice", "light", "poison"];
+
+// ── Focus fire ──────────────────────────────────────────────────────────────
+// Four characters each picking their own favourite target spreads damage across the
+// whole enemy line, and spread damage kills nothing. Nothing dying means nobody
+// stops acting — which is a large part of why the AI needs 9 rounds where the table
+// needs 3. Real players just say "everyone on the big one", so the party gets to do
+// the same: ONE called target, shared by all four brains, held until it dies.
+//
+// Two rules, both of them things a table does without thinking:
+//   1. A wounded enemy is a magnet. Anything under focusLowHpFraction gets finished,
+//      overriding the standing call — a corpse stops taking turns.
+//   2. Otherwise, stick with the call. Switching targets mid-fight is how you end up
+//      with three enemies on half health instead of one dead one.
+//
+// The fresh call goes to whoever dies soonest (lowest current HP), because removing
+// a body is worth more than damaging two.
+//
+// Yes, this "knows" enemy HP the players wouldn't. That's the user's explicit call
+// and it is the right one: at a real table the GM's descriptions, the damage numbers
+// and simple counting give players a good enough read, and modelling the fog would
+// mostly add noise to a balance signal.
+export function refreshFocus(api) {
+  const foes = api.foes();
+  if (!foes.length) { api.setFocus(null); return null; }
+
+  const hurt = foes
+    .filter((f) => pct(propNum(f.actorDoc, "current_hp"), propNum(f.actorDoc, "max_hp")) <= TUNING.focusLowHpFraction)
+    .sort((a, b) => propNum(a.actorDoc, "current_hp") - propNum(b.actorDoc, "current_hp"));
+
+  if (hurt.length) {
+    const kill = hurt[0];
+    if (api.focusUuid() !== kill.tokenUuid) {
+      SimMode.note("focus", `party switches to ${kill.name} — they're nearly down`);
+    }
+    api.setFocus(kill.tokenUuid);
+    return kill;
+  }
+
+  // Standing call still alive? Keep it.
+  const current = foes.find((f) => f.tokenUuid === api.focusUuid());
+  if (current) return current;
+
+  const call = foes
+    .slice()
+    .sort((a, b) => propNum(a.actorDoc, "current_hp") - propNum(b.actorDoc, "current_hp"))[0];
+  api.setFocus(call.tokenUuid);
+  SimMode.note("focus", `party calls the target: ${call.name}`);
+  return call;
+}
+
+// The called target, IF it's a sane thing for this character to hit. A character
+// whose element the focus absorbs would be healing it — they peel off rather than
+// blindly obey the call, which is also what a real player does.
+export function focusFor(api, element = null) {
+  const foes = api.foes();
+  const focus = foes.find((f) => f.tokenUuid === api.focusUuid());
+  if (!focus) return null;
+  if (!TUNING.focusRespectAffinity || !element) return focus;
+
+  const aff = api.affinityOf(focus, element);
+  if (aff === "AB" || aff === "IM") return null;   // don't feed it — pick your own
+  return focus;
+}
 
 // ── Revival (party-wide, runs before everything) ────────────────────────────
 // A downed ally is a death spiral: the party loses a quarter of its output, takes
@@ -337,7 +422,8 @@ function hinaOffense(api) {
     if (finishable) return api.castOn(iceberg, [finishable]);
   }
 
-  // 2. Enough targets weak to ice → Glacies hits up to three of them.
+  // 2. Enough targets weak to ice → Glacies hits up to three of them. (Only worth
+  //    breaking focus for: an AOE isn't spreading damage, it's adding it.)
   if (glacies) {
     const weak = foes.filter((f) => api.affinityOf(f, "ice") === "VU");
     if (weak.length >= TUNING.glaciesMinWeak) {
@@ -345,8 +431,11 @@ function hinaOffense(api) {
     }
   }
 
-  // 3. Otherwise the bigger single hit, on whoever it lands hardest against.
+  // 3. Single hit — on the party's CALLED target if ice does anything to them.
   if (iceberg) {
+    const called = focusFor(api, "ice");
+    if (called) return api.castOn(iceberg, [called]);
+
     const target = foes
       .filter(takesIce)
       .sort((a, b) => {
@@ -474,9 +563,9 @@ export const PROFILES = {
 
       const foes = api.foes();
       if (!foes.length) return null;
-      // Detonate is VAR_ELEMENT, so aim it at whoever is worst off rather than
-      // trying to out-think an element we don't know yet.
-      const target = foes.slice().sort((a, b) =>
+      // Detonate is VAR_ELEMENT, so there is no element to reason about — just put
+      // it on the called target.
+      const target = focusFor(api) ?? foes.slice().sort((a, b) =>
         propNum(a.actorDoc, "current_hp") - propNum(b.actorDoc, "current_hp"))[0];
       return api.castOn(spell, [target]);
     },

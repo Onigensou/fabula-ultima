@@ -24,7 +24,7 @@
 // See [[project_action_pattern_ai]] and [[project_enemy_autopilot]].
 
 import { log, warn } from "../logger.js";
-import { profileFor, mpItemPolicy, hpItemPolicy, revivePolicy } from "./profiles.js";
+import { profileFor, mpItemPolicy, hpItemPolicy, revivePolicy, refreshFocus } from "./profiles.js";
 import { SimMode } from "./sim-mode.js";
 import { canAffordItem } from "./cost.js";
 import { protectExhausted } from "./reaction-brain.js";
@@ -132,8 +132,23 @@ function findConsumableRestoring(actorDoc, resource) {
 // living foe by how that element lands, and break ties by who is closest to dying.
 const AFFINITY_SCORE = { VU: 3, NA: 1, RS: 0.4, IM: 0, AB: -5 };
 
-function bestAttackTarget(actorDoc, foes) {
+function bestAttackTarget(actorDoc, foes, focusUuid = null) {
   const element = String(actorDoc?.system?.props?.weapon1_damagetype ?? "").trim().toLowerCase();
+
+  // The party's called target wins — UNLESS swinging at it would feed an absorb or
+  // do literally nothing, in which case peel off. Concentrated damage is what kills;
+  // four people each hitting their own favourite is how you end up with three
+  // enemies on half HP instead of one corpse.
+  if (focusUuid) {
+    const called = foes.find((f) => f.tokenUuid === focusUuid);
+    if (called) {
+      let aff = "NA";
+      try { if (element) aff = String(AR.getAffinityForType(called.actorDoc, element) ?? "NA").toUpperCase(); } catch {}
+      if (aff !== "AB" && aff !== "IM") {
+        return { dc: called, aff, affScore: AFFINITY_SCORE[aff] ?? 1, hp: hpOf(called) };
+      }
+    }
+  }
 
   const scored = foes.map((dc) => {
     // getAffinityForType takes the ACTOR (it resolves the map itself) and
@@ -330,6 +345,14 @@ function makePolicyApi(director, snap, self, creatables = []) {
     budgetSpent(round, key) { return SimMode.spent(round, key); },
     spendBudget(round, key) { SimMode.spend(round, key); },
 
+    // The party's called target — shared across all four brains.
+    focusUuid() { return SimMode.focus(); },
+    setFocus(uuid) { SimMode.setFocus(uuid); },
+
+    // Down to the last enemy? Then the action-economy war is already won: four
+    // actions against one. The fight is about closing it out safely, not racing.
+    isEndgame() { return foes.length <= 1; },
+
     // Pre-answer the menu this action is about to open (Zarg's Gadgets element).
     // Consumed once, by the next picker.
     hintPick(hint) { SimMode.setPickHint(hint); },
@@ -437,6 +460,10 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), al
   const creatables = await fetchCreatables(actorDoc);
   const policyApi = makePolicyApi(director, snap, self, creatables);
 
+  // Agree on a target before anyone swings. Re-checked every turn so a wounded
+  // enemy pulls the whole party onto them mid-round, exactly as a table would.
+  refreshFocus(policyApi);
+
   // The party's item economy, ahead of everybody's own plan. Each of these abstains
   // on its own when it isn't the right call, so ordering them first doesn't make
   // anyone reckless — it just means a party that is bleeding out, dry, or a member
@@ -493,7 +520,7 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), al
   }
   if (!foes.length) return null;
 
-  const pick = bestAttackTarget(actorDoc, foes);
+  const pick = bestAttackTarget(actorDoc, foes, SimMode.focus());
   const uuid = pick ? tokenUuidOf(pick.dc) : null;
   if (!uuid) return null;
 

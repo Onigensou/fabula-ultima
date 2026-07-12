@@ -61,13 +61,13 @@ const curHpOf = (actor) => numOr(actor?.system?.props?.current_hp, 0);
 
 // Would this land hard enough to be worth spending a defensive reaction on?
 // "Strong" = it takes a serious bite out of the target, or it outright kills them.
-function isStrongHit(row, targetActor) {
+function isStrongHit(row, targetActor, bar = TUNING.strongHitFraction) {
   if (!row || row.hit === false) return false;
   const dmg = numOr(row.damage, 0);
   if (dmg <= 0) return false;
   if (dmg >= curHpOf(targetActor)) return true;                     // lethal
   const max = maxHpOf(targetActor);
-  return max > 0 && dmg / max >= TUNING.strongHitFraction;
+  return max > 0 && dmg / max >= bar;
 }
 
 // Would this attack even LAND on her? An action rolls one accuracy total against
@@ -167,11 +167,18 @@ function protectPolicy({ ar, reactorActor, director }) {
   const safe = canTankIt(ar, reactorActor);
   if (!safe.safe) return { decision: "skip", why: "she'd take the hit badly herself" };
 
+  // ENDGAME: one enemy left, so the fight is won on action economy and the only way
+  // to lose it now is to drop somebody. She stops holding Protect for the "big" hit
+  // and starts eating anything worth eating — there is no later to save it for.
+  const lastOne = (director?.dCombat?.combatants ?? [])
+    .filter((c) => c.side === "enemy" && !c.isDefeatedLive?.()).length <= 1;
+  const bar = lastOne ? TUNING.strongHitFractionEndgame : TUNING.strongHitFraction;
+
   // Whom is it aimed at? Anyone but her, who is about to get hit hard.
   const victims = rowsOf(ar)
     .filter((r) => r?.actorUuid && r.actorUuid !== reactorActor?.uuid)
     .map((r) => ({ row: r, actor: actorOf(r.actorUuid) }))
-    .filter((v) => v.actor && isStrongHit(v.row, v.actor));
+    .filter((v) => v.actor && isStrongHit(v.row, v.actor, bar));
 
   if (!victims.length) return { decision: "skip", why: "nothing worth stepping in front of" };
 
