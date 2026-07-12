@@ -541,8 +541,11 @@ export class ShopWindowApp {
         line-height:12px; white-space:nowrap;
       }
 
-      /* ── Presence: who's browsing what ── */
+      /* ── Presence: who's browsing what ──
+         Visibility is toggled by .has-viewers, never by an inline display:
+         clearing an inline style falls back to display:none and hides the chip. */
       .fu-shop-viewers { display:none; gap:4px; flex-wrap:wrap; margin-top:3px; }
+      .fu-shop-viewers.has-viewers { display:flex; }
       .fu-shop-viewer-chip {
         display:inline-flex; align-items:center; gap:3px;
         font-size:10px; font-weight:800; line-height:1.4;
@@ -554,6 +557,7 @@ export class ShopWindowApp {
         display:none; align-items:center; flex-wrap:wrap; gap:4px;
         margin-top:3px;
       }
+      .fu-shop-browsers.has-viewers { display:flex; }
       .fu-browsers-label {
         font-size:10px; font-weight:800; color:#5a3800; opacity:0.6;
         text-transform:uppercase; letter-spacing:0.05em; margin-right:2px;
@@ -704,17 +708,19 @@ export class ShopWindowApp {
   static _applyPresence(root, viewers) {
     if (!root) return;
 
-    // Reset everything this function owns
+    // Reset everything this function owns. Visibility is a class, not an inline
+    // display: clearing an inline style just falls back to the stylesheet's
+    // `display:none`, which would build the chips and then hide them.
     root.querySelectorAll(".fu-shop-row").forEach(row => {
       row.style.borderColor = "";
-      row.style.background  = "";
+      row.style.outline     = "";
       const strip = row.querySelector(".fu-shop-viewers");
-      if (strip) { strip.innerHTML = ""; strip.style.display = "none"; }
+      if (strip) { strip.innerHTML = ""; strip.classList.remove("has-viewers"); }
     });
     root.querySelectorAll(".fu-tab-dots").forEach(d => { d.innerHTML = ""; });
 
     const browsers = root.querySelector(".fu-shop-browsers");
-    if (browsers) { browsers.innerHTML = ""; browsers.style.display = "none"; }
+    if (browsers) { browsers.innerHTML = ""; browsers.classList.remove("has-viewers"); }
 
     if (!viewers?.length) return;
 
@@ -731,18 +737,16 @@ export class ShopWindowApp {
       const row = root.querySelector(`.fu-shop-row[data-item-uuid="${CSS.escape(itemUuid)}"]`);
       if (!row) continue;
 
+      // Outline only — a filled row fought with the sold-out/selected states and
+      // was far louder than the name badge it was meant to support.
       const lead = list[0];
       row.style.borderColor = lead.color;
-      row.style.background  = hexToRgba(lead.color, 0.13);
+      row.style.outline     = `1px solid ${lead.color}`;
 
       const strip = row.querySelector(".fu-shop-viewers");
       if (!strip) continue;
-      strip.style.display = "";
-      strip.innerHTML = list.map(v => `
-        <span class="fu-shop-viewer-chip"
-              style="color:${v.color}; border-color:${v.color}; background:${hexToRgba(v.color, 0.14)}">
-          ${v.isGM ? "👁" : "👤"} ${this._esc(v.label)}
-        </span>`).join("");
+      strip.classList.add("has-viewers");
+      strip.innerHTML = list.map(v => this._viewerChip(v)).join("");
     }
 
     // A dot on the tab of anyone whose pick lives in a category you aren't on,
@@ -764,13 +768,19 @@ export class ShopWindowApp {
 
     // Header roster line
     if (browsers) {
-      browsers.style.display = "";
-      browsers.innerHTML = `<span class="fu-browsers-label">Browsing:</span>` + viewers.map(v => `
-        <span class="fu-shop-viewer-chip"
-              style="color:${v.color}; border-color:${v.color}; background:${hexToRgba(v.color, 0.14)}">
-          ${v.isGM ? "👁" : "👤"} ${this._esc(v.label)}
-        </span>`).join("");
+      browsers.classList.add("has-viewers");
+      browsers.innerHTML = `<span class="fu-browsers-label">Browsing:</span>`
+        + viewers.map(v => this._viewerChip(v)).join("");
     }
+  }
+
+  // Name badge for one viewer, in their Foundry user colour. Label is the linked
+  // character's name — that's what the table calls each other — falling back to
+  // the user name when no actor is linked (a GM, usually).
+  static _viewerChip(v) {
+    return `<span class="fu-shop-viewer-chip"
+                  style="color:${v.color}; border-color:${v.color}; background:${hexToRgba(v.color, 0.12)}"
+                  title="${this._esc(v.label)}">${v.isGM ? "👁" : "👤"} ${this._esc(v.label)}</span>`;
   }
 
   // ──────────────────────────────────────────────────────────────
