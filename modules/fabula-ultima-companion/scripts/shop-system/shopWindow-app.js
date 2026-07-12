@@ -940,7 +940,7 @@ export class ShopWindowApp {
       // Someone else buying must not yank this reader out of what they were
       // looking at, so carry the selection and the scroll position across.
       const prevScroll = oldRoot.querySelector(".fu-shop-panel.active .fu-shop-list")?.scrollTop ?? 0;
-      if (state.selectedUuid && !actor.items.some(i => i.uuid === state.selectedUuid)) {
+      if (state.selectedUuid && !actor.items.find(i => i.uuid === state.selectedUuid)) {
         // The item they were reading just sold out from under them. Tell the room,
         // or everyone else keeps showing their badge on a row that no longer exists.
         state.selectedUuid = null;
