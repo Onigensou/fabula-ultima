@@ -388,12 +388,32 @@ async function simFallbackBundle(director, snap) {
   // Identify THIS combatant's turn. A re-entry into DECLARE for the same
   // (round, combatant) means the last action bounced — see SimMode's re-declare
   // guard. Retire it and let the brain pick again, rather than looping on it.
-  const turnKey = `${director?.dCombat?.round ?? 0}:${snap?.combatantId ?? snap?.tokenId ?? "?"}`;
+  // Is this turn a granted FREE ACTION? If so it carries an allow-list of the
+  // commands it may be spent on (Barrage grants a free Attack), exactly as the
+  // Octopath menu would enforce. Pass it down or the brain re-picks a Skill and
+  // the granted action is thrown away.
+  let allowedLabels = null;
+  let freeTag = "";
+  try {
+    const { freeActions } = await import("./free-actions.js");
+    const grant = freeActions.get?.(snap?.actorId);
+    if (grant?.enabledLabels?.length) {
+      allowedLabels = grant.enabledLabels;
+      freeTag = `:free:${grant.sourceLabel ?? "?"}`;
+      SimMode.note("free-action", `${snap?.name} has a free action from ${grant.sourceLabel ?? "?"} (${allowedLabels.join(", ")})`);
+    }
+  } catch (e) { warn("[SIM] free-action lookup threw", e); }
+
+  // The free action gets its OWN declaration space. Without `freeTag` a granted
+  // free Attack collides with the Attack the same combatant may already have made
+  // this round — the re-declare guard would read that as a bounce and Guard
+  // instead of taking the free shot.
+  const turnKey = `${director?.dCombat?.round ?? 0}:${snap?.combatantId ?? snap?.tokenId ?? "?"}${freeTag}`;
 
   for (let attempt = 0; attempt < 4; attempt++) {
     let bundle = null;
     try {
-      bundle = await decidePlayerAction(director, snap, SimMode.blockedForTurn(turnKey));
+      bundle = await decidePlayerAction(director, snap, SimMode.blockedForTurn(turnKey), allowedLabels);
     } catch (e) {
       warn("[SIM] player brain threw", e);
       break;

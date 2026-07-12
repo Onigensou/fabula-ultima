@@ -59,6 +59,7 @@
 
 import { log, warn } from "./logger.js";
 import { playUiHoverSfx } from "./director-ui-sfx.js";
+import { SimMode } from "./sim/sim-mode.js";
 
 const CSS_ID  = "fud-list-picker-style";
 const ROOT_ID = "fud-list-picker-root";
@@ -379,6 +380,28 @@ export async function pickFromList({
     ? sections
     : (Array.isArray(options) && options.length ? [{ label: null, hint: null, items: options }] : []);
   if (!groups.length) { warn("list-picker: no options provided — auto-cancelling"); return null; }
+
+  // ── Sim harness ───────────────────────────────────────────────────────────
+  // Skill-internal choices (Keren's Create Phantasm asking WHICH phantasm; element
+  // picks; mode picks) all land here. With nobody at the keyboard the FSM would
+  // park, so take the first ENABLED row — the same thing a player pressing Enter
+  // on a freshly-opened picker gets, since autoFocusFirst highlights row 0.
+  //
+  // This is a real fidelity limit and worth stating plainly: the sim always takes
+  // the FIRST option, never the smartest one. Where a choice actually matters
+  // (which element to conjure against a resistant enemy) that is a weaker play
+  // than a human would make — so it biases fights HARDER, not easier, and never
+  // silently flatters the party.
+  if (SimMode.active) {
+    const rows = groups.flatMap((g) => (Array.isArray(g?.items) ? g.items : []));
+    const enabled = rows.filter((r) => !r?.disabled);
+    const pick = enabled[0] ?? null;
+    if (!pick) { log("[SIM] list-picker: every row disabled — cancelling"); return multiSelect ? [] : null; }
+    const shown = String(pick.primary ?? pick.value ?? "?").replace(/<[^>]*>/g, "").trim();
+    log(`[SIM] list-picker "${title}" → auto-picked "${shown}"`);
+    SimMode.note("choice", `${title}: took "${shown}" (first option)`);
+    return multiSelect ? [pick.value] : pick.value;
+  }
 
   const key = overlayKey ?? director?.combatId ?? `lp-${++_spawnSeq}`;
   const prior = _overlays.get(key);

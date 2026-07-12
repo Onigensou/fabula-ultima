@@ -26,6 +26,7 @@
 import { log, warn } from "../logger.js";
 import { profileFor } from "./profiles.js";
 import { SimMode } from "./sim-mode.js";
+import { canAffordItem } from "./cost.js";
 
 import { ActionReaderCore as AR } from "../../action-reader/actionReader-core.js";
 import { resolveActionReaderPerformer } from "../../action-reader/actionReader-resolvePerformer.js";
@@ -127,14 +128,29 @@ function makePolicyApi(director, snap, self) {
 }
 
 // ── The rotation: profile rows through the real ActionReader ─────────────────
-async function runRotation({ token, combat, combatant, rows, blocked }) {
-  // Drop anything that already bounced this turn BEFORE the engine sees it, so
-  // the priority window and weighted pick only ever consider workable actions.
-  const usable = blocked?.size
-    ? rows.filter((r) => !blocked.has(String(r?.data?.action_pattern_name ?? "").trim().toLowerCase()))
-    : rows;
-  if (!usable?.length) return null;
-  const filteredRows = usable;
+async function runRotation({ token, combat, combatant, actorDoc, rows, blocked }) {
+  const rowName = (r) => String(r?.data?.action_pattern_name ?? "").trim();
+
+  // Drop anything that already bounced this turn, and anything the actor cannot
+  // PAY for. The affordability pass is ours because ActionReader's feasibility
+  // check only prices mp/ip/zenit — see cost.js. Both filters run BEFORE the
+  // engine sees the rows, so the priority window and weighted pick only ever
+  // consider actions that can actually happen.
+  const filteredRows = rows.filter((r) => {
+    const name = rowName(r);
+    if (blocked?.has(name.toLowerCase())) return false;
+
+    const item = actorDoc?.items?.find?.((i) => String(i.name).trim().toLowerCase() === name.toLowerCase());
+    if (!item) return true;   // not an item we own → let the engine drop it
+
+    const afford = canAffordItem(actorDoc, item);
+    if (!afford.ok) {
+      SimMode.note("cost", `${actorDoc.name} can't afford ${name} (${afford.have ?? 0}/${afford.need} ${afford.res})`);
+      return false;
+    }
+    return true;
+  });
+  if (!filteredRows.length) return null;
   try {
     const ctx = AR.createBaseContext();
 
@@ -177,7 +193,7 @@ async function runRotation({ token, combat, combatant, rows, blocked }) {
 // Returns a compose bundle, or null to let the caller fall back to Guard.
 // `blocked` = action names that already bounced this turn (SimMode's re-declare
 // guard) — skip them at every layer, or we just re-offer the thing that failed.
-export async function decidePlayerAction(director, snap, blocked = new Set()) {
+export async function decidePlayerAction(director, snap, blocked = new Set(), allowedLabels = null) {
   const self = selfCombatant(director, snap);
   const actorDoc = self?.actorDoc ?? null;
   if (!actorDoc) return null;
@@ -186,11 +202,22 @@ export async function decidePlayerAction(director, snap, blocked = new Set()) {
   const { foes } = sides(director, snap);
   const isBlocked = (name) => blocked.has(String(name ?? "").trim().toLowerCase());
 
+  // A FREE ACTION grant restricts what may be declared (Zarg's Barrage grants a
+  // free ATTACK; Counter Pass grants only Passes). The Octopath menu greys the
+  // rest out, so the brain must honour the same allow-list — otherwise it offers
+  // a Skill the free action can't be spent on, the declaration bounces, and the
+  // granted attack is silently lost. Which is exactly what happened: Zarg cast
+  // Barrage every turn and never once fired the shot it paid for.
+  const allow = Array.isArray(allowedLabels) && allowedLabels.length
+    ? new Set(allowedLabels.map((l) => String(l).trim().toLowerCase()))
+    : null;
+  const permits = (cmd) => !allow || allow.has(String(cmd).trim().toLowerCase());
+
   // 1. Policy — the things a rotation table cannot say (heal a dying ally).
   if (typeof profile.policy === "function") {
     try {
       const bundle = profile.policy(makePolicyApi(director, snap, self));
-      if (bundle && !isBlocked(bundle._name)) return bundle;
+      if (bundle && !isBlocked(bundle._name) && permits(bundle.command)) return bundle;
     } catch (e) {
       warn(`[SIM] player-brain: ${actorDoc.name} policy threw — falling through`, e);
     }
@@ -201,12 +228,18 @@ export async function decidePlayerAction(director, snap, blocked = new Set()) {
   const combat = director?.combat ?? game.combat ?? null;
   const combatant = combat?.combatants?.find?.((c) => c.tokenId === snap?.tokenId) ?? null;
 
-  if (token) {
-    const picked = await runRotation({ token, combat, combatant, rows: profile.rows, blocked });
-    if (picked) return picked.bundle;
+  // Under a free-action grant that doesn't permit Skill/Spell (the common case:
+  // "Attack"), skip the rotation entirely and go spend the granted attack.
+  const rotationAllowed = permits("Skill") || permits("Spell");
+
+  if (token && rotationAllowed) {
+    const picked = await runRotation({ token, combat, combatant, actorDoc, rows: profile.rows, blocked });
+    if (picked && permits(picked.bundle.command)) return picked.bundle;
   }
 
-  // 3. Basic attack, aimed with its head up.
+  // 3. Basic attack, aimed with its head up. Also the landing spot for a granted
+  // free Attack.
+  if (!permits("Attack")) return null;
   if (!hasMainWeapon(actorDoc)) {
     log(`[SIM] player-brain: ${snap?.name} has no main-hand weapon`);
     return null;
