@@ -5600,7 +5600,11 @@ async function applyApplyAeEffect(row, ctx) {
     // ticking entirely.
     const flagsNS = template.flags?.[FLAG_NS] ?? {};
     const explicit = Number(template.duration?.rounds);
-    const lifetimeMode = String(flagsNS.lifetimeMode ?? "").trim().toLowerCase();
+    // `ae_lifetime_mode` lets a row override the template's lifecycle for THIS
+    // application (mirrors `ae_initial_charges`) — e.g. apply the canonical Flying
+    // as a bearer-turn charge countdown (`target_turn_end` + `ae_initial_charges`)
+    // so the BD charge badge shows N → … → 1 on the token, without a per-skill copy.
+    const lifetimeMode = String(row.ae_lifetime_mode ?? flagsNS.lifetimeMode ?? "").trim().toLowerCase();
     // Per-AE lifecycle mode (homebrew):
     //   - lifetimeMode === "round_end"  → expires via tickDirectorAEsAtRoundEnd
     //     at the END of the round it was applied in (Rampart). The

@@ -64,6 +64,7 @@ import { initTestBattleTool } from "./test-battle-tool.js";
 import { registerBuiltinReactor, clearBuiltinReactors } from "./instance-settle.js";
 import { crisisReactor } from "./crisis-reactor.js";
 import { defeatReactor } from "./defeat-reactor.js";
+import { derivedStatusReactor } from "./derived-status-reactor.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initKeywordSuggest } from "./keyword-suggest.js";
 import { initDevToolsMenu, registerDevTool } from "./dev-tools-menu.js";
@@ -244,6 +245,7 @@ async function start(arg) {
   clearBuiltinReactors();
   registerBuiltinReactor(crisisReactor);
   registerBuiltinReactor(defeatReactor);
+  registerBuiltinReactor(derivedStatusReactor);
 
   _instance = director;
   try {
@@ -531,6 +533,7 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   clearBuiltinReactors();
   registerBuiltinReactor(crisisReactor);
   registerBuiltinReactor(defeatReactor);
+  registerBuiltinReactor(derivedStatusReactor);
 
   _instance = director;
 
