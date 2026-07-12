@@ -7721,9 +7721,9 @@
       "away_name_3": "",
       "away_name_4": "",
       "battle_bgm": "Fabula Battle Theme",
-      "battle_log": "[\n  {\n    \"ts\": \"2026-07-11T17:46:35.847Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"poison\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 58,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 7\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 58 Poison damage to Dryad [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:46:35.999Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"poison\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 58,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 7\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 58 Poison damage to Dryad [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:48:57.686Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 7,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 27 Null damage to Dryad [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:48:57.945Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 7,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 27 Null damage to Dryad [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:49:37.185Z\",\n    \"accuracy\": \"16\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 44,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 44 Ice damage to Pyrefly [Vulnerable]\"\n  }\n]",
-      "battle_log_table": {
-        "0": {
+      "battle_log": "[\n  {\n    \"ts\": \"2026-07-11T17:46:35.847Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"poison\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 58,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 7\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 58 Poison damage to Dryad [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:46:35.999Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"poison\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 58,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 7\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 58 Poison damage to Dryad [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:48:57.686Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 7,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 27 Null damage to Dryad [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:48:57.945Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 7,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 27 Null damage to Dryad [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-11T17:49:37.185Z\",\n    \"accuracy\": \"16\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"Pyrefly\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 44,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 20,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 44 Ice damage to Pyrefly [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-12T13:06:32.841Z\",\n    \"accuracy\": \"22\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"dark\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 31,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999968\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 31 Dark damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-12T13:06:52.783Z\",\n    \"accuracy\": \"12\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"bolt\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 50,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999968,\n        \"to\": 999918\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 50 Bolt damage to BD Dummy Enemy [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-12T13:07:18.826Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"air\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 0,\n      \"effectiveness\": \"Immune\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999918,\n        \"to\": 999918\n      },\n      \"mp\": null,\n      \"shield\": null,\n      \"affected\": false,\n      \"noEffectReason\": \"Immune\"\n    },\n    \"summary\": \"Zarg deals 0 Air damage to BD Dummy Enemy [Immune]\"\n  }\n]",
+      "battle_log_table": [
+        {
           "$deleted": false,
           "accuracy": "17",
           "affinity": "Vulnerable",
@@ -7738,7 +7738,7 @@
           "value_type": "HP",
           "weapon_type": "Bow"
         },
-        "1": {
+        {
           "$deleted": false,
           "accuracy": "17",
           "affinity": "Vulnerable",
@@ -7753,7 +7753,7 @@
           "value_type": "HP",
           "weapon_type": "Bow"
         },
-        "2": {
+        {
           "$deleted": false,
           "accuracy": "17",
           "affinity": "Normal",
@@ -7768,7 +7768,7 @@
           "value_type": "HP",
           "weapon_type": "Bow"
         },
-        "3": {
+        {
           "$deleted": false,
           "accuracy": "17",
           "affinity": "Normal",
@@ -7783,7 +7783,7 @@
           "value_type": "HP",
           "weapon_type": "Bow"
         },
-        "4": {
+        {
           "$deleted": false,
           "accuracy": "16",
           "affinity": "Vulnerable",
@@ -7797,8 +7797,53 @@
           "value": "44",
           "value_type": "HP",
           "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "22",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Zarg",
+          "damage_type": "Dark",
+          "efficiency": "100%",
+          "range": "Ranged",
+          "source_type": "Attack",
+          "value": "31",
+          "value_type": "HP",
+          "weapon_type": "Bow"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "12",
+          "affinity": "Vulnerable",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Zarg",
+          "damage_type": "Bolt",
+          "efficiency": "100%",
+          "range": "Ranged",
+          "source_type": "Attack",
+          "value": "50",
+          "value_type": "HP",
+          "weapon_type": "Bow"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "15",
+          "affinity": "Immune",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Zarg",
+          "damage_type": "Air",
+          "efficiency": "100%",
+          "range": "Ranged",
+          "source_type": "Attack",
+          "value": "—",
+          "value_type": "HP",
+          "weapon_type": "Bow"
         }
-      },
+      ],
       "battle_tile_percentage": "0",
       "bench_currenthp_1": "0",
       "bench_currenthp_2": "0",
