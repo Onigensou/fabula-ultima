@@ -27,6 +27,7 @@ import { log, warn } from "../logger.js";
 import { profileFor } from "./profiles.js";
 import { SimMode } from "./sim-mode.js";
 import { canAffordItem } from "./cost.js";
+import { protectExhausted } from "./reaction-brain.js";
 
 import { ActionReaderCore as AR } from "../../action-reader/actionReader-core.js";
 import { resolveActionReaderPerformer } from "../../action-reader/actionReader-resolvePerformer.js";
@@ -115,15 +116,34 @@ function makePolicyApi(director, snap, self) {
     round: director?.dCombat?.round ?? 0,
     allies: () => allies,
     foes: () => foes,
+
     findItem(name) {
       const want = String(name).trim().toLowerCase();
       return self?.actorDoc?.items?.find?.((i) => String(i.name).trim().toLowerCase() === want) ?? null;
     },
+
     castOn(item, targetDcs) {
       const uuids = targetDcs.map(tokenUuidOf).filter(Boolean);
       if (!item || !uuids.length) return null;
+      // Only offer an action we can actually pay for — feasibility upstream can't
+      // price custom resources (see cost.js).
+      if (!canAffordItem(self?.actorDoc, item).ok) return null;
       return castBundle(item, uuids);
     },
+
+    // A combatant's affinity to an element ("VU"/"RS"/"IM"/"AB"/"NA").
+    affinityOf(dc, element) {
+      try { return String(AR.getAffinityForType(dc?.actorDoc, element) ?? "NA").toUpperCase(); }
+      catch { return "NA"; }
+    },
+
+    // Pre-answer the menu this action is about to open (Zarg's Gadgets element).
+    // Consumed once, by the next picker.
+    hintPick(hint) { SimMode.setPickHint(hint); },
+
+    // Has the party's defensive answer already been spent this round? Hina's heal
+    // is explicitly gated on this.
+    protectExhausted(round) { return protectExhausted(round); },
   };
 }
 

@@ -395,7 +395,25 @@ export async function pickFromList({
   if (SimMode.active) {
     const rows = groups.flatMap((g) => (Array.isArray(g?.items) ? g.items : []));
     const enabled = rows.filter((r) => !r?.disabled);
-    const pick = enabled[0] ?? null;
+
+    // A brain that already knows the answer leaves a hint (WHICH element to load
+    // into Zarg's Gadgets, WHICH ally Blanche is covering). Match it; fall back to
+    // the first row when the menu doesn't offer what we asked for.
+    const hint = SimMode.takePickHint();
+    let pick = null;
+    if (hint) {
+      const wanted = String(hint.label ?? hint.actorUuid ?? hint.tokenUuid ?? "").trim().toLowerCase();
+      pick = enabled.find((r) => {
+        const v = r?.value;
+        if (v && typeof v === "object" && (v.actorUuid === hint.actorUuid || v.tokenUuid === hint.tokenUuid)) return true;
+        if (typeof v === "string" && v.toLowerCase() === wanted) return true;
+        const text = String(r?.primary ?? "").replace(/<[^>]*>/g, "").toLowerCase();
+        return wanted && text.includes(wanted);
+      }) ?? null;
+      if (pick) log(`[SIM] list-picker: hint matched "${wanted}"`);
+      else log(`[SIM] list-picker: hint "${wanted}" not on the menu — taking first`);
+    }
+    pick = pick ?? enabled[0] ?? null;
     if (!pick) { log("[SIM] list-picker: every row disabled — cancelling"); return multiSelect ? [] : null; }
     const shown = String(pick.primary ?? pick.value ?? "?").replace(/<[^>]*>/g, "").trim();
     log(`[SIM] list-picker "${title}" → auto-picked "${shown}"`);

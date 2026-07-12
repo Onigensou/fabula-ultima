@@ -36,6 +36,7 @@ import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.j
 import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { resolvesVsMagicDefense } from "./snapshot.js";
 import { SimMode } from "./sim/sim-mode.js";
+import { decideReactions } from "./sim/reaction-brain.js";
 
 // Resolve which active non-GM user owns the given actor doc. Returns
 // userId or null. Deterministic on multi-owner actors (sort by id).
@@ -6611,10 +6612,37 @@ export async function postActionCard({ director, kind, payload }) {
     // reactions fire at all is the run's `reactions` policy, applied upstream via
     // __FU_HARNESS_ACCEPT_PASSIVES__. Dwell is the run's pace (0 on batch).
     if (SimMode.active) {
-      setTimeout(() => {
+      (async () => {
+        // Decide the ask-mode reactions BEFORE confirming. This is the difference
+        // between a party that defends itself and one that doesn't: Protect,
+        // Prophetic Defender and Keren's damage riders are all ask-mode pills, and
+        // an undecided pill snapshots as "skip" — so without this the party simply
+        // never reacts. Decisions go through recordPillDecision, the SAME path a
+        // human click takes, so the mutation pipeline (redirect subjects, costs,
+        // re-render) runs for real.
+        try {
+          const decisions = decideReactions({
+            prePassives,
+            ar: cardAr,
+            director,
+            decided: new Set(reactionDecisionMap.keys()),
+          });
+          for (const d of decisions) {
+            if (d.hint) SimMode.setPickHint(d.hint);   // WHICH ally to cover
+            await recordPillDecision(d.rowKey, d.carrierUuid, d.decision);
+          }
+        } catch (e) {
+          warn("[SIM] reaction brain threw — confirming without reactions", e);
+        }
+
+        // Dwell AFTER the pills resolve, so at "watch" pace you can actually read
+        // the card in the state it will resolve in (reactions applied).
+        const dwell = SimMode.cardDwellMs();
+        if (dwell > 0) await new Promise((r) => setTimeout(r, dwell));
+
         try { finish("confirm"); }
         catch (e) { warn("[SIM] auto-confirm threw — card may hang", e); }
-      }, SimMode.cardDwellMs());
+      })();
     }
   });
 }

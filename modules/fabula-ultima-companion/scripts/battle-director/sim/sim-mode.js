@@ -57,6 +57,8 @@ const _state = {
   startedAt: 0,
   saved: null,   // originals of the ONI APIs we shim for the duration of a run
   decl: new Map(),      // turnKey → Set<action signature declared>
+  budget: new Map(),    // `round:key` → times spent (Protect once/round, …)
+  hint: null,           // next picker's answer, when a brain already knows it
   blocked: new Map(),   // turnKey → Set<action name that bounced>
 };
 
@@ -138,6 +140,8 @@ export const SimMode = {
     _state.startedAt = Date.now();
     _state.decl = new Map();
     _state.blocked = new Map();
+    _state.budget = new Map();
+    _state.hint = null;
     _state.active = true;
 
     // Reactions ride the pre-existing harness override rather than a new
@@ -191,6 +195,36 @@ export const SimMode = {
 
   blockedForTurn(turnKey) {
     return _state.blocked.get(turnKey) ?? new Set();
+  },
+
+  // ── Per-round budgets ─────────────────────────────────────────────────────
+  // "Blanche protects at most once per round", and — crucially — Hina must be
+  // able to ASK whether Blanche has already spent it, because her heal is gated
+  // on the party's defensive option being exhausted. So the budget is shared
+  // state, not a private counter inside one profile.
+  spend(round, key) {
+    const k = `${round}:${key}`;
+    _state.budget.set(k, (_state.budget.get(k) ?? 0) + 1);
+  },
+
+  spent(round, key) {
+    return _state.budget.get(`${round}:${key}`) ?? 0;
+  },
+
+  // ── Pick hint ─────────────────────────────────────────────────────────────
+  // The pickers auto-answer with the FIRST option, which is fine for a picker
+  // that only exists to be acknowledged and actively wrong for one that carries a
+  // real decision — WHICH ally to Protect, WHICH element to load into Zarg's
+  // Gadgets. A brain that already knows the answer leaves it here; the next
+  // picker consumes it (once) and falls back to first-option if nothing matches.
+  setPickHint(hint) {
+    _state.hint = hint ?? null;
+  },
+
+  takePickHint() {
+    const h = _state.hint;
+    _state.hint = null;
+    return h;
   },
 
   pace() {

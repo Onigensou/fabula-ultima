@@ -346,6 +346,19 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
   // spin is purely theatrical, so we lose the animation, not the math.
   // Must sit ABOVE the remote branch — a sim never routes a pick to a player.
   if (SimMode.active) {
+    // A brain-supplied hint answers the picks that carry a real decision — above
+    // all WHICH ally Blanche is stepping in front of. Only meaningful for a
+    // single-target pick; random and locked sets are not choices.
+    if (mode !== "random" && !lockSelection && count === 1) {
+      const hint = SimMode.takePickHint();
+      const want = hint?.tokenUuid ?? null;
+      const match = want ? eligible.find((e) => e.tokenUuid === want) : null;
+      if (match) {
+        log(`[SIM] target-picker: hint → ${match.name ?? match.tokenUuid}`);
+        return Promise.resolve({ ok: true, cancelled: false, tokenUuids: [match.tokenUuid] });
+      }
+    }
+
     let picked;
     if (mode === "random") {
       const pool = Array.isArray(randomPool) && randomPool.length ? randomPool : eligible;
