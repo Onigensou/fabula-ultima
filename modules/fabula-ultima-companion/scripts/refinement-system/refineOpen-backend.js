@@ -1,6 +1,6 @@
 // scripts/refinement-system/refineOpen-backend.js
 import {
-  REFINEOPEN, gp, normActorId, isBlacksmithActor, getCenterPx, distPxCenters,
+  REFINEOPEN, gp, normActorId, isBlacksmithActor, isTokenHidden, getCenterPx, distPxCenters,
 } from "./refineOpen-const.js";
 import { RefineWindowApp } from "./refineWindow-app.js";
 
@@ -134,8 +134,8 @@ export class RefineOpenBackend {
 
       const partyIds      = await this._resolvePartyActorIds(false);
       const tokens        = canvas.tokens?.placeables ?? [];
-      const smithTokens   = tokens.filter(t => t?.actor && isBlacksmithActor(t.actor));
-      const partyTokens   = tokens.filter(t => t?.actor && partyIds.has(t.actor.id));
+      const smithTokens   = tokens.filter(t => t?.actor && !isTokenHidden(t) && isBlacksmithActor(t.actor));
+      const partyTokens   = tokens.filter(t => t?.actor && !isTokenHidden(t) && partyIds.has(t.actor.id));
 
       if (!partyTokens.length) { this._emit(new Set()); return; }
 
@@ -171,15 +171,22 @@ export class RefineOpenBackend {
 
   // ── Hooks ──
   async _onUpdateToken(tokenDoc, changes) {
-    if (!(("x" in changes) || ("y" in changes))) return;
-    const afterX = "x" in changes ? changes.x : tokenDoc.x;
-    const afterY = "y" in changes ? changes.y : tokenDoc.y;
-    this._posOverrides.set(tokenDoc.id, { x: afterX, y: afterY, ts: Date.now() });
+    const moved      = ("x" in changes) || ("y" in changes);
+    const hidToggled = ("hidden" in changes);
+    if (!moved && !hidToggled) return;
+
+    if (moved) {
+      const afterX = "x" in changes ? changes.x : tokenDoc.x;
+      const afterY = "y" in changes ? changes.y : tokenDoc.y;
+      this._posOverrides.set(tokenDoc.id, { x: afterX, y: afterY, ts: Date.now() });
+    }
 
     const actor   = tokenDoc.object?.actor ?? game.actors?.get(tokenDoc.actorId);
     if (!actor) return;
     const partyIds = await this._resolvePartyActorIds(false);
-    if (partyIds.has(actor.id) || isBlacksmithActor(actor)) this._queueScan("move");
+    if (partyIds.has(actor.id) || isBlacksmithActor(actor)) {
+      this._queueScan(hidToggled ? "hidden" : "move");
+    }
   }
 
   _onCreateToken() { this._queueScan("create"); }

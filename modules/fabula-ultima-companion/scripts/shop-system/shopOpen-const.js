@@ -32,6 +32,10 @@ export const normActorId = (v) => {
 
 export const isShopActor = (actor) => gp(actor, "system.props.isShop", false) === true;
 
+// A GM-hidden token is treated as absent: no proximity button, for GMs too.
+// (Buttons are DOM overlays, so they don't inherit the token's canvas visibility.)
+export const isTokenHidden = (token) => token?.document?.hidden === true;
+
 export const ownershipObserver = () => {
   const lvl = CONST?.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER;
   return Number.isFinite(lvl) ? lvl : 2;

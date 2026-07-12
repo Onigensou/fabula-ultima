@@ -4,6 +4,7 @@ import {
   gp,
   normActorId,
   isShopActor,
+  isTokenHidden,
   ownershipObserver,
   ownershipNone,
   getCenterPx,
@@ -248,8 +249,8 @@ export class ShopOpenBackend {
       const partyIds = await this._resolvePartyActorIds(false);
       const tokens = canvas.tokens?.placeables ?? [];
 
-      const shopTokens = tokens.filter(t => t?.actor && isShopActor(t.actor));
-      const partyTokens = tokens.filter(t => t?.actor && partyIds.has(t.actor.id));
+      const shopTokens = tokens.filter(t => t?.actor && !isTokenHidden(t) && isShopActor(t.actor));
+      const partyTokens = tokens.filter(t => t?.actor && !isTokenHidden(t) && partyIds.has(t.actor.id));
 
       if (partyTokens.length === 0) {
         this._emitDesired(new Set());
@@ -304,14 +305,17 @@ export class ShopOpenBackend {
   // Hooks
   // ──────────────────────────────────────────────────────────────
   async _onUpdateToken(tokenDoc, changes) {
-    const moved = ("x" in changes) || ("y" in changes);
-    if (!moved) return;
+    const moved    = ("x" in changes) || ("y" in changes);
+    const hidToggled = ("hidden" in changes);
+    if (!moved && !hidToggled) return;
 
-    const afterX = ("x" in changes) ? changes.x : tokenDoc.x;
-    const afterY = ("y" in changes) ? changes.y : tokenDoc.y;
-    this._setOverride(tokenDoc.id, afterX, afterY);
+    if (moved) {
+      const afterX = ("x" in changes) ? changes.x : tokenDoc.x;
+      const afterY = ("y" in changes) ? changes.y : tokenDoc.y;
+      this._setOverride(tokenDoc.id, afterX, afterY);
+    }
 
-    // Relevance filter (party or shop moved)
+    // Relevance filter (party or shop moved / was hidden or revealed)
     const placeable = tokenDoc.object;
     const actor = placeable?.actor ?? game.actors?.get(tokenDoc.actorId);
     if (!actor) return;
@@ -321,7 +325,7 @@ export class ShopOpenBackend {
     const isShop = isShopActor(actor);
     if (!(isParty || isShop)) return;
 
-    this._queueScan("updateToken(move)");
+    this._queueScan(hidToggled ? "updateToken(hidden)" : "updateToken(move)");
   }
 
   _onCreateToken() { this._queueScan("createToken"); }

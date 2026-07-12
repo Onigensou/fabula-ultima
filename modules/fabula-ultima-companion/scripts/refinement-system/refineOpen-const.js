@@ -13,6 +13,10 @@ export const gp = (obj, path, fallback = undefined) => {
 export const isBlacksmithActor = (actor) =>
   gp(actor, "system.props.isBlacksmith", false) === true;
 
+// A GM-hidden token is treated as absent: no proximity button, for GMs too.
+// (Buttons are DOM overlays, so they don't inherit the token's canvas visibility.)
+export const isTokenHidden = (token) => token?.document?.hidden === true;
+
 export const normActorId = (v) => {
   if (!v) return null;
   const s = String(v).trim();

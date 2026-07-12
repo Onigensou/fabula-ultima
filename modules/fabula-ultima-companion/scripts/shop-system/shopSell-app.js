@@ -25,6 +25,7 @@ const SELL_CATEGORIES = [
   { key: "accessory",  emoji: "💍",  label: "Accessory"  },
   { key: "consumable", emoji: "🧪",  label: "Consumable" },
   { key: "recipe",     emoji: "📖",  label: "Recipe"     },
+  { key: "material",   emoji: "🪵",  label: "Material"   },
 ];
 
 export class ShopSellApp {
