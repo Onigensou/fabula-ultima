@@ -67,6 +67,17 @@ export function distPxCenters(a, b) {
 
 // Tint a Foundry user colour for use as a row background (same treatment the
 // camp system's activity select uses for other players' picks).
+// Ink that stays legible on a solid user-colour badge — Foundry user colours run
+// from near-black to bright yellow, so neither white nor black works for all.
+export function readableInk(hex) {
+  const h = String(hex ?? "").replace("#", "");
+  if (h.length < 6) return "#ffffff";
+  const [r, g, b] = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
+  const lin = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const lum = (0.2126 * lin(r)) + (0.7152 * lin(g)) + (0.0722 * lin(b));
+  return lum > 0.45 ? "#241a08" : "#ffffff";
+}
+
 export function hexToRgba(hex, alpha) {
   const h = String(hex ?? "").replace("#", "");
   if (h.length < 6) return `rgba(138,96,48,${alpha})`;

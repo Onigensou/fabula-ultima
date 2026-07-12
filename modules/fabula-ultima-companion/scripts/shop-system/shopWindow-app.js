@@ -14,7 +14,7 @@
 //   item.system.props.category      — weapon sub-type (Sword, Arcane, Bow…)
 //   item.system.props.type_damage   — damage type plain string (Physical, Fire…)
 
-import { gp, hexToRgba } from "./shopopen-const.js";
+import { gp, hexToRgba, readableInk } from "./shopopen-const.js";
 
 const GP_ICON = `<img class="fu-zenit-icon" src="https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png" alt="Zenit">`;
 
@@ -356,6 +356,7 @@ export class ShopWindowApp {
         grid-template-columns: 36px 1fr auto auto auto;
         align-items:center; gap:8px;
         padding:6px 8px; border-radius:8px;
+        position:relative;   /* containing block for the floating viewer badge */
         background:rgba(255,255,255,0.55);
         border:1px solid rgba(184,153,64,0.35);
         transition:background 0.1s, border-color 0.1s;
@@ -543,19 +544,29 @@ export class ShopWindowApp {
 
       /* ── Presence: who's browsing what ──
          Visibility is toggled by .has-viewers, never by an inline display:
-         clearing an inline style falls back to display:none and hides the chip. */
-      .fu-shop-viewers { display:none; gap:4px; flex-wrap:wrap; margin-top:3px; }
+         clearing an inline style falls back to display:none and hides the chip.
+
+         The row badge is absolutely positioned, so it is OUT OF FLOW: a badge
+         appearing or disappearing must never reflow the row, or item text
+         shifts under the eyes of whoever is reading it. */
+      .fu-shop-viewers {
+        display:none;
+        position:absolute; top:-6px; right:8px;   /* straddles the top border; clears the Buy button */
+        gap:3px; z-index:3;
+        pointer-events:none;   /* never eat a click meant for the Buy button */
+      }
       .fu-shop-viewers.has-viewers { display:flex; }
       .fu-shop-viewer-chip {
         display:inline-flex; align-items:center; gap:3px;
-        font-size:10px; font-weight:800; line-height:1.4;
-        padding:1px 6px; border-radius:999px;
-        border:1px solid currentColor;
+        font-size:10px; font-weight:800; line-height:1.5;
+        padding:0 6px; border-radius:999px;
+        border:1px solid;
         white-space:nowrap;
+        box-shadow:0 1px 3px rgba(0,0,0,0.28);
       }
       .fu-shop-browsers {
         display:none; align-items:center; flex-wrap:wrap; gap:4px;
-        margin-top:3px;
+        margin-left:auto;   /* right-aligned on the Zenit row */
       }
       .fu-shop-browsers.has-viewers { display:flex; }
       .fu-browsers-label {
@@ -679,8 +690,10 @@ export class ShopWindowApp {
           <div class="fu-shop-header-info">
             <div class="fu-shop-header-name">${this._esc(shopTitle)}</div>
             ${quoteLine}
-            <div class="fu-shop-zenit-bar">${zenitStr}</div>
-            <div class="fu-shop-browsers"></div>
+            <div class="fu-shop-zenit-bar">
+              <span class="fu-zenit-text">${zenitStr}</span>
+              <div class="fu-shop-browsers"></div>
+            </div>
           </div>
         </div>
 
@@ -776,10 +789,11 @@ export class ShopWindowApp {
 
   // Name badge for one viewer, in their Foundry user colour. Label is the linked
   // character's name — that's what the table calls each other — falling back to
-  // the user name when no actor is linked (a GM, usually).
+  // the user name when no actor is linked (a GM, usually). Solid fill rather than
+  // a tint: at 10px, floating over a busy row, a washed-out chip doesn't read.
   static _viewerChip(v) {
     return `<span class="fu-shop-viewer-chip"
-                  style="color:${v.color}; border-color:${v.color}; background:${hexToRgba(v.color, 0.12)}"
+                  style="background:${v.color}; border-color:${hexToRgba(v.color, 0.55)}; color:${readableInk(v.color)}"
                   title="${this._esc(v.label)}">${v.isGM ? "👁" : "👤"} ${this._esc(v.label)}</span>`;
   }
 
