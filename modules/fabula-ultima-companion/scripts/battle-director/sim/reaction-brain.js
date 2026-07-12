@@ -287,6 +287,23 @@ function gadgetPolicy(ctx) {
 // pill only appears on his own card when it's eligible, and `available` already
 // encodes whether he can pay, so the judgement left to us is simply: is this shot
 // worth augmenting? Same test as the other riders — will the damage actually land.
+// Warning Shot is an OPENER (user's call): worth it on the first round, after which
+// Zarg is better off just putting damage out.
+function warningShotPolicy(ctx) {
+  const round = ctx.director?.dCombat?.round ?? 0;
+  if (!TUNING.warningShotRounds.includes(round)) {
+    return { decision: "skip", why: `round ${round} — it's an opener` };
+  }
+  return damageRiderPolicy(ctx);
+}
+
+// Potion Rain turns Zarg's consumable into an area effect — one turn, the whole
+// party topped up. Free, and it only ever fires on an item he was already using, so
+// there is nothing to weigh: take it.
+function potionRainPolicy() {
+  return { decision: "apply", why: "spreads the potion across the party" };
+}
+
 const POLICIES = {
   // Defensive redirects.
   "protect": protectPolicy,
@@ -300,7 +317,10 @@ const POLICIES = {
   // Plain damage riders — no choice to make, just "is this worth spending on".
   "for whom the bell tolls": damageRiderPolicy,
   "barrage": damageRiderPolicy,
-  "warning shot": damageRiderPolicy,
+  "warning shot": warningShotPolicy,
+
+  // Economy.
+  "potion rain": potionRainPolicy,
 };
 
 // ── Public ───────────────────────────────────────────────────────────────────

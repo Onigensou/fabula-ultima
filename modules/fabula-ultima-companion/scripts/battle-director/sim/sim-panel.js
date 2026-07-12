@@ -129,7 +129,7 @@ async function openPanel() {
       </select>
 
       <label class="fud-sim-check">
-        <input type="checkbox" class="fud-sim-react" ${saved.reactions === "apply" ? "checked" : ""}>
+        <input type="checkbox" class="fud-sim-react" ${saved.reactions === "skip" ? "" : "checked"}>
         <span>Party uses its ask-mode reactions</span>
       </label>
 

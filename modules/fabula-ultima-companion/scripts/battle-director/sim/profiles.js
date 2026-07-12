@@ -56,17 +56,31 @@ export const TUNING = {
   glaciesMinWeak: 2,      // this many ice-VULNERABLE enemies makes Glacies pay
   glaciesMaxTargets: 3,   // Glacies' own cap
 
-  // Utility cadence. Acceleration is an extra action for an ally — cast on these
-  // rounds, and only when nobody needs healing.
-  accelerationRounds: [1, 3, 6, 9, 12],
+  // Acceleration grants an ally an extra action. Gated on the AE not already being
+  // on the field rather than on a round cadence — re-casting it on someone who is
+  // still accelerated is a wasted turn, and Hina's time is better spent on damage.
   accelerationPriority: ["Zarg", "Keren"],   // damage dealers, not the tank
-  // Stop strips an enemy activation. Only worth it on a small field — on a big one
-  // there is always another enemy to act anyway.
-  stopMaxEnemies: 2,
+  accelerationAe: /accelerat/i,
+  // Stop strips an enemy activation. Only worth the turn when it removes a
+  // meaningful share of the enemy's economy — i.e. when there is exactly one enemy
+  // left. With two or more there is always somebody else to act anyway.
+  stopMaxEnemies: 1,
 
   // Zarg's Gadgets: augments a normal attack (buff + element swap) for IP.
   gadgetIpCost: 2,
   gadgetReserveIp: 0,   // keep this much IP back for emergencies
+  // Warning Shot is an opener — after round 1 he is better off just shooting.
+  warningShotRounds: [1],
+
+  // ── MP economy ────────────────────────────────────────────────────────────
+  // The fight visibly slowed down late as the casters ran dry. A real party fixes
+  // that with consumables, so the sim should too.
+  mpItemThreshold: 0.30,   // an ally under this much MP wants a top-up
+  mpItemMinTargets: 1,     // how many must be dry before somebody spends a turn
+  mpItemsPerRound: 1,      // at most one party member plays potion-caddy per round
+  // Who takes potion duty first. Zarg leads because Potion Rain makes his
+  // consumables hit the whole party — one turn, everyone refilled.
+  potionPriority: ["Zarg"],
 };
 
 // Build one pattern row in the raw shape readPatternTable expects
@@ -172,6 +186,50 @@ function hinaHealPolicy(api) {
 
 export const ELEMENTS = ["air", "bolt", "dark", "earth", "fire", "ice", "light", "poison"];
 
+// ── MP economy (party-wide, runs before every profile) ──────────────────────
+// The fight slowed to a crawl late on because the casters ran out of MP and fell
+// back to poking with sticks. A real party fixes that with a consumable, so this
+// runs for EVERY character, ahead of their own policy.
+//
+// MP-restorers are found by EFFECT, not by name: a consumable whose effect_table
+// grants `mp` (Elixir, Grape Juice, whatever gets added next). No name list to
+// maintain and nothing to forget.
+//
+// Zarg gets first refusal because Potion Rain (creature_performs_action) turns his
+// consumable into an area effect — one turn, the whole party refilled. Everybody
+// else defers to him while he is alive and holding one; if he isn't, whoever has a
+// potion picks up the duty rather than letting the party grind to a halt.
+export function mpItemPolicy(api) {
+  const round = api.round;
+  if (SimMode_spent(api, round) >= TUNING.mpItemsPerRound) return null;
+
+  const dry = api.allies().filter(
+    (dc) => pct(propNum(dc.actorDoc, "current_mp"), propNum(dc.actorDoc, "max_mp")) < TUNING.mpItemThreshold
+  );
+  if (dry.length < TUNING.mpItemMinTargets) return null;
+
+  const mine = api.findMpItem();
+  if (!mine) return null;
+
+  // Defer to the designated potioneer while he can still do it better.
+  const preferred = TUNING.potionPriority.find((name) =>
+    api.allies().some((dc) => new RegExp(name, "i").test(dc.name ?? "") && api.allyHasMpItem(dc))
+  );
+  const iAmPreferred = preferred && new RegExp(preferred, "i").test(api.self?.name ?? "");
+  if (preferred && !iAmPreferred) return null;
+
+  api.spendBudget(round, "mp-item");
+  // Target the driest ally. Potion Rain (if the user has it) spreads it anyway.
+  const target = dry.sort(
+    (a, b) => pct(propNum(a.actorDoc, "current_mp"), propNum(a.actorDoc, "max_mp"))
+            - pct(propNum(b.actorDoc, "current_mp"), propNum(b.actorDoc, "max_mp"))
+  )[0];
+  return api.useItem(mine, [target]);
+}
+
+// Tiny indirection so profiles don't import SimMode directly.
+function SimMode_spent(api, round) { return api.budgetSpent(round, "mp-item"); }
+
 // ── Hina's turn ─────────────────────────────────────────────────────────────
 // Her whole turn is a judgement call, so none of it can live in a pattern row.
 //
@@ -238,10 +296,11 @@ function hinaPolicy(api) {
     (dc) => pct(propNum(dc.actorDoc, "current_hp"), propNum(dc.actorDoc, "max_hp")) < TUNING.healWorthItFraction
   );
 
-  // 2. Acceleration — an extra action for an ally is the strongest thing she can
-  //    do with a quiet turn, but only when the party is healthy enough that she
-  //    won't be needed for a heal instead. Cadence, not spam.
-  if (!anyoneHurt && TUNING.accelerationRounds.includes(api.round)) {
+  // 2. Acceleration — an extra action for an ally is the strongest thing she can do
+  //    with a quiet turn. Gated on nobody ALREADY being accelerated: re-casting it
+  //    on someone who still has the AE is a thrown-away turn, and the point of the
+  //    gate is to buy her more time on damage.
+  if (!anyoneHurt && !allies.some((dc) => api.hasAe(dc, TUNING.accelerationAe))) {
     const acc = api.findItem("Acceleration");
     if (acc) {
       const target = pickAccelerationTarget(api, allies);
@@ -249,9 +308,9 @@ function hinaPolicy(api) {
     }
   }
 
-  // 3. Stop — strips an activation. Only worth it on a small field (on a big one
-  //    there is always another enemy to act anyway), and only against someone who
-  //    still has an activation left to lose this round.
+  // 3. Stop — strips an activation. Only worth the turn when it takes a real bite
+  //    out of the enemy's economy (i.e. one enemy left), and only against somebody
+  //    who still has an activation to lose this round.
   if (api.foes().length <= TUNING.stopMaxEnemies) {
     const stop = api.findItem("Stop");
     const victim = api.foes()

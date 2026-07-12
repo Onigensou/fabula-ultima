@@ -1043,6 +1043,26 @@ async function resolveAction(director, ar, opts = {}) {
           },
         });
       }
+      // A hit that does NOTHING is not a hit, for the purposes of "did I connect?".
+      // The accuracy roll can land on a target that is IMMUNE to the element (zero
+      // damage) or ABSORBS it (heals them) — mechanically that is a whiff dressed
+      // up as a strike, and treating it as a success let Centaur's Blazing Sweep
+      // ("repeat if all targets hit") loop indefinitely against a party member who
+      // absorbed it: she "was hit" every time, so the repeat gate stayed satisfied
+      // until the dice finally missed her outright.
+      //
+      // So a no-effect outcome now reads like a MISS here. Deliberately scoped to
+      // `allTargetsHit` — the "did the whole volley connect?" question — and NOT to
+      // hitTargets/hitTargetTokenUuids, which on-hit riders consume: an immune
+      // target was still physically struck, and a rider like "apply Burn on hit"
+      // should keep firing. Widen it only with a reason.
+      const landedTokenUuids = struck
+        .filter((r) => {
+          const aff = String(r.affinity ?? "").toUpperCase();
+          return aff !== "IM" && aff !== "AB";
+        })
+        .map((r) => r.tokenUuid);
+
       // One-shot post-attack trigger — fires after all per-target
       // creature_deals_damage fires. Carries allTargetsHit so passives
       // like Blazing Sweep's "repeat if all hit" can gate on a single
@@ -1055,7 +1075,7 @@ async function resolveAction(director, ar, opts = {}) {
           targetTokenUuids: allTargetUuids,
           hitTargets: struckTokenUuids,
           hitTargetTokenUuids: struckTokenUuids,
-          allTargetsHit: struckTokenUuids.length >= allTargetUuids.length && allTargetUuids.length > 0,
+          allTargetsHit: landedTokenUuids.length >= allTargetUuids.length && allTargetUuids.length > 0,
           sourceActorUuid: ar.attackerActorRef,
           sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
           actionIntent: ar.actionIntent,

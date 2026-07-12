@@ -24,7 +24,7 @@
 // See [[project_action_pattern_ai]] and [[project_enemy_autopilot]].
 
 import { log, warn } from "../logger.js";
-import { profileFor } from "./profiles.js";
+import { profileFor, mpItemPolicy } from "./profiles.js";
 import { SimMode } from "./sim-mode.js";
 import { canAffordItem } from "./cost.js";
 import { protectExhausted } from "./reaction-brain.js";
@@ -76,6 +76,28 @@ function hasMainWeapon(actorDoc) {
 // has nothing to be cast AT. A real castable skill always names a target ("Self",
 // "One Enemy", "Up to three creatures"). So encode the rule once, here, and the
 // next augment somebody adds can't fool a rotation either.
+// An MP-restoring consumable, identified by what it DOES, not what it's called.
+// Grape Juice's effect row is { effect_kind: "grant", grant_resource: "mp",
+// grant_amount: 20 } and an Elixir's looks the same — so match on that and the
+// list maintains itself.
+function findMpItemOn(actorDoc) {
+  for (const item of actorDoc?.items ?? []) {
+    const p = item?.system?.props ?? {};
+    if (String(p.item_type ?? "").toLowerCase() !== "consumable") continue;
+    if (Number(p.item_quantity ?? p.quantity ?? 0) <= 0) continue;
+
+    const et = p.effect_table;
+    const rows = Array.isArray(et) ? et : Object.values(et ?? {});
+    const restoresMp = rows.some((r) =>
+      String(r?.effect_kind ?? "").toLowerCase() === "grant"
+      && String(r?.grant_resource ?? "").toLowerCase() === "mp"
+      && Number(r?.grant_amount ?? 0) > 0
+    );
+    if (restoresMp) return item;
+  }
+  return null;
+}
+
 function isAugment(item) {
   const p = item?.system?.props ?? {};
   const target = String(p.skill_target ?? "").trim();
@@ -163,6 +185,43 @@ function makePolicyApi(director, snap, self) {
       try { return String(AR.getAffinityForType(dc?.actorDoc, element) ?? "NA").toUpperCase(); }
       catch { return "NA"; }
     },
+
+    // Does this combatant currently carry an Active Effect matching `re`?
+    hasAe(dc, re) {
+      const effects = dc?.actorDoc?.effects ?? [];
+      for (const e of effects) {
+        if (e?.disabled) continue;
+        if (re.test(String(e?.name ?? ""))) return true;
+      }
+      return false;
+    },
+
+    // An MP-restoring consumable in MY inventory, found by EFFECT rather than by
+    // name — any consumable whose effect_table grants `mp` (Elixir, Grape Juice,
+    // whatever gets added later). Quantity must be > 0.
+    findMpItem() { return findMpItemOn(self?.actorDoc); },
+    allyHasMpItem(dc) { return !!findMpItemOn(dc?.actorDoc); },
+
+    // Use a consumable. The Item bundle shape mirrors what the item-picker produces
+    // (compose-action's Item branch): mode "use", key = the item's id, cost 0.
+    useItem(item, targetDcs) {
+      const uuids = targetDcs.map(tokenUuidOf).filter(Boolean);
+      if (!item || !uuids.length) return null;
+      return {
+        command: "Item",
+        skillUuid: item.uuid,
+        sourceItemUuid: item.uuid,
+        linkedSkillUuid: null,
+        itemMode: "use",
+        itemKey: item.id,
+        itemCost: 0,
+        targetUuids: uuids,
+        _name: item.name,
+      };
+    },
+
+    budgetSpent(round, key) { return SimMode.spent(round, key); },
+    spendBudget(round, key) { SimMode.spend(round, key); },
 
     // Pre-answer the menu this action is about to open (Zarg's Gadgets element).
     // Consumed once, by the next picker.
@@ -266,10 +325,25 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), al
     : null;
   const permits = (cmd) => !allow || allow.has(String(cmd).trim().toLowerCase());
 
+  const policyApi = makePolicyApi(director, snap, self);
+
+  // 0. MP economy — party-wide, ahead of everyone's own plan. Late-game fights were
+  //    grinding to a halt because the casters ran dry and fell back to poking with
+  //    sticks; a real party spends a turn on a consumable instead.
+  try {
+    const potion = mpItemPolicy(policyApi);
+    if (potion && !isBlocked(potion._name) && permits(potion.command)) {
+      SimMode.note("mp", `${snap?.name} → ${potion._name} (party is out of MP)`);
+      return potion;
+    }
+  } catch (e) {
+    warn(`[SIM] player-brain: MP-item policy threw`, e);
+  }
+
   // 1. Policy — the things a rotation table cannot say (heal a dying ally).
   if (typeof profile.policy === "function") {
     try {
-      const bundle = profile.policy(makePolicyApi(director, snap, self));
+      const bundle = profile.policy(policyApi);
       if (bundle && !isBlocked(bundle._name) && permits(bundle.command)) return bundle;
     } catch (e) {
       warn(`[SIM] player-brain: ${actorDoc.name} policy threw — falling through`, e);

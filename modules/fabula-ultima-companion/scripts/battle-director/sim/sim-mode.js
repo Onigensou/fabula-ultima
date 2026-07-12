@@ -33,10 +33,11 @@ export const PACE = {
 
 export const DEFAULT_SIM_CONFIG = {
   pace: "fast",
-  // Ask-mode reactions. "skip" is the Phase-0 default and it is NOT neutral —
-  // a party that never uses its ask-mode reactions reads weaker than it plays,
-  // so every report must state which setting produced it.
-  reactions: "skip",   // "skip" | "apply"
+  // Fallback for ask-mode reactions that have NO named policy in reaction-brain.js.
+  // "apply" is the honest default: a real party uses its reactions, and defaulting
+  // to "skip" quietly disabled every beneficial reaction nobody had written up yet
+  // (Potion Rain among them). Named policies always win over this.
+  reactions: "apply",   // "skip" | "apply"
   // Opportunities (crit follow-ups, either side). Auto-picking one well needs
   // option semantics we don't model yet, so a sim declines them — symmetric,
   // since both sides crit, but a real fidelity gap the report must own.
