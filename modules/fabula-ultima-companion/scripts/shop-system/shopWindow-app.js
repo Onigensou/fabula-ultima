@@ -551,18 +551,22 @@ export class ShopWindowApp {
          shifts under the eyes of whoever is reading it. */
       .fu-shop-viewers {
         display:none;
-        position:absolute; top:-6px; right:8px;   /* straddles the top border; clears the Buy button */
-        gap:3px; z-index:3;
+        position:absolute; top:-5px; right:58px;   /* clear of the Buy button, over the price column */
+        gap:2px; z-index:3;
         pointer-events:none;   /* never eat a click meant for the Buy button */
       }
       .fu-shop-viewers.has-viewers { display:flex; }
       .fu-shop-viewer-chip {
-        display:inline-flex; align-items:center; gap:3px;
+        display:inline-flex; align-items:center;
         font-size:10px; font-weight:800; line-height:1.5;
         padding:0 6px; border-radius:999px;
         border:1px solid;
         white-space:nowrap;
         box-shadow:0 1px 3px rgba(0,0,0,0.28);
+      }
+      /* The in-row badge rides the border, so it stays smaller than the header roster. */
+      .fu-shop-viewers .fu-shop-viewer-chip {
+        font-size:9px; line-height:1.45; padding:0 5px;
       }
       .fu-shop-browsers {
         display:none; align-items:center; flex-wrap:wrap; gap:4px;
@@ -794,7 +798,7 @@ export class ShopWindowApp {
   static _viewerChip(v) {
     return `<span class="fu-shop-viewer-chip"
                   style="background:${v.color}; border-color:${hexToRgba(v.color, 0.55)}; color:${readableInk(v.color)}"
-                  title="${this._esc(v.label)}">${v.isGM ? "👁" : "👤"} ${this._esc(v.label)}</span>`;
+                  title="${this._esc(v.label)}">${this._esc(v.label)}</span>`;
   }
 
   // ──────────────────────────────────────────────────────────────
