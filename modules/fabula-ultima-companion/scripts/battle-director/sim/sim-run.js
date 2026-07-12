@@ -154,10 +154,16 @@ export async function run({
   const scene = game.scenes?.find((s) => s.name === SCENE_NAME) ?? game.scenes?.active ?? canvas?.scene ?? null;
   if (!scene) { ui.notifications?.error("[SIM] no scene to launch on."); return null; }
 
-  // Default party = every player-owned actor. Explicit is better; this is the
-  // convenience path for the spike.
-  const refs = party ?? game.actors.filter((x) => x.hasPlayerOwner).map((x) => x.uuid);
-  if (!refs.length) { ui.notifications?.error("[SIM] no party members resolved."); return null; }
+  // The party MUST be explicit. There is no safe default: `hasPlayerOwner` is
+  // true for ~150 actors in this world (every retired PC, guest and class shell),
+  // and a "convenience" fallback would happily clone all of them. Cloning is the
+  // safety mechanism that keeps a sim off the real PCs — it must never run on a
+  // set the caller didn't name.
+  const refs = Array.isArray(party) ? party.filter(Boolean) : [];
+  if (!refs.length) {
+    ui.notifications?.error("[SIM] pass an explicit `party: [uuid, …]` — there is no default.");
+    return null;
+  }
 
   let clones = [];
   let result = null;
