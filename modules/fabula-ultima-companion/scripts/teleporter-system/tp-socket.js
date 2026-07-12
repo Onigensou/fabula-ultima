@@ -3,6 +3,12 @@
 //
 // GM-side execution of teleport operations requested via socket.
 //
+// HOST GATE — both handlers run only on the PRIMARY GM (TP.api.isPrimaryGM()).
+// Foundry broadcasts sockets to every client, so in the dual-GM setup a plain
+// `isGM` check let both GM clients service the same request. For TP_CROSS_SCENE
+// that meant both created a token from the prototype → a replica at the
+// destination. Players and secondary GMs are senders here, never executors.
+//
 // Messages:
 //   TP_SAME_SCENE   — move token within the same scene
 //   TP_CROSS_SCENE  — move token to a different scene
@@ -31,7 +37,9 @@
 
       // ── Same-scene token move ───────────────────────────────────────────────
       if (msg.type === "TP_SAME_SCENE") {
-        if (!game.user?.isGM) return;
+        // Host gate: an `isGM` check would let BOTH GM clients service this,
+        // double-writing the token and running the DP rebuild twice.
+        if (!TP.api.isPrimaryGM()) return;
         const { tokenId, sceneId, x, y, offX = 0, offY = 0, forcedNodeId = null } = msg.payload ?? {};
 
         const scene    = game.scenes.get(sceneId);
@@ -77,7 +85,9 @@
 
       // ── Cross-scene token move ──────────────────────────────────────────────
       if (msg.type === "TP_CROSS_SCENE") {
-        if (!game.user?.isGM) return;
+        // Host gate: both GMs passing this check is what spawned a replica token
+        // at the destination — each one created its own from the prototype.
+        if (!TP.api.isPrimaryGM()) return;
         const { actorId, fromSceneId, toSceneId, x, y } = msg.payload ?? {};
         await TP.api.executeCrossSceneTeleport(actorId, fromSceneId, toSceneId, x, y)
           .catch(e => console.error(TAG, "TP_CROSS_SCENE failed:", e));

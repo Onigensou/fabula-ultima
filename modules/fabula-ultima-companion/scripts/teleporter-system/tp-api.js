@@ -5,10 +5,19 @@
 //
 // Key operations:
 //   teleportToken(tokenDoc, destination, options) — move token to destination
-//   executeCrossSceneTeleport(...)               — GM-only cross-scene transport
+//   executeCrossSceneTeleport(...)               — host-only cross-scene transport
 //   getFlags(tileDoc)                            — read teleporter flags
 //   isTeleporterEnabled(tileDoc)                 — check if tile is a teleporter
 //   getSceneMode(scene)                          — read current scene mode
+//   isPrimaryGM()                                — dual-GM host gate
+//
+// DUAL-GM HOST MODEL:
+//   Every write goes through the ONE primary GM (game.users.activeGM). Players
+//   and secondary GMs emit a socket request instead of acting locally. Detection
+//   still runs everywhere (any client may be driving the party token), so a
+//   single teleport can reach the host up to three times at once — its own local
+//   trigger plus a socket from each other client. executeCrossSceneTeleport()
+//   therefore also carries an in-flight dedupe; the host gate alone is not enough.
 //
 // Destination object shape:
 //   { type: "coords", x, y, sceneId }
@@ -35,6 +44,25 @@
   const TAG       = "[TeleporterSystem][API]";
   const SOCKET_CH = `module.${MODULE_ID}`;
   const FLAG_ROOT = "teleporter";
+
+  // ── Primary-GM host gate (dual-GM setup) ─────────────────────────────────────
+  // The world normally runs TWO GM clients. Foundry broadcasts sockets to all of
+  // them and token-move hooks fire on all of them, so an `isGM` guard lets BOTH
+  // execute — which duplicated the destination token on cross-scene teleports.
+  // Exactly one GM (core's activeGM) is the host; every other client routes its
+  // request through the socket instead of acting locally.
+  //
+  // Delegates to the shared helper (scripts/shared/primary-gm.js, loaded well
+  // before this file) rather than hand-rolling a tenth copy of the same check.
+
+  function isPrimaryGM() {
+    const shared = globalThis.FUCompanion?.isPrimaryGM;
+    if (typeof shared === "function") return shared();
+    // Fallback only if the shared helper failed to load (load-order regression).
+    if (!game.user?.isGM) return false;
+    const active = game.users?.activeGM ?? null;
+    return active ? active.id === game.user.id : true;
+  }
 
   // ── Flag helpers ─────────────────────────────────────────────────────────────
 
@@ -140,7 +168,8 @@
     const offX = (applyDpOffset && DP?.UI?.TOKEN_OFFSET) ? Number(DP.UI.TOKEN_OFFSET.x ?? 0) : 0;
     const offY = (applyDpOffset && DP?.UI?.TOKEN_OFFSET) ? Number(DP.UI.TOKEN_OFFSET.y ?? 0) : 0;
 
-    if (!game.user?.isGM) {
+    // Players AND secondary GMs hand off to the primary GM. Only the host writes.
+    if (!isPrimaryGM()) {
       game.socket.emit(SOCKET_CH, {
         type:    "TP_SAME_SCENE",
         payload: {
@@ -194,7 +223,8 @@
     const actorId     = tokenDoc.actorId;
     const fromSceneId = tokenDoc.parent?.id ?? canvas?.scene?.id;
 
-    if (!game.user?.isGM) {
+    // Players AND secondary GMs hand off to the primary GM. Only the host writes.
+    if (!isPrimaryGM()) {
       game.socket.emit(SOCKET_CH, {
         type:    "TP_CROSS_SCENE",
         payload: { actorId, fromSceneId, toSceneId: resolved.sceneId, x: resolved.x, y: resolved.y },
@@ -205,11 +235,36 @@
     await executeCrossSceneTeleport(actorId, fromSceneId, resolved.sceneId, resolved.x, resolved.y);
   }
 
+  // ── Cross-scene in-flight dedupe ─────────────────────────────────────────────
+  // The host gate alone is not enough. One physical teleport can reach the SAME
+  // primary-GM client three ways at once: its own exploration ticker detecting
+  // the tile entry locally, a TP_CROSS_SCENE socket from the player, and another
+  // from the secondary GM. Each is a separate call, and tp-bootstrap's cooldown
+  // only guards its own local trigger — the socket path never touches it.
+  // Collapse them here, at the one place that actually creates the token.
+
+  const CROSS_DEDUPE_MS = 3000;
+  const _crossInFlight  = new Map(); // `${actorId}:${toSceneId}` → timestamp
+
+  function _claimCrossTeleport(actorId, toSceneId) {
+    const key  = `${actorId}:${toSceneId}`;
+    const last = _crossInFlight.get(key);
+    if (last && (Date.now() - last) < CROSS_DEDUPE_MS) return false;
+    _crossInFlight.set(key, Date.now());
+    setTimeout(() => _crossInFlight.delete(key), CROSS_DEDUPE_MS * 2);
+    return true;
+  }
+
   async function executeCrossSceneTeleport(actorId, fromSceneId, toSceneId, spawnX, spawnY) {
-    if (!game.user?.isGM) return;
+    if (!isPrimaryGM()) return;
 
     const destScene = game.scenes.get(toSceneId);
     if (!destScene) { console.warn(TAG, "destination scene not found:", toSceneId); return; }
+
+    if (!_claimCrossTeleport(actorId, toSceneId)) {
+      console.debug(TAG, "cross-scene teleport already in flight, ignoring duplicate request:", actorId, toSceneId);
+      return;
+    }
 
     const gSize = destScene.grid?.size ?? 100;
 
@@ -217,8 +272,13 @@
       if (actorId) {
         const actor = game.actors.get(actorId);
         if (actor) {
-          const existing = destScene.tokens?.find?.(t => t.actorId === actorId) ?? null;
-          if (existing) await existing.delete().catch(e => console.warn(TAG, "cleanup dest token:", e));
+          // Delete EVERY token for this actor at the destination, not just the
+          // first — a scene carrying replicas from an earlier session heals here.
+          const existing = destScene.tokens?.filter?.(t => t.actorId === actorId) ?? [];
+          if (existing.length) {
+            await destScene.deleteEmbeddedDocuments("Token", existing.map(t => t.id))
+              .catch(e => console.warn(TAG, "cleanup dest tokens:", e));
+          }
 
           const tokenData   = actor.prototypeToken.toObject();
           tokenData.x       = Math.round(spawnX - (tokenData.width  ?? 1) * gSize / 2);
@@ -242,8 +302,10 @@
 
     if (fromSceneId && actorId && fromSceneId !== toSceneId) {
       const fromScene = game.scenes.get(fromSceneId);
-      const oldToken  = fromScene?.tokens?.find?.(t => t.actorId === actorId);
-      if (oldToken) oldToken.delete().catch(() => {});
+      const oldTokens = fromScene?.tokens?.filter?.(t => t.actorId === actorId) ?? [];
+      if (oldTokens.length) {
+        fromScene.deleteEmbeddedDocuments("Token", oldTokens.map(t => t.id)).catch(() => {});
+      }
     }
   }
 
@@ -283,6 +345,7 @@
     getFlags,
     isTeleporterEnabled,
     getSceneMode,
+    isPrimaryGM,
   };
 
   console.debug(TAG, "Teleporter API loaded.");
