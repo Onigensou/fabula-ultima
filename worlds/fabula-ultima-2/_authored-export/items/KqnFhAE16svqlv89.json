@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/careful_synthesis_iii.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Lord%20Cloth.gif",
   "name": "Secret Formula",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -36,6 +36,7 @@
       "description": "<p>When you create a <strong>potion</strong> or <strong>magisphere</strong> whose effects restore HP and/or MP, each restored amount is increased by <strong>【SL × 5】.</strong></p><p> When you create an <strong>elemental shard, potion</strong> or <strong>magisphere</strong> that deals damage, that item deals <strong>【SL】</strong> extra damage.</p>",
       "duration": "",
       "heroic_requirement": "",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Lord%20Cloth.gif",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

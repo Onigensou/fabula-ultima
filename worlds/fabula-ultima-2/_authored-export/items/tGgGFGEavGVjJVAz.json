@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Mega-Ether_from_Final_Fantasy_XIV_icon.webp",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/but.png",
   "name": "Skull Orb",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -55,6 +55,7 @@
       "gadget_magitech_tier": "",
       "heroic_requirement": "",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/but.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

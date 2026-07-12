@@ -16933,6 +16933,10 @@
             "name": "Lens of Insight (Passive)"
           },
           {
+            "id": "H7HyFkQ2cH7rzf44",
+            "name": "Lift off"
+          },
+          {
             "id": "20QAZWYIlUg4Uj6B",
             "name": "Love Potion"
           },
@@ -21898,16 +21902,16 @@
         "type": "character",
         "items": [
           {
-            "id": "AQprVL9AoxIbsz3D",
-            "name": "+3 Zarg's Bow - Light"
-          },
-          {
             "id": "9eWyiZCnRhC89Fsn",
             "name": "+4 Combat Tunic"
           },
           {
             "id": "xEHcsYyJhPaTCGcJ",
             "name": "+5 Zarg's Bow"
+          },
+          {
+            "id": "AQprVL9AoxIbsz3D",
+            "name": "+5 Zarg's Bow - Light"
           },
           {
             "id": "4HAJia1ADJ8RijE8",
@@ -22150,7 +22154,7 @@
             "name": "Zero Trigger: Strategy"
           }
         ],
-        "effects": 2
+        "effects": 1
       },
       {
         "id": "eovuAdwJdbtn8rOr",

@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213959.730.png",
+  "img": "icons/equipment/shield/heater-stone-orange.webp",
   "name": "Trailblaze Strike",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -36,6 +36,7 @@
       "description": "<p>On hit, Deals damage equals to your <strong>【DEF】 </strong>to the target. <strong>Choose one of the following effects:</strong></p><ul><li><p>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.IBN7DtvWLFDo8jNh\" data-id=\"IBN7DtvWLFDo8jNh\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); text-shadow: rgb(255, 0, 0) 0px 0px 8px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Stagger</span></strong></a></span></span> to the target</p></li><li><p>Choose one ally you can see who has yet to take a turn during this round: that ally may take their turn immediately after yours during this round.</p></li></ul>",
       "duration": "Instantaneous",
       "heroic_requirement": "",
+      "img": "icons/equipment/shield/heater-stone-orange.webp",
       "isCheck": true,
       "isFacet": false,
       "isHeroic": false,

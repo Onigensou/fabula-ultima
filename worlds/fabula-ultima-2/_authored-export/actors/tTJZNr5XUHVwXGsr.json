@@ -102,7 +102,7 @@
           "_id": "BFDDgD0KNhojB5Zu",
           "_stats": {
             "compendiumSource": null,
-            "coreVersion": "12.331",
+            "coreVersion": "12.343",
             "createdTime": 1772223175133,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
@@ -152,7 +152,9 @@
           "name": "Flying",
           "origin": null,
           "sort": 0,
-          "statuses": [],
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
           "system": {
             "tags": []
           },
@@ -233,7 +235,7 @@
           "_id": "3exyIvNNslqYqn78",
           "_stats": {
             "compendiumSource": null,
-            "coreVersion": "12.331",
+            "coreVersion": "12.343",
             "createdTime": 1771677724389,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
@@ -283,7 +285,9 @@
           "name": "Flying",
           "origin": null,
           "sort": 0,
-          "statuses": [],
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
           "system": {
             "tags": []
           },

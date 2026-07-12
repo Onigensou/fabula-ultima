@@ -36,6 +36,7 @@
       "description": "<p>Reverse all <strong>Basic Buff </strong>on all creature<strong> </strong>into <strong>Basic Debuff</strong></p><p>Reverse all <strong>Basic Debuff </strong>on all creature<strong> </strong>into <strong>Basic Buff</strong></p>",
       "duration": "Instantaneous",
       "heroic_requirement": "",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/EternityWinnerPassive1.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

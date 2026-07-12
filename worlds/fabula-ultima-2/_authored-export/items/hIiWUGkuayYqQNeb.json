@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/the_look.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
   "name": "Draconic Roar",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -41,7 +41,7 @@
       "heroic_requirement": "",
       "id": "hIiWUGkuayYqQNeb",
       "ignore_hr": false,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/the_look.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
       "isCheck": true,
       "isFacet": false,
       "isHeroic": false,

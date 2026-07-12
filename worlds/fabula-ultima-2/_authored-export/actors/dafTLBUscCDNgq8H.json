@@ -369,7 +369,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.OzZIYbff6H0Drj8r.Token.pomflVSBXAQd6Ifd",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.iLMSzKYJ0zCMxnZc",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -965,6 +965,156 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "nfyTB7h842rjR4BU",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783877758726,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "nfyTB7h842rjR4BU",
+              "originalParentId": "2rMxW49Y5ZoD5jiY",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.nfyTB7h842rjR4BU"
+            },
+            "fabula-ultima-companion": {
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "name": "Flying",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
+          "system": {
+            "tags": [
+              "icarus-flying"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "Z4n4fsHHfLGvldLf",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783877758726,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Z4n4fsHHfLGvldLf",
+              "originalParentId": "2rMxW49Y5ZoD5jiY",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.Z4n4fsHHfLGvldLf"
+            },
+            "fabula-ultima-companion": {
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "ae_duplicate_mode": "replace_same_status",
+                    "ae_template_ref": "Flying",
+                    "effect_kind": "apply_ae",
+                    "effect_label": "iw_fly",
+                    "target_ref": "self"
+                  },
+                  "1": {
+                    "count": "all",
+                    "effect_kind": "remove_tagged_ae",
+                    "effect_label": "iw_ground",
+                    "filter_tag": "icarus-flying",
+                    "target_ref": "self"
+                  }
+                },
+                "name": "Icarus Wing",
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "iw_fly",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "conflict_start"
+                  },
+                  "1": {
+                    "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
+                    "reaction_cause_filter": "damage",
+                    "reaction_effect_ref": "iw_ground",
+                    "reaction_passive_mode": "force",
+                    "reaction_resource_filter": "hp",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_lose_resource"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "name": "Icarus Wing",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
@@ -1111,7 +1261,7 @@
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Elegy_for_the_End.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214939.162.png",
       "name": "Starfall Comet",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -1124,6 +1274,7 @@
           "cost": "0",
           "damage_bonus": "15",
           "description": "<p>A single Starfall comet. Deals <strong>【HR+15】 Light damage</strong> to one random enemy.</p>",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214939.162.png",
           "isCheck": true,
           "isOffensiveSpell": true,
           "name": "Starfall Comet",
@@ -2008,6 +2159,7 @@
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -2746,6 +2898,7 @@
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -4072,7 +4225,7 @@
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2126.gif",
       "name": "Shield of Rejuvenation (Passive)",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -4108,6 +4261,7 @@
               "skip_when_passive": true
             }
           },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2126.gif",
           "isCheck": false,
           "isReaction": true,
           "level": "1",
@@ -5323,6 +5477,63 @@
       "type": "equippableItem"
     },
     {
+      "_id": "H7HyFkQ2cH7rzf44",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783884158621,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://cdna.artstation.com/p/assets/images/images/024/014/374/large/marko-bubalo-jetpack-novi2.jpg?1581033568",
+      "name": "Lift off",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "qicvF0JiQQkBupVA",
+        "props": {
+          "cost": "1 IP",
+          "description": "Spend 1 Inventory Point to gain Flying for three turns.",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "3",
+              "ae_initial_charges_max": "3",
+              "ae_lifetime_mode": "target_turn_end",
+              "ae_template_ref": "Flying",
+              "effect_kind": "apply_ae",
+              "effect_label": "liftoff_fly",
+              "target_ref": "self"
+            }
+          },
+          "img": "https://cdna.artstation.com/p/assets/images/images/024/014/374/large/marko-bubalo-jetpack-novi2.jpg?1581033568",
+          "isCheck": false,
+          "isOffensiveSpell": false,
+          "name": "Draconic Roar",
+          "on_activate_effect_ref": "liftoff_fly",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "H7HyFkQ2cH7rzf44"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "hxPlRSwOxHShzdRK",
       "_stats": {
         "compendiumSource": "Item.YpRxmj2S5mNfkal2",
@@ -6148,7 +6359,7 @@
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
       "name": "Windpiercer (Passive)",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -6169,6 +6380,7 @@
               "target_ref": "trigger_subject"
             }
           },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "isCheck": false,
           "name": "Windpiercer (Passive)",
           "on_activate_effect_ref": "",
@@ -6528,7 +6740,7 @@
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Elegy_for_the_End.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214939.162.png",
       "name": "Starfall",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -6556,6 +6768,7 @@
               "free_of_cost": "true"
             }
           },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214939.162.png",
           "isCheck": false,
           "isOffensiveSpell": false,
           "name": "Starfall",
@@ -8633,6 +8846,64 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "Ox5h5jcWGb9CRaL2",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783881148686,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Ox5h5jcWGb9CRaL2",
+              "originalParentId": "qicvF0JiQQkBupVA",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.qicvF0JiQQkBupVA.ActiveEffect.Ox5h5jcWGb9CRaL2"
+            },
+            "fabula-ultima-companion": {
+              "deriveStatus": {
+                "grant": "Swift",
+                "requireEquipped": true,
+                "ruleKey": "jetpack-flying-swift",
+                "when": "AE_COUNT_FLYING > 0"
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://cdna.artstation.com/p/assets/images/images/024/014/374/large/marko-bubalo-jetpack-novi2.jpg?1581033568",
+          "name": "Aerial Swiftness",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.4.2"
@@ -11210,7 +11481,7 @@
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
       "name": "Glowstick (Passive)",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -11259,6 +11530,7 @@
               "performer_ref": "glowstick_ally"
             }
           },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
           "isCheck": false,
           "isReaction": true,
           "level": "1",
@@ -12536,8 +12808,8 @@
       "affinity_3": "NA",
       "affinity_4": "NA",
       "affinity_5": "NA",
-      "affinity_6": "AB",
-      "affinity_7": "VU",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
       "affinity_8": "NA",
       "affinity_9": "NA",
       "animation_table": {},
@@ -12949,7 +13221,7 @@
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
       "current_hp": "86",
-      "current_ip": "2",
+      "current_ip": 2,
       "current_mp": "114",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",

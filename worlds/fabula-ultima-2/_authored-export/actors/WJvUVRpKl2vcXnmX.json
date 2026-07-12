@@ -1350,7 +1350,7 @@
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13039.gif",
       "name": "Poisoned Dagger (gear skill)",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -1371,6 +1371,7 @@
               "target_ref": "trigger_subject"
             }
           },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13039.gif",
           "isCheck": false,
           "name": "Poisoned Dagger (gear skill)",
           "on_activate_effect_ref": "",

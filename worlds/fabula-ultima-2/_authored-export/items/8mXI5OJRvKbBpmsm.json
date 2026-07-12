@@ -71,11 +71,11 @@
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "5",
-      "defense_target_type": "mdef",
       "demiHuman_ef": "100",
       "demon_ef": "100",
       "description": "<ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Glacies Finis </strong>】</p>\n        <hr class=\"\">\n    </li>\n</ul>\n<details>\n    <summary><strong>⚡ Glacies Finis</strong></summary>\n    <p><strong>Cost:</strong> 30 x T MP</p>\n    <p><strong>Target:</strong> Up to three creatures</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p><strong>Check:【INS】</strong> + <strong>【WLP】</strong></p>\n    <p>You cause a glacial avalanche. Each target hit by this spell suffers 【HR + 35】ice damage. Opportunity: Each target hit by this spell suffers Fatigue.</p>\n</details>",
       "dragon_ef": "100",
+      "effect_table": {},
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",
@@ -88,9 +88,12 @@
       "humanoid_ef": "100",
       "id": "8mXI5OJRvKbBpmsm",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1626.gif",
+      "ingredient_taste": "",
+      "ingredient_taste2": "",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
+      "isIngredient": false,
       "isKey": false,
       "isMartial": false,
       "isModule": false,
@@ -105,6 +108,14 @@
       "item_quantity": "1",
       "item_rarity": "Rare",
       "item_skill_active": {
+        "YDxWAJAtZKlH5Xo7": {
+          "id": "${item.id}",
+          "name": "Glacies Finis",
+          "skill_cost": "30 x T MP",
+          "skill_description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+          "skill_maxLevel": 1,
+          "uuid": "Item.YDxWAJAtZKlH5Xo7"
+        },
         "g74cJxJ4guXSyVlJ": {
           "id": "${item.id}",
           "name": "Glacies Finis",
@@ -120,9 +131,18 @@
       "name": "Arch Ice Wand",
       "optional_params": {},
       "plant_ef": "100",
+      "reaction_config_table": {},
+      "recipe_dish_uuid": "",
+      "recipe_kind": "",
       "refine_count": "0",
       "refine_level": "0",
       "related_item_list": {
+        "YDxWAJAtZKlH5Xo7": {
+          "id": "${item.id}",
+          "name": "Glacies Finis",
+          "related_item_description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+          "uuid": "Item.YDxWAJAtZKlH5Xo7"
+        },
         "g74cJxJ4guXSyVlJ": {
           "id": "${item.id}",
           "name": "Glacies Finis",
@@ -134,6 +154,7 @@
       "rolled_atr1": "WLP",
       "rolled_atr2": "WLP",
       "set_name": "",
+      "skill_tags": "",
       "skill_target": "One Enemy",
       "soldier_ef": "100",
       "spirit_ef": "100",
@@ -144,7 +165,7 @@
       "weapon_range": "Ranged"
     },
     "template": "ZoiV53VaLzeRsEps",
-    "templateSystemUniqueVersion": 987283856,
+    "templateSystemUniqueVersion": 3202566307,
     "unique": false,
     "uniqueId": "8mXI5OJRvKbBpmsm"
   },
