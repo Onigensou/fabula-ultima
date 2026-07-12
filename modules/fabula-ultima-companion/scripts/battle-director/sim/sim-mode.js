@@ -37,8 +37,16 @@ export const DEFAULT_SIM_CONFIG = {
   // a party that never uses its ask-mode reactions reads weaker than it plays,
   // so every report must state which setting produced it.
   reactions: "skip",   // "skip" | "apply"
-  // Hard stop. A stalemate (two sides that cannot kill each other) must end the
-  // run, not hang the harness.
+  // Opportunities (crit follow-ups, either side). Auto-picking one well needs
+  // option semantics we don't model yet, so a sim declines them — symmetric,
+  // since both sides crit, but a real fidelity gap the report must own.
+  opportunities: "skip",   // "skip"
+  // The design budget. A fight that has not resolved EITHER WAY by this round is
+  // reported as a design failure, not a stalemate: by now the party should have
+  // won or lost. This is a verdict, not just a loop guard.
+  expectedRounds: 12,
+  // Hard stop, well past expectedRounds. Two sides that literally cannot kill
+  // each other must still terminate the run.
   maxRounds: 30,
 };
 
@@ -47,7 +55,74 @@ const _state = {
   config: { ...DEFAULT_SIM_CONFIG },
   transcript: [],
   startedAt: 0,
+  saved: null,   // originals of the ONI APIs we shim for the duration of a run
 };
+
+// ── The ONI shims ───────────────────────────────────────────────────────────
+// Two systems outside the Battle Director still stop a hands-free fight dead,
+// because they ask a HUMAN to click:
+//
+//   ONI.CheckRequester  — the "roll your check" panel (e.g. the Wandering Flame's
+//                         Explosive Entrance). Its `request` already supports a
+//                         `mode: "silent"` path that performs the SAME roll with
+//                         no UI, and `rollCost` pre-rolls before it ever opens the
+//                         overlay (the overlay resolves with the value already
+//                         rolled). So the sim keeps every roll and drops only the
+//                         panel — no math is faked.
+//
+//   ONI.OpportunitySystem — the crit follow-up picker. There is no headless path:
+//                         picking WELL needs option semantics we don't model yet.
+//                         So a sim DECLINES opportunities and says so. Both sides
+//                         crit, so it is roughly symmetric — but it is a real
+//                         fidelity gap, and the report has to own it rather than
+//                         quietly bank the difference.
+//
+// These are installed on begin() and restored on end(), so nothing leaks into
+// real play. Shimming here keeps the injection surface at 4 old files: neither
+// check-requester nor opportunity-system is edited.
+function installShims() {
+  const ONI = globalThis.ONI ?? (globalThis.ONI = {});
+  const saved = { cr: ONI.CheckRequester ?? null, opp: ONI.OpportunitySystem ?? null };
+
+  const cr = saved.cr;
+  if (cr?.request) {
+    ONI.CheckRequester = {
+      ...cr,
+      request: (actors, options = {}) => cr.request(actors, { ...options, mode: "silent" }),
+      requestOne: (actor, options = {}) => cr.requestOne(actor, { ...options, mode: "silent" }),
+      // Same dice, no overlay. rollCost's own overlay is presentational — it
+      // resolves with the value it rolled before opening.
+      rollCost: async ({ faces = 6, count = 1 } = {}) => {
+        SimMode.note("check", `cost roll ${count}d${faces} (silent)`);
+        return ONI.Dice.roll(count, faces);
+      },
+    };
+    log("[SIM] CheckRequester → silent mode");
+  }
+
+  const opp = saved.opp;
+  if (opp?.offer) {
+    ONI.OpportunitySystem = {
+      ...opp,
+      offer: async ({ actorName } = {}) => {
+        SimMode.note("opportunity", `${actorName ?? "someone"} declined an Opportunity (sim does not pick these yet)`);
+        return { cancelled: true };
+      },
+    };
+    log("[SIM] OpportunitySystem → auto-decline");
+  }
+
+  _state.saved = saved;
+}
+
+function restoreShims() {
+  const saved = _state.saved;
+  if (!saved) return;
+  const ONI = globalThis.ONI ?? {};
+  if (saved.cr) ONI.CheckRequester = saved.cr;
+  if (saved.opp) ONI.OpportunitySystem = saved.opp;
+  _state.saved = null;
+}
 
 export const SimMode = {
   get active() { return _state.active; },
@@ -65,8 +140,9 @@ export const SimMode = {
     // injection — `dispatchReactionMenu` already checks this global and
     // auto-accepts/declines askable candidates without spawning a menu.
     globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ = _state.config.reactions === "apply";
+    installShims();
 
-    log(`[SIM] begin — pace=${_state.config.pace} reactions=${_state.config.reactions} maxRounds=${_state.config.maxRounds}`);
+    log(`[SIM] begin — pace=${_state.config.pace} reactions=${_state.config.reactions} expected=${_state.config.expectedRounds} max=${_state.config.maxRounds}`);
     return _state.config;
   },
 
@@ -77,6 +153,7 @@ export const SimMode = {
     if (!_state.active) return;
     _state.active = false;
     try { delete globalThis.__FU_HARNESS_ACCEPT_PASSIVES__; } catch { globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ = undefined; }
+    restoreShims();
     log(`[SIM] end — ${_state.transcript.length} event(s) in ${((Date.now() - _state.startedAt) / 1000).toFixed(1)}s`);
   },
 

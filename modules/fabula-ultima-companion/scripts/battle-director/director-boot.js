@@ -63,6 +63,7 @@ import { initBattleStateTool } from "./battle-state-tool.js";
 import { initTestBattleTool } from "./test-battle-tool.js";
 import { run as simRun, abort as simAbort } from "./sim/sim-run.js";
 import { SimMode } from "./sim/sim-mode.js";
+import { initSimPanel } from "./sim/sim-panel.js";
 import { registerBuiltinReactor, clearBuiltinReactors } from "./instance-settle.js";
 import { crisisReactor } from "./crisis-reactor.js";
 import { defeatReactor } from "./defeat-reactor.js";
@@ -1503,6 +1504,10 @@ Hooks.once("ready", () => {
   // participants (real/class-test player, real/dummy enemy, ally, extra enemies).
   try { initTestBattleTool(); }
   catch (e) { warn("initTestBattleTool on ready threw", e); }
+
+  // Auto-Playtest (sim) — GM panel to run a hands-free battle and read a verdict.
+  try { initSimPanel(); }
+  catch (e) { warn("initSimPanel on ready threw", e); }
 
   // Director entrance renderer — registered on every client so the GM can
   // broadcast the party run-in dash + enemy fade to all screens.

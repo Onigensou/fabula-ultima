@@ -124,6 +124,31 @@ function classify(snap) {
   return "inconclusive";
 }
 
+// Turn the raw outcome into the sentence the designer actually wants to read.
+// Deliberately opinionated — the whole point of the tool is to stop hedging about
+// whether a fight landed.
+function verdictFor(outcome, hpLeft, rounds, expectedRounds) {
+  const pct = hpLeft == null ? null : Math.round(hpLeft * 100);
+  switch (outcome) {
+    case "overtime":
+      return `UNRESOLVED after ${expectedRounds} rounds — neither side can close it out. The fight is not designed well enough: by now the party should have won or lost.`;
+    case "stalled":
+      return "STALLED — the harness stopped seeing progress. Probably a gate still waiting on a human, not a balance result. Do not read numbers off this run.";
+    case "defeat":
+      return `DEFEAT in ${rounds} round(s).`;
+    case "mutual-destruction":
+      return `MUTUAL DESTRUCTION in ${rounds} round(s) — everyone died.`;
+    case "victory":
+      if (pct == null) return `VICTORY in ${rounds} round(s).`;
+      if (pct >= 85) return `VICTORY in ${rounds} round(s) at ${pct}% HP — TRIVIAL. The party was never in danger.`;
+      if (pct >= 70) return `VICTORY in ${rounds} round(s) at ${pct}% HP — too easy; there was no real pressure.`;
+      if (pct >= 40) return `VICTORY in ${rounds} round(s) at ${pct}% HP — a real fight.`;
+      return `VICTORY in ${rounds} round(s) at ${pct}% HP — a close call.`;
+    default:
+      return `INCONCLUSIVE after ${rounds} round(s).`;
+  }
+}
+
 // Party HP remaining, as a fraction of the party's total max HP. THE headline
 // balance number: a fight the party walks out of at >70% never really happened.
 function partyHpRemaining(snap) {
@@ -141,6 +166,7 @@ export async function run({
   party = null,
   pace = "fast",
   reactions = "skip",
+  expectedRounds = 12,
   maxRounds = 30,
 } = {}) {
   const a = api();
@@ -169,7 +195,7 @@ export async function run({
   let result = null;
 
   try {
-    SimMode.begin({ pace, reactions, maxRounds });
+    SimMode.begin({ pace, reactions, expectedRounds, maxRounds });
 
     clones = await cloneParty(refs);
     if (!clones.length) throw new Error("no party clones were created");
@@ -196,6 +222,8 @@ export async function run({
     let lastProgress = Date.now();
     let lastSig = "";
     let final = null;
+    let overtime = false;
+    let stalled = false;
 
     for (;;) {
       const director = a.getActiveDirector?.() ?? globalThis.__fuDirector_lastInstance ?? null;
@@ -208,15 +236,24 @@ export async function run({
 
         if (snap.ended) { SimMode.note("end", `combat ended in round ${snap.round}`); break; }
 
-        if (snap.round > maxRounds) {
-          SimMode.note("abort", `hit the ${maxRounds}-round cap — calling it a stalemate`);
+        // The design budget. Past this round the fight has failed to resolve
+        // either way, which IS the finding — so stop and report it rather than
+        // grinding on to the hard cap. (The Wandering Flame run that prompted
+        // this would have run until the heat death of the universe: it absorbs
+        // Hina's fire and out-heals the party's chip damage.)
+        if (snap.round > expectedRounds) {
+          overtime = true;
+          SimMode.note("overtime", `still unresolved after the ${expectedRounds}-round budget — stopping`);
           break;
         }
+
+        if (snap.round > maxRounds) { overtime = true; break; }   // absolute backstop
       }
 
       if (!a.isRunning?.()) { SimMode.note("end", "director stopped"); break; }
 
       if (Date.now() - lastProgress > STALL_TIMEOUT_MS) {
+        stalled = true;
         SimMode.note("abort", `no progress for ${STALL_TIMEOUT_MS / 1000}s — aborting (a gate is probably still waiting on a human)`);
         break;
       }
@@ -224,19 +261,24 @@ export async function run({
       await sleep(POLL_MS);
     }
 
-    const outcome = classify(final);
+    // "overtime" outranks whatever the board happened to look like: a fight that
+    // needed more than its budget is a design problem regardless of who was
+    // ahead on HP when the buzzer went.
+    const outcome = stalled ? "stalled" : overtime ? "overtime" : classify(final);
     const hpLeft = partyHpRemaining(final);
     result = {
       outcome,
+      verdict: verdictFor(outcome, hpLeft, final?.round ?? 0, expectedRounds),
       rounds: final?.round ?? 0,
       partyHpRemaining: hpLeft,
       durationSec: Math.round((Date.now() - started) / 1000),
       combatants: final?.combatants ?? [],
       transcript: [...SimMode.transcript],
-      config: { pace, reactions, maxRounds },
+      config: { pace, reactions, expectedRounds, maxRounds },
     };
 
     log(`[SIM] RESULT — ${outcome} in ${result.rounds} round(s); party at ${hpLeft == null ? "?" : Math.round(hpLeft * 100)}% HP (${result.durationSec}s wall)`);
+    log(`[SIM] VERDICT — ${result.verdict}`);
   } catch (e) {
     warn("[SIM] run threw", e);
     ui.notifications?.error(`[SIM] run failed: ${e?.message ?? e}`);
@@ -253,8 +295,18 @@ export async function run({
   return result;
 }
 
-// Escape hatch, for when a run wedges and the console is all you have.
-export function abort() {
-  try { api()?.stop?.(); } catch {}
-  return forceEndSim("manual abort");
+// Escape hatch. Leaves sim mode FIRST (so the injected branches stop firing even
+// if the director's teardown is slow), then stops the battle and sweeps the
+// clones. Awaited properly — a fire-and-forget stop() left the director running
+// the first time we needed this.
+export async function abort() {
+  const wasActive = forceEndSim("manual abort");
+  try { if (api()?.isRunning?.()) await api().stop(); }
+  catch (e) { warn("[SIM] abort: stop threw", e); }
+  try {
+    const folder = game.folders?.find((f) => f.type === "Actor" && f.name === SCRATCH_FOLDER);
+    const ids = folder ? game.actors.filter((x) => x.folder?.id === folder.id).map((x) => x.id) : [];
+    if (ids.length) await Actor.deleteDocuments(ids);
+  } catch (e) { warn("[SIM] abort: clone sweep threw", e); }
+  return wasActive;
 }
