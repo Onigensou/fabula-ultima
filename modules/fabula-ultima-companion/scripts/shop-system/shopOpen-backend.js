@@ -12,6 +12,10 @@ import {
 } from "./shopopen-const.js";
 import { ShopWindowApp } from "./shopWindow-app.js";
 
+// Dual-GM host gate. Every raw-socket message arrives at BOTH GM clients, so any
+// handler that WRITES must run on exactly one of them. See scripts/shared/primary-gm.js.
+const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() ?? false;
+
 export class ShopOpenBackend {
   constructor(cfg = {}) {
     this.cfg = {
@@ -41,6 +45,9 @@ export class ShopOpenBackend {
 
     // Sell handler — set by bootstrap after construction
     this._sellHandler = null;
+
+    // Presence roster ("who's browsing what") — set by bootstrap after construction
+    this._presence = null;
 
     // internal
     this._cachedPartyActorIds = new Set();
@@ -365,12 +372,36 @@ export class ShopOpenBackend {
   async _requestOpenShop(actorUuid) {
     const requesterId = game.user.id;
 
+    // A GM already has full access to the shop actor, so there is nothing to
+    // grant. It also cannot go through OPEN_GRANT: game.socket does not echo to
+    // the sender, so a GM emitting its own grant would never receive it — which
+    // is why the GM's shop button used to do nothing at all. Open locally.
     if (game.user.isGM) {
-      await this._gmHandleOpenRequest({ actorUuid, requesterId });
+      await this._openLocalShopWindow(actorUuid);
       return;
     }
 
     this._emitSocket({ type: SHOPOPEN.MSG.OPEN_REQ, payload: { actorUuid, requesterId } });
+  }
+
+  // Opens the shop UI on THIS client. GMs get it read-only (spectate).
+  async _openLocalShopWindow(actorUuid) {
+    const actor = await fromUuid(actorUuid);
+    if (!actor || !isShopActor(actor)) return;
+
+    const isGM = game.user.isGM;
+
+    // Only players hold a temporary ownership grant that has to be handed back.
+    if (!isGM) this._openedByActorUuidLocal.add(actorUuid);
+
+    ShopWindowApp.open(actorUuid, {
+      spectate: isGM,
+      onClose: () => {
+        if (isGM) return;
+        this._openedByActorUuidLocal.delete(actorUuid);
+        this._requestCloseShop(actorUuid);
+      },
+    });
   }
 
   _requestCloseShop(actorUuid) {
@@ -403,38 +434,45 @@ export class ShopOpenBackend {
     const actor = await fromUuid(actorUuid);
     if (!actor) return;
 
-    const perActor = this._gmOpenedByActorUuid.get(actorUuid);
+    const perActor  = this._gmOpenedByActorUuid.get(actorUuid);
     const wasOpened = perActor?.has(requesterId);
-    if (!wasOpened) return;
 
-    const none = ownershipNone();
-    await actor.update({ ownership: { [requesterId]: none } });
+    // The tracking map lives only on the GM that handled the open. If the primary
+    // GM changed between the player's open and close, the new primary has no
+    // record of it — so fall back to the actor's own ownership. Without this the
+    // player would keep OBSERVER on the shop actor for the rest of the session.
+    const holdsGrant = actor.ownership?.[requesterId] === ownershipObserver();
+    if (!wasOpened && !holdsGrant) return;
 
-    perActor.delete(requesterId);
-    if (perActor.size === 0) this._gmOpenedByActorUuid.delete(actorUuid);
+    await actor.update({ ownership: { [requesterId]: ownershipNone() } });
+
+    perActor?.delete(requesterId);
+    if (perActor && perActor.size === 0) this._gmOpenedByActorUuid.delete(actorUuid);
   }
 
   _onSocket(msg) {
     try {
       if (!msg?.type) return;
 
-      if (game.user.isGM && msg.type === SHOPOPEN.MSG.OPEN_REQ) {
+      // Ownership grants/revokes are document writes: primary GM only, or both
+      // GMs write the same ownership twice and emit two grants for one click.
+      if (msg.type === SHOPOPEN.MSG.OPEN_REQ) {
+        if (!isPrimaryGM()) return;
         const { actorUuid, requesterId } = msg.payload ?? {};
         this._gmHandleOpenRequest({ actorUuid, requesterId }).catch(e => this.err("_gmHandleOpenRequest failed:", e));
         return;
       }
 
-      if (game.user.isGM && msg.type === SHOPOPEN.MSG.CLOSE_REQ) {
+      if (msg.type === SHOPOPEN.MSG.CLOSE_REQ) {
+        if (!isPrimaryGM()) return;
         const { actorUuid, requesterId } = msg.payload ?? {};
         this._gmHandleCloseRequest({ actorUuid, requesterId }).catch(e => this.err("_gmHandleCloseRequest failed:", e));
         return;
       }
 
       // ── Shop purchase (GM executes, result sent back to requester) ──
-      if (game.user.isGM && msg.type === SHOPOPEN.MSG.BUY_REQ) {
-        // Only primary active GM to avoid duplicate execution
-        const gms = (game.users?.contents ?? []).filter(u => u?.isGM && u?.active);
-        if (gms[0]?.id !== game.user.id) return;
+      if (msg.type === SHOPOPEN.MSG.BUY_REQ) {
+        if (!isPrimaryGM()) return;
 
         const { purchaseId, ...rest } = msg.payload ?? {};
         this.log("BUY_REQ received, executing purchase:", purchaseId);
@@ -458,9 +496,8 @@ export class ShopOpenBackend {
       }
 
       // ── Shop sell (GM executes, result sent back to requester) ──
-      if (game.user.isGM && msg.type === SHOPOPEN.MSG.SELL_REQ) {
-        const gms = (game.users?.contents ?? []).filter(u => u?.isGM && u?.active);
-        if (gms[0]?.id !== game.user.id) return;
+      if (msg.type === SHOPOPEN.MSG.SELL_REQ) {
+        if (!isPrimaryGM()) return;
 
         const { sellId, ...rest } = msg.payload ?? {};
         this.log("SELL_REQ received, executing sell:", sellId);
@@ -483,27 +520,19 @@ export class ShopOpenBackend {
         return;
       }
 
+      // ── Presence: ephemeral, all clients render it, no GM gate (no writes) ──
+      if (msg.type === SHOPOPEN.MSG.PRESENCE_ENTER ||
+          msg.type === SHOPOPEN.MSG.PRESENCE_LEAVE ||
+          msg.type === SHOPOPEN.MSG.PRESENCE_SELECT) {
+        this._presence?.onSocket(msg.type, msg.payload ?? {});
+        return;
+      }
+
       if (msg.type === SHOPOPEN.MSG.OPEN_GRANT) {
         const { actorUuid, requesterId } = msg.payload ?? {};
         if (requesterId !== game.user.id) return;
 
-        fromUuid(actorUuid).then(actor => {
-          if (!actor) return;
-          this._openedByActorUuidLocal.add(actorUuid);
-
-          if (game.user.isGM) {
-            // GM opens the full NPC sheet for shop management
-            actor.sheet?.render(true, { focus: true });
-          } else {
-            // Players get the custom shop window (no NPC data exposed)
-            ShopWindowApp.open(actorUuid, {
-              onClose: () => {
-                this._openedByActorUuidLocal.delete(actorUuid);
-                this._requestCloseShop(actorUuid);
-              },
-            });
-          }
-        }).catch(e => this.err("OPEN_GRANT fromUuid failed:", e));
+        this._openLocalShopWindow(actorUuid).catch(e => this.err("OPEN_GRANT open failed:", e));
       }
     } catch (e) {
       this.err("Socket handler error:", e);

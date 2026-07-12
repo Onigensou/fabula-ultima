@@ -12,6 +12,11 @@ export const SHOPOPEN = {
     BUY_RESULT:  "FU_SHOP_BUY_RESULT_V1",
     SELL_REQ:    "FU_SHOP_SELL_REQ_V1",
     SELL_RESULT: "FU_SHOP_SELL_RESULT_V1",
+
+    // Ephemeral "who's browsing what" — any client → all clients, no GM involved.
+    PRESENCE_ENTER:  "FU_SHOP_PRESENCE_ENTER_V1",
+    PRESENCE_LEAVE:  "FU_SHOP_PRESENCE_LEAVE_V1",
+    PRESENCE_SELECT: "FU_SHOP_PRESENCE_SELECT_V1",
   },
 
   // Animation
@@ -58,4 +63,26 @@ export function getCenterPx(token, overrideXY = null) {
 
 export function distPxCenters(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+// Tint a Foundry user colour for use as a row background (same treatment the
+// camp system's activity select uses for other players' picks).
+// Ink that stays legible on a solid user-colour badge — Foundry user colours run
+// from near-black to bright yellow, so neither white nor black works for all.
+export function readableInk(hex) {
+  const h = String(hex ?? "").replace("#", "");
+  if (h.length < 6) return "#ffffff";
+  const [r, g, b] = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
+  const lin = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const lum = (0.2126 * lin(r)) + (0.7152 * lin(g)) + (0.0722 * lin(b));
+  return lum > 0.45 ? "#241a08" : "#ffffff";
+}
+
+export function hexToRgba(hex, alpha) {
+  const h = String(hex ?? "").replace("#", "");
+  if (h.length < 6) return `rgba(138,96,48,${alpha})`;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
 }
