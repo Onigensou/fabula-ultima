@@ -219,55 +219,66 @@ function damageRiderPolicy({ ar, carrierName }) {
   return { decision: "apply", why: `${carrierName} — the damage will land` };
 }
 
-// Zarg: Gadgets. NOT a turn action — an augment he declares ON a normal attack,
-// buffing its damage and swapping its element, paid for in IP. So the decision is:
-// this shot is about to land, is it worth 2 IP to re-point it at a weakness?
+// ── Element swaps (Gadgets, Thermokinesis) ───────────────────────────────────
+// Several augments do the same thing: they let the caster CHOOSE the damage type
+// of the action they're riding. That choice is made in a menu that opens after the
+// pill is applied — and the sim answers menus with the first option unless a brain
+// leaves a hint. So an element-swap augment applied WITHOUT a hint is worse than
+// useless: Keren fired Thermokinesis into an Inferex and the menu's first entry was
+// Fire, which Inferex ABSORBS. She was healing it.
 //
-// Worth it when the target is VULNERABLE to something he can switch to, or when
-// the shot's CURRENT element is being resisted/ignored (swapping to anything
-// neutral is a straight gain). Otherwise he keeps the IP — Gadgets is not free.
-function gadgetPolicy({ ar, reactorActor }) {
-  const ip = numOr(reactorActor?.system?.props?.current_ip, 0);
+// So: never apply one of these without saying which element, and only apply when
+// the swap is a genuine improvement on what the action already does.
+const AFF_SCORE = { VU: 3, NA: 1, RS: 0.4, IM: 0, AB: -5 };
+
+function affScore(aff) {
+  return AFF_SCORE[String(aff ?? "NA").toUpperCase()] ?? 1;
+}
+
+// Best element to switch to against this target, with its affinity.
+function bestElementAgainst(target) {
+  let best = null;
+  for (const el of ELEMENTS) {
+    let aff = "NA";
+    try { aff = String(AR.getAffinityForType(target, el) ?? "NA").toUpperCase(); } catch {}
+    const score = affScore(aff);
+    if (!best || score > best.score) best = { element: el, aff, score };
+  }
+  return best;
+}
+
+function elementSwapPolicy({ ar, carrierName }) {
+  const landing = rowsOf(ar).filter((r) => r?.hit !== false);
+  if (!landing.length) return { decision: "skip", why: "nothing is landing" };
+
+  // Judge against the primary target (the one the action is really aimed at).
+  const row = landing[0];
+  const target = actorOf(row.actorUuid);
+  if (!target) return { decision: "skip", why: "can't resolve the target" };
+
+  // What the action ALREADY does to them — this is the bar to beat. `affinity` on
+  // the row is the target's affinity to the action's current element.
+  const current = affScore(row.affinity);
+  const best = bestElementAgainst(target);
+
+  if (!best || best.score <= current) {
+    return { decision: "skip", why: `can't improve on ${String(row.affinity ?? "NA").toUpperCase()} — saving it` };
+  }
+
+  return {
+    decision: "apply",
+    why: `${carrierName} → ${best.element} (${target.name} is ${best.aff}); was ${String(row.affinity ?? "NA").toUpperCase()}`,
+    hint: { label: best.element },
+  };
+}
+
+// Gadgets is an element swap that also costs IP, so it keeps a reserve on top.
+function gadgetPolicy(ctx) {
+  const ip = numOr(ctx.reactorActor?.system?.props?.current_ip, 0);
   if (ip - TUNING.gadgetIpCost < TUNING.gadgetReserveIp) {
     return { decision: "skip", why: `only ${ip} IP left` };
   }
-
-  const landing = rowsOf(ar).filter((r) => r?.hit !== false);
-  if (!landing.length) return { decision: "skip", why: "the shot is missing anyway" };
-
-  // Aim at the sturdiest reason to bother: a target that's VU to something.
-  for (const r of landing) {
-    const target = actorOf(r.actorUuid);
-    if (!target) continue;
-
-    const weak = ELEMENTS.find((el) => {
-      try { return String(AR.getAffinityForType(target, el) ?? "NA").toUpperCase() === "VU"; }
-      catch { return false; }
-    });
-    if (weak) {
-      return {
-        decision: "apply",
-        why: `re-pointing the shot at ${target.name}'s ${weak} weakness`,
-        hint: { label: weak },
-      };
-    }
-  }
-
-  // No weakness anywhere — but if what he's throwing is being shrugged off, almost
-  // anything else is an improvement.
-  const shrugged = landing.every((r) => ["RS", "IM", "AB"].includes(String(r?.affinity ?? "NA").toUpperCase()));
-  if (shrugged) {
-    const target = actorOf(landing[0].actorUuid);
-    const neutral = ELEMENTS.find((el) => {
-      try { return String(AR.getAffinityForType(target, el) ?? "NA").toUpperCase() === "NA"; }
-      catch { return false; }
-    });
-    if (neutral) {
-      return { decision: "apply", why: `current element is being shrugged off — switching to ${neutral}`, hint: { label: neutral } };
-    }
-  }
-
-  return { decision: "skip", why: "no weakness to exploit — saving the IP" };
+  return elementSwapPolicy(ctx);
 }
 
 // Zarg's other two augments. Barrage (10 MP, creature_performs_action) and Warning
@@ -277,11 +288,17 @@ function gadgetPolicy({ ar, reactorActor }) {
 // encodes whether he can pay, so the judgement left to us is simply: is this shot
 // worth augmenting? Same test as the other riders — will the damage actually land.
 const POLICIES = {
+  // Defensive redirects.
   "protect": protectPolicy,
   "prophetic defender": propheticPolicy,
-  "thermokinesis": damageRiderPolicy,
-  "for whom the bell tolls": damageRiderPolicy,
+
+  // Element swaps — these CHOOSE the damage type, so they must never fire without
+  // naming it (see elementSwapPolicy).
+  "thermokinesis": elementSwapPolicy,
   "gadgets": gadgetPolicy,
+
+  // Plain damage riders — no choice to make, just "is this worth spending on".
+  "for whom the bell tolls": damageRiderPolicy,
   "barrage": damageRiderPolicy,
   "warning shot": damageRiderPolicy,
 };
@@ -332,4 +349,19 @@ export function decideReactions({ prePassives, ar, director, decided }) {
 // defensive answer available.
 export function protectExhausted(round) {
   return SimMode.spent(round, "blanche-protect") >= TUNING.protectPerRound;
+}
+
+// SAFETY NET. The Thermokinesis bug was not really about Thermokinesis: ANY augment
+// that opens an element menu will, without a hint, take the menu's first option —
+// and if that happens to be Fire and the target absorbs Fire, we heal it. A policy
+// per augment fixes the ones we know about; this covers the ones we don't.
+//
+// Returns the best element to use against the action's primary target, so a picker
+// that finds itself looking at a list of elements with no explicit hint has
+// something sane to fall back on instead of "whatever is at the top".
+export function bestElementForCard(ar) {
+  const landing = rowsOf(ar).filter((r) => r?.hit !== false);
+  const target = landing.length ? actorOf(landing[0].actorUuid) : null;
+  if (!target) return null;
+  return bestElementAgainst(target)?.element ?? null;
 }

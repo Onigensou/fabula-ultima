@@ -36,7 +36,7 @@ import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.j
 import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { resolvesVsMagicDefense } from "./snapshot.js";
 import { SimMode } from "./sim/sim-mode.js";
-import { decideReactions } from "./sim/reaction-brain.js";
+import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
 
 // Resolve which active non-GM user owns the given actor doc. Returns
 // userId or null. Deterministic on multi-owner actors (sort by id).
@@ -6621,6 +6621,13 @@ export async function postActionCard({ director, kind, payload }) {
         // human click takes, so the mutation pipeline (redirect subjects, costs,
         // re-render) runs for real.
         try {
+          // Safety net for element menus: any augment that lets the caster pick a
+          // damage type opens one, and an unhinted picker takes option ONE. That is
+          // how Keren fired Fire into an Inferex that absorbs it. Named policies
+          // hint the right element; this covers the augments nobody has written a
+          // policy for yet.
+          SimMode.setElementFallback(bestElementForCard(cardAr));
+
           const decisions = decideReactions({
             prePassives,
             ar: cardAr,
@@ -6633,6 +6640,8 @@ export async function postActionCard({ director, kind, payload }) {
           }
         } catch (e) {
           warn("[SIM] reaction brain threw — confirming without reactions", e);
+        } finally {
+          SimMode.setElementFallback(null);   // card-scoped; don't leak to the next
         }
 
         // Dwell AFTER the pills resolve, so at "watch" pace you can actually read

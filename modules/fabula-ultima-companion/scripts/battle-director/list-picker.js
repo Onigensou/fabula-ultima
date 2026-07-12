@@ -399,7 +399,21 @@ export async function pickFromList({
     // A brain that already knows the answer leaves a hint (WHICH element to load
     // into Zarg's Gadgets, WHICH ally Blanche is covering). Match it; fall back to
     // the first row when the menu doesn't offer what we asked for.
-    const hint = SimMode.takePickHint();
+    // No explicit hint, but this LOOKS like an element menu? Use the card's
+    // best-element fallback rather than blindly taking option one — picking the
+    // element the target absorbs is worse than not augmenting at all.
+    let hint = SimMode.takePickHint();
+    if (!hint) {
+      const fallback = SimMode.elementFallback?.();
+      const looksElemental = fallback && enabled.some((r) =>
+        new RegExp(`\\b${fallback}\\b`, "i").test(String(r?.primary ?? "").replace(/<[^>]*>/g, ""))
+      );
+      if (looksElemental) {
+        hint = { label: fallback };
+        log(`[SIM] list-picker: element menu with no hint — defaulting to ${fallback}`);
+      }
+    }
+
     let pick = null;
     if (hint) {
       const wanted = String(hint.label ?? hint.actorUuid ?? hint.tokenUuid ?? "").trim().toLowerCase();

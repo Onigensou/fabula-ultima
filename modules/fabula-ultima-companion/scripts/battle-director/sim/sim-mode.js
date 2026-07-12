@@ -59,6 +59,7 @@ const _state = {
   decl: new Map(),      // turnKey → Set<action signature declared>
   budget: new Map(),    // `round:key` → times spent (Protect once/round, …)
   hint: null,           // next picker's answer, when a brain already knows it
+  elementFallback: null, // card-scoped: best element vs the current target
   blocked: new Map(),   // turnKey → Set<action name that bounced>
 };
 
@@ -142,6 +143,7 @@ export const SimMode = {
     _state.blocked = new Map();
     _state.budget = new Map();
     _state.hint = null;
+    _state.elementFallback = null;
     _state.active = true;
 
     // Reactions ride the pre-existing harness override rather than a new
@@ -226,6 +228,15 @@ export const SimMode = {
     _state.hint = null;
     return h;
   },
+
+  // Sticky, card-scoped fallback for ELEMENT menus specifically. Any augment that
+  // lets the caster choose a damage type opens such a menu, and without an answer
+  // the picker takes option one — which is how Keren ended up firing Fire into an
+  // Inferex that ABSORBS it. A named policy hints the right element; this catches
+  // the augments nobody has written a policy for yet. Unlike the one-shot hint it
+  // persists for the whole card, because we don't know how many menus will open.
+  setElementFallback(el) { _state.elementFallback = el ?? null; },
+  elementFallback() { return _state.elementFallback ?? null; },
 
   pace() {
     return PACE[_state.config.pace] ?? PACE.fast;
