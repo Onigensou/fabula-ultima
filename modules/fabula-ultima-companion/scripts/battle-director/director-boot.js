@@ -103,6 +103,7 @@ import "./_test-harness-director.js";
 // Player resource HUD — side-effect import registers socket actions and the
 // reload-gate canvasReady hook on every client (not just the GM).
 import "./director-player-hud.js";
+import { destroyDirectorHud } from "./director-player-hud.js";
 
 // Module-level singleton — at most one director runs per client.
 let _instance = null;
@@ -368,6 +369,18 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   // rewind / End Battle.
   try { await clearAllStandaloneMenus(); } catch (e) { warn("stop: clearAllStandaloneMenus threw", e); }
   try { passiveCardQueue.clear(); } catch {}
+  // Defensive player-HUD teardown, for the same reason as the menu cleanup above.
+  // destroyDirectorHud normally runs from STOPPED.onEnter — but only a battle that
+  // ENDS reaches STOPPED (BATTLE_ENDING → STOPPED → here). A stop() called
+  // directly on a live battle (the sim harness aborting, a dev calling
+  // api.stop(), any external teardown) skips those states entirely, and the HUD
+  // was left stranded on every client with no way to dismiss it. Idempotent:
+  // destroyLocally on an already-cleared key is a no-op and the unsetFlags swallow
+  // their own errors, so the normal End-Battle path double-calling this is free.
+  if (cleanupTokens) {
+    try { await destroyDirectorHud(battleScene); }
+    catch (e) { warn("stop: destroyDirectorHud threw", e); }
+  }
   // The next two are TRUE-teardown cleanups (End Battle), NOT re-mount
   // cleanups (rewind / reload). The rewind path stops the live instance only
   // to reconstruct it a beat later via resumeFromSavedState — the conflict is
