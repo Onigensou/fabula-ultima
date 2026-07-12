@@ -101,7 +101,9 @@ const attackBundle = (targetUuids) => ({ command: "Attack", attackMode: "main", 
 function castBundle(item, targetUuids) {
   const st = String(item?.system?.props?.skill_type ?? "").trim().toLowerCase();
   const command = st === "spell" ? "Spell" : "Skill";
-  return { command, skillUuid: item.uuid, sourceItemUuid: item.uuid, targetUuids };
+  // `_name` is carried for the re-declare guard + transcript. applyComposedBundle
+  // ignores unknown keys, so it costs nothing downstream.
+  return { command, skillUuid: item.uuid, sourceItemUuid: item.uuid, targetUuids, _name: item.name };
 }
 
 // ── The policy API handed to profile.policy() ────────────────────────────────
@@ -125,8 +127,14 @@ function makePolicyApi(director, snap, self) {
 }
 
 // ── The rotation: profile rows through the real ActionReader ─────────────────
-async function runRotation({ token, combat, combatant, rows }) {
-  if (!rows?.length) return null;
+async function runRotation({ token, combat, combatant, rows, blocked }) {
+  // Drop anything that already bounced this turn BEFORE the engine sees it, so
+  // the priority window and weighted pick only ever consider workable actions.
+  const usable = blocked?.size
+    ? rows.filter((r) => !blocked.has(String(r?.data?.action_pattern_name ?? "").trim().toLowerCase()))
+    : rows;
+  if (!usable?.length) return null;
+  const filteredRows = usable;
   try {
     const ctx = AR.createBaseContext();
 
@@ -140,7 +148,7 @@ async function runRotation({ token, combat, combatant, rows }) {
     // action_pattern_table prop, so we hand it the profile's rows instead. No
     // action-reader edit, and every downstream stage behaves as it does for a
     // monster.
-    ctx.actorData.actionPatternRowsRaw = rows;
+    ctx.actorData.actionPatternRowsRaw = filteredRows;
 
     await readActionReaderPatternTable(ctx);
     await evaluateActionReaderConditions(ctx);
@@ -167,22 +175,22 @@ async function runRotation({ token, combat, combatant, rows }) {
 
 // ── Public ───────────────────────────────────────────────────────────────────
 // Returns a compose bundle, or null to let the caller fall back to Guard.
-export async function decidePlayerAction(director, snap) {
+// `blocked` = action names that already bounced this turn (SimMode's re-declare
+// guard) — skip them at every layer, or we just re-offer the thing that failed.
+export async function decidePlayerAction(director, snap, blocked = new Set()) {
   const self = selfCombatant(director, snap);
   const actorDoc = self?.actorDoc ?? null;
   if (!actorDoc) return null;
 
   const profile = profileFor(actorDoc.name);
   const { foes } = sides(director, snap);
+  const isBlocked = (name) => blocked.has(String(name ?? "").trim().toLowerCase());
 
   // 1. Policy — the things a rotation table cannot say (heal a dying ally).
   if (typeof profile.policy === "function") {
     try {
       const bundle = profile.policy(makePolicyApi(director, snap, self));
-      if (bundle) {
-        SimMode.note("decide", `${snap?.name} → ${bundle.command} (policy)`);
-        return bundle;
-      }
+      if (bundle && !isBlocked(bundle._name)) return bundle;
     } catch (e) {
       warn(`[SIM] player-brain: ${actorDoc.name} policy threw — falling through`, e);
     }
@@ -194,11 +202,8 @@ export async function decidePlayerAction(director, snap) {
   const combatant = combat?.combatants?.find?.((c) => c.tokenId === snap?.tokenId) ?? null;
 
   if (token) {
-    const picked = await runRotation({ token, combat, combatant, rows: profile.rows });
-    if (picked) {
-      SimMode.note("decide", `${snap?.name} → ${picked.bundle.command} "${picked.name}" (rotation)`);
-      return picked.bundle;
-    }
+    const picked = await runRotation({ token, combat, combatant, rows: profile.rows, blocked });
+    if (picked) return picked.bundle;
   }
 
   // 3. Basic attack, aimed with its head up.
@@ -212,6 +217,6 @@ export async function decidePlayerAction(director, snap) {
   const uuid = pick ? tokenUuidOf(pick.dc) : null;
   if (!uuid) return null;
 
-  SimMode.note("decide", `${snap?.name} → Attack ${pick.dc.name} [${pick.aff}] (basic)`);
+  SimMode.note("attack", `${snap?.name} swings at ${pick.dc.name} [${pick.aff}]`);
   return attackBundle([uuid]);
 }

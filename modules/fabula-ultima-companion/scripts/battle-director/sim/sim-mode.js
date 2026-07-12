@@ -56,6 +56,8 @@ const _state = {
   transcript: [],
   startedAt: 0,
   saved: null,   // originals of the ONI APIs we shim for the duration of a run
+  decl: new Map(),      // turnKey → Set<action signature declared>
+  blocked: new Map(),   // turnKey → Set<action name that bounced>
 };
 
 // ── The ONI shims ───────────────────────────────────────────────────────────
@@ -134,6 +136,8 @@ export const SimMode = {
     _state.config = { ...DEFAULT_SIM_CONFIG, ...config };
     _state.transcript = [];
     _state.startedAt = Date.now();
+    _state.decl = new Map();
+    _state.blocked = new Map();
     _state.active = true;
 
     // Reactions ride the pre-existing harness override rather than a new
@@ -155,6 +159,38 @@ export const SimMode = {
     try { delete globalThis.__FU_HARNESS_ACCEPT_PASSIVES__; } catch { globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ = undefined; }
     restoreShims();
     log(`[SIM] end — ${_state.transcript.length} event(s) in ${((Date.now() - _state.startedAt) / 1000).toFixed(1)}s`);
+  },
+
+  // ── Re-declare guard ──────────────────────────────────────────────────────
+  // Some actions cannot execute for reasons no AI can see from the sheet. Keren's
+  // Detonate Phantasm needs a phantasm ON THE FIELD; declared without one, the
+  // FSM bounces straight back to DECLARE — where the brain, being deterministic,
+  // confidently picks the very same spell again. That is an infinite loop, and it
+  // is what parked our first profiled run.
+  //
+  // So: remember what each combatant has already declared THIS TURN. A repeat
+  // means the action bounced, so blacklist it for the rest of the turn and let
+  // the brain choose again. Exhaust every option and the turn ends in a Guard.
+  // Generic on purpose — this catches the next skill with an invisible
+  // precondition too, without us having to predict which one it is.
+  declaredThisTurn(turnKey, sig) {
+    return _state.decl.get(turnKey)?.has(sig) ?? false;
+  },
+
+  recordDeclaration(turnKey, sig) {
+    if (!_state.decl.has(turnKey)) _state.decl.set(turnKey, new Set());
+    _state.decl.get(turnKey).add(sig);
+  },
+
+  blockForTurn(turnKey, name) {
+    if (!name) return;
+    if (!_state.blocked.has(turnKey)) _state.blocked.set(turnKey, new Set());
+    _state.blocked.get(turnKey).add(String(name).trim().toLowerCase());
+    this.note("blocked", `"${name}" bounced back to DECLARE — not offering it again this turn`);
+  },
+
+  blockedForTurn(turnKey) {
+    return _state.blocked.get(turnKey) ?? new Set();
   },
 
   pace() {

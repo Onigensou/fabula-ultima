@@ -43,6 +43,33 @@ async function resolveActor(ref) {
   return game.actors?.getName?.(String(ref)) ?? null;
 }
 
+// ── The real party ──────────────────────────────────────────────────────────
+// "The party" is whoever the DB actor says it is — `member_id_1..N` on the
+// current-game DB actor (see [[feedback_players_means_party]]). NOT
+// `hasPlayerOwner`, which is true for ~150 actors in this world (every retired
+// PC, guest and class shell). Slot 1 stores a bare id while the others store
+// full uuids, so normalize both.
+export async function resolveDbParty() {
+  try {
+    const data = await globalThis.FUCompanion?.api?.getCurrentGameDb?.();
+    const props = data?.db?.system?.props ?? null;
+    if (!props) return [];
+
+    const out = [];
+    for (let i = 1; i <= 8; i++) {
+      const raw = String(props[`member_id_${i}`] ?? "").trim();
+      if (!raw) continue;
+      const uuid = raw.includes(".") ? raw : `Actor.${raw}`;
+      const actor = await fromUuid(uuid).catch(() => null);
+      if (actor) out.push({ uuid: actor.uuid, name: actor.name });
+    }
+    return out;
+  } catch (e) {
+    warn("[SIM] resolveDbParty threw", e);
+    return [];
+  }
+}
+
 async function ensureScratchFolder() {
   const existing = game.folders?.find((f) => f.type === "Actor" && f.name === SCRATCH_FOLDER);
   if (existing) return existing;
@@ -161,9 +188,10 @@ function partyHpRemaining(snap) {
 
 // ── The run ─────────────────────────────────────────────────────────────────
 export async function run({
-  enemy,
+  enemy,                 // single enemy (kept for the console path)
   quantity = 1,
-  party = null,
+  enemies = null,        // encounter GROUP: [{ uuid, quantity }, …] — wins over `enemy`
+  party = null,          // omit → the DB-resolved party
   pace = "fast",
   reactions = "skip",
   expectedRounds = 12,
@@ -174,20 +202,37 @@ export async function run({
   if (a.isRunning?.()) { ui.notifications?.warn("[SIM] A battle is already running — end it first."); return null; }
   if (SimMode.active) { ui.notifications?.warn("[SIM] A sim is already in progress."); return null; }
 
-  const enemyActor = await resolveActor(enemy);
-  if (!enemyActor) { ui.notifications?.error(`[SIM] enemy actor not found: ${enemy}`); return null; }
+  // Encounter group: a list of different enemies with counts, exactly like the
+  // Test Battle tool's payload. A bare `enemy` is just a one-row group.
+  const group = Array.isArray(enemies) && enemies.length
+    ? enemies
+    : (enemy ? [{ uuid: enemy, quantity }] : []);
+  if (!group.length) { ui.notifications?.error("[SIM] no enemies given."); return null; }
+
+  const manualPicks = [];
+  for (const g of group) {
+    const actor = await resolveActor(g?.uuid ?? g);
+    if (!actor) { warn(`[SIM] enemy not found: ${g?.uuid ?? g}`); continue; }
+    manualPicks.push({
+      actorUuid: actor.uuid,
+      name: actor.name,
+      quantity: Math.max(1, Number(g?.quantity ?? 1) | 0),
+    });
+  }
+  if (!manualPicks.length) { ui.notifications?.error("[SIM] none of the enemies resolved."); return null; }
 
   const scene = game.scenes?.find((s) => s.name === SCENE_NAME) ?? game.scenes?.active ?? canvas?.scene ?? null;
   if (!scene) { ui.notifications?.error("[SIM] no scene to launch on."); return null; }
 
-  // The party MUST be explicit. There is no safe default: `hasPlayerOwner` is
-  // true for ~150 actors in this world (every retired PC, guest and class shell),
-  // and a "convenience" fallback would happily clone all of them. Cloning is the
-  // safety mechanism that keeps a sim off the real PCs — it must never run on a
-  // set the caller didn't name.
-  const refs = Array.isArray(party) ? party.filter(Boolean) : [];
+  // The party defaults to whoever the DB actor says the party IS — never to
+  // `hasPlayerOwner`, which matches ~150 actors here (retired PCs, guests, class
+  // shells). Cloning is what keeps a sim off the real PCs, so the set must always
+  // be one somebody actually named.
+  const refs = Array.isArray(party) && party.length
+    ? party.filter(Boolean)
+    : (await resolveDbParty()).map((m) => m.uuid);
   if (!refs.length) {
-    ui.notifications?.error("[SIM] pass an explicit `party: [uuid, …]` — there is no default.");
+    ui.notifications?.error("[SIM] no party — the DB actor has no members, so pass `party: [uuid, …]`.");
     return null;
   }
 
@@ -206,11 +251,12 @@ export async function run({
 
     const payload = {
       context: { battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true },
-      encounterPlan: { mode: "manual", manualPicks: [{ actorUuid: enemyActor.uuid, name: enemyActor.name, quantity }] },
+      encounterPlan: { mode: "manual", manualPicks },
       party: { members },
     };
 
-    SimMode.note("start", `${members.length} PC(s) vs ${enemyActor.name} ×${quantity}`);
+    const foeLabel = manualPicks.map((p) => `${p.name}×${p.quantity}`).join(" + ");
+    SimMode.note("start", `${members.length} PC(s) vs ${foeLabel}`);
     await a.start({ payload });
 
     // ── Watch it play ─────────────────────────────────────────────────────

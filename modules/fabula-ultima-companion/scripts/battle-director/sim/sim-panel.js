@@ -10,7 +10,7 @@
 
 import { log, warn } from "../logger.js";
 import { registerDevTool, devToolsAnchorBottom, devToolsAnchorLeft } from "../dev-tools-menu.js";
-import { run as simRun, abort as simAbort } from "./sim-run.js";
+import { run as simRun, abort as simAbort, resolveDbParty } from "./sim-run.js";
 import { SimMode } from "./sim-mode.js";
 
 const PANEL_ID = "fud-sim-panel";
@@ -66,12 +66,13 @@ function saveConfig(cfg) {
 }
 
 // ── Panel ───────────────────────────────────────────────────────────────────
-function openPanel() {
+async function openPanel() {
   document.getElementById(PANEL_ID)?.remove();
 
   const saved = loadConfig();
   const pcs = pcCandidates();
   const enemies = enemyCandidates();
+  const dbParty = await resolveDbParty();   // the REAL party, per the DB actor
 
   const root = document.createElement("div");
   root.id = PANEL_ID;
@@ -79,14 +80,17 @@ function openPanel() {
   root.style.left = `${devToolsAnchorLeft()}px`;
 
   const enemyOpts = enemies
-    .map((e) => `<option value="${e.uuid}" ${saved.enemy === e.uuid ? "selected" : ""}>${escapeHtml(e.name)}</option>`)
+    .map((e) => `<option value="${e.uuid}">${escapeHtml(e.name)}</option>`)
     .join("");
 
-  const savedParty = new Set(Array.isArray(saved.party) ? saved.party : []);
+  // Party ticks default to the DB-resolved party; a saved selection overrides.
+  const preTicked = new Set(
+    Array.isArray(saved.party) && saved.party.length ? saved.party : dbParty.map((m) => m.uuid)
+  );
   const pcRows = pcs
     .map((p) => `
       <label class="fud-sim-pc">
-        <input type="checkbox" value="${p.uuid}" ${savedParty.has(p.uuid) ? "checked" : ""}>
+        <input type="checkbox" value="${p.uuid}" ${preTicked.has(p.uuid) ? "checked" : ""}>
         <span>${escapeHtml(p.name)}</span>
         <em>${escapeHtml(String(p.system?.props?.max_hp ?? "?"))} HP</em>
       </label>`)
@@ -103,13 +107,15 @@ function openPanel() {
         your actual PCs are never touched.
       </div>
 
-      <label class="fud-sim-lbl">Enemy</label>
-      <select class="fud-sim-enemy">${enemyOpts}</select>
+      <label class="fud-sim-lbl">Encounter <em>(add as many kinds as you like)</em></label>
+      <div class="fud-sim-addrow">
+        <select class="fud-sim-enemy">${enemyOpts}</select>
+        <input class="fud-sim-qty" type="number" min="1" max="12" value="1" title="How many">
+        <div class="fud-sim-add" title="Add to the encounter">+</div>
+      </div>
+      <div class="fud-sim-group"></div>
 
-      <label class="fud-sim-lbl">Count</label>
-      <input class="fud-sim-qty" type="number" min="1" max="8" value="${Number(saved.quantity) || 1}">
-
-      <label class="fud-sim-lbl">Party <em>(no default — pick them)</em></label>
+      <label class="fud-sim-lbl">Party <em>(defaults to the DB party)</em></label>
       <div class="fud-sim-pcs">${pcRows || "<i>no eligible PCs found</i>"}</div>
 
       <label class="fud-sim-lbl">Expected rounds <em>(unresolved by here = badly designed)</em></label>
@@ -138,7 +144,42 @@ function openPanel() {
   document.body.appendChild(root);
 
   const statusEl = root.querySelector(".fud-sim-status");
+  const groupEl = root.querySelector(".fud-sim-group");
   const setStatus = (html, cls = "") => { statusEl.className = `fud-sim-status ${cls}`; statusEl.innerHTML = html; };
+
+  // ── Encounter group (mirrors the Test Battle tool's mixed-enemy payload) ───
+  let group = Array.isArray(saved.enemies) && saved.enemies.length ? [...saved.enemies] : [];
+
+  const renderGroup = () => {
+    if (!group.length) {
+      groupEl.innerHTML = `<i class="fud-sim-empty">No enemies yet — pick one above and press +</i>`;
+      return;
+    }
+    groupEl.innerHTML = group
+      .map((g, i) => `
+        <div class="fud-sim-grow">
+          <span>${escapeHtml(g.name)}</span>
+          <em>×${g.quantity}</em>
+          <div class="fud-sim-del" data-i="${i}" title="Remove">✕</div>
+        </div>`)
+      .join("");
+    groupEl.querySelectorAll(".fud-sim-del").forEach((b) => {
+      b.addEventListener("click", () => { group.splice(Number(b.dataset.i), 1); renderGroup(); });
+    });
+  };
+  renderGroup();
+
+  root.querySelector(".fud-sim-add").addEventListener("click", () => {
+    const sel = root.querySelector(".fud-sim-enemy");
+    const uuid = sel.value;
+    const name = sel.options[sel.selectedIndex]?.textContent ?? "?";
+    const quantity = Math.max(1, Number(root.querySelector(".fud-sim-qty").value) || 1);
+    if (!uuid) return;
+    const existing = group.find((g) => g.uuid === uuid);
+    if (existing) existing.quantity += quantity;
+    else group.push({ uuid, name, quantity });
+    renderGroup();
+  });
 
   root.querySelector(".fud-sim-x").addEventListener("click", () => root.remove());
 
@@ -149,20 +190,18 @@ function openPanel() {
   });
 
   root.querySelector(".fud-sim-run").addEventListener("click", async () => {
-    const enemy = root.querySelector(".fud-sim-enemy").value;
-    const quantity = Math.max(1, Number(root.querySelector(".fud-sim-qty").value) || 1);
     const party = [...root.querySelectorAll(".fud-sim-pcs input:checked")].map((i) => i.value);
     const expectedRounds = Math.max(2, Number(root.querySelector(".fud-sim-exp").value) || 12);
     const pace = root.querySelector(".fud-sim-pace").value;
     const reactions = root.querySelector(".fud-sim-react").checked ? "apply" : "skip";
 
-    if (!enemy) { setStatus("Pick an enemy.", "err"); return; }
+    if (!group.length) { setStatus("Add at least one enemy to the encounter.", "err"); return; }
     if (!party.length) { setStatus("Pick at least one party member.", "err"); return; }
 
-    saveConfig({ enemy, quantity, party, expectedRounds, pace, reactions });
+    saveConfig({ enemies: group, party, expectedRounds, pace, reactions });
     setStatus("Running… the fight plays itself. Nothing here needs clicking.", "busy");
 
-    const res = await simRun({ enemy, quantity, party, pace, reactions, expectedRounds });
+    const res = await simRun({ enemies: group, party, pace, reactions, expectedRounds });
     if (!res) { setStatus("Run failed — see the console.", "err"); return; }
 
     const pct = res.partyHpRemaining == null ? "?" : `${Math.round(res.partyHpRemaining * 100)}%`;
@@ -208,6 +247,41 @@ function ensureStyle() {
   width:100%; background:#11141a; color:#e8eaf0;
   border:1px solid rgba(255,255,255,.16); border-radius:5px; padding:4px 6px;
 }
+/* The dropdown LIST is drawn by the OS and does not inherit the select's colors —
+   without this it renders as pale-on-pale and is unreadable. Style the options
+   explicitly (and the disabled/selected states, which Chromium picks separately). */
+#${PANEL_ID} select option {
+  background:#11141a; color:#e8eaf0;
+}
+#${PANEL_ID} select option:checked,
+#${PANEL_ID} select option:hover {
+  background:#2f6d43; color:#ffffff;
+}
+
+/* Encounter builder */
+#${PANEL_ID} .fud-sim-addrow { display:flex; gap:5px; align-items:center; }
+#${PANEL_ID} .fud-sim-addrow .fud-sim-enemy { flex:1; min-width:0; }
+#${PANEL_ID} .fud-sim-addrow .fud-sim-qty { width:52px; flex:none; }
+#${PANEL_ID} .fud-sim-add {
+  width:26px; height:26px; flex:none; display:flex; align-items:center; justify-content:center;
+  border-radius:5px; cursor:pointer; font-weight:800; font-size:15px;
+  background:#2e4a34; border:1px solid rgba(255,255,255,.18);
+}
+#${PANEL_ID} .fud-sim-add:hover { background:#3b6144; border-color:rgba(255,216,102,.6); }
+#${PANEL_ID} .fud-sim-group {
+  margin-top:5px; display:flex; flex-direction:column; gap:3px;
+  border:1px solid rgba(255,255,255,.12); border-radius:5px; padding:5px; background:#11141a;
+  min-height:26px;
+}
+#${PANEL_ID} .fud-sim-empty { opacity:.45; font-size:11px; }
+#${PANEL_ID} .fud-sim-grow {
+  display:flex; align-items:center; gap:6px; padding:2px 4px;
+  background:rgba(255,255,255,.05); border-radius:4px;
+}
+#${PANEL_ID} .fud-sim-grow span { flex:1; }
+#${PANEL_ID} .fud-sim-grow em { font-style:normal; opacity:.7; font-weight:700; }
+#${PANEL_ID} .fud-sim-del { cursor:pointer; opacity:.5; padding:0 3px; }
+#${PANEL_ID} .fud-sim-del:hover { opacity:1; color:#ff9a8f; }
 #${PANEL_ID} .fud-sim-pcs {
   max-height: 132px; overflow-y:auto; border:1px solid rgba(255,255,255,.12);
   border-radius:5px; padding:4px; background:#11141a;

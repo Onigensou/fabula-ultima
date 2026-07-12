@@ -107,14 +107,34 @@ export const PROFILES = {
     ],
   },
 
-  // Phantasm controller. Strike is free, so it is the floor; Detonate is the
-  // payoff once there is MP to spend.
+  // Phantasm controller.
+  //
+  // Detonate Phantasm needs a PHANTASM ON THE FIELD — a precondition that exists
+  // nowhere on the item, so neither ActionReader nor any row condition can see
+  // it. Declared without one, the FSM bounces back to DECLARE and a deterministic
+  // brain re-picks it forever; that is exactly what parked our first profiled
+  // run. The re-declare guard now catches this class of thing generically, but
+  // guessing wrong still burns a turn — so gate it properly here, in the policy
+  // layer, which is the one place that can look at the actual board.
+  //
+  // Create Phantasm: Strike is free, so it is the floor.
   Keren: {
     label: "Keren — phantasm damage",
-    policy: healPolicy({ spellName: "Life Transference", threshold: 0.3, mpCost: 20 }),
+    policy: (api) => {
+      const heal = healPolicy({ spellName: "Life Transference", threshold: 0.3, mpCost: 20 })(api);
+      if (heal) return heal;
+
+      const hasPhantasm = api.allies().some((dc) => /phantasm|numen/i.test(dc.name ?? ""));
+      if (!hasPhantasm) return null;   // nothing to detonate — fall through to the rotation
+
+      const spell = api.findItem("Detonate Phantasm");
+      if (!spell || Number(api.self?.system?.props?.current_mp) < 20) return null;
+      const foes = api.foes();
+      if (!foes.length) return null;
+      return api.castOn(spell, [foes[0]]);
+    },
     rows: [
-      row(0, { name: "Detonate Phantasm", cond: "mp", v1: 25, v2: 100, prio: 20, focus: "by_affinity" }),
-      row(1, { name: "Create Phantasm: Strike", cond: "always", prio: 14, focus: "lowest_hp" }),
+      row(0, { name: "Create Phantasm: Strike", cond: "always", prio: 14, focus: "lowest_hp" }),
     ],
   },
 

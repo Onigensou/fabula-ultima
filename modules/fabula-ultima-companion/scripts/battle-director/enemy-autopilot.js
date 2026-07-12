@@ -385,20 +385,45 @@ export async function autopilotDecideAction(director, snap) {
 // A Guard here is a real in-fiction choice, not a skipped turn, so it shows up
 // honestly in the transcript rather than silently vanishing.
 async function simFallbackBundle(director, snap) {
-  try {
-    const fromBrain = await decidePlayerAction(director, snap);
-    if (fromBrain) {
-      const blocked = (snap?.blockedActions ?? []).find((b) => b?.label === fromBrain.command);
-      if (!blocked) {
-        SimMode.note("decide", `${snap?.name} → ${fromBrain.command} (player brain)`);
-        return fromBrain;
-      }
-      log(`[SIM] player brain wanted ${fromBrain.command} but it is blocked by ${blocked.reason} — guarding`);
+  // Identify THIS combatant's turn. A re-entry into DECLARE for the same
+  // (round, combatant) means the last action bounced — see SimMode's re-declare
+  // guard. Retire it and let the brain pick again, rather than looping on it.
+  const turnKey = `${director?.dCombat?.round ?? 0}:${snap?.combatantId ?? snap?.tokenId ?? "?"}`;
+
+  for (let attempt = 0; attempt < 4; attempt++) {
+    let bundle = null;
+    try {
+      bundle = await decidePlayerAction(director, snap, SimMode.blockedForTurn(turnKey));
+    } catch (e) {
+      warn("[SIM] player brain threw", e);
+      break;
     }
-  } catch (e) {
-    warn("[SIM] player brain threw — guarding", e);
+    if (!bundle) break;
+
+    // An action-gating debuff (Silence on a Spell, etc.) — the menu would grey it
+    // out, so don't declare it.
+    const gated = (snap?.blockedActions ?? []).find((b) => b?.label === bundle.command);
+    if (gated) {
+      log(`[SIM] ${snap?.name}: ${bundle.command} is gated by ${gated.reason}`);
+      SimMode.blockForTurn(turnKey, bundle._name ?? bundle.command);
+      continue;
+    }
+
+    // Signature identifies the ACTION, not just the command: two different spells
+    // are different declarations.
+    const sig = `${bundle.command}:${bundle.skillUuid ?? bundle.attackMode ?? ""}`;
+    if (SimMode.declaredThisTurn(turnKey, sig)) {
+      // We already tried exactly this and we're back here — it didn't take.
+      SimMode.blockForTurn(turnKey, bundle._name ?? bundle.skillUuid ?? bundle.command);
+      continue;
+    }
+
+    SimMode.recordDeclaration(turnKey, sig);
+    SimMode.note("decide", `${snap?.name} → ${bundle.command}${bundle._name ? ` "${bundle._name}"` : ""} (player brain)`);
+    return bundle;
   }
-  SimMode.note("decide", `${snap?.name} → Guard (no actionable option)`);
+
+  SimMode.note("decide", `${snap?.name} → Guard (nothing left that works)`);
   return { command: "Guard", coverTokenUuid: null };
 }
 
