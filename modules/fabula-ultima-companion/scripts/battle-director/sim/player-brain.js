@@ -20,12 +20,18 @@
 
 import { log } from "../logger.js";
 
+// The acting combatant, from the director's authoritative model. The turnSnapshot
+// is frozen and carries only `actorUuid` (no live doc), so resolve the
+// DirectorCombatant — it holds live `actorDoc` / `tokenUuid` refs.
+function selfCombatant(director, snap) {
+  return director?.dCombat?.combatants?.find?.((c) => c.tokenId === snap?.tokenId) ?? null;
+}
+
 // Living opposing combatants, from the director's authoritative model.
 function livingOpponents(director, snap) {
   const dc = director?.dCombat;
   if (!dc) return [];
-  const self = dc.combatants?.find?.((c) => c.tokenId === snap?.tokenId) ?? null;
-  const mySide = self?.side ?? "party";
+  const mySide = selfCombatant(director, snap)?.side ?? "party";
   return (dc.combatants ?? []).filter((c) => c.side !== mySide && !c.isDefeatedLive?.());
 }
 
@@ -45,7 +51,7 @@ function hasMainWeapon(actorDoc) {
 }
 
 function tokenUuidOf(dc) {
-  return dc?.tokenDoc?.uuid ?? canvas?.tokens?.get(dc?.tokenId)?.document?.uuid ?? null;
+  return dc?.tokenUuid ?? dc?.tokenDoc?.uuid ?? null;
 }
 
 // Decide a turn. Returns a compose bundle (the same shape composeAction hands to
@@ -56,7 +62,7 @@ function tokenUuidOf(dc) {
 // TARGET stage derives the weapon from the attacker's equipped hand
 // (state-handlers' Attack branch), which is exactly what a human click produces.
 export async function decidePlayerAction(director, snap) {
-  const actorDoc = snap?.actorDoc ?? canvas?.tokens?.get(snap?.tokenId)?.actor ?? null;
+  const actorDoc = selfCombatant(director, snap)?.actorDoc ?? null;
 
   if (!hasMainWeapon(actorDoc)) {
     log(`[SIM] player-brain: ${snap?.name} has no main-hand weapon — no attack available`);
