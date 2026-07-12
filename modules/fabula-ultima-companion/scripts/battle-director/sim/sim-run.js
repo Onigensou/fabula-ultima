@@ -76,6 +76,42 @@ async function ensureScratchFolder() {
   return Folder.create({ name: SCRATCH_FOLDER, type: "Actor" });
 }
 
+// ── Phoenix Feathers ────────────────────────────────────────────────────────
+// A revive item is the single biggest swing in a fight that goes wrong — the run
+// where Keren went down early and it snowballed would have looked completely
+// different with one. But how many the party is carrying is a scenario variable,
+// not a property of the characters, so the dev sets it per run and we stock the
+// clones accordingly.
+//
+// The stack goes to ONE carrier (whoever already owns the item — Zarg does), and
+// every other clone is zeroed, so `N feathers` means the PARTY has N, not N each.
+const FEATHER_RE = /phoenix\s*feather/i;
+
+function feathersOn(actorDoc) {
+  return (actorDoc?.items ?? []).find((i) => FEATHER_RE.test(i.name ?? ""));
+}
+
+async function stockFeathers(clones, count) {
+  const n = Math.max(0, Number(count) | 0);
+
+  const carriers = clones.filter((c) => feathersOn(c));
+  if (!carriers.length) {
+    if (n > 0) warn(`[SIM] no party member owns a Phoenix Feather — cannot stock ${n}. Give one to a PC first.`);
+    return;
+  }
+
+  for (let i = 0; i < carriers.length; i++) {
+    const item = feathersOn(carriers[i]);
+    const qty = i === 0 ? n : 0;   // one carrier holds the party's stack
+    try {
+      await item.update({ "system.props.item_quantity": String(qty) });
+    } catch (e) {
+      warn(`[SIM] could not set Phoenix Feather count on ${carriers[i].name}`, e);
+    }
+  }
+  log(`[SIM] party stocked with ${n} Phoenix Feather(s) — carried by ${carriers[0].name}`);
+}
+
 // ── Party cloning ───────────────────────────────────────────────────────────
 async function cloneParty(actorRefs) {
   const folder = await ensureScratchFolder();
@@ -207,9 +243,10 @@ export async function run({
   enemies = null,        // encounter GROUP: [{ uuid, quantity }, …] — wins over `enemy`
   party = null,          // omit → the DB-resolved party
   pace = "fast",
-  reactions = "skip",
+  reactions = "apply",
   expectedRounds = 7,
   maxRounds = 30,
+  phoenixFeathers = 0,   // how many the party walks in carrying
 } = {}) {
   const a = api();
   if (!a?.start) { ui.notifications?.error("[SIM] Battle Director API not ready."); return null; }
@@ -258,6 +295,7 @@ export async function run({
 
     clones = await cloneParty(refs);
     if (!clones.length) throw new Error("no party clones were created");
+    await stockFeathers(clones, phoenixFeathers);
 
     const members = clones.map((c, i) => ({
       actorUuid: c.uuid, actorId: c.id, name: c.name, slot: i + 1, img: c.img,

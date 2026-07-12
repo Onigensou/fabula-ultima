@@ -24,7 +24,7 @@
 // See [[project_action_pattern_ai]] and [[project_enemy_autopilot]].
 
 import { log, warn } from "../logger.js";
-import { profileFor, mpItemPolicy } from "./profiles.js";
+import { profileFor, mpItemPolicy, revivePolicy } from "./profiles.js";
 import { SimMode } from "./sim-mode.js";
 import { canAffordItem } from "./cost.js";
 import { protectExhausted } from "./reaction-brain.js";
@@ -76,6 +76,16 @@ function hasMainWeapon(actorDoc) {
 // has nothing to be cast AT. A real castable skill always names a target ("Self",
 // "One Enemy", "Up to three creatures"). So encode the rule once, here, and the
 // next augment somebody adds can't fool a rotation either.
+function isAugment(item) {
+  const p = item?.system?.props ?? {};
+  const target = String(p.skill_target ?? "").trim();
+  if (target && target !== "-") return false;   // it has something to aim at → castable
+
+  const rc = p.reaction_config_table;
+  const rows = Array.isArray(rc) ? rc : Object.values(rc ?? {});
+  return rows.some((r) => String(r?.reaction_trigger ?? "").trim() !== "");
+}
+
 // An MP-restoring consumable, identified by what it DOES, not what it's called.
 // Grape Juice's effect row is { effect_kind: "grant", grant_resource: "mp",
 // grant_amount: 20 } and an Elixir's looks the same — so match on that and the
@@ -96,16 +106,6 @@ function findMpItemOn(actorDoc) {
     if (restoresMp) return item;
   }
   return null;
-}
-
-function isAugment(item) {
-  const p = item?.system?.props ?? {};
-  const target = String(p.skill_target ?? "").trim();
-  if (target && target !== "-") return false;   // it has something to aim at → castable
-
-  const rc = p.reaction_config_table;
-  const rows = Array.isArray(rc) ? rc : Object.values(rc ?? {});
-  return rows.some((r) => String(r?.reaction_trigger ?? "").trim() !== "");
 }
 
 // ── Affinity-aware target choice for the BASIC ATTACK ────────────────────────
@@ -201,6 +201,28 @@ function makePolicyApi(director, snap, self) {
     // whatever gets added later). Quantity must be > 0.
     findMpItem() { return findMpItemOn(self?.actorDoc); },
     allyHasMpItem(dc) { return !!findMpItemOn(dc?.actorDoc); },
+
+    // A consumable I hold, by name, with stock left. (Phoenix Feather — unlike an
+    // MP potion there is no effect signature to match on, since "revive" is the
+    // item's own logic, so this one is by name.)
+    findConsumable(re) {
+      for (const item of self?.actorDoc?.items ?? []) {
+        const p = item?.system?.props ?? {};
+        if (String(p.item_type ?? "").toLowerCase() !== "consumable") continue;
+        if (Number(p.item_quantity ?? p.quantity ?? 0) <= 0) continue;
+        if (re.test(item.name ?? "")) return item;
+      }
+      return null;
+    },
+
+    // Downed allies. sides() filters the defeated out (they can't act), but a KO'd
+    // PC stays ON the field — defeat-reactor only removes enemies — so they remain
+    // targetable, which is what makes a revive possible at all.
+    koAllies() {
+      const dc = director?.dCombat;
+      const mine = selfCombatant(director, snap)?.side ?? "party";
+      return (dc?.combatants ?? []).filter((c) => c.side === mine && c.isDefeatedLive?.());
+    },
 
     // Use a consumable. The Item bundle shape mirrors what the item-picker produces
     // (compose-action's Item branch): mode "use", key = the item's id, cost 0.
@@ -326,6 +348,19 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), al
   const permits = (cmd) => !allow || allow.has(String(cmd).trim().toLowerCase());
 
   const policyApi = makePolicyApi(director, snap, self);
+
+  // 0a. Revive — a downed ally is a death spiral, so this outranks everything. It
+  //     abstains on its own when a LIVING ally is still in danger (stabilise first),
+  //     so putting it at the top doesn't make it reckless.
+  try {
+    const revive = revivePolicy(policyApi);
+    if (revive && !isBlocked(revive._name) && permits(revive.command)) {
+      SimMode.note("revive", `${snap?.name} → ${revive._name} on a downed ally`);
+      return revive;
+    }
+  } catch (e) {
+    warn(`[SIM] player-brain: revive policy threw`, e);
+  }
 
   // 0. MP economy — party-wide, ahead of everyone's own plan. Late-game fights were
   //    grinding to a halt because the casters ran dry and fell back to poking with

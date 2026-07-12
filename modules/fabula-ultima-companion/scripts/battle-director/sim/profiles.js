@@ -81,6 +81,10 @@ export const TUNING = {
   // Who takes potion duty first. Zarg leads because Potion Rain makes his
   // consumables hit the whole party — one turn, everyone refilled.
   potionPriority: ["Zarg"],
+
+  // Revival. The count the party carries is set per RUN (the sim panel), because
+  // it's a scenario variable, not a character trait.
+  phoenixFeather: /phoenix\s*feather/i,
 };
 
 // Build one pattern row in the raw shape readPatternTable expects
@@ -185,6 +189,37 @@ function hinaHealPolicy(api) {
 }
 
 export const ELEMENTS = ["air", "bolt", "dark", "earth", "fire", "ice", "light", "poison"];
+
+// ── Revival (party-wide, runs before everything) ────────────────────────────
+// A downed ally is a death spiral: the party loses a quarter of its output, takes
+// the same incoming damage, and falls further behind — which is exactly how the run
+// where Keren went down early ended in a wipe.
+//
+// The ordering is the user's, and it is the right one: stabilise the LIVING first.
+// Reviving somebody at half HP while another ally is one hit from joining them just
+// trades one corpse for another. So a feather is only spent when nobody still
+// standing is in danger — otherwise this abstains and the heal policies take the
+// turn instead.
+export function revivePolicy(api) {
+  const down = api.koAllies();
+  if (!down.length) return null;
+
+  const threatened = api.allies().some(
+    (dc) => pct(propNum(dc.actorDoc, "current_hp"), propNum(dc.actorDoc, "max_hp")) <= TUNING.healKoRiskFraction
+  );
+  if (threatened) return null;   // heal first — a revive now just makes two casualties
+
+  const feather = api.findConsumable(TUNING.phoenixFeather);
+  if (!feather) return null;
+
+  // Bring back whoever will survive the longest on a crisis-score revive (the item
+  // restores to ~50%), so the party gets a body that can actually hold a line.
+  const target = down
+    .slice()
+    .sort((a, b) => propNum(b.actorDoc, "max_hp") - propNum(a.actorDoc, "max_hp"))[0];
+
+  return api.useItem(feather, [target]);
+}
 
 // ── MP economy (party-wide, runs before every profile) ──────────────────────
 // The fight slowed to a crawl late on because the casters ran out of MP and fell

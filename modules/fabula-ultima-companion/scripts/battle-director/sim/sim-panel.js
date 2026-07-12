@@ -118,6 +118,9 @@ async function openPanel() {
       <label class="fud-sim-lbl">Party <em>(defaults to the DB party)</em></label>
       <div class="fud-sim-pcs">${pcRows || "<i>no eligible PCs found</i>"}</div>
 
+      <label class="fud-sim-lbl">Phoenix Feathers <em>(revives the party walks in with)</em></label>
+      <input class="fud-sim-feathers" type="number" min="0" max="9" value="${Number(saved.phoenixFeathers) || 0}">
+
       <label class="fud-sim-lbl">Expected rounds <em>(unresolved by here = badly designed)</em></label>
       <input class="fud-sim-exp" type="number" min="2" max="40" value="${Number(saved.expectedRounds) || 7}">
 
@@ -192,16 +195,17 @@ async function openPanel() {
   root.querySelector(".fud-sim-run").addEventListener("click", async () => {
     const party = [...root.querySelectorAll(".fud-sim-pcs input:checked")].map((i) => i.value);
     const expectedRounds = Math.max(2, Number(root.querySelector(".fud-sim-exp").value) || 7);
+    const phoenixFeathers = Math.max(0, Number(root.querySelector(".fud-sim-feathers").value) || 0);
     const pace = root.querySelector(".fud-sim-pace").value;
     const reactions = root.querySelector(".fud-sim-react").checked ? "apply" : "skip";
 
     if (!group.length) { setStatus("Add at least one enemy to the encounter.", "err"); return; }
     if (!party.length) { setStatus("Pick at least one party member.", "err"); return; }
 
-    saveConfig({ enemies: group, party, expectedRounds, pace, reactions });
+    saveConfig({ enemies: group, party, expectedRounds, phoenixFeathers, pace, reactions });
     setStatus("Running… the fight plays itself. Nothing here needs clicking.", "busy");
 
-    const res = await simRun({ enemies: group, party, pace, reactions, expectedRounds });
+    const res = await simRun({ enemies: group, party, pace, reactions, expectedRounds, phoenixFeathers });
     if (!res) { setStatus("Run failed — see the console.", "err"); return; }
 
     const pct = res.partyHpRemaining == null ? "?" : `${Math.round(res.partyHpRemaining * 100)}%`;
