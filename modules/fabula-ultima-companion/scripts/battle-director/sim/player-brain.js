@@ -65,6 +65,27 @@ function hasMainWeapon(actorDoc) {
   return raw !== "" && raw.toUpperCase() !== "SHI";
 }
 
+// ── Is this an AUGMENT rather than an action? ────────────────────────────────
+// Three times now a profile has tried to "cast" something that is not castable.
+// Zarg's Barrage, Warning Shot and High Speed, and his Gadgets, are all AUGMENTS:
+// they carry a reaction trigger and fire ON another action (or at conflict start),
+// buffing it. Declaring one as a turn action burns the turn and does nothing — the
+// exact symptom of "Zarg keeps casting Barrage and never attacks".
+//
+// The tell is structural, not a name list: a trigger-driven skill with NO target
+// has nothing to be cast AT. A real castable skill always names a target ("Self",
+// "One Enemy", "Up to three creatures"). So encode the rule once, here, and the
+// next augment somebody adds can't fool a rotation either.
+function isAugment(item) {
+  const p = item?.system?.props ?? {};
+  const target = String(p.skill_target ?? "").trim();
+  if (target && target !== "-") return false;   // it has something to aim at → castable
+
+  const rc = p.reaction_config_table;
+  const rows = Array.isArray(rc) ? rc : Object.values(rc ?? {});
+  return rows.some((r) => String(r?.reaction_trigger ?? "").trim() !== "");
+}
+
 // ── Affinity-aware target choice for the BASIC ATTACK ────────────────────────
 // The first live run had the party plinking a boss with no regard for what it was
 // immune to. A basic attack carries the weapon's damage type, so score every
@@ -125,6 +146,12 @@ function makePolicyApi(director, snap, self) {
     castOn(item, targetDcs) {
       const uuids = targetDcs.map(tokenUuidOf).filter(Boolean);
       if (!item || !uuids.length) return null;
+      // An augment fires ON an action; it cannot BE one. Same guard as the
+      // rotation, so a hand-written policy can't make this mistake either.
+      if (isAugment(item)) {
+        warn(`[SIM] policy tried to cast the augment "${item.name}" — that is a reaction, not a turn action`);
+        return null;
+      }
       // Only offer an action we can actually pay for — feasibility upstream can't
       // price custom resources (see cost.js).
       if (!canAffordItem(self?.actorDoc, item).ok) return null;
@@ -162,6 +189,12 @@ async function runRotation({ token, combat, combatant, actorDoc, rows, blocked }
 
     const item = actorDoc?.items?.find?.((i) => String(i.name).trim().toLowerCase() === name.toLowerCase());
     if (!item) return true;   // not an item we own → let the engine drop it
+
+    // An augment can't be declared as a turn action — it fires on one.
+    if (isAugment(item)) {
+      SimMode.note("rotation", `${actorDoc.name}: "${name}" is an augment, not an action — the reaction brain owns it`);
+      return false;
+    }
 
     const afford = canAffordItem(actorDoc, item);
     if (!afford.ok) {

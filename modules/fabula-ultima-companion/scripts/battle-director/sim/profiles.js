@@ -294,17 +294,21 @@ export const PROFILES = {
     ],
   },
 
-  // Archer. Gadgets is NOT a turn action — it is an augment he declares ON a normal
-  // attack (a creature_will_deal_damage reaction) that buffs the damage and swaps
-  // its element for IP. So it lives in reaction-brain.js, and his TURN is simply:
-  // buff, barrage, shoot. Barrage grants a free Attack, which the brain now spends.
+  // Archer — and his turn is simply to SHOOT. Nearly his whole kit is augments that
+  // ride on that shot rather than replace it:
+  //     Barrage      creature_performs_action     (10 MP)
+  //     Warning Shot creature_will_deal_damage    (free)
+  //     Gadgets      creature_will_deal_damage    (2 IP)  — buff + element swap
+  //     High Speed   conflict_start               (fires itself; never "cast")
+  // All four live in reaction-brain.js. An empty rotation is CORRECT here: the
+  // brain falls through to an affinity-aimed basic attack, and the augments then
+  // stack onto it. Declaring any of them as a turn action burns the turn and does
+  // nothing — which is exactly what "Zarg keeps casting Barrage and never attacks"
+  // was. (isAugment() in player-brain.js now blocks that structurally.)
   Zarg: {
-    label: "Zarg — archer; augments his shots with Gadgets",
+    label: "Zarg — archer; his kit rides on the shot, so he just shoots",
     policy: null,
-    rows: [
-      row(0, { name: "High Speed", cond: "round", v1: 1, v2: 2, prio: 18, cd: 4 }),
-      row(1, { name: "Barrage", cond: "mp", v1: 15, v2: 100, prio: 16, focus: "lowest_hp" }),
-    ],
+    rows: [],
   },
 
   // Phantasm controller.

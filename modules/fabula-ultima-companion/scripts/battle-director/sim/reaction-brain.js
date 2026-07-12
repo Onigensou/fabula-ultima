@@ -270,12 +270,20 @@ function gadgetPolicy({ ar, reactorActor }) {
   return { decision: "skip", why: "no weakness to exploit — saving the IP" };
 }
 
+// Zarg's other two augments. Barrage (10 MP, creature_performs_action) and Warning
+// Shot (free, creature_will_deal_damage) both ride ON his attack — they are not
+// things he "casts", which is what he was wrongly doing with his whole turn. The
+// pill only appears on his own card when it's eligible, and `available` already
+// encodes whether he can pay, so the judgement left to us is simply: is this shot
+// worth augmenting? Same test as the other riders — will the damage actually land.
 const POLICIES = {
   "protect": protectPolicy,
   "prophetic defender": propheticPolicy,
   "thermokinesis": damageRiderPolicy,
   "for whom the bell tolls": damageRiderPolicy,
   "gadgets": gadgetPolicy,
+  "barrage": damageRiderPolicy,
+  "warning shot": damageRiderPolicy,
 };
 
 // ── Public ───────────────────────────────────────────────────────────────────
