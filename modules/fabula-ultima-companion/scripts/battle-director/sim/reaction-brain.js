@@ -26,6 +26,7 @@ import { log, warn } from "../logger.js";
 import { SimMode } from "./sim-mode.js";
 import { TUNING, ELEMENTS } from "./profiles.js";
 import { ActionReaderCore as AR } from "../../action-reader/actionReader-core.js";
+import { resolvesVsMagicDefense } from "../snapshot.js";
 
 const norm = (s) => String(s ?? "").trim().toLowerCase();
 const numOr = (v, d = 0) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
@@ -69,28 +70,84 @@ function isStrongHit(row, targetActor) {
   return max > 0 && dmg / max >= TUNING.strongHitFraction;
 }
 
-// Can the reactor eat this without it mattering? Three ways to be safe, all of
-// them things a player would actually check: the element does nothing to me, the
-// attack already missed me, or the projected damage is trivial.
-function isSafeToTake(ar, reactorActor) {
+// Would this attack even LAND on her? An action rolls one accuracy total against
+// each target's defence, so if that total is under her defence it cannot hit her —
+// which is what "it's lower than her defensive stats" means. Returns null when we
+// can't tell (no roll, no defence), and null must never be read as "safe".
+function wouldMiss(ar, reactorActor) {
+  const total = Number(ar?.roll?.total);
+  if (!Number.isFinite(total)) return null;
+  if (ar?.canMiss === false) return false;   // an action that can't miss, won't
+
+  const vsMagic = resolvesVsMagicDefense({
+    defenseTargetType: ar?.defenseTargetType,
+    isSpell: String(ar?.skillType ?? "").toLowerCase() === "spell",
+  });
+  const p = reactorActor?.system?.props ?? {};
+  const def = Number(vsMagic ? (p.magic_defense ?? p.current_mdef) : (p.defense ?? p.current_def));
+  if (!Number.isFinite(def)) return null;
+
+  return total < def;
+}
+
+// What does the card actually KNOW about the damage aimed at her? Absence of a row
+// is not evidence of harmlessness — she is usually NOT among the targets of the
+// action she is thinking about intercepting.
+//
+// This distinction is the whole bug that produced the Centaur loop: the first
+// version defaulted an unknown damage figure to 0, so "we have no idea" read as
+// "it's harmless", and Hina cheerfully pulled a PHYSICAL sweep she takes full
+// damage from onto herself, survived on the fire rider she absorbs, and kept the
+// enemy's "repeat if all targets hit" firing forever. Unknown now fails CLOSED.
+function projectedDamage(ar, reactorActor) {
   const row = rowFor(ar, reactorActor?.uuid);
-  if (row && row.hit === false) return { safe: true, why: "it already missed her" };
+  if (!row) return { known: false };
+  if (row.hit === false) return { known: true, missed: true, dmg: 0 };
+  const d = Number(row.damage);
+  return Number.isFinite(d) ? { known: true, missed: false, dmg: d } : { known: false };
+}
 
-  const element = actionElement(ar);
-  if (element) {
-    let aff = "NA";
-    try { aff = String(AR.getAffinityForType(reactorActor, element) ?? "NA").toUpperCase(); } catch {}
-    if (aff === "IM" || aff === "AB") return { safe: true, why: `she is ${aff} to ${element}` };
-    if (aff === "RS") return { safe: true, why: `she resists ${element}` };
-  }
+function affinityTo(reactorActor, element) {
+  if (!element) return null;
+  try { return String(AR.getAffinityForType(reactorActor, element) ?? "NA").toUpperCase(); }
+  catch { return null; }
+}
 
-  // Projected damage against her specifically, when the card knows it.
-  const dmg = row ? numOr(row.damage, 0) : null;
+// Hina's bar (her spec): she only soaks what genuinely cannot hurt her — she
+// ABSORBS or is IMMUNE to it, or its accuracy is under her defence so it would
+// miss her anyway. Resistance is NOT enough: resisted damage is still damage.
+function takesNothingFrom(ar, reactorActor) {
+  const proj = projectedDamage(ar, reactorActor);
+  if (proj.known && proj.missed) return { safe: true, why: "it already missed her" };
+
+  const aff = affinityTo(reactorActor, actionElement(ar));
+  if (aff === "IM" || aff === "AB") return { safe: true, why: `she is ${aff} to ${actionElement(ar)}` };
+
+  const miss = wouldMiss(ar, reactorActor);
+  if (miss === true) return { safe: true, why: "its accuracy is under her defence — it can't hit her" };
+
+  if (proj.known && proj.dmg === 0) return { safe: true, why: "it does nothing to her" };
+
+  return { safe: false, why: null };   // unknown → NOT safe
+}
+
+// Blanche's bar (her spec) is lower — she is the tank, and she may step in front of
+// something she merely RESISTS, or that has already missed her, or that would barely
+// scratch her. Still requires positive evidence.
+function canTankIt(ar, reactorActor) {
+  const strict = takesNothingFrom(ar, reactorActor);
+  if (strict.safe) return strict;
+
+  const aff = affinityTo(reactorActor, actionElement(ar));
+  if (aff === "RS") return { safe: true, why: `she resists ${actionElement(ar)}` };
+
+  const proj = projectedDamage(ar, reactorActor);
   const max = maxHpOf(reactorActor);
-  if (dmg != null && max > 0 && dmg / max <= TUNING.safeDamageFraction) {
-    return { safe: true, why: `it would only cost her ${dmg}` };
+  if (proj.known && max > 0 && proj.dmg / max <= TUNING.safeDamageFraction) {
+    return { safe: true, why: `it would only cost her ${proj.dmg}` };
   }
-  return { safe: false, why: null };
+
+  return { safe: false, why: null };   // unknown → NOT safe
 }
 
 // ── The policies ─────────────────────────────────────────────────────────────
@@ -107,7 +164,7 @@ function protectPolicy({ ar, reactorActor, director }) {
     return { decision: "skip", why: "already protected this round" };
   }
 
-  const safe = isSafeToTake(ar, reactorActor);
+  const safe = canTankIt(ar, reactorActor);
   if (!safe.safe) return { decision: "skip", why: "she'd take the hit badly herself" };
 
   // Whom is it aimed at? Anyone but her, who is about to get hit hard.
@@ -139,7 +196,7 @@ function propheticPolicy({ ar, reactorActor }) {
     return { decision: "skip", why: `only ${targets} target(s) — not worth the redirect` };
   }
 
-  const safe = isSafeToTake(ar, reactorActor);
+  const safe = takesNothingFrom(ar, reactorActor);
   if (!safe.safe) return { decision: "skip", why: "she would actually take damage" };
 
   return { decision: "apply", why: `soaking a ${targets}-target action — ${safe.why}` };
