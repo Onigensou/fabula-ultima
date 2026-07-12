@@ -93,6 +93,20 @@ async function cloneParty(actorRefs) {
     // reads false even before the sim's AI-gate override kicks in.
     data.ownership = { default: 0 };
 
+    // START FROM A KNOWN STATE. A clone inherits whatever HP/MP/IP the real PC
+    // happens to be sitting on — Blanche was at 69/164 when we cloned her — which
+    // silently makes a fight look harder than it is and makes two runs of the same
+    // encounter incomparable. Full HP/MP/IP, and Zero Power at 0 (a party does not
+    // walk into a fight with a charged limit break). Note the CURRENT zero-power
+    // value is `zero_power_value`; there is no `current_zp` on the actor.
+    const p = data.system?.props;
+    if (p) {
+      if (p.max_hp != null) p.current_hp = p.max_hp;
+      if (p.max_mp != null) p.current_mp = p.max_mp;
+      if (p.max_ip != null) p.current_ip = p.max_ip;
+      p.zero_power_value = 0;
+    }
+
     const doc = await Actor.create(data);
     if (doc) {
       clones.push(doc);
@@ -194,7 +208,7 @@ export async function run({
   party = null,          // omit → the DB-resolved party
   pace = "fast",
   reactions = "skip",
-  expectedRounds = 12,
+  expectedRounds = 7,
   maxRounds = 30,
 } = {}) {
   const a = api();

@@ -119,7 +119,7 @@ async function openPanel() {
       <div class="fud-sim-pcs">${pcRows || "<i>no eligible PCs found</i>"}</div>
 
       <label class="fud-sim-lbl">Expected rounds <em>(unresolved by here = badly designed)</em></label>
-      <input class="fud-sim-exp" type="number" min="2" max="40" value="${Number(saved.expectedRounds) || 12}">
+      <input class="fud-sim-exp" type="number" min="2" max="40" value="${Number(saved.expectedRounds) || 7}">
 
       <label class="fud-sim-lbl">Pace</label>
       <select class="fud-sim-pace">
@@ -191,7 +191,7 @@ async function openPanel() {
 
   root.querySelector(".fud-sim-run").addEventListener("click", async () => {
     const party = [...root.querySelectorAll(".fud-sim-pcs input:checked")].map((i) => i.value);
-    const expectedRounds = Math.max(2, Number(root.querySelector(".fud-sim-exp").value) || 12);
+    const expectedRounds = Math.max(2, Number(root.querySelector(".fud-sim-exp").value) || 7);
     const pace = root.querySelector(".fud-sim-pace").value;
     const reactions = root.querySelector(".fud-sim-react").checked ? "apply" : "skip";
 

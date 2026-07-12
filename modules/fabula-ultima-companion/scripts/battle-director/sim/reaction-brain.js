@@ -24,7 +24,7 @@
 
 import { log, warn } from "../logger.js";
 import { SimMode } from "./sim-mode.js";
-import { TUNING } from "./profiles.js";
+import { TUNING, ELEMENTS } from "./profiles.js";
 import { ActionReaderCore as AR } from "../../action-reader/actionReader-core.js";
 
 const norm = (s) => String(s ?? "").trim().toLowerCase();
@@ -162,11 +162,63 @@ function damageRiderPolicy({ ar, carrierName }) {
   return { decision: "apply", why: `${carrierName} — the damage will land` };
 }
 
+// Zarg: Gadgets. NOT a turn action — an augment he declares ON a normal attack,
+// buffing its damage and swapping its element, paid for in IP. So the decision is:
+// this shot is about to land, is it worth 2 IP to re-point it at a weakness?
+//
+// Worth it when the target is VULNERABLE to something he can switch to, or when
+// the shot's CURRENT element is being resisted/ignored (swapping to anything
+// neutral is a straight gain). Otherwise he keeps the IP — Gadgets is not free.
+function gadgetPolicy({ ar, reactorActor }) {
+  const ip = numOr(reactorActor?.system?.props?.current_ip, 0);
+  if (ip - TUNING.gadgetIpCost < TUNING.gadgetReserveIp) {
+    return { decision: "skip", why: `only ${ip} IP left` };
+  }
+
+  const landing = rowsOf(ar).filter((r) => r?.hit !== false);
+  if (!landing.length) return { decision: "skip", why: "the shot is missing anyway" };
+
+  // Aim at the sturdiest reason to bother: a target that's VU to something.
+  for (const r of landing) {
+    const target = actorOf(r.actorUuid);
+    if (!target) continue;
+
+    const weak = ELEMENTS.find((el) => {
+      try { return String(AR.getAffinityForType(target, el) ?? "NA").toUpperCase() === "VU"; }
+      catch { return false; }
+    });
+    if (weak) {
+      return {
+        decision: "apply",
+        why: `re-pointing the shot at ${target.name}'s ${weak} weakness`,
+        hint: { label: weak },
+      };
+    }
+  }
+
+  // No weakness anywhere — but if what he's throwing is being shrugged off, almost
+  // anything else is an improvement.
+  const shrugged = landing.every((r) => ["RS", "IM", "AB"].includes(String(r?.affinity ?? "NA").toUpperCase()));
+  if (shrugged) {
+    const target = actorOf(landing[0].actorUuid);
+    const neutral = ELEMENTS.find((el) => {
+      try { return String(AR.getAffinityForType(target, el) ?? "NA").toUpperCase() === "NA"; }
+      catch { return false; }
+    });
+    if (neutral) {
+      return { decision: "apply", why: `current element is being shrugged off — switching to ${neutral}`, hint: { label: neutral } };
+    }
+  }
+
+  return { decision: "skip", why: "no weakness to exploit — saving the IP" };
+}
+
 const POLICIES = {
   "protect": protectPolicy,
   "prophetic defender": propheticPolicy,
   "thermokinesis": damageRiderPolicy,
   "for whom the bell tolls": damageRiderPolicy,
+  "gadgets": gadgetPolicy,
 };
 
 // ── Public ───────────────────────────────────────────────────────────────────

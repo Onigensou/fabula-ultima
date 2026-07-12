@@ -44,7 +44,7 @@ export const DEFAULT_SIM_CONFIG = {
   // The design budget. A fight that has not resolved EITHER WAY by this round is
   // reported as a design failure, not a stalemate: by now the party should have
   // won or lost. This is a verdict, not just a loop guard.
-  expectedRounds: 12,
+  expectedRounds: 7,
   // Hard stop, well past expectedRounds. Two sides that literally cannot kill
   // each other must still terminate the run.
   maxRounds: 30,

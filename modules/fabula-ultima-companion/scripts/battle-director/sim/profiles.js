@@ -47,6 +47,26 @@ export const TUNING = {
   healMinTargets: 2,          // wait for this many hurt allies — Heal covers 3
   healEmergencyFraction: 0.15, // …unless someone is THIS low, then go now
   healMaxTargets: 3,          // Heal's own cap ("Up to three creatures")
+
+  // Hina's ice. Iceberg is the bigger single hit; Glacies covers up to three.
+  // We can't project Iceberg's damage before COMPUTE, so "can it finish them?" is
+  // an HP threshold — the honest version of the question, and a knob rather than a
+  // guess hidden in the logic. Raise it if she keeps failing to close kills.
+  icebergKoHp: 60,
+  glaciesMinWeak: 2,      // this many ice-VULNERABLE enemies makes Glacies pay
+  glaciesMaxTargets: 3,   // Glacies' own cap
+
+  // Utility cadence. Acceleration is an extra action for an ally — cast on these
+  // rounds, and only when nobody needs healing.
+  accelerationRounds: [1, 3, 6, 9, 12],
+  accelerationPriority: ["Zarg", "Keren"],   // damage dealers, not the tank
+  // Stop strips an enemy activation. Only worth it on a small field — on a big one
+  // there is always another enemy to act anyway.
+  stopMaxEnemies: 2,
+
+  // Zarg's Gadgets: augments a normal attack (buff + element swap) for IP.
+  gadgetIpCost: 2,
+  gadgetReserveIp: 0,   // keep this much IP back for emergencies
 };
 
 // Build one pattern row in the raw shape readPatternTable expects
@@ -150,36 +170,109 @@ function hinaHealPolicy(api) {
   return api.castOn(item, targets);
 }
 
-// Zarg's Gadgets (2 IP): a self-buff that loads his damage with a chosen element.
-// The element is picked from a MENU that opens after the action is declared, so
-// the choice can't live in a pattern row — the brain leaves a pick-hint and the
-// list-picker consumes it (falling back to first-option if the menu doesn't have
-// what we asked for). Without the hint the sim would blindly take option one,
-// which for Gadgets is actively wrong.
+export const ELEMENTS = ["air", "bolt", "dark", "earth", "fire", "ice", "light", "poison"];
+
+// ── Hina's turn ─────────────────────────────────────────────────────────────
+// Her whole turn is a judgement call, so none of it can live in a pattern row.
 //
-// Only worth an action when there is a weakness to hit. If no enemy is VU to
-// anything he carries, he skips it and shoots normally.
-const ELEMENTS = ["air", "bolt", "dark", "earth", "fire", "ice", "light", "poison"];
-
-function zargGadgetPolicy(api) {
-  if (propNum(api.self, "current_ip") < 2) return null;
-
-  const item = api.findItem("Gadgets");
-  if (!item) return null;
-
+//   1. Heal        — last resort only (see hinaHealPolicy).
+//   2. Acceleration— on a cadence, and only when nobody needs healing.
+//   3. Stop        — shave an activation off a small enemy field.
+//   4. Ice         — Glacies vs Iceberg, chosen properly (below).
+//
+// GLACIES vs ICEBERG is the interesting one. Iceberg is the bigger single-target
+// hit; Glacies covers up to three. So: if Iceberg can finish someone, finish them.
+// Otherwise, if two or more enemies are weak to ice, Glacies pays for itself.
+// Otherwise Iceberg.
+//
+// We cannot cheaply predict Iceberg's damage before COMPUTE runs, so "can it KO?"
+// is a tunable HP threshold rather than a real projection. It is the honest
+// version of the question and it is a knob (TUNING.icebergKoHp), not a guess
+// buried in the logic.
+function hinaOffense(api) {
   const foes = api.foes();
   if (!foes.length) return null;
 
-  // Find the juiciest (foe, element) pair: something a living enemy is VU to.
-  for (const foe of foes.slice().sort((a, b) =>
-    pct(propNum(a.actorDoc, "current_hp"), propNum(a.actorDoc, "max_hp"))
-    - pct(propNum(b.actorDoc, "current_hp"), propNum(b.actorDoc, "max_hp")))) {
-    const weak = ELEMENTS.find((el) => api.affinityOf(foe, el) === "VU");
-    if (!weak) continue;
-    api.hintPick({ label: weak });   // answer the element menu before it opens
-    return api.castOn(item, [foe]);
+  const iceberg = api.findItem("Iceberg");
+  const glacies = api.findItem("Glacies");
+  const takesIce = (f) => !["RS", "IM", "AB"].includes(api.affinityOf(f, "ice"));
+
+  // 1. Can Iceberg finish someone off? Then do that — a dead enemy stops acting.
+  if (iceberg) {
+    const finishable = foes
+      .filter((f) => takesIce(f) && propNum(f.actorDoc, "current_hp") <= TUNING.icebergKoHp)
+      .sort((a, b) => propNum(a.actorDoc, "current_hp") - propNum(b.actorDoc, "current_hp"))[0];
+    if (finishable) return api.castOn(iceberg, [finishable]);
   }
-  return null;   // nothing is weak to anything — just shoot
+
+  // 2. Enough targets weak to ice → Glacies hits up to three of them.
+  if (glacies) {
+    const weak = foes.filter((f) => api.affinityOf(f, "ice") === "VU");
+    if (weak.length >= TUNING.glaciesMinWeak) {
+      return api.castOn(glacies, weak.slice(0, TUNING.glaciesMaxTargets));
+    }
+  }
+
+  // 3. Otherwise the bigger single hit, on whoever it lands hardest against.
+  if (iceberg) {
+    const target = foes
+      .filter(takesIce)
+      .sort((a, b) => {
+        const av = api.affinityOf(a, "ice") === "VU" ? 0 : 1;
+        const bv = api.affinityOf(b, "ice") === "VU" ? 0 : 1;
+        return av - bv || propNum(a.actorDoc, "current_hp") - propNum(b.actorDoc, "current_hp");
+      })[0];
+    if (target) return api.castOn(iceberg, [target]);
+  }
+
+  return null;   // no ice available (or nobody takes it) → rotation / basic attack
+}
+
+function hinaPolicy(api) {
+  // 1. Heal — last resort, fully gated.
+  const heal = hinaHealPolicy(api);
+  if (heal) return heal;
+
+  const allies = api.allies();
+  const anyoneHurt = allies.some(
+    (dc) => pct(propNum(dc.actorDoc, "current_hp"), propNum(dc.actorDoc, "max_hp")) < TUNING.healWorthItFraction
+  );
+
+  // 2. Acceleration — an extra action for an ally is the strongest thing she can
+  //    do with a quiet turn, but only when the party is healthy enough that she
+  //    won't be needed for a heal instead. Cadence, not spam.
+  if (!anyoneHurt && TUNING.accelerationRounds.includes(api.round)) {
+    const acc = api.findItem("Acceleration");
+    if (acc) {
+      const target = pickAccelerationTarget(api, allies);
+      if (target) return api.castOn(acc, [target]);
+    }
+  }
+
+  // 3. Stop — strips an activation. Only worth it on a small field (on a big one
+  //    there is always another enemy to act anyway), and only against someone who
+  //    still has an activation left to lose this round.
+  if (api.foes().length <= TUNING.stopMaxEnemies) {
+    const stop = api.findItem("Stop");
+    const victim = api.foes()
+      .filter((f) => (f.turnsRemaining ?? 0) >= 1)
+      .sort((a, b) => (b.turnsRemaining ?? 0) - (a.turnsRemaining ?? 0))[0];
+    if (stop && victim) return api.castOn(stop, [victim]);
+  }
+
+  // 4. Ice.
+  return hinaOffense(api);
+}
+
+// Whoever benefits most from an extra action: a damage dealer, not the tank and
+// not herself. Name-ordered so it's obvious and editable rather than inferred.
+function pickAccelerationTarget(api, allies) {
+  const others = allies.filter((dc) => dc.actorDoc?.uuid !== api.self?.uuid);
+  for (const want of TUNING.accelerationPriority) {
+    const hit = others.find((dc) => new RegExp(want, "i").test(dc.name ?? ""));
+    if (hit) return hit;
+  }
+  return others[0] ?? null;
 }
 
 // ── The profiles ────────────────────────────────────────────────────────────
@@ -188,26 +281,26 @@ export const PROFILES = {
   // Ice mage / healer. The single biggest lesson of the first live run: she owns
   // Iceberg + Glacies and never cast them, while the Wandering Flame sat there
   // Ice-VULNERABLE. by_affinity targeting is the whole point of her rotation.
-  // Ice caster. Offense is the DEFAULT — the heal is a last resort (see
-  // hinaHealPolicy), and her big defensive contribution is Prophetic Defender,
-  // which is a REACTION and lives in reaction-brain.js, not here.
+  // Ice caster. Almost her whole turn is judgement the rotation table cannot make,
+  // so it all lives in the policy: pick the RIGHT ice spell, slot in utility on a
+  // cadence, heal only as a last resort. Her big defensive contribution — Prophetic
+  // Defender — is a REACTION and lives in reaction-brain.js.
   Hina: {
-    label: "Hina — ice caster; heals only as a last resort",
-    policy: hinaHealPolicy,
+    label: "Hina — ice caster; utility on a cadence, heals last",
+    policy: hinaPolicy,
     rows: [
-      row(0, { name: "Glacies", cond: "enemy_count", v1: 2, v2: 99, prio: 22, focus: "by_affinity" }),
-      row(1, { name: "Iceberg", cond: "mp", v1: 20, v2: 100, prio: 20, focus: "by_affinity" }),
-      row(2, { name: "Drain Spirit", cond: "mp", v1: 0, v2: 15, prio: 8, focus: "auto" }),
+      // Only the MP-starved fallback. Everything else is decided above.
+      row(0, { name: "Drain Spirit", cond: "mp", v1: 0, v2: 19, prio: 8, focus: "auto" }),
     ],
   },
 
-  // Archer. Gadgets loads his shot with an element the enemy is WEAK to — a plain
-  // rotation row can't do that, because the element is a menu choice made after
-  // the action is declared, so it needs the pick-hint (see zargGadgetPolicy).
-  // Barrage grants a free Attack, which the brain now actually spends.
+  // Archer. Gadgets is NOT a turn action — it is an augment he declares ON a normal
+  // attack (a creature_will_deal_damage reaction) that buffs the damage and swaps
+  // its element for IP. So it lives in reaction-brain.js, and his TURN is simply:
+  // buff, barrage, shoot. Barrage grants a free Attack, which the brain now spends.
   Zarg: {
-    label: "Zarg — archer; exploits elemental weakness via Gadgets",
-    policy: zargGadgetPolicy,
+    label: "Zarg — archer; augments his shots with Gadgets",
+    policy: null,
     rows: [
       row(0, { name: "High Speed", cond: "round", v1: 1, v2: 2, prio: 18, cd: 4 }),
       row(1, { name: "Barrage", cond: "mp", v1: 15, v2: 100, prio: 16, focus: "lowest_hp" }),

@@ -53,12 +53,15 @@ export function canAfford(actor, costText) {
   const r = c.resource;
   const need = c.amount;
 
+  // Zero Power's CURRENT value lives in `zero_power_value` (verified live: Hina 4,
+  // Blanche 6). There is no `current_zp` on the actor — that name only exists on
+  // the party DB actor's mirrored `member_currentzp_N`.
   const core = {
     mp: num(p.current_mp),
     ip: num(p.current_ip),
     zenit: num(p.zenit),
-    zero_power: num(p.current_zp) ?? num(p.zero_power_current),
-    zp: num(p.current_zp) ?? num(p.zero_power_current),
+    zero_power: num(p.zero_power_value),
+    zp: num(p.zero_power_value),
   };
 
   if (r in core) {
