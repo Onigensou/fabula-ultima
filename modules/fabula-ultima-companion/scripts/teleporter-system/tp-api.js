@@ -51,16 +51,17 @@
   // execute — which duplicated the destination token on cross-scene teleports.
   // Exactly one GM (core's activeGM) is the host; every other client routes its
   // request through the socket instead of acting locally.
+  //
+  // Delegates to the shared helper (scripts/shared/primary-gm.js, loaded well
+  // before this file) rather than hand-rolling a tenth copy of the same check.
 
   function isPrimaryGM() {
+    const shared = globalThis.FUCompanion?.isPrimaryGM;
+    if (typeof shared === "function") return shared();
+    // Fallback only if the shared helper failed to load (load-order regression).
     if (!game.user?.isGM) return false;
     const active = game.users?.activeGM ?? null;
-    if (active) return active.id === game.user.id;
-    // Fall back to "first active GM" if activeGM is unavailable on this core version.
-    const firstGM = game.users
-      ?.filter?.(u => u.isGM && u.active)
-      ?.sort?.((a, b) => String(a.id).localeCompare(String(b.id)))?.[0];
-    return firstGM ? firstGM.id === game.user.id : true;
+    return active ? active.id === game.user.id : true;
   }
 
   // ── Flag helpers ─────────────────────────────────────────────────────────────
