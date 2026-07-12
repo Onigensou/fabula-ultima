@@ -46,6 +46,9 @@ export class ShopOpenBackend {
     // Sell handler — set by bootstrap after construction
     this._sellHandler = null;
 
+    // Presence roster ("who's browsing what") — set by bootstrap after construction
+    this._presence = null;
+
     // internal
     this._cachedPartyActorIds = new Set();
     this._lastDbResolveTs = 0;
@@ -514,6 +517,14 @@ export class ShopOpenBackend {
       if (msg.type === SHOPOPEN.MSG.SELL_RESULT) {
         const sellHandler = this._sellHandler;
         if (sellHandler) sellHandler.onSellResult(msg.payload ?? {});
+        return;
+      }
+
+      // ── Presence: ephemeral, all clients render it, no GM gate (no writes) ──
+      if (msg.type === SHOPOPEN.MSG.PRESENCE_ENTER ||
+          msg.type === SHOPOPEN.MSG.PRESENCE_LEAVE ||
+          msg.type === SHOPOPEN.MSG.PRESENCE_SELECT) {
+        this._presence?.onSocket(msg.type, msg.payload ?? {});
         return;
       }
 

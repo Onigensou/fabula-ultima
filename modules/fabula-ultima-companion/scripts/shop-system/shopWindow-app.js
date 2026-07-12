@@ -14,7 +14,7 @@
 //   item.system.props.category      — weapon sub-type (Sword, Arcane, Bow…)
 //   item.system.props.type_damage   — damage type plain string (Physical, Fire…)
 
-import { gp } from "./shopopen-const.js";
+import { gp, hexToRgba } from "./shopopen-const.js";
 
 const GP_ICON = `<img class="fu-zenit-icon" src="https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png" alt="Zenit">`;
 
@@ -541,6 +541,39 @@ export class ShopWindowApp {
         line-height:12px; white-space:nowrap;
       }
 
+      /* ── Presence: who's browsing what ── */
+      .fu-shop-viewers { display:none; gap:4px; flex-wrap:wrap; margin-top:3px; }
+      .fu-shop-viewer-chip {
+        display:inline-flex; align-items:center; gap:3px;
+        font-size:10px; font-weight:800; line-height:1.4;
+        padding:1px 6px; border-radius:999px;
+        border:1px solid currentColor;
+        white-space:nowrap;
+      }
+      .fu-shop-browsers {
+        display:none; align-items:center; flex-wrap:wrap; gap:4px;
+        margin-top:3px;
+      }
+      .fu-browsers-label {
+        font-size:10px; font-weight:800; color:#5a3800; opacity:0.6;
+        text-transform:uppercase; letter-spacing:0.05em; margin-right:2px;
+      }
+      .fu-tab-dots {
+        position:absolute; bottom:1px; left:50%; transform:translateX(-50%);
+        display:flex; gap:2px; pointer-events:none;
+      }
+      .fu-tab-dot {
+        width:5px; height:5px; border-radius:999px;
+        border:1px solid rgba(0,0,0,0.35);
+      }
+      .fu-shop-spectate-badge {
+        display:inline-flex; align-items:center; gap:3px;
+        font-size:11px; font-weight:800;
+        color:#5a3800; background:rgba(184,153,64,0.3);
+        border:1px solid rgba(139,105,20,0.5);
+        border-radius:999px; padding:1px 8px;
+      }
+
       /* ── Sell button (injected into .dialog-buttons row) ── */
       .fu-shop-sell-dlg-btn {
         background: #9a7aba !important; border-color: #7a5a9a !important;
@@ -557,23 +590,27 @@ export class ShopWindowApp {
   // HTML builders
   // ──────────────────────────────────────────────────────────────
 
-  static _buildRow(item, buyerZenit, hasBuyer, buyerPriceMult = 1) {
+  static _buildRow(item, { buyerZenit, hasBuyer, buyerPriceMult = 1, spectate = false } = {}) {
     const baseCost      = this._itemCost(item);
     const effectiveCost = baseCost > 0 ? Math.round(baseCost * buyerPriceMult) : 0;
     const qty           = this._itemQty(item);
     const desc          = this._itemDesc(item);
     const outOfStock    = qty <= 0;
-    const cantAfford    = !outOfStock && hasBuyer && effectiveCost > 0 && Number.isFinite(buyerZenit) && buyerZenit < effectiveCost;
-    const disabled      = outOfStock || cantAfford || !hasBuyer;
+    const cantAfford    = !spectate && !outOfStock && hasBuyer && effectiveCost > 0 && Number.isFinite(buyerZenit) && buyerZenit < effectiveCost;
+    const disabled      = spectate || outOfStock || cantAfford || !hasBuyer;
 
-    const tip = outOfStock ? "Out of stock" : cantAfford ? "Not enough Zenit" : !hasBuyer ? "No linked character" : "";
+    const tip = spectate    ? "Spectating — the GM cannot buy"
+              : outOfStock  ? "Out of stock"
+              : cantAfford  ? "Not enough Zenit"
+              : !hasBuyer   ? "No linked character"
+              : "";
     const costHtml = effectiveCost > 0
       ? `<span class="fu-shop-cost">${GP_ICON}${effectiveCost.toLocaleString()}</span>`
       : `<span class="fu-shop-cost free">Free</span>`;
     const stockHtml = outOfStock
       ? `<span class="fu-shop-stock" style="color:#8b4513">Sold Out</span>`
       : `<span class="fu-shop-stock">×${qty}</span>`;
-    const btnLabel = outOfStock ? "—" : cantAfford ? "💸" : "Buy";
+    const btnLabel = spectate ? "👁" : outOfStock ? "—" : cantAfford ? "💸" : "Buy";
 
     return `
       <div class="fu-shop-row${outOfStock ? " sold-out" : ""}"
@@ -587,6 +624,7 @@ export class ShopWindowApp {
         <div class="fu-shop-row-inner">
           <span class="fu-shop-item-name">${this._esc(item.name)}</span>
           ${desc ? `<span class="fu-shop-item-desc">${this._esc(desc)}</span>` : ""}
+          <span class="fu-shop-viewers"></span>
         </div>
         ${costHtml}
         ${stockHtml}
@@ -595,7 +633,7 @@ export class ShopWindowApp {
       </div>`;
   }
 
-  static _buildHTML({ portrait, shopTitle, quote, buyerZenit, hasBuyer, itemsByCategory, activeTab, newItemIds = new Set(), buyerPriceMult = 1 }) {
+  static _buildHTML({ portrait, shopTitle, quote, buyerZenit, hasBuyer, itemsByCategory, activeTab, newItemIds = new Set(), buyerPriceMult = 1, spectate = false, shopZenit = 0 }) {
     // Tabs
     const tabs = SHOP_CATEGORIES.map(c => {
       const items   = itemsByCategory[c.key] ?? [];
@@ -604,23 +642,27 @@ export class ShopWindowApp {
       const badge   = hasNew ? `<span class="fu-tab-new-badge">New!</span>` : "";
       return `<div class="fu-shop-tab${activeTab === c.key ? " active" : ""}${isEmpty ? " fu-tab-empty" : ""}"
                    data-tab="${c.key}" data-tooltip="${this._esc(c.label)}"
-                   title="${this._esc(c.label)}">${c.emoji}${badge}</div>`;
+                   title="${this._esc(c.label)}">${c.emoji}${badge}<span class="fu-tab-dots"></span></div>`;
     }).join("");
 
     // Panels
+    const rowOpts = { buyerZenit, hasBuyer, buyerPriceMult, spectate };
     const panels = SHOP_CATEGORIES.map(c => {
       const items = itemsByCategory[c.key] ?? [];
       const rows = items.length
-        ? items.map(it => this._buildRow(it, buyerZenit, hasBuyer, buyerPriceMult)).join("")
+        ? items.map(it => this._buildRow(it, rowOpts)).join("")
         : `<div class="fu-shop-empty">Nothing in stock.</div>`;
       return `<div class="fu-shop-panel${activeTab === c.key ? " active" : ""}" data-panel="${c.key}">
                 <div class="fu-shop-list">${rows}</div>
               </div>`;
     }).join("");
 
-    const zenitStr = hasBuyer && Number.isFinite(buyerZenit)
-      ? `Your Zenit: <span class="zv">${GP_ICON}${buyerZenit.toLocaleString()}</span>`
-      : `<span style="opacity:0.6">Link a character to your user to shop</span>`;
+    const zenitStr = spectate
+      ? `<span class="fu-shop-spectate-badge">👁 Spectating</span>
+         <span style="margin-left:8px">Shop Till: <span class="zv">${GP_ICON}${Number(shopZenit || 0).toLocaleString()}</span></span>`
+      : hasBuyer && Number.isFinite(buyerZenit)
+        ? `Your Zenit: <span class="zv">${GP_ICON}${buyerZenit.toLocaleString()}</span>`
+        : `<span style="opacity:0.6">Link a character to your user to shop</span>`;
 
     const quoteLine = quote ? `<div class="fu-shop-quote">"${this._esc(quote)}"</div>` : "";
 
@@ -634,6 +676,7 @@ export class ShopWindowApp {
             <div class="fu-shop-header-name">${this._esc(shopTitle)}</div>
             ${quoteLine}
             <div class="fu-shop-zenit-bar">${zenitStr}</div>
+            <div class="fu-shop-browsers"></div>
           </div>
         </div>
 
@@ -648,6 +691,86 @@ export class ShopWindowApp {
 
         <div class="fu-shop-skills" id="fu-shop-skills"></div>
       </div>`;
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // Presence — "who's browsing what"
+  //
+  // Deliberately a style/badge pass over the existing DOM rather than a rebuild:
+  // selections change far more often than stock does, and a rebuild here would
+  // fight the debounced data redraw and throw away the reader's scroll position.
+  // ──────────────────────────────────────────────────────────────
+
+  static _applyPresence(root, viewers) {
+    if (!root) return;
+
+    // Reset everything this function owns
+    root.querySelectorAll(".fu-shop-row").forEach(row => {
+      row.style.borderColor = "";
+      row.style.background  = "";
+      const strip = row.querySelector(".fu-shop-viewers");
+      if (strip) { strip.innerHTML = ""; strip.style.display = "none"; }
+    });
+    root.querySelectorAll(".fu-tab-dots").forEach(d => { d.innerHTML = ""; });
+
+    const browsers = root.querySelector(".fu-shop-browsers");
+    if (browsers) { browsers.innerHTML = ""; browsers.style.display = "none"; }
+
+    if (!viewers?.length) return;
+
+    // Row tint + name chips, grouped so several people can look at one item.
+    const byItem = new Map();
+    for (const v of viewers) {
+      if (!v.itemUuid) continue;
+      const list = byItem.get(v.itemUuid) ?? [];
+      list.push(v);
+      byItem.set(v.itemUuid, list);
+    }
+
+    for (const [itemUuid, list] of byItem.entries()) {
+      const row = root.querySelector(`.fu-shop-row[data-item-uuid="${CSS.escape(itemUuid)}"]`);
+      if (!row) continue;
+
+      const lead = list[0];
+      row.style.borderColor = lead.color;
+      row.style.background  = hexToRgba(lead.color, 0.13);
+
+      const strip = row.querySelector(".fu-shop-viewers");
+      if (!strip) continue;
+      strip.style.display = "";
+      strip.innerHTML = list.map(v => `
+        <span class="fu-shop-viewer-chip"
+              style="color:${v.color}; border-color:${v.color}; background:${hexToRgba(v.color, 0.14)}">
+          ${v.isGM ? "👁" : "👤"} ${this._esc(v.label)}
+        </span>`).join("");
+    }
+
+    // A dot on the tab of anyone whose pick lives in a category you aren't on,
+    // so you can see they've wandered off to Consumables.
+    const byTab = new Map();
+    for (const v of viewers) {
+      if (!v.tab) continue;
+      const list = byTab.get(v.tab) ?? [];
+      list.push(v);
+      byTab.set(v.tab, list);
+    }
+    for (const [tab, list] of byTab.entries()) {
+      const dots = root.querySelector(`.fu-shop-tab[data-tab="${CSS.escape(tab)}"] .fu-tab-dots`);
+      if (!dots) continue;
+      dots.innerHTML = list
+        .map(v => `<span class="fu-tab-dot" style="background:${v.color}" title="${this._esc(v.label)}"></span>`)
+        .join("");
+    }
+
+    // Header roster line
+    if (browsers) {
+      browsers.style.display = "";
+      browsers.innerHTML = `<span class="fu-browsers-label">Browsing:</span>` + viewers.map(v => `
+        <span class="fu-shop-viewer-chip"
+              style="color:${v.color}; border-color:${v.color}; background:${hexToRgba(v.color, 0.14)}">
+          ${v.isGM ? "👁" : "👤"} ${this._esc(v.label)}
+        </span>`).join("");
+    }
   }
 
   // ──────────────────────────────────────────────────────────────
@@ -682,31 +805,43 @@ export class ShopWindowApp {
       row.addEventListener("click", (e) => {
         if (e.target.closest("[data-action='buy']")) return;
         snd()?.playItemSelect();
-        root.querySelectorAll(".fu-shop-row").forEach(r => r.classList.toggle("fu-selected", r === row));
-
-        const preview = root.querySelector(".fu-shop-preview");
-        if (preview) preview.innerHTML = ctx.getPreviewHTML(row.dataset.itemUuid);
-
-        const skills = root.querySelector(".fu-shop-skills");
-        if (skills) {
-          const skillsHTML = ctx.getSkillsHTML(row.dataset.itemUuid);
-          if (skillsHTML) {
-            skills.innerHTML = skillsHTML;
-            skills.classList.add("has-skills");
-          } else {
-            skills.innerHTML = "";
-            skills.classList.remove("has-skills");
-          }
-        }
+        ctx.selectItem(row.dataset.itemUuid, { broadcast: true });
       });
     });
+  }
+
+  // Paint a selection (own or restored-after-redraw) into an already-built root.
+  static _renderSelection(root, ctx, itemUuid) {
+    if (!root) return;
+
+    root.querySelectorAll(".fu-shop-row").forEach(r =>
+      r.classList.toggle("fu-selected", r.dataset.itemUuid === itemUuid));
+
+    const preview = root.querySelector(".fu-shop-preview");
+    if (preview) {
+      preview.innerHTML = itemUuid
+        ? ctx.getPreviewHTML(itemUuid)
+        : `<div class="fu-preview-placeholder">← Click an item to see its stats</div>`;
+    }
+
+    const skills = root.querySelector(".fu-shop-skills");
+    if (skills) {
+      const skillsHTML = itemUuid ? ctx.getSkillsHTML(itemUuid) : null;
+      if (skillsHTML) {
+        skills.innerHTML = skillsHTML;
+        skills.classList.add("has-skills");
+      } else {
+        skills.innerHTML = "";
+        skills.classList.remove("has-skills");
+      }
+    }
   }
 
   // ──────────────────────────────────────────────────────────────
   // Open
   // ──────────────────────────────────────────────────────────────
 
-  static async open(shopActorUuid, { onClose } = {}) {
+  static async open(shopActorUuid, { onClose, spectate = false } = {}) {
     // Deduplicate
     const existing = _openWindows.get(shopActorUuid);
     if (existing) { try { existing.bringToTop?.(); } catch {} return existing; }
@@ -714,8 +849,12 @@ export class ShopWindowApp {
     const actor = await fromUuid(shopActorUuid);
     if (!actor) { ui.notifications?.error?.("[ShopWindow] Shop actor not found."); return null; }
 
-    const buyerActor = game.user.character ?? null;
+    // A spectating GM never buys — gate on `spectate`, not on having a character,
+    // because a GM may well have one linked.
+    const buyerActor = spectate ? null : (game.user.character ?? null);
     const hasBuyer   = !!buyerActor;
+
+    const presence = window.FUCompanion?.shopPresence ?? null;
 
     // Snapshot: remember which items were in stock when the shop opened (for "New!" badge)
     const initialItemIds = new Set(actor.items.contents.map(i => i.uuid));
@@ -732,14 +871,22 @@ export class ShopWindowApp {
       }
       return byCat;
     };
-    const readZenit = () => hasBuyer ? Math.max(0, Number(buyerActor.system?.props?.zenit ?? 0)) : 0;
-    const readMult  = () => hasBuyer ? ShopWindowApp._buyerMult(buyerActor) : 1;
+    const readZenit     = () => hasBuyer ? Math.max(0, Number(buyerActor.system?.props?.zenit ?? 0)) : 0;
+    const readMult      = () => hasBuyer ? ShopWindowApp._buyerMult(buyerActor) : 1;
+    const readShopZenit = () => Math.max(0, Number(gp(actor, "system.props.zenit", 0)) || 0);
 
     const state = {
       activeTab:       null,
       itemsByCategory: readItems(),
       buyerZenit:      readZenit(),
       buyerPriceMult:  readMult(),
+      shopZenit:       readShopZenit(),
+      selectedUuid:    null,
+
+      // Set while this client's purchase is in flight. An incoming redraw would
+      // otherwise swap in a fresh, ENABLED buy button under the user's cursor —
+      // a second click there is a second real purchase.
+      inFlight:        false,
     };
 
     // Auto-pick first non-empty category
@@ -762,17 +909,43 @@ export class ShopWindowApp {
       activeTab: state.activeTab,
       newItemIds: readNewItemIds(),
       buyerPriceMult: state.buyerPriceMult,
+      spectate,
+      shopZenit: state.shopZenit,
     });
 
-    const redraw = async () => {
+    const rootEl = () => dlg?.element?.[0]?.querySelector?.(".fu-shop") ?? null;
+
+    const refreshPresence = () => {
+      if (!presence) return;
+      const root = rootEl();
+      if (!root) return;
+      ShopWindowApp._applyPresence(root, presence.viewers(shopActorUuid, { excludeSelf: true }));
+    };
+
+    let redrawPending = false;
+
+    const redraw = () => {
+      // Don't swap the DOM out from under an in-flight purchase; catch up after.
+      if (state.inFlight) { redrawPending = true; return; }
+      redrawPending = false;
+
+      const oldRoot = rootEl();
+      if (!oldRoot) return;
+
       state.itemsByCategory = readItems();
       state.buyerZenit      = readZenit();
       state.buyerPriceMult  = readMult();
+      state.shopZenit       = readShopZenit();
 
-      const dialogEl = dlg?.element?.[0];
-      if (!dialogEl) return;
-      const oldRoot = dialogEl.querySelector(".fu-shop");
-      if (!oldRoot) return;
+      // Someone else buying must not yank this reader out of what they were
+      // looking at, so carry the selection and the scroll position across.
+      const prevScroll = oldRoot.querySelector(".fu-shop-panel.active .fu-shop-list")?.scrollTop ?? 0;
+      if (state.selectedUuid && !actor.items.some(i => i.uuid === state.selectedUuid)) {
+        // The item they were reading just sold out from under them. Tell the room,
+        // or everyone else keeps showing their badge on a row that no longer exists.
+        state.selectedUuid = null;
+        presence?.select(shopActorUuid, null, null);
+      }
 
       const tmp = document.createElement("div");
       tmp.innerHTML = ShopWindowApp._buildHTML(buildData());
@@ -781,7 +954,36 @@ export class ShopWindowApp {
 
       oldRoot.replaceWith(newRoot);
       ShopWindowApp._bindRoot(newRoot, ctx);
+      ShopWindowApp._renderSelection(newRoot, ctx, state.selectedUuid);
+
+      const list = newRoot.querySelector(".fu-shop-panel.active .fu-shop-list");
+      if (list) list.scrollTop = prevScroll;
+
+      refreshPresence();
     };
+
+    // One transfer is several writes (item quantity, item delete, two Zenit
+    // updates), each firing its own hook — coalesce them into a single repaint.
+    let redrawTimer = null;
+    const queueRedraw = () => {
+      if (redrawTimer) return;
+      redrawTimer = setTimeout(() => { redrawTimer = null; redraw(); }, 80);
+    };
+
+    // ── Live sync: the shop is shared, so anyone's write repaints everyone ──
+    const onItemChange  = (doc) => { if (doc?.parent?.uuid === shopActorUuid) queueRedraw(); };
+    const onActorChange = (a)   => {
+      if (a?.uuid === shopActorUuid || (buyerActor && a?.uuid === buyerActor.uuid)) queueRedraw();
+    };
+
+    const hookIds = [
+      ["createItem",  Hooks.on("createItem",  onItemChange)],
+      ["updateItem",  Hooks.on("updateItem",  onItemChange)],
+      ["deleteItem",  Hooks.on("deleteItem",  onItemChange)],
+      ["updateActor", Hooks.on("updateActor", onActorChange)],
+    ];
+
+    const unsubPresence = presence?.subscribe(shopActorUuid, refreshPresence) ?? null;
 
     const ctx = {
       state,
@@ -793,10 +995,27 @@ export class ShopWindowApp {
         const item = actor.items.find(i => i.uuid === uuid);
         return item ? ShopWindowApp._buildSkillsContent(item) : null;
       },
+
+      // Selecting a row shows its stats AND tells the table what you're eyeing —
+      // it doubles as the pointer for "this one, the sword".
+      selectItem: (itemUuid, { broadcast = false } = {}) => {
+        state.selectedUuid = itemUuid ?? null;
+        const root = rootEl();
+        ShopWindowApp._renderSelection(root, ctx, state.selectedUuid);
+
+        if (!broadcast || !presence) return;
+        const tab = state.selectedUuid
+          ? root?.querySelector(`.fu-shop-row[data-item-uuid="${CSS.escape(state.selectedUuid)}"]`)
+                ?.closest(".fu-shop-panel")?.dataset?.panel ?? state.activeTab
+          : null;
+        presence.select(shopActorUuid, state.selectedUuid, tab);
+      },
+
       onOpenSell: () => {
         window.FUCompanion?.shopSellApp?.open?.(shopActorUuid, { sellerActorUuid: buyerActor?.uuid });
       },
       onBuy: async (btn) => {
+        if (spectate) return;
         const row = btn.closest(".fu-shop-row");
         if (!row) return;
 
@@ -810,40 +1029,58 @@ export class ShopWindowApp {
           return;
         }
 
-        // Quantity prompt for stackable items
-        let quantity = 1;
-        if (itemQty > 1) {
-          const qtyUI = window["oni.ItemTransferQuantityUI"];
-          if (qtyUI) {
-            const picked = await qtyUI.promptQuantity({ itemName, maxQuantity: itemQty, defaultQuantity: 1 });
-            if (picked == null) return; // cancelled
-            quantity = picked;
+        const orig = btn.textContent;
+
+        // Hold redraws for the whole flow, not just the request: a repaint while
+        // the quantity prompt is up would rebuild the row behind it and hand back
+        // an enabled buy button — and a second click there is a second real buy.
+        let result;
+        state.inFlight = true;
+        try {
+          // Quantity prompt for stackable items
+          let quantity = 1;
+          if (itemQty > 1) {
+            const qtyUI = window["oni.ItemTransferQuantityUI"];
+            if (qtyUI) {
+              const picked = await qtyUI.promptQuantity({ itemName, maxQuantity: itemQty, defaultQuantity: 1 });
+              if (picked == null) return; // cancelled
+              quantity = picked;
+            }
           }
+
+          const total = itemCost * quantity;
+          if (total > 0 && state.buyerZenit < total) {
+            ui.notifications?.warn?.(`Not enough Zenit — need 🪙 ${total.toLocaleString()}, have 🪙 ${state.buyerZenit.toLocaleString()}.`);
+            return;
+          }
+
+          btn.disabled = true;
+          btn.textContent = "…";
+
+          const handler = window.FUCompanion?.shopPurchase;
+          if (!handler) {
+            ui.notifications?.error?.("Shop purchase system not available.");
+            return;
+          }
+
+          result = await handler.requestPurchase({
+            shopActorUuid,
+            itemUuid,
+            quantity,
+            buyerActorUuid:  buyerActor.uuid,
+            requesterUserId: game.user.id,
+          });
+        } finally {
+          state.inFlight = false;
         }
 
-        const total = itemCost * quantity;
-        if (total > 0 && state.buyerZenit < total) {
-          ui.notifications?.warn?.(`Not enough Zenit — need 🪙 ${total.toLocaleString()}, have 🪙 ${state.buyerZenit.toLocaleString()}.`);
+        // Cancelled, or the handler was missing: restore the row, and pick up any
+        // stock change that landed while we were holding redraws back.
+        if (!result) {
+          if (redrawPending) redraw();
+          else { btn.disabled = false; btn.textContent = orig; }
           return;
         }
-
-        const orig = btn.textContent;
-        btn.disabled = true;
-        btn.textContent = "…";
-
-        const handler = window.FUCompanion?.shopPurchase;
-        if (!handler) {
-          ui.notifications?.error?.("Shop purchase system not available.");
-          btn.disabled = false; btn.textContent = orig; return;
-        }
-
-        const result = await handler.requestPurchase({
-          shopActorUuid,
-          itemUuid,
-          quantity,
-          buyerActorUuid:  buyerActor.uuid,
-          requesterUserId: game.user.id,
-        });
 
         if (result.ok) {
           window.FUCompanion?.shopSound?.playPurchase();
@@ -854,7 +1091,7 @@ export class ShopWindowApp {
           // new balance immediately — the full redraw syncs from the actor after.
           if (result.totalCost > 0) {
             state.buyerZenit = Math.max(0, state.buyerZenit - result.totalCost);
-            const zenitBar = dlg?.element?.[0]?.querySelector?.(".fu-shop-zenit-bar");
+            const zenitBar = rootEl()?.querySelector?.(".fu-shop-zenit-bar");
             if (zenitBar) {
               zenitBar.innerHTML = `Your Zenit: <span class="zv">${GP_ICON}${state.buyerZenit.toLocaleString()}</span>`;
             }
@@ -863,7 +1100,7 @@ export class ShopWindowApp {
           // By the time BUY_RESULT arrives the GM has finished all DB writes,
           // so Foundry's reactive sync has already pushed actor changes to this client.
           // No artificial delay needed.
-          await redraw();
+          redraw();
         } else {
           const MSGS = {
             out_of_stock:          "This item is out of stock.",
@@ -878,20 +1115,25 @@ export class ShopWindowApp {
             server_error:          "A server error occurred — check GM console.",
           };
           ui.notifications?.error?.(MSGS[result.reason] ?? `Purchase failed (${result.reason ?? "unknown"}).`);
-          btn.disabled = false; btn.textContent = orig;
+          // Rebuild rather than un-disabling by hand: a failure usually means the
+          // stock moved under us, and redraw shows the truth.
+          redraw();
         }
+
+        if (redrawPending) redraw();
       },
     };
 
     dlg = new Dialog(
       {
-        title:   `Shop — ${shopTitle}`,
+        title:   spectate ? `Shop — ${shopTitle} (Spectating)` : `Shop — ${shopTitle}`,
         content: ShopWindowApp._buildHTML(buildData()),
-        buttons: { close: { icon: '<i class="fas fa-door-open"></i>', label: "Leave Shop" } },
+        buttons: { close: { icon: '<i class="fas fa-door-open"></i>', label: spectate ? "Stop Spectating" : "Leave Shop" } },
         default: "close",
         render: (html) => {
           const root = (html instanceof jQuery ? html[0] : html).querySelector?.(".fu-shop") ?? (html instanceof jQuery ? html[0] : html);
           ShopWindowApp._bindRoot(root, ctx);
+          refreshPresence();
 
           // Inject Sell button into the dialog-buttons row (left of Leave Shop)
           if (hasBuyer) {
@@ -908,6 +1150,12 @@ export class ShopWindowApp {
         },
         close: () => {
           window.FUCompanion?.shopSound?.playCancel();
+
+          if (redrawTimer) clearTimeout(redrawTimer);
+          for (const [name, id] of hookIds) { try { Hooks.off(name, id); } catch {} }
+          unsubPresence?.();
+          presence?.leave(shopActorUuid);
+
           _openWindows.delete(shopActorUuid);
           onClose?.();
         },
@@ -917,6 +1165,11 @@ export class ShopWindowApp {
 
     _openWindows.set(shopActorUuid, dlg);
     dlg.render(true);
+
+    // Announce arrival: everyone already in this shop replies with their own
+    // presence, so a late joiner doesn't walk into an apparently empty room.
+    presence?.enter(shopActorUuid);
+
     window.FUCompanion?.shopSound?.playShopOpen?.();
     return dlg;
   }

@@ -6,6 +6,7 @@ import { ShopPurchaseHandler } from "./shopPurchase-handler.js";
 import { ShopSoundManager }    from "./shopSound-manager.js";
 import { ShopSellHandler }     from "./shopSell-handler.js";
 import { ShopSellApp }         from "./shopSell-app.js";
+import { ShopPresence }        from "./shopPresence.js";
 
 Hooks.once("ready", async () => {
   const ui = new ShopOpenUI({
@@ -23,6 +24,7 @@ Hooks.once("ready", async () => {
   const purchaseHandler = new ShopPurchaseHandler();
   const sellHandler     = new ShopSellHandler();
   const soundManager    = new ShopSoundManager();
+  const presence        = new ShopPresence();
   soundManager.preloadAll(); // warm CDN cache so first-use audio is instant
 
   // Wire purchase handler into backend (BUY_REQ/BUY_RESULT route through backend._onSocket)
@@ -30,6 +32,9 @@ Hooks.once("ready", async () => {
 
   // Wire sell handler into backend (SELL_REQ/SELL_RESULT route through backend._onSocket)
   backend._sellHandler = sellHandler;
+
+  // Wire presence into backend (PRESENCE_* route through backend._onSocket)
+  backend._presence = presence;
 
   // Backend -> UI
   backend.uiSetDesiredVisible = (set) => ui.setDesiredVisible(set);
@@ -65,6 +70,7 @@ Hooks.once("ready", async () => {
   window.FUCompanion.shopSell     = sellHandler;
   window.FUCompanion.shopSellApp  = ShopSellApp;
   window.FUCompanion.shopSound    = soundManager;
+  window.FUCompanion.shopPresence = presence;
 
   console.debug(SHOPOPEN.TAG, "Module bootstrap loaded (ShopOpen v2 — player self-service).");
 });
