@@ -61,6 +61,8 @@ import { initDominationCrest } from "./domination-crest.js";
 import { initDamageNumberLivetest } from "./damage-numbers/damage-number-livetest.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
 import { initTestBattleTool } from "./test-battle-tool.js";
+import { run as simRun, abort as simAbort } from "./sim/sim-run.js";
+import { SimMode } from "./sim/sim-mode.js";
 import { registerBuiltinReactor, clearBuiltinReactors } from "./instance-settle.js";
 import { crisisReactor } from "./crisis-reactor.js";
 import { defeatReactor } from "./defeat-reactor.js";
@@ -910,6 +912,10 @@ Hooks.once("ready", () => {
   // does NOT touch HP/MP (cosmetic only).
   studio.previewDamageVfx = (payload) => { try { playResourceLossVfx(payload); } catch (e) { warn("previewDamageVfx threw", e); } };
   const exp = (api.experimental = api.experimental ?? {});
+  // Automated playtest harness (GM-only, dev). Runs a real hands-free battle and
+  // reports how it went — see sim/sim-run.js. `sim.abort()` is the panic valve if
+  // a run ever wedges. Phase 0: console-driven, one fight at a time.
+  exp.sim = { run: simRun, abort: simAbort, mode: SimMode };
   exp.battleDirector = {
     start,
     stop,

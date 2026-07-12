@@ -35,6 +35,7 @@ import { lookupTerm } from "./keyword-registry.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { resolvesVsMagicDefense } from "./snapshot.js";
+import { SimMode } from "./sim/sim-mode.js";
 
 // Resolve which active non-GM user owns the given actor doc. Returns
 // userId or null. Deterministic on multi-owner actors (sort by id).
@@ -6600,6 +6601,21 @@ export async function postActionCard({ director, kind, payload }) {
     };
 
     _overlays.set(director.combatId, { cleanup, root });
+
+    // ── Sim harness: nobody is at the keyboard ───────────────────────────────
+    // The card is fully built and wired at this point, so we resolve it through
+    // the SAME `finish("confirm")` path a human click takes — the reaction-pill
+    // snapshot, the mirror-close broadcast and the despawn all run identically.
+    // Undecided ask-mode pills snapshot as "skip" (snapshotReactionDecisions'
+    // default), so this cannot deadlock on a pending pill; whether ask-mode
+    // reactions fire at all is the run's `reactions` policy, applied upstream via
+    // __FU_HARNESS_ACCEPT_PASSIVES__. Dwell is the run's pace (0 on batch).
+    if (SimMode.active) {
+      setTimeout(() => {
+        try { finish("confirm"); }
+        catch (e) { warn("[SIM] auto-confirm threw — card may hang", e); }
+      }, SimMode.cardDwellMs());
+    }
   });
 }
 

@@ -24,6 +24,8 @@
 
 import { log, warn } from "./logger.js";
 import { registerDevTool } from "./dev-tools-menu.js";
+import { SimMode } from "./sim/sim-mode.js";
+import { decidePlayerAction } from "./sim/player-brain.js";
 
 // ── ActionReader pipeline (direct ESM import — same singleton the world macro
 //    drives through the module API). We run every stage EXCEPT AnnounceResult:
@@ -73,6 +75,9 @@ export function registerAutopilotSetting() {
 }
 
 export function isAutopilotEnabled() {
+  // A sim has nobody at the keyboard — the autopilot is mandatory, regardless of
+  // what the GM's toggle happens to be set to.
+  if (SimMode.active) return true;
   try { return game.settings.get(MODULE_ID, SETTING_KEY) === true; }
   catch { return false; }
 }
@@ -217,9 +222,16 @@ function showThinkingPip(token) {
 }
 
 // Await a "thinking" pause with the pip shown over the token, then tear it down.
+//
+// In a sim the pause is whatever the run's pace says (zero on fast/batch) — the
+// jitter exists to make a monster read as hand-played, and a playtest run has
+// nobody to read it. Same for the pip: it's pure decoration, and at batch pace
+// it would just be DOM churn between instant decisions.
 async function think(token, range) {
-  const pip = showThinkingPip(token);
-  try { await jitterDelay(range); }
+  const inSim = SimMode.active;
+  const effRange = inSim ? SimMode.thinkRange() : range;
+  const pip = (inSim && !SimMode.showPip()) ? { remove() {} } : showThinkingPip(token);
+  try { await jitterDelay(effRange); }
   finally { pip.remove(); }
 }
 
@@ -311,6 +323,11 @@ function toBundle(chosenAction, chosenTargets) {
 export function isAiControlledCombatant(dc) {
   const actor = dc?.actorDoc ?? null;
   if (!actor) return false;
+  // In a sim EVERY combatant is AI-controlled — the party included. (The sim's
+  // party is a set of GM-owned clones, so `hasPlayerOwner` would already be
+  // false; this makes it true by construction rather than by accident, so a sim
+  // can never stall waiting on a player-owned actor.)
+  if (SimMode.active) return true;
   return !actor.hasPlayerOwner;
 }
 
@@ -347,7 +364,45 @@ export async function autopilotPickCombatant(director, eligible) {
 // ── Public: DECLARE — decide WHAT action + WHICH targets ──────────────────────
 // snap = the acting actor's turnSnapshot. Returns a compose bundle (with a
 // thinking pause + pip) or null → caller falls back to manual composeAction.
+//
+// In a sim, "fall back to manual" is a deadlock: there is nobody to open the
+// menu for. So a sim never returns null — it escalates through the fallback
+// chain below (ActionReader → player brain → Guard) until something is
+// actionable. Real play is untouched: outside a sim this still returns null and
+// the GM gets the Octopath menu exactly as before.
 export async function autopilotDecideAction(director, snap) {
+  const bundle = await decideViaActionReader(director, snap);
+  if (bundle) return bundle;
+  if (!SimMode.active) return null;   // real play — manual fallback, unchanged
+  return await simFallbackBundle(director, snap);
+}
+
+// The sim's terminal fallback. ActionReader had nothing (no pattern table, as on
+// every PC; or nothing feasible/legal), so:
+//   1. ask the player brain for an action, then
+//   2. Guard — which always composes, needs no picker (coverTokenUuid null =
+//      self-guard) and is never gated by a debuff, so the turn always resolves.
+// A Guard here is a real in-fiction choice, not a skipped turn, so it shows up
+// honestly in the transcript rather than silently vanishing.
+async function simFallbackBundle(director, snap) {
+  try {
+    const fromBrain = await decidePlayerAction(director, snap);
+    if (fromBrain) {
+      const blocked = (snap?.blockedActions ?? []).find((b) => b?.label === fromBrain.command);
+      if (!blocked) {
+        SimMode.note("decide", `${snap?.name} → ${fromBrain.command} (player brain)`);
+        return fromBrain;
+      }
+      log(`[SIM] player brain wanted ${fromBrain.command} but it is blocked by ${blocked.reason} — guarding`);
+    }
+  } catch (e) {
+    warn("[SIM] player brain threw — guarding", e);
+  }
+  SimMode.note("decide", `${snap?.name} → Guard (no actionable option)`);
+  return { command: "Guard", coverTokenUuid: null };
+}
+
+async function decideViaActionReader(director, snap) {
   try {
     const token = canvas?.tokens?.get(snap?.tokenId) ?? null;
     if (!token) { log("autopilot: DECLARE has no canvas token — manual fallback"); return null; }
@@ -358,11 +413,13 @@ export async function autopilotDecideAction(director, snap) {
 
     // Show the pip WHILE the AI deliberates + for a jittered "reading" beat, so
     // the pause overlaps the actual compute rather than adding pure dead time.
-    const pip = showThinkingPip(token);
+    // In a sim both the pip and the jitter follow the run's pace (nil on fast).
+    const inSim = SimMode.active;
+    const pip = (inSim && !SimMode.showPip()) ? { remove() {} } : showThinkingPip(token);
     let ctx = null;
     try {
       ctx = await runActionReader({ token, combat, combatant });
-      await jitterDelay(AUTOPILOT_TIMING.decision);
+      await jitterDelay(inSim ? SimMode.thinkRange() : AUTOPILOT_TIMING.decision);
     } finally {
       pip.remove();
     }
@@ -394,6 +451,7 @@ export async function autopilotDecideAction(director, snap) {
     }
 
     log(`autopilot: ${snap.name} → ${bundle.command} "${ctx.chosenAction?.name}" on ${bundle.targetUuids.length} target(s)`);
+    SimMode.note("decide", `${snap.name} → ${bundle.command} "${ctx.chosenAction?.name}" on ${bundle.targetUuids.length} target(s)`);
     return bundle;
   } catch (e) {
     warn("autopilotDecideAction threw", e);
