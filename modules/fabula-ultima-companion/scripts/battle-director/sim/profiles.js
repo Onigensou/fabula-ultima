@@ -96,7 +96,7 @@ export const TUNING = {
   // ── Focus fire ────────────────────────────────────────────────────────────
   // A wounded enemy is a magnet: below this fraction of max HP the party drops
   // whatever it was doing and finishes them.
-  focusLowHpFraction: 0.40,
+  focusLowHpFraction: 0.70,
   // Deviating from the called target is allowed only when the focus is a genuinely
   // terrible target for THIS character (they'd feed an absorb). Otherwise everyone
   // hits the same thing, because concentrated damage is what actually kills.

@@ -254,32 +254,39 @@ function bestElementAgainst(target) {
   return best;
 }
 
+// These augments do TWO things: buff the damage AND re-point the element. So the
+// old "only spend it if the element improves" test was wrong twice over — it hoarded
+// the resource, and it ignored the damage buff, which is worth having even when the
+// element can't be bettered.
+//
+// There is no prize for finishing a fight with MP and IP in the bank. If it is
+// payable, it fires — and it always names the best available element, because an
+// unhinted swap takes option one and can land on something the target ABSORBS.
 function elementSwapPolicy({ ar, carrierName }) {
   const landing = rowsOf(ar).filter((r) => r?.hit !== false);
   if (!landing.length) return { decision: "skip", why: "nothing is landing" };
 
-  // Judge against the primary target (the one the action is really aimed at).
   const row = landing[0];
   const target = actorOf(row.actorUuid);
   if (!target) return { decision: "skip", why: "can't resolve the target" };
 
-  // What the action ALREADY does to them — this is the bar to beat. `affinity` on
-  // the row is the target's affinity to the action's current element.
   const current = affScore(row.affinity);
   const best = bestElementAgainst(target);
+  if (!best) return { decision: "skip", why: "no element to pick" };
 
-  if (!best || best.score <= current) {
-    return { decision: "skip", why: `can't improve on ${String(row.affinity ?? "NA").toUpperCase()} — saving it` };
-  }
-
+  const better = best.score > current;
   return {
     decision: "apply",
-    why: `${carrierName} → ${best.element} (${target.name} is ${best.aff}); was ${String(row.affinity ?? "NA").toUpperCase()}`,
+    why: better
+      ? `${carrierName} → ${best.element} (${target.name} is ${best.aff}); was ${String(row.affinity ?? "NA").toUpperCase()}`
+      : `${carrierName} → ${best.element}; the element can't be bettered but the damage buff is still worth it`,
     hint: { label: best.element },
   };
 }
 
-// Gadgets is an element swap that also costs IP, so it keeps a reserve on top.
+// Gadgets is an element swap paid in IP. The reserve knob stays (set to 0) so a
+// future "keep some IP for emergencies" policy has somewhere to live, but by default
+// nothing is held back.
 function gadgetPolicy(ctx) {
   const ip = numOr(ctx.reactorActor?.system?.props?.current_ip, 0);
   if (ip - TUNING.gadgetIpCost < TUNING.gadgetReserveIp) {
@@ -304,6 +311,17 @@ function warningShotPolicy(ctx) {
   return damageRiderPolicy(ctx);
 }
 
+// Barrage buys the attack a MULTI-TARGET property, and there is no prize for
+// finishing a fight with MP in the bank. So: if he can pay, he pays. No hoarding.
+//
+// Deliberately NOT the damage-rider test — that declines when the target resists,
+// which is the wrong question here. Barrage's value is that the shot hits MORE
+// PEOPLE, and spreading the volley shortens the fight even against a resistant
+// target. The pill only appears when it's affordable and legal in the first place.
+function barragePolicy() {
+  return { decision: "apply", why: "spends MP to make the shot multi-target — no reason to hoard" };
+}
+
 // Potion Rain turns Zarg's consumable into an area effect — one turn, the whole
 // party topped up. Free, and it only ever fires on an item he was already using, so
 // there is nothing to weigh: take it.
@@ -323,8 +341,10 @@ const POLICIES = {
 
   // Plain damage riders — no choice to make, just "is this worth spending on".
   "for whom the bell tolls": damageRiderPolicy,
-  "barrage": damageRiderPolicy,
   "warning shot": warningShotPolicy,
+
+  // Spend-to-win: these buy REACH, not just damage, so they fire whenever payable.
+  "barrage": barragePolicy,
 
   // Economy.
   "potion rain": potionRainPolicy,

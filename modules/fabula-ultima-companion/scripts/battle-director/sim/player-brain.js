@@ -126,29 +126,40 @@ function findConsumableRestoring(actorDoc, resource) {
   return null;
 }
 
+// ── How many creatures can this weapon hit? ──────────────────────────────────
+// Zarg's bow reads "Up to two creatures" — so every turn he spent shooting ONE
+// enemy, he was throwing away half his output. A weapon's reach is authored on the
+// item's skill_target, so read it instead of assuming everything is single-target.
+const NUM_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
+
+function weaponTargetCap(actorDoc) {
+  const p = actorDoc?.system?.props ?? {};
+  const hand = String(p.main_hand ?? "").trim().toLowerCase();
+  if (!hand) return 1;
+
+  const weapon = (actorDoc?.items ?? []).find(
+    (i) => String(i.name ?? "").trim().toLowerCase() === hand
+  );
+  const text = String(weapon?.system?.props?.skill_target ?? "").trim().toLowerCase();
+  if (!text) return 1;
+
+  const m = text.match(/(?:up to\s+)?(\d+|one|two|three|four|five|six)\b/);
+  if (!m) return 1;
+  const n = NUM_WORDS[m[1]] ?? Number(m[1]);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
 // ── Affinity-aware target choice for the BASIC ATTACK ────────────────────────
 // The first live run had the party plinking a boss with no regard for what it was
 // immune to. A basic attack carries the weapon's damage type, so score every
 // living foe by how that element lands, and break ties by who is closest to dying.
 const AFFINITY_SCORE = { VU: 3, NA: 1, RS: 0.4, IM: 0, AB: -5 };
 
-function bestAttackTarget(actorDoc, foes, focusUuid = null) {
+// Returns up to `cap` targets, best first. The party's called target leads (unless
+// swinging at it would feed an absorb — then peel off), and any remaining swings go
+// to the next best foes rather than being wasted.
+function bestAttackTargets(actorDoc, foes, focusUuid = null, cap = 1) {
   const element = String(actorDoc?.system?.props?.weapon1_damagetype ?? "").trim().toLowerCase();
-
-  // The party's called target wins — UNLESS swinging at it would feed an absorb or
-  // do literally nothing, in which case peel off. Concentrated damage is what kills;
-  // four people each hitting their own favourite is how you end up with three
-  // enemies on half HP instead of one corpse.
-  if (focusUuid) {
-    const called = foes.find((f) => f.tokenUuid === focusUuid);
-    if (called) {
-      let aff = "NA";
-      try { if (element) aff = String(AR.getAffinityForType(called.actorDoc, element) ?? "NA").toUpperCase(); } catch {}
-      if (aff !== "AB" && aff !== "IM") {
-        return { dc: called, aff, affScore: AFFINITY_SCORE[aff] ?? 1, hp: hpOf(called) };
-      }
-    }
-  }
 
   const scored = foes.map((dc) => {
     // getAffinityForType takes the ACTOR (it resolves the map itself) and
@@ -158,16 +169,23 @@ function bestAttackTarget(actorDoc, foes, focusUuid = null) {
       if (element) aff = AR.getAffinityForType(dc.actorDoc, element) ?? "NA";
     } catch { /* unknown element → treat as neutral */ }
     const affScore = AFFINITY_SCORE[String(aff).toUpperCase()] ?? 1;
-    return { dc, aff, affScore, hp: hpOf(dc) };
+    return { dc, aff: String(aff).toUpperCase(), affScore, hp: hpOf(dc) };
   });
 
   // Prefer anything we don't actively feed. Only if EVERY foe absorbs/ignores our
   // element do we accept the least-bad one — swinging is still better than idling.
   const viable = scored.filter((s) => s.affScore > 0);
-  const pool = viable.length ? viable : scored;
-
+  const pool = (viable.length ? viable : scored).slice();
   pool.sort((a, b) => (b.affScore - a.affScore) || (a.hp - b.hp));
-  return pool[0] ?? null;
+
+  const out = [];
+  const called = focusUuid ? pool.find((s) => s.dc.tokenUuid === focusUuid) : null;
+  if (called) out.push(called);   // the call leads; it's already filtered for absorbs
+  for (const s of pool) {
+    if (out.length >= cap) break;
+    if (!out.includes(s)) out.push(s);
+  }
+  return out;
 }
 
 // ── Bundle builders (PC shapes) ──────────────────────────────────────────────
@@ -520,10 +538,17 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), al
   }
   if (!foes.length) return null;
 
-  const pick = bestAttackTarget(actorDoc, foes, SimMode.focus());
-  const uuid = pick ? tokenUuidOf(pick.dc) : null;
-  if (!uuid) return null;
+  // A weapon that reaches two creatures should HIT two creatures. Anything less is
+  // throwing away half the swing.
+  const cap = weaponTargetCap(actorDoc);
+  const picks = bestAttackTargets(actorDoc, foes, SimMode.focus(), cap);
+  const uuids = picks.map((p) => tokenUuidOf(p.dc)).filter(Boolean);
+  if (!uuids.length) return null;
 
-  SimMode.note("attack", `${snap?.name} swings at ${pick.dc.name} [${pick.aff}]`);
-  return attackBundle([uuid]);
+  SimMode.note(
+    "attack",
+    `${snap?.name} swings at ${picks.map((p) => `${p.dc.name} [${p.aff}]`).join(" + ")}`
+    + (cap > 1 ? ` (weapon reaches ${cap})` : "")
+  );
+  return attackBundle(uuids);
 }
