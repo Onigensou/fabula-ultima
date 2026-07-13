@@ -417,12 +417,21 @@ export async function pickFromList({
     let pick = null;
     if (hint) {
       const wanted = String(hint.label ?? hint.actorUuid ?? hint.tokenUuid ?? "").trim().toLowerCase();
+      // Match the LABEL *and* the DESCRIPTION. A menu's visible label is often a
+      // flavour name that has nothing to do with what it does: Gadgets offers
+      // "Cryo / Pyro / Volt", whose descriptions read "+5; becomes Ice / Fire /
+      // Bolt". A brain asking for "ice" must find Cryo — matching the label alone
+      // silently fell through to option one, which would happily pick Cryo when
+      // asked for Fire.
+      const strip = (s) => String(s ?? "").replace(/<[^>]*>/g, "").toLowerCase();
+      const word = wanted ? new RegExp(`\\b${wanted.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i") : null;
+
       pick = enabled.find((r) => {
         const v = r?.value;
         if (v && typeof v === "object" && (v.actorUuid === hint.actorUuid || v.tokenUuid === hint.tokenUuid)) return true;
         if (typeof v === "string" && v.toLowerCase() === wanted) return true;
-        const text = String(r?.primary ?? "").replace(/<[^>]*>/g, "").toLowerCase();
-        return wanted && text.includes(wanted);
+        if (!word) return false;
+        return word.test(strip(r?.primary)) || word.test(strip(r?.secondary));
       }) ?? null;
       if (pick) log(`[SIM] list-picker: hint matched "${wanted}"`);
       else log(`[SIM] list-picker: hint "${wanted}" not on the menu — taking first`);

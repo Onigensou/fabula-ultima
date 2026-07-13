@@ -50,10 +50,30 @@ function rowFor(ar, actorUuid) {
   return rowsOf(ar).find((r) => r?.actorUuid === actorUuid) ?? null;
 }
 
-function actorOf(uuidOrDoc) {
+// Resolve the ACTOR behind a per-target row.
+//
+// Target rows carry a token-scoped uuid ("Scene.x.Token.y.Actor.z"), and leaning on
+// fromUuidSync for that is fragile — one null and every element-swap policy silently
+// decided it "can't resolve the targets" and skipped, which is why Zarg was spending
+// no IP at all. The director already holds live actor docs for every combatant, so
+// ask IT first and keep fromUuidSync only as a fallback.
+function actorOf(uuidOrDoc, director = null) {
   if (!uuidOrDoc) return null;
   if (typeof uuidOrDoc !== "string") return uuidOrDoc;
-  return fromUuidSync?.(uuidOrDoc) ?? null;
+
+  const dc = (director?.dCombat?.combatants ?? []).find(
+    (c) => c.actorUuid === uuidOrDoc || c.tokenUuid === uuidOrDoc
+  );
+  if (dc?.actorDoc) return dc.actorDoc;
+
+  try { return fromUuidSync?.(uuidOrDoc) ?? null; } catch { return null; }
+}
+
+// The actor a per-target row refers to, matched on either uuid the row carries.
+function rowActor(row, director) {
+  const byToken = (director?.dCombat?.combatants ?? []).find((c) => c.tokenUuid === row?.tokenUuid);
+  if (byToken?.actorDoc) return byToken.actorDoc;
+  return actorOf(row?.actorUuid, director);
 }
 
 const maxHpOf = (actor) => numOr(actor?.system?.props?.max_hp, 0);
@@ -177,7 +197,7 @@ function protectPolicy({ ar, reactorActor, director }) {
   // Whom is it aimed at? Anyone but her, who is about to get hit hard.
   const victims = rowsOf(ar)
     .filter((r) => r?.actorUuid && r.actorUuid !== reactorActor?.uuid)
-    .map((r) => ({ row: r, actor: actorOf(r.actorUuid) }))
+    .map((r) => ({ row: r, actor: rowActor(r, director) }))
     .filter((v) => v.actor && isStrongHit(v.row, v.actor, bar));
 
   if (!victims.length) return { decision: "skip", why: "nothing worth stepping in front of" };
@@ -304,11 +324,11 @@ function bestElementAcross(targets) {
 // There is no prize for finishing a fight with MP and IP in the bank. If it is
 // payable, it fires — and it always names the best available element, because an
 // unhinted swap takes option one and can land on something the target ABSORBS.
-function elementSwapPolicy({ ar, carrierName }) {
+function elementSwapPolicy({ ar, carrierName, director }) {
   const landing = rowsOf(ar).filter((r) => r?.hit !== false);
   if (!landing.length) return { decision: "skip", why: "nothing is landing" };
 
-  const targets = landing.map((r) => actorOf(r.actorUuid)).filter(Boolean);
+  const targets = landing.map((r) => rowActor(r, director)).filter(Boolean);
   if (!targets.length) return { decision: "skip", why: "can't resolve the targets" };
 
   const best = bestElementAcross(targets);
@@ -411,13 +431,20 @@ export function decideReactions({ prePassives, ar, director, decided }) {
   for (const p of prePassives ?? []) {
     const key = `${p.rowKey}:${p.carrierUuid}`;
     if (decided?.has(key)) continue;          // auto-fire / off — already settled
-    if (p.available === false) continue;      // dimmed: can't pay for it
 
-    const reactorActor = actorOf(p.reactorActorUuid) ?? actorOf(p.carrierUuid);
+    // Dimmed = can't pay for it. Say so out loud: "Zarg never spends IP" could just
+    // as easily have been this, and a silent `continue` gives you nothing to go on.
+    if (p.available === false) {
+      SimMode.note("reaction", `${p.reactorActorName ?? p.carrierName}: ${p.carrierName} unavailable (${p.unavailableReason ?? "?"})`);
+      continue;
+    }
+
+    const reactorActor = actorOf(p.reactorActorUuid, director) ?? actorOf(p.carrierUuid, director);
     const name = norm(p.carrierName);
     const policy = POLICIES[name];
 
     if (!policy) {
+      SimMode.note("reaction", `${p.reactorActorName ?? p.carrierName}: ${p.carrierName} → ${fallback} (no policy; run default)`);
       out.push({ rowKey: p.rowKey, carrierUuid: p.carrierUuid, decision: fallback });
       continue;
     }
@@ -456,9 +483,9 @@ export function protectExhausted(round) {
 // Returns the best element to use against the action's primary target, so a picker
 // that finds itself looking at a list of elements with no explicit hint has
 // something sane to fall back on instead of "whatever is at the top".
-export function bestElementForCard(ar) {
+export function bestElementForCard(ar, director = null) {
   const landing = rowsOf(ar).filter((r) => r?.hit !== false);
-  const targets = landing.map((r) => actorOf(r.actorUuid)).filter(Boolean);
+  const targets = landing.map((r) => rowActor(r, director)).filter(Boolean);
   if (!targets.length) return null;
   // Across ALL targets, not just the first — a multi-target shot must not pick an
   // element that one enemy is weak to and another absorbs.

@@ -6626,7 +6626,7 @@ export async function postActionCard({ director, kind, payload }) {
           // how Keren fired Fire into an Inferex that absorbs it. Named policies
           // hint the right element; this covers the augments nobody has written a
           // policy for yet.
-          SimMode.setElementFallback(bestElementForCard(cardAr));
+          SimMode.setElementFallback(bestElementForCard(cardAr, director));
 
           const decisions = decideReactions({
             prePassives,
