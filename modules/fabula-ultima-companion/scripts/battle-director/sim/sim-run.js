@@ -1,16 +1,20 @@
 // Sim Runner — launches a hands-free Battle Director fight and reports how it went.
 //
-// PHASE 0 SCOPE: one battle, console-driven, no panel and no aggregate report.
-// The single question it answers is "can the FSM run a whole fight with nobody
-// at the keyboard?" Everything else (batching, per-PC profiles, the HTML report,
-// the dev-tools panel) is deliberately not here yet.
+// Normally driven from the 🧪 dev-tools panel (sim-panel.js). The console entry point:
 //
 //   await FUCompanion.api.experimental.sim.run({
-//     enemy: "Actor.KygETN50UthluNPl",   // or an actor NAME
-//     quantity: 1,
-//     party: ["Actor.xxx", "Actor.yyy"], // omit → every PC in the party folder
-//     pace: "fast",                       // "watch" | "fast" | "batch"
+//     enemies: [{ uuid: "Actor.xxx", quantity: 2 }],  // an encounter group
+//     party:   ["Actor.xxx", …],       // omit → the DB-resolved party
+//     pace:    "fast",                 // "watch" | "fast" | "batch"
+//     expectedRounds: 7,               // unresolved by here = a design failure
+//     phoenixFeathers: 0,              // revives the party walks in with
+//     startingZp: 0,                   // 6 = a charged limit break
+//     fabulaPoints: 3,                 // invokes spend these
 //   });
+//
+// Every run writes a machine-readable decision log to
+// `worlds/<world>/sim-logs/sim-<timestamp>.json` (see sim-journal.js) — that journal is
+// how you find out WHY the AI didn't do something, which is otherwise invisible.
 //
 // SAFETY — why the party is cloned. Party tokens spawn LINKED (director-init:490
 // "PCs linked, NPCs unlinked"), so every point of damage a sim deals to a PC

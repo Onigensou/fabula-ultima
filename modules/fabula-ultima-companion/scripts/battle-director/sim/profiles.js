@@ -13,16 +13,19 @@
 //              most important thing a real party does — cannot be expressed as a
 //              row at all. That lives here.
 //
-// STATUS: BASIC. These are first-draft rotations written from each PC's real kit,
-// not from watching you play. They exist to make the sim's numbers mean something
-// rather than to be correct. Treat every fight result as provisional until the
-// profiles are tuned against how the party ACTUALLY plays.
+// STATUS (v1). Tuned against live runs until the sim closed the same encounter in the
+// same number of rounds as the real table. The party plays its whole kit: focus fire,
+// multi-target weapons, element-swapping augments, the IP/MP item economy, Phoenix
+// Feather revives, Zero Power, Fabula Point invokes (Bond before Trait, and Bond again
+// after a reroll), and crit Opportunities.
 //
-// Known simplifications, all of which make the party read WEAKER than it is:
-//   - no Fabula Point spends, no Opportunity picks (the sim declines those)
-//   - no equipment swaps, no item/consumable use
-//   - Blanche's Adoration-cost skills are not cost-checked (feasibility only
-//     parses MP/IP), so her rotation stays deliberately thin
+// Known simplifications, all of which make the party read WEAKER than it is — so a
+// fight the sim finds HARD is genuinely hard:
+//   - Opportunities always take Advantage; the cleverer options are never chosen
+//   - a skill's own option menus take the first entry unless a brain hints otherwise
+//   - no equipment swaps mid-fight
+//   - custom-resource costs the engine can't price (Adoration) are treated as
+//     unaffordable rather than guessed at, so Blanche's rotation stays thin
 
 import { SimMode } from "./sim-mode.js";
 
