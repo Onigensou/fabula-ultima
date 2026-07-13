@@ -6363,7 +6363,9 @@ const StandaloneReactionWindow = {
             try {
               const { sweepCrisis } = await import("./crisis-reactor.js");
               await sweepCrisis(director);
-            } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} crisis sweep threw`, e); }
+              const { sweepDerivedStatuses } = await import("./derived-status-reactor.js");
+              await sweepDerivedStatuses(director);
+            } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} crisis/derived sweep threw`, e); }
             // Remove eligible enemies that begin combat already at 0 HP — the
             // event-driven defeat reactor only fires on HP changes.
             try {

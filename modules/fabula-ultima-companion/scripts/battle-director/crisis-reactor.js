@@ -30,7 +30,7 @@ function num(v) { const n = Number(v); return Number.isFinite(n) ? n : null; }
 
 // Threshold = stored crisis_hp (skill-manipulable) when present & finite, else
 // ceil(max_hp/2) for NPCs/monsters that don't carry crisis_hp.
-function crisisThreshold(actor) {
+export function crisisThreshold(actor) {
   const p = actor?.system?.props ?? {};
   const stored = num(p.crisis_hp);
   if (stored != null) return stored;
