@@ -24,7 +24,7 @@
 // See [[project_action_pattern_ai]] and [[project_enemy_autopilot]].
 
 import { log, warn } from "../logger.js";
-import { profileFor, mpItemPolicy, hpItemPolicy, revivePolicy, refreshFocus } from "./profiles.js";
+import { profileFor, mpItemPolicy, hpItemPolicy, revivePolicy, refreshFocus, TUNING } from "./profiles.js";
 import { SimMode } from "./sim-mode.js";
 import { canAffordItem } from "./cost.js";
 import { protectExhausted } from "./reaction-brain.js";
@@ -95,6 +95,7 @@ function isAugment(item) {
 //
 // Matching on behaviour means Elixir, Grape Juice, Apple Juice and anything added
 // later are all found automatically, with no name list to fall out of date.
+//
 // HOW MUCH does it restore? 0 = it doesn't. Used to pick the BIGGEST heal rather
 // than the cheapest one — Zarg was reaching for a 30 HP Apple Juice when a 50 HP
 // Elixir was one IP away, which wastes the turn as surely as not healing at all.
@@ -120,6 +121,26 @@ function itemRestoreAmount(item, resource) {
 }
 
 const itemRestores = (item, resource) => itemRestoreAmount(item, resource) > 0;
+
+// ── IP reserve ───────────────────────────────────────────────────────────────
+// How much IP must this character keep in hand for their own attacks?
+//
+// IP is contested: it buys potions (Elixir 2 IP, Apple Juice 1 IP) AND it pays for
+// damage augments (Zarg's Gadgets, 2 IP a shot). Zarg is the party's potion caddy, so
+// he spent himself down to 0 IP buying Elixirs and then — silently — never infused
+// another arrow for the rest of the fight. His own damage was being starved by his
+// medic duties, and the transcript said so in as many words:
+//     "Gadgets: holds Gadgets — only 0 IP left"
+//
+// So anyone who owns an IP-priced AUGMENT keeps a working reserve. Nobody else hoards:
+// a character with no IP augment has nothing to save it for.
+function reservedIpFor(actorDoc) {
+  const hasIpAugment = (actorDoc?.items ?? []).some((item) => {
+    if (!isAugment(item)) return false;
+    return /\bip\b/i.test(String(item?.system?.props?.cost ?? ""));
+  });
+  return hasIpAugment ? TUNING.itemIpReserve : 0;
+}
 
 // The BIGGEST-healing consumable the actor is carrying (stock-limited; using it
 // spends one). Distinct from a CREATABLE, which anyone can conjure by paying IP.
@@ -307,8 +328,13 @@ function makePolicyApi(director, snap, self, creatables = []) {
     // is no stock to exhaust. This is the party's real economy.
     findCreatableRestoring(resource) {
       const ip = Number(self?.actorDoc?.system?.props?.current_ip ?? 0) || 0;
+      // Don't spend the last of the IP on potions if this character's DAMAGE rides on
+      // it. Zarg is the party's potion caddy AND his shots are augmented by Gadgets
+      // (2 IP each) — so he was buying Elixirs until he hit 0 IP and then quietly
+      // never infused another arrow. A real player keeps enough back to keep swinging.
+      const spendable = ip - reservedIpFor(self?.actorDoc);
       return creatables
-        .filter((c) => c.ipCost <= ip && itemRestores(c.doc, resource))
+        .filter((c) => c.ipCost <= spendable && itemRestores(c.doc, resource))
         // BIGGEST heal first, not cheapest. A turn spent restoring 30 HP when 50 was
         // affordable is a turn half-wasted; IP is only a tiebreak.
         .sort((a, b) =>

@@ -72,6 +72,11 @@ export const TUNING = {
   // left. With two or more there is always somebody else to act anyway.
   stopMaxEnemies: 1,
 
+  // IP is contested between potions and damage augments. A character whose shots are
+  // augmented with IP keeps this much back for them — otherwise the party medic spends
+  // himself down to 0 and stops infusing his own arrows. Enough for two Gadgets.
+  itemIpReserve: 4,
+
   // Zarg's Gadgets: augments a normal attack (buff + element swap) for IP.
   gadgetIpCost: 2,
   gadgetReserveIp: 0,   // keep this much IP back for emergencies
