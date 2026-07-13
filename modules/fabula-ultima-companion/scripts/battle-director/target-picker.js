@@ -12,6 +12,7 @@
 
 import { log, warn } from "./logger.js";
 import { playUiHoverSfx } from "./director-ui-sfx.js";
+import { SimMode } from "./sim/sim-mode.js";
 
 const STYLE_ID = "fud-targetpicker-style";
 
@@ -334,6 +335,49 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
   // action card in COMPUTE/CONFIRM provides the visual target summary.
   if (mode === "all") {
     return Promise.resolve({ ok: true, cancelled: false, tokenUuids: eligible.map((e) => e.tokenUuid) });
+  }
+
+  // ── Sim harness ───────────────────────────────────────────────────────────
+  // Every interactive targeting path funnels through here: the random roulette
+  // (Inferex's Chomp), the LOCKED confirm on obvious self/all sets, and genuine
+  // multi-target picks. With nobody at the keyboard all three would park the FSM,
+  // so answer them the way the UI would — and note that the random draw below is
+  // the SAME draw the picker makes: it pre-computes the result and the roulette
+  // spin is purely theatrical, so we lose the animation, not the math.
+  // Must sit ABOVE the remote branch — a sim never routes a pick to a player.
+  if (SimMode.active) {
+    // A brain-supplied hint answers the picks that carry a real decision — above
+    // all WHICH ally Blanche is stepping in front of. Only meaningful for a
+    // single-target pick; random and locked sets are not choices.
+    if (mode !== "random" && !lockSelection && count === 1) {
+      const hint = SimMode.takePickHint();
+      const want = hint?.tokenUuid ?? null;
+      const match = want ? eligible.find((e) => e.tokenUuid === want) : null;
+      if (match) {
+        log(`[SIM] target-picker: hint → ${match.name ?? match.tokenUuid}`);
+        return Promise.resolve({ ok: true, cancelled: false, tokenUuids: [match.tokenUuid] });
+      }
+    }
+
+    let picked;
+    if (mode === "random") {
+      const pool = Array.isArray(randomPool) && randomPool.length ? randomPool : eligible;
+      const actualCount = randomizeCount
+        ? Math.floor(Math.random() * count) + 1
+        : Math.min(count, pool.length);
+      picked = [...pool].sort(() => Math.random() - 0.5).slice(0, actualCount);
+    } else if (lockSelection) {
+      // A locked confirm pre-selects every eligible token; Confirm is the only
+      // meaningful answer.
+      picked = eligible;
+    } else {
+      picked = eligible.slice(0, Math.max(1, Math.min(count, eligible.length)));
+    }
+    return Promise.resolve({
+      ok: true,
+      cancelled: false,
+      tokenUuids: picked.map((e) => e.tokenUuid).filter(Boolean),
+    });
   }
 
   // Remote routing — render the picker on the initiating player's client and

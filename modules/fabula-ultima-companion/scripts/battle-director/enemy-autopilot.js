@@ -24,6 +24,8 @@
 
 import { log, warn } from "./logger.js";
 import { registerDevTool } from "./dev-tools-menu.js";
+import { SimMode } from "./sim/sim-mode.js";
+import { decidePlayerAction } from "./sim/player-brain.js";
 
 // ── ActionReader pipeline (direct ESM import — same singleton the world macro
 //    drives through the module API). We run every stage EXCEPT AnnounceResult:
@@ -73,6 +75,9 @@ export function registerAutopilotSetting() {
 }
 
 export function isAutopilotEnabled() {
+  // A sim has nobody at the keyboard — the autopilot is mandatory, regardless of
+  // what the GM's toggle happens to be set to.
+  if (SimMode.active) return true;
   try { return game.settings.get(MODULE_ID, SETTING_KEY) === true; }
   catch { return false; }
 }
@@ -217,9 +222,16 @@ function showThinkingPip(token) {
 }
 
 // Await a "thinking" pause with the pip shown over the token, then tear it down.
+//
+// In a sim the pause is whatever the run's pace says (zero on fast/batch) — the
+// jitter exists to make a monster read as hand-played, and a playtest run has
+// nobody to read it. Same for the pip: it's pure decoration, and at batch pace
+// it would just be DOM churn between instant decisions.
 async function think(token, range) {
-  const pip = showThinkingPip(token);
-  try { await jitterDelay(range); }
+  const inSim = SimMode.active;
+  const effRange = inSim ? SimMode.thinkRange() : range;
+  const pip = (inSim && !SimMode.showPip()) ? { remove() {} } : showThinkingPip(token);
+  try { await jitterDelay(effRange); }
   finally { pip.remove(); }
 }
 
@@ -311,12 +323,31 @@ function toBundle(chosenAction, chosenTargets) {
 export function isAiControlledCombatant(dc) {
   const actor = dc?.actorDoc ?? null;
   if (!actor) return false;
+  // In a sim EVERY combatant is AI-controlled — the party included. (The sim's
+  // party is a set of GM-owned clones, so `hasPlayerOwner` would already be
+  // false; this makes it true by construction rather than by accident, so a sim
+  // can never stall waiting on a player-owned actor.)
+  if (SimMode.active) return true;
   return !actor.hasPlayerOwner;
 }
 
 // Is the CURRENT Director turn an AI-controlled combatant?
 export function isAiControlledTurn(director) {
   try {
+    // In a sim, EVERY declaration is the AI's — including the ones that are not a
+    // "turn" at all.
+    //
+    // This lookup resolves the CURRENT combatant, and a FREE ACTION is not taken by the
+    // current combatant: it is taken by the REACTOR, on somebody else's turn (or, for a
+    // conflict_start grant like High Speed, before anyone's turn — where
+    // currentCombatantId is still null and this returned false outright).
+    //
+    // So the autopilot gate never fired for those declarations, DECLARE fell straight
+    // through to composeAction, and the free action was forfeited: the journal showed
+    // Acceleration firing and queueing (queued:2) and then "nothing legal to declare"
+    // with no grant line, because the brain was never even asked.
+    if (SimMode.active) return true;
+
     const dc = director?.dCombat;
     if (!dc) return false;
     const cur = dc.combatants?.find?.((c) => c.id === dc.currentCombatantId) ?? null;
@@ -347,7 +378,115 @@ export async function autopilotPickCombatant(director, eligible) {
 // ── Public: DECLARE — decide WHAT action + WHICH targets ──────────────────────
 // snap = the acting actor's turnSnapshot. Returns a compose bundle (with a
 // thinking pause + pip) or null → caller falls back to manual composeAction.
+//
+// In a sim, "fall back to manual" is a deadlock: there is nobody to open the
+// menu for. So a sim never returns null — it escalates through the fallback
+// chain below (ActionReader → player brain → Guard) until something is
+// actionable. Real play is untouched: outside a sim this still returns null and
+// the GM gets the Octopath menu exactly as before.
 export async function autopilotDecideAction(director, snap) {
+  const bundle = await decideViaActionReader(director, snap);
+  if (bundle) return bundle;
+  if (!SimMode.active) return null;   // real play — manual fallback, unchanged
+  return await simFallbackBundle(director, snap);
+}
+
+// The sim's terminal fallback. ActionReader had nothing (no pattern table, as on
+// every PC; or nothing feasible/legal), so:
+//   1. ask the player brain for an action, then
+//   2. Guard — which always composes, needs no picker (coverTokenUuid null =
+//      self-guard) and is never gated by a debuff, so the turn always resolves.
+// A Guard here is a real in-fiction choice, not a skipped turn, so it shows up
+// honestly in the transcript rather than silently vanishing.
+async function simFallbackBundle(director, snap) {
+  // Identify THIS combatant's turn. A re-entry into DECLARE for the same
+  // (round, combatant) means the last action bounced — see SimMode's re-declare
+  // guard. Retire it and let the brain pick again, rather than looping on it.
+  // Is this turn a granted FREE ACTION? If so it carries an allow-list of the
+  // commands it may be spent on (Barrage grants a free Attack), exactly as the
+  // Octopath menu would enforce. Pass it down or the brain re-picks a Skill and
+  // the granted action is thrown away.
+  // The WHOLE grant is threaded down, not just its labels: it also carries the spell MP
+  // cap (Acceleration: ≤10), the skill allow-list (Counter Pass: Passes only) and any
+  // locked target. Passing only the labels meant the brain could not answer a Skill
+  // grant at all, so the FSM fell back to the manual menu and a human had to click.
+  let grant = null;
+  let freeTag = "";
+  try {
+    const { freeActions } = await import("./free-actions.js");
+    const g = freeActions.get?.(snap?.actorId);
+    if (g?.enabledLabels?.length) {
+      grant = g;
+      freeTag = `:free:${g.sourceLabel ?? "?"}`;
+      SimMode.note(
+        "free-action",
+        `${snap?.name} has a free action from ${g.sourceLabel ?? "?"} (${g.enabledLabels.join(", ")}`
+        + `${g.maxMpCost != null ? `, ≤${g.maxMpCost} MP` : ""}`
+        + `${g.allowedSkillRefs?.length ? `, only: ${g.allowedSkillRefs.join("/")}` : ""})`
+      );
+    }
+  } catch (e) { warn("[SIM] free-action lookup threw", e); }
+
+  const allowedLabels = grant?.enabledLabels ?? null;
+
+  // The free action gets its OWN declaration space. Without `freeTag` a granted
+  // free Attack collides with the Attack the same combatant may already have made
+  // this round — the re-declare guard would read that as a bounce and Guard
+  // instead of taking the free shot.
+  const turnKey = `${director?.dCombat?.round ?? 0}:${snap?.combatantId ?? snap?.tokenId ?? "?"}${freeTag}`;
+
+  for (let attempt = 0; attempt < 4; attempt++) {
+    let bundle = null;
+    try {
+      bundle = await decidePlayerAction(director, snap, SimMode.blockedForTurn(turnKey), grant);
+    } catch (e) {
+      warn("[SIM] player brain threw", e);
+      break;
+    }
+    if (!bundle) break;
+
+    // An action-gating debuff (Silence on a Spell, etc.) — the menu would grey it
+    // out, so don't declare it.
+    const gated = (snap?.blockedActions ?? []).find((b) => b?.label === bundle.command);
+    if (gated) {
+      log(`[SIM] ${snap?.name}: ${bundle.command} is gated by ${gated.reason}`);
+      SimMode.blockForTurn(turnKey, bundle._name ?? bundle.command);
+      continue;
+    }
+
+    // Signature identifies the ACTION, not just the command: two different spells
+    // are different declarations.
+    const sig = `${bundle.command}:${bundle.skillUuid ?? bundle.attackMode ?? ""}`;
+    if (SimMode.declaredThisTurn(turnKey, sig)) {
+      // We already tried exactly this and we're back here — it didn't take.
+      SimMode.blockForTurn(turnKey, bundle._name ?? bundle.skillUuid ?? bundle.command);
+      continue;
+    }
+
+    SimMode.recordDeclaration(turnKey, sig);
+    SimMode.note("decide", `${snap?.name} → ${bundle.command}${bundle._name ? ` "${bundle._name}"` : ""} (player brain)`);
+    return bundle;
+  }
+
+  // Terminal fallback. On a NORMAL turn, Guard always composes and always resolves.
+  //
+  // Under a FREE-ACTION grant it is a trap: the grant's enabledLabels do not include
+  // Guard (Dance permits only "Skill"), so declaring it is illegal, the FSM rejects it
+  // and re-opens the compose menu — which is precisely the menu a human then had to
+  // click. A free action we cannot answer should be DECLINED, not Guarded: returning
+  // null lets DECLARE fall through to composeAction, which in a sim cancels rather than
+  // prompting (see compose-action.js).
+  const grantLabels = (allowedLabels ?? []).map((l) => String(l).trim().toLowerCase());
+  if (grantLabels.length && !grantLabels.includes("guard")) {
+    SimMode.note("decide", `${snap?.name} → declines the free action (nothing legal to spend it on)`);
+    return null;
+  }
+
+  SimMode.note("decide", `${snap?.name} → Guard (nothing left that works)`);
+  return { command: "Guard", coverTokenUuid: null };
+}
+
+async function decideViaActionReader(director, snap) {
   try {
     const token = canvas?.tokens?.get(snap?.tokenId) ?? null;
     if (!token) { log("autopilot: DECLARE has no canvas token — manual fallback"); return null; }
@@ -358,11 +497,13 @@ export async function autopilotDecideAction(director, snap) {
 
     // Show the pip WHILE the AI deliberates + for a jittered "reading" beat, so
     // the pause overlaps the actual compute rather than adding pure dead time.
-    const pip = showThinkingPip(token);
+    // In a sim both the pip and the jitter follow the run's pace (nil on fast).
+    const inSim = SimMode.active;
+    const pip = (inSim && !SimMode.showPip()) ? { remove() {} } : showThinkingPip(token);
     let ctx = null;
     try {
       ctx = await runActionReader({ token, combat, combatant });
-      await jitterDelay(AUTOPILOT_TIMING.decision);
+      await jitterDelay(inSim ? SimMode.thinkRange() : AUTOPILOT_TIMING.decision);
     } finally {
       pip.remove();
     }
@@ -394,6 +535,7 @@ export async function autopilotDecideAction(director, snap) {
     }
 
     log(`autopilot: ${snap.name} → ${bundle.command} "${ctx.chosenAction?.name}" on ${bundle.targetUuids.length} target(s)`);
+    SimMode.note("decide", `${snap.name} → ${bundle.command} "${ctx.chosenAction?.name}" on ${bundle.targetUuids.length} target(s)`);
     return bundle;
   } catch (e) {
     warn("autopilotDecideAction threw", e);

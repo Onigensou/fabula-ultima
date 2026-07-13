@@ -118,3 +118,6 @@
 
 .DS_Store
 Thumbs.db
+
+# Auto-playtest journals (sim debug output, not world data)
+worlds/*/sim-logs/

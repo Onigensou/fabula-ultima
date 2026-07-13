@@ -17,6 +17,7 @@
 // Returns Promise<{ ok, cancelled, A1, A2 }>.
 
 import { log, warn } from "./logger.js";
+import { SimMode } from "./sim/sim-mode.js";
 
 const CSS_ID  = "fud-attribute-pair-picker-style";
 const ROOT_ID = "fud-attribute-pair-picker-root";
@@ -250,6 +251,17 @@ export async function pickAttributePair({
   includeDL = false,
   defaultDL = 10,
 } = {}) {
+  // Sim harness: this is the GM's judgement call on a Hinder check (RAW Core
+  // p.71 — the GM picks the pair that matches the described approach). With
+  // nobody at the keyboard there is no approach to judge, so take the caller's
+  // defaults, which are the item's own authored pair + DL.
+  if (SimMode.active) {
+    const A1 = defaults?.A1 ?? "DEX";
+    const A2 = defaults?.A2 ?? "INS";
+    log(`[SIM] attribute-pair: auto-answering with defaults ${A1}+${A2}${includeDL ? ` DL${defaultDL}` : ""}`);
+    return { ok: true, cancelled: false, A1, A2, ...(includeDL ? { dl: Math.max(1, Number(defaultDL) || 10) } : {}) };
+  }
+
   // No GM gate: attribute-pair picker is client-local.
   ensureStyles();
 
