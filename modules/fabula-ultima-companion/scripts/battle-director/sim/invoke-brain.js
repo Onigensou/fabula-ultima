@@ -57,52 +57,77 @@ function lowDice(roll) {
 
 // Decide + execute. Returns true if anything was invoked (the caller re-reads cardAr
 // from invokeState.lastAr, exactly as the click handler does).
+//
+// Three scenarios, and the third is the one that's easy to miss:
+//
+//   A. Bond alone lands it            → spend the bond. Done. (Deterministic, cheap.)
+//   B. Bond can't reach; dice are low → reroll, and that's that.
+//   C. Bond can't reach; reroll comes back BETTER but still short — and now the bond
+//      DOES reach → spend it. The reroll didn't finish the job, it moved the goalposts
+//      into range. Checking the bond only once, up front, throws that away and eats
+//      the miss with a usable point still in hand.
+//
+// So the bond is evaluated again AFTER the reroll, against the new numbers.
 export async function simInvoke({ director, ar, root, invokeState, attackerActor }) {
   try {
     if (!attackerActor) return false;
     if (getInvokeCapability(attackerActor) !== "full") return false;   // PCs only
     if (!ar?.roll || ar.roll.isFumble) return false;                   // can't invoke on a fumble
-
-    const gap = shortfall(ar);
-    if (gap == null) return false;   // nothing missed — nothing to fix
+    if (shortfall(ar) == null) return false;                           // nothing missed
 
     const worker = await import("../invoke/invoke-worker.js");
     let acted = false;
 
-    // 1. BOND first — it is deterministic, so if it's enough, it IS the answer.
-    if (!invokeState.bond && canPay(attackerActor).ok) {
-      const best = readActorBonds(attackerActor)
-        .filter((b) => b.bonus > 0)
-        .sort((a, b) => b.bonus - a.bonus)[0] ?? null;
+    const liveAr = () => invokeState.lastAr ?? ar;
+    const bestBond = () =>
+      readActorBonds(attackerActor).filter((b) => b.bonus > 0).sort((a, b) => b.bonus - a.bonus)[0] ?? null;
 
-      if (best && best.bonus >= gap) {
-        const ok = await worker.handleInvokeBond({
-          director, ar, root, invokeState, prePickedBondIndex: best.index,
-        });
-        if (ok) {
-          SimMode.note("invoke", `${attackerActor.name} invokes Bond "${best.name}" (+${best.bonus}) — missed by ${gap}, so this lands it`);
-          acted = true;
-        }
+    // Spend the bond IF it closes the CURRENT gap. Called twice: once before the
+    // reroll, once after — the numbers change in between.
+    const tryBond = async (why) => {
+      if (invokeState.bond || !canPay(attackerActor).ok) return false;
+      const gap = shortfall(liveAr());
+      if (gap == null) return false;                  // already hitting
+      const bond = bestBond();
+      if (!bond || bond.bonus < gap) return false;    // not enough to matter
+
+      const ok = await worker.handleInvokeBond({
+        director, ar: liveAr(), root, invokeState, prePickedBondIndex: bond.index,
+      });
+      if (ok) {
+        SimMode.note("invoke", `${attackerActor.name} invokes Bond "${bond.name}" (+${bond.bonus}) — short by ${gap}${why}`);
+        acted = true;
       }
-    }
+      return ok;
+    };
 
-    // 2. TRAIT — the gamble, only if we're still short and only on the low dice.
-    const liveAr = invokeState.lastAr ?? ar;
-    const stillShort = shortfall(liveAr);
-    if (stillShort != null && !invokeState.trait && canPay(attackerActor).ok) {
-      const pick = lowDice(liveAr.roll);
+    // 1. Bond, if it lands it outright.
+    if (await tryBond(", so it lands")) return acted;
+
+    // 2. Trait — the gamble, only on dice actually worth rerolling.
+    const gapBefore = shortfall(liveAr());
+    if (gapBefore != null && !invokeState.trait && canPay(attackerActor).ok) {
+      const pick = lowDice(liveAr().roll);
       if (pick) {
         const ok = await worker.handleInvokeTrait({
-          director, ar: liveAr, root, invokeState, prePickedChoice: pick.choice,
+          director, ar: liveAr(), root, invokeState, prePickedChoice: pick.choice,
         });
         if (ok) {
-          SimMode.note("invoke", `${attackerActor.name} invokes Trait, rerolling ${pick.choice} — ${pick.desc}`);
+          const after = shortfall(liveAr());
+          SimMode.note(
+            "invoke",
+            `${attackerActor.name} invokes Trait, rerolling ${pick.choice} — ${pick.desc}`
+            + (after == null ? " → hits" : ` → still short by ${after}`)
+          );
           acted = true;
         }
       } else {
-        log(`[SIM] ${attackerActor.name} missed by ${stillShort} but both dice are already high — not rerolling`);
+        log(`[SIM] ${attackerActor.name} missed by ${gapBefore} but both dice are already high — not rerolling`);
       }
     }
+
+    // 3. The reroll improved things but didn't finish — is the bond in range NOW?
+    await tryBond(" after the reroll, so this finishes it");
 
     return acted;
   } catch (e) {
