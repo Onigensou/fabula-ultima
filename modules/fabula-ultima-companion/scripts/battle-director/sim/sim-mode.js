@@ -38,10 +38,10 @@ export const DEFAULT_SIM_CONFIG = {
   // to "skip" quietly disabled every beneficial reaction nobody had written up yet
   // (Potion Rain among them). Named policies always win over this.
   reactions: "apply",   // "skip" | "apply"
-  // Opportunities (crit follow-ups, either side). Auto-picking one well needs
-  // option semantics we don't model yet, so a sim declines them — symmetric,
-  // since both sides crit, but a real fidelity gap the report must own.
-  opportunities: "skip",   // "skip"
+  // Opportunities (crit follow-ups). The PARTY takes Advantage (+4 on the next check,
+  // which includes accuracy) on a random ally; enemies still decline. See
+  // opportunity-brain.js.
+  opportunities: "advantage",   // "advantage" | "skip"
   // The design budget. A fight that has not resolved EITHER WAY by this round is
   // reported as a design failure, not a stalemate: by now the party should have
   // won or lost. This is a verdict, not just a loop guard.
@@ -77,12 +77,16 @@ const _state = {
 //                         rolled). So the sim keeps every roll and drops only the
 //                         panel — no math is faked.
 //
-//   ONI.OpportunitySystem — the crit follow-up picker. There is no headless path:
-//                         picking WELL needs option semantics we don't model yet.
-//                         So a sim DECLINES opportunities and says so. Both sides
-//                         crit, so it is roughly symmetric — but it is a real
-//                         fidelity gap, and the report has to own it rather than
-//                         quietly bank the difference.
+//   ONI.OpportunitySystem — the crit follow-up picker. The PARTY now cashes its crits
+//                         in: always Advantage (+4 to the next check, which includes
+//                         accuracy), on a random ally. Enemies still decline. We skip
+//                         the effect's `pre` phase (the ally-targeting UI, which
+//                         nothing would answer) and call `post` directly with the pick
+//                         already made — so the AE that lands is the real one and only
+//                         the prompt is bypassed. The other options (Affliction,
+//                         Bonding…) need judgement we don't model, so they are simply
+//                         not chosen: value left on the table, which is the honest
+//                         direction to err. See opportunity-brain.js.
 //
 // These are installed on begin() and restored on end(), so nothing leaks into
 // real play. Shimming here keeps the injection surface at 4 old files: neither
@@ -111,12 +115,15 @@ function installShims() {
   if (opp?.offer) {
     ONI.OpportunitySystem = {
       ...opp,
-      offer: async ({ actorName } = {}) => {
-        SimMode.note("opportunity", `${actorName ?? "someone"} declined an Opportunity (sim does not pick these yet)`);
-        return { cancelled: true };
+      // The party now CASHES its crits (Advantage, +4, on a random ally) instead of
+      // declining them. Loaded lazily to keep sim-mode free of a cycle back through
+      // the brains. See opportunity-brain.js.
+      offer: async (args = {}) => {
+        const { simOpportunity } = await import("./opportunity-brain.js");
+        return simOpportunity(args);
       },
     };
-    log("[SIM] OpportunitySystem → auto-decline");
+    log("[SIM] OpportunitySystem → party takes Advantage");
   }
 
   _state.saved = saved;
