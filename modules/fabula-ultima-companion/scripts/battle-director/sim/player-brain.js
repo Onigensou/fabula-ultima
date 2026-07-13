@@ -538,14 +538,33 @@ function bestDamagingSpell(api, actorDoc, foes, maxMpCost) {
 // uuid — Counter Pass only permits Passes), and may lock the target (the enemy that
 // triggered it). Both are honoured.
 function bestFreeSkill(api, actorDoc, foes, { allowedSkillRefs = null, lockedTargetTokenUuid = null } = {}) {
-  const allow = Array.isArray(allowedSkillRefs) && allowedSkillRefs.length
-    ? new Set(allowedSkillRefs.map((r) => String(r).trim().toLowerCase()))
-    : null;
+  // The allow-list matches by NAME, by UUID, or by TAG ("tag:dance"). Zarg's Dance grant
+  // uses the tag form exclusively, and a name/uuid-only matcher found nothing — so he
+  // reported "nothing left that works", fell back to Guard, and Guard is not legal under
+  // a Skill-only grant, which is what put the menu on screen.
+  const refs = (Array.isArray(allowedSkillRefs) ? allowedSkillRefs : [])
+    .map((r) => String(r).trim().toLowerCase())
+    .filter(Boolean);
+
+  const wantTags = refs.filter((r) => r.startsWith("tag:")).map((r) => r.slice(4).trim());
+  const wantNames = new Set(refs.filter((r) => !r.startsWith("tag:")));
+  const hasAllowList = refs.length > 0;
+
+  const itemTags = (item) =>
+    String(item?.system?.props?.skill_tags ?? "")
+      .split(/[,\n]+/)
+      .map((t) => t.trim().toLowerCase())
+      .filter(Boolean);
 
   const permitted = (item) => {
-    if (!allow) return true;
-    return allow.has(String(item.name ?? "").trim().toLowerCase())
-        || allow.has(String(item.uuid ?? "").trim().toLowerCase());
+    if (!hasAllowList) return true;
+    if (wantNames.has(String(item.name ?? "").trim().toLowerCase())) return true;
+    if (wantNames.has(String(item.uuid ?? "").trim().toLowerCase())) return true;
+    if (wantTags.length) {
+      const tags = itemTags(item);
+      if (wantTags.some((t) => tags.includes(t))) return true;
+    }
+    return false;
   };
 
   const locked = lockedTargetTokenUuid

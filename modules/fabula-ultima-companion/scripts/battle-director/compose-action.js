@@ -33,6 +33,7 @@
 // See [[director-player-driven-input]] for the design.
 
 import { log, warn } from "./logger.js";
+import { SimMode } from "./sim/sim-mode.js";
 import { INTENTS } from "./intents.js";
 import { TurnUI } from "./turn-ui.js";
 import { requestTargeting } from "./target-picker.js";
@@ -107,6 +108,22 @@ export async function composeAction({
 }) {
   if (!snap) return { cancelled: true, reason: "no snap" };
   if (!token) return { cancelled: true, reason: "no token" };
+
+  // ── Sim harness: the Octopath menu must NEVER open ─────────────────────────
+  // Reaching composeAction during a sim means the brain declined to pre-compose this
+  // action — almost always a FREE ACTION it had nothing legal to spend on. Rendering
+  // the menu there parks the FSM on a click that nobody is going to make, and that is
+  // exactly the "I still have to press buttons" this harness exists to eliminate.
+  //
+  // A cancel is the honest answer: the free action is declined and the FSM moves on.
+  // On a normal turn this is unreachable — the brain always produces at least a Guard —
+  // so a cancel here can only ever forfeit something we had no legal use for anyway.
+  if (SimMode.active) {
+    log(`[SIM] composeAction reached for ${snap.name} — no legal pre-composed action, declining rather than prompting`);
+    SimMode.note("compose", `${snap.name}: nothing legal to declare — declining (no menu)`);
+    return { cancelled: true, reason: "sim: declined" };
+  }
+
   if (!cancelSentinel) {
     // Defensive: callers should always pass one, but supply a stub.
     cancelSentinel = new Promise(() => {});

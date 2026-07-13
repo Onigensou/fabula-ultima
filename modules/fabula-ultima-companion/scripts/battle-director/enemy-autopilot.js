@@ -454,6 +454,20 @@ async function simFallbackBundle(director, snap) {
     return bundle;
   }
 
+  // Terminal fallback. On a NORMAL turn, Guard always composes and always resolves.
+  //
+  // Under a FREE-ACTION grant it is a trap: the grant's enabledLabels do not include
+  // Guard (Dance permits only "Skill"), so declaring it is illegal, the FSM rejects it
+  // and re-opens the compose menu — which is precisely the menu a human then had to
+  // click. A free action we cannot answer should be DECLINED, not Guarded: returning
+  // null lets DECLARE fall through to composeAction, which in a sim cancels rather than
+  // prompting (see compose-action.js).
+  const grantLabels = (allowedLabels ?? []).map((l) => String(l).trim().toLowerCase());
+  if (grantLabels.length && !grantLabels.includes("guard")) {
+    SimMode.note("decide", `${snap?.name} → declines the free action (nothing legal to spend it on)`);
+    return null;
+  }
+
   SimMode.note("decide", `${snap?.name} → Guard (nothing left that works)`);
   return { command: "Guard", coverTokenUuid: null };
 }
