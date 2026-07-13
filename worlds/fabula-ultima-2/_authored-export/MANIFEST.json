@@ -237,6 +237,12 @@
         "parent": null
       },
       {
+        "id": "dxGOkDwFsUeDqyhc",
+        "name": "BD Sim",
+        "type": "Actor",
+        "parent": null
+      },
+      {
         "id": "3jJfILdP7Xihm6nW",
         "name": "Beginning Quest BGM",
         "type": "Playlist",
@@ -14603,6 +14609,22 @@
         "effects": 0
       },
       {
+        "id": "RSJgsnKyUcVICLpn",
+        "name": "Dark Soul",
+        "type": "character",
+        "items": [
+          {
+            "id": "WCLdX38KZdJiosAq",
+            "name": "Ethereal"
+          },
+          {
+            "id": "u8RRkOVtKngpFhMy",
+            "name": "Lingering Scorn"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "QWZQf8dHv15P9PrR",
         "name": "Darkblade",
         "type": "character",
@@ -16117,11 +16139,23 @@
         "items": [
           {
             "id": "LgcM4WQ3tsbvRMkG",
-            "name": "An Eye for an Eye"
+            "name": "Blood Weapon"
           },
           {
             "id": "bUu8h4C4kis0z3QL",
             "name": "Dark Bane"
+          },
+          {
+            "id": "hwRQZH4zxC0vB8wh",
+            "name": "Dark Missionary"
+          },
+          {
+            "id": "204P2m0SDx8ypBrJ",
+            "name": "Living Dead"
+          },
+          {
+            "id": "tkplYk5nVtf3nu66",
+            "name": "Living Shadow"
           },
           {
             "id": "S01TD1lW8JUnapHh",
@@ -16129,11 +16163,23 @@
           },
           {
             "id": "slPJ2kAvobcND9QL",
-            "name": "The Blackest Night"
+            "name": "Shadow Wall"
+          },
+          {
+            "id": "kFPcc3xDPvPXIGum",
+            "name": "Shadowbringers"
+          },
+          {
+            "id": "TNYXBbOxhHCXZZ5S",
+            "name": "Souleater"
+          },
+          {
+            "id": "jFDqULDfaJIyCqp0",
+            "name": "Torcleaver"
           },
           {
             "id": "xc1wLkLVukf7ouTD",
-            "name": "Zero Power: Shadowbringers"
+            "name": "Zero Power: The Blackest Night"
           },
           {
             "id": "vu1WOzGmFq5DxXNY",

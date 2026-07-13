@@ -1,0 +1,19 @@
+{
+  "_id": "dxGOkDwFsUeDqyhc",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783965466170,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "BD Sim",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}
