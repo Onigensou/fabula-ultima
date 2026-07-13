@@ -139,7 +139,7 @@ async function openPanel() {
 
       <label class="fud-sim-check">
         <input type="checkbox" class="fud-sim-react" ${saved.reactions === "skip" ? "" : "checked"}>
-        <span>Party uses its ask-mode reactions</span>
+        <span>Card reactions with no policy: use them</span>
       </label>
 
       <div class="fud-sim-actions">

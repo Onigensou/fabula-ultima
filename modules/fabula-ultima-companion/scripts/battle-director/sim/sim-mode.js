@@ -34,10 +34,10 @@ export const PACE = {
 
 export const DEFAULT_SIM_CONFIG = {
   pace: "fast",
-  // Fallback for ask-mode reactions that have NO named policy in reaction-brain.js.
-  // "apply" is the honest default: a real party uses its reactions, and defaulting
-  // to "skip" quietly disabled every beneficial reaction nobody had written up yet
-  // (Potion Rain among them). Named policies always win over this.
+  // Fallback for ACTION-CARD ask-mode pills that have NO named policy in
+  // reaction-brain.js. Named policies always win over this, and STANDALONE reactions
+  // (turn_end free actions, conflict_start passives) ignore it entirely — they are
+  // always taken. See installShims().
   reactions: "apply",   // "skip" | "apply"
   // Opportunities (crit follow-ups). The PARTY takes Advantage (+4 on the next check,
   // which includes accuracy) on a random ally; enemies still decline. See
@@ -157,10 +157,23 @@ export const SimMode = {
     _state.focus = null;
     _state.active = true;
 
-    // Reactions ride the pre-existing harness override rather than a new
-    // injection — `dispatchReactionMenu` already checks this global and
-    // auto-accepts/declines askable candidates without spawning a menu.
-    globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ = _state.config.reactions === "apply";
+    // STANDALONE reactions (turn_start / turn_end / conflict_start / round_*) ride the
+    // pre-existing harness override: `dispatchReactionMenu` checks this global and
+    // auto-fires askable candidates without spawning a menu.
+    //
+    // This is ALWAYS on in a sim, and that is a deliberate change. It used to be tied
+    // to the run's `reactions` setting, which meant a stale panel config reading "skip"
+    // silently threw away every standalone reaction the party had — Acceleration's
+    // free-action charge and Zarg's Dance among them — while the CARD pills kept
+    // working, because those go through named policies in reaction-brain.js and never
+    // consulted this flag. So the party looked like it was reacting normally and was
+    // quietly missing a whole class of its kit. It cost several rounds of debugging to
+    // find, and the failure mode is invisible by construction: harnessSkipped candidates
+    // are dropped with no menu, no fire and no log.
+    //
+    // A real party takes its free actions. There is no version of "playing well" that
+    // declines them, so the sim does not model one.
+    globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ = true;
     installShims();
 
     log(`[SIM] begin — pace=${_state.config.pace} reactions=${_state.config.reactions} expected=${_state.config.expectedRounds} max=${_state.config.maxRounds}`);
