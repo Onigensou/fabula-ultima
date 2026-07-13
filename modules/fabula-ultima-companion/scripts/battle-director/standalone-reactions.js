@@ -473,6 +473,20 @@ export async function dispatchReactionMenu({
     else if (harnessChoice === false) harnessSkipped.push(c);
     else askable.push(c);
   }
+  // Sim diagnostic — WHERE did each candidate end up, and did the fire loop run?
+  // Acceleration reports available:true in both passes yet never fires, so the answer
+  // is in this split, not in the availability check.
+  if (SimMode.active) {
+    Journal.write("candidate-split", `${reactor?.name} [${trigger}]`, {
+      phase: phase ?? "single",
+      willFire: phase !== "ask",
+      autoFire: autoFire.map((c) => c.carrierName),
+      askable: askable.map((c) => c.carrierName),
+      harnessSkipped: harnessSkipped.map((c) => c.carrierName),
+      harnessFlag: globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ ?? null,
+    });
+  }
+
   // Phase: "ask" suppresses auto-fire (force/on already ran in the forced
   // pass); "forced"/null run it.
   for (const c of (phase === "ask" ? [] : autoFire)) {
@@ -482,8 +496,20 @@ export async function dispatchReactionMenu({
       });
       fired.push(c);
       log(`reaction[${trigger}]: auto-fired "${c.carrierName}" for ${reactor.name}`);
+      if (SimMode.active) {
+        const { freeActionQueue } = await import("./free-action-queue.js");
+        Journal.write("reaction-fired", `${reactor.name}: ${c.carrierName} [${trigger}]`, {
+          phase: phase ?? "single",
+          freeActionsQueued: freeActionQueue.size(),
+        });
+      }
     } catch (e) {
       warn(`reaction[${trigger}]: auto-fire threw for ${c.carrierName}`, e);
+      if (SimMode.active) {
+        Journal.write("reaction-fire-failed", `${reactor.name}: ${c.carrierName} [${trigger}]`, {
+          error: String(e?.message ?? e),
+        });
+      }
     }
     if (scope && scene) {
       await appendFired(scene, scope, {
