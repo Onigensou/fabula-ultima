@@ -140,6 +140,14 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   "round_end",
   "turn_start",
   "turn_end",
+  // Equip lifecycle — fire (subject = the wearer) when a gear item's isEquipped
+  // flips, emitted by a standing updateItem hook. Let a gear `_skill` arm/clean up
+  // its own state declaratively (Apple o' Archer: arm the ranged-taunt aura on
+  // equip, remove it on unequip). The unequip trigger reaches the just-removed
+  // item's `_skill` via a containerReactionInPlay bypass (the equip gate is already
+  // false by the time it fires — mirrors the used-weapon bypass).
+  "creature_equips_item",
+  "creature_unequips_item",
 ]);
 
 export const LEGACY_BRIDGED_TRIGGERS = new Set([
@@ -172,6 +180,8 @@ export const STANDALONE_TRIGGERS = new Set([
   "round_end",
   "turn_start",
   "turn_end",
+  "creature_equips_item",
+  "creature_unequips_item",
 ]);
 
 // ── Phase classification — single source of truth for UI routing ────
@@ -244,6 +254,8 @@ export const TRIGGER_PHASE = Object.freeze({
   "round_end":                  "standalone",
   "turn_start":                 "standalone",
   "turn_end":                   "standalone",
+  "creature_equips_item":       "standalone",
+  "creature_unequips_item":     "standalone",
 });
 
 // Convenience accessors derived from TRIGGER_PHASE.

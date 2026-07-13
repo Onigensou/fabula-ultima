@@ -1382,6 +1382,13 @@ function containerReactionInPlay(item, casterActor, payload) {
     const reactorIsActor = !!actingUuid && casterActor?.uuid === actingUuid;
     if (usedUuid && reactorIsActor && container.uuid === usedUuid) return true;
   }
+  // The item being UNEQUIPPED counts as "in play" for its OWN unequip trigger,
+  // even though isEquipped is already false by the time the hook fires — so a gear
+  // `_skill` can clean up on removal (Apple o' Archer: remove its ranged-taunt aura).
+  // Scoped to the just-removed item via payload.unequippedItemUuid, mirroring the
+  // used-weapon bypass above.
+  if (payload?.trigger === "creature_unequips_item" && payload?.unequippedItemUuid
+      && container.uuid === payload.unequippedItemUuid) return true;
   return false;
 }
 

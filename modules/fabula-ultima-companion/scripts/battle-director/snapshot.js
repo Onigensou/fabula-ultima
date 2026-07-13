@@ -785,6 +785,16 @@ export function getTargetSideForcedInclude(actor) {
   const effects = actor?.effects?.contents ?? actor?.effects ?? [];
   for (const ae of effects) {
     if (ae?.disabled) continue;
+    // Source-equipped safety-net: an aura stamped with a source gear item
+    // (flags[NS].sourceItemId) is only live while that item is equipped. Guards
+    // against a stale aura left behind when the gear was unequipped OUT of combat,
+    // where the unequip reaction can't fire (no director) — so the taunt vanishes
+    // the moment the item comes off, reaction or not.
+    const srcId = ae?.flags?.[FLAG_NS]?.sourceItemId;
+    if (srcId) {
+      const src = actor?.items?.get?.(srcId);
+      if (src && src.system?.props?.isEquipped !== true) continue;
+    }
     const ranges = new Set();
     for (const ch of (ae?.changes ?? [])) {
       if (ch?.key !== "must_be_targeted_by") continue;
@@ -1486,17 +1496,30 @@ export function applyAttackRangeGate(eligible, weapon) {
 // reachable enemy target. `attackerActor` (optional) applies the Super-Armor bypass —
 // a dominating attacker (ignore_action_gating) ignores the pin, mirroring
 // getMustTargetReasons. Returns [{ tokenUuid, actorUuid, name, reason }].
+// Normalize an attack/aura range token to canonical form. The weapon sheet stores
+// "Range"/"Ranged"/"Melee" (mixed casing + the "range"≡"ranged" shorthand), while
+// auras author "ranged"/"melee"/"any" — a naive lowercase compare mismatches
+// "range" vs "ranged". Mirror the substring convention ATTACK_IS_RANGED uses so all
+// spellings line up.
+function canonRange(r) {
+  const s = String(r ?? "").trim().toLowerCase();
+  if (!s) return "";
+  if (s.includes("rang")) return "ranged";
+  if (s.includes("mele")) return "melee";
+  return s; // "any" or a custom token
+}
+
 export function collectForcedIncludeTargets(eligible, weaponRange, attackerActor = null) {
   if (!Array.isArray(eligible) || !eligible.length) return [];
   if (attackerActor && hasIgnoreActionGating(attackerActor)) return [];
-  const range = String(weaponRange ?? "").trim().toLowerCase();
+  const range = canonRange(weaponRange);
   if (!range) return [];
   const out = [];
   for (const e of eligible) {
     const fi = Array.isArray(e.forcedInclude) ? e.forcedInclude : [];
     let reason = null;
     for (const b of fi) {
-      const ranges = Array.isArray(b.ranges) ? b.ranges : [];
+      const ranges = (Array.isArray(b.ranges) ? b.ranges : []).map(canonRange);
       if (ranges.includes("any") || ranges.includes(range)) { reason = b.aeName; break; }
     }
     if (reason) out.push({ tokenUuid: e.tokenUuid, actorUuid: e.actorUuid, name: e.name, reason });

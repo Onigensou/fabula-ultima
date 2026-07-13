@@ -1303,6 +1303,45 @@ Hooks.once("ready", () => {
     } catch (e) { warn("deleteToken prune threw", e); }
   });
 
+  // Equip lifecycle → gear `_skill` reactions. When a gear shell's `isEquipped`
+  // flips during a live battle, dispatch creature_equips_item / creature_unequips_item
+  // to the wearer so a gear `_skill` can arm / clean up its own state declaratively
+  // (Apple o' Archer: arm the ranged-taunt aura on equip, remove it on unequip).
+  // Force-only (no menu). GM-only + in-combat — out of combat, battle-start arming +
+  // the taunt reader's source-equipped safety-net cover it. The unequip trigger
+  // reaches the just-removed item's `_skill` via the containerReactionInPlay bypass
+  // (payload.unequippedItemUuid), since isEquipped is already false by now.
+  Hooks.on("updateItem", async (item, changes) => {
+    try {
+      if (!game.user?.isGM) return;
+      const eqChange = changes?.system?.props?.isEquipped;
+      if (eqChange === undefined) return;
+      const GEAR = new Set(["accessory", "armor", "weapon", "shield"]);
+      if (!GEAR.has(String(item.system?.props?.item_type ?? "").toLowerCase())) return;
+      const actor = item.parent;
+      if (!actor || actor.documentName !== "Actor") return;
+      const director = _instance;
+      const dc = director?.dCombat;
+      if (!dc?.started || dc.ended) return; // in-combat only
+      const isCombatant = (dc.combatants ?? []).some(
+        (c) => c?.actorDoc?.uuid === actor.uuid || c?.actorUuid === actor.uuid,
+      );
+      if (!isCombatant) return;
+      const token = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid) ?? null;
+      if (!token) return;
+      const trigger = eqChange ? "creature_equips_item" : "creature_unequips_item";
+      const { dispatchReactionMenu } = await import("./standalone-reactions.js?cb=" + Date.now());
+      await dispatchReactionMenu({
+        director, reactor: actor, token, trigger,
+        payload: {
+          trigger, unequippedItemUuid: item.uuid, equippedItemUuid: item.uuid,
+          sourceActorUuid: null, round: dc.round ?? null,
+        },
+        scope: null, scene: null, phase: "forced",
+      });
+    } catch (e) { warn("equip-lifecycle reaction dispatch threw", e); }
+  });
+
   // Async-load freeActions onto the api surface (require isn't available
   // in ESM; the eager-loaded value above is a stub fallback). The async
   // path is the real wire.
