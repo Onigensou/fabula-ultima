@@ -28,6 +28,8 @@
 // the stage-2 ally-indicator broadcast is a future slice.
 
 import { log, warn } from "./logger.js";
+import { SimMode } from "./sim/sim-mode.js";
+import { Journal } from "./sim/sim-journal.js";
 import { INTENTS } from "./intents.js";
 
 // ── Idempotency persistence (A) ─────────────────────────────────────
@@ -401,6 +403,22 @@ export async function dispatchReactionMenu({
   if (skipSet.size) {
     candidates = candidates.filter((c) => !skipSet.has(`${c.rowKey}:${c.carrierUuid}`));
   }
+  // Sim diagnostic. A candidate that fails its CONDITION is dropped silently a few
+  // lines below (by design — surfacing it to a player is noise), which means an AI that
+  // "just never uses" a reaction gives you nothing to go on. Acceleration's free-action
+  // charge was vanishing exactly this way. Costs nothing outside a sim run.
+  if (SimMode.active) {
+    for (const c of candidates) {
+      Journal.write("candidate", `${reactor?.name}: ${c.carrierName} [${trigger}]`, {
+        phase: phase ?? "single",
+        mode: c.mode,
+        available: c.available !== false,
+        unavailableKind: c.unavailableKind ?? null,
+        unavailableReason: c.unavailableReason ?? null,
+      });
+    }
+  }
+
   if (!candidates?.length) return { cancelled: false, fired: [] };
 
   // Auto-skip ONLY when every candidate has already been used in this
