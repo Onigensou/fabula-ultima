@@ -39,10 +39,22 @@ function sideOf(actorUuid) {
   return c?.side ?? null;
 }
 
-// A living party token on the canvas, at random (user's spec: "target a random ally").
+// A summoned unit — disposable by design. Buffing one is a wasted Opportunity: the +4
+// goes onto a body the party is happy to lose, and quite possibly one that will vanish
+// before it ever makes another check.
+function isSummon(actorDoc) {
+  const v = actorDoc?.system?.props?.isSummon;
+  return v === true || v === "true" || v === 1 || v === "1";
+}
+
+// A living REAL party member, at random (user's spec: "target a random ally").
+// Summons are excluded — Advantage was landing on Keren's phantasm, which is exactly the
+// sort of thing that looks like it worked and quietly does nothing.
 function randomAllyToken() {
   const dc = director()?.dCombat;
-  const allies = (dc?.combatants ?? []).filter((c) => c.side === "party" && !c.isDefeatedLive?.());
+  const allies = (dc?.combatants ?? []).filter(
+    (c) => c.side === "party" && !c.isDefeatedLive?.() && !isSummon(c.actorDoc)
+  );
   if (!allies.length) return null;
 
   const shuffled = allies.slice().sort(() => Math.random() - 0.5);

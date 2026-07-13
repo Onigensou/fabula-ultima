@@ -20,6 +20,7 @@
 // trying to stop trusting. See [[project_battle_director]].
 
 import { log, warn } from "../logger.js";
+import { Journal } from "./sim-journal.js";
 
 // ── Pacing ─────────────────────────────────────────────────────────────────
 // watch — readable in real time; you spectate the fight like a replay.
@@ -275,11 +276,17 @@ export const SimMode = {
     return this.pace().pip;
   },
 
-  // Append to the run transcript. The recorder (Phase 1) reads this; for the
-  // spike it doubles as the console trace.
+  // Append to the run transcript AND the on-disk journal.
+  //
+  // The journal previously only recorded reactions, because it was wired into the
+  // reaction brain by hand and nowhere else — so an entire run's worth of TURN
+  // decisions was invisible, and "is she even casting Acceleration?" was unanswerable
+  // from the log. Forwarding every note here means anything a brain bothers to say is
+  // captured, and there is no second place to remember to wire up.
   note(kind, text, data = null) {
     if (!_state.active) return;
     _state.transcript.push({ t: Date.now() - _state.startedAt, kind, text, data });
+    try { Journal.write(kind, text, data ? { data } : {}); } catch {}
     log(`[SIM] ${kind}: ${text}`);
   },
 };
