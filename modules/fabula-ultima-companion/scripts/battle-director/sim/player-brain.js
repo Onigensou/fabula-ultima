@@ -29,6 +29,7 @@ import { SimMode } from "./sim-mode.js";
 import { Journal } from "./sim-journal.js";
 import { canAffordItem } from "./cost.js";
 import { protectExhausted } from "./reaction-brain.js";
+import { resolveAttackerWeapon, resolveVirtualAttacks, resolvePrimaryAttackWeapon } from "../snapshot.js";
 
 import { ActionReaderCore as AR } from "../../action-reader/actionReader-core.js";
 import { resolveActionReaderPerformer } from "../../action-reader/actionReader-resolvePerformer.js";
@@ -75,12 +76,43 @@ const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; 
 const hpOf = (dc) => num(dc?.actorDoc?.system?.props?.current_hp) ?? Infinity;
 const tokenUuidOf = (dc) => dc?.tokenUuid ?? dc?.tokenDoc?.uuid ?? null;
 
-// CSB stores the equipped hand as a bare name; empty/SHI means nothing usable
-// (see readWeapon in snapshot.js). Better to Guard than to emit an Attack the
-// TARGET stage cannot resolve a weapon for.
-function hasMainWeapon(actorDoc) {
-  const raw = String(actorDoc?.system?.props?.main_hand ?? "").trim();
-  return raw !== "" && raw.toUpperCase() !== "SHI";
+// ── How does this character actually SWING? ─────────────────────────────────
+// Not everyone attacks with a weapon in their main hand.
+//
+// Blanche has Dual Shieldbearer: two shields, no weapon, and the engine grants her a
+// VIRTUAL attack ("Twin Shields", Brawling) instead. The skill itself has no
+// automation — it is pure descriptive text — so nothing about her sheet says "main
+// hand" is unusable. `main_hand` reads "+4 Titanic Shield", which is a perfectly
+// non-empty string, so the old check happily emitted attackMode "main"... and TARGET
+// then found no weapon behind it and aborted the action with "no weapon detected".
+// She was throwing away her turn every time she tried to attack.
+//
+// So ask the ENGINE what she can swing with, using the same resolvers TARGET uses,
+// rather than guessing from a prop:
+//     main weapon      → "main"
+//     off-hand only    → "off"
+//     virtual attack   → "virtual:N"   (Blanche's Twin Shields)
+//     nothing at all   → null → Guard
+function resolveAttackMode(actorDoc) {
+  try {
+    if (resolveAttackerWeapon(actorDoc, { which: "main" })) return "main";
+    if (resolveAttackerWeapon(actorDoc, { which: "off" })) return "off";
+    const virtual = resolveVirtualAttacks(actorDoc);
+    if (virtual?.length) return "virtual:0";
+  } catch (e) {
+    warn(`[SIM] resolveAttackMode threw for ${actorDoc?.name}`, e);
+  }
+  return null;
+}
+
+// The element the swing will actually carry — read off the resolved weapon (virtual
+// included), not the weapon1_damagetype prop, which is meaningless for a virtual attack.
+function attackElement(actorDoc) {
+  try {
+    const w = resolvePrimaryAttackWeapon(actorDoc);
+    const el = w?.damageType ?? actorDoc?.system?.props?.weapon1_damagetype;
+    return String(el ?? "").trim().toLowerCase();
+  } catch { return ""; }
 }
 
 // ── Is this an AUGMENT rather than an action? ────────────────────────────────
@@ -208,7 +240,7 @@ const AFFINITY_SCORE = { VU: 3, NA: 1, RS: 0.4, IM: 0, AB: -5 };
 // swinging at it would feed an absorb — then peel off), and any remaining swings go
 // to the next best foes rather than being wasted.
 function bestAttackTargets(actorDoc, foes, focusUuid = null, cap = 1) {
-  const element = String(actorDoc?.system?.props?.weapon1_damagetype ?? "").trim().toLowerCase();
+  const element = attackElement(actorDoc);
 
   const scored = foes.map((dc) => {
     // getAffinityForType takes the ACTOR (it resolves the map itself) and
@@ -241,7 +273,7 @@ function bestAttackTargets(actorDoc, foes, focusUuid = null, cap = 1) {
 // A PC weapon attack is `attackMode: "main"` with NO item uuid — TARGET derives
 // the weapon from the equipped hand. (An NPC attack is the other shape entirely:
 // attackMode "npc" + npcAttackItemUuid. Don't cross the two.)
-const attackBundle = (targetUuids) => ({ command: "Attack", attackMode: "main", targetUuids });
+const attackBundle = (targetUuids, attackMode = "main") => ({ command: "Attack", attackMode, targetUuids });
 
 function castBundle(item, targetUuids) {
   const st = String(item?.system?.props?.skill_type ?? "").trim().toLowerCase();
@@ -601,15 +633,18 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), al
   // 3. Basic attack, aimed with its head up. Also the landing spot for a granted
   // free Attack.
   if (!permits("Attack")) return null;
-  if (!hasMainWeapon(actorDoc)) {
-    log(`[SIM] player-brain: ${snap?.name} has no main-hand weapon`);
-    return null;
-  }
   if (!foes.length) return null;
 
+  const mode = resolveAttackMode(actorDoc);
+  if (!mode) {
+    log(`[SIM] player-brain: ${snap?.name} has nothing to attack with`);
+    return null;
+  }
+
   // A weapon that reaches two creatures should HIT two creatures. Anything less is
-  // throwing away half the swing.
-  const cap = weaponTargetCap(actorDoc);
+  // throwing away half the swing. (Only a real main weapon carries a reach — a virtual
+  // attack is single-target.)
+  const cap = mode === "main" ? weaponTargetCap(actorDoc) : 1;
   const picks = bestAttackTargets(actorDoc, foes, SimMode.focus(), cap);
   const uuids = picks.map((p) => tokenUuidOf(p.dc)).filter(Boolean);
   if (!uuids.length) return null;
@@ -617,7 +652,8 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), al
   SimMode.note(
     "attack",
     `${snap?.name} swings at ${picks.map((p) => `${p.dc.name} [${p.aff}]`).join(" + ")}`
+    + (mode.startsWith("virtual") ? " (virtual attack)" : "")
     + (cap > 1 ? ` (weapon reaches ${cap})` : "")
   );
-  return attackBundle(uuids);
+  return attackBundle(uuids, mode);
 }

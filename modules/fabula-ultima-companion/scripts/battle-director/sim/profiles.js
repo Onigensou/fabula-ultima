@@ -246,9 +246,18 @@ export function refreshFocus(api) {
   const foes = api.foes();
   if (!foes.length) { api.setFocus(null); return null; }
 
+  const exploitableF = (f) => ELEMENTS.some((el) => api.affinityOf(f, el) === "VU");
+
   const hurt = foes
     .filter((f) => pct(propNum(f.actorDoc, "current_hp"), propNum(f.actorDoc, "max_hp")) <= TUNING.focusLowHpFraction)
-    .sort((a, b) => propNum(a.actorDoc, "current_hp") - propNum(b.actorDoc, "current_hp"));
+    // Among the wounded, finish the one the party can actually hurt fastest. Sorting
+    // purely by HP had the party chasing the Centaur (immune to nothing, weak to
+    // nothing) while an ice-vulnerable Inferex sat beside it taking half damage from
+    // everyone. A weakness is close to a damage multiplier; it outranks a few HP.
+    .sort((a, b) =>
+      (exploitableF(b) ? 1 : 0) - (exploitableF(a) ? 1 : 0)
+      || propNum(a.actorDoc, "current_hp") - propNum(b.actorDoc, "current_hp")
+    );
 
   if (hurt.length) {
     const kill = hurt[0];
@@ -294,6 +303,14 @@ export function focusFor(api, element = null) {
 
   const aff = api.affinityOf(focus, element);
   if (aff === "AB" || aff === "IM") return null;   // don't feed it — pick your own
+
+  // Don't throw away a weakness to obey the call. Hina was casting Iceberg at the
+  // Centaur (ice: NA) while an ice-VULNERABLE Inferex stood right there — because the
+  // party had called the Centaur and she followed it. Focus fire is about not
+  // SPREADING damage; it is not a reason to hit for half. If somebody else is
+  // vulnerable to what she is throwing, she throws it at THEM.
+  if (aff !== "VU" && foes.some((f) => api.affinityOf(f, element) === "VU")) return null;
+
   return focus;
 }
 
