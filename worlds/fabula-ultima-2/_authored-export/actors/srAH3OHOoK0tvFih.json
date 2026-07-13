@@ -4324,6 +4324,7 @@
           "effect_table": {},
           "heroic_requirement": "",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/fey_illumination2.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -4370,7 +4371,7 @@
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
       "name": "Dragontrap Bow (Passive)",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -4391,6 +4392,7 @@
               "target_ref": "trigger_subject"
             }
           },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "isCheck": false,
           "name": "Dragontrap Bow (Passive)",
           "on_activate_effect_ref": "",

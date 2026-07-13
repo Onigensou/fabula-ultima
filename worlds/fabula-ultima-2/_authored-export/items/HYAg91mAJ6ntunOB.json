@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderSkill3.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GoldenMace.gif",
   "name": "Mammonite",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -36,6 +36,7 @@
       "description": "<p>Perform a <strong>Free Attack </strong>with a weapon you have equipped, you may spend up to <strong>250 Zenit, </strong>this attack deals <strong>X bonus damage, </strong>X is equal to the Zenit Spent to perform this skill divided by 10 <em>(Round Up)</em></p>",
       "duration": "Instantaneous",
       "heroic_requirement": "",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GoldenMace.gif",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

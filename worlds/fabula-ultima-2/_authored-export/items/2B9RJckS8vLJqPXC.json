@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/infuriate.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2700.gif",
   "name": "Provoke",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -37,6 +37,7 @@
       "duration": "Instantaneous",
       "heroic_requirement": "",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2700.gif",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

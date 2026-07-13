@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/enhanced_arcane_crest.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Spear/Icon-Dreadreaper%2527s_Scythe.webp",
   "name": "Soul Eater",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -36,6 +36,7 @@
       "description": "<p>When you reduce a creature to 0 HP, you gain <strong>【SL】</strong>MP</p>",
       "duration": "Instantaneous",
       "heroic_requirement": "",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Spear/Icon-Dreadreaper%2527s_Scythe.webp",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

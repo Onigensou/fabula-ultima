@@ -275,7 +275,9 @@
       "name": "Snared",
       "origin": null,
       "sort": 0,
-      "statuses": [],
+      "statuses": [
+        "5K3lbMsHORKZCJWQ"
+      ],
       "system": {
         "tags": [
           "debuff"
@@ -3632,7 +3634,7 @@
       "_id": "wWX3DvOWaeMB6Uji",
       "_stats": {
         "compendiumSource": null,
-        "coreVersion": "12.331",
+        "coreVersion": "12.343",
         "createdTime": 1770018028331,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
@@ -3679,7 +3681,9 @@
       "name": "Flying",
       "origin": null,
       "sort": 0,
-      "statuses": [],
+      "statuses": [
+        "CVxHWmDb0gQsob1q"
+      ],
       "system": {
         "tags": []
       },

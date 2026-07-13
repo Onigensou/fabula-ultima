@@ -37,7 +37,7 @@
           "_id": "Bf0BV2kycoBSO9mB",
           "_stats": {
             "compendiumSource": null,
-            "coreVersion": "12.331",
+            "coreVersion": "12.343",
             "createdTime": 1772223214742,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
@@ -87,7 +87,9 @@
           "name": "Flying",
           "origin": null,
           "sort": 0,
-          "statuses": [],
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
           "system": {
             "tags": []
           },
@@ -442,7 +444,7 @@
           "_id": "tbkWuXlI0tXkIJJ2",
           "_stats": {
             "compendiumSource": null,
-            "coreVersion": "12.331",
+            "coreVersion": "12.343",
             "createdTime": 1769400466422,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
@@ -492,7 +494,9 @@
           "name": "Flying",
           "origin": null,
           "sort": 0,
-          "statuses": [],
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
           "system": {
             "tags": []
           },
@@ -730,7 +734,7 @@
           "_id": "JbJqDAIuPoVjksyX",
           "_stats": {
             "compendiumSource": null,
-            "coreVersion": "12.331",
+            "coreVersion": "12.343",
             "createdTime": 1771677641832,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
@@ -780,7 +784,9 @@
           "name": "Flying",
           "origin": null,
           "sort": 0,
-          "statuses": [],
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
           "system": {
             "tags": []
           },

@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/ElswordSkill7.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
   "name": "Withstand",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -37,6 +37,7 @@
       "duration": "",
       "heroic_requirement": "",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,

@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/Primal_Ruination.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1377.gif",
   "name": "Cleaving Strike",
   "ownership": {
     "2vy7wrEUqBy0kzsU": 3,
@@ -60,6 +60,7 @@
       "duration": "Instantaneous",
       "heroic_requirement": "",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1377.gif",
       "isCheck": true,
       "isFacet": false,
       "isHeroic": false,

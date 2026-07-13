@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
   "name": "Glowstick (Passive)",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -63,6 +63,7 @@
           "performer_ref": "glowstick_ally"
         }
       },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
       "isCheck": false,
       "isReaction": true,
       "level": "1",

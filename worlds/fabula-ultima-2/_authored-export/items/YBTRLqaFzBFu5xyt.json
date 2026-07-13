@@ -14,7 +14,7 @@
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+  "img": "icons/equipment/chest/robe-layered-blue.webp",
   "name": "Protect",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -37,6 +37,7 @@
       "duration": "Instantaneous",
       "heroic_requirement": "",
       "ignore_hr": false,
+      "img": "icons/equipment/chest/robe-layered-blue.webp",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
