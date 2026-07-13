@@ -121,6 +121,12 @@ async function openPanel() {
       <label class="fud-sim-lbl">Phoenix Feathers <em>(revives the party walks in with)</em></label>
       <input class="fud-sim-feathers" type="number" min="0" max="9" value="${Number(saved.phoenixFeathers) || 0}">
 
+      <label class="fud-sim-lbl">Zero Power / Fabula Points <em>(what they walk in with)</em></label>
+      <div class="fud-sim-addrow">
+        <input class="fud-sim-zp" type="number" min="0" max="10" value="${Number(saved.startingZp) || 0}" title="Zero Power each PC starts with (6 = charged)">
+        <input class="fud-sim-fp" type="number" min="0" max="10" value="${saved.fabulaPoints ?? 3}" title="Fabula Points each PC starts with">
+      </div>
+
       <label class="fud-sim-lbl">Expected rounds <em>(unresolved by here = badly designed)</em></label>
       <input class="fud-sim-exp" type="number" min="2" max="40" value="${Number(saved.expectedRounds) || 7}">
 
@@ -196,16 +202,18 @@ async function openPanel() {
     const party = [...root.querySelectorAll(".fud-sim-pcs input:checked")].map((i) => i.value);
     const expectedRounds = Math.max(2, Number(root.querySelector(".fud-sim-exp").value) || 7);
     const phoenixFeathers = Math.max(0, Number(root.querySelector(".fud-sim-feathers").value) || 0);
+    const startingZp = Math.max(0, Number(root.querySelector(".fud-sim-zp").value) || 0);
+    const fabulaPoints = Math.max(0, Number(root.querySelector(".fud-sim-fp").value) || 0);
     const pace = root.querySelector(".fud-sim-pace").value;
     const reactions = root.querySelector(".fud-sim-react").checked ? "apply" : "skip";
 
     if (!group.length) { setStatus("Add at least one enemy to the encounter.", "err"); return; }
     if (!party.length) { setStatus("Pick at least one party member.", "err"); return; }
 
-    saveConfig({ enemies: group, party, expectedRounds, phoenixFeathers, pace, reactions });
+    saveConfig({ enemies: group, party, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, pace, reactions });
     setStatus("Running… the fight plays itself. Nothing here needs clicking.", "busy");
 
-    const res = await simRun({ enemies: group, party, pace, reactions, expectedRounds, phoenixFeathers });
+    const res = await simRun({ enemies: group, party, pace, reactions, expectedRounds, phoenixFeathers, startingZp, fabulaPoints });
     if (!res) { setStatus("Run failed — see the console.", "err"); return; }
 
     const pct = res.partyHpRemaining == null ? "?" : `${Math.round(res.partyHpRemaining * 100)}%`;

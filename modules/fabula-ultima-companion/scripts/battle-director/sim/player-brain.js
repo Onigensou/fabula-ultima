@@ -95,35 +95,45 @@ function isAugment(item) {
 //
 // Matching on behaviour means Elixir, Grape Juice, Apple Juice and anything added
 // later are all found automatically, with no name list to fall out of date.
-function itemRestores(item, resource) {
+// HOW MUCH does it restore? 0 = it doesn't. Used to pick the BIGGEST heal rather
+// than the cheapest one — Zarg was reaching for a 30 HP Apple Juice when a 50 HP
+// Elixir was one IP away, which wastes the turn as surely as not healing at all.
+function itemRestoreAmount(item, resource) {
   const p = item?.system?.props ?? {};
   const want = String(resource).toLowerCase();
 
   const et = p.effect_table;
   const rows = Array.isArray(et) ? et : Object.values(et ?? {});
-  const granted = rows.some((r) =>
-    String(r?.effect_kind ?? "").toLowerCase() === "grant"
-    && String(r?.grant_resource ?? "").toLowerCase() === want
-    && Number(r?.grant_amount ?? 0) > 0
-  );
-  if (granted) return true;
+  const granted = rows
+    .filter((r) =>
+      String(r?.effect_kind ?? "").toLowerCase() === "grant"
+      && String(r?.grant_resource ?? "").toLowerCase() === want
+    )
+    .reduce((max, r) => Math.max(max, Number(r?.grant_amount ?? 0) || 0), 0);
+  if (granted > 0) return granted;
 
+  // The other authoring style: type_damage names the pool, damage_bonus is the size.
   const td = String(p.type_damage ?? "").trim().toLowerCase();
-  if (want === "mp") return td === "mp";
-  if (want === "hp") return td === "hp" || td === "healing" || td === "heal";
-  return false;
+  const matches = want === "mp" ? td === "mp" : (td === "hp" || td === "healing" || td === "heal");
+  if (!matches) return 0;
+  return Number(p.damage_bonus ?? 0) || 0;
 }
 
-// A CONSUMABLE the actor is carrying (classic JRPG style: stock-limited, and using
-// it spends one). Distinct from a CREATABLE, which anyone can conjure by paying IP.
+const itemRestores = (item, resource) => itemRestoreAmount(item, resource) > 0;
+
+// The BIGGEST-healing consumable the actor is carrying (stock-limited; using it
+// spends one). Distinct from a CREATABLE, which anyone can conjure by paying IP.
 function findConsumableRestoring(actorDoc, resource) {
+  let best = null;
+  let bestAmt = 0;
   for (const item of actorDoc?.items ?? []) {
     const p = item?.system?.props ?? {};
     if (String(p.item_type ?? "").toLowerCase() !== "consumable") continue;
     if (Number(p.item_quantity ?? p.quantity ?? 0) <= 0) continue;
-    if (itemRestores(item, resource)) return item;
+    const amt = itemRestoreAmount(item, resource);
+    if (amt > bestAmt) { best = item; bestAmt = amt; }
   }
-  return null;
+  return best;
 }
 
 // ── How many creatures can this weapon hit? ──────────────────────────────────
@@ -252,6 +262,15 @@ function makePolicyApi(director, snap, self, creatables = []) {
       return self?.actorDoc?.items?.find?.((i) => String(i.name).trim().toLowerCase() === want) ?? null;
     },
 
+    // This character's Zero Power. Identified by the item's own isZeroPower flag
+    // (with a name fallback), so it works for anyone without a per-character list.
+    findZeroPower() {
+      return self?.actorDoc?.items?.find?.((i) => {
+        const p = i?.system?.props ?? {};
+        return p.isZeroPower === true || /^zero power\b/i.test(String(i.name ?? ""));
+      }) ?? null;
+    },
+
     castOn(item, targetDcs) {
       const uuids = targetDcs.map(tokenUuidOf).filter(Boolean);
       if (!item || !uuids.length) return null;
@@ -290,7 +309,12 @@ function makePolicyApi(director, snap, self, creatables = []) {
       const ip = Number(self?.actorDoc?.system?.props?.current_ip ?? 0) || 0;
       return creatables
         .filter((c) => c.ipCost <= ip && itemRestores(c.doc, resource))
-        .sort((a, b) => a.ipCost - b.ipCost)[0] ?? null;
+        // BIGGEST heal first, not cheapest. A turn spent restoring 30 HP when 50 was
+        // affordable is a turn half-wasted; IP is only a tiebreak.
+        .sort((a, b) =>
+          itemRestoreAmount(b.doc, resource) - itemRestoreAmount(a.doc, resource)
+          || a.ipCost - b.ipCost
+        )[0] ?? null;
     },
 
     // USE: spend one from the pack. Stock-limited, classic JRPG style.

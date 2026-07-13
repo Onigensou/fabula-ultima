@@ -93,6 +93,10 @@ export const TUNING = {
   // it's a scenario variable, not a character trait.
   phoenixFeather: /phoenix\s*feather/i,
 
+  // ── Zero Power ────────────────────────────────────────────────────────────
+  zeroPowerCost: 6,             // the standard price of a limit break
+  zeroPowerHealFraction: 0.55,  // Blanche fires hers when someone is this hurt
+
   // ── Focus fire ────────────────────────────────────────────────────────────
   // A wounded enemy is a magnet: below this fraction of max HP the party drops
   // whatever it was doing and finishes them.
@@ -254,11 +258,23 @@ export function refreshFocus(api) {
   const current = foes.find((f) => f.tokenUuid === api.focusUuid());
   if (current) return current;
 
-  const call = foes
+  // A fresh call. Prefer an enemy with a weakness the party can actually exploit —
+  // between Hina's ice and the element-swapping augments, a VULNERABILITY is close to
+  // a damage multiplier, and the party knows what it's fighting. Only when nobody
+  // stands out (all weak, or none weak) does it fall back to "whoever dies soonest".
+  const exploitable = foes.filter((f) => ELEMENTS.some((el) => api.affinityOf(f, el) === "VU"));
+  const pool = (exploitable.length && exploitable.length < foes.length) ? exploitable : foes;
+
+  const call = pool
     .slice()
     .sort((a, b) => propNum(a.actorDoc, "current_hp") - propNum(b.actorDoc, "current_hp"))[0];
   api.setFocus(call.tokenUuid);
-  SimMode.note("focus", `party calls the target: ${call.name}`);
+
+  const weak = ELEMENTS.filter((el) => api.affinityOf(call, el) === "VU");
+  SimMode.note(
+    "focus",
+    `party calls the target: ${call.name}${weak.length ? ` — weak to ${weak.join("/")}` : ""}`
+  );
   return call;
 }
 
@@ -274,6 +290,52 @@ export function focusFor(api, element = null) {
   const aff = api.affinityOf(focus, element);
   if (aff === "AB" || aff === "IM") return null;   // don't feed it — pick your own
   return focus;
+}
+
+// ── Zero Power ──────────────────────────────────────────────────────────────
+// A limit break the party was building and never spending. Each one is a normal
+// Active skill priced in Zero Power, so the cost machinery already handles it (see
+// cost.js — the current pool is `zero_power_value`, NOT `current_zp`); all that was
+// missing was anyone deciding to press the button.
+//
+// The rules are the user's, and they are per-character because the powers are:
+//   Blanche — a party heal. Only when somebody actually needs it.
+//   Hina    — a gimmick (re-roll opportunities). Never worth an AI's turn.
+//   Keren   — needs a phantasm on the field to be worth anything.
+//   Zarg    — Meteor Shower (poison, all enemies). Fire it unless something is
+//             immune to poison, in which case the volley is partly wasted.
+function zeroPowerFor(name) {
+  return (api) => {
+    const zp = propNum(api.self, "zero_power_value");
+    if (!(zp >= TUNING.zeroPowerCost)) return null;
+
+    const skill = api.findZeroPower();
+    if (!skill) return null;
+
+    switch (name) {
+      case "Blanche": {
+        const worst = weakestAlly(api);
+        if (!worst || worst.frac > TUNING.zeroPowerHealFraction) return null;
+        return api.castOn(skill, api.allies());
+      }
+      case "Keren": {
+        const hasPhantasm = api.allies().some((dc) => /phantasm|numen/i.test(dc.name ?? ""));
+        if (!hasPhantasm) return null;
+        return api.castOn(skill, api.foes());
+      }
+      case "Zarg": {
+        const foes = api.foes();
+        if (!foes.length) return null;
+        // Poison, hitting everything. If anyone shrugs it off entirely the blast is
+        // half-wasted — hold it for a field it can actually clear.
+        const immune = foes.some((f) => ["IM", "AB"].includes(api.affinityOf(f, "poison")));
+        if (immune) return null;
+        return api.castOn(skill, foes);
+      }
+      default:
+        return null;   // Hina: never. It's a gimmick, not a nuke.
+    }
+  };
 }
 
 // ── Revival (party-wide, runs before everything) ────────────────────────────
@@ -450,6 +512,9 @@ function hinaOffense(api) {
 }
 
 function hinaPolicy(api) {
+  // NOTE: no Zero Power. Hers is a gimmick (re-roll opportunities), not a nuke, and
+  // spending a turn on it is worse than casting ice. User's explicit call.
+
   // 1. Heal — last resort, fully gated.
   const heal = hinaHealPolicy(api);
   if (heal) return heal;
@@ -529,7 +594,7 @@ export const PROFILES = {
   // was. (isAugment() in player-brain.js now blocks that structurally.)
   Zarg: {
     label: "Zarg — archer; his kit rides on the shot, so he just shoots",
-    policy: null,
+    policy: zeroPowerFor("Zarg"),
     rows: [],
   },
 
@@ -552,6 +617,9 @@ export const PROFILES = {
   Keren: {
     label: "Keren — alternates Create ↔ Detonate Phantasm",
     policy: (api) => {
+      const zero = zeroPowerFor("Keren")(api);
+      if (zero) return zero;
+
       const heal = healPolicy({ spellName: "Life Transference", threshold: 0.3, mpCost: 20 })(api);
       if (heal) return heal;
 
@@ -579,7 +647,7 @@ export const PROFILES = {
   // she leans on Heal + her weapon. Guarding is handled by the terminal fallback.
   Blanche: {
     label: "Blanche — tank, healing support",
-    policy: healPolicy({ spellName: "Heal", threshold: 0.5, mpCost: 10 }),
+    policy: (api) => zeroPowerFor("Blanche")(api) ?? healPolicy({ spellName: "Heal", threshold: 0.5, mpCost: 10 })(api),
     rows: [
       row(0, { name: "Muleta", cond: "always", prio: 12, focus: "lowest_hp" }),
     ],

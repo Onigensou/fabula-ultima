@@ -113,7 +113,7 @@ async function stockFeathers(clones, count) {
 }
 
 // ── Party cloning ───────────────────────────────────────────────────────────
-async function cloneParty(actorRefs) {
+async function cloneParty(actorRefs, _startZp = 0, _startFp = 3) {
   const folder = await ensureScratchFolder();
   const clones = [];
   for (const ref of actorRefs) {
@@ -140,7 +140,11 @@ async function cloneParty(actorRefs) {
       if (p.max_hp != null) p.current_hp = p.max_hp;
       if (p.max_mp != null) p.current_mp = p.max_mp;
       if (p.max_ip != null) p.current_ip = p.max_ip;
-      p.zero_power_value = 0;
+      // Zero Power and Fabula Points are SCENARIO variables — how charged the party is
+      // walking in — so they come from the run config, not from whatever the real PC
+      // happens to be sitting on.
+      p.zero_power_value = _startZp;
+      p.fabula_point = _startFp;
     }
 
     const doc = await Actor.create(data);
@@ -247,6 +251,8 @@ export async function run({
   expectedRounds = 7,
   maxRounds = 30,
   phoenixFeathers = 0,   // how many the party walks in carrying
+  startingZp = 0,        // Zero Power each PC walks in with (6 = a charged limit break)
+  fabulaPoints = 3,      // Fabula Points each PC walks in with (invokes spend these)
 } = {}) {
   const a = api();
   if (!a?.start) { ui.notifications?.error("[SIM] Battle Director API not ready."); return null; }
@@ -293,7 +299,7 @@ export async function run({
   try {
     SimMode.begin({ pace, reactions, expectedRounds, maxRounds });
 
-    clones = await cloneParty(refs);
+    clones = await cloneParty(refs, startingZp, fabulaPoints);
     if (!clones.length) throw new Error("no party clones were created");
     await stockFeathers(clones, phoenixFeathers);
 
@@ -372,7 +378,7 @@ export async function run({
       durationSec: Math.round((Date.now() - started) / 1000),
       combatants: final?.combatants ?? [],
       transcript: [...SimMode.transcript],
-      config: { pace, reactions, expectedRounds, maxRounds },
+      config: { pace, reactions, expectedRounds, maxRounds, phoenixFeathers, startingZp, fabulaPoints },
     };
 
     log(`[SIM] RESULT — ${outcome} in ${result.rounds} round(s); party at ${hpLeft == null ? "?" : Math.round(hpLeft * 100)}% HP (${result.durationSec}s wall)`);

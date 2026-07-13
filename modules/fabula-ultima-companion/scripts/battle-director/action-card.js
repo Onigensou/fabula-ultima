@@ -37,6 +37,7 @@ import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { resolvesVsMagicDefense } from "./snapshot.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
+import { simInvoke } from "./sim/invoke-brain.js";
 
 // Resolve which active non-GM user owns the given actor doc. Returns
 // userId or null. Deterministic on multi-owner actors (sort by id).
@@ -6620,6 +6621,20 @@ export async function postActionCard({ director, kind, payload }) {
         // never reacts. Decisions go through recordPillDecision, the SAME path a
         // human click takes, so the mutation pipeline (redirect subjects, costs,
         // re-render) runs for real.
+        // INVOKE first — a Fabula Point can turn this miss into a hit, and it has to
+        // happen BEFORE the reaction pills are decided so the damage riders see the
+        // final hit/miss state rather than the pre-invoke one.
+        try {
+          const attackerActor = director.dCombat?.combatants
+            ?.find((c) => c.tokenUuid === cardAr?.attacker?.tokenUuid)?.actorDoc
+            ?? (cardAr?.attackerActorRef ? await fromUuid(cardAr.attackerActorRef).catch(() => null) : null);
+
+          const invoked = await simInvoke({ director, ar: cardAr, root, invokeState, attackerActor });
+          if (invoked) cardAr = invokeState.lastAr ?? cardAr;
+        } catch (e) {
+          warn("[SIM] invoke brain threw — carrying on", e);
+        }
+
         try {
           // Safety net for element menus: any augment that lets the caster pick a
           // damage type opens one, and an unhinted picker takes option ONE. That is
