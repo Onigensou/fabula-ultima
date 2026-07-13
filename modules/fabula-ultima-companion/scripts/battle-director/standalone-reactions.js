@@ -28,6 +28,8 @@
 // the stage-2 ally-indicator broadcast is a future slice.
 
 import { log, warn } from "./logger.js";
+import { SimMode } from "./sim/sim-mode.js";
+import { Journal } from "./sim/sim-journal.js";
 import { INTENTS } from "./intents.js";
 
 // ── Idempotency persistence (A) ─────────────────────────────────────
@@ -401,6 +403,22 @@ export async function dispatchReactionMenu({
   if (skipSet.size) {
     candidates = candidates.filter((c) => !skipSet.has(`${c.rowKey}:${c.carrierUuid}`));
   }
+  // Sim diagnostic. A candidate that fails its CONDITION is dropped silently a few
+  // lines below (by design — surfacing it to a player is noise), which means an AI that
+  // "just never uses" a reaction gives you nothing to go on. Acceleration's free-action
+  // charge was vanishing exactly this way. Costs nothing outside a sim run.
+  if (SimMode.active) {
+    for (const c of candidates) {
+      Journal.write("candidate", `${reactor?.name}: ${c.carrierName} [${trigger}]`, {
+        phase: phase ?? "single",
+        mode: c.mode,
+        available: c.available !== false,
+        unavailableKind: c.unavailableKind ?? null,
+        unavailableReason: c.unavailableReason ?? null,
+      });
+    }
+  }
+
   if (!candidates?.length) return { cancelled: false, fired: [] };
 
   // Auto-skip ONLY when every candidate has already been used in this
@@ -455,6 +473,20 @@ export async function dispatchReactionMenu({
     else if (harnessChoice === false) harnessSkipped.push(c);
     else askable.push(c);
   }
+  // Sim diagnostic — WHERE did each candidate end up, and did the fire loop run?
+  // Acceleration reports available:true in both passes yet never fires, so the answer
+  // is in this split, not in the availability check.
+  if (SimMode.active) {
+    Journal.write("candidate-split", `${reactor?.name} [${trigger}]`, {
+      phase: phase ?? "single",
+      willFire: phase !== "ask",
+      autoFire: autoFire.map((c) => c.carrierName),
+      askable: askable.map((c) => c.carrierName),
+      harnessSkipped: harnessSkipped.map((c) => c.carrierName),
+      harnessFlag: globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ ?? null,
+    });
+  }
+
   // Phase: "ask" suppresses auto-fire (force/on already ran in the forced
   // pass); "forced"/null run it.
   for (const c of (phase === "ask" ? [] : autoFire)) {
@@ -464,8 +496,20 @@ export async function dispatchReactionMenu({
       });
       fired.push(c);
       log(`reaction[${trigger}]: auto-fired "${c.carrierName}" for ${reactor.name}`);
+      if (SimMode.active) {
+        const { freeActionQueue } = await import("./free-action-queue.js");
+        Journal.write("reaction-fired", `${reactor.name}: ${c.carrierName} [${trigger}]`, {
+          phase: phase ?? "single",
+          freeActionsQueued: freeActionQueue.size(),
+        });
+      }
     } catch (e) {
       warn(`reaction[${trigger}]: auto-fire threw for ${c.carrierName}`, e);
+      if (SimMode.active) {
+        Journal.write("reaction-fire-failed", `${reactor.name}: ${c.carrierName} [${trigger}]`, {
+          error: String(e?.message ?? e),
+        });
+      }
     }
     if (scope && scene) {
       await appendFired(scene, scope, {

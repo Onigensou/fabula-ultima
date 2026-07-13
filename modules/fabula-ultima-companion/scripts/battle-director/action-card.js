@@ -35,6 +35,9 @@ import { lookupTerm } from "./keyword-registry.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { resolvesVsMagicDefense } from "./snapshot.js";
+import { SimMode } from "./sim/sim-mode.js";
+import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
+import { simInvoke } from "./sim/invoke-brain.js";
 
 // Resolve which active non-GM user owns the given actor doc. Returns
 // userId or null. Deterministic on multi-owner actors (sort by id).
@@ -6600,6 +6603,71 @@ export async function postActionCard({ director, kind, payload }) {
     };
 
     _overlays.set(director.combatId, { cleanup, root });
+
+    // ── Sim harness: nobody is at the keyboard ───────────────────────────────
+    // The card is fully built and wired at this point, so we resolve it through
+    // the SAME `finish("confirm")` path a human click takes — the reaction-pill
+    // snapshot, the mirror-close broadcast and the despawn all run identically.
+    // Undecided ask-mode pills snapshot as "skip" (snapshotReactionDecisions'
+    // default), so this cannot deadlock on a pending pill; whether ask-mode
+    // reactions fire at all is the run's `reactions` policy, applied upstream via
+    // __FU_HARNESS_ACCEPT_PASSIVES__. Dwell is the run's pace (0 on batch).
+    if (SimMode.active) {
+      (async () => {
+        // Decide the ask-mode reactions BEFORE confirming. This is the difference
+        // between a party that defends itself and one that doesn't: Protect,
+        // Prophetic Defender and Keren's damage riders are all ask-mode pills, and
+        // an undecided pill snapshots as "skip" — so without this the party simply
+        // never reacts. Decisions go through recordPillDecision, the SAME path a
+        // human click takes, so the mutation pipeline (redirect subjects, costs,
+        // re-render) runs for real.
+        // INVOKE first — a Fabula Point can turn this miss into a hit, and it has to
+        // happen BEFORE the reaction pills are decided so the damage riders see the
+        // final hit/miss state rather than the pre-invoke one.
+        try {
+          const attackerActor = director.dCombat?.combatants
+            ?.find((c) => c.tokenUuid === cardAr?.attacker?.tokenUuid)?.actorDoc
+            ?? (cardAr?.attackerActorRef ? await fromUuid(cardAr.attackerActorRef).catch(() => null) : null);
+
+          const invoked = await simInvoke({ director, ar: cardAr, root, invokeState, attackerActor });
+          if (invoked) cardAr = invokeState.lastAr ?? cardAr;
+        } catch (e) {
+          warn("[SIM] invoke brain threw — carrying on", e);
+        }
+
+        try {
+          // Safety net for element menus: any augment that lets the caster pick a
+          // damage type opens one, and an unhinted picker takes option ONE. That is
+          // how Keren fired Fire into an Inferex that absorbs it. Named policies
+          // hint the right element; this covers the augments nobody has written a
+          // policy for yet.
+          SimMode.setElementFallback(bestElementForCard(cardAr, director));
+
+          const decisions = decideReactions({
+            prePassives,
+            ar: cardAr,
+            director,
+            decided: new Set(reactionDecisionMap.keys()),
+          });
+          for (const d of decisions) {
+            if (d.hint) SimMode.setPickHint(d.hint);   // WHICH ally to cover
+            await recordPillDecision(d.rowKey, d.carrierUuid, d.decision);
+          }
+        } catch (e) {
+          warn("[SIM] reaction brain threw — confirming without reactions", e);
+        } finally {
+          SimMode.setElementFallback(null);   // card-scoped; don't leak to the next
+        }
+
+        // Dwell AFTER the pills resolve, so at "watch" pace you can actually read
+        // the card in the state it will resolve in (reactions applied).
+        const dwell = SimMode.cardDwellMs();
+        if (dwell > 0) await new Promise((r) => setTimeout(r, dwell));
+
+        try { finish("confirm"); }
+        catch (e) { warn("[SIM] auto-confirm threw — card may hang", e); }
+      })();
+    }
   });
 }
 
