@@ -27,7 +27,7 @@ import { log, warn } from "../logger.js";
 import { profileFor, mpItemPolicy, hpItemPolicy, revivePolicy, refreshFocus, TUNING } from "./profiles.js";
 import { SimMode } from "./sim-mode.js";
 import { Journal } from "./sim-journal.js";
-import { canAffordItem } from "./cost.js";
+import { canAffordItem, parseCost } from "./cost.js";
 import { protectExhausted } from "./reaction-brain.js";
 import { resolveAttackerWeapon, resolveVirtualAttacks, resolvePrimaryAttackWeapon } from "../snapshot.js";
 
@@ -482,6 +482,53 @@ function makePolicyApi(director, snap, self, creatables = []) {
   };
 }
 
+// ── Spending a FREE ACTION (Acceleration's charges) ─────────────────────────
+// Acceleration hands its holder an AE with 2 charges and a `turn_end` reaction that
+// grants a free action — "Attack,Spell", with the spell capped at max_mp_cost 10.
+//
+// The brain used to run its whole normal policy chain here, which is wrong twice: it
+// would happily pick a heal or a utility spell (wasting a free damage action), and it
+// had no idea about the MP CAP, so it would offer Iceberg (20 MP) into a 10 MP window,
+// have the declaration bounce, and eventually Guard away the free turn entirely.
+//
+// A free action is a gift. Spend it on damage: the best damaging spell that fits under
+// the cap, and failing that, a swing. (User's rule.)
+function bestDamagingSpell(api, actorDoc, foes, maxMpCost) {
+  const cap = Number.isFinite(Number(maxMpCost)) ? Number(maxMpCost) : Infinity;
+
+  const candidates = [];
+  for (const item of actorDoc?.items ?? []) {
+    const p = item?.system?.props ?? {};
+    if (String(p.skill_type ?? "").trim().toLowerCase() !== "spell") continue;
+
+    // Must actually deal damage — a heal is not what a free action is for.
+    const el = String(p.type_damage ?? "").trim().toLowerCase();
+    if (!el || ["healing", "heal", "hp", "mp"].includes(el)) continue;
+
+    const cost = parseCost(p.cost);
+    if (!cost.free && cost.resource === "mp" && cost.amount > cap) continue;   // over the cap
+    if (!canAffordItem(actorDoc, item).ok) continue;
+
+    // Who does this land hardest on? A vulnerable target is worth more than a big spell.
+    const vu = foes.find((f) => api.affinityOf(f, el) === "VU") ?? null;
+    const usable = foes.filter((f) => !["IM", "AB"].includes(api.affinityOf(f, el)));
+    if (!usable.length) continue;
+
+    candidates.push({
+      item,
+      element: el,
+      target: vu ?? usable.find((f) => f.tokenUuid === api.focusUuid()) ?? usable[0],
+      vu: vu ? 1 : 0,
+      power: cost.amount || 0,   // a pricier spell is a bigger spell, near enough
+    });
+  }
+
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => (b.vu - a.vu) || (b.power - a.power));
+  const best = candidates[0];
+  return api.castOn(best.item, [best.target]);
+}
+
 // ── The rotation: profile rows through the real ActionReader ─────────────────
 async function runRotation({ token, combat, combatant, actorDoc, rows, blocked }) {
   const rowName = (r) => String(r?.data?.action_pattern_name ?? "").trim();
@@ -554,7 +601,7 @@ async function runRotation({ token, combat, combatant, actorDoc, rows, blocked }
 // Returns a compose bundle, or null to let the caller fall back to Guard.
 // `blocked` = action names that already bounced this turn (SimMode's re-declare
 // guard) — skip them at every layer, or we just re-offer the thing that failed.
-export async function decidePlayerAction(director, snap, blocked = new Set(), allowedLabels = null) {
+export async function decidePlayerAction(director, snap, blocked = new Set(), allowedLabels = null, maxMpCost = null) {
   const self = selfCombatant(director, snap);
   const actorDoc = self?.actorDoc ?? null;
   if (!actorDoc) return null;
@@ -582,6 +629,22 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), al
   // Agree on a target before anyone swings. Re-checked every turn so a wounded
   // enemy pulls the whole party onto them mid-round, exactly as a table would.
   refreshFocus(policyApi);
+
+  // A FREE ACTION (Acceleration) is a gift, and it is not the moment to heal or buff —
+  // it is an extra chance to hurt something. Prefer the best damaging spell that fits
+  // under the grant's MP cap; failing that, swing. This short-circuits the whole normal
+  // chain, which would otherwise spend the free turn on a utility cast, or offer a
+  // 20 MP Iceberg into a 10 MP window and bounce it away to nothing.
+  if (allow) {
+    if (permits("Spell")) {
+      const spell = bestDamagingSpell(policyApi, actorDoc, foes, maxMpCost);
+      if (spell && !isBlocked(spell._name)) {
+        SimMode.note("free-action", `${snap?.name} spends it on ${spell._name}`);
+        return spell;
+      }
+    }
+    // …otherwise fall through to the basic attack below.
+  }
 
   // The party's item economy, ahead of everybody's own plan. Each of these abstains
   // on its own when it isn't the right call, so ordering them first doesn't make

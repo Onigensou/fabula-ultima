@@ -393,14 +393,23 @@ async function simFallbackBundle(director, snap) {
   // Octopath menu would enforce. Pass it down or the brain re-picks a Skill and
   // the granted action is thrown away.
   let allowedLabels = null;
+  let maxMpCost = null;
   let freeTag = "";
   try {
     const { freeActions } = await import("./free-actions.js");
     const grant = freeActions.get?.(snap?.actorId);
     if (grant?.enabledLabels?.length) {
       allowedLabels = grant.enabledLabels;
+      // Acceleration's grant caps the spell it will pay for (max_mp_cost 10). Without
+      // this the brain offers a 20 MP Iceberg into a 10 MP window, the declaration
+      // bounces, and the free action is Guarded away to nothing.
+      maxMpCost = grant.maxMpCost ?? null;
       freeTag = `:free:${grant.sourceLabel ?? "?"}`;
-      SimMode.note("free-action", `${snap?.name} has a free action from ${grant.sourceLabel ?? "?"} (${allowedLabels.join(", ")})`);
+      SimMode.note(
+        "free-action",
+        `${snap?.name} has a free action from ${grant.sourceLabel ?? "?"} (${allowedLabels.join(", ")}`
+        + `${maxMpCost != null ? `, ≤${maxMpCost} MP` : ""})`
+      );
     }
   } catch (e) { warn("[SIM] free-action lookup threw", e); }
 
@@ -413,7 +422,7 @@ async function simFallbackBundle(director, snap) {
   for (let attempt = 0; attempt < 4; attempt++) {
     let bundle = null;
     try {
-      bundle = await decidePlayerAction(director, snap, SimMode.blockedForTurn(turnKey), allowedLabels);
+      bundle = await decidePlayerAction(director, snap, SimMode.blockedForTurn(turnKey), allowedLabels, maxMpCost);
     } catch (e) {
       warn("[SIM] player brain threw", e);
       break;
