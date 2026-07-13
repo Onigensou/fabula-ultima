@@ -764,6 +764,44 @@ export function getTargetSideBlocks(actor) {
   return out;
 }
 
+// AE-driven FORCED-INCLUSION taunt — the INVERSE of getTargetSideBlocks. Walks a
+// potential target's active effects, collects every change row whose
+// `key === "must_be_targeted_by"`, and returns the attack ranges for which the
+// bearer FORCES an attacker to include it as one of the targets (the FU "must
+// include X as one of your targets" effect — Apple o' Archer's taunt). Unlike
+// `cannot_be_targeted_by` (which EXCLUDES the bearer from the pool), this makes
+// the bearer a MANDATORY member of any matching attack's target set while leaving
+// spare multi-target slots free for other creatures. Range grammar
+// ("melee"/"ranged"/"any"), comma-multi, and AE-name-as-reason mirror
+// getTargetSideBlocks exactly, so its sibling collectForcedIncludeTargets can
+// reuse the same weapon-range match + greyed-overlay reason label.
+//
+// Returns Array<{ aeName: string, ranges: Set<string> }> — empty when none apply.
+// NOTE: read on the TAUNTER side; the ATTACKER-side Super-Armor bypass
+// (ignore_action_gating) is applied in collectForcedIncludeTargets, which has the
+// acting creature, mirroring how getMustTargetReasons early-outs for the attacker.
+export function getTargetSideForcedInclude(actor) {
+  const out = [];
+  const effects = actor?.effects?.contents ?? actor?.effects ?? [];
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    const ranges = new Set();
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "must_be_targeted_by") continue;
+      const raw = String(ch.value ?? "").trim().toLowerCase();
+      if (!raw) continue;
+      for (const r of raw.split(/[\s,]+/)) {
+        const trimmed = r.trim();
+        if (trimmed) ranges.add(trimmed);
+      }
+    }
+    if (ranges.size) {
+      out.push({ aeName: String(ae.name ?? "").trim() || "Must be targeted", ranges });
+    }
+  }
+  return out;
+}
+
 // ── Flying targeting rule (RAW Core: a Flying creature can't be reached by melee) ──
 // Flying is a CONFIG status effect (not a hub AE), so we read the STATUS directly
 // — kept deliberately separate from the generic cannot_be_targeted_by block system
@@ -1296,6 +1334,12 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
         Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
       )),
+      // "Must include X" taunt (must_be_targeted_by) — distinct from targetingBlocks
+      // ("cannot target"): read by collectForcedIncludeTargets to PIN this candidate
+      // as a mandatory target, never to exclude anyone.
+      forcedInclude: Object.freeze(getTargetSideForcedInclude(actor).map((b) =>
+        Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
+      )),
     }));
   }
   // Attach excluded list as a property BEFORE freezing — Object.freeze
@@ -1338,6 +1382,9 @@ export function snapshotTargetForToken(tokenLike) {
     conditions: Object.freeze(readActiveConditions(actor)),
     isFlying: targetIsFlying(actor),
     targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
+      Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
+    )),
+    forcedInclude: Object.freeze(getTargetSideForcedInclude(actor).map((b) =>
       Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
     )),
   });
@@ -1413,6 +1460,47 @@ export function applyAttackRangeGate(eligible, weapon) {
   // token is excluded, only that it is.
   const priorExcluded = Array.isArray(eligible.excluded) ? eligible.excluded : [];
   out.excluded = Object.freeze([...priorExcluded, ...newlyExcluded]);
+  return out;
+}
+
+// ── Forced-inclusion taunt collector ("must include X as one of your targets") ──
+// THIRD and distinct member of the targeting-constraint family. Keep the three
+// SEPARATE — they are different questions with different enforcement:
+//   1. "Cannot target X"   → cannot_be_targeted_by / cannot_target_uuids (Cover,
+//      Vanish). REMOVES X from the pool (getTargetSideBlocks + applyAttackRangeGate,
+//      or getCannotTargetReasons). X becomes unpickable.
+//   2. "Can only target X" → must_target_applier (Provoked). RESTRICTS the whole
+//      pool to X — every NON-X target is excluded (getMustTargetReasons, enforced in
+//      the eligibility loops). Exclusive.
+//   3. "Must include X"    → must_be_targeted_by (THIS). REQUIRES X to be one of the
+//      targets but leaves the other slots free — a multi-target attack still hits
+//      others. It does NOT exclude anyone; it only pins X. Enforced as a picker /
+//      autopilot MANDATORY target, never as a pool exclusion.
+// Because (3) is inclusion-only, it must never route through the exclusion channels
+// above — that would wrongly delete the spare-slot targets. This collector returns
+// the pin set; callers pass it as `mandatoryTokenUuids` to the picker (or seed the
+// autopilot's chosen list).
+//
+// Operates on an attacker's ALREADY range-gated ENEMY pool (post applyAttackRangeGate),
+// so scoping is automatic: a taunter only pins attackers for whom it is a live,
+// reachable enemy target. `attackerActor` (optional) applies the Super-Armor bypass —
+// a dominating attacker (ignore_action_gating) ignores the pin, mirroring
+// getMustTargetReasons. Returns [{ tokenUuid, actorUuid, name, reason }].
+export function collectForcedIncludeTargets(eligible, weaponRange, attackerActor = null) {
+  if (!Array.isArray(eligible) || !eligible.length) return [];
+  if (attackerActor && hasIgnoreActionGating(attackerActor)) return [];
+  const range = String(weaponRange ?? "").trim().toLowerCase();
+  if (!range) return [];
+  const out = [];
+  for (const e of eligible) {
+    const fi = Array.isArray(e.forcedInclude) ? e.forcedInclude : [];
+    let reason = null;
+    for (const b of fi) {
+      const ranges = Array.isArray(b.ranges) ? b.ranges : [];
+      if (ranges.includes("any") || ranges.includes(range)) { reason = b.aeName; break; }
+    }
+    if (reason) out.push({ tokenUuid: e.tokenUuid, actorUuid: e.actorUuid, name: e.name, reason });
+  }
   return out;
 }
 
@@ -1555,6 +1643,12 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       conditions: Object.freeze(readActiveConditions(actor)),
       isFlying: targetIsFlying(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
+        Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
+      )),
+      // "Must include X" taunt (must_be_targeted_by) — distinct from targetingBlocks
+      // ("cannot target"): read by collectForcedIncludeTargets to PIN this candidate
+      // as a mandatory target, never to exclude anyone.
+      forcedInclude: Object.freeze(getTargetSideForcedInclude(actor).map((b) =>
         Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
       )),
     }));

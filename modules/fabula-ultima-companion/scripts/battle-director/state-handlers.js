@@ -12,7 +12,7 @@ import { log, warn, err } from "./logger.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -1056,6 +1056,9 @@ async function resolveAction(director, ar, opts = {}) {
           hitTargets: struckTokenUuids,
           hitTargetTokenUuids: struckTokenUuids,
           allTargetsHit: struckTokenUuids.length >= allTargetUuids.length && allTargetUuids.length > 0,
+          // Stronger than allTargetsHit: every target took > 0 damage (excludes
+          // immune / absorb / reduced-to-0 hits). Gates ALL_TARGETS_DAMAGED.
+          allTargetsDamaged: hits.filter((r) => Number(r.damage) > 0).length >= allTargetUuids.length && allTargetUuids.length > 0,
           sourceActorUuid: ar.attackerActorRef,
           sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
           actionIntent: ar.actionIntent,
@@ -2748,6 +2751,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     excludeSelf                       = false,
     usingPreComposed                  = false,
     composedTargetUuids               = null,
+    attackRange                       = null,
     titleText:          forcedTitle   = null,
     cancelLabel                       = "Cancel",
     secondaryAction                   = null,
@@ -2953,6 +2957,29 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     };
   }
   const targetUuids = [...result.tokenUuids];
+  // ── "Must include X" taunt (must_be_targeted_by) — authoritative + count-aware ──
+  // Single GM-side choke point for EVERY performer path that reaches here:
+  //   • player / GM manual pre-compose → the picker already pinned the taunter, so
+  //     this is a no-op;
+  //   • autopilot / any pre-composed bundle that bypassed the picker → the taunter
+  //     is re-added here.
+  // This is the INCLUSION case (distinct from "can only target"/Provoked, which
+  // restricts the whole pool): we PIN the taunter WITHOUT dropping the other picks,
+  // evicting one non-mandatory slot only when the target count is already full.
+  if (!isSelf && pickerMode !== "random" && pickerMode !== "all") {
+    const range = String(attackRange ?? skill?.system?.props?.skill_range ?? "any")
+      .trim().toLowerCase() || "any";
+    const mandatory = collectForcedIncludeTargets(eligibleForPicker, range, attackerActor)
+      .map((e) => e.tokenUuid);
+    for (const m of mandatory) {
+      if (targetUuids.includes(m)) continue;
+      if (targetUuids.length < count) { targetUuids.push(m); continue; }
+      // Full — evict the first NON-mandatory pick to make room; if every slot is
+      // already held by a mandatory target, allow a slight overflow rather than drop one.
+      const evictIdx = targetUuids.findIndex((u) => !mandatory.includes(u));
+      if (evictIdx >= 0) targetUuids[evictIdx] = m; else targetUuids.push(m);
+    }
+  }
   const targets     = eligibleForPicker.filter((e) => targetUuids.includes(e.tokenUuid));
   return {
     ok: true, cancelled: false,
@@ -3770,6 +3797,7 @@ const Target = {
       eligiblePostFilter: (pool) => applyAttackRangeGate(pool, currentWeapon),
       usingPreComposed:   !isMultiPassReEntry,
       composedTargetUuids: director.ctx.pickedTargetUuids,
+      attackRange:        currentWeapon?.range ?? null,
       titleText:          attackTitle,
       cancelLabel:        attackCancelLabel,
     });

@@ -303,7 +303,14 @@ function clearTargetingDim(dimState) {
 //   { ok: true, skipped: true, secondaryValue: value, tokenUuids: [] }.
 //   Used for Guard's "Skip Cover" — confirms an "I'm proceeding without
 //   making a target selection" path distinct from cancel.
-export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null, lockSelection = false, remote = null } = {}) {
+export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null, lockSelection = false, mandatoryTokenUuids = [], remote = null } = {}) {
+  // `mandatoryTokenUuids`: tokens that MUST be among the final selection — the
+  // "must include X as one of your targets" taunt (Apple o' Archer via
+  // must_be_targeted_by). Distinct from `lockSelection` (which locks ALL targets)
+  // and from a pool exclusion: these are pre-selected + non-deselectable, but the
+  // player still freely picks the REMAINING slots. Confirm is blocked until every
+  // mandatory token is selected. Only tokens actually present in `eligible` are
+  // enforced (a mandatory target outside the range-gated pool can't deadlock).
   // `lockSelection`: render the picker with EVERY eligible target pre-selected
   // and locked (ring clicks ignored), so an "obvious" target (self / all) still
   // gets a confirm/cancel pass instead of auto-resolving. Confirm is always
@@ -350,7 +357,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         kind: REMOTE_PICK_KINDS.TARGET,
         externalCancel,
         onTimeoutValue: { ok: false, cancelled: true, tokenUuids: [] },
-        spec: { eligible, mode, count, titleText, cancelLabel, secondaryAction, randomizeCount, randomPool, lockSelection },
+        spec: { eligible, mode, count, titleText, cancelLabel, secondaryAction, randomizeCount, randomPool, lockSelection, mandatoryTokenUuids },
       })
     );
   }
@@ -361,6 +368,12 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     // Build canvas-positioned rings around each eligible token.
     const rings = new Map(); // tokenUuid -> { el, token }
     const selected = new Set(); // tokenUuid
+    // Mandatory "must include" targets, filtered to those actually in the eligible
+    // pool (a mandatory target that got range-gated out must NOT deadlock confirm).
+    const mustInclude = new Set(
+      (Array.isArray(mandatoryTokenUuids) ? mandatoryTokenUuids : [])
+        .filter((u) => eligible.some((e) => e.tokenUuid === u)),
+    );
 
     // Random-mode state — both closed over by the roulette timer, tryConfirm,
     // and finish, so they're declared here at the top of the Promise scope.
@@ -421,8 +434,11 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     const confirmBtn = banner.querySelector(".fud-target-btn.confirm");
 
     function isValidSelection() {
-      if (lockSelection) return true; // locked obvious target — confirm always valid
       if (mode === "random") return true; // draw is pre-computed; confirm is always valid
+      // "Must include X" — every mandatory token must be selected before confirm,
+      // regardless of mode (even lockSelection, which pre-selects everything anyway).
+      for (const u of mustInclude) if (!selected.has(u)) return false;
+      if (lockSelection) return true; // locked obvious target — confirm always valid
       if (mode === "exact") return selected.size === count;
       if (mode === "up_to") return selected.size >= 1 && selected.size <= count;
       return selected.size > 0;
@@ -597,12 +613,14 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       const uuid = token?.document?.uuid;
       if (!uuid || !rings.has(uuid)) return;
       if (selected.has(uuid)) {
+        if (mustInclude.has(uuid)) return; // mandatory "must include" target — can't deselect
         selected.delete(uuid);
         setSelected(uuid, false);
       } else {
         if (selected.size >= count && mode === "exact") {
-          // Replace the oldest selection
-          const firstUuid = selected.values().next().value;
+          // Replace the oldest selection — but never evict a mandatory target.
+          const firstUuid = [...selected].find((u) => !mustInclude.has(u));
+          if (firstUuid === undefined) return; // all slots held by mandatory targets — full
           selected.delete(firstUuid);
           setSelected(firstUuid, false);
         } else if (selected.size >= count) {
@@ -885,6 +903,15 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       for (const e of eligible) {
         selected.add(e.tokenUuid);
         setSelected(e.tokenUuid, true);
+      }
+      updateBanner();
+    } else if (mustInclude.size) {
+      // "Must include X" — pre-select the mandatory ring(s) so the player starts
+      // with the taunter locked in and picks only the remaining slots. Deselect is
+      // blocked in onTokenClick; confirm is gated in isValidSelection.
+      for (const u of mustInclude) {
+        selected.add(u);
+        setSelected(u, true);
       }
       updateBanner();
     }

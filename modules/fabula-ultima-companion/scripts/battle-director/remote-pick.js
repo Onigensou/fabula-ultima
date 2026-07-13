@@ -67,6 +67,7 @@ async function renderLocalPick({ kind, spec = {}, externalCancel = null }) {
     randomizeCount: !!spec.randomizeCount,
     randomPool: spec.randomPool ?? null,
     lockSelection: !!spec.lockSelection,
+    mandatoryTokenUuids: spec.mandatoryTokenUuids ?? [],
     externalCancel,
   });
 }

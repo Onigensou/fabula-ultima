@@ -47,7 +47,7 @@ import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
 import { buildUltimaMenuSpec } from "./domination.js";
 import { pickFromList } from "./list-picker.js";
-import { applyAttackRangeGate, applyStudyGuardExclusion, snapshotEligibleTargetsFromDCombat } from "./snapshot.js";
+import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, snapshotEligibleTargetsFromDCombat } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -446,6 +446,14 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     return { cancelled: true, reason: "no eligible targets" };
   }
 
+  // "Must include X" taunt (must_be_targeted_by): any candidate that pins itself for
+  // this weapon's range becomes a mandatory pick, while spare multi-target slots stay
+  // free (distinct from "can only target"/Provoked, which restricts the whole pool).
+  let attackerActorDoc = null;
+  try { attackerActorDoc = await fromUuid(snap.actorUuid); } catch {}
+  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, currentWeapon?.range, attackerActorDoc)
+    .map((e) => e.tokenUuid);
+
   // Multi-pass (two-weapon) deliberately picks only ONE target for the FIRST
   // pass — pass 2 re-enters TARGET on the GM (FSM-driven; per-pick lag for the
   // second pass — an acceptable cost since two-weapon is uncommon). A
@@ -460,6 +468,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     const result = await raceCancel(
       requestTargeting({
         director, eligible: filtered, mode: "exact", count: 1,
+        mandatoryTokenUuids,
         titleText: `Pick a target for ${snap.name}'s Attack`,
         // Tear down the canvas rings + banner if our race resolves
         // against us (e.g. GM committed locally while we were picking).
@@ -491,6 +500,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
       const result = await raceCancel(
         requestTargeting({
           director, eligible: filtered, mode: plan.mode, count: plan.count,
+          mandatoryTokenUuids,
           titleText: plan.count > 1
             ? `Pick up to ${plan.count} targets for ${snap.name}'s Attack`
             : `Pick a target for ${snap.name}'s Attack`,
@@ -582,6 +592,11 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
     return { cancelled: true, reason: "no eligible targets" };
   }
 
+  // "Must include X" taunt (must_be_targeted_by) — pin any candidate that forces
+  // inclusion for this attack's range (Apple o' Archer). Spare slots stay free.
+  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, range, actor)
+    .map((e) => e.tokenUuid);
+
   // Target count. NPC attacks read the same `skill_target` text as skills
   // ("One Creature", "Up to two creatures", "All Enemy", "One Random Creature", etc.).
   const skillTargetText = String(attackItem.system?.props?.skill_target ?? "").trim();
@@ -604,6 +619,7 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
         eligible: filtered,
         mode: plan.mode,
         count: plan.count,
+        mandatoryTokenUuids,
         titleText: `Pick ${plan.count > 1 ? `up to ${plan.count} targets` : "a target"} for ${snap.name}'s ${attackItem.name}`,
         externalCancel: cancelSentinel,
       }),
@@ -800,6 +816,14 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     return { cancelled: true, reason: "no targets" };
   }
 
+  // "Must include X" taunt (must_be_targeted_by) for a SKILL/spell: pass the skill's
+  // range so a range-scoped taunt (e.g. Apple o' Archer's "ranged") does NOT pin a
+  // spell, while an "any"-scoped taunt still does. Defaults to "any" (non-weapon
+  // action) so only universal taunts apply here.
+  const sourceRange = String(source?.system?.props?.skill_range ?? "").trim().toLowerCase() || "any";
+  const mandatoryTokenUuids = collectForcedIncludeTargets(targetList, sourceRange, actor)
+    .map((e) => e.tokenUuid);
+
   // Single-source target plan (mode + count + ×T affordability cap), shared with
   // the GM-side resolveActionTargets. Random → GM-side roulette (player sends
   // empty). "All" → enter the picker with every eligible target locked, so the
@@ -831,6 +855,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
       eligible: targetList,
       mode: plan.mode,
       count: plan.count,
+      mandatoryTokenUuids,
       titleText: `${snap.name}: pick target${plan.count > 1 ? "s" : ""} for ${source.name}`,
       externalCancel: cancelSentinel,
     }),
