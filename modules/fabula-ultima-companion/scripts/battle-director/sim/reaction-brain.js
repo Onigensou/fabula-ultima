@@ -242,16 +242,58 @@ function affScore(aff) {
   return AFF_SCORE[String(aff ?? "NA").toUpperCase()] ?? 1;
 }
 
+function affinityOfActor(actor, element) {
+  try { return String(AR.getAffinityForType(actor, element) ?? "NA").toUpperCase(); }
+  catch { return "NA"; }
+}
+
 // Best element to switch to against this target, with its affinity.
 function bestElementAgainst(target) {
   let best = null;
   for (const el of ELEMENTS) {
-    let aff = "NA";
-    try { aff = String(AR.getAffinityForType(target, el) ?? "NA").toUpperCase(); } catch {}
+    const aff = affinityOfActor(target, el);
     const score = affScore(aff);
     if (!best || score > best.score) best = { element: el, aff, score };
   }
   return best;
+}
+
+// Best element across EVERY target the action is about to hit.
+//
+// This is the whole point of the fix: Zarg's bow reaches two creatures, and the old
+// code judged the element against only the FIRST of them. So it never noticed that
+// the other one was Ice-weak — and, worse, it could happily switch to an element the
+// second target absorbed, healing them with the same volley.
+//
+// The user's rule, and it's the right one: a weakness on ONE target is worth
+// switching for, but ONLY if no other target resists / is immune to / absorbs the new
+// element. A shot that melts one enemy and heals the other is not an upgrade.
+//
+//   - Absorb / Immune on ANY target  → disqualified outright. Never feed an enemy.
+//   - Resist on any target           → disqualified while a clean element exists;
+//                                      accepted only as a last resort.
+//   - Otherwise rank by how many targets are VULNERABLE.
+function bestElementAcross(targets) {
+  const rank = (el) => {
+    const affs = targets.map((t) => affinityOfActor(t, el));
+    return {
+      element: el,
+      affs,
+      feeds: affs.some((a) => a === "AB" || a === "IM"),
+      resisted: affs.some((a) => a === "RS"),
+      vu: affs.filter((a) => a === "VU").length,
+      score: affs.reduce((s, a) => s + affScore(a), 0),
+    };
+  };
+
+  const candidates = ELEMENTS.map(rank).filter((c) => !c.feeds);
+  if (!candidates.length) return null;   // every element feeds somebody
+
+  const clean = candidates.filter((c) => !c.resisted);
+  const pool = clean.length ? clean : candidates;
+
+  pool.sort((a, b) => (b.vu - a.vu) || (b.score - a.score));
+  return pool[0];
 }
 
 // These augments do TWO things: buff the damage AND re-point the element. So the
@@ -266,20 +308,28 @@ function elementSwapPolicy({ ar, carrierName }) {
   const landing = rowsOf(ar).filter((r) => r?.hit !== false);
   if (!landing.length) return { decision: "skip", why: "nothing is landing" };
 
-  const row = landing[0];
-  const target = actorOf(row.actorUuid);
-  if (!target) return { decision: "skip", why: "can't resolve the target" };
+  const targets = landing.map((r) => actorOf(r.actorUuid)).filter(Boolean);
+  if (!targets.length) return { decision: "skip", why: "can't resolve the targets" };
 
-  const current = affScore(row.affinity);
-  const best = bestElementAgainst(target);
-  if (!best) return { decision: "skip", why: "no element to pick" };
+  const best = bestElementAcross(targets);
+  if (!best) {
+    // Every element on the list would heal or bounce off somebody in the volley.
+    return { decision: "skip", why: "no element works on all targets without feeding one" };
+  }
 
+  // What the shot already does, summed across the same targets — the bar to beat.
+  const current = landing.reduce((s, r) => s + affScore(r.affinity), 0);
+
+  const names = targets.map((t, i) => `${t.name}:${best.affs[i]}`).join(", ");
   const better = best.score > current;
+
   return {
     decision: "apply",
-    why: better
-      ? `${carrierName} → ${best.element} (${target.name} is ${best.aff}); was ${String(row.affinity ?? "NA").toUpperCase()}`
-      : `${carrierName} → ${best.element}; the element can't be bettered but the damage buff is still worth it`,
+    why: best.vu
+      ? `${carrierName} → ${best.element} (${names})`
+      : better
+        ? `${carrierName} → ${best.element} (${names})`
+        : `${carrierName} → ${best.element}; no weakness to hit, but the damage buff still lands (${names})`,
     hint: { label: best.element },
   };
 }
@@ -408,7 +458,9 @@ export function protectExhausted(round) {
 // something sane to fall back on instead of "whatever is at the top".
 export function bestElementForCard(ar) {
   const landing = rowsOf(ar).filter((r) => r?.hit !== false);
-  const target = landing.length ? actorOf(landing[0].actorUuid) : null;
-  if (!target) return null;
-  return bestElementAgainst(target)?.element ?? null;
+  const targets = landing.map((r) => actorOf(r.actorUuid)).filter(Boolean);
+  if (!targets.length) return null;
+  // Across ALL targets, not just the first — a multi-target shot must not pick an
+  // element that one enemy is weak to and another absorbs.
+  return bestElementAcross(targets)?.element ?? bestElementAgainst(targets[0])?.element ?? null;
 }
