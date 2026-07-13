@@ -334,6 +334,20 @@ export function isAiControlledCombatant(dc) {
 // Is the CURRENT Director turn an AI-controlled combatant?
 export function isAiControlledTurn(director) {
   try {
+    // In a sim, EVERY declaration is the AI's — including the ones that are not a
+    // "turn" at all.
+    //
+    // This lookup resolves the CURRENT combatant, and a FREE ACTION is not taken by the
+    // current combatant: it is taken by the REACTOR, on somebody else's turn (or, for a
+    // conflict_start grant like High Speed, before anyone's turn — where
+    // currentCombatantId is still null and this returned false outright).
+    //
+    // So the autopilot gate never fired for those declarations, DECLARE fell straight
+    // through to composeAction, and the free action was forfeited: the journal showed
+    // Acceleration firing and queueing (queued:2) and then "nothing legal to declare"
+    // with no grant line, because the brain was never even asked.
+    if (SimMode.active) return true;
+
     const dc = director?.dCombat;
     if (!dc) return false;
     const cur = dc.combatants?.find?.((c) => c.id === dc.currentCombatantId) ?? null;
