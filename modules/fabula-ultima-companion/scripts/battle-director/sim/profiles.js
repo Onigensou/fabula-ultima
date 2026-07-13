@@ -324,7 +324,7 @@ function zeroPowerFor(name) {
         return api.castOn(skill, api.allies());
       }
       case "Keren": {
-        const hasPhantasm = api.allies().some((dc) => /phantasm|numen/i.test(dc.name ?? ""));
+        const hasPhantasm = api.alliesAll().some((dc) => /phantasm|numen/i.test(dc.name ?? ""));
         if (!hasPhantasm) return null;
         return api.castOn(skill, api.foes());
       }
@@ -628,7 +628,7 @@ export const PROFILES = {
       const heal = healPolicy({ spellName: "Life Transference", threshold: 0.3, mpCost: 20 })(api);
       if (heal) return heal;
 
-      const hasPhantasm = api.allies().some((dc) => /phantasm|numen/i.test(dc.name ?? ""));
+      const hasPhantasm = api.alliesAll().some((dc) => /phantasm|numen/i.test(dc.name ?? ""));
       if (!hasPhantasm) return null;   // nothing to detonate → rotation conjures one
 
       const spell = api.findItem("Detonate Phantasm");

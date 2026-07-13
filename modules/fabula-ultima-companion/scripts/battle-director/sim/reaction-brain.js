@@ -24,9 +24,17 @@
 
 import { log, warn } from "../logger.js";
 import { SimMode } from "./sim-mode.js";
+import { Journal } from "./sim-journal.js";
 import { TUNING, ELEMENTS } from "./profiles.js";
 import { ActionReaderCore as AR } from "../../action-reader/actionReader-core.js";
 import { resolvesVsMagicDefense } from "../snapshot.js";
+
+// Local copy — importing it from player-brain would close a cycle (player-brain already
+// imports protectExhausted from here).
+function isSummon(actorDoc) {
+  const v = actorDoc?.system?.props?.isSummon;
+  return v === true || v === "true" || v === 1 || v === "1";
+}
 
 const norm = (s) => String(s ?? "").trim().toLowerCase();
 const numOr = (v, d = 0) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
@@ -198,7 +206,9 @@ function protectPolicy({ ar, reactorActor, director }) {
   const victims = rowsOf(ar)
     .filter((r) => r?.actorUuid && r.actorUuid !== reactorActor?.uuid)
     .map((r) => ({ row: r, actor: rowActor(r, director) }))
-    .filter((v) => v.actor && isStrongHit(v.row, v.actor, bar));
+    // Never step in front of a SUMMON. A phantasm exists to be spent; taking a hit for
+    // one trades a real body for a disposable one, which is the wrong way round.
+    .filter((v) => v.actor && !isSummon(v.actor) && isStrongHit(v.row, v.actor, bar));
 
   if (!victims.length) return { decision: "skip", why: "nothing worth stepping in front of" };
 
@@ -439,12 +449,34 @@ export function decideReactions({ prePassives, ar, director, decided }) {
       continue;
     }
 
-    const reactorActor = actorOf(p.reactorActorUuid, director) ?? actorOf(p.carrierUuid, director);
+    // WHO is reacting?
+    //
+    // `reactorActorUuid` is only populated for a THIRD-PARTY reaction — Protect on an
+    // ally's card, where the reactor is not the one acting. For a SELF-carried
+    // reaction (Gadgets, Thermokinesis, Barrage) it is null, because the reactor IS
+    // the action-taker.
+    //
+    // The old fallback was `carrierUuid`, which is the ITEM the reaction lives on —
+    // not an actor. So every self-carried reaction resolved its "reactor" to a skill
+    // document, read `current_ip` off it, got 0, and concluded it couldn't afford
+    // itself. That is why Zarg reported "only 0 IP left" no matter how much IP he had,
+    // and why he never once infused an arrow. Thermokinesis was silently dead the same
+    // way.
+    const reactorActor =
+      actorOf(p.reactorActorUuid, director)
+      ?? actorOf(ar?.attackerActorRef, director)
+      ?? actorOf(ar?.attacker?.actorUuid, director);
+
+    if (!reactorActor) {
+      SimMode.note("reaction", `${p.carrierName}: skipped — could not resolve who is reacting`);
+      continue;
+    }
+
     const name = norm(p.carrierName);
     const policy = POLICIES[name];
 
     if (!policy) {
-      SimMode.note("reaction", `${p.reactorActorName ?? p.carrierName}: ${p.carrierName} → ${fallback} (no policy; run default)`);
+      SimMode.note("reaction", `${reactorActor.name}: ${p.carrierName} → ${fallback} (no policy; run default)`);
       out.push({ rowKey: p.rowKey, carrierUuid: p.carrierUuid, decision: fallback });
       continue;
     }
@@ -459,9 +491,28 @@ export function decideReactions({ prePassives, ar, director, decided }) {
 
     SimMode.note(
       "reaction",
-      `${p.reactorActorName ?? p.carrierName}: ${verdict.decision === "apply" ? "USES" : "holds"} ${p.carrierName}` +
+      `${reactorActor.name}: ${verdict.decision === "apply" ? "USES" : "holds"} ${p.carrierName}` +
       (verdict.why ? ` — ${verdict.why}` : "")
     );
+
+    // Journal the REJECTIONS too, with the state they were judged against. "He never
+    // used Gadgets" and "he considered Gadgets and thought he had 0 IP" look identical
+    // from outside and need completely different fixes.
+    Journal.write("reaction", `${p.carrierName}: ${verdict.decision}`, {
+      actor: reactorActor.name,
+      carrier: p.carrierName,
+      decision: verdict.decision,
+      why: verdict.why ?? null,
+      hint: verdict.hint?.label ?? null,
+      // The resources the policy actually looked at — the thing that was wrong for
+      // three rounds of debugging.
+      reactorIp: numOr(reactorActor.system?.props?.current_ip, null),
+      reactorMp: numOr(reactorActor.system?.props?.current_mp, null),
+      targets: rowsOf(ar).map((r) => ({
+        name: r.name, hit: r.hit, damage: r.damage, affinity: r.affinity,
+      })),
+    });
+
     out.push({ rowKey: p.rowKey, carrierUuid: p.carrierUuid, decision: verdict.decision, hint: verdict.hint ?? null });
   }
 

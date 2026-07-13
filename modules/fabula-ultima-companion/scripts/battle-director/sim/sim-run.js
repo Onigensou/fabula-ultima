@@ -22,6 +22,7 @@
 
 import { log, warn } from "../logger.js";
 import { SimMode, forceEndSim } from "./sim-mode.js";
+import { Journal } from "./sim-journal.js";
 
 const SCRATCH_FOLDER = "BD Sim";
 const SCENE_NAME = "Training Ground";
@@ -298,6 +299,7 @@ export async function run({
 
   try {
     SimMode.begin({ pace, reactions, expectedRounds, maxRounds });
+    Journal.begin(foundry.utils.randomID(), { pace, reactions, expectedRounds, phoenixFeathers, startingZp, fabulaPoints });
 
     clones = await cloneParty(refs, startingZp, fabulaPoints);
     if (!clones.length) throw new Error("no party clones were created");
@@ -380,6 +382,8 @@ export async function run({
       transcript: [...SimMode.transcript],
       config: { pace, reactions, expectedRounds, maxRounds, phoenixFeathers, startingZp, fabulaPoints },
     };
+
+    try { result.journalPath = await Journal.flush({ outcome, rounds: result.rounds, partyHpRemaining: hpLeft }); } catch {}
 
     log(`[SIM] RESULT — ${outcome} in ${result.rounds} round(s); party at ${hpLeft == null ? "?" : Math.round(hpLeft * 100)}% HP (${result.durationSec}s wall)`);
     log(`[SIM] VERDICT — ${result.verdict}`);

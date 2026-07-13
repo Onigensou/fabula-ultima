@@ -26,6 +26,7 @@
 import { log, warn } from "../logger.js";
 import { profileFor, mpItemPolicy, hpItemPolicy, revivePolicy, refreshFocus, TUNING } from "./profiles.js";
 import { SimMode } from "./sim-mode.js";
+import { Journal } from "./sim-journal.js";
 import { canAffordItem } from "./cost.js";
 import { protectExhausted } from "./reaction-brain.js";
 
@@ -43,12 +44,29 @@ function selfCombatant(director, snap) {
   return director?.dCombat?.combatants?.find?.((c) => c.tokenId === snap?.tokenId) ?? null;
 }
 
+// A summoned unit — a phantasm, a construct, a temporary body. Disposable by
+// design: it exists to soak a hit or add an attack and then go away. Healing it,
+// buffing it or stepping in front of it is a wasted turn, so it is excluded from
+// every SUPPORT decision (heal / revive / Acceleration / Protect) while still
+// counting as a combatant that fights and can be looked at.
+export function isSummon(actorDoc) {
+  const v = actorDoc?.system?.props?.isSummon;
+  return v === true || v === "true" || v === 1 || v === "1";
+}
+
 function sides(director, snap) {
   const dc = director?.dCombat;
   const mine = selfCombatant(director, snap)?.side ?? "party";
   const all = (dc?.combatants ?? []).filter((c) => !c.isDefeatedLive?.());
+  const allies = all.filter((c) => c.side === mine);
   return {
-    allies: all.filter((c) => c.side === mine),
+    // `allies` is the SUPPORT-eligible list — real party members. Summons are
+    // deliberately absent: the party does not spend its healing on something that is
+    // meant to be spent.
+    allies: allies.filter((c) => !isSummon(c.actorDoc)),
+    // …but some decisions need the whole side (Keren checking whether her phantasm is
+    // on the field, for one — it's a summon, and that's the point).
+    alliesAll: allies,
     foes: all.filter((c) => c.side !== mine),
   };
 }
@@ -271,11 +289,12 @@ async function fetchCreatables(actorDoc) {
 
 // ── The policy API handed to profile.policy() ────────────────────────────────
 function makePolicyApi(director, snap, self, creatables = []) {
-  const { allies, foes } = sides(director, snap);
+  const { allies, alliesAll, foes } = sides(director, snap);
   return {
     self: self?.actorDoc ?? null,
     round: director?.dCombat?.round ?? 0,
-    allies: () => allies,
+    allies: () => allies,            // support-eligible: summons excluded
+    alliesAll: () => alliesAll,      // the whole side, summons included
     foes: () => foes,
 
     findItem(name) {
@@ -371,7 +390,7 @@ function makePolicyApi(director, snap, self, creatables = []) {
     koAllies() {
       const dc = director?.dCombat;
       const mine = selfCombatant(director, snap)?.side ?? "party";
-      return (dc?.combatants ?? []).filter((c) => c.side === mine && c.isDefeatedLive?.());
+      return (dc?.combatants ?? []).filter((c) => c.side === mine && c.isDefeatedLive?.() && !isSummon(c.actorDoc));
     },
 
     // USE a consumable from the pack — it is spent. Mirrors the item-picker's "use"
