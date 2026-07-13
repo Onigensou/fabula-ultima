@@ -392,26 +392,28 @@ async function simFallbackBundle(director, snap) {
   // commands it may be spent on (Barrage grants a free Attack), exactly as the
   // Octopath menu would enforce. Pass it down or the brain re-picks a Skill and
   // the granted action is thrown away.
-  let allowedLabels = null;
-  let maxMpCost = null;
+  // The WHOLE grant is threaded down, not just its labels: it also carries the spell MP
+  // cap (Acceleration: ≤10), the skill allow-list (Counter Pass: Passes only) and any
+  // locked target. Passing only the labels meant the brain could not answer a Skill
+  // grant at all, so the FSM fell back to the manual menu and a human had to click.
+  let grant = null;
   let freeTag = "";
   try {
     const { freeActions } = await import("./free-actions.js");
-    const grant = freeActions.get?.(snap?.actorId);
-    if (grant?.enabledLabels?.length) {
-      allowedLabels = grant.enabledLabels;
-      // Acceleration's grant caps the spell it will pay for (max_mp_cost 10). Without
-      // this the brain offers a 20 MP Iceberg into a 10 MP window, the declaration
-      // bounces, and the free action is Guarded away to nothing.
-      maxMpCost = grant.maxMpCost ?? null;
-      freeTag = `:free:${grant.sourceLabel ?? "?"}`;
+    const g = freeActions.get?.(snap?.actorId);
+    if (g?.enabledLabels?.length) {
+      grant = g;
+      freeTag = `:free:${g.sourceLabel ?? "?"}`;
       SimMode.note(
         "free-action",
-        `${snap?.name} has a free action from ${grant.sourceLabel ?? "?"} (${allowedLabels.join(", ")}`
-        + `${maxMpCost != null ? `, ≤${maxMpCost} MP` : ""})`
+        `${snap?.name} has a free action from ${g.sourceLabel ?? "?"} (${g.enabledLabels.join(", ")}`
+        + `${g.maxMpCost != null ? `, ≤${g.maxMpCost} MP` : ""}`
+        + `${g.allowedSkillRefs?.length ? `, only: ${g.allowedSkillRefs.join("/")}` : ""})`
       );
     }
   } catch (e) { warn("[SIM] free-action lookup threw", e); }
+
+  const allowedLabels = grant?.enabledLabels ?? null;
 
   // The free action gets its OWN declaration space. Without `freeTag` a granted
   // free Attack collides with the Attack the same combatant may already have made
@@ -422,7 +424,7 @@ async function simFallbackBundle(director, snap) {
   for (let attempt = 0; attempt < 4; attempt++) {
     let bundle = null;
     try {
-      bundle = await decidePlayerAction(director, snap, SimMode.blockedForTurn(turnKey), allowedLabels, maxMpCost);
+      bundle = await decidePlayerAction(director, snap, SimMode.blockedForTurn(turnKey), grant);
     } catch (e) {
       warn("[SIM] player brain threw", e);
       break;

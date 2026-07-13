@@ -529,6 +529,75 @@ function bestDamagingSpell(api, actorDoc, foes, maxMpCost) {
   return api.castOn(best.item, [best.target]);
 }
 
+// A free action that grants a SKILL (Blanche's Counter Pass, Zarg's Dance) rather than
+// a Spell or an Attack. The brain used to have no answer for these, so it returned
+// nothing, the FSM fell back to the manual Octopath menu, and a human had to click —
+// which is exactly the "I still have to press buttons" the sim exists to remove.
+//
+// The grant may restrict WHICH skills are legal (`allowedSkillRefs`, matched by name or
+// uuid — Counter Pass only permits Passes), and may lock the target (the enemy that
+// triggered it). Both are honoured.
+function bestFreeSkill(api, actorDoc, foes, { allowedSkillRefs = null, lockedTargetTokenUuid = null } = {}) {
+  const allow = Array.isArray(allowedSkillRefs) && allowedSkillRefs.length
+    ? new Set(allowedSkillRefs.map((r) => String(r).trim().toLowerCase()))
+    : null;
+
+  const permitted = (item) => {
+    if (!allow) return true;
+    return allow.has(String(item.name ?? "").trim().toLowerCase())
+        || allow.has(String(item.uuid ?? "").trim().toLowerCase());
+  };
+
+  const locked = lockedTargetTokenUuid
+    ? foes.find((f) => f.tokenUuid === lockedTargetTokenUuid) ?? null
+    : null;
+
+  const candidates = [];
+  for (const item of actorDoc?.items ?? []) {
+    const p = item?.system?.props ?? {};
+    const type = String(p.skill_type ?? "").trim().toLowerCase();
+    if (!["active", "skill", "spell"].includes(type)) continue;
+    if (isAugment(item)) continue;              // can't be declared — it rides an action
+    if (!permitted(item)) continue;
+    if (!canAffordItem(actorDoc, item).ok) continue;
+
+    const targetText = String(p.skill_target ?? "").trim().toLowerCase();
+    const el = String(p.type_damage ?? "").trim().toLowerCase();
+    const hurts = !!el && !["healing", "heal", "hp", "mp"].includes(el);
+
+    let target = null;
+    if (/self/.test(targetText)) {
+      target = api.allies().find((a) => a.actorDoc?.uuid === actorDoc.uuid) ?? null;
+    } else if (/ally|allies/.test(targetText)) {
+      target = api.allies()
+        .slice()
+        .sort((a, b) =>
+          pctOf(a.actorDoc, "current_hp", "max_hp") - pctOf(b.actorDoc, "current_hp", "max_hp"))[0] ?? null;
+    } else {
+      // Aim it at the enemy that triggered the grant if one is locked, else the
+      // vulnerable one, else the party's called target.
+      target = locked
+        ?? (el ? foes.find((f) => api.affinityOf(f, el) === "VU") : null)
+        ?? foes.find((f) => f.tokenUuid === api.focusUuid())
+        ?? foes[0] ?? null;
+    }
+    if (!target) continue;
+
+    candidates.push({ item, target, score: hurts ? 2 : 1, power: parseCost(p.cost).amount || 0 });
+  }
+
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => (b.score - a.score) || (b.power - a.power));
+  const best = candidates[0];
+  return api.castOn(best.item, [best.target]);
+}
+
+const pctOf = (actor, cur, max) => {
+  const c = Number(actor?.system?.props?.[cur]);
+  const m = Number(actor?.system?.props?.[max]);
+  return (!Number.isFinite(c) || !Number.isFinite(m) || m <= 0) ? 1 : c / m;
+};
+
 // ── The rotation: profile rows through the real ActionReader ─────────────────
 async function runRotation({ token, combat, combatant, actorDoc, rows, blocked }) {
   const rowName = (r) => String(r?.data?.action_pattern_name ?? "").trim();
@@ -601,7 +670,9 @@ async function runRotation({ token, combat, combatant, actorDoc, rows, blocked }
 // Returns a compose bundle, or null to let the caller fall back to Guard.
 // `blocked` = action names that already bounced this turn (SimMode's re-declare
 // guard) — skip them at every layer, or we just re-offer the thing that failed.
-export async function decidePlayerAction(director, snap, blocked = new Set(), allowedLabels = null, maxMpCost = null) {
+export async function decidePlayerAction(director, snap, blocked = new Set(), grant = null) {
+  const allowedLabels = grant?.enabledLabels ?? null;
+  const maxMpCost = grant?.maxMpCost ?? null;
   const self = selfCombatant(director, snap);
   const actorDoc = self?.actorDoc ?? null;
   if (!actorDoc) return null;
@@ -643,7 +714,19 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), al
         return spell;
       }
     }
-    // …otherwise fall through to the basic attack below.
+    // A SKILL grant (Counter Pass, Dance) — the case the brain had no answer for, which
+    // is why the manual menu kept appearing and a human had to click.
+    if (permits("Skill")) {
+      const skill = bestFreeSkill(policyApi, actorDoc, foes, {
+        allowedSkillRefs: grant?.allowedSkillRefs ?? null,
+        lockedTargetTokenUuid: grant?.lockedTargetTokenUuid ?? null,
+      });
+      if (skill && !isBlocked(skill._name)) {
+        SimMode.note("free-action", `${snap?.name} spends it on ${skill._name}`);
+        return skill;
+      }
+    }
+    // …otherwise fall through to the basic attack below (if the grant permits one).
   }
 
   // The party's item economy, ahead of everybody's own plan. Each of these abstains
