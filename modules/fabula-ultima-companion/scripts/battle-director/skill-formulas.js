@@ -649,6 +649,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // ally focus. Per-applier match (actorHasNamedStatusFromApplier) so a
       // sibling Esper's focus doesn't qualify.
       case "MY_FOCUS_IN_CRISIS": return myFocusInCrisis(actor, payload) ? 1 : 0;
+      // 1 if this actor currently has an Arcanum MERGED — an active AE flagged
+      // `fabula-ultima-companion.arcanumMerge` (the Arcanist merge/marker AE).
+      // Powers Bind and Summon's dynamic card cost (summoning costs MP; while
+      // merged the action is Pulse/Dismiss, which are free) and any "while
+      // merged" gate. General, not per-Arcanum.
+      case "ARCANUM_MERGED": return actorHasArcanumMerge(actor) ? 1 : 0;
       // Number of live summons (incl. phantasms) THIS actor put on the field —
       // tokens flagged summonedBy == me + isSummon/isPhantasm. Gates Create
       // Phantasm: Strike's "Command an existing Phantasm" menu option
@@ -942,6 +948,14 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Returns 0 on creature_deals_damage (per-target) — use this identifier
       // only in creature_completes_attack rows.
       case "ALL_TARGETS_HIT": return payload?.allTargetsHit ? 1 : 0;
+      // 1 if every targeted creature actually took > 0 damage this action, else 0.
+      // The damage-dealing twin of ALL_TARGETS_HIT: a target can be HIT (accuracy
+      // connected) yet take no damage (immune / absorb / reduced to 0), so this is
+      // strictly stronger. Populated by creature_completes_attack payload
+      // (allTargetsDamaged field). Returns 0 on per-target triggers — use only in
+      // creature_completes_attack rows. Powers Blazing Sweep's "repeat if all
+      // targets are damaged" gate.
+      case "ALL_TARGETS_DAMAGED": return payload?.allTargetsDamaged ? 1 : 0;
       // 1 if the action is a basic weapon ATTACK (ar.kind/view.kind === "Attack").
       // Reads payload.actionKind. The Attack twin of ACTION_IS_SPELL — lets a reaction
       // scope to the Attack action ONLY: e.g. Swordbreaker's on-miss Bane fires on a
@@ -2163,6 +2177,17 @@ function anyEnemyInCrisis(actor) {
       return String(e?.name ?? "").trim().toLowerCase() === "crisis";
     });
   return enemyActorsOf(actor).some(inCrisis);
+}
+
+// 1 if `actor` currently has an Arcanum merged — any active AE flagged
+// fabula-ultima-companion.arcanumMerge (the Arcanist merge/marker AE). Powers the
+// ARCANUM_MERGED identifier.
+function actorHasArcanumMerge(actor) {
+  for (const e of (actor?.effects?.contents ?? actor?.effects ?? [])) {
+    if (e?.disabled) continue;
+    if (e?.flags?.["fabula-ultima-companion"]?.arcanumMerge) return true;
+  }
+  return false;
 }
 
 // 1 if an ALLY who carries THIS actor's Focus AE (status fud-focus, applied by

@@ -603,6 +603,14 @@
     {
       "key": "2026-07-04-burn-champion-halved",
       "path": "data-migrations/2026-07-04-burn-champion-halved.js"
+    },
+    {
+      "key": "2026-07-14-arcanum-template",
+      "path": "data-migrations/2026-07-14-arcanum-template.js"
+    },
+    {
+      "key": "2026-07-14-arcanist-avatar-vengeance-author",
+      "path": "data-migrations/2026-07-14-arcanist-avatar-vengeance-author.js"
     }
   ]
 }

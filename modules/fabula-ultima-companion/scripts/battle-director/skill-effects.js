@@ -1075,6 +1075,18 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
       return;
     }
     if (kind === "open_action_menu") {
+      // Arcanum dynamic-source menu (Bind and Summon): the summon MP cost lives on
+      // the menu row (all summon options share it). Surface it for affordability —
+      // Free while merged (the pick is a free Pulse/Dismiss). Mirrors the preview.
+      if (String(row.menu_dynamic_source ?? "").trim().toLowerCase() === "arcanum") {
+        let merged = 0;
+        try { merged = Number(evaluateFormula("ARCANUM_MERGED", resolver, 0)) || 0; } catch {}
+        if (merged > 0) return;
+        const formula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
+        const amount = Number(evaluateFormula(formula, resolver, 0)) || 0;
+        if (amount > 0) debit.mp = (debit.mp ?? 0) + amount;
+        return;
+      }
       // Options are player choices — NOT summed into the fixed cost (you pick
       // ONE). But if any option carries a self-cost, flag the action variable.
       if (row.free_mode !== true) {
@@ -1112,6 +1124,18 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
     if (kind === "confirm") {
       // Branch buttons are player choices — flag variable if any branch costs.
       if (parseEffectRefList(row.confirm_button_refs).some((r) => hasCostUnder(r))) variable = true;
+      return;
+    }
+    if (kind === "summon_arcanum") {
+      // The summon MP cost lives inside the effect_kind (cancel-safe: pick then
+      // debit), so surface it here for affordability. Free while merged (the
+      // action is a free Pulse/Dismiss). Mirrors the preview cost chip.
+      let merged = 0;
+      try { merged = Number(evaluateFormula("ARCANUM_MERGED", resolver, 0)) || 0; } catch {}
+      if (merged > 0) return;
+      const formula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
+      const amount = Number(evaluateFormula(formula, resolver, 0)) || 0;
+      if (amount > 0) debit.mp = (debit.mp ?? 0) + amount;
       return;
     }
     // grant / apply_ae / remove_tagged_ae / leave_combat / etc.: not a gate on
@@ -1366,6 +1390,12 @@ function containerReactionInPlay(item, casterActor, payload) {
   if (!containerId) return true;
   const container = casterActor?.items?.get?.(containerId);
   if (!container) return true;
+  // Arcanum children (Merge/Pulse/Dismiss `_skill`s) are LIVE only while their
+  // Arcanum is merged — the reaction analogue of the gear-equip gate below. Before
+  // summon (no merge AE) the Arcanum sits bound but dormant, so its Merge regen
+  // reaction must NOT fire. Checked BEFORE the GEAR gate: an Arcanum isn't gear, so
+  // it would otherwise hit the fail-open path and leak its reaction pre-summon.
+  if (isArcanumContainer(container)) return isArcanumMerged(casterActor, container);
   const itemType = String(container.system?.props?.item_type ?? "").toLowerCase();
   const GEAR = new Set(["accessory", "armor", "weapon", "shield"]);
   if (!GEAR.has(itemType)) return true;
@@ -3595,6 +3625,7 @@ const EFFECT_KIND_DISPATCH = {
   chain:               applyChainEffect,
   chance:              applyChanceEffect,
   open_action_menu:    applyOpenActionMenuEffect,
+  summon_arcanum:      applySummonArcanumEffect,
   free_action:         applyFreeActionEffect,
   adjust_charges:      applyAdjustChargesEffect,
   trigger_status:      triggerStatusRun,     // UNIFIED (see triggerStatusRun) — fire a status's tick N×
@@ -3718,6 +3749,7 @@ export const EFFECT_KIND_LABELS = {
   chain:               "Chain (invoke other effects)",
   chance:              "Chance (X% gate → then/else effect)",
   open_action_menu:    "Open Action Menu",
+  summon_arcanum:      "Summon Arcanum (Arcanist)",
   free_action:         "Free Action (perform single action)",
   adjust_charges:      "Adjust Charges (multiply/add a target's stacks)",
   trigger_status:      "Trigger Status (fire a status's tick N×, e.g. Burn)",
@@ -3870,8 +3902,41 @@ const EFFECT_KIND_PREVIEW = {
   }),
 
   // open_action_menu surfaces as a Decision node, not an inline EffectPreview —
-  // the profile builder handles it separately. Return null here.
-  open_action_menu: () => null,
+  // the profile builder handles it separately. Return null here. EXCEPTION: the
+  // Arcanum dynamic-source menu (Bind and Summon) carries the summon MP cost on the
+  // menu row itself, so surface a cost chip (dynamic: Emergency/Crisis baked into
+  // summon_cost_formula; Free while merged, when the pick is a free Pulse/Dismiss).
+  open_action_menu: (row, pctx) => {
+    if (String(row?.menu_dynamic_source ?? "").trim().toLowerCase() !== "arcanum") return null;
+    const resolver = pctx?.resolver;
+    if (!resolver) return null;
+    let merged = 0;
+    try { merged = Number(evaluateFormula("ARCANUM_MERGED", resolver, 0)) || 0; } catch {}
+    if (merged > 0) return null;
+    const formula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
+    let amount = 0;
+    try { amount = Number(evaluateFormula(formula, resolver, 0)) || 0; } catch {}
+    if (amount <= 0) return null;
+    return { type: "cost", resource: "mp", amount, valence: "neutral", source: row.effect_label };
+  },
+
+  // summon_arcanum is a RESOLVE-time control surface (its own picker), but it DOES
+  // surface a cost chip so the action card shows the summon MP (dynamic: the
+  // Emergency Arcanum / Crisis reduction is baked into summon_cost_formula, and it
+  // reads Free while merged, when the action is a free Pulse/Dismiss). Mirrors how
+  // a declarative consume_resource row previews its formula amount.
+  summon_arcanum: (row, pctx) => {
+    const resolver = pctx?.resolver;
+    if (!resolver) return null;
+    let merged = 0;
+    try { merged = Number(evaluateFormula("ARCANUM_MERGED", resolver, 0)) || 0; } catch {}
+    if (merged > 0) return null;  // Pulse/Dismiss — no summon cost
+    const formula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
+    let amount = 0;
+    try { amount = Number(evaluateFormula(formula, resolver, 0)) || 0; } catch {}
+    if (amount <= 0) return null;
+    return { type: "cost", resource: "mp", amount, valence: "neutral", source: row.effect_label };
+  },
 
   // prompt_element is a RESOLVE-time player prompt (pick a damage type) — no
   // inline card preview. (prompt_number has its own entry below.)
@@ -6427,6 +6492,14 @@ export function interpolateMenuText(str, ctx) {
 }
 
 function buildMenuOptions(row, ctx) {
+  // Dynamic option source: generate the option list from live actor data instead
+  // of authored refs/inline. The open_action_menu machinery (pre-card capture,
+  // cancel-to-menu, icons, owner-remote routing) is unchanged — only the option
+  // list is computed. `menu_dynamic_source: "arcanum"` → the caster's bound Arcana
+  // (not merged) or the active Arcanum's Pulse/Dismiss (merged).
+  const dynSource = String(row.menu_dynamic_source ?? "").trim().toLowerCase();
+  if (dynSource === "arcanum") return buildArcanumMenuOptions(row, ctx);
+
   const refs = parseEffectRefList(row.menu_option_refs);
   const splitPipe = (s) =>
     (s == null || String(s).trim() === "") ? [] : String(s).split("|").map((x) => x.trim());
@@ -6984,6 +7057,266 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
   return { ok: true, cancelled: false, hasMenu: true, picks: chosenLabels, effects, damageNullified };
 }
 
+// ── summon_arcanum (Arcanist control surface) ────────────────────────────
+//
+// The one entry point for the Arcanist's bind/summon loop, authored on Bind and
+// Summon's on_activate. Behaviour splits on whether the caster currently has an
+// Arcanum MERGED — detected by an AE flagged `arcanumMerge` (the merge AE doubles
+// as the "summoned" marker + carries the merge-benefit reaction):
+//
+//   • NOT merged → pick one of the caster's bound Arcana (its `class:"Arcanum"`
+//     container items), debit the summon cost (`summon_cost_formula`, default
+//     "40" — the Emergency Arcanum reduction rides inside the formula), then run
+//     that Arcanum's Merge child skill, which applies the merge AE.
+//   • MERGED → offer the active Arcanum's Pulse / Dismiss child skills. Summoning
+//     another is blocked (FU RAW: dismiss first). Dismiss removes the merge AE
+//     after its own effect resolves.
+//
+// Arcana ↔ children use the CSB container model: each child `_skill` has
+// `system.container === arcanum.id` and `system.props.arcanum_role ∈
+// {merge,pulse,dismiss}`. Nothing is hard-coded per-Arcanum — any Arcanum on the
+// _Arcanum Template with those three roles works.
+const ARCANUM_MERGE_FLAG = "arcanumMerge";
+const ARCANUM_UID_FLAG   = "arcanumUniqueId";
+const ARCANUM_ROLE_PROP  = "arcanum_role";
+
+function findMergedArcanumAe(actor) {
+  for (const ae of (actor?.effects ?? [])) {
+    if (ae?.disabled) continue;
+    if (ae?.flags?.[FLAG_NS]?.[ARCANUM_MERGE_FLAG]) return ae;
+  }
+  return null;
+}
+
+// Resolve the "_Arcanum Template" document id at runtime (by name — no hard-coded
+// UUID in the engine, so it stays lint-clean and world-portable). Cached; the
+// cache self-heals if the template is recreated with a new id.
+const ARCANUM_TEMPLATE_NAME = "_Arcanum Template";
+let _arcanumTemplateIdCache = null;
+function arcanumTemplateId() {
+  if (_arcanumTemplateIdCache && globalThis.game?.items?.get(_arcanumTemplateIdCache)) {
+    return _arcanumTemplateIdCache;
+  }
+  const t = globalThis.game?.items?.find(
+    (it) => it.type === "_equippableItemTemplate" && it.name === ARCANUM_TEMPLATE_NAME);
+  _arcanumTemplateIdCache = t?.id ?? null;
+  return _arcanumTemplateIdCache;
+}
+
+// An Arcanum is identified INTRINSICALLY by sitting on the _Arcanum Template —
+// gather the actor's items of that template, no flag or container hard-link
+// needed. Falls back to the namespaced flag / legacy `class:"Arcanum"` prop for
+// hand-authored data or if the template can't be resolved.
+function isArcanumContainer(item) {
+  const tid = arcanumTemplateId();
+  if (tid && String(item?.system?.template ?? "") === tid) return true;
+  if (item?.flags?.[FLAG_NS]?.isArcanum) return true;
+  return String(item?.system?.props?.class ?? "").trim().toLowerCase() === "arcanum";
+}
+
+function listBoundArcana(actor) {
+  const out = [];
+  for (const it of (actor?.items ?? [])) if (isArcanumContainer(it)) out.push(it);
+  return out;
+}
+
+// The child _skills carry `system.container` = the arcanum's embedded id (CSB uses
+// "-" as the empty-container sentinel). Match on id, with uniqueId as a fallback.
+function findArcanumChild(actor, arcanum, role) {
+  if (!arcanum) return null;
+  const aid = String(arcanum.id ?? "").trim();
+  const uid = String(arcanum.system?.uniqueId ?? "").trim();
+  const want = String(role).trim().toLowerCase();
+  for (const it of (actor?.items ?? [])) {
+    const c = String(it?.system?.container ?? "").trim();
+    if (!c || c === "-") continue;
+    if (c !== aid && (!uid || c !== uid)) continue;
+    if (String(it?.system?.props?.[ARCANUM_ROLE_PROP] ?? "").trim().toLowerCase() === want) return it;
+  }
+  return null;
+}
+
+// Resolve the Arcanum container that a merge AE belongs to (by the uniqueId the
+// merge AE stamped, else by name match on a container item).
+function arcanumForMergeAe(actor, mergeAe) {
+  const uid = String(mergeAe?.flags?.[FLAG_NS]?.[ARCANUM_UID_FLAG] ?? "").trim();
+  if (uid) {
+    const byUid = (actor?.items ?? []).find((it) => isArcanumContainer(it)
+      && String(it.system?.uniqueId ?? "").trim() === uid);
+    if (byUid) return byUid;
+  }
+  const name = String(mergeAe?.name ?? "").trim().toLowerCase();
+  return (actor?.items ?? []).find((it) => isArcanumContainer(it)
+    && String(it.name ?? "").trim().toLowerCase() === name) ?? null;
+}
+
+// Is THIS specific Arcanum the one currently merged on the actor? Only one Arcanum
+// can be merged at a time (FU RAW: dismiss before re-summon), so it's "the merge AE
+// resolves to this container." Matches on the stamped uniqueId, with the embedded id
+// and a name fallback for hand-authored data. Used to gate the Arcanum's child skills
+// (usable + reactive) to the merged window.
+export function isArcanumMerged(actor, arcanum) {
+  if (!actor || !arcanum) return false;
+  const mergeAe = findMergedArcanumAe(actor);
+  if (!mergeAe) return false;
+  const stampedUid = String(mergeAe.flags?.[FLAG_NS]?.[ARCANUM_UID_FLAG] ?? "").trim();
+  const arcUid = String(arcanum.system?.uniqueId ?? "").trim();
+  if (stampedUid && arcUid) return stampedUid === arcUid;
+  const resolved = arcanumForMergeAe(actor, mergeAe);
+  return !!resolved && resolved.id === arcanum.id;
+}
+
+// Is `item` a child `_skill` of the Arcanum that is currently merged? The picker uses
+// this to let a merged Arcanum's Pulse/Dismiss (and any usable child) surface as
+// first-class actor skills — a container child is normally hidden from the standalone
+// list, but while its Arcanum is merged its children are genuinely available. "-" is
+// CSB's empty-container sentinel, not a link.
+export function isMergedArcanumChild(item, actor) {
+  const c = String(item?.system?.container ?? "").trim();
+  if (!c || c === "-" || !actor) return false;
+  const container = actor.items?.get?.(c);
+  if (!container || !isArcanumContainer(container)) return false;
+  return isArcanumMerged(actor, container);
+}
+
+// Dispatch a child _skill's own on_activate chain. The sub-ctx swaps `skill` to
+// the child and CLEARS the parent's recipe-merged fire-points / effect-table so
+// findEffectRow + fireActivationEffect read the CHILD's props, not Bind and
+// Summon's. reactorActor / payload / targets carry through unchanged.
+async function runArcanumChild(child, ctx) {
+  const subCtx = { ...ctx, skill: child, firePoints: {}, runtimeEffectTable: null };
+  return fireActivationEffect(child, subCtx);
+}
+
+// ── STEP 1: retrieve arcanum data (the dynamic option source) ──────────────
+// Build the open_action_menu option list from the caster's live Arcana. Returns
+// { options, optionRows } in the EXACT shape buildMenuOptions produces for authored
+// menus, so ALL the existing open_action_menu machinery (pre-card capture, cancel-
+// to-menu, icons, owner-remote routing) is reused unchanged. Each optionRow is a
+// `summon_arcanum` EXECUTOR row (no picker of its own):
+//   • not merged → one option per bound Arcanum → summon_target = its uniqueId
+//   • merged     → the active Arcanum's Pulse / Dismiss → arcanum_action = role
+function buildArcanumMenuOptions(row, ctx) {
+  const caster = ctx.reactorActor;
+  const options = [];
+  const optionRows = [];
+  if (!caster) return { options, optionRows };
+  const baseLabel = row.effect_label ?? "arcanum";
+  const costFormula = String(row.summon_cost_formula ?? row.summon_cost ?? "40");
+  const mergeAe = findMergedArcanumAe(caster);
+  if (mergeAe) {
+    const arcanum = arcanumForMergeAe(caster, mergeAe);
+    for (const role of ["pulse", "dismiss"]) {
+      const child = arcanum ? findArcanumChild(caster, arcanum, role) : null;
+      if (!child) continue;
+      options.push({
+        label: child.name,
+        description: role === "dismiss" ? "Release the Arcanum, then resolve its Dismiss effect." : "Channel the Arcanum's Pulse.",
+        icon: child.img ?? arcanum?.img ?? null,
+        disabled: false, badge: null,
+      });
+      optionRows.push({ effect_kind: "summon_arcanum", arcanum_action: role, effect_label: `${baseLabel}:${role}` });
+    }
+  } else {
+    for (const arc of listBoundArcana(caster)) {
+      const dom = String(arc.system?.props?.domain ?? "").trim();
+      options.push({ label: arc.name, description: dom ? `Domain: ${dom}` : null, icon: arc.img ?? null, disabled: false, badge: null });
+      optionRows.push({
+        effect_kind: "summon_arcanum",
+        summon_target: String(arc.system?.uniqueId ?? arc.id ?? "").trim(),
+        summon_cost_formula: costFormula,
+        effect_label: `${baseLabel}:summon:${arc.id}`,
+      });
+    }
+  }
+  return { options, optionRows };
+}
+
+// ── STEP 3 (summon half): debit the cost + apply a specific Arcanum's merge ──
+async function doSummonArcanum(arc, row, ctx) {
+  const caster = ctx.reactorActor;
+  const costFormula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
+  const costRow = { effect_label: "summon:cost", consume_resource: "mp", consume_amount: costFormula, target_ref: "self", on_empty: "abort" };
+  const derived = describeConsumeResource(costRow, ctx);
+  const paid = await consumeResourceApply(costRow, ctx, derived);
+  if (!paid?.ok) {
+    ui.notifications?.warn(`${caster.name} can't afford to summon ${arc.name} (${derived.amount} MP).`);
+    return { ok: true, kind: "summon_arcanum", abort: true, reason: "insufficient-mp" };
+  }
+  const mergeChild = findArcanumChild(caster, arc, "merge");
+  if (!mergeChild) {
+    warn(`skill-effects.summon_arcanum: "${arc.name}" has no Merge child skill`);
+    return { ok: false, kind: "summon_arcanum", reason: "no-merge-child" };
+  }
+  const mres = await runArcanumChild(mergeChild, ctx);
+  log(`skill-effects.summon_arcanum: ${caster.name} summoned "${arc.name}" (−${derived.amount} MP)`);
+  return { ok: true, kind: "summon_arcanum", mode: "summon", arcanum: arc.name, mergeResult: mres };
+}
+
+// ── summon_arcanum — the per-option EXECUTOR ───────────────────────────────
+// The SELECTION is owned by the open_action_menu (menu_dynamic_source:"arcanum")
+// on Bind and Summon — that's the verified pre-card capture + cancel + icons path.
+// This kind just performs the chosen option:
+//   • summon_target  → doSummonArcanum (debit + merge)
+//   • arcanum_action → run the active Arcanum's Pulse/Dismiss child (Dismiss also
+//                      removes the merge AE)
+// A legacy self-picker path remains for direct invocation / back-compat.
+async function applySummonArcanumEffect(row, ctx) {
+  const caster = ctx.reactorActor;
+  if (!caster) return { ok: false, kind: "summon_arcanum", reason: "no-caster" };
+
+  const summonTarget = String(row.summon_target ?? "").trim();
+  if (summonTarget) {
+    const arc = listBoundArcana(caster).find(
+      (a) => String(a.system?.uniqueId ?? "").trim() === summonTarget || a.id === summonTarget);
+    if (!arc) {
+      ui.notifications?.warn(`${caster.name}: that Arcanum is no longer bound.`);
+      return { ok: true, kind: "summon_arcanum", abort: true, reason: "arcanum-gone" };
+    }
+    return doSummonArcanum(arc, row, ctx);
+  }
+
+  const arcanumAction = String(row.arcanum_action ?? "").trim().toLowerCase();
+  if (arcanumAction === "pulse" || arcanumAction === "dismiss") {
+    const mergeAe = findMergedArcanumAe(caster);
+    const arcanum = mergeAe ? arcanumForMergeAe(caster, mergeAe) : null;
+    const child = arcanum ? findArcanumChild(caster, arcanum, arcanumAction) : null;
+    if (!child) {
+      ui.notifications?.warn(`${caster.name}: no ${arcanumAction} available.`);
+      return { ok: true, kind: "summon_arcanum", abort: true, reason: `no-${arcanumAction}` };
+    }
+    const cres = await runArcanumChild(child, ctx);
+    if (arcanumAction === "dismiss" && mergeAe) {
+      try { await mergeAe.delete(); }
+      catch (e) { warn(`skill-effects.summon_arcanum: failed to remove merge AE "${mergeAe?.name}": ${e.message}`); }
+      log(`skill-effects.summon_arcanum: ${caster.name} dismissed "${mergeAe?.name}"`);
+    }
+    return { ok: true, kind: "summon_arcanum", mode: arcanumAction, child: child.name, childResult: cres };
+  }
+
+  // ── Legacy self-picker (back-compat). Bind and Summon now selects via the
+  //    open_action_menu dynamic source; this only runs on direct invocation. ──
+  const { options, optionRows } = buildArcanumMenuOptions({ ...row, effect_label: row.effect_label ?? "arcanum_control" }, ctx);
+  if (!options.length) {
+    ui.notifications?.warn(`${caster.name} has no Arcana action available.`);
+    return { ok: true, kind: "summon_arcanum", abort: true, reason: "no-options" };
+  }
+  const menuRow = {
+    effect_label: row.effect_label ?? "arcanum_control",
+    menu_title: findMergedArcanumAe(caster) ? "Arcanum" : "Summon Arcanum",
+    menu_subtitle: row.menu_subtitle ?? null, menu_pick_count: 1, skip_when_passive: true,
+  };
+  const { chosenIndices, cancelled } = await selectMenuPicks(menuRow, ctx, options);
+  if (cancelled || !chosenIndices.length) return { ok: true, kind: "summon_arcanum", abort: true, reason: "cancelled" };
+  if (ctx?.captureMode) {
+    if (!ctx.payload) ctx.payload = {};
+    if (!ctx.payload._capturedMenuPicks) ctx.payload._capturedMenuPicks = {};
+    ctx.payload._capturedMenuPicks[menuRow.effect_label] = [options[chosenIndices[0]].label];
+    return { ok: true, kind: "summon_arcanum", captured: true, selectedLabel: options[chosenIndices[0]].label };
+  }
+  return applyEffectRow(optionRows[chosenIndices[0]], ctx);
+}
+
 async function applyOpenActionMenuEffect(row, ctx) {
   // Free-action mode (legacy reaction-grant.js parity). When `free_mode`
   // is true, the row does NOT show an inline picker; instead it
@@ -7187,6 +7520,17 @@ async function applyFreeActionEffect(row, ctx) {
   let enabledLabels = [];
   if (ref.toLowerCase() === "self") {
     presetItem = ctx.skill ?? null;
+  } else if (ref.toLowerCase().startsWith("merged_arcanum:")) {
+    // Dynamic preset: perform a child of the performer's CURRENTLY-MERGED Arcanum, by
+    // arcanum_role. `merged_arcanum:dismiss` stages that Arcanum's Dismiss child; general
+    // across every Arcanum (resolved via the live merge AE → its container → the role child),
+    // so a shared merge-AE reaction can offer "dismiss the merged Arcanum" without naming a
+    // specific skill. No merged Arcanum (or no such child) → no preset → warn + no-op.
+    const role = ref.slice("merged_arcanum:".length).trim().toLowerCase();
+    const mergeAe = findMergedArcanumAe(performer);
+    const mergedArc = mergeAe ? arcanumForMergeAe(performer, mergeAe) : null;
+    presetItem = mergedArc ? findArcanumChild(performer, mergedArc, role) : null;
+    if (!presetItem) warn(`skill-effects.free_action: action_ref "merged_arcanum:${role}" — no merged Arcanum / no ${role} child on ${performer.name}`);
   } else if (ref) {
     const parts = ref.split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
     const allTypes = parts.length > 0 && parts.every((p) => FREE_ACTION_TYPES.has(p.toLowerCase()));

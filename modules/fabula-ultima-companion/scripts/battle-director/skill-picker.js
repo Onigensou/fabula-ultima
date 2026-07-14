@@ -12,7 +12,7 @@
 import { log, warn } from "./logger.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
-import { analyzeChainCost, estimatePerformReactionCost } from "./skill-effects.js";
+import { analyzeChainCost, estimatePerformReactionCost, isMergedArcanumChild } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { getMaxActionTargets, skillTargetIsMulti } from "./snapshot.js";
@@ -197,8 +197,15 @@ export async function gatherSkillsForActor(actor) {
     // below — so an equipped wand can grant a castable Spell/Skill that
     // disappears when the gear is unequipped, with no duplicate when the actor
     // also knows the skill. "-" is CSB's empty-container sentinel, not a link.
+    //
+    // EXCEPTION — Arcanum children: an Arcanum's Merge/Pulse/Dismiss `_skill`s are
+    // container children, but while that Arcanum is MERGED its usable children
+    // (Pulse/Dismiss) are genuinely available and surface here as first-class actor
+    // skills. Gated to the merged window by isMergedArcanumChild; before summon they
+    // stay hidden like any other container child. (menu_hidden still filters the
+    // reactive Merge child out of the usable list downstream.)
     const container = String(item.system?.container ?? "").trim();
-    if (container && container !== "-") continue;
+    if (container && container !== "-" && !isMergedArcanumChild(item, actor)) continue;
     if (seenUuids.has(item.uuid)) continue;
     const cand = buildCandidateFromItem(item, actor, { source: "actor", sourceItem: null });
     if (!cand) continue;
