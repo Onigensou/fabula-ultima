@@ -2,7 +2,7 @@
 // folder, tagged for the hot-pot so future unique recipes have stock to draw on.
 //
 // Tastes are spread across all five families so no recipe combo is impossible:
-//   umami : Bean Paste, Oil        salty : Cheese
+//   umami : Bean Paste, Cooking Oil    salty : Cheese
 //   sweet : Cabbage, Flour         bitter: Cauliflower, Turnip
 //   sour  : Cucumber
 // All Common → potency 1 each (four of them = potency 4 → Tier 1 before the
@@ -26,7 +26,9 @@ const INGREDIENTS = [
     icon: `${ICON}/bean-paste_gph.webp`,
     desc: "A dark, salt-fermented bean paste aged in cedar casks. A single spoonful turns plain broth into something that tastes like it simmered all day." },
 
-  { id: "FoodOil000000001", name: "Oil", taste: "umami", cost: "25",
+  // "Cooking Oil", not "Oil" — the world already has an Oil *status effect*, and
+  // recipe matching is by NAME, so the distinct name keeps the two unambiguous.
+  { id: "FoodOil000000001", name: "Cooking Oil", taste: "umami", cost: "25",
     icon: `${ICON}/oil_gph.webp`,
     desc: "Pressed cooking oil in a stoppered flask. Carries flavour into everything it touches, and makes a campfire pan sing." },
 
