@@ -1,0 +1,28 @@
+{
+  "_id": "5TXvwHYuBKpa2L4N",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1784055612421,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "i7fbFD8Djifdw08W",
+  "img": "icons/svg/daze.svg",
+  "name": "_Arcanum Template",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "templateSystemUniqueVersion": 4207140005
+  },
+  "type": "_equippableItemTemplate"
+}

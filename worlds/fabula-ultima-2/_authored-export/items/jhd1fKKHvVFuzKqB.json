@@ -1,0 +1,59 @@
+{
+  "_id": "jhd1fKKHvVFuzKqB",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1784055616193,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ip5BRdQzbnsmkpnU",
+  "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+  "name": "Avatar of Vengeance: Pulse",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "i2iiWtzT0FMQHRqj",
+    "props": {
+      "arcanum_role": "pulse",
+      "class": "Arcanist",
+      "cost": "",
+      "description": "<p>You channel the Avatar's flame, inflicting <strong>3 stacks of Burn</strong> on up to <strong>three creatures</strong> you can see.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "3",
+          "ae_template_ref": "Burn",
+          "effect_kind": "apply_ae",
+          "effect_label": "aov_pulse",
+          "target_ref": "action_targets"
+        }
+      },
+      "id": "jhd1fKKHvVFuzKqB",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "level": "1",
+      "max_level": "1",
+      "menu_hidden": false,
+      "name": "Avatar of Vengeance: Pulse",
+      "on_activate_effect_ref": "aov_pulse",
+      "skill_target": "Up to three creatures",
+      "skill_type": "Active",
+      "uuid": "Item.jhd1fKKHvVFuzKqB"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "jhd1fKKHvVFuzKqB"
+  },
+  "type": "equippableItem"
+}

@@ -3054,6 +3054,65 @@
       "type": "equippableItem"
     },
     {
+      "_id": "cO0XV8LLrIo0EA10",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784055619841,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ip5BRdQzbnsmkpnU",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Avatar of Vengeance: Pulse",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "xZHnj03HylO0ZqVk",
+        "props": {
+          "arcanum_role": "pulse",
+          "class": "Arcanist",
+          "cost": "",
+          "description": "<p>You channel the Avatar's flame, inflicting <strong>3 stacks of Burn</strong> on up to <strong>three creatures</strong> you can see.</p>",
+          "details_roller": "Show",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "3",
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "aov_pulse",
+              "target_ref": "action_targets"
+            }
+          },
+          "id": "jhd1fKKHvVFuzKqB",
+          "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "level": "1",
+          "max_level": "1",
+          "menu_hidden": false,
+          "name": "Avatar of Vengeance: Pulse",
+          "on_activate_effect_ref": "aov_pulse",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Active",
+          "uuid": "Item.jhd1fKKHvVFuzKqB"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "jhd1fKKHvVFuzKqB"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "EGYilCNAGvl2BldF",
       "_stats": {
         "compendiumSource": "Item.nkKJD5vo65EM887m",
@@ -7560,8 +7619,18 @@
           "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "description": "<p>You call upon one of your bound <strong>Arcana</strong>, <strong>merging</strong> with it by paying its summon cost in <strong>Mind Points</strong>. While merged, you may use that Arcanum's skills.</p><p>Only one Arcanum may be merged at a time — you must <strong>Dismiss</strong> your current Arcanum before summoning another.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "arcanum_control",
+              "menu_dynamic_source": "arcanum",
+              "menu_subtitle": "Choose an Arcanum",
+              "menu_title": "Bind and Summon",
+              "summon_cost_formula": "40 - HAS_STATUS_CRISIS * SL_EMERGENCY_ARCANUM * 5"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
@@ -7571,15 +7640,17 @@
           "level": "0",
           "max_level": "1",
           "name": "Bind and Summon",
+          "on_activate_effect_ref": "arcanum_control",
           "optional_params": {},
+          "pre_activate_effect_ref": "arcanum_control",
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Other",
+          "skill_target": "Self",
+          "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -8534,6 +8605,104 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "WjrBIzz4zJvO4C4k"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ojhjj5rwEcDUULwE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784055620755,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ip5BRdQzbnsmkpnU",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Avatar of Vengeance: Dismiss",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "xZHnj03HylO0ZqVk",
+        "props": {
+          "arcanum_role": "dismiss",
+          "check_mode": "none",
+          "class": "Arcanist",
+          "cost": "",
+          "damage_bonus": "30",
+          "description": "<p><em>As a free action, before or after your action on your turn,</em> you release the Avatar in a final blaze, dealing <strong>【30】 Fire damage</strong> to <strong>all enemies</strong> and ending the merge.</p><p>As you do, you may spend <strong>【6 Zero Power】</strong> to deal additional <strong>Fire damage</strong> to each enemy equal to <strong>【10 × their Burn stacks】</strong>, then remove all <strong>Burn</strong> from those enemies.</p>",
+          "details_roller": "Show",
+          "effect_table": {
+            "0": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "aov_dismiss_unmerge",
+              "filter_tag": "arcanum-merge",
+              "target_ref": "self"
+            },
+            "1": {
+              "chain_steps": "aov_overload_cost,aov_overload_dmg,aov_overload_consume",
+              "effect_kind": "chain",
+              "effect_label": "aov_overload"
+            },
+            "2": {
+              "consume_amount": "6",
+              "consume_resource": "zero_power",
+              "effect_kind": "consume_resource",
+              "effect_label": "aov_overload_cost",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "3": {
+              "damage_amount": "TARGET_AE_CHARGES_BURN * 10",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "aov_overload_dmg"
+            },
+            "4": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "aov_overload_consume",
+              "filter_tag": "burn",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "id": "exBxZ5rirKCIKQJq",
+          "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "level": "1",
+          "max_level": "1",
+          "menu_hidden": true,
+          "name": "Avatar of Vengeance: Dismiss",
+          "on_activate_effect_ref": "aov_dismiss_unmerge",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TRIGGER_IS_SELF == 1",
+              "reaction_effect_ref": "aov_overload",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_source_skill": "Avatar of Vengeance: Dismiss",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "skill_target": "All enemies",
+          "skill_type": "Active",
+          "type_damage": "fire",
+          "uuid": "Item.exBxZ5rirKCIKQJq"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "exBxZ5rirKCIKQJq"
       },
       "type": "equippableItem"
     },
@@ -11414,6 +11583,177 @@
       "type": "equippableItem"
     },
     {
+      "_id": "VfvSYb1r8r32ZHOW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784055618918,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "5OXacTiNFM8EAMbf",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Merged with the <strong>Avatar of Vengeance</strong>. You recover HP &amp; MP whenever <strong>Burn</strong> triggers.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "5OXacTiNFM8EAMbf",
+              "originalParentId": "UoFV3k6ELMKMLhRB",
+              "originalUuid": "Item.UoFV3k6ELMKMLhRB.ActiveEffect.5OXacTiNFM8EAMbf"
+            },
+            "fabula-ultima-companion": {
+              "arcanumMerge": true,
+              "arcanumUniqueId": "i2iiWtzT0FMQHRqj",
+              "directorPermanent": true,
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "action_ref": "merged_arcanum:dismiss",
+                    "effect_kind": "free_action",
+                    "effect_label": "dismiss_free"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "dismiss_free",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_trigger": "turn_start"
+                  },
+                  "1": {
+                    "reaction_effect_ref": "dismiss_free",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_trigger": "turn_end"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "name": "Avatar of Vengeance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-arcanum-merge"
+          ],
+          "system": {
+            "tags": [
+              "arcanum-merge",
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ip5BRdQzbnsmkpnU",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Avatar of Vengeance: Merge",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "xZHnj03HylO0ZqVk",
+        "props": {
+          "arcanum_role": "merge",
+          "class": "Arcanist",
+          "cost": "",
+          "description": "<p>You <strong>merge</strong> with the Avatar of Vengeance. While merged, whenever <strong>any creature's Burn</strong> triggers, you recover <strong>【2% of your Max HP】</strong> and <strong>【2% of your Max MP】</strong> <em>(rounded up)</em>.</p>",
+          "details_roller": "Show",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Avatar of Vengeance",
+              "effect_kind": "apply_ae",
+              "effect_label": "aov_merge_apply",
+              "target_ref": "self"
+            },
+            "1": {
+              "chain_steps": "aov_regen_hp,aov_regen_mp",
+              "effect_kind": "chain",
+              "effect_label": "aov_regen"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "aov_regen_hp",
+              "grant_amount": "ceil(MAX_HP * 0.02)",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            },
+            "3": {
+              "effect_kind": "grant",
+              "effect_label": "aov_regen_mp",
+              "grant_amount": "ceil(MAX_MP * 0.02)",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "id": "UoFV3k6ELMKMLhRB",
+          "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "level": "1",
+          "max_level": "1",
+          "menu_hidden": true,
+          "name": "Avatar of Vengeance: Merge",
+          "on_activate_effect_ref": "aov_merge_apply",
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "aov_regen",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_status_filter": "Burn",
+              "reaction_trigger": "creature_status_triggered"
+            }
+          },
+          "skill_target": "",
+          "skill_type": "Passive",
+          "uuid": "Item.UoFV3k6ELMKMLhRB"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "UoFV3k6ELMKMLhRB"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "vliuwtKw7PKGGKcU",
       "_stats": {
         "compendiumSource": null,
@@ -12171,6 +12511,50 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "CMeM0siw1nq7rr1G"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "xZHnj03HylO0ZqVk",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784055617998,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "isArcanum": true
+        }
+      },
+      "folder": "ip5BRdQzbnsmkpnU",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Avatar of Vengeance",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "class": "Arcanum",
+          "description": "<p><strong>Domain:</strong> Vengeance, Burn.</p><p>An Arcanum of wrathful flame. While merged with the <strong>Avatar of Vengeance</strong>, every <strong>Burn</strong> that flares across the battlefield feeds your fury — spread the flames with <strong>Pulse</strong>, then release the Avatar in a blaze with <strong>Dismiss</strong>.</p>",
+          "domain": "Vengeance, Burn",
+          "element": "fire",
+          "id": "i2iiWtzT0FMQHRqj",
+          "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "name": "Avatar of Vengeance",
+          "uuid": "Item.i2iiWtzT0FMQHRqj"
+        },
+        "template": "5TXvwHYuBKpa2L4N",
+        "templateSystemUniqueVersion": 4207140005,
+        "unique": true,
+        "uniqueId": "i2iiWtzT0FMQHRqj"
       },
       "type": "equippableItem"
     },

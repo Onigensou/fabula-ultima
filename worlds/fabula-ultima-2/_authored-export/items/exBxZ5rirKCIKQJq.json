@@ -1,0 +1,98 @@
+{
+  "_id": "exBxZ5rirKCIKQJq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1784055616933,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ip5BRdQzbnsmkpnU",
+  "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+  "name": "Avatar of Vengeance: Dismiss",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "i2iiWtzT0FMQHRqj",
+    "props": {
+      "arcanum_role": "dismiss",
+      "check_mode": "none",
+      "class": "Arcanist",
+      "cost": "",
+      "damage_bonus": "30",
+      "description": "<p><em>As a free action, before or after your action on your turn,</em> you release the Avatar in a final blaze, dealing <strong>【30】 Fire damage</strong> to <strong>all enemies</strong> and ending the merge.</p><p>As you do, you may spend <strong>【6 Zero Power】</strong> to deal additional <strong>Fire damage</strong> to each enemy equal to <strong>【10 × their Burn stacks】</strong>, then remove all <strong>Burn</strong> from those enemies.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "aov_dismiss_unmerge",
+          "filter_tag": "arcanum-merge",
+          "target_ref": "self"
+        },
+        "1": {
+          "chain_steps": "aov_overload_cost,aov_overload_dmg,aov_overload_consume",
+          "effect_kind": "chain",
+          "effect_label": "aov_overload"
+        },
+        "2": {
+          "consume_amount": "6",
+          "consume_resource": "zero_power",
+          "effect_kind": "consume_resource",
+          "effect_label": "aov_overload_cost",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "3": {
+          "damage_amount": "TARGET_AE_CHARGES_BURN * 10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "aov_overload_dmg"
+        },
+        "4": {
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "aov_overload_consume",
+          "filter_tag": "burn",
+          "target_ref": "hit_action_targets"
+        }
+      },
+      "id": "exBxZ5rirKCIKQJq",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "level": "1",
+      "max_level": "1",
+      "menu_hidden": true,
+      "name": "Avatar of Vengeance: Dismiss",
+      "on_activate_effect_ref": "aov_dismiss_unmerge",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "TRIGGER_IS_SELF == 1",
+          "reaction_effect_ref": "aov_overload",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_source_skill": "Avatar of Vengeance: Dismiss",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_target": "All enemies",
+      "skill_type": "Active",
+      "type_damage": "fire",
+      "uuid": "Item.exBxZ5rirKCIKQJq"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "exBxZ5rirKCIKQJq"
+  },
+  "type": "equippableItem"
+}

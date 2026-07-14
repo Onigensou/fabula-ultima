@@ -1,0 +1,44 @@
+{
+  "_id": "i2iiWtzT0FMQHRqj",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1784055614623,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "isArcanum": true
+    }
+  },
+  "folder": "ip5BRdQzbnsmkpnU",
+  "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+  "name": "Avatar of Vengeance",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Arcanum",
+      "description": "<p><strong>Domain:</strong> Vengeance, Burn.</p><p>An Arcanum of wrathful flame. While merged with the <strong>Avatar of Vengeance</strong>, every <strong>Burn</strong> that flares across the battlefield feeds your fury — spread the flames with <strong>Pulse</strong>, then release the Avatar in a blaze with <strong>Dismiss</strong>.</p>",
+      "domain": "Vengeance, Burn",
+      "element": "fire",
+      "id": "i2iiWtzT0FMQHRqj",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Avatar of Vengeance",
+      "uuid": "Item.i2iiWtzT0FMQHRqj"
+    },
+    "template": "5TXvwHYuBKpa2L4N",
+    "templateSystemUniqueVersion": 4207140005,
+    "unique": true,
+    "uniqueId": "i2iiWtzT0FMQHRqj"
+  },
+  "type": "equippableItem"
+}

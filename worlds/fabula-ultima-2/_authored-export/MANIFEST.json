@@ -153,6 +153,12 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
+        "id": "tEfbtISAcxgXYJnq",
+        "name": "Arcanum",
+        "type": "Item",
+        "parent": "w7jZN8CMjtlWQtyW"
+      },
+      {
         "id": "8VHBObYtwGPFESMC",
         "name": "Armor",
         "type": "Item",
@@ -175,6 +181,12 @@
         "name": "Aunction Trick",
         "type": "Item",
         "parent": "VzpCG9mySsd9sQSL"
+      },
+      {
+        "id": "ip5BRdQzbnsmkpnU",
+        "name": "Avatar of Vengeance",
+        "type": "Item",
+        "parent": "tEfbtISAcxgXYJnq"
       },
       {
         "id": "3N7IEgYzTwCMSUC4",
@@ -2243,6 +2255,12 @@
         "effects": 0
       },
       {
+        "id": "5TXvwHYuBKpa2L4N",
+        "name": "_Arcanum Template",
+        "type": "_equippableItemTemplate",
+        "effects": 0
+      },
+      {
         "id": "oG4U8b6if8enaswT",
         "name": "_Cooking Config",
         "type": "equippableItem",
@@ -2672,7 +2690,13 @@
         "id": "dhGCKitpetFxtw3o",
         "name": "Apple o' Archer",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
+      },
+      {
+        "id": "ykKEyw9o3OVdHwHY",
+        "name": "Apple o' Archer",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "mgLKRtSDNp2zAkbC",
@@ -2919,6 +2943,30 @@
         "name": "Avalon",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "i2iiWtzT0FMQHRqj",
+        "name": "Avatar of Vengeance",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "exBxZ5rirKCIKQJq",
+        "name": "Avatar of Vengeance: Dismiss",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "UoFV3k6ELMKMLhRB",
+        "name": "Avatar of Vengeance: Merge",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "jhd1fKKHvVFuzKqB",
+        "name": "Avatar of Vengeance: Pulse",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "1ruFh69np3Bf6oVn",
@@ -16863,6 +16911,22 @@
           {
             "id": "OCQPqSoXnu62MS5q",
             "name": "Automaton Suit"
+          },
+          {
+            "id": "xZHnj03HylO0ZqVk",
+            "name": "Avatar of Vengeance"
+          },
+          {
+            "id": "ojhjj5rwEcDUULwE",
+            "name": "Avatar of Vengeance: Dismiss"
+          },
+          {
+            "id": "VfvSYb1r8r32ZHOW",
+            "name": "Avatar of Vengeance: Merge"
+          },
+          {
+            "id": "cO0XV8LLrIo0EA10",
+            "name": "Avatar of Vengeance: Pulse"
           },
           {
             "id": "H0DADhpEoUIbwhex",

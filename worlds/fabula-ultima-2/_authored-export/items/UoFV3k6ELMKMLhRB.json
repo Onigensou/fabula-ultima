@@ -1,0 +1,171 @@
+{
+  "_id": "UoFV3k6ELMKMLhRB",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1784055615477,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "5OXacTiNFM8EAMbf",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784055616157,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Merged with the <strong>Avatar of Vengeance</strong>. You recover HP &amp; MP whenever <strong>Burn</strong> triggers.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "5OXacTiNFM8EAMbf",
+          "originalParentId": "UoFV3k6ELMKMLhRB",
+          "originalUuid": "Item.UoFV3k6ELMKMLhRB.ActiveEffect.5OXacTiNFM8EAMbf"
+        },
+        "fabula-ultima-companion": {
+          "arcanumMerge": true,
+          "arcanumUniqueId": "i2iiWtzT0FMQHRqj",
+          "directorPermanent": true,
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "action_ref": "merged_arcanum:dismiss",
+                "effect_kind": "free_action",
+                "effect_label": "dismiss_free"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "dismiss_free",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              },
+              "1": {
+                "reaction_effect_ref": "dismiss_free",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_end"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Avatar of Vengeance",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-arcanum-merge"
+      ],
+      "system": {
+        "tags": [
+          "arcanum-merge",
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ip5BRdQzbnsmkpnU",
+  "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+  "name": "Avatar of Vengeance: Merge",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "i2iiWtzT0FMQHRqj",
+    "props": {
+      "arcanum_role": "merge",
+      "class": "Arcanist",
+      "cost": "",
+      "description": "<p>You <strong>merge</strong> with the Avatar of Vengeance. While merged, whenever <strong>any creature's Burn</strong> triggers, you recover <strong>【2% of your Max HP】</strong> and <strong>【2% of your Max MP】</strong> <em>(rounded up)</em>.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Avatar of Vengeance",
+          "effect_kind": "apply_ae",
+          "effect_label": "aov_merge_apply",
+          "target_ref": "self"
+        },
+        "1": {
+          "chain_steps": "aov_regen_hp,aov_regen_mp",
+          "effect_kind": "chain",
+          "effect_label": "aov_regen"
+        },
+        "2": {
+          "effect_kind": "grant",
+          "effect_label": "aov_regen_hp",
+          "grant_amount": "ceil(MAX_HP * 0.02)",
+          "grant_resource": "hp",
+          "target_ref": "self"
+        },
+        "3": {
+          "effect_kind": "grant",
+          "effect_label": "aov_regen_mp",
+          "grant_amount": "ceil(MAX_MP * 0.02)",
+          "grant_resource": "mp",
+          "target_ref": "self"
+        }
+      },
+      "id": "UoFV3k6ELMKMLhRB",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "level": "1",
+      "max_level": "1",
+      "menu_hidden": true,
+      "name": "Avatar of Vengeance: Merge",
+      "on_activate_effect_ref": "aov_merge_apply",
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "aov_regen",
+          "reaction_passive_mode": "force",
+          "reaction_source": "",
+          "reaction_status_filter": "Burn",
+          "reaction_trigger": "creature_status_triggered"
+        }
+      },
+      "skill_target": "",
+      "skill_type": "Passive",
+      "uuid": "Item.UoFV3k6ELMKMLhRB"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "UoFV3k6ELMKMLhRB"
+  },
+  "type": "equippableItem"
+}
