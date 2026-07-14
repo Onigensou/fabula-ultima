@@ -1,9 +1,9 @@
 {
-  "_id": "oG4U8b6if8enaswT",
+  "_id": "FoodFlour0000001",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1781314424625,
+    "createdTime": 1784014632487,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -11,59 +11,14 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
-    },
-    "fabula-ultima-companion": {
-      "cookingConfig": {
-        "goopDishId": "Vp2ssK4jo3hm2gp0",
-        "matrix": {
-          "bitter": {
-            "1": "Q5UDJVTGRDxoLCGQ",
-            "2": "wZgT2o2OENmdfjYR",
-            "3": "wIkld1R2JP4M2LVz"
-          },
-          "salty": {
-            "1": "KlYnR1HMsffA4h45",
-            "2": "yB7IA4xUxtF69kaq",
-            "3": "jAooP1bMhGYfaXJ0"
-          },
-          "sour": {
-            "1": "G0tvPWqwJHkdwoFQ",
-            "2": "mEasUD0nS0YKOKjX",
-            "3": "L8Eti1B1z8U6G9fA"
-          },
-          "sweet": {
-            "1": "oel2cAzIcVh85ocz",
-            "2": "AXoP4nNE3BflbOfM",
-            "3": "Ia0PyiGiWa2K7I5L"
-          },
-          "umami": {
-            "1": "GBixGFmKRv0B1Lgj",
-            "2": "eMh3Xb0aIcqxWRnM",
-            "3": "H45kwofTyj8J4OVf"
-          }
-        },
-        "mysteryDishId": "spYAfHOWI0OG5M9X",
-        "recipes": [
-          {
-            "dishId": "G1gaPudd1ngD1sh0",
-            "ingredients": [
-              {
-                "name": "Jellopy",
-                "qty": 4
-              }
-            ],
-            "name": "Giga Pudding"
-          }
-        ]
-      }
     }
   },
-  "folder": "UNuBsFNeuyDDZ5AZ",
-  "img": "icons/svg/book.svg",
-  "name": "_Cooking Config",
+  "folder": "36rowiHAcXnIPsKK",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Ingredient/flour_gph.webp",
+  "name": "Flour",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
-    "default": 3
+    "default": 0
   },
   "sort": 0,
   "system": {
@@ -78,12 +33,10 @@
       "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
-      "custom_logic_action": "",
-      "custom_logic_resolution": "",
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<p>Cooking system tunables live in this item's flags (fabula-ultima-companion.cookingConfig). Do not delete.</p>",
+      "description": "<p><em>A sack of finely milled flour. The humble beginning of every bread, dumpling and pudding worth eating.</em></p>",
       "dragon_ef": "100",
       "effect_table": {},
       "elemental_ef": "100",
@@ -96,14 +49,14 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "id": "oG4U8b6if8enaswT",
-      "img": "icons/svg/book.svg",
-      "ingredient_taste": "",
+      "id": "FoodFlour0000001",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Ingredient/flour_gph.webp",
+      "ingredient_taste": "sweet",
       "ingredient_taste2": "",
       "insect_ef": "100",
       "ip_cost": "0",
       "isEquipped": false,
-      "isIngredient": false,
+      "isIngredient": true,
       "isKey": false,
       "isMartial": false,
       "isModule": false,
@@ -112,18 +65,16 @@
       "isUnique": false,
       "item_baseDef": "0",
       "item_baseMdef": "0",
-      "item_cost": "0",
+      "item_cost": "10",
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Common",
-      "item_type": "misc",
+      "item_type": "material",
       "mimic_ef": "100",
       "monster_ef": "100",
-      "name": "_Cooking Config",
+      "name": "Flour",
       "optional_params": {},
-      "passive_logic_action": "",
-      "passive_logic_resolution": "",
       "plant_ef": "100",
       "reaction_config_table": {},
       "recipe_dish_uuid": "",
@@ -134,19 +85,20 @@
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
       "set_name": "<Set Name>",
+      "skill_tags": "",
       "skill_target": "One Enemy",
       "soldier_ef": "100",
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
-      "uuid": "Item.oG4U8b6if8enaswT",
+      "uuid": "Item.FoodFlour0000001",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },
     "template": "ZoiV53VaLzeRsEps",
-    "templateSystemUniqueVersion": 987283856,
+    "templateSystemUniqueVersion": 3202566307,
     "unique": false,
-    "uniqueId": "oG4U8b6if8enaswT"
+    "uniqueId": "FoodFlour0000001"
   },
   "type": "equippableItem"
 }

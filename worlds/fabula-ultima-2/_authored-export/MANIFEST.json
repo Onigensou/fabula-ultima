@@ -3131,6 +3131,12 @@
         "effects": 0
       },
       {
+        "id": "FoodBeanPaste001",
+        "name": "Bean Paste",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "1432ZQUHr4ZjqUbF",
         "name": "Bear Paw",
         "type": "equippableItem",
@@ -3671,6 +3677,12 @@
         "effects": 0
       },
       {
+        "id": "FoodCabbage00001",
+        "name": "Cabbage",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "40mxu0MfpsS2EOi8",
         "name": "Caduceus",
         "type": "equippableItem",
@@ -3791,6 +3803,12 @@
         "effects": 0
       },
       {
+        "id": "FoodCauliflowr01",
+        "name": "Cauliflower",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "W8lnSR9AbSzraxF1",
         "name": "Ceaseless Battlefield",
         "type": "equippableItem",
@@ -3865,6 +3883,12 @@
       {
         "id": "9cHSgi4ag97uKGW7",
         "name": "Cheap Shot",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FoodCheese000001",
+        "name": "Cheese",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4043,6 +4067,12 @@
         "effects": 0
       },
       {
+        "id": "FoodOil000000001",
+        "name": "Cooking Oil",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Hurc7SbzCtjIAaC3",
         "name": "Copycat",
         "type": "equippableItem",
@@ -4189,6 +4219,12 @@
       {
         "id": "DAZcD3sQRwPfW9Jz",
         "name": "Crystal Powder",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FoodCucumber0001",
+        "name": "Cucumber",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5321,6 +5357,12 @@
         "effects": 0
       },
       {
+        "id": "FoodFlour0000001",
+        "name": "Flour",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "e6klBcOHJxZ82I6K",
         "name": "Fly Trap",
         "type": "equippableItem",
@@ -5685,6 +5727,12 @@
         "name": "Giants Belt",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "G1gaPudd1ngD1sh0",
+        "name": "Giga Pudding",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "FRwmrAhwe8xSLEXZ",
@@ -11329,6 +11377,12 @@
       {
         "id": "tSxUTz2i8UVcmnG3",
         "name": "Turn Undead",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FoodTurnip000001",
+        "name": "Turnip",
         "type": "equippableItem",
         "effects": 0
       },
