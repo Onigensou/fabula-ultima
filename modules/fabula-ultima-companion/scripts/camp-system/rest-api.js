@@ -63,10 +63,12 @@
   }
 
   function isPermanent(effect) {
-    // The "permanent" status OR the director-permanent flag (equipment-managed
-    // effects like an Equipment Set's "always Wet") survive Rest cleanup.
-    return effect.statuses?.has?.("permanent") === true
-      || effect.flags?.["fabula-ultima-companion"]?.directorPermanent === true;
+    // Survives the Rest sweep: director-permanent (equipment-managed, e.g. an
+    // Equipment Set's "always Wet") or rest-bound (the "permanent" status /
+    // a campRestCharges flag — food buffs, expired below by _tickCampRestEffects).
+    // Shared with the dungeon turn tick — see scripts/shared/ae-lifetime.js.
+    const AEL = globalThis.FUCompanion.AELifetime;
+    return AEL.isDirectorPermanent(effect) || AEL.isRestBound(effect);
   }
 
   function getAudioHelper() {
@@ -256,8 +258,8 @@
   //   campRestCharges: 0  → expires at the very next rest
   //   campRestCharges: 1  → survives 1 rest, expires at the following one
   //   campRestCharges: N  → survives N rests, expires at rest N+1
-  // The AE must also carry statuses: ["permanent"] so _clearTemporaryEffects
-  // does not remove it on the same pass.
+  // The flag alone protects the AE from the _clearTemporaryEffects pass above
+  // and from the dungeon turn tick (both go through AELifetime.isRestBound).
   async function _tickCampRestEffects(actor) {
     const MODULE_ID = "fabula-ultima-companion";
     const snapshot  = Array.from(actor.effects);

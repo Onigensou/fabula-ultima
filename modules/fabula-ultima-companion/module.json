@@ -24,6 +24,7 @@
     "scripts/lint/equipment-set-lint.js",
     "scripts/shared-utils.js",
     "scripts/shared/primary-gm.js",
+    "scripts/shared/ae-lifetime.js",
     "scripts/scene-prefetch.js",
     "scripts/reload-broadcast.js",
     "scripts/reload-button.js",

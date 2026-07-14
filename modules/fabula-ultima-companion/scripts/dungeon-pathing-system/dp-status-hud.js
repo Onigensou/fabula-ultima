@@ -197,6 +197,14 @@
   padding: 0 2px;
 }
 
+/* Rest-bound effects (food buffs) carry no countdown — they last until the next
+   rest, so they show a sun instead of a number. */
+.oni-dp-hud-badge.is-rest-bound {
+  border-color: rgba(240,190,90,0.85);
+  color: #ffd98a;
+  font-size: 9px;
+}
+
 /* ── AE Tooltip ── */
 #oni-dp-hud-tooltip {
   position: fixed;
@@ -418,11 +426,12 @@
     return tags.some(t => VISIBLE_TAGS.has(String(t).toLowerCase().trim()));
   }
 
+  // A countdown badge is only meaningful for effects a dungeon step actually
+  // ticks down. Permanent / rest-bound / item-transferred / charge-governed AEs
+  // get no number — see scripts/shared/ae-lifetime.js.
   function getAETurns(eff) {
+    if (!globalThis.FUCompanion.AELifetime.isDungeonTickable(eff)) return null;
     const flags = eff?.flags?.[FLAG_NS] ?? {};
-    const mode  = String(flags.lifetimeMode ?? "").trim().toLowerCase();
-    if (mode === "on_activation") return null;
-    if (flags.directorPermanent === true || mode === "round_end") return null;
     const stamp = flags.directorAppliedBy;
     if (stamp && stamp.turnsRemaining != null) return Number(stamp.turnsRemaining);
     if (flags.dungeonTurnsRemaining != null) return Number(flags.dungeonTurnsRemaining);
@@ -518,7 +527,9 @@
         const icon  = eff.icon ?? eff.img ?? "icons/svg/mystery-man.svg";
         const label = eff.name ?? "Effect";
         const turns = getAETurns(eff);
-        const badge = turns != null ? `<span class="oni-dp-hud-badge">${turns}</span>` : "";
+        const badge = globalThis.FUCompanion.AELifetime.isRestBound(eff)
+          ? `<span class="oni-dp-hud-badge is-rest-bound">☀</span>`
+          : turns != null ? `<span class="oni-dp-hud-badge">${turns}</span>` : "";
         const uuid  = eff?.uuid ?? eff?.id ?? "";
         return `<div class="oni-dp-hud-ae" data-eff-uuid="${uuid}">
           <img src="${icon}" alt="${label}">${badge}

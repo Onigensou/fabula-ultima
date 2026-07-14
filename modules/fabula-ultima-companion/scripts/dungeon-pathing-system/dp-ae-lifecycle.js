@@ -21,10 +21,10 @@
 //                       tickAEsOnActor falls back to lazy-init only for AEs
 //                       applied outside the tile engine (camp events, macros).
 //
-// Skip conditions (matching battle director behaviour):
-//   directorPermanent === true   — permanent; never auto-expires
-//   lifetimeMode "on_activation" — charge-governed; expires via consume_charge
-//   lifetimeMode "round_end"     — group-round mechanic, not per-character-step
+// WHAT is tickable is decided by FUCompanion.AELifetime.isDungeonTickable() —
+// permanent, rest-bound (food buffs), item-transferred and charge-governed AEs
+// are all left alone. See scripts/shared/ae-lifetime.js for the four classes.
+// Do not re-inline that rule here; the food-buff bug was two copies disagreeing.
 //
 // Only the GM client executes writes. Because Hooks.callAll is local-only,
 // the TURN_END hook fires on the player's client; dp-socket tickPartyAEs()
@@ -36,6 +36,8 @@
   const FLAG_NS   = MODULE_ID;
   const TAG       = "[DungeonPathing][AELifecycle]";
   const DEFAULT_DURATION = 3;
+
+  const isDungeonTickable = (eff) => globalThis.FUCompanion.AELifetime.isDungeonTickable(eff);
 
   // ── Single-actor tick ──────────────────────────────────────────────────────
   // Can also be called manually for testing or custom scenarios.
@@ -49,13 +51,9 @@
     let   ticked   = 0;
 
     for (const eff of actor.effects ?? []) {
+      if (!isDungeonTickable(eff)) continue;
+
       const flags = eff.flags?.[FLAG_NS] ?? {};
-
-      // Skip permanent / non-per-turn AEs
-      if (flags.directorPermanent === true) continue;
-      const mode = String(flags.lifetimeMode ?? "").trim().toLowerCase();
-      if (mode === "on_activation" || mode === "round_end") continue;
-
       const stamp = flags.directorAppliedBy;
       let turnsRemaining;
       let updatePath;
@@ -124,12 +122,7 @@
     // Short-circuit: if no actor has a tickable AE, skip all DB roundtrips.
     // This is the common case when walking through dungeon without active debuffs.
     const anyTickable = members.some(({ actor }) =>
-      (actor?.effects ?? []).some(eff => {
-        const f = eff.flags?.[FLAG_NS] ?? {};
-        if (f.directorPermanent === true) return false;
-        const mode = String(f.lifetimeMode ?? "").trim().toLowerCase();
-        return mode !== "on_activation" && mode !== "round_end";
-      })
+      (actor?.effects ?? []).some(isDungeonTickable)
     );
     if (!anyTickable) return;
 
