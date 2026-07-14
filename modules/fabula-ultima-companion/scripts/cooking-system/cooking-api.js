@@ -33,6 +33,7 @@
   // ── Config ─────────────────────────────────────────────────────────────────
   const DEFAULT_CONFIG = {
     matrix: {},
+    recipes: [],
     mysteryDishId: null,
     goopDishId: null,
     tierBreakpoints: [8, 12],
@@ -95,20 +96,40 @@
       });
   }
 
+  // ── Recipes ────────────────────────────────────────────────────────────────
+  // A recipe entry accepts either an already-flat name list (`ingredientNames`,
+  // used by recipe ITEMS whose CSB itemContainer can only hold one row per item)
+  // or a counted list (`ingredients: [{ name, qty }]`, used by _Cooking Config).
+  // Counted entries expand to repeated names so a pot of 4 Jellopy can match a
+  // "Jellopy x4" recipe — the matcher below compares exact multisets.
+  function _recipeIngredientNames(r) {
+    if (Array.isArray(r?.ingredients) && r.ingredients.length) {
+      return r.ingredients.flatMap(row => {
+        const name = row?.name;
+        const qty = Math.max(1, parseInt(row?.qty) || 1);
+        return name ? Array(qty).fill(name) : [];
+      });
+    }
+    return [...(r?.ingredientNames ?? [])].filter(Boolean);
+  }
+
   // ── Pure resolver ──────────────────────────────────────────────────────────
   function resolve(contributions, opts = {}) {
     const cfg = opts.config ?? getConfig();
     const rng = opts.rng ?? Math.random;
     const check = opts.cookerCheck ?? null;
-    const recipes = opts.knownRecipes ?? [];
+    // Config recipes are intrinsic to the system (nobody has to "know" them);
+    // knownRecipes are the actor-owned recipe-item path.
+    const recipes = [...(cfg.recipes ?? []), ...(opts.knownRecipes ?? [])];
     const contribs = (contributions ?? []).filter(Boolean);
     const breakdown = [];
 
     let potencyMod = 0, fumbleWeird = 0;
     if (check) {
       if (check.isFumble) {
+        // A fumble always ruins the pot (see the goop gate below), so the
+        // weirdness bump is bookkeeping only — don't narrate it twice.
         fumbleWeird = cfg.cookerCheck.fumbleWeird;
-        breakdown.push(`Cooker fumbled — +${fumbleWeird} weirdness`);
       } else if (check.isCrit) {
         potencyMod = cfg.cookerCheck.critPotency;
         breakdown.push(`Critical cooking! +${potencyMod} potency`);
@@ -119,13 +140,17 @@
       }
     }
 
-    // Exact recipe match (bypasses goop + check)
+    // Exact recipe match (bypasses the taste math and the weirdness/goop check).
+    // A fumbled cooker check ruins even a unique recipe, so skip matching there.
     const potNames = contribs.map(c => c.name).sort();
-    for (const r of recipes) {
-      const req = [...(r.ingredientNames ?? [])].sort();
-      if (req.length && req.length === potNames.length && req.every((n,i) => n === potNames[i])) {
-        breakdown.push(`Recipe match: ${r.name}`);
-        return { kind: "recipe", dishId: r.dishUuid, recipeName: r.name, potency: null, weirdness: 0, breakdown };
+    if (!check?.isFumble) {
+      for (const r of recipes) {
+        const req = _recipeIngredientNames(r).sort();
+        if (req.length && req.length === potNames.length && req.every((n,i) => n === potNames[i])) {
+          breakdown.push(`Recipe match: ${r.name}`);
+          const dishId = r.dishUuid ?? r.dishId ?? null;
+          return { kind: "recipe", dishId, recipeName: r.name, potency: null, weirdness: 0, breakdown };
+        }
       }
     }
 
@@ -149,8 +174,10 @@
       breakdown.push(`${line} (+${rp} potency)`);
     }
 
-    if (weirdness >= cfg.weirdThreshold) {
-      breakdown.push(`Weirdness ${weirdness} ≥ ${cfg.weirdThreshold} — the pot is ruined`);
+    if (check?.isFumble || weirdness >= cfg.weirdThreshold) {
+      breakdown.push(check?.isFumble
+        ? "Cooker fumbled — the pot is ruined"
+        : `Weirdness ${weirdness} ≥ ${cfg.weirdThreshold} — the pot is ruined`);
       return { kind: "goop", dishId: cfg.goopDishId, potency, weirdness, points, breakdown };
     }
 
@@ -383,7 +410,6 @@
     const contribDescs = picks.map(p => describeItem(p.item, p.entry.actor.uuid));
     const knownRecipes = _gatherKnownRecipes(entries.map(e => e.actor));
     const outcome = resolve(contribDescs, { config: cfg, cookerCheck, knownRecipes });
-    if (cookerCheck?.isFumble) outcome.kind = "goop";
 
     // --- consume (default: false for dev safety) ---
     if (opts.consume === true) {
@@ -578,7 +604,6 @@
     const contribDescs = picks.map(p => describeItem(p.item, p.entry.actor.uuid));
     const knownRecipes = _gatherKnownRecipes(entries.map(e => e.actor));
     const outcome = resolve(contribDescs, { config: cfg, cookerCheck, knownRecipes });
-    if (cookerCheck?.isFumble) outcome.kind = "goop";
 
     // --- consume ---
     for (const p of picks) await _consume(p.entry.actor, p.item);

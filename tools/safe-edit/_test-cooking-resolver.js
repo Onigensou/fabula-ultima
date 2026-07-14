@@ -97,5 +97,35 @@ expect("taste2 weights", [r.kind, r.dishId, r.points.sour, r.points.sweet], ["di
 r = cooking.resolve([ing("A", ""), ing("B", "sweet"), ing("C", "sweet"), ing("D", "umami")], opts());
 expect("blank taste = weird", [r.kind, r.weirdness], ["dish", 1]);
 
+// ── Config-borne unique recipes (Giga Pudding: Jellopy x4) ──────────────────
+const CFG_R = {
+  ...CFG,
+  recipes: [{ name: "Giga Pudding", dishId: "gigapudding", ingredients: [{ name: "Jellopy", qty: 4 }] }],
+};
+const optsR = (extra = {}) => ({ config: CFG_R, rng: () => 0.0, ...extra });
+const jellopy = () => ing("Jellopy", "sweet");
+
+// 14. 4x Jellopy → Giga Pudding (counted recipe, nobody has to "know" it)
+r = cooking.resolve([jellopy(), jellopy(), jellopy(), jellopy()], optsR());
+expect("giga pudding x4", [r.kind, r.dishId, r.recipeName], ["recipe", "gigapudding", "Giga Pudding"]);
+
+// 15. Only 3 Jellopy → no match, falls through to normal sweet taste math
+r = cooking.resolve([jellopy(), jellopy(), jellopy()], optsR());
+expect("3x jellopy = no recipe", [r.kind, r.dishId], ["dish", "sweet1"]);
+
+// 16. 3 Jellopy + 1 other → no match (exact multiset, not a subset)
+r = cooking.resolve([jellopy(), jellopy(), jellopy(), ing("Nibbers", "umami")], optsR());
+expect("3x jellopy + other", [r.kind, r.dishId], ["dish", "sweet1"]);
+
+// 17. Fumble ruins even the unique recipe — and yields the REAL goop dish id
+r = cooking.resolve([jellopy(), jellopy(), jellopy(), jellopy()],
+  optsR({ cookerCheck: { total: 2, isCrit: false, isFumble: true } }));
+expect("fumble beats recipe", [r.kind, r.dishId], ["goop", "goop"]);
+
+// 18. Fumble on a plain dish now goops properly (previously kept the dish id)
+r = cooking.resolve([ing("A", "umami"), ing("B", "umami"), ing("C", "umami"), ing("D", "umami")],
+  optsR({ cookerCheck: { total: 3, isCrit: false, isFumble: true } }));
+expect("fumble goops dish", [r.kind, r.dishId], ["goop", "goop"]);
+
 console.log(failures ? `\n${failures} FAILURES` : "\nALL PASS");
 process.exit(failures ? 1 : 0);
