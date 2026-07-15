@@ -55,6 +55,7 @@ import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
+import { initHpBarTuner } from "./damage-numbers/hp-bar-tuner.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
 // Damage-number audition (look-only) tool is intentionally not registered as a
@@ -1526,6 +1527,12 @@ Hooks.once("ready", () => {
   // hostile NPC's token on all screens.
   try { initNpcHpBar(); }
   catch (e) { warn("initNpcHpBar on ready threw", e); }
+
+  // HP Bar Tuner — GM dev tool with sliders for the bar's world-scoped look
+  // config (position / height / width / roundness / scale); live-previews on
+  // the selected token.
+  try { initHpBarTuner(); }
+  catch (e) { warn("initHpBarTuner on ready threw", e); }
 
   // Boss Domination VFX — socketlib handlers (energy burst, Escape fade) +
   // the AE-driven red outline watcher, on every client.

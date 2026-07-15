@@ -69,10 +69,32 @@ const QUANT_STEPS = 50;
 
 // Bar geometry (screen px). Width follows the token's on-screen width so a
 // boss token gets a wider bar, clamped so tiny/huge zooms stay readable.
-const BAR_MIN_W = 64;
-const BAR_MAX_W = 240;
-const BAR_H = 11;
-const BAR_OFFSET_Y = 12; // gap below the token's bottom edge
+// These are the DEFAULTS — the live values come from the world-scoped tuning
+// setting below (GM-adjustable via the "HP Bar Tuner" dev tool).
+const BAR_MIN_W = 40;
+const BAR_MAX_W = 400;
+const SLIDE_PX = 16; // spawn/despawn horizontal slide distance
+
+// GM-tunable look config (world setting, read fresh on every spawn so a saved
+// tweak shows on the very next hit — no reload). See hp-bar-tuner.js.
+export const TUNING_SETTING = "npcHpBarTuning";
+export const TUNING_DEFAULTS = Object.freeze({
+  offsetX: 0,       // px, horizontal shift from token center (+ = right)
+  offsetY: 12,      // px, gap below the token's bottom edge (+ = down)
+  height: 11,       // px, bar height
+  widthScale: 1.0,  // × the token's on-screen width
+  radius: 20,       // px, corner roundness (>= height/2 ⇒ pill)
+  scale: 1.0,       // overall multiplier on width + height
+});
+
+export function getBarTuning() {
+  try {
+    const saved = game.settings.get(MODULE_ID, TUNING_SETTING) ?? {};
+    return { ...TUNING_DEFAULTS, ...saved };
+  } catch (_) {
+    return { ...TUNING_DEFAULTS };
+  }
+}
 
 let _socket = null;
 // tokenUuid -> { root, track, fill, ghost, holdTimer, hideTimer, removeTimer }
@@ -82,6 +104,15 @@ const _active = new Map();
 // Idempotent. Call once on every client after socketlib is up (boot `ready`).
 export function initNpcHpBar() {
   try {
+    // World-scoped look tuning — hidden from the vanilla settings sheet; edited
+    // via the HP Bar Tuner dev tool. Registered on every client (players need
+    // it to READ; only the GM can write a world setting).
+    try {
+      game.settings.register(MODULE_ID, TUNING_SETTING, {
+        scope: "world", config: false, type: Object,
+        default: { ...TUNING_DEFAULTS },
+      });
+    } catch (e) { warn("hp-bar: tuning setting registration failed", e); }
     if (typeof socketlib === "undefined" || !game.modules.get("socketlib")?.active) {
       warn("hp-bar: socketlib unavailable — bars stay local-only");
       return;
@@ -140,11 +171,15 @@ export function emitNpcHpBar({ tokenUuid, actor = null, hpBefore, hpAfter, maxHp
     const before = Number(hpBefore);
     const after = Number(hpAfter);
     if (!Number.isFinite(before) || !Number.isFinite(after) || before === after) return;
+    // Per-target gate diagnostics: on a multi-target action every target emits
+    // independently, so "the bar only showed on one enemy" is usually a gate —
+    // this names which one suppressed which token. Filter console by [BD].
+    const who = actor?.name ?? tokenUuid;
     const tokenDoc = resolveTokenDoc(tokenUuid);
-    if (!tokenDoc) return;
+    if (!tokenDoc) { log(`hp-bar: gated out (token not found) — ${who}`); return; }
     const HOSTILE = CONST?.TOKEN_DISPOSITIONS?.HOSTILE ?? -1;
-    if (tokenDoc.disposition !== HOSTILE) return;
-    if (!isStudiedMonster(tokenDoc, actor)) return;
+    if (tokenDoc.disposition !== HOSTILE) { log(`hp-bar: gated out (not hostile) — ${who}`); return; }
+    if (!isStudiedMonster(tokenDoc, actor)) { log(`hp-bar: gated out (not studied) — ${who}`); return; }
     emitNpcHpBarUnchecked({
       tokenUuid,
       fromFrac: quantFrac(before / maxHp),
@@ -177,11 +212,15 @@ function ensureStyle() {
   inherits: false;
   initial-value: #57c96b;
 }
+/* Entrance: slides in left→right while fading in; exit reverses (right→left +
+   fade out). The transform is driven from JS so retargets can cancel a
+   mid-exit slide smoothly. */
 .fud-hpbar {
   position: fixed; z-index: 99985; pointer-events: none;
-  transform: translate(-50%, 0);
+  transform: translate(calc(-50% - ${SLIDE_PX}px), 0);
   opacity: 0;
-  transition: opacity ${FADE_MS}ms ease;
+  transition: opacity ${FADE_MS}ms ease,
+              transform ${FADE_MS}ms cubic-bezier(.2, .8, .3, 1);
 }
 /* Track: layered outline — bright inner rim + dark outer ring + drop shadow —
    plus an inset bevel so it reads as a game HP BAR, not a flat block. */
@@ -264,6 +303,17 @@ function paintFill(fill, frac) {
   fill.style.setProperty("--hpbar-color", fillColor(frac));
 }
 
+// Enter/exit: slide + fade together. The CSS class holds the "offstage left"
+// pose; showing moves to center, hiding returns offstage (right→left).
+function poseIn(root) {
+  root.style.opacity = "1";
+  root.style.transform = "translate(-50%, 0)";
+}
+function poseOut(root) {
+  root.style.opacity = "0";
+  root.style.transform = `translate(calc(-50% - ${SLIDE_PX}px), 0)`;
+}
+
 // Current rendered width of `el` as a fraction of the track — used to freeze a
 // mid-drain ghost exactly where it visually is when a combo retargets the bar.
 function renderedFrac(el, track) {
@@ -298,27 +348,40 @@ export function renderNpcHpBarLocal(payload = {}) {
     // ── spawn ──
     // Screen-space geometry from the token's on-screen footprint at spawn time
     // (snapshot positioning — same accepted tradeoff as the damage numbers).
+    const cfg = getBarTuning();
     const scale = canvas.stage.scale?.x ?? 1;
-    const barW = Math.round(Math.max(BAR_MIN_W, Math.min(BAR_MAX_W, (token.w ?? 100) * scale)));
+    const barW = Math.round(
+      Math.max(BAR_MIN_W, Math.min(BAR_MAX_W, (token.w ?? 100) * scale * cfg.widthScale)) * cfg.scale
+    );
+    const barH = Math.max(2, Math.round(cfg.height * cfg.scale));
     const cx = token.center?.x ?? (token.x ?? 0) + (token.w ?? 100) / 2;
     const bottomY = (token.y ?? 0) + (token.h ?? 100);
     const pt = worldToClient(cx, bottomY);
 
     const root = document.createElement("div");
     root.className = "fud-hpbar" + (isGain ? " fud-hpbar--gain" : "");
-    root.style.left = `${pt.x}px`;
-    root.style.top = `${pt.y + BAR_OFFSET_Y}px`;
+    root.style.left = `${pt.x + cfg.offsetX}px`;
+    root.style.top = `${pt.y + cfg.offsetY}px`;
     root.style.width = `${barW}px`;
-    root.style.height = `${BAR_H}px`;
+    root.style.height = `${barH}px`;
 
+    // Corner roundness from tuning: full radius on the track + the fills' LEFT
+    // edge; the fills' right (leading) edge stays slightly squared so the edge
+    // being chewed reads as a crisp line.
+    const rad = Math.max(0, Number(cfg.radius) || 0);
+    const leadRad = Math.min(4, rad);
     const track = document.createElement("div");
     track.className = "fud-hpbar-track";
+    track.style.borderRadius = `${rad}px`;
     const ghost = document.createElement("div");
     ghost.className = "fud-hpbar-ghost";
+    ghost.style.borderRadius = `${rad}px ${leadRad}px ${leadRad}px ${rad}px`;
     const fill = document.createElement("div");
     fill.className = "fud-hpbar-fill";
+    fill.style.borderRadius = `${rad}px ${leadRad}px ${leadRad}px ${rad}px`;
     const gloss = document.createElement("div");
     gloss.className = "fud-hpbar-gloss";
+    gloss.style.borderRadius = `${rad}px`;
     track.appendChild(ghost);
     track.appendChild(fill);
     track.appendChild(gloss);
@@ -334,7 +397,7 @@ export function renderNpcHpBarLocal(payload = {}) {
       fill.style.width = `${fromFrac * 100}%`;
       paintFill(fill, fromFrac);
       void root.offsetWidth; // commit start values before animating
-      root.style.opacity = "1";
+      poseIn(root);
       fill.style.width = `${toFrac * 100}%`;
       paintFill(fill, toFrac);
       entry.hideTimer = setTimeout(() => beginHide(tokenUuid), FADE_MS + GAIN_SLIDE_MS + LINGER_MS);
@@ -346,7 +409,7 @@ export function renderNpcHpBarLocal(payload = {}) {
       fill.style.width = `${toFrac * 100}%`;
       paintFill(fill, fromFrac);
       void root.offsetWidth;
-      root.style.opacity = "1";
+      poseIn(root);
       scheduleDrain(entry, tokenUuid, toFrac);
     }
 
@@ -380,7 +443,7 @@ function retarget(entry, tokenUuid, { fromFrac, toFrac, isGain }) {
   clearTimeout(entry.holdTimer);
   clearTimeout(entry.hideTimer);
   clearTimeout(entry.removeTimer);
-  entry.root.style.opacity = "1";
+  poseIn(entry.root); // also cancels a mid-exit slide
   entry.root.classList.toggle("fud-hpbar--gain", isGain);
 
   if (isGain) {
@@ -406,9 +469,22 @@ function retarget(entry, tokenUuid, { fromFrac, toFrac, isGain }) {
 function beginHide(tokenUuid) {
   const entry = _active.get(tokenUuid);
   if (!entry) return;
-  try { entry.root.style.opacity = "0"; } catch (_) {}
+  try { poseOut(entry.root); } catch (_) {}
   entry.removeTimer = setTimeout(() => {
     try { entry.root.remove(); } catch (_) {}
     _active.delete(tokenUuid);
   }, FADE_MS + 60);
+}
+
+// Remove every live bar immediately (no exit animation). Used by the tuner so
+// a preview always SPAWNS with the newest geometry instead of retargeting a
+// bar built from the old values.
+export function clearNpcHpBars() {
+  for (const [uuid, entry] of _active) {
+    clearTimeout(entry.holdTimer);
+    clearTimeout(entry.hideTimer);
+    clearTimeout(entry.removeTimer);
+    try { entry.root.remove(); } catch (_) {}
+    _active.delete(uuid);
+  }
 }
