@@ -7,11 +7,12 @@
 // have the resource HUD); unstudied monsters never get one (studying is what
 // unlocks it).
 //
-// DAMAGE GHOST (loss): the green fill SNAPS to the new value immediately and a
-// RED segment covers [new → old] — the visual size of the hit. After a short
-// hold the red segment drains down to the green edge: that drain IS the
-// "health decreasing" animation. Heals keep the classic slide: green sweeps UP
-// to the new value with a soft glow.
+// DAMAGE GHOST (loss): the green fill slides DOWN to the new value fast,
+// revealing a RED segment covering [new → old] — the visual size of the hit.
+// After a short hold the red segment drains down to the green edge, much
+// slower than the green slide: green slide = the hit landing, red drain = the
+// health bleeding off. Heals keep the classic slide: green sweeps UP to the
+// new value with a soft glow.
 //
 // CRISIS COLOR: no notch/marker — the FILL ITSELF is the signal. Green above
 // 50%, yellow at 50% and below (FU Crisis), red at 25% and below. On a hit
@@ -58,8 +59,9 @@ const TIER_IDENTITY = 7;
 // restart the HOLD+DRAIN portion. Deliberately unhurried — the bar is the
 // information, players need time to actually read it.
 const FADE_MS = 250;        // opacity in/out (CSS transition, both directions)
+const GREEN_SLIDE_MS = 250; // loss: green slides down to the new value (fast)
 const HOLD_MS = 600;        // red ghost holds at the damage-chunk size
-const DRAIN_MS = 700;       // red ghost drains to the green edge
+const DRAIN_MS = 700;       // red ghost drains to the green edge (slow)
 const GAIN_SLIDE_MS = 600;  // heal: green sweeps up
 const LINGER_MS = 1500;     // hold after the drain/sweep completes
 
@@ -246,9 +248,10 @@ function ensureStyle() {
   background: linear-gradient(to bottom, #ff6a55, #d92c1e 60%, #a81c12);
   transition: width ${DRAIN_MS}ms cubic-bezier(.3, .7, .3, 1);
 }
-/* Current-HP fill. Width SNAPS on damage (the ghost does the animating) but
-   the condition color cross-fades on the drain clock, so a Crisis crossing
-   reads as a gradual green→yellow shift. Heals opt into a width sweep. */
+/* Current-HP fill. On damage it slides down FAST (much quicker than the red
+   drain that follows); the condition color cross-fades on the drain clock, so
+   a Crisis crossing reads as a gradual green→yellow shift. Heals override the
+   width sweep with a slower, glowing one. */
 .fud-hpbar-fill {
   position: absolute; top: 0; left: 0; bottom: 0;
   border-radius: 999px 4px 4px 999px;
@@ -256,7 +259,8 @@ function ensureStyle() {
     color-mix(in srgb, var(--hpbar-color, #57c96b) 65%, #ffffff) 0%,
     var(--hpbar-color, #57c96b) 55%,
     color-mix(in srgb, var(--hpbar-color, #57c96b) 70%, #000000) 100%);
-  transition: --hpbar-color ${DRAIN_MS}ms ease;
+  transition: width ${GREEN_SLIDE_MS}ms cubic-bezier(.3, .8, .3, 1),
+              --hpbar-color ${DRAIN_MS}ms ease;
 }
 .fud-hpbar--gain .fud-hpbar-fill {
   transition: width ${GAIN_SLIDE_MS}ms cubic-bezier(.22, .9, .32, 1),
@@ -404,20 +408,22 @@ export function renderNpcHpBarLocal(payload = {}) {
       paintFill(fill, toFrac);
       entry.hideTimer = setTimeout(() => beginHide(tokenUuid), FADE_MS + GAIN_SLIDE_MS + LINGER_MS);
     } else {
-      // Damage ghost: green already AT the new value, red covers [0 → old] so
-      // the sliver above the green edge is the chunk just dealt. Color starts
-      // at the PRE-hit condition; the crisis shift rides the drain below.
+      // Damage ghost: both layers start at the PRE-hit value, then the green
+      // slides down fast to the new value — revealing the red chunk just dealt
+      // — holds, and the red drains slowly after (scheduleDrain). Color starts
+      // at the PRE-hit condition; the crisis shift rides the drain.
       ghost.style.width = `${fromFrac * 100}%`;
-      fill.style.width = `${toFrac * 100}%`;
+      fill.style.width = `${fromFrac * 100}%`;
       paintFill(fill, fromFrac);
       void root.offsetWidth;
       poseIn(root);
+      fill.style.width = `${toFrac * 100}%`;
       scheduleDrain(entry, tokenUuid, toFrac);
     }
 
     registerAnimation({
       kind: "npc-hp-bar",
-      durationMs: FADE_MS + HOLD_MS + DRAIN_MS + LINGER_MS + FADE_MS,
+      durationMs: FADE_MS + GREEN_SLIDE_MS + HOLD_MS + DRAIN_MS + LINGER_MS + FADE_MS,
       meta: { tokenUuid },
     });
   } catch (e) {
@@ -425,22 +431,23 @@ export function renderNpcHpBarLocal(payload = {}) {
   }
 }
 
-// Hold, then drain the red ghost down to the green edge — shifting the fill's
-// condition color on the same clock — then linger and fade.
+// Wait out the green slide + hold, then drain the red ghost down to the green
+// edge — shifting the fill's condition color on the same clock — then linger
+// and fade.
 function scheduleDrain(entry, tokenUuid, toFrac) {
   entry.holdTimer = setTimeout(() => {
     try {
       entry.ghost.style.width = `${toFrac * 100}%`;
       paintFill(entry.fill, toFrac);
     } catch (_) {}
-  }, HOLD_MS);
-  entry.hideTimer = setTimeout(() => beginHide(tokenUuid), HOLD_MS + DRAIN_MS + LINGER_MS);
+  }, GREEN_SLIDE_MS + HOLD_MS);
+  entry.hideTimer = setTimeout(() => beginHide(tokenUuid), GREEN_SLIDE_MS + HOLD_MS + DRAIN_MS + LINGER_MS);
 }
 
-// A new payload while the bar is live: green snaps to the new value, the ghost
-// is frozen exactly where it's rendered (mid-drain safe) and extended to keep
-// covering the highest recent HP, and the hold/drain clock restarts. Cancels
-// any in-progress fade-out (opacity transitions back up smoothly).
+// A new payload while the bar is live: green slides fast to the new value, the
+// ghost is frozen exactly where it's rendered (mid-drain safe) and extended to
+// keep covering the highest recent HP, and the hold/drain clock restarts.
+// Cancels any in-progress fade-out (opacity transitions back up smoothly).
 function retarget(entry, tokenUuid, { fromFrac, toFrac, isGain }) {
   clearTimeout(entry.holdTimer);
   clearTimeout(entry.hideTimer);
