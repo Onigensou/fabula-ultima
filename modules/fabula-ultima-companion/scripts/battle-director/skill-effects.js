@@ -363,6 +363,21 @@ function fireResourceGainVfx(opts) {
   }
 }
 
+// Transient NPC HP bar — after any HP write on a STUDIED hostile NPC, a bare
+// bar slides to the new fill under the token (approximate condition, no
+// numbers). The hostile/studied gates + fraction conversion live in the bar
+// module (emitNpcHpBar), so callers just pass the raw HP facts from the seam.
+// Same lazy fire-and-forget contract as fireResourceLossVfx.
+function fireNpcHpBar(opts) {
+  try {
+    import("./damage-numbers/director-hp-bar.js")
+      .then((m) => m.emitNpcHpBar?.(opts))
+      .catch((e) => warn("fireNpcHpBar import failed", e));
+  } catch (e) {
+    warn("fireNpcHpBar threw", e);
+  }
+}
+
 // Affinity-specific feedback. Immune (IM → 0 damage) gets no loss/gain VFX
 // otherwise, so it'd land silently; absorb (AB) gets an absorb-specific look so
 // it doesn't masquerade as a plain heal. Same lazy fire-and-forget contract.
@@ -503,6 +518,7 @@ export async function applyDamageToTarget({
       await target.update({ "system.props.current_hp": newHp });
       log(`${prefix}absorbed ${healed} on ${targetName}: ${curHp} → ${newHp} (heal)${logSuffix}`);
       fireAbsorbVfx({ tokenUuid, amount: newHp - curHp });
+      fireNpcHpBar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: newHp, maxHp });
       _pushLog({ resource: "hp", affinity: "AB", value: healed, valueDirection: "recover", bands: { hp: { from: curHp, to: newHp } } });
     } else {
       log(`${prefix}no HP change for ${targetName} [AB]${logSuffix} (damage was ${damage})`);
@@ -579,6 +595,9 @@ export async function applyDamageToTarget({
     } else {
       fireResourceLossVfx({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
     }
+    // Transient HP bar (studied hostile NPCs only — gated inside). No-ops when
+    // the reaction clamp / shield left HP unchanged (hpBefore === hpAfter).
+    fireNpcHpBar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: newHp, maxHp });
     _pushLog({ resource: "hp", affinity, value: damage, valueDirection: "loss", bands: { hp: { from: curHp, to: newHp }, shield: { from: curShield, to: newShield } } });
     return {
       resource: "hp",
@@ -4560,6 +4579,13 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
       // decision that path stays silent, so we only float gains here.
       if (result.applied > 0) {
         fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: result.applied });
+        if (resource === "hp") {
+          fireNpcHpBar({
+            tokenUuid: token.uuid, actor,
+            hpBefore: result.newValue - result.applied, hpAfter: result.newValue,
+            maxHp: readPropNum(actor, ["max_hp"]),
+          });
+        }
       }
     }
   }
@@ -4632,6 +4658,9 @@ async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }
       await actor.update({ [`system.props.${def.prop}`]: newValue });
       applied.push({ actorUuid: actor.uuid, resource, from: cur, to: newValue });
       try { fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: newValue - cur }); } catch {}
+      if (resource === "hp") {
+        fireNpcHpBar({ tokenUuid: token.uuid, actor, hpBefore: cur, hpAfter: newValue, maxHp: readPropNum(actor, ["max_hp"]) });
+      }
       log(`skill-effects.set_resource: ${actor.name} ${resource} ${cur} → ${newValue} (row "${row.effect_label}")`);
     } catch (e) { warn(`skill-effects.set_resource: update failed on ${actor.name}`, e); }
   }

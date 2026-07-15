@@ -54,6 +54,7 @@ import { initSfxAudition } from "./sfx-audition.js";
 import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
+import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
 // Damage-number audition (look-only) tool is intentionally not registered as a
@@ -1029,6 +1030,15 @@ Hooks.once("ready", () => {
       emit: (payload) => emitHurtReaction(payload),
       renderLocal: (payload) => playHurtReactionLocal(payload),
     },
+    // Transient NPC HP bar. `emit` = production path (hostile + studied gates,
+    // raw HP facts → fractions); `emitUnchecked` = gate-free fractions payload
+    // (broadcasts — dev/preview); `renderLocal` = this client only. See
+    // damage-numbers/director-hp-bar.js.
+    npcHpBar: {
+      emit: (payload) => emitNpcHpBar(payload),
+      emitUnchecked: (payload) => emitNpcHpBarUnchecked(payload),
+      renderLocal: (payload) => renderNpcHpBarLocal(payload),
+    },
     // Re-broadcast the turn-action tracker from the live dCombat. Used by the
     // icon focal-point tuner to reflect a saved focus immediately mid-battle.
     refreshTurnActions: () => {
@@ -1510,6 +1520,12 @@ Hooks.once("ready", () => {
   // live loss path doesn't call it yet.
   try { initHurtReaction(); }
   catch (e) { warn("initHurtReaction on ready threw", e); }
+
+  // Transient NPC HP bar — registers its socketlib handler on every client so
+  // the GM-side damage/heal seams can slide a condition bar under a studied
+  // hostile NPC's token on all screens.
+  try { initNpcHpBar(); }
+  catch (e) { warn("initNpcHpBar on ready threw", e); }
 
   // Boss Domination VFX — socketlib handlers (energy burst, Escape fade) +
   // the AE-driven red outline watcher, on every client.
