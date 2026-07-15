@@ -1,10 +1,22 @@
 // Director-native transient NPC HP bar — DOM screen-space subsystem.
 //
 // When a STUDIED hostile NPC's HP changes (damage or heal), a bare unlabeled
-// bar fades in under the token, slides to the new fill, lingers, and fades
-// out — giving players an APPROXIMATE read on the monster's condition without
-// exposing numbers. Player characters never get one (they have the resource
-// HUD); unstudied monsters never get one (studying is what unlocks it).
+// bar fades in under the token, plays a JRPG "damage ghost" sequence, lingers,
+// and fades out — giving players an APPROXIMATE read on the monster's
+// condition without exposing numbers. Player characters never get one (they
+// have the resource HUD); unstudied monsters never get one (studying is what
+// unlocks it).
+//
+// DAMAGE GHOST (loss): the green fill SNAPS to the new value immediately and a
+// RED segment covers [new → old] — the visual size of the hit. After a short
+// hold the red segment drains down to the green edge: that drain IS the
+// "health decreasing" animation. Heals keep the classic slide: green sweeps UP
+// to the new value with a soft glow.
+//
+// CRISIS COLOR: no notch/marker — the FILL ITSELF is the signal. Green above
+// 50%, yellow at 50% and below (FU Crisis), red at 25% and below. On a hit
+// that crosses a threshold the color change rides the red drain (same duration,
+// gradual green→yellow), not the initial snap.
 //
 // Same architecture as the damage-number / hurt-reaction siblings: the GM
 // computes a tiny SEMANTIC payload and broadcasts it via socketlib; every
@@ -22,10 +34,11 @@
 //      lowest SUCCESSFUL study result is Identity, so this is "any success".
 //      Fail-CLOSED when the encyclopedia API is missing — no study, no bar.
 //
-// MULTI-HIT: one bar per token (`_active` map). A new payload while a bar is
-// up RETARGETS the existing fill — CSS width transitions animate from the
-// current rendered value, so a 5-hit combo reads as one bar stepping down five
-// times — and resets the linger timer.
+// MULTI-HIT: one bar per token (`_active` map). A new loss while a bar is up
+// RETARGETS it: green snaps lower, the red ghost is frozen at its current
+// rendered width and extended to keep covering [new green → highest recent],
+// and the hold/drain clock restarts — a combo reads as one bar being chewed
+// down, not a stack of bars.
 //
 // Not a manifest entry: imported by director-boot.js and initialised from its
 // ready hook — loads on a normal hard-reload, no Setup-relaunch.
@@ -41,11 +54,14 @@ const STYLE_ID = "fud-hp-bar-style";
 // encyclopedia-core.js — the encyclopedia's classifyStudyTotal ladder.
 const TIER_IDENTITY = 7;
 
-// Timing (ms). Life = FADE_IN + SLIDE + LINGER + FADE_OUT; retargets restart
-// the SLIDE+LINGER portion.
-const FADE_MS = 200;     // opacity in/out (CSS transition, both directions)
-const SLIDE_MS = 600;    // fill width slide
-const LINGER_MS = 700;   // hold after the slide completes
+// Timing (ms). Loss life = FADE + HOLD + DRAIN + LINGER + FADE; retargets
+// restart the HOLD+DRAIN portion. Deliberately unhurried — the bar is the
+// information, players need time to actually read it.
+const FADE_MS = 250;        // opacity in/out (CSS transition, both directions)
+const HOLD_MS = 600;        // red ghost holds at the damage-chunk size
+const DRAIN_MS = 700;       // red ghost drains to the green edge
+const GAIN_SLIDE_MS = 600;  // heal: green sweeps up
+const LINGER_MS = 1500;     // hold after the drain/sweep completes
 
 // Payload fractions are quantized to 2% steps — visually invisible, but blunts
 // deriving max HP from a known damage number over an exact fraction delta.
@@ -55,11 +71,11 @@ const QUANT_STEPS = 50;
 // boss token gets a wider bar, clamped so tiny/huge zooms stay readable.
 const BAR_MIN_W = 64;
 const BAR_MAX_W = 240;
-const BAR_H = 9;
+const BAR_H = 11;
 const BAR_OFFSET_Y = 12; // gap below the token's bottom edge
 
 let _socket = null;
-// tokenUuid -> { root, fill, hideTimer, removeTimer } — one live bar per token.
+// tokenUuid -> { root, track, fill, ghost, holdTimer, hideTimer, removeTimer }
 const _active = new Map();
 
 // ── boot: socket registration ──────────────────────────────────────────────
@@ -153,36 +169,64 @@ export function emitNpcHpBarUnchecked(payload = {}) {
 function ensureStyle() {
   if (document.getElementById(STYLE_ID)) return;
   const css = `
+/* Registered so --hpbar-color INTERPOLATES on transition (the gradual
+   green→yellow crisis shift). Unregistered custom properties snap. On a
+   browser without @property support the color still changes — just instantly. */
+@property --hpbar-color {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #57c96b;
+}
 .fud-hpbar {
   position: fixed; z-index: 99985; pointer-events: none;
   transform: translate(-50%, 0);
   opacity: 0;
   transition: opacity ${FADE_MS}ms ease;
 }
+/* Track: layered outline — bright inner rim + dark outer ring + drop shadow —
+   plus an inset bevel so it reads as a game HP BAR, not a flat block. */
 .fud-hpbar-track {
   position: relative; width: 100%; height: 100%;
   border-radius: 999px;
-  background: rgba(10, 10, 14, .78);
-  border: 1px solid rgba(255, 255, 255, .28);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, .55);
+  background: linear-gradient(to bottom, #05060a, #14161d 55%, #0a0b10);
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, .85),
+    0 0 0 1.5px rgba(235, 240, 255, .75),
+    0 0 0 3px rgba(0, 0, 0, .9),
+    0 3px 9px rgba(0, 0, 0, .6);
   overflow: hidden;
 }
+/* Red damage ghost — sits UNDER the green fill, spanning [0 → pre-hit HP].
+   The visible red sliver is the chunk between the green edge and its own edge.
+   Its width drain (after the hold) is the "health decreasing" animation. */
+.fud-hpbar-ghost {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  border-radius: 999px 4px 4px 999px;
+  background: linear-gradient(to bottom, #ff6a55, #d92c1e 60%, #a81c12);
+  transition: width ${DRAIN_MS}ms cubic-bezier(.3, .7, .3, 1);
+}
+/* Current-HP fill. Width SNAPS on damage (the ghost does the animating) but
+   the condition color cross-fades on the drain clock, so a Crisis crossing
+   reads as a gradual green→yellow shift. Heals opt into a width sweep. */
 .fud-hpbar-fill {
   position: absolute; top: 0; left: 0; bottom: 0;
-  border-radius: 999px;
-  transition: width ${SLIDE_MS}ms cubic-bezier(.22, .9, .32, 1),
-              background-color ${SLIDE_MS}ms ease,
-              box-shadow ${SLIDE_MS}ms ease;
+  border-radius: 999px 4px 4px 999px;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--hpbar-color, #57c96b) 65%, #ffffff) 0%,
+    var(--hpbar-color, #57c96b) 55%,
+    color-mix(in srgb, var(--hpbar-color, #57c96b) 70%, #000000) 100%);
+  transition: --hpbar-color ${DRAIN_MS}ms ease;
 }
-/* Heal (fill sliding UP) — soft green glow so a recover reads differently. */
 .fud-hpbar--gain .fud-hpbar-fill {
+  transition: width ${GAIN_SLIDE_MS}ms cubic-bezier(.22, .9, .32, 1),
+              --hpbar-color ${GAIN_SLIDE_MS}ms ease;
   box-shadow: 0 0 8px 1px rgba(110, 255, 140, .8);
 }
-/* Crisis notch — FU's mechanically meaningful 50% line, over the track. */
-.fud-hpbar-notch {
-  position: absolute; top: -1px; bottom: -1px; left: 50%;
-  width: 2px; margin-left: -1px;
-  background: rgba(255, 255, 255, .45);
+/* Gloss highlight across the top — over every layer, part of the "bar feel". */
+.fud-hpbar-gloss {
+  position: absolute; inset: 0; border-radius: 999px;
+  background: linear-gradient(to bottom,
+    rgba(255, 255, 255, .30) 0%, rgba(255, 255, 255, .08) 42%, transparent 50%);
 }
 `.trim();
   const style = document.createElement("style");
@@ -205,19 +249,32 @@ function canvasTokenFromUuid(tokenUuid) {
   return tokenId ? (canvas?.tokens?.get?.(tokenId) ?? null) : null;
 }
 
-// Approximate condition color from the fill fraction: healthy green above 50%
-// (Crisis), wounded amber above 25%, danger red below.
+// Condition color: green while healthy, yellow from Crisis (50%) down, red in
+// deep danger (25%). The fill IS the crisis indicator — no notch.
 function fillColor(frac) {
   if (frac > 0.5) return "#57c96b";
   if (frac > 0.25) return "#e8c33a";
   return "#e84b3a";
 }
 
+// The fill's gradient derives from --hpbar-color. `background` transition on
+// gradients isn't animatable everywhere, so the gradual crisis shift also sets
+// a plain backgroundColor fallback under the gradient via the custom property.
+function paintFill(fill, frac) {
+  fill.style.setProperty("--hpbar-color", fillColor(frac));
+}
+
+// Current rendered width of `el` as a fraction of the track — used to freeze a
+// mid-drain ghost exactly where it visually is when a combo retargets the bar.
+function renderedFrac(el, track) {
+  const tw = track.getBoundingClientRect().width || 1;
+  return Math.max(0, Math.min(1, el.getBoundingClientRect().width / tw));
+}
+
 // ── render (runs on EVERY client) ──────────────────────────────────────────
-// One bar per token: spawn if absent (fade in at fromFrac, slide to toFrac),
-// RETARGET if present (CSS transitions continue from the current rendered
-// width — mid-animation retargets are smooth for free). Self-removes after
-// slide + linger + fade. Silently no-ops off-canvas — flavor, never critical.
+// One bar per token: spawn if absent, RETARGET if present. Self-removes after
+// hold + drain + linger + fade. Silently no-ops off-canvas — flavor, never
+// critical.
 export function renderNpcHpBarLocal(payload = {}) {
   try {
     ensureStyle();
@@ -233,15 +290,7 @@ export function renderNpcHpBarLocal(payload = {}) {
 
     const existing = _active.get(tokenUuid);
     if (existing?.root?.isConnected) {
-      // Retarget the live bar: new fill target + color, restart linger clock,
-      // cancel any in-progress fade-out (opacity transitions back up smoothly).
-      clearTimeout(existing.hideTimer);
-      clearTimeout(existing.removeTimer);
-      existing.root.style.opacity = "1";
-      existing.root.classList.toggle("fud-hpbar--gain", isGain);
-      existing.fill.style.width = `${toFrac * 100}%`;
-      existing.fill.style.backgroundColor = fillColor(toFrac);
-      existing.hideTimer = setTimeout(() => beginHide(tokenUuid), SLIDE_MS + LINGER_MS);
+      retarget(existing, tokenUuid, { fromFrac, toFrac, isGain });
       return;
     }
     _active.delete(tokenUuid); // clear a stale (disconnected) entry
@@ -264,37 +313,94 @@ export function renderNpcHpBarLocal(payload = {}) {
 
     const track = document.createElement("div");
     track.className = "fud-hpbar-track";
+    const ghost = document.createElement("div");
+    ghost.className = "fud-hpbar-ghost";
     const fill = document.createElement("div");
     fill.className = "fud-hpbar-fill";
-    fill.style.width = `${fromFrac * 100}%`;
-    fill.style.backgroundColor = fillColor(fromFrac);
-    const notch = document.createElement("div");
-    notch.className = "fud-hpbar-notch";
+    const gloss = document.createElement("div");
+    gloss.className = "fud-hpbar-gloss";
+    track.appendChild(ghost);
     track.appendChild(fill);
-    track.appendChild(notch);
+    track.appendChild(gloss);
     root.appendChild(track);
     document.body.appendChild(root);
 
+    const entry = { root, track, fill, ghost, holdTimer: null, hideTimer: null, removeTimer: null };
+    _active.set(tokenUuid, entry);
+
+    if (isGain) {
+      // Heal: no ghost; green sweeps up from the old value.
+      ghost.style.width = "0%";
+      fill.style.width = `${fromFrac * 100}%`;
+      paintFill(fill, fromFrac);
+      void root.offsetWidth; // commit start values before animating
+      root.style.opacity = "1";
+      fill.style.width = `${toFrac * 100}%`;
+      paintFill(fill, toFrac);
+      entry.hideTimer = setTimeout(() => beginHide(tokenUuid), FADE_MS + GAIN_SLIDE_MS + LINGER_MS);
+    } else {
+      // Damage ghost: green already AT the new value, red covers [0 → old] so
+      // the sliver above the green edge is the chunk just dealt. Color starts
+      // at the PRE-hit condition; the crisis shift rides the drain below.
+      ghost.style.width = `${fromFrac * 100}%`;
+      fill.style.width = `${toFrac * 100}%`;
+      paintFill(fill, fromFrac);
+      void root.offsetWidth;
+      root.style.opacity = "1";
+      scheduleDrain(entry, tokenUuid, toFrac);
+    }
+
     registerAnimation({
       kind: "npc-hp-bar",
-      durationMs: FADE_MS + SLIDE_MS + LINGER_MS + FADE_MS,
+      durationMs: FADE_MS + HOLD_MS + DRAIN_MS + LINGER_MS + FADE_MS,
       meta: { tokenUuid },
     });
-
-    // Force a reflow so the fill's fromFrac width and the root's opacity:0 are
-    // committed BEFORE the animated values land — otherwise the transition is
-    // skipped and the bar pops in already at toFrac.
-    void root.offsetWidth;
-    root.style.opacity = "1";
-    fill.style.width = `${toFrac * 100}%`;
-    fill.style.backgroundColor = fillColor(toFrac);
-
-    const entry = { root, fill, hideTimer: null, removeTimer: null };
-    entry.hideTimer = setTimeout(() => beginHide(tokenUuid), SLIDE_MS + LINGER_MS);
-    _active.set(tokenUuid, entry);
   } catch (e) {
     warn("renderNpcHpBarLocal threw", e);
   }
+}
+
+// Hold, then drain the red ghost down to the green edge — shifting the fill's
+// condition color on the same clock — then linger and fade.
+function scheduleDrain(entry, tokenUuid, toFrac) {
+  entry.holdTimer = setTimeout(() => {
+    try {
+      entry.ghost.style.width = `${toFrac * 100}%`;
+      paintFill(entry.fill, toFrac);
+    } catch (_) {}
+  }, HOLD_MS);
+  entry.hideTimer = setTimeout(() => beginHide(tokenUuid), HOLD_MS + DRAIN_MS + LINGER_MS);
+}
+
+// A new payload while the bar is live: green snaps to the new value, the ghost
+// is frozen exactly where it's rendered (mid-drain safe) and extended to keep
+// covering the highest recent HP, and the hold/drain clock restarts. Cancels
+// any in-progress fade-out (opacity transitions back up smoothly).
+function retarget(entry, tokenUuid, { fromFrac, toFrac, isGain }) {
+  clearTimeout(entry.holdTimer);
+  clearTimeout(entry.hideTimer);
+  clearTimeout(entry.removeTimer);
+  entry.root.style.opacity = "1";
+  entry.root.classList.toggle("fud-hpbar--gain", isGain);
+
+  if (isGain) {
+    // Heal mid-bar: sweep green up; whatever ghost remains gets covered (and
+    // any later drain can only shrink it further — harmless underneath).
+    entry.fill.style.width = `${toFrac * 100}%`;
+    paintFill(entry.fill, toFrac);
+    entry.hideTimer = setTimeout(() => beginHide(tokenUuid), GAIN_SLIDE_MS + LINGER_MS);
+    return;
+  }
+
+  // Freeze the ghost at its current rendered width (no transition), then make
+  // sure it still covers at least the pre-hit HP of THIS hit.
+  const held = Math.max(renderedFrac(entry.ghost, entry.track), fromFrac, toFrac);
+  entry.ghost.style.transition = "none";
+  entry.ghost.style.width = `${held * 100}%`;
+  entry.fill.style.width = `${toFrac * 100}%`;
+  void entry.ghost.offsetWidth; // commit the freeze before re-enabling
+  entry.ghost.style.transition = "";
+  scheduleDrain(entry, tokenUuid, toFrac);
 }
 
 function beginHide(tokenUuid) {
