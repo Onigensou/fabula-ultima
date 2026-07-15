@@ -95,6 +95,10 @@ const CASES = [
       });
     },
   },
+  // Shield (temp HP) — the WHITE segment right of the green fill.
+  { label: "HP bar — shield hit (HP safe)",  fn: (t) => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: 0.60, toFrac: 0.60, fromShield: 0.30, toShield: 0.10 }) },
+  { label: "HP bar — shield break + HP",     fn: (t) => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: 0.60, toFrac: 0.45, fromShield: 0.15, toShield: 0.00 }) },
+  { label: "HP bar — gain shield",           fn: (t) => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: 0.50, toFrac: 0.50, fromShield: 0.00, toShield: 0.25 }) },
   {
     // Production path on the selected token's REAL HP (display only — no HP
     // write): shows a bar ONLY if the token is hostile AND studied.

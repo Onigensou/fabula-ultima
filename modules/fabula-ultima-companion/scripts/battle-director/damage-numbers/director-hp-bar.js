@@ -19,6 +19,12 @@
 // that crosses a threshold the color change rides the red drain (same duration,
 // gradual green→yellow), not the initial snap.
 //
+// SHIELD (temp HP): a WHITE segment stacked to the RIGHT of the green fill —
+// still one bar. Payload carries shield fractions (scaled vs maxHp); the white
+// edge slides on the green's fast clock, the red ghost covers combined
+// shield+HP damage, and a shield-only hit (HP untouched) animates the same
+// way. A pure shield application sweeps up like a heal.
+//
 // Same architecture as the damage-number / hurt-reaction siblings: the GM
 // computes a tiny SEMANTIC payload and broadcasts it via socketlib; every
 // client renders from its OWN camera transform (snapshot positioning at spawn,
@@ -168,13 +174,18 @@ function quantFrac(v) {
 // ── public emit (GM-side, gated) ────────────────────────────────────────────
 // Called from the damage/heal write seams with the raw HP facts; applies the
 // hostile + studied gates, converts to fractions, renders locally + broadcasts.
+// Shield (temp HP, `shield_value`) rides the same payload as extra fractions —
+// scaled against maxHp so it stacks visually to the right of the HP fill.
 // Fire-and-forget; never throws into the caller's HP write.
-export function emitNpcHpBar({ tokenUuid, actor = null, hpBefore, hpAfter, maxHp } = {}) {
+export function emitNpcHpBar({ tokenUuid, actor = null, hpBefore, hpAfter, maxHp, shieldBefore = 0, shieldAfter = 0 } = {}) {
   try {
     if (!tokenUuid || !(Number(maxHp) > 0)) return;
     const before = Number(hpBefore);
     const after = Number(hpAfter);
-    if (!Number.isFinite(before) || !Number.isFinite(after) || before === after) return;
+    const sBefore = Math.max(0, Number(shieldBefore) || 0);
+    const sAfter = Math.max(0, Number(shieldAfter) || 0);
+    if (!Number.isFinite(before) || !Number.isFinite(after)) return;
+    if (before === after && sBefore === sAfter) return;
     // Per-target gate diagnostics: on a multi-target action every target emits
     // independently, so "the bar only showed on one enemy" is usually a gate —
     // this names which one suppressed which token. Filter console by [BD].
@@ -188,6 +199,8 @@ export function emitNpcHpBar({ tokenUuid, actor = null, hpBefore, hpAfter, maxHp
       tokenUuid,
       fromFrac: quantFrac(before / maxHp),
       toFrac: quantFrac(after / maxHp),
+      fromShield: quantFrac(sBefore / maxHp),
+      toShield: quantFrac(sAfter / maxHp),
     });
   } catch (e) {
     warn("emitNpcHpBar threw", e);
@@ -247,6 +260,20 @@ function ensureStyle() {
   border-radius: 999px 4px 4px 999px;
   background: linear-gradient(to bottom, #ff6a55, #d92c1e 60%, #a81c12);
   transition: width ${DRAIN_MS}ms cubic-bezier(.3, .7, .3, 1);
+}
+/* Shield (temp HP) — a WHITE segment stacked to the right of the HP fill.
+   Layered between the ghost and the fill: its width spans [0 → hp+shield], so
+   the visible white part is whatever sticks out past the green edge. Slides on
+   the same fast clock as the green, and the red ghost covers combined
+   shield+HP damage. */
+.fud-hpbar-shieldbar {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  border-radius: 999px 4px 4px 999px;
+  background: linear-gradient(to bottom, #ffffff 0%, #dfe6ee 55%, #a9b6c6 100%);
+  transition: width ${GREEN_SLIDE_MS}ms cubic-bezier(.3, .8, .3, 1);
+}
+.fud-hpbar--gain .fud-hpbar-shieldbar {
+  transition: width ${GAIN_SLIDE_MS}ms cubic-bezier(.22, .9, .32, 1);
 }
 /* Current-HP fill. On damage it slides down FAST (much quicker than the red
    drain that follows); the condition color cross-fades on the drain clock, so
@@ -342,11 +369,18 @@ export function renderNpcHpBarLocal(payload = {}) {
 
     const fromFrac = Math.max(0, Math.min(1, Number(payload.fromFrac) || 0));
     const toFrac = Math.max(0, Math.min(1, Number(payload.toFrac) || 0));
-    const isGain = toFrac > fromFrac;
+    // Effective totals: HP + shield, clamped to the track. The white shield
+    // segment is whatever of the total sticks out past the green edge; a
+    // shield bigger than the missing HP just truncates at the bar's end.
+    const fromE = Math.min(1, fromFrac + Math.max(0, Number(payload.fromShield) || 0));
+    const toE = Math.min(1, toFrac + Math.max(0, Number(payload.toShield) || 0));
+    // Gain/loss is judged on the TOTAL: a pure shield application animates like
+    // a heal (white sweeps up), a shield-eaten hit like damage (ghost + drain).
+    const isGain = toE > fromE;
 
     const existing = _active.get(tokenUuid);
     if (existing?.root?.isConnected) {
-      retarget(existing, tokenUuid, { fromFrac, toFrac, isGain });
+      retarget(existing, tokenUuid, { fromFrac, toFrac, fromE, toE, isGain });
       return;
     }
     _active.delete(tokenUuid); // clear a stale (disconnected) entry
@@ -382,6 +416,9 @@ export function renderNpcHpBarLocal(payload = {}) {
     const ghost = document.createElement("div");
     ghost.className = "fud-hpbar-ghost";
     ghost.style.borderRadius = `${rad}px ${leadRad}px ${leadRad}px ${rad}px`;
+    const shieldBar = document.createElement("div");
+    shieldBar.className = "fud-hpbar-shieldbar";
+    shieldBar.style.borderRadius = `${rad}px ${leadRad}px ${leadRad}px ${rad}px`;
     const fill = document.createElement("div");
     fill.className = "fud-hpbar-fill";
     fill.style.borderRadius = `${rad}px ${leadRad}px ${leadRad}px ${rad}px`;
@@ -389,36 +426,43 @@ export function renderNpcHpBarLocal(payload = {}) {
     gloss.className = "fud-hpbar-gloss";
     gloss.style.borderRadius = `${rad}px`;
     track.appendChild(ghost);
+    track.appendChild(shieldBar);
     track.appendChild(fill);
     track.appendChild(gloss);
     root.appendChild(track);
     document.body.appendChild(root);
 
-    const entry = { root, track, fill, ghost, holdTimer: null, hideTimer: null, removeTimer: null };
+    const entry = { root, track, fill, ghost, shieldBar, holdTimer: null, hideTimer: null, removeTimer: null };
     _active.set(tokenUuid, entry);
 
     if (isGain) {
-      // Heal: no ghost; green sweeps up from the old value.
+      // Heal / shield application: no ghost; green and the white shield edge
+      // sweep up from the old values together.
       ghost.style.width = "0%";
+      shieldBar.style.width = `${fromE * 100}%`;
       fill.style.width = `${fromFrac * 100}%`;
       paintFill(fill, fromFrac);
       void root.offsetWidth; // commit start values before animating
       poseIn(root);
+      shieldBar.style.width = `${toE * 100}%`;
       fill.style.width = `${toFrac * 100}%`;
       paintFill(fill, toFrac);
       entry.hideTimer = setTimeout(() => beginHide(tokenUuid), FADE_MS + GAIN_SLIDE_MS + LINGER_MS);
     } else {
-      // Damage ghost: both layers start at the PRE-hit value, then the green
-      // slides down fast to the new value — revealing the red chunk just dealt
-      // — holds, and the red drains slowly after (scheduleDrain). Color starts
+      // Damage ghost: every layer starts at the PRE-hit value, then the green
+      // fill and the white shield edge slide down fast to their new values —
+      // revealing the red chunk just dealt (combined shield+HP damage) —
+      // hold, and the red drains slowly after (scheduleDrain). Color starts
       // at the PRE-hit condition; the crisis shift rides the drain.
-      ghost.style.width = `${fromFrac * 100}%`;
+      ghost.style.width = `${fromE * 100}%`;
+      shieldBar.style.width = `${fromE * 100}%`;
       fill.style.width = `${fromFrac * 100}%`;
       paintFill(fill, fromFrac);
       void root.offsetWidth;
       poseIn(root);
+      shieldBar.style.width = `${toE * 100}%`;
       fill.style.width = `${toFrac * 100}%`;
-      scheduleDrain(entry, tokenUuid, toFrac);
+      scheduleDrain(entry, tokenUuid, toFrac, toE);
     }
 
     registerAnimation({
@@ -431,13 +475,14 @@ export function renderNpcHpBarLocal(payload = {}) {
   }
 }
 
-// Wait out the green slide + hold, then drain the red ghost down to the green
-// edge — shifting the fill's condition color on the same clock — then linger
-// and fade.
-function scheduleDrain(entry, tokenUuid, toFrac) {
+// Wait out the green slide + hold, then drain the red ghost down to the
+// remaining total's edge (white shield edge if any shield survives, green edge
+// otherwise) — shifting the fill's condition color (an HP read, shield doesn't
+// affect crisis) on the same clock — then linger and fade.
+function scheduleDrain(entry, tokenUuid, toFrac, toE = toFrac) {
   entry.holdTimer = setTimeout(() => {
     try {
-      entry.ghost.style.width = `${toFrac * 100}%`;
+      entry.ghost.style.width = `${toE * 100}%`;
       paintFill(entry.fill, toFrac);
     } catch (_) {}
   }, GREEN_SLIDE_MS + HOLD_MS);
@@ -448,7 +493,7 @@ function scheduleDrain(entry, tokenUuid, toFrac) {
 // ghost is frozen exactly where it's rendered (mid-drain safe) and extended to
 // keep covering the highest recent HP, and the hold/drain clock restarts.
 // Cancels any in-progress fade-out (opacity transitions back up smoothly).
-function retarget(entry, tokenUuid, { fromFrac, toFrac, isGain }) {
+function retarget(entry, tokenUuid, { fromFrac, toFrac, fromE, toE, isGain }) {
   clearTimeout(entry.holdTimer);
   clearTimeout(entry.hideTimer);
   clearTimeout(entry.removeTimer);
@@ -456,8 +501,10 @@ function retarget(entry, tokenUuid, { fromFrac, toFrac, isGain }) {
   entry.root.classList.toggle("fud-hpbar--gain", isGain);
 
   if (isGain) {
-    // Heal mid-bar: sweep green up; whatever ghost remains gets covered (and
-    // any later drain can only shrink it further — harmless underneath).
+    // Heal / shield application mid-bar: sweep green + white edge up; whatever
+    // ghost remains gets covered (and any later drain can only shrink it
+    // further — harmless underneath).
+    entry.shieldBar.style.width = `${toE * 100}%`;
     entry.fill.style.width = `${toFrac * 100}%`;
     paintFill(entry.fill, toFrac);
     entry.hideTimer = setTimeout(() => beginHide(tokenUuid), GAIN_SLIDE_MS + LINGER_MS);
@@ -465,14 +512,15 @@ function retarget(entry, tokenUuid, { fromFrac, toFrac, isGain }) {
   }
 
   // Freeze the ghost at its current rendered width (no transition), then make
-  // sure it still covers at least the pre-hit HP of THIS hit.
-  const held = Math.max(renderedFrac(entry.ghost, entry.track), fromFrac, toFrac);
+  // sure it still covers at least the pre-hit TOTAL (HP+shield) of THIS hit.
+  const held = Math.max(renderedFrac(entry.ghost, entry.track), fromE, toE);
   entry.ghost.style.transition = "none";
   entry.ghost.style.width = `${held * 100}%`;
+  entry.shieldBar.style.width = `${toE * 100}%`;
   entry.fill.style.width = `${toFrac * 100}%`;
   void entry.ghost.offsetWidth; // commit the freeze before re-enabling
   entry.ghost.style.transition = "";
-  scheduleDrain(entry, tokenUuid, toFrac);
+  scheduleDrain(entry, tokenUuid, toFrac, toE);
 }
 
 function beginHide(tokenUuid) {
