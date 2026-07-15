@@ -55,7 +55,6 @@ import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
-import { initHpBarTuner } from "./damage-numbers/hp-bar-tuner.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
 // Damage-number audition (look-only) tool is intentionally not registered as a
@@ -1528,11 +1527,11 @@ Hooks.once("ready", () => {
   try { initNpcHpBar(); }
   catch (e) { warn("initNpcHpBar on ready threw", e); }
 
-  // HP Bar Tuner — GM dev tool with sliders for the bar's world-scoped look
-  // config (position / height / width / roundness / scale); live-previews on
-  // the selected token.
-  try { initHpBarTuner(); }
-  catch (e) { warn("initHpBarTuner on ready threw", e); }
+  // HP Bar Tuner (damage-numbers/hp-bar-tuner.js) is intentionally NOT loaded
+  // at startup — the GM-tuned values are baked into TUNING_DEFAULTS. To re-tune,
+  // load it on demand from the console:
+  //   (await import("/modules/fabula-ultima-companion/scripts/battle-director/damage-numbers/hp-bar-tuner.js")).initHpBarTuner()
+  // then open Developer Tools → "HP bar tuner".
 
   // Boss Domination VFX — socketlib handlers (energy burst, Escape fade) +
   // the AE-driven red outline watcher, on every client.

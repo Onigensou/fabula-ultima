@@ -78,13 +78,15 @@ const SLIDE_PX = 16; // spawn/despawn horizontal slide distance
 // GM-tunable look config (world setting, read fresh on every spawn so a saved
 // tweak shows on the very next hit — no reload). See hp-bar-tuner.js.
 export const TUNING_SETTING = "npcHpBarTuning";
+// Values hand-tuned by the GM via the HP Bar Tuner (2026-07-15): slightly
+// overlapping the token's bottom edge, near-square corners, 80% size.
 export const TUNING_DEFAULTS = Object.freeze({
-  offsetX: 0,       // px, horizontal shift from token center (+ = right)
-  offsetY: 12,      // px, gap below the token's bottom edge (+ = down)
-  height: 11,       // px, bar height
-  widthScale: 1.0,  // × the token's on-screen width
-  radius: 20,       // px, corner roundness (>= height/2 ⇒ pill)
-  scale: 1.0,       // overall multiplier on width + height
+  offsetX: 0,        // px, horizontal shift from token center (+ = right)
+  offsetY: -12,      // px, from the token's bottom edge (+ = down)
+  height: 10,        // px, bar height
+  widthScale: 0.95,  // × the token's on-screen width
+  radius: 1,         // px, corner roundness (>= height/2 ⇒ pill)
+  scale: 0.80,       // overall multiplier on width + height
 });
 
 export function getBarTuning() {
