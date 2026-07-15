@@ -363,6 +363,21 @@ function fireResourceGainVfx(opts) {
   }
 }
 
+// Transient NPC HP bar — after any HP write on a STUDIED hostile NPC, a bare
+// bar slides to the new fill under the token (approximate condition, no
+// numbers). The hostile/studied gates + fraction conversion live in the bar
+// module (emitNpcHpBar), so callers just pass the raw HP facts from the seam.
+// Same lazy fire-and-forget contract as fireResourceLossVfx.
+function fireNpcHpBar(opts) {
+  try {
+    import("./damage-numbers/director-hp-bar.js")
+      .then((m) => m.emitNpcHpBar?.(opts))
+      .catch((e) => warn("fireNpcHpBar import failed", e));
+  } catch (e) {
+    warn("fireNpcHpBar threw", e);
+  }
+}
+
 // Affinity-specific feedback. Immune (IM → 0 damage) gets no loss/gain VFX
 // otherwise, so it'd land silently; absorb (AB) gets an absorb-specific look so
 // it doesn't masquerade as a plain heal. Same lazy fire-and-forget contract.
@@ -503,6 +518,8 @@ export async function applyDamageToTarget({
       await target.update({ "system.props.current_hp": newHp });
       log(`${prefix}absorbed ${healed} on ${targetName}: ${curHp} → ${newHp} (heal)${logSuffix}`);
       fireAbsorbVfx({ tokenUuid, amount: newHp - curHp });
+      const _sh = readPropNum(target, ["shield_value"], 0);
+      fireNpcHpBar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: newHp, maxHp, shieldBefore: _sh, shieldAfter: _sh });
       _pushLog({ resource: "hp", affinity: "AB", value: healed, valueDirection: "recover", bands: { hp: { from: curHp, to: newHp } } });
     } else {
       log(`${prefix}no HP change for ${targetName} [AB]${logSuffix} (damage was ${damage})`);
@@ -528,9 +545,11 @@ export async function applyDamageToTarget({
       fireResourceLossVfx({ tokenUuid, resource: "shield", amount: absorbed, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
     }
 
-    // Fully absorbed — only the shield changed; HP untouched.
+    // Fully absorbed — only the shield changed; HP untouched. The HP bar still
+    // shows: its white shield segment takes the hit (emit self-gates otherwise).
     if (toHp <= 0) {
       await target.update({ "system.props.shield_value": newShield });
+      fireNpcHpBar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: curHp, maxHp, shieldBefore: curShield, shieldAfter: newShield });
       _pushLog({ resource: "shield", affinity, value: damage, valueDirection: "loss", bands: { shield: { from: curShield, to: newShield }, hp: { from: curHp, to: curHp } } });
       return { resource: "hp", finalValue: damage, valueDirection: "loss", fired: [], shieldAbsorbed: absorbed };
     }
@@ -579,6 +598,10 @@ export async function applyDamageToTarget({
     } else {
       fireResourceLossVfx({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
     }
+    // Transient HP bar (studied hostile NPCs only — gated inside). Carries the
+    // shield band so a partially-soaked hit shows white + green shrinking in
+    // one sweep. No-ops when nothing changed (reaction clamp to 0).
+    fireNpcHpBar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: newHp, maxHp, shieldBefore: curShield, shieldAfter: newShield });
     _pushLog({ resource: "hp", affinity, value: damage, valueDirection: "loss", bands: { hp: { from: curHp, to: newHp }, shield: { from: curShield, to: newShield } } });
     return {
       resource: "hp",
@@ -4560,6 +4583,21 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
       // decision that path stays silent, so we only float gains here.
       if (result.applied > 0) {
         fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: result.applied });
+        if (resource === "hp" || resource === "shield") {
+          // hp grant: HP band moves, standing shield rides along. shield
+          // grant: shield band moves, current HP rides along.
+          const isShield = resource === "shield";
+          const hpNow = readPropNum(actor, ["current_hp", "hp"]);
+          const shNow = readPropNum(actor, ["shield_value"], 0);
+          fireNpcHpBar({
+            tokenUuid: token.uuid, actor,
+            hpBefore: isShield ? hpNow : result.newValue - result.applied,
+            hpAfter: isShield ? hpNow : result.newValue,
+            maxHp: readPropNum(actor, ["max_hp"]),
+            shieldBefore: isShield ? result.newValue - result.applied : shNow,
+            shieldAfter: isShield ? result.newValue : shNow,
+          });
+        }
       }
     }
   }
@@ -4632,6 +4670,19 @@ async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }
       await actor.update({ [`system.props.${def.prop}`]: newValue });
       applied.push({ actorUuid: actor.uuid, resource, from: cur, to: newValue });
       try { fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: newValue - cur }); } catch {}
+      if (resource === "hp" || resource === "shield") {
+        // Covers both the restore-revive (hp) and shield-apply (Golem
+        // Soulstone "gain 10 Shield") uses of set_resource.
+        const isShield = resource === "shield";
+        const hpNow = readPropNum(actor, ["current_hp", "hp"]);
+        const shNow = readPropNum(actor, ["shield_value"], 0);
+        fireNpcHpBar({
+          tokenUuid: token.uuid, actor,
+          hpBefore: isShield ? hpNow : cur, hpAfter: isShield ? hpNow : newValue,
+          maxHp: readPropNum(actor, ["max_hp"]),
+          shieldBefore: isShield ? cur : shNow, shieldAfter: isShield ? newValue : shNow,
+        });
+      }
       log(`skill-effects.set_resource: ${actor.name} ${resource} ${cur} → ${newValue} (row "${row.effect_label}")`);
     } catch (e) { warn(`skill-effects.set_resource: update failed on ${actor.name}`, e); }
   }

@@ -30,6 +30,7 @@ import {
   playAbsorbVfx,
 } from "../director-vfx.js";
 import { emitHurtReaction } from "./director-hurt-reaction.js";
+import { emitNpcHpBar, emitNpcHpBarUnchecked } from "./director-hp-bar.js";
 
 const PANEL_ID = "fud-dmgnum-livetest-panel";
 const STYLE_ID = "fud-dmgnum-livetest-style";
@@ -72,6 +73,43 @@ const CASES = [
     fn: (t) => {
       playResourceLossVfx({ tokenUuid: t, resource: "hp", amount: 260, element: "fire", affinity: "VU", isCrit: true });
       emitHurtReaction({ tokenUuid: t, intensity: "strong" });
+    },
+  },
+  // ── Transient NPC HP bar ──
+  // "Unchecked" cases skip the hostile/studied gates so the VISUAL can be
+  // auditioned on any token. The GATED case runs the production emit exactly
+  // as skill-effects does — use it to verify the study/disposition gating
+  // (silence on an unstudied or friendly token is the CORRECT outcome).
+  { label: "HP bar — hit 80%→55%",     fn: (t) => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: 0.80, toFrac: 0.55 }) },
+  { label: "HP bar — deep red 30%→8%", fn: (t) => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: 0.30, toFrac: 0.08 }) },
+  { label: "HP bar — heal 20%→45%",    fn: (t) => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: 0.20, toFrac: 0.45 }) },
+  { label: "HP bar — KO 15%→0%",       fn: (t) => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: 0.15, toFrac: 0.00 }) },
+  {
+    // Multi-hit combo: successive emits while the bar is up RETARGET the live
+    // fill (one bar stepping down), timed like a real multi-hit RESOLVE loop.
+    label: "HP bar — multi-hit ×4",
+    fn: (t) => {
+      const steps = [[1.00, 0.86], [0.86, 0.71], [0.71, 0.52], [0.52, 0.40]];
+      steps.forEach(([from, to], i) => {
+        setTimeout(() => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: from, toFrac: to }), i * 260);
+      });
+    },
+  },
+  // Shield (temp HP) — the WHITE segment right of the green fill.
+  { label: "HP bar — shield hit (HP safe)",  fn: (t) => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: 0.60, toFrac: 0.60, fromShield: 0.30, toShield: 0.10 }) },
+  { label: "HP bar — shield break + HP",     fn: (t) => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: 0.60, toFrac: 0.45, fromShield: 0.15, toShield: 0.00 }) },
+  { label: "HP bar — gain shield",           fn: (t) => emitNpcHpBarUnchecked({ tokenUuid: t, fromFrac: 0.50, toFrac: 0.50, fromShield: 0.00, toShield: 0.25 }) },
+  {
+    // Production path on the selected token's REAL HP (display only — no HP
+    // write): shows a bar ONLY if the token is hostile AND studied.
+    label: "HP bar — GATED (real HP, −25%)",
+    fn: (t) => {
+      const tokenId = String(t).split(".Token.").pop();
+      const actor = canvas?.tokens?.get?.(tokenId)?.actor ?? null;
+      const cur = Number(actor?.system?.props?.current_hp ?? 0) || 0;
+      const max = Number(actor?.system?.props?.max_hp ?? 0) || 0;
+      if (!max) { ui.notifications?.warn("HP bar livetest: token has no max_hp."); return; }
+      emitNpcHpBar({ tokenUuid: t, actor, hpBefore: cur, hpAfter: Math.max(0, cur - Math.round(max * 0.25)), maxHp: max });
     },
   },
 ];
