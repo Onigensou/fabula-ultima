@@ -7,6 +7,7 @@
 // Dynamically imported by action-card.js on first invoke click.
 
 import { log, warn } from "../logger.js";
+import { decideHit } from "../check.js";
 import { freezeActionResult } from "../snapshot.js";
 import {
   canPay, payPoint, readActorBonds,
@@ -74,7 +75,7 @@ async function recomputeArAfterInvoke(ar, newRoll) {
   if (!perTargetResults) {
     perTargetResults = (ar.perTargetResults ?? []).map((r) => {
       const def = r.defense ?? 0;
-      const hit = newRoll.isCrit || (!newRoll.isFumble && newRoll.total >= def);
+      const hit = decideHit(newRoll, newRoll.total, def);   // shared hit rule
       return { ...r, isCrit: newRoll.isCrit, isFumble: newRoll.isFumble, hit };
     });
   }

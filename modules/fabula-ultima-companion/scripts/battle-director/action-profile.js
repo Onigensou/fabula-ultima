@@ -23,7 +23,7 @@ import {
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense } from "./snapshot.js";
 import { applyClassAffinityAndMult } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
-import { deriveCheck } from "./check.js";
+import { deriveCheck, decideHit } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp, describeGrant,
   isTargetImmuneToStatuses } from "./skill-effects.js";
@@ -350,9 +350,9 @@ function resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll
   let hit = !rolled;            // auto-hit when no roll required
   let pierceMiss = false;
   if (rolled) {
-    if (check.isFumble) hit = false;
-    else if (check.isCrit) hit = true;
-    else hit = check.total >= defStat;
+    // Shared hit rule: crit hits, fumble misses, else total ≥ defense (`check`
+    // is the roll here, so the auto-hit branch never engages inside `if rolled`).
+    hit = decideHit(check, check.total, defStat);
     // Pierce-miss (deal half on a miss) applies to ANY pierce action — attack OR a
     // pierce spell (Iceberg). `primary.pierce` is now set kind-agnostically.
     if (!hit && primary.pierce) pierceMiss = true;
@@ -1263,13 +1263,16 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
     // hit/miss from the ORIGINAL roll. Re-apply the override on the rebuilt rows so
     // a "set 0 → all miss" survives the recompute (the old overlay preserved it by
     // skipping misses). Mirrors card-mutations.applyAdjustAccuracyMutation.
-    if (accuracyOverride && Array.isArray(delta?.perTargetResults)) {
-      const isCrit = !!ar.roll?.isCrit, isFumble = !!ar.roll?.isFumble;
+    // `ar.roll` gate: an accuracy override can only exist for an action that had a
+    // check (its producers all bail on a null roll). Guard here too so a no-check
+    // auto-hit action can never have its guaranteed hits recomputed against defense.
+    if (ar.roll && accuracyOverride && Array.isArray(delta?.perTargetResults)) {
+      const isCrit = !!ar.roll?.isCrit;
       const newTotal = Number(accuracyOverride.to ?? 0);
       const newHits = [];
       for (const row of delta.perTargetResults) {
         const def = Number(row.defense ?? 10);
-        const newHit = isCrit ? true : (!isFumble && newTotal >= def);
+        const newHit = decideHit(ar.roll, newTotal, def);   // shared hit rule
         row.hit = newHit;
         row.crit = isCrit && newHit;
         row.rawDamage = newHit ? row.rawDamage : 0;
@@ -1286,8 +1289,8 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
     // one is also in play, else the roll total). PER-TARGET, so it runs AFTER the
     // action-wide accuracy loop and only touches the overridden slots. Mirrors the
     // accuracyOverride re-apply above. defenseOverrides: [{ tokenUuid, actorUuid, from, to, via }].
-    if (Array.isArray(defenseOverrides) && defenseOverrides.length && Array.isArray(delta?.perTargetResults)) {
-      const isCrit = !!ar.roll?.isCrit, isFumble = !!ar.roll?.isFumble;
+    if (ar.roll && Array.isArray(defenseOverrides) && defenseOverrides.length && Array.isArray(delta?.perTargetResults)) {
+      const isCrit = !!ar.roll?.isCrit;
       const effTotal = Number(accuracyOverride?.to ?? ar.roll?.total ?? 0);
       let flipped = false;
       for (const row of delta.perTargetResults) {
@@ -1295,7 +1298,7 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
           (o.tokenUuid && o.tokenUuid === row.tokenUuid) || (o.actorUuid && o.actorUuid === row.actorUuid));
         if (!ov) continue;
         const newDef = Number(ov.to);
-        const newHit = isCrit ? true : (!isFumble && effTotal >= newDef);
+        const newHit = decideHit(ar.roll, effTotal, newDef);   // shared hit rule
         row.defense = newDef;
         row.hit = newHit;
         row.crit = isCrit && newHit;
