@@ -31,6 +31,7 @@ import { registerWanderingFlameAmbush } from "./battle-end/followups/wandering-f
 import { initWanderingFlameEntrance } from "./battle-end/followups/wandering-flame-entrance.js";
 import { getPendingClaim, clearPendingClaim, listUndyingRules } from "./battle-end/undying/undying.js";
 import { registerBlackestNight, blackestNightReactor } from "./battle-end/undying/geist-blackest-night.js";
+import { initBlackestNightCinematic } from "./battle-end/undying/blackest-night-cinematic.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
 import { TurnUI } from "./turn-ui.js";
 import { registerPlayerComposeActionHandler } from "./compose-action.js";
@@ -927,9 +928,11 @@ Hooks.once("ready", () => {
   try { initWanderingFlameEntrance(); } catch (e) { warn("initWanderingFlameEntrance threw", e); }
   try { registerWanderingFlameAmbush(); } catch (e) { warn("registerWanderingFlameAmbush threw", e); }
   // Undying interception (Geist's Zero Power: The Blackest Night). The
-  // builtin reactor is registered per-battle in start()/resume(); this only
-  // registers the BATTLE_ENDING rule. See [[undying]].
+  // builtin reactor is registered per-battle in start()/resume(); this
+  // registers the BATTLE_ENDING rule + the cinematic's socket on every
+  // client. See [[undying]].
   try { registerBlackestNight(); } catch (e) { warn("registerBlackestNight threw", e); }
+  try { initBlackestNightCinematic(); } catch (e) { warn("initBlackestNightCinematic threw", e); }
   // Equipment Orbment system — dynamic import so it needs no module.json esmodules
   // entry (a hard reload picks it up; no Setup relaunch). Self-contained under
   // scripts/orbment/. See [[project_equipment_orbment]].
