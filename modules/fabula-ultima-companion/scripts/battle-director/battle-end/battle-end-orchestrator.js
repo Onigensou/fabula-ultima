@@ -18,6 +18,7 @@ import { runBattleEndDefeatScreen } from "./battle-end-defeat-screen.js";
 import { runBattleEndTransition } from "./battle-end-transition.js";
 import { runBattleEndResourceReset } from "./battle-end-cleanup.js";
 import { evaluateFollowups, mergeRewardSnapshots } from "./battle-followup.js";
+import { evaluateUndying } from "./undying/undying.js";
 
 function detectOutcome(director) {
   const dc = director.dCombat;
@@ -86,6 +87,26 @@ export async function runBattleEndSequence(director) {
   })();
 
   log("[BattleEnd] Starting sequence", { outcome: endCtx.outcome, rounds: endCtx.totalRounds });
+
+  // ── Undying interception (e.g. Geist's Zero Power: The Blackest Night) ───
+  // Runs FIRST — before the prompt, the victory cinematic, and follow-up
+  // evaluation. A pending undying claim means a battle-ender hit 0 HP with
+  // its revive condition met: the rule plays the fake-out, applies the
+  // restore, un-latches dCombat, and sets ctx.pendingUndying so the FSM
+  // resumes the SAME conflict instead of stopping. Reward snapshots are left
+  // untouched (the battle isn't over — the real Battle-End still needs them).
+  // An undying claim outranks a follow-up: you can't be ambushed after a
+  // fight that never ended. See [[undying]].
+  let _undying = null;
+  try { _undying = await evaluateUndying(endCtx); }
+  catch (e) { warn("[BattleEnd] evaluateUndying threw", e); _undying = null; }
+  if (_undying?.handled) {
+    log("[BattleEnd] Undying rule handled — resuming conflict, skipping victory pipeline");
+    // Consume any pre-filled (sword-button) prompt result so it can't leak
+    // into the resumed battle's eventual real Battle-End prompt.
+    director.ctx.battleEndPromptResult = null;
+    return;
+  }
 
   // ── Follow-up / sequel evaluation (e.g. ⭐ Wandering Flame ambush) ────────
   // Runs BEFORE the Battle-End prompt + victory cinematic so a triggered

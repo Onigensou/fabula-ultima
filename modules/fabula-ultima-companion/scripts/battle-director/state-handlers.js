@@ -6760,7 +6760,16 @@ const BattleEnding = {
       director.ctx.payload?.options?.devMode ||
       director.ctx.payload?.context?.lean
     );
-    if (!isDevMode) {
+    // A pending undying claim (boss revive — see [[undying]]) means this
+    // battle must NOT end, lean or not: the sequence runs so evaluateUndying
+    // can intercept and resume. Normal lean/sim flow never registers a claim
+    // (the reactor revives inline), so sims are unaffected — this only
+    // activates under the undying.forceCinematic dev toggle.
+    let _undyingPending = false;
+    try {
+      _undyingPending = !!(game.settings.get("fabula-ultima-companion", "bdUndyingState")?.pending);
+    } catch (_) {}
+    if (!isDevMode || _undyingPending) {
       try {
         await runBattleEndSequence(director);
       } catch (e) {

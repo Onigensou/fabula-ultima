@@ -29,6 +29,9 @@ import {
 } from "./battle-end/battle-followup.js";
 import { registerWanderingFlameAmbush } from "./battle-end/followups/wandering-flame-ambush.js";
 import { initWanderingFlameEntrance } from "./battle-end/followups/wandering-flame-entrance.js";
+import { getPendingClaim, clearPendingClaim, listUndyingRules, isForceCinematic, setForceCinematic } from "./battle-end/undying/undying.js";
+import { registerBlackestNight, blackestNightReactor } from "./battle-end/undying/geist-blackest-night.js";
+import { initBlackestNightCinematic } from "./battle-end/undying/blackest-night-cinematic.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
 import { TurnUI } from "./turn-ui.js";
 import { registerPlayerComposeActionHandler } from "./compose-action.js";
@@ -252,6 +255,9 @@ async function start(arg) {
   registerBuiltinReactor(crisisReactor);
   registerBuiltinReactor(defeatReactor);
   registerBuiltinReactor(derivedStatusReactor);
+  // Geist's Blackest Night undying trigger — after defeatReactor so the
+  // creature_defeated emit + KO status land first. See [[undying]].
+  registerBuiltinReactor(blackestNightReactor);
 
   _instance = director;
   try {
@@ -552,6 +558,9 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   registerBuiltinReactor(crisisReactor);
   registerBuiltinReactor(defeatReactor);
   registerBuiltinReactor(derivedStatusReactor);
+  // Geist's Blackest Night undying trigger — must survive resume too, or a
+  // mid-boss-fight F5 silently disables the revive. See [[undying]].
+  registerBuiltinReactor(blackestNightReactor);
 
   _instance = director;
 
@@ -889,6 +898,12 @@ Hooks.once("init", () => {
   game.settings.register("fabula-ultima-companion", "bdCarriedRewards", {
     scope: "world", config: false, default: null, type: Object,
   });
+  // Undying interception state: { pending: claim|null }. The claim bridges
+  // the trigger (settle loop) to its pickup (BATTLE_ENDING), surviving an F5
+  // in between. See [[undying]].
+  game.settings.register("fabula-ultima-companion", "bdUndyingState", {
+    scope: "world", config: false, default: {}, type: Object,
+  });
   // Enemy Autopilot toggle (Director drives enemy turns via Action Patterns up
   // to the action card). Registered here so get/set are live before "ready".
   // See [[project_action_pattern_ai]].
@@ -912,6 +927,12 @@ Hooks.once("ready", () => {
   // it). Idempotent. See [[battle-followup]].
   try { initWanderingFlameEntrance(); } catch (e) { warn("initWanderingFlameEntrance threw", e); }
   try { registerWanderingFlameAmbush(); } catch (e) { warn("registerWanderingFlameAmbush threw", e); }
+  // Undying interception (Geist's Zero Power: The Blackest Night). The
+  // builtin reactor is registered per-battle in start()/resume(); this
+  // registers the BATTLE_ENDING rule + the cinematic's socket on every
+  // client. See [[undying]].
+  try { registerBlackestNight(); } catch (e) { warn("registerBlackestNight threw", e); }
+  try { initBlackestNightCinematic(); } catch (e) { warn("initBlackestNightCinematic threw", e); }
   // Equipment Orbment system — dynamic import so it needs no module.json esmodules
   // entry (a hard reload picks it up; no Setup relaunch). Self-contained under
   // scripts/orbment/. See [[project_equipment_orbment]].
@@ -964,6 +985,19 @@ Hooks.once("ready", () => {
         id: r.id, label: r.label ?? "", priority: r.priority ?? 0,
       })),
       pity: (id) => getFollowupPity(id),
+    },
+    // Undying interception (boss revives — Geist's Blackest Night). GM
+    // inspection + recovery: a stale pending claim would hijack the NEXT
+    // battle's end, so clearPending() is the escape hatch. See [[undying]].
+    undying: {
+      pending: () => getPendingClaim(),
+      clearPending: () => clearPendingClaim(),
+      listRules: () => listUndyingRules().map((r) => ({ id: r.id, label: r.label ?? "" })),
+      triggers: () => _instance?.ctx?._undyingTriggers ?? 0,
+      // Dev: lean test battles revive inline (no cinematic) — flip this on to
+      // preview the full fake-out from the Test Battle tool.
+      forceCinematic: (on) => setForceCinematic(on),
+      isForceCinematic: () => isForceCinematic(),
     },
     // Manual recovery — removes any tokens still flagged as director-spawned
     // on the given scene (or canvas.scene by default). Normally fires

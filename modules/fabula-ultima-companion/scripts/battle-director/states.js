@@ -296,6 +296,12 @@ export const TRANSITIONS = Object.freeze({
     // directly to STOPPED. ABORT also hard-exits to STOPPED so the GM can
     // always escape a stuck sequence.
     //
+    // Undying hand-off: an undying rule (Geist's Blackest Night) revived a
+    // battle-ender mid-pipeline. The SAME conflict resumes — same dCombat
+    // (already un-latched + advanced by the rule), same round numbering, no
+    // PREP re-entry — at the state the rule computed (TURN_START, or
+    // ROUND_START on a round wrap). See [[undying]].
+    //
     // Follow-up hand-off: if the orchestrator set ctx.pendingFollowup (a
     // Battle-End rule fired, e.g. ⭐ Wandering Flame), route back to PREP for
     // an IN-PLACE new conflict instead of stopping. The commit hook swaps
@@ -304,8 +310,18 @@ export const TRANSITIONS = Object.freeze({
     // carry over; PREP rebuilds dCombat fresh (round resets, conflict_start
     // re-fires). See [[battle-followup]].
     INTERNAL_DONE: {
-      next: (ctx) => ctx.pendingFollowup ? STATES.PREP : STATES.STOPPED,
+      next: (ctx) =>
+        ctx.pendingUndying?.resumeAt ? ctx.pendingUndying.resumeAt
+          : ctx.pendingFollowup ? STATES.PREP
+          : STATES.STOPPED,
       commit: async (ctx) => {
+        if (ctx.pendingUndying) {
+          ctx.pendingUndying = null;
+          ctx.endOfCombat = false;
+          ctx.endOfRound  = false;
+          ctx.abortReason = null;
+          return;
+        }
         if (!ctx.pendingFollowup) return;
         ctx.payload        = ctx.pendingFollowup.payload;
         ctx.pendingFollowup = null;

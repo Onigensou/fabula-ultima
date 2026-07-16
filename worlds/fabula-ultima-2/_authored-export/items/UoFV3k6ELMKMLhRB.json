@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "5OXacTiNFM8EAMbf",
+      "_id": "RY0zLg4kFC5ayOtd",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784055616157,
+        "createdTime": 1784088993603,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -34,9 +34,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "5OXacTiNFM8EAMbf",
+          "originalId": "RY0zLg4kFC5ayOtd",
           "originalParentId": "UoFV3k6ELMKMLhRB",
-          "originalUuid": "Item.UoFV3k6ELMKMLhRB.ActiveEffect.5OXacTiNFM8EAMbf"
+          "originalUuid": "Item.UoFV3k6ELMKMLhRB.ActiveEffect.RY0zLg4kFC5ayOtd"
         },
         "fabula-ultima-companion": {
           "arcanumMerge": true,
