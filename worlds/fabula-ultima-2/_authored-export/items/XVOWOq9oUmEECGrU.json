@@ -856,7 +856,8 @@
                 "reaction_trigger": "turn_start"
               }
             }
-          }
+          },
+          "stackMode": "add"
         },
         "statuscounter": {
           "config": {

@@ -335,7 +335,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "chargesMax": 99,
-              "directorPermanent": true
+              "directorPermanent": true,
+              "stackMode": "add"
             },
             "statuscounter": {
               "config": {

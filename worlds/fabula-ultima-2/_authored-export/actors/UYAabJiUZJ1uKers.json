@@ -335,6 +335,68 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "mqyyxKCtbbWCoT3S",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1784216826700,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>This soul is <strong>decaying</strong>: it loses <strong>1</strong> stack at the end of <strong>every turn</strong>. When the counter reaches <strong>0</strong>, the soul perishes and inflicts <strong>all of its debuffs</strong> on <strong>every creature</strong> on the battlefield. Destroying it before the countdown ends removes it cleanly.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "mqyyxKCtbbWCoT3S",
+              "originalParentId": "hwRQZH4zxC0vB8wh",
+              "originalUuid": "Actor.UYAabJiUZJ1uKers.Item.hwRQZH4zxC0vB8wh.ActiveEffect.mqyyxKCtbbWCoT3S"
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "half_life",
+              "charges": 1,
+              "chargesMax": 12,
+              "directorPermanent": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/dark_mind.png",
+          "name": "Half-Life",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-half-life"
+          ],
+          "system": {
+            "tags": [
+              "half_life"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -384,7 +446,90 @@
           "defense_target_type": "def",
           "description": "<p>Consume <strong>25% Current HP </strong>to summon <strong>3</strong> <strong>Dark Soul</strong></p><p><strong>Dark Soul </strong>comes into play with <strong>Random Debuff</strong>, they <strong>cursed </strong>others with their affliction when they leave the battlefield unless <strong>Exorcised</strong></p>",
           "duration": "1 Round",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "dm_hpcost",
+              "grant_amount": "0 - floor(CUR_HP * 0.25)",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            },
+            "1": {
+              "dice_count": "1",
+              "dice_faces": "12",
+              "effect_kind": "roll_dice",
+              "effect_label": "dm_r1",
+              "prompt_var": "hl1"
+            },
+            "2": {
+              "dice_count": "1",
+              "dice_faces": "12",
+              "effect_kind": "roll_dice",
+              "effect_label": "dm_r2",
+              "prompt_var": "hl2"
+            },
+            "3": {
+              "dice_count": "1",
+              "dice_faces": "12",
+              "effect_kind": "roll_dice",
+              "effect_label": "dm_r3",
+              "prompt_var": "hl3"
+            },
+            "4": {
+              "effect_kind": "summon",
+              "effect_label": "dm_s1",
+              "summon_actor": "Dark Soul",
+              "summon_count": "1"
+            },
+            "5": {
+              "effect_kind": "summon",
+              "effect_label": "dm_s2",
+              "summon_actor": "Dark Soul",
+              "summon_count": "1"
+            },
+            "6": {
+              "effect_kind": "summon",
+              "effect_label": "dm_s3",
+              "summon_actor": "Dark Soul",
+              "summon_count": "1"
+            },
+            "7": {
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "VAR_HL1",
+              "ae_template_ref": "Half-Life",
+              "effect_kind": "apply_ae",
+              "effect_label": "dm_hl1",
+              "target_ref": "dm_s1"
+            },
+            "8": {
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "VAR_HL2",
+              "ae_template_ref": "Half-Life",
+              "effect_kind": "apply_ae",
+              "effect_label": "dm_hl2",
+              "target_ref": "dm_s2"
+            },
+            "9": {
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "VAR_HL3",
+              "ae_template_ref": "Half-Life",
+              "effect_kind": "apply_ae",
+              "effect_label": "dm_hl3",
+              "target_ref": "dm_s3"
+            },
+            "10": {
+              "ae_duplicate_mode": "replace",
+              "ae_name_pool": "Slow,Dazed,Weak,Shaken,Enraged,Poisoned",
+              "effect_kind": "apply_ae",
+              "effect_label": "dm_curse",
+              "target_ref": "dm_s1,dm_s2,dm_s3"
+            },
+            "11": {
+              "chain_steps": "dm_hpcost,dm_r1,dm_r2,dm_r3,dm_s1,dm_s2,dm_s3,dm_hl1,dm_hl2,dm_hl3,dm_curse",
+              "effect_kind": "chain",
+              "effect_label": "dm_root"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -396,7 +541,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Dark Missionary",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "dm_root",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
