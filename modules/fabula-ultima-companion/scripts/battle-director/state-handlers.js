@@ -975,9 +975,9 @@ async function resolveAction(director, ar, opts = {}) {
     // make `hit_action_targets` reactions like Vanish over-apply — that's a
     // later keyword-layer follow-up, not this foundation).
     const struck = hits.filter((r) => r.hit || r.pierceMiss);
+    const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+    const struckTokenUuids = struck.map((r) => r.tokenUuid);
     if (struck.length) {
-      const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
-      const struckTokenUuids = struck.map((r) => r.tokenUuid);
 
       // Free-action grant ON-HIT riders — the granting skill's effect_table rows
       // named in `onHitEffectRefs` run against the GENUINELY HIT targets
@@ -1043,11 +1043,17 @@ async function resolveAction(director, ar, opts = {}) {
           },
         });
       }
-      // One-shot post-attack trigger — fires after all per-target
-      // creature_deals_damage fires. Carries allTargetsHit so passives
-      // like Blazing Sweep's "repeat if all hit" can gate on a single
-      // clean event without per-target multi-fire.
-      queuePostResolveTrigger(director, {
+    }
+    // One-shot post-attack trigger — fires after all per-target
+    // creature_deals_damage fires, and fires HIT OR MISS: a fully-evaded
+    // attack still COMPLETES. The payload's allTargetsHit / allTargetsDamaged /
+    // hitTargets (HIT_COUNT) are what hit-gated consumers filter on — Blazing
+    // Sweep's repeat gates ALL_TARGETS_HIT == 1; Morrigan / Scythe gate
+    // HIT_COUNT > 0. (This used to sit inside the struck-length gate above, so
+    // a whiff emitted NOTHING and completes_attack repeat chains — Geist's
+    // Shadowbringers — silently died on the first evade. Hit-or-miss is also
+    // what the Opportunity Advantage-spend row documents and expects.)
+    queuePostResolveTrigger(director, {
         casterActor,
         trigger: "creature_completes_attack",
         payload: {
@@ -1067,7 +1073,6 @@ async function resolveAction(director, ar, opts = {}) {
           sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
         },
       });
-    }
   } else if (ar.hasDamage && hits.some((r) => r.hit)) {
     queuePostResolveTrigger(director, {
       casterActor,

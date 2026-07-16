@@ -258,6 +258,7 @@ export async function run({
   phoenixFeathers = 0,   // how many the party walks in carrying
   startingZp = 0,        // Zero Power each PC walks in with (6 = a charged limit break)
   fabulaPoints = 3,      // Fabula Points each PC walks in with (invokes spend these)
+  scripts = null,        // skill-under-test directives — force a caster's action(s)
 } = {}) {
   const a = api();
   if (!a?.start) { ui.notifications?.error("[SIM] Battle Director API not ready."); return null; }
@@ -303,7 +304,12 @@ export async function run({
 
   try {
     SimMode.begin({ pace, reactions, expectedRounds, maxRounds });
-    Journal.begin(foundry.utils.randomID(), { pace, reactions, expectedRounds, phoenixFeathers, startingZp, fabulaPoints });
+    // Skill-under-test directives: resolve each caster to { name, uuid } so the
+    // hands-free hook can match it on the field (PC clones carry a " [SIM]" suffix,
+    // which the matcher strips). Registered AFTER begin() clears prior state.
+    const directives = await normalizeScripts(scripts);
+    if (directives.length) SimMode.setScripts(directives);
+    Journal.begin(foundry.utils.randomID(), { pace, reactions, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, scripts: directives.length });
 
     clones = await cloneParty(refs, startingZp, fabulaPoints);
     if (!clones.length) throw new Error("no party clones were created");
@@ -421,4 +427,121 @@ export async function abort() {
     if (ids.length) await Actor.deleteDocuments(ids);
   } catch (e) { warn("[SIM] abort: clone sweep threw", e); }
   return wasActive;
+}
+
+// ── Scripted directives (skill-under-test) ───────────────────────────────────
+// Normalize the `scripts` option into the shape SimMode + scripted-action.js
+// expect: [{ match: { name, uuid }, skill, targets, force, once }]. Accepts either
+//   - an array:  [{ caster, skill, targets, force, once }, …]
+//   - an object: { "Hina": { skill: "Iceberg", targets: "enemy" }, "Zarg": "…" }
+//                (a bare string value is shorthand for { skill: <string> })
+// `caster` is a name or UUID; it is resolved so the on-field clone (which carries a
+// " [SIM]" suffix) still matches by UUID or base name.
+async function normalizeScripts(scripts) {
+  if (!scripts) return [];
+  const raw = Array.isArray(scripts)
+    ? scripts
+    : Object.entries(scripts).map(([caster, v]) =>
+        typeof v === "string" ? { caster, skill: v } : { caster, ...v });
+
+  const out = [];
+  for (const d of raw) {
+    if (!d?.skill) { warn("[SIM] script directive has no skill — skipped", d); continue; }
+    const actor = d.caster ? await resolveActor(d.caster) : null;
+    if (!actor && d.caster) warn(`[SIM] script caster not found: ${d.caster} — matching by name only`);
+    out.push({
+      match: { name: actor?.name ?? String(d.caster ?? ""), uuid: actor?.uuid ?? null },
+      skill: String(d.skill),
+      targets: d.targets ?? "enemy",
+      force: d.force ?? null,
+      once: !!d.once,
+    });
+  }
+  return out;
+}
+
+// PC vs NPC — the same discriminator the sim panel uses (a player-owned actor with
+// a main hand is a fightable PC; everything else is an NPC).
+function isPcActor(actor) {
+  const p = actor?.system?.props ?? {};
+  return !!actor?.hasPlayerOwner && String(p.main_hand ?? "").trim() !== "";
+}
+
+// ── testSkill — the ergonomic skill-under-test entry point ───────────────────
+// Force ONE combatant to cast ONE skill, in a live hands-free battle, and report
+// what happened. The caster's side is inferred (PC → party, monster → enemy) and it
+// is auto-placed on that side; you supply the opposition (the "dummy" to cast at).
+//
+//   await FUCompanion.api.experimental.sim.testSkill({
+//     caster: "Hina",                       // a party PC (name or UUID)
+//     skill:  "Iceberg",                    // a skill the caster owns (name or UUID)
+//     enemy:  "Actor.someDummy",            // who to test against (single) …
+//     // enemies: [{ uuid, quantity }],     // … or a full encounter group
+//     targets: "enemy",                     // "enemy"|"enemies"|"self"|"allies"|[names/uuids]
+//     force:   { crit: true },              // optional: crit|fumble|hit|miss|{rA,rB}
+//     party:   ["Actor.otherPC", …],        // optional extra allies (default: just the caster)
+//     pace: "fast", expectedRounds: 30,     // usual run knobs pass through
+//   });
+//
+// For a MONSTER skill, name the boss as `caster`; it is placed on the enemy side and
+// `party` becomes the dummies it casts at (defaults to the DB party). For anything
+// more elaborate (multiple scripted casters, multi-round sequences) call `run` with
+// a `scripts` array directly — that is the general form; this is the common case.
+export async function testSkill({
+  caster, skill, targets = "enemy", force = null, once = false,
+  casterSide = null,          // "party" | "enemy" — override the inference
+  enemy = null, enemies = null, quantity = 1,
+  party = null,
+  // Skill tests want to WATCH the skill land, not be cut short by a round budget —
+  // so expectedRounds defaults high. Everything else mirrors `run`'s defaults.
+  pace = "fast", reactions = "apply", expectedRounds = 30, maxRounds = 30,
+  phoenixFeathers = 0, startingZp = 6, fabulaPoints = 3,
+} = {}) {
+  if (!caster || !skill) {
+    ui.notifications?.error("[SIM] testSkill needs { caster, skill }.");
+    return null;
+  }
+  const casterActor = await resolveActor(caster);
+  if (!casterActor) { ui.notifications?.error(`[SIM] testSkill: caster not found: ${caster}`); return null; }
+
+  const side = casterSide ?? (isPcActor(casterActor) ? "party" : "enemy");
+
+  // Assemble the two sides so the caster is on `side` and the opposition exists.
+  let enemyGroup = Array.isArray(enemies) && enemies.length
+    ? enemies.map((g) => ({ uuid: g?.uuid ?? g, quantity: Math.max(1, Number(g?.quantity ?? 1) | 0) }))
+    : (enemy ? [{ uuid: enemy, quantity: Math.max(1, Number(quantity) | 0) }] : []);
+  let partyRefs = Array.isArray(party) && party.length ? party.filter(Boolean) : [];
+
+  if (side === "party") {
+    // Caster fights with the party; it must be cloned, so ensure it is in the set.
+    if (!partyRefs.some((r) => sameActor(r, casterActor))) partyRefs = [casterActor.uuid, ...partyRefs];
+    if (!enemyGroup.length) {
+      ui.notifications?.error("[SIM] testSkill: give an `enemy` (or `enemies`) for the caster to test against.");
+      return null;
+    }
+  } else {
+    // Caster is a monster: it spawns on the enemy side, and the party are the dummies.
+    if (!enemyGroup.some((g) => sameActor(g.uuid, casterActor))) enemyGroup = [{ uuid: casterActor.uuid, quantity: 1 }, ...enemyGroup];
+    if (!partyRefs.length) partyRefs = (await resolveDbParty()).map((m) => m.uuid);
+    if (!partyRefs.length) {
+      ui.notifications?.error("[SIM] testSkill: a monster caster needs a `party` to cast at (none, and no DB party).");
+      return null;
+    }
+  }
+
+  return run({
+    enemies: enemyGroup,
+    party: partyRefs,
+    pace, reactions, expectedRounds, maxRounds,
+    phoenixFeathers, startingZp, fabulaPoints,
+    scripts: [{ caster: casterActor.uuid, skill, targets, force, once }],
+  });
+}
+
+// Loose actor-ref equality: a UUID string, a name, or an actor doc all compare to
+// the same actor.
+function sameActor(ref, actor) {
+  if (!ref || !actor) return false;
+  const s = typeof ref === "string" ? ref : (ref?.uuid ?? ref?.name ?? "");
+  return s === actor.uuid || s === actor.id || String(s).trim().toLowerCase() === String(actor.name).trim().toLowerCase();
 }

@@ -7903,6 +7903,13 @@ async function applyTransferAeEffect(row, ctx) {
     const chargeKey = String(eff?.flags?.[FLAG_NS]?.chargeKey ?? "").trim().toLowerCase();
     return filterTags.some((t) => tags.includes(t) || (chargeKey && chargeKey === t));
   };
+  // keep_source: COPY instead of MOVE — the matched AEs stay on the source and
+  // are ALSO applied to the destination. Turns transfer_ae into a copy/share
+  // primitive (Geist's Souleater "share the debuffs between you and the target":
+  // two keep_source copies, self→target and target→self, so both end with the
+  // union). Charges/reactionConfig still ride along on the copy.
+  const keepSource = row.keep_source === true || String(row.keep_source ?? "").trim().toLowerCase() === "true";
+
   // How many to move: ""/all = every match; N = up to N (multi-select picker).
   const countRaw = String(row.count ?? "").trim().toLowerCase();
   const takeAll = countRaw === "" || countRaw === "all";
@@ -7975,17 +7982,20 @@ async function applyTransferAeEffect(row, ctx) {
       // If the dest already bears this AE, refresh it in place with the moved
       // (preserved-charge) data; else create. Remove from source either way.
       const existing = Array.from(dest.effects ?? []).find((e) => e.name === eff.name);
-      try {
-        await src.deleteEmbeddedDocuments("ActiveEffect", [eff.id]);
-      } catch (e) {
-        warn(`skill-effects.transfer_ae: delete from ${src.name} failed`, e);
-        continue;
+      // MOVE = delete from source first; COPY (keep_source) = leave it in place.
+      if (!keepSource) {
+        try {
+          await src.deleteEmbeddedDocuments("ActiveEffect", [eff.id]);
+        } catch (e) {
+          warn(`skill-effects.transfer_ae: delete from ${src.name} failed`, e);
+          continue;
+        }
       }
       try {
         if (existing) await existing.update(data);
         else await dest.createEmbeddedDocuments("ActiveEffect", [data]);
         moved.push({
-          from: src.uuid, to: dest.uuid, name: eff.name,
+          from: src.uuid, to: dest.uuid, name: eff.name, copied: keepSource,
           charges: data.flags?.[FLAG_NS]?.charges ?? null,
         });
       } catch (e) {

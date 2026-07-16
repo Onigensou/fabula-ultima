@@ -582,6 +582,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "MAX_MP": return readProp(actor, "max_mp");
       case "CUR_IP": return readProp(actor, "current_ip");
       case "MAX_IP": return readProp(actor, "max_ip");
+      // Remaining shield buffer (shield_value resource). Symmetric read-token for
+      // the grant/set_resource "shield" writers (resources.js) — nothing else
+      // could read the live shield before this. Powers "consume any remaining
+      // Shield to deal damage equal to the amount consumed" (Geist's Shadow Wall):
+      // a round_end row reads CUR_SHIELD for the AoE amount, then zeroes it.
+      case "CUR_SHIELD": return readProp(actor, "shield_value");
       // Boss Zero Power pool (Fafnir). CUR_ZERO_POWER / ZERO_POWER read the
       // current stack count; used to cap an accumulator trigger (Zero Trigger:
       // Suffering gains ZP only while ZERO_POWER < 3).
@@ -868,6 +874,15 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (!subjectUuid) return 0;
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
+      }
+      // Remaining shield buffer of the trigger's SUBJECT (the current target).
+      // Twin of CUR_SHIELD resolved against subjectActorUuid, for per-victim
+      // shield reads in the outgoing-damage pass.
+      case "TARGET_CUR_SHIELD": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return subject ? (Number(subject?.system?.props?.shield_value ?? 0) || 0) : 0;
       }
       // Magic Defense (derived) of the trigger's SUBJECT creature (the current
       // target). Twin of TARGET_MAX_HP (same subjectActorUuid resolve), reading

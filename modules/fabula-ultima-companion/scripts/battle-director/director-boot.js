@@ -62,7 +62,7 @@ import { initDominationCrest } from "./domination-crest.js";
 import { initDamageNumberLivetest } from "./damage-numbers/damage-number-livetest.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
 import { initTestBattleTool } from "./test-battle-tool.js";
-import { run as simRun, abort as simAbort } from "./sim/sim-run.js";
+import { run as simRun, abort as simAbort, testSkill as simTestSkill } from "./sim/sim-run.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { Journal as SimJournal } from "./sim/sim-journal.js";
 import { initSimPanel } from "./sim/sim-panel.js";
@@ -934,7 +934,10 @@ Hooks.once("ready", () => {
   // Automated playtest harness (GM-only, dev). Runs a real hands-free battle and
   // reports how it went — see sim/sim-run.js. `sim.abort()` is the panic valve if
   // a run ever wedges. Phase 0: console-driven, one fight at a time.
-  exp.sim = { run: simRun, abort: simAbort, mode: SimMode, journal: () => SimJournal.entries() };
+  // `testSkill` FORCES a chosen combatant to cast a chosen skill in a live hands-free
+  // battle (with optional forced dice) — the skill-under-test tool. `run({ scripts })`
+  // is the general form. See sim/scripted-action.js + sim/sim-run.js.
+  exp.sim = { run: simRun, testSkill: simTestSkill, abort: simAbort, mode: SimMode, journal: () => SimJournal.entries() };
   exp.battleDirector = {
     start,
     stop,
