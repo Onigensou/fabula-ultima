@@ -5,25 +5,32 @@
 //   2. battle BGM stops, victory fanfare plays, camera pans to the party —
 //      this deliberately mirrors the REAL Battle-End FX so it reads as a win
 //   3. the fanfare fades out under a heartbeat… vignette closes in
-//   4. hard snap-pan to Geist, gray and still; a second heartbeat; silence
-//   5. dark implosion burst on Geist + screenshake
-//   6. THE RISE — restore lands here (onRise): color floods back, the webm
-//      resumes, violet flash
-//   7. boss BGM returns, vignette lifts, input unlocks, combat resumes
+//   4. hard snap-pan to Geist; heartbeats keep looping over the body
+//   5. THE VIGIL — the screen dims to near-black but Geist's KO sprite stays
+//      lit above the dim, pulsing in sync with each heartbeat (~4s of dread)
+//   6. screenflash (Flash1.ogg) — the KO sprite becomes the REVIVE sprite,
+//      floating idly in the dark (~2.5s)
+//   7. Zero Power cut-in: Geist's portrait slides across (Overdrive sting)
+//      while the action namecard banner announces the skill (💥 + live item
+//      name, hostile theme)
+//   8. THE RISE — restore lands here (onRise): overlay drops, the battle
+//      webm resumes in color, red/violet particle burst + screenshake
+//   9. boss BGM returns, camera pans home, dim lifts, combat resumes
 //
 // SHORT (2nd+ revival — "he just refuses to die", ~3s): no fake victory, no
-// BGM swap. Heartbeat, snap-pan, burst, rise, done.
+// BGM swap. Heartbeat, snap-pan, burst, rise, camera home.
 //
 // Architecture mirrors wandering-flame-entrance.js: GM resolves everything
-// non-deterministic (fanfare URL, pan target) into ONE payload, broadcasts
-// via socketlib, and every client — GM included — runs the same local
-// timeline. Only the GM's run carries onRise (the restore) and the world-
-// level BGM ops (stop battle track / resume boss track propagate to all
-// clients via playlist documents on their own).
+// non-deterministic (fanfare URL, pan target, cut-in art, banner title) into
+// ONE payload, broadcasts via socketlib, and every client — GM included —
+// runs the same local timeline. Only the GM's run carries onRise (the
+// restore), the world-level BGM ops, and the namecard broadcast (that
+// renderer fans out on its own — firing it per client would stack banners).
 //
-// No external assets: heartbeat is WebAudio-synthesized, the burst is
-// generated PIXI radial gradients, vignette/flash are DOM. The fanfare URL
-// comes from whatever playlist track the game DB names as victory_bgm.
+// All overlay work is screen-fixed DOM (camera-transform-immune, the same
+// argument director-cutin.js makes); only the particle burst is PIXI (world-
+// anchored on the token). The camera is static during every DOM beat, so
+// token→screen projection is computed once per beat.
 //
 // Contract (stable since Phase 1):
 //   await playBlackestNightCinematic({ mode, director, endCtx, bossTokenUuid, onRise })
@@ -37,8 +44,21 @@ const MODULE_ID   = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_BLACKEST_NIGHT_PLAY";
 const STYLE_ID    = "fud-bn-style";
 const VIGNETTE_ID = "fud-bn-vignette";
+const DIM_ID      = "fud-bn-dim";
+const SPRITE_ID   = "fud-bn-sprite";
+const CUTIN_ID    = "fud-bn-cutin";
 const FLASH_ID    = "fud-bn-flash";
 const LOCK_ID     = "fud-bn-input-lock";
+
+// ─── Art / SFX (Geist-specific; cut-in prefers the actor's own
+// cut_in_zero_power prop so future art swaps need no code) ─────────────────
+const ASSETS = {
+  ko:       "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_KO.png",
+  revive:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Revive.png",
+  cutin:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Portrait/Geist_Cutin.png",
+  flashSfx: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Flash1.ogg",
+  cutinSfx: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Overdrive.wav",
+};
 
 // ─── Timing / tuning (ms unless noted) — edit here during live tuning ─────
 const CFG = {
@@ -53,11 +73,19 @@ const CFG = {
     beatAfterFadeMs:  600,    // heartbeat #1 lands here
     snapPanMs:        550,    // beat 4 — hard cut to Geist
     snapPanScale:     1.9,
-    dreadHoldMs:      900,    // heartbeat #2 + silence
-    burstMs:          900,    // beat 5 — implosion
+    preDimBeatsMs:    1500,   // heartbeats looping over the body before the dim
+    dimInMs:          600,    // the world goes dark…
+    vigilMs:          4000,   // …Geist alone stays lit, pulsing with each beat
+    beatIntervalMs:   950,    // heartbeat cadence through pre-dim + vigil
+    flashSwapMs:      260,    // beat 6 — screenflash, KO → Revive sprite
+    reviveHoldMs:     2500,   // floating in the dark
+    cutinInMs:        380,    // beat 7 — Zero Power cut-in slide-in
+    cutinHoldMs:      1300,
+    cutinOutMs:       380,
+    burstMs:          1000,   // beat 8 — rise burst
     shakeMs:          700,
-    riseFlashMs:      450,    // beat 6 — color floods back
-    riseTailMs:       700,    // hold on the risen boss before control returns
+    riseFlashMs:      450,
+    riseTailMs:       800,    // hold on the risen boss before control returns
     vignetteOutMs:    600,
     resetPanMs:       900,    // camera home to the default battle view
   },
@@ -76,6 +104,11 @@ const CFG = {
     resetPanMs:       650,
   },
   heartbeatVol: 0.9,
+  // Overlay sprite sizing/facing. Art faces LEFT; enemies face RIGHT on this
+  // battlefield → mirror horizontally.
+  spriteFlipX: true,
+  spriteScale: 1.2,           // overlay height = token screen height × this
+  cutinHeightVh: 72,          // cut-in portrait height (viewport-height %)
 };
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -104,11 +137,11 @@ export async function playBlackestNightCinematic({
   bossTokenUuid = null,
   onRise = null,
 } = {}) {
-  // Resolve everything clients need into one deterministic payload.
   const bossDoc  = bossTokenUuid ? await fromUuid(bossTokenUuid).catch(() => null) : null;
   const bossTd   = bossDoc?.document ?? bossDoc;
   const sceneId  = bossTd?.parent?.id ?? canvas?.scene?.id ?? null;
   const tokenId  = bossTd?.id ?? null;
+  const bossActor = bossTd?.actor ?? null;
 
   // Fake-victory pan target: a random player-owned token (same pick for every
   // client — the GM chooses).
@@ -119,8 +152,7 @@ export async function playBlackestNightCinematic({
   }
 
   // Victory fanfare URL off the DB's victory_bgm playlist track (played as a
-  // LOCAL Audio per client so the fade is frame-accurate; playlist docs would
-  // add write-latency to every volume step).
+  // LOCAL Audio per client so the fade is frame-accurate).
   let fanfareUrl = null;
   if (mode === "full") {
     const name = await fetchVictoryBgmName();
@@ -128,9 +160,15 @@ export async function playBlackestNightCinematic({
     if (!fanfareUrl) warn(`[BlackestNight] victory track "${name}" not found — fake-out plays without fanfare`);
   }
 
+  // Banner title + cut-in art off the LIVE actor so renames / art swaps need
+  // no code change. Falls back to the pinned assets.
+  const skillItem = bossActor?.items?.find?.((i) => /blackest\s+night/i.test(i?.name ?? "")) ?? null;
+  const bannerTitle = skillItem?.name ?? "Zero Power: The Blackest Night";
+  const cutinUrl = String(bossActor?.system?.props?.cut_in_zero_power ?? "").trim() || ASSETS.cutin;
+
   const payload = {
     runId: `bn_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-    mode, sceneId, tokenId, panTargetId, fanfareUrl,
+    mode, sceneId, tokenId, panTargetId, fanfareUrl, cutinUrl,
   };
 
   // World-level BGM stop FIRST (propagates to all clients via the playlist
@@ -143,7 +181,7 @@ export async function playBlackestNightCinematic({
   try { _socket?.executeForOthers?.(ACTION_PLAY, payload); }
   catch (e) { warn("[BlackestNight] broadcast failed", e); }
 
-  await playLocal(payload, { onRise, director });
+  await playLocal(payload, { onRise, director, bannerTitle });
 }
 
 async function fetchVictoryBgmName() {
@@ -167,7 +205,7 @@ function resolvePlaylistSoundUrl(name) {
 
 // ─── Local timeline (every client; gmExtras only on the GM) ───────────────
 async function playLocal(payload, gmExtras) {
-  const { mode = "full", sceneId, tokenId, panTargetId, fanfareUrl } = payload ?? {};
+  const { mode = "full", sceneId, tokenId, panTargetId, fanfareUrl, cutinUrl } = payload ?? {};
   const t = CFG[mode] ?? CFG.short;
   const isGM = !!gmExtras;
 
@@ -183,6 +221,10 @@ async function playLocal(payload, gmExtras) {
   const unlock = installInputLock();
   let downed = null;
   let fanfare = null;
+  let tokenHide = null;
+
+  // Warm the overlay art while the fake victory plays (fire-and-forget).
+  preloadImages([ASSETS.ko, ASSETS.revive, cutinUrl]);
 
   try {
     // ── beat 1: he lies defeated ──
@@ -193,11 +235,8 @@ async function playLocal(payload, gmExtras) {
       // ── beat 2: the fake victory ──
       if (fanfareUrl) fanfare = startFanfare(fanfareUrl, CFG.full.fanfareVol);
       const target = panTargetId ? canvas.tokens?.get?.(panTargetId) : null;
-      if (target) {
-        await panTo(target.center, t.victoryPanScale, t.victoryPanMs);
-      } else {
-        await wait(t.victoryPanMs);
-      }
+      if (target) await panTo(target.center, t.victoryPanScale, t.victoryPanMs);
+      else await wait(t.victoryPanMs);
       await wait(t.victoryHoldMs);
 
       // ── beat 3: the music dies ──
@@ -211,26 +250,61 @@ async function playLocal(payload, gmExtras) {
 
     // ── beat 4: snap to the body ──
     if (bossToken) await panTo(bossToken.center, t.snapPanScale, t.snapPanMs);
-    heartbeat();
-    await wait(t.dreadHoldMs);
 
-    // ── beat 5: implosion ──
-    if (bossToken) playImplosionBurst(bossToken, t.burstMs);
-    screenshake(t.shakeMs);
-    await wait(t.burstMs);
+    if (mode === "full") {
+      // Heartbeats keep looping over the body…
+      await heartbeatSpan(t.preDimBeatsMs, t.beatIntervalMs, null);
 
-    // ── beat 6: THE RISE — restore lands exactly here ──
-    if (isGM && typeof gmExtras.onRise === "function") {
-      try { await gmExtras.onRise(); } catch (e) { warn("[BlackestNight] onRise threw", e); }
+      // ── beat 5: THE VIGIL — the world goes dark, Geist alone stays lit ──
+      const spriteEl = bossToken ? mountSpriteOverlay(bossToken, ASSETS.ko) : null;
+      if (bossToken) tokenHide = hideToken(bossToken);
+      showDim(t.dimInMs);
+      await heartbeatSpan(t.vigilMs, t.beatIntervalMs, spriteEl);
+
+      // ── beat 6: screenflash — the body stirs ──
+      playSfx(ASSETS.flashSfx, 0.8);
+      flash(t.flashSwapMs * 2);
+      await wait(t.flashSwapMs);
+      swapSpriteOverlay(spriteEl, ASSETS.revive, { floating: true });
+      await wait(t.reviveHoldMs);
+
+      // ── beat 7: the Zero Power announces itself ──
+      playSfx(ASSETS.cutinSfx, 0.8);
+      if (isGM) fireNamecard(gmExtras.bannerTitle);
+      await playCutin(cutinUrl, t.cutinInMs, t.cutinHoldMs, t.cutinOutMs);
+
+      // ── beat 8: THE RISE ──
+      if (isGM && typeof gmExtras.onRise === "function") {
+        try { await gmExtras.onRise(); } catch (e) { warn("[BlackestNight] onRise threw", e); }
+      }
+      unmountSpriteOverlay();
+      if (tokenHide) { tokenHide(); tokenHide = null; }
+      liftDownedTreatment(downed); downed = null;
+      if (bossToken) playRiseBurst(bossToken, t.burstMs);
+      screenshake(t.shakeMs);
+      flash(t.riseFlashMs);
+      await wait(t.burstMs);
+
+      // ── beat 9: the fight goes on ──
+      if (isGM) {
+        try { await playBattleBgm(gmExtras.director?.ctx?.payload); }
+        catch (e) { warn("[BlackestNight] boss BGM resume threw", e); }
+      }
+      hideDim(t.vignetteOutMs);
+    } else {
+      // ── SHORT: heartbeat → burst → rise, no theatrics ──
+      heartbeat();
+      await wait(t.dreadHoldMs);
+      if (bossToken) playRiseBurst(bossToken, t.burstMs);
+      screenshake(t.shakeMs);
+      await wait(t.burstMs);
+      if (isGM && typeof gmExtras.onRise === "function") {
+        try { await gmExtras.onRise(); } catch (e) { warn("[BlackestNight] onRise threw", e); }
+      }
+      liftDownedTreatment(downed); downed = null;
+      flash(t.riseFlashMs);
     }
-    liftDownedTreatment(downed); downed = null;
-    flash(t.riseFlashMs);
 
-    // ── beat 7: the fight goes on ──
-    if (isGM && mode === "full") {
-      try { await playBattleBgm(gmExtras.director?.ctx?.payload); }
-      catch (e) { warn("[BlackestNight] boss BGM resume threw", e); }
-    }
     await wait(t.riseTailMs);
     hideVignette(t.vignetteOutMs);
     // Camera home — the cinematic ends where the battle camera lives, not
@@ -241,18 +315,22 @@ async function playLocal(payload, gmExtras) {
   } catch (e) {
     warn("[BlackestNight] cinematic threw (cleaning up)", e);
   } finally {
+    try { unmountSpriteOverlay(); } catch (_) {}
+    try { if (tokenHide) tokenHide(); } catch (_) {}
     try { liftDownedTreatment(downed); } catch (_) {}
     try { stopFanfare(fanfare); } catch (_) {}
+    try { hideDim(200); } catch (_) {}
     try { hideVignette(200); } catch (_) {}
+    try { document.getElementById(CUTIN_ID)?.remove(); } catch (_) {}
     unlock();
   }
 }
 
 // ─── Downed treatment ──────────────────────────────────────────────────────
-// Geist has no defeated art — his battle stance IS his token webm. "Downed"
-// = pause the video + desaturate/darken the mesh. NOTE: Foundry shares video
-// textures by src, so pausing would freeze every token using the same file —
-// Geist's sprite is unique to him, which is why this is safe here.
+// Geist has no defeated token art — his battle stance IS his token webm.
+// "Downed" = pause the video + desaturate/darken the mesh. NOTE: Foundry
+// shares video textures by src, so pausing would freeze every token using
+// the same file — Geist's sprite is unique to him, which is why this is safe.
 function applyDownedTreatment(token) {
   const mesh = token?.mesh;
   if (!mesh) return null;
@@ -280,10 +358,180 @@ function liftDownedTreatment(h) {
   try { h.vid?.play?.(); } catch (_) {}
 }
 
+// Hide the real token under the DOM overlay. Per the proven recipe: a
+// one-shot `renderable=false` gets undone by Foundry's per-frame refresh, so
+// re-assert every tick; restore = remove guard + renderFlags refresh.
+function hideToken(token) {
+  if (!token) return null;
+  const guard = () => {
+    try { token.renderable = false; if (token.mesh) token.mesh.renderable = false; } catch (_) {}
+  };
+  canvas.app.ticker.add(guard);
+  guard();
+  return () => {
+    try { canvas.app.ticker.remove(guard); } catch (_) {}
+    try {
+      token.renderable = true;
+      if (token.mesh) token.mesh.renderable = true;
+      token.renderFlags?.set?.({ refreshVisibility: true, refreshMesh: true, refreshState: true });
+    } catch (_) {}
+  };
+}
+
+// ─── Sprite overlay (screen-fixed DOM above the dim) ──────────────────────
+// Token center/size → screen px via the stage worldTransform. Camera is
+// static during overlay beats, so a one-time projection holds.
+function tokenScreenRect(token) {
+  const wt = canvas.stage.worldTransform;
+  const c = wt.apply(new PIXI.Point(token.center.x, token.center.y));
+  const scale = canvas.stage.scale.x;
+  return { x: c.x, y: c.y, w: (token.w ?? 100) * scale, h: (token.h ?? 100) * scale };
+}
+
+function mountSpriteOverlay(token, url) {
+  try {
+    unmountSpriteOverlay();
+    ensureStyle();
+    const r = tokenScreenRect(token);
+    const root = document.createElement("div");
+    root.id = SPRITE_ID;
+    Object.assign(root.style, {
+      position: "fixed",
+      left: `${Math.round(r.x)}px`,
+      top: `${Math.round(r.y)}px`,
+      transform: "translate(-50%, -50%)",
+      zIndex: "99982",
+      pointerEvents: "none",
+    });
+    const bob = document.createElement("div");    // pulse/bob live here so the
+    bob.className = "fud-bn-bob-wrap";            // img keeps its flip transform
+    const img = document.createElement("img");
+    img.src = url;
+    Object.assign(img.style, {
+      height: `${Math.round(r.h * CFG.spriteScale)}px`,
+      width: "auto",
+      transform: CFG.spriteFlipX ? "scaleX(-1)" : "none",
+      filter: "drop-shadow(0 0 18px rgba(120,20,160,0.55))",
+    });
+    bob.appendChild(img);
+    root.appendChild(bob);
+    document.body.appendChild(root);
+    return root;
+  } catch (e) { warn("[BlackestNight] sprite overlay mount failed", e); return null; }
+}
+
+function swapSpriteOverlay(root, url, { floating = false } = {}) {
+  try {
+    const img = root?.querySelector?.("img");
+    if (!img) return;
+    img.src = url;
+    if (floating) root.querySelector(".fud-bn-bob-wrap")?.classList.add("fud-bn-floating");
+  } catch (_) {}
+}
+
+function unmountSpriteOverlay() {
+  try { document.getElementById(SPRITE_ID)?.remove(); } catch (_) {}
+}
+
+// One synced heartbeat + sprite pulse. The pulse rides the bob wrapper so it
+// composes with the float animation instead of fighting it.
+function pulseSprite(root) {
+  try {
+    const bob = root?.querySelector?.(".fud-bn-bob-wrap");
+    const img = root?.querySelector?.("img");
+    bob?.animate?.(
+      [{ transform: "scale(1)" }, { transform: "scale(1.07)", offset: 0.25 }, { transform: "scale(1)" }],
+      { duration: 480, easing: "ease-out" }
+    );
+    img?.animate?.(
+      [{ filter: "drop-shadow(0 0 18px rgba(120,20,160,0.55)) brightness(1)" },
+       { filter: "drop-shadow(0 0 34px rgba(200,40,80,0.85)) brightness(1.35)", offset: 0.25 },
+       { filter: "drop-shadow(0 0 18px rgba(120,20,160,0.55)) brightness(1)" }],
+      { duration: 480, easing: "ease-out" }
+    );
+  } catch (_) {}
+}
+
+// Run heartbeats (SFX + optional sprite pulse) every `intervalMs` across
+// `spanMs`, then resolve.
+async function heartbeatSpan(spanMs, intervalMs, spriteEl) {
+  const t0 = performance.now();
+  while (performance.now() - t0 < spanMs) {
+    heartbeat();
+    if (spriteEl) pulseSprite(spriteEl);
+    const remaining = spanMs - (performance.now() - t0);
+    await wait(Math.min(intervalMs, Math.max(0, remaining)));
+  }
+}
+
+// ─── Zero Power cut-in (portrait slides across over the dim) ──────────────
+function playCutin(url, inMs, holdMs, outMs) {
+  return new Promise((resolve) => {
+    try {
+      document.getElementById(CUTIN_ID)?.remove();
+      const img = document.createElement("img");
+      img.id = CUTIN_ID;
+      img.src = url;
+      Object.assign(img.style, {
+        position: "fixed",
+        left: "0",
+        top: "50%",
+        height: `${CFG.cutinHeightVh}vh`,
+        width: "auto",
+        zIndex: "99983",
+        pointerEvents: "none",
+        transform: "translate(-110%, -50%)",
+        filter: "drop-shadow(0 0 30px rgba(0,0,0,0.8))",
+      });
+      document.body.appendChild(img);
+      const total = inMs + holdMs + outMs;
+      const anim = img.animate(
+        [
+          { transform: "translate(-110%, -50%)" },
+          { transform: "translate(18vw, -50%)",  offset: inMs / total },
+          { transform: "translate(24vw, -50%)",  offset: (inMs + holdMs) / total }, // slow drift on hold
+          { transform: "translate(110vw, -50%)" },
+        ],
+        { duration: total, easing: "linear", fill: "forwards" }
+      );
+      anim.onfinish = () => { try { img.remove(); } catch (_) {} resolve(); };
+      setTimeout(() => { try { img.remove(); } catch (_) {} resolve(); }, total + 400); // failsafe
+    } catch (e) { warn("[BlackestNight] cutin failed", e); resolve(); }
+  });
+}
+
+// Action namecard banner — same renderer every BD action card uses. GM-only:
+// namecardBroadcast fans out to all clients itself.
+function fireNamecard(title) {
+  try {
+    const render = window.FUCompanion?.api?.namecardBroadcast;
+    if (typeof render !== "function") { log("[BlackestNight] namecard renderer missing — skipping"); return; }
+    render({
+      title: title || "Zero Power: The Blackest Night",
+      options: {
+        bg: "#000000",
+        accent: "#ff5a5a",                    // hostile theme (director-vfx)
+        text: ["#ffffff", "#ffd6d6"],
+        glowColor: "#ffffff",
+        border: "rgba(255,255,255,.10)",
+        dropShadow: "0 10px 22px rgba(0,0,0,.35)",
+        maskEdges: true, edgeFade: 0.12,
+        showIcon: true, iconOverride: "💥", iconScale: 0.93, iconGapPx: 10,
+        xAlign: "center", offsetX: 0, offsetY: 64,
+        fixedWidth: 640, autoWidth: false, cardScale: 1.0,
+        inMs: 350, holdMs: 1700, outMs: 400, enterFrom: "left",
+        maxFontPx: 30, minFontPx: 16, letterSpacing: 0.06, fontWeight: 700,
+        upperCase: false, fontFamily: "Pixel Operator, system-ui, sans-serif",
+        textShadowStrength: 0.0, textStrokePx: 0.1, textStrokeColor: "rgba(0,0,0,0.55)",
+        baselineVh: 900, scaleMin: 0.75, scaleMax: 1.75, scaleMode: "vh",
+      },
+    });
+  } catch (e) { warn("[BlackestNight] namecard failed", e); }
+}
+
 // ─── Camera ────────────────────────────────────────────────────────────────
 // Default battle view: the director's PREP-time viewport snapshot when one
-// exists, else the scene's configured Initial View Position. Null → skip
-// (leave the camera wherever it is).
+// exists, else the scene's configured Initial View Position. Null → skip.
 function battleCameraTarget() {
   try {
     const vp = game.settings.get(MODULE_ID, "bdBattleSceneViewport");
@@ -307,7 +555,7 @@ async function panTo(center, scale, durationMs) {
   } catch (e) { warn("[BlackestNight] pan failed", e); }
 }
 
-// ─── Fanfare (local Audio, per client) ────────────────────────────────────
+// ─── Audio ─────────────────────────────────────────────────────────────────
 function startFanfare(url, vol) {
   try {
     const a = new Audio(url);
@@ -336,7 +584,15 @@ function stopFanfare(a) {
   try { a?.pause?.(); } catch (_) {}
 }
 
-// ─── Heartbeat (WebAudio "lub-dub", no asset) ─────────────────────────────
+function playSfx(url, vol = 0.7) {
+  try {
+    const a = new Audio(url);
+    a.volume = vol;
+    a.play().catch(() => {});
+  } catch (_) {}
+}
+
+// WebAudio-synthesized "lub-dub" — no asset, cadence-accurate.
 let _audioCtx = null;
 function heartbeat() {
   try {
@@ -363,7 +619,7 @@ function heartbeat() {
   } catch (_) {}
 }
 
-// ─── Vignette / flash / shake / input lock (DOM) ──────────────────────────
+// ─── DOM: style / dim / vignette / flash / shake / lock ───────────────────
 function ensureStyle() {
   if (document.getElementById(STYLE_ID)) return;
   const st = document.createElement("style");
@@ -381,8 +637,43 @@ function ensureStyle() {
   80% { transform: translate(3px, 2px); }
   90% { transform: translate(-2px,-1px); }
 }
-.fud-bn-shaking { animation: fud-bn-shake 120ms linear infinite; }`;
+.fud-bn-shaking { animation: fud-bn-shake 120ms linear infinite; }
+@keyframes fud-bn-float {
+  0%,100% { translate: 0 0; }
+  50%     { translate: 0 -10px; }
+}
+.fud-bn-floating { animation: fud-bn-float 2.2s ease-in-out infinite; }`;
   document.head.appendChild(st);
+}
+
+// Near-black dim UNDER the sprite overlay — "the world goes dark, Geist
+// alone stays lit".
+function showDim(fadeInMs) {
+  try {
+    let el = document.getElementById(DIM_ID);
+    if (!el) {
+      el = document.createElement("div");
+      el.id = DIM_ID;
+      Object.assign(el.style, {
+        position: "fixed", inset: "0", zIndex: "99981", pointerEvents: "none",
+        background: "rgba(2,0,8,0.88)",
+        opacity: "0", transition: `opacity ${fadeInMs}ms ease-in`,
+      });
+      document.body.appendChild(el);
+    }
+    el.style.transition = `opacity ${fadeInMs}ms ease-in`;
+    requestAnimationFrame(() => { el.style.opacity = "1"; });
+  } catch (_) {}
+}
+
+function hideDim(fadeOutMs) {
+  try {
+    const el = document.getElementById(DIM_ID);
+    if (!el) return;
+    el.style.transition = `opacity ${fadeOutMs}ms ease-out`;
+    el.style.opacity = "0";
+    setTimeout(() => { try { el.remove(); } catch (_) {} }, fadeOutMs + 100);
+  } catch (_) {}
 }
 
 function showVignette(fadeInMs) {
@@ -413,7 +704,7 @@ function hideVignette(fadeOutMs) {
   } catch (_) {}
 }
 
-// Violet-white pop at the rise.
+// Violet-white pop (rise + sprite swap).
 function flash(durMs) {
   try {
     let el = document.getElementById(FLASH_ID);
@@ -467,9 +758,18 @@ function installInputLock() {
   } catch { return () => {}; }
 }
 
-// ─── Implosion burst (generated PIXI, no assets) ──────────────────────────
-// A dark ring converges on the boss, then a violet core bloom (ADD blend)
-// pops at the moment of the rise flash.
+function preloadImages(urls) {
+  for (const u of urls) {
+    try {
+      if (!u) continue;
+      const img = new Image();
+      img.src = u;
+      img.decode?.().catch(() => {});
+    } catch (_) {}
+  }
+}
+
+// ─── Rise burst (generated PIXI, red/violet — Dark Knight theme) ──────────
 function radialTexture(inner, outer) {
   const c = document.createElement("canvas");
   c.width = c.height = 256;
@@ -482,50 +782,70 @@ function radialTexture(inner, outer) {
   return PIXI.Texture.from(c);
 }
 
-function playImplosionBurst(token, durMs) {
+function playRiseBurst(token, durMs) {
   try {
     const stage = canvas?.stage;
     if (!stage || !token?.center) return;
     stage.sortableChildren = true;
 
     const size = Math.max(token.w ?? 100, token.h ?? 100);
-    const mk = (tex, blend, scale0, alpha0) => {
+    const texRed    = radialTexture("rgba(255,60,80,0.95)",  "rgba(120,0,20,0)");
+    const texViolet = radialTexture("rgba(190,90,255,0.95)", "rgba(70,0,120,0)");
+    const texCore   = radialTexture("rgba(255,255,255,0.95)", "rgba(170,80,255,0)");
+
+    const sprites = [];
+    const mk = (tex, x, y, s0, alpha0) => {
       const s = new PIXI.Sprite(tex);
       s.anchor.set(0.5);
-      s.position.set(token.center.x, token.center.y);
-      s.width = s.height = size * scale0;
+      s.position.set(x, y);
+      s.width = s.height = s0;
       s.alpha = alpha0;
       s.zIndex = 100000;
-      if (blend != null) s.blendMode = blend;
+      s.blendMode = PIXI.BLEND_MODES.ADD;
       stage.addChild(s);
+      sprites.push(s);
       return s;
     };
 
-    const ring = mk(radialTexture("rgba(20,0,40,0)", "rgba(40,0,70,0.9)"), null, 3.2, 0);
-    const core = mk(radialTexture("rgba(200,120,255,0.95)", "rgba(80,0,140,0)"), PIXI.BLEND_MODES.ADD, 0.2, 0);
+    // Core bloom + expanding shockwave ring.
+    const core = mk(texCore, token.center.x, token.center.y, size * 0.4, 1);
+    const ring = mk(texViolet, token.center.x, token.center.y, size * 0.6, 0.9);
+
+    // Radial particles — red/violet embers thrown outward.
+    const N = 34;
+    const parts = [];
+    for (let i = 0; i < N; i++) {
+      const ang = (i / N) * Math.PI * 2 + Math.random() * 0.35;
+      const speed = size * (1.2 + Math.random() * 1.6);
+      const p = mk(
+        (i % 2) ? texRed : texViolet,
+        token.center.x, token.center.y,
+        size * (0.10 + Math.random() * 0.14),
+        1
+      );
+      parts.push({ p, ang, speed, drift: (Math.random() - 0.5) * size * 0.4 });
+    }
 
     const t0 = performance.now();
-    const convergeMs = durMs * 0.72;
     const tick = () => {
-      const now = performance.now();
-      const k = Math.min(1, (now - t0) / convergeMs);
+      const k = Math.min(1, (performance.now() - t0) / durMs);
       const e = 1 - Math.pow(1 - k, 3);   // easeOutCubic
-      const sc = 3.2 - (3.2 - 0.35) * e;
-      ring.width = ring.height = size * sc;
-      ring.alpha = Math.min(0.9, k * 1.6);
-      if (k >= 1) {
-        // core bloom for the remainder
-        const k2 = Math.min(1, (now - t0 - convergeMs) / (durMs - convergeMs));
-        ring.alpha = 0.9 * (1 - k2);
-        core.alpha = Math.sin(k2 * Math.PI);
-        core.width = core.height = size * (0.2 + 2.4 * k2);
+      core.width = core.height = size * (0.4 + 2.2 * e);
+      core.alpha = 1 - k;
+      ring.width = ring.height = size * (0.6 + 3.4 * e);
+      ring.alpha = 0.9 * (1 - k);
+      for (const { p, ang, speed, drift } of parts) {
+        p.position.set(
+          token.center.x + Math.cos(ang) * speed * e + drift * e,
+          token.center.y + Math.sin(ang) * speed * e - size * 0.5 * e * e   // slight upward lift
+        );
+        p.alpha = 1 - k;
       }
-      if (now - t0 >= durMs) {
+      if (k >= 1) {
         canvas.app.ticker.remove(tick);
-        try { ring.destroy(); } catch (_) {}
-        try { core.destroy(); } catch (_) {}
+        for (const s of sprites) { try { s.destroy(); } catch (_) {} }
       }
     };
     canvas.app.ticker.add(tick);
-  } catch (e) { warn("[BlackestNight] burst failed", e); }
+  } catch (e) { warn("[BlackestNight] rise burst failed", e); }
 }
