@@ -136,7 +136,8 @@ async function collapseAdds(director, cause) {
 // Atomic revive: spend ALL ZP, HP up to the decayed cap, MP in full, KO
 // marker cleared. Works on the combatant's live actorDoc (the synthetic
 // token actor in combat) so the write lands where the damage did.
-export async function applyBlackestNightRestore(director, claim, { silent = false } = {}) {
+// Deliberately posts NO chat message — the cinematic does the storytelling.
+export async function applyBlackestNightRestore(director, claim) {
   const actor =
     findGeistCombatant(director)?.actorDoc ??
     (claim?.actorUuid ? await fromUuid(claim.actorUuid).catch(() => null) : null) ??
@@ -165,14 +166,6 @@ export async function applyBlackestNightRestore(director, claim, { silent = fals
     catch (e) { warn("[BlackestNight] KO clear threw", e); }
   }
 
-  if (!silent) {
-    try {
-      ChatMessage.create({
-        content: `<b>Geist</b> sacrifices part of his soul — <b>The Blackest Night</b>! ` +
-                 `He rises again with <b>${hp}</b> HP. (Revival #${n})`,
-      });
-    } catch (_) {}
-  }
   log(`[BlackestNight] restore #${n}: hp ${hp}/${maxHp}, mp full, zp spent`);
   return { hp, maxHp, triggerIndex: n };
 }
@@ -218,7 +211,7 @@ export async function blackestNightReactor(director, cfg, extra) {
       // Sim path: restore inline, un-latch a side-wipe that may have raced
       // in (e.g. adds were already dead), keep the battle running.
       log(`[BlackestNight] lean mode — inline revive #${n}`);
-      await applyBlackestNightRestore(director, { triggerIndex: n, actorUuid: actor.uuid }, { silent: true });
+      await applyBlackestNightRestore(director, { triggerIndex: n, actorUuid: actor.uuid });
       if (director.dCombat?.ended) director.dCombat.ended = false;
       director.ctx.endOfCombat = false;
       return;
