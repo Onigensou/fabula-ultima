@@ -351,6 +351,9 @@ async function playLocal(payload, gmExtras) {
       }
       destroyKoWorldSprite(koWorld); koWorld = null;
       if (tokenHide) { tokenHide(); tokenHide = null; }
+      // Same action-name banner as the full path — the short beat still
+      // announces the skill.
+      if (isGM) fireNamecard(gmExtras.bannerTitle);
       playSfx(ASSETS.riseSfx, CFG.riseSfxVol);
       if (bossToken) {
         playAuraExplosion(bossToken, t.explodeMs);
