@@ -7860,7 +7860,10 @@ function recordCapturedRemovals(ctx, label, names) {
 // remaining charges / turnsRemaining / directorAppliedBy stamp. Unlike apply_ae
 // (which clones a fresh template and resets the charge to the template default),
 // transfer_ae carries the live instance over — so a 2-charge mark stays a
-// 2-charge mark on its new bearer.
+// 2-charge mark on its new bearer. A target_ref resolving to MULTIPLE tokens
+// fans each matched AE out to every destination (Lingering Scorn: the dying
+// Dark Soul inflicts its debuffs on all creatures); a MOVE deletes the source
+// instance once, after at least one copy landed.
 //
 // Two selection modes:
 //   • `ae_template_ref: "<Name>"` — move the one AE with that name.
@@ -7922,23 +7925,44 @@ async function applyTransferAeEffect(row, ctx) {
     return { ok: false, kind: "transfer_ae", reason: fromResult.reason ?? "no-source" };
   }
 
-  // Destination — the chosen ally. Honors a cancel from the picker (the player
-  // declined the optional transfer) as a clean no-op.
+  // Destination(s) — honors a cancel from the picker (the player declined the
+  // optional transfer) as a clean no-op. A target_ref that resolves to MULTIPLE
+  // tokens applies each matched AE to EVERY destination (Lingering Scorn: the
+  // dying Dark Soul spreads its debuffs to all creatures on the field); a MOVE
+  // (keep_source absent) deletes from the source once, after the copies land.
   const destResult = await resolveTargetRef(row.target_ref, ctx);
   if (destResult?.cancelled) {
     return { ok: true, kind: "transfer_ae", applied: [], reason: "cancelled", cancelled: true };
   }
-  if (!destResult?.ok || !destResult.tokens.length) {
+  if (!destResult?.ok) {
     return { ok: false, kind: "transfer_ae", reason: destResult?.reason ?? "no-dest" };
   }
-  const dest = destResult.tokens[0]?.actor;
-  if (!dest) return { ok: false, kind: "transfer_ae", reason: "no-dest-actor" };
+  // An ok-but-EMPTY dest (an allow_empty targeting row that matched nobody —
+  // e.g. Lingering Scorn's "every other combatant" when none remain) is a clean
+  // no-op, NOT an abort: later chain steps (the soul still dies) must run.
+  if (!destResult.tokens.length) {
+    return { ok: true, kind: "transfer_ae", applied: [], reason: "no-dest-empty" };
+  }
+  const destActors = [];
+  const seenDest = new Set();
+  for (const t of destResult.tokens) {
+    const a = t?.actor;
+    if (!a || seenDest.has(a.uuid)) continue;
+    seenDest.add(a.uuid);
+    destActors.push(a);
+  }
+  if (!destActors.length) return { ok: false, kind: "transfer_ae", reason: "no-dest-actor" };
+  const dest = destActors[0]; // single-dest fast path keeps its name for the picker subtitle
 
   const moved = [];
   for (const token of fromResult.tokens) {
     const src = token.actor;
     if (!src?.effects) continue;
-    if (src.uuid === dest.uuid) {
+    // Destinations for THIS source — a creature never transfers to itself. With
+    // a single dest that IS the source, the whole source is a no-op (unchanged
+    // single-dest behavior); multi-dest just drops self from the fan-out.
+    const dests = destActors.filter((d) => d.uuid !== src.uuid);
+    if (!dests.length) {
       log(`skill-effects.transfer_ae: source == destination (${src.name}); skipping`);
       continue;
     }
@@ -7979,32 +8003,70 @@ async function applyTransferAeEffect(row, ctx) {
       // reactionConfig all ride along). Drop _id so it can re-key on the dest.
       const data = eff.toObject();
       delete data._id;
-      // If the dest already bears this AE, refresh it in place with the moved
-      // (preserved-charge) data; else create. Remove from source either way.
-      const existing = Array.from(dest.effects ?? []).find((e) => e.name === eff.name);
-      // MOVE = delete from source first; COPY (keep_source) = leave it in place.
-      if (!keepSource) {
+      // Apply to EVERY destination. If a dest already bears this AE, refresh it
+      // in place with the moved (preserved-charge) data; else create.
+      let appliedCount = 0;
+      for (const destActor of dests) {
+        const existing = Array.from(destActor.effects ?? []).find((e) => e.name === eff.name);
+        try {
+          if (existing) {
+            // stackMode "add" — declared on the AE (flags.<NS>.stackMode, e.g.
+            // the Burn charge-as-stack model): a transferred duplicate MERGES by
+            // ADDING charges to the bearer's own stack (Burn 5 + moved Burn 3 =
+            // Burn 8, capped at chargesMax when set) instead of the incoming
+            // copy overwriting it. Non-stack AEs keep the refresh-in-place
+            // behavior. Per-dest CLONE — `data` is shared across the fan-out,
+            // and each dest's merged total differs.
+            const stackAdd = String(
+              data.flags?.[FLAG_NS]?.stackMode ?? existing.flags?.[FLAG_NS]?.stackMode ?? ""
+            ).trim().toLowerCase() === "add";
+            let payload = data;
+            if (stackAdd) {
+              payload = foundry.utils.deepClone(data);
+              const cur = Number(existing.flags?.[FLAG_NS]?.charges ?? 0) || 0;
+              const inc = Number(data.flags?.[FLAG_NS]?.charges ?? 0) || 0;
+              const cap = Number(data.flags?.[FLAG_NS]?.chargesMax ?? existing.flags?.[FLAG_NS]?.chargesMax);
+              let merged = cur + inc;
+              if (Number.isFinite(cap) && cap > 0) merged = Math.min(merged, cap);
+              payload.flags = payload.flags ?? {};
+              payload.flags[FLAG_NS] = payload.flags[FLAG_NS] ?? {};
+              payload.flags[FLAG_NS].charges = merged;
+              // Keep the visible statuscounter badge in sync (same opt-in rule
+              // as adjust_charges: only when the author set visible === true).
+              if (payload.flags?.statuscounter?.visible === true) payload.flags.statuscounter.value = merged;
+            }
+            await existing.update(payload);
+            moved.push({
+              from: src.uuid, to: destActor.uuid, name: eff.name, copied: keepSource,
+              charges: payload.flags?.[FLAG_NS]?.charges ?? null, stacked: stackAdd || undefined,
+            });
+          } else {
+            await destActor.createEmbeddedDocuments("ActiveEffect", [data]);
+            moved.push({
+              from: src.uuid, to: destActor.uuid, name: eff.name, copied: keepSource,
+              charges: data.flags?.[FLAG_NS]?.charges ?? null,
+            });
+          }
+          appliedCount++;
+        } catch (e) {
+          warn(`skill-effects.transfer_ae: apply to ${destActor.name} failed`, e);
+        }
+      }
+      // MOVE = remove from the source once the copies have landed (COPY leaves
+      // it in place). If every apply failed, keep the source instance — a MOVE
+      // must never destroy the only remaining copy.
+      if (!keepSource && appliedCount) {
         try {
           await src.deleteEmbeddedDocuments("ActiveEffect", [eff.id]);
         } catch (e) {
           warn(`skill-effects.transfer_ae: delete from ${src.name} failed`, e);
-          continue;
         }
-      }
-      try {
-        if (existing) await existing.update(data);
-        else await dest.createEmbeddedDocuments("ActiveEffect", [data]);
-        moved.push({
-          from: src.uuid, to: dest.uuid, name: eff.name, copied: keepSource,
-          charges: data.flags?.[FLAG_NS]?.charges ?? null,
-        });
-      } catch (e) {
-        warn(`skill-effects.transfer_ae: apply to ${dest.name} failed`, e);
       }
     }
   }
   if (moved.length) {
-    log(`skill-effects.transfer_ae: moved ${moved.length} AE(s) to ${dest.name}`);
+    const destNames = [...new Set(moved.map((m) => m.to))].length;
+    log(`skill-effects.transfer_ae: ${keepSource ? "copied" : "moved"} ${moved.length} AE application(s) across ${destNames} destination(s)`);
   }
   return { ok: true, kind: "transfer_ae", applied: moved };
 }

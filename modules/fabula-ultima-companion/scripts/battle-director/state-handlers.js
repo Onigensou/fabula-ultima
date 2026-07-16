@@ -6196,6 +6196,13 @@ const TurnEnd = {
       const teRoundEnded = director.dCombat.round ?? 0;
       const endingActorUuid  = director.dCombat?.current?.actorUuid ?? null;
       const endingTokenUuid  = director.dCombat?.current?.tokenUuid ?? null;
+      // Per-activation discriminator for the turn_end fired-set scope. Captured
+      // BEFORE nextTurn — buildStandalonePayload reads dCombat.current, which is
+      // already null/the NEXT combatant when the turn_end window dispatches, so
+      // without this the scope key collapses to "a?" for every turn_end and a
+      // multi-activation boss's 2nd/3rd turn ends of the round dedup against
+      // its 1st (turn_start never had the bug: current is set there).
+      const endingActivationsRemaining = director.dCombat?.current?.turnsRemaining ?? null;
 
       // Bearer-turn-end AE tick — decrement "target_turn_end" lifetime AEs on the
       // actor whose turn just ended (action-gating Advanced Debuffs last N of the
@@ -6251,6 +6258,9 @@ const TurnEnd = {
       director.ctx.standalonePayload = {
         actingActorUuid: endingActorUuid,
         actingTokenUuid: endingTokenUuid,
+        // Pre-nextTurn snapshot — overrides buildStandalonePayload's
+        // dCombat.current read (null between turns). See capture above.
+        actingActivationsRemaining: endingActivationsRemaining,
       };
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;

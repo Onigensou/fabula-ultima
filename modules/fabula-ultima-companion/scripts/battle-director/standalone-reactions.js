@@ -1080,7 +1080,7 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
   const scope = scopeKeyFor(trigger, payload);
   const triggerLabel = labelForTrigger(trigger);
 
-  const dispatches = reactors.map(({ actor, token }) =>
+  const dispatchOne = ({ actor, token }) =>
     dispatchReactionMenu({
       director,
       reactor: actor,
@@ -1095,9 +1095,23 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
     }).catch((e) => {
       warn(`dispatchStandaloneTrigger[${trigger}]: reactor ${actor?.name} threw`, e);
       return { cancelled: true, fired: [] };
-    })
-  );
-  const results = await Promise.all(dispatches);
+    });
+  // FORCED pass: strictly SEQUENTIAL (reaction-architecture Rule 2 — decisions
+  // apply in order, each next reactor re-gates against fresh state). A parallel
+  // fan-out here let one reactor's auto-fired chain MUTATE another reactor
+  // mid-dispatch (Lingering Scorn's pop writes debuff AEs onto sibling souls
+  // whose own discovery was in flight) — the raced dispatch threw and was
+  // silently swallowed by the per-reactor catch, so that reactor just skipped
+  // the window ("inconsistent" Half-Life ticks/pops, 2026-07-16). Ask-mode
+  // menus stay parallel: multiple players deciding simultaneously is the
+  // designed first-to-click flow, and ask menus don't auto-mutate state.
+  let results;
+  if (phase === "forced") {
+    results = [];
+    for (const r of reactors) results.push(await dispatchOne(r));
+  } else {
+    results = await Promise.all(reactors.map(dispatchOne));
+  }
   const involved = results.filter((r) => r.fired.length || !r.cancelled).length;
   log(`dispatchStandaloneTrigger[${trigger}]: ${results.length} reactor(s) processed`);
   return involved;
