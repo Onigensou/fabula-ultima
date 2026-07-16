@@ -1,24 +1,29 @@
 // The Blackest Night — revival cinematic (the fake-out victory).
 //
 // FULL beat sheet (first revival of a battle):
-//   1. Geist drops — downed treatment ON (webm paused, desaturated, darkened)
+//   1. Geist drops — his token is hidden and replaced by the KO sprite
+//      (world-anchored PIXI, so it tracks the camera through the pans)
 //   2. battle BGM stops, victory fanfare plays, camera pans to the party —
 //      this deliberately mirrors the REAL Battle-End FX so it reads as a win
 //   3. the fanfare fades out under a heartbeat… vignette closes in
-//   4. hard snap-pan to Geist; heartbeats keep looping over the body
-//   5. THE VIGIL — the screen dims to near-black but Geist's KO sprite stays
-//      lit above the dim, pulsing in sync with each heartbeat (~4s of dread)
+//   4. hard snap-pan to the body; heartbeats keep looping
+//   5. THE VIGIL — the screen dims to near-black; the KO sprite hands off to
+//      a screen-fixed DOM copy ABOVE the dim, pulsing with each heartbeat
 //   6. screenflash (Flash1.ogg) — the KO sprite becomes the REVIVE sprite,
 //      floating idly in the dark (~2.5s)
-//   7. Zero Power cut-in: Geist's portrait slides across (Overdrive sting)
-//      while the action namecard banner announces the skill (💥 + live item
-//      name, hostile theme)
+//   7. Zero Power cut-in: full-height portrait slides across (Overdrive
+//      sting) while the action namecard banner announces the skill (💥 +
+//      live item name, hostile theme)
 //   8. THE RISE — restore lands here (onRise): overlay drops, the battle
-//      webm resumes in color, red/violet particle burst + screenshake
-//   9. boss BGM returns, camera pans home, dim lifts, combat resumes
+//      webm returns, an "aura explosion" clone of the battle sprite scales
+//      out over the screen (50% opacity → 0), red/violet particle burst,
+//      MG_DEATH_BLUR SFX, screenshake
+//   9. Geist's DEDICATED battle BGM ("Geist_Battle") starts, camera pans
+//      home, dim lifts, combat resumes
 //
-// SHORT (2nd+ revival — "he just refuses to die", ~3s): no fake victory, no
-// BGM swap. Heartbeat, snap-pan, burst, rise, camera home.
+// SHORT (2nd+ revival, ~4s): KO sprite swap, heartbeat, snap-pan, rise
+// (aura explosion + burst + SFX). No fake victory, no BGM ops — the Geist
+// BGM is already playing from revival #1.
 //
 // Architecture mirrors wandering-flame-entrance.js: GM resolves everything
 // non-deterministic (fanfare URL, pan target, cut-in art, banner title) into
@@ -27,10 +32,12 @@
 // restore), the world-level BGM ops, and the namecard broadcast (that
 // renderer fans out on its own — firing it per client would stack banners).
 //
-// All overlay work is screen-fixed DOM (camera-transform-immune, the same
-// argument director-cutin.js makes); only the particle burst is PIXI (world-
-// anchored on the token). The camera is static during every DOM beat, so
-// token→screen projection is computed once per beat.
+// Overlay rendering is split by camera phase: while the camera MOVES the KO
+// sprite is world-anchored PIXI; once the camera is static and the dim is up
+// it becomes screen-fixed DOM (camera-transform-immune, above the dim).
+// NOTE on injected <img>: a global stylesheet borders every img — zero out
+// border/outline/box-shadow on all injected media (see
+// [[feedback_dom_img_transparent_border]]).
 //
 // Contract (stable since Phase 1):
 //   await playBlackestNightCinematic({ mode, director, endCtx, bossTokenUuid, onRise })
@@ -58,7 +65,14 @@ const ASSETS = {
   cutin:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Portrait/Geist_Cutin.png",
   flashSfx: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Flash1.ogg",
   cutinSfx: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Overdrive.wav",
+  riseSfx:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/MG_DEATH_BLUR01.wav",
 };
+
+// Geist's dedicated boss track (playlist sound name, any playlist). Started
+// at the rise of the FULL sequence; the short sequence assumes it's already
+// playing. Played through playBattleBgm so the director's tracked-BGM stop
+// still works at the real battle end.
+const GEIST_BGM = "Geist_Battle";
 
 // ─── Timing / tuning (ms unless noted) — edit here during live tuning ─────
 const CFG = {
@@ -80,9 +94,10 @@ const CFG = {
     flashSwapMs:      260,    // beat 6 — screenflash, KO → Revive sprite
     reviveHoldMs:     2500,   // floating in the dark
     cutinInMs:        380,    // beat 7 — Zero Power cut-in slide-in
-    cutinHoldMs:      1300,
+    cutinHoldMs:      2300,   // (+1s per review)
     cutinOutMs:       380,
     burstMs:          1000,   // beat 8 — rise burst
+    explodeMs:        950,    // aura-explosion clone scale-out
     shakeMs:          700,
     riseFlashMs:      450,
     riseTailMs:       800,    // hold on the risen boss before control returns
@@ -97,6 +112,7 @@ const CFG = {
     snapPanScale:     1.9,
     dreadHoldMs:      550,    // heartbeat #2
     burstMs:          650,
+    explodeMs:        750,
     shakeMs:          500,
     riseFlashMs:      350,
     riseTailMs:       400,
@@ -104,11 +120,14 @@ const CFG = {
     resetPanMs:       650,
   },
   heartbeatVol: 0.9,
+  riseSfxVol:   0.5,
+  explodeAlpha: 0.5,          // aura clone starting opacity
   // Overlay sprite sizing/facing. Art faces LEFT; enemies face RIGHT on this
   // battlefield → mirror horizontally.
   spriteFlipX: true,
-  spriteScale: 1.2,           // overlay height = token screen height × this
-  cutinHeightVh: 72,          // cut-in portrait height (viewport-height %)
+  spriteScale: 1.2,           // overlay height = token height × this
+  cutinHeightVh: 100,         // cut-in portrait fills the screen height
+  namecardHoldMs: 2700,       // (+1s per review)
 };
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -219,16 +238,19 @@ async function playLocal(payload, gmExtras) {
 
   const bossToken = tokenId ? canvas.tokens?.get?.(tokenId) ?? null : null;
   const unlock = installInputLock();
-  let downed = null;
   let fanfare = null;
   let tokenHide = null;
+  let koWorld = null;    // world-anchored PIXI KO sprite (camera-tracking)
 
   // Warm the overlay art while the fake victory plays (fire-and-forget).
   preloadImages([ASSETS.ko, ASSETS.revive, cutinUrl]);
 
   try {
-    // ── beat 1: he lies defeated ──
-    downed = applyDownedTreatment(bossToken);
+    // ── beat 1: he lies defeated — KO sprite REPLACES the token outright ──
+    if (bossToken) {
+      koWorld = await mountKoWorldSprite(bossToken, ASSETS.ko);
+      if (koWorld) tokenHide = hideToken(bossToken);
+    }
     await wait(t.downedSettleMs);
 
     if (mode === "full") {
@@ -256,8 +278,11 @@ async function playLocal(payload, gmExtras) {
       await heartbeatSpan(t.preDimBeatsMs, t.beatIntervalMs, null);
 
       // ── beat 5: THE VIGIL — the world goes dark, Geist alone stays lit ──
+      // Camera is static now: hand the KO sprite off from world-PIXI to a
+      // screen-fixed DOM copy that rides ABOVE the dim. DOM mounts first so
+      // there's no blink.
       const spriteEl = bossToken ? mountSpriteOverlay(bossToken, ASSETS.ko) : null;
-      if (bossToken) tokenHide = hideToken(bossToken);
+      destroyKoWorldSprite(koWorld); koWorld = null;
       showDim(t.dimInMs);
       await heartbeatSpan(t.vigilMs, t.beatIntervalMs, spriteEl);
 
@@ -279,30 +304,38 @@ async function playLocal(payload, gmExtras) {
       }
       unmountSpriteOverlay();
       if (tokenHide) { tokenHide(); tokenHide = null; }
-      liftDownedTreatment(downed); downed = null;
-      if (bossToken) playRiseBurst(bossToken, t.burstMs);
+      playSfx(ASSETS.riseSfx, CFG.riseSfxVol);
+      if (bossToken) {
+        playAuraExplosion(bossToken, t.explodeMs);
+        playRiseBurst(bossToken, t.burstMs);
+      }
       screenshake(t.shakeMs);
       flash(t.riseFlashMs);
-      await wait(t.burstMs);
+      await wait(Math.max(t.burstMs, t.explodeMs));
 
-      // ── beat 9: the fight goes on ──
+      // ── beat 9: Geist's own theme takes over ──
       if (isGM) {
-        try { await playBattleBgm(gmExtras.director?.ctx?.payload); }
-        catch (e) { warn("[BlackestNight] boss BGM resume threw", e); }
+        try { await playBattleBgm({ battleConfig: { bgm: GEIST_BGM } }); }
+        catch (e) { warn("[BlackestNight] Geist BGM start threw", e); }
       }
       hideDim(t.vignetteOutMs);
     } else {
-      // ── SHORT: heartbeat → burst → rise, no theatrics ──
+      // ── SHORT: heartbeat → rise, no theatrics; Geist BGM already playing ──
       heartbeat();
       await wait(t.dreadHoldMs);
-      if (bossToken) playRiseBurst(bossToken, t.burstMs);
-      screenshake(t.shakeMs);
-      await wait(t.burstMs);
       if (isGM && typeof gmExtras.onRise === "function") {
         try { await gmExtras.onRise(); } catch (e) { warn("[BlackestNight] onRise threw", e); }
       }
-      liftDownedTreatment(downed); downed = null;
+      destroyKoWorldSprite(koWorld); koWorld = null;
+      if (tokenHide) { tokenHide(); tokenHide = null; }
+      playSfx(ASSETS.riseSfx, CFG.riseSfxVol);
+      if (bossToken) {
+        playAuraExplosion(bossToken, t.explodeMs);
+        playRiseBurst(bossToken, t.burstMs);
+      }
+      screenshake(t.shakeMs);
       flash(t.riseFlashMs);
+      await wait(Math.max(t.burstMs, t.explodeMs));
     }
 
     await wait(t.riseTailMs);
@@ -316,8 +349,8 @@ async function playLocal(payload, gmExtras) {
     warn("[BlackestNight] cinematic threw (cleaning up)", e);
   } finally {
     try { unmountSpriteOverlay(); } catch (_) {}
+    try { destroyKoWorldSprite(koWorld); } catch (_) {}
     try { if (tokenHide) tokenHide(); } catch (_) {}
-    try { liftDownedTreatment(downed); } catch (_) {}
     try { stopFanfare(fanfare); } catch (_) {}
     try { hideDim(200); } catch (_) {}
     try { hideVignette(200); } catch (_) {}
@@ -326,40 +359,35 @@ async function playLocal(payload, gmExtras) {
   }
 }
 
-// ─── Downed treatment ──────────────────────────────────────────────────────
-// Geist has no defeated token art — his battle stance IS his token webm.
-// "Downed" = pause the video + desaturate/darken the mesh. NOTE: Foundry
-// shares video textures by src, so pausing would freeze every token using
-// the same file — Geist's sprite is unique to him, which is why this is safe.
-function applyDownedTreatment(token) {
-  const mesh = token?.mesh;
-  if (!mesh) return null;
-  let vid = null;
+// ─── World-anchored KO sprite (camera-tracking replacement for the token) ──
+// Used while the camera is MOVING (fake victory pan, snap-pan). Sized off
+// the token footprint, flipped to face right (art faces left).
+async function mountKoWorldSprite(token, url) {
   try {
-    const src = mesh.texture?.baseTexture?.resource?.source;
-    if (typeof HTMLVideoElement !== "undefined" && src instanceof HTMLVideoElement) {
-      vid = src;
-      vid.pause();
-    }
-  } catch (_) {}
-  let cm = null;
-  try {
-    cm = new PIXI.ColorMatrixFilter();
-    cm.desaturate();
-    cm.brightness(0.5, true);
-    mesh.filters = [...(mesh.filters ?? []), cm];
-  } catch (e) { warn("[BlackestNight] downed filter failed", e); }
-  return { mesh, cm, vid };
+    const loader = foundry?.canvas?.loadTexture ?? globalThis.loadTexture;
+    const tex = await loader(url).catch(() => null);
+    if (!tex || !token?.center) return null;
+    const stage = canvas?.stage;
+    if (!stage) return null;
+    stage.sortableChildren = true;
+    const spr = new PIXI.Sprite(tex);
+    spr.anchor.set(0.5);
+    spr.position.set(token.center.x, token.center.y);
+    const s = ((token.h ?? 100) * CFG.spriteScale) / tex.height;
+    spr.scale.set(CFG.spriteFlipX ? -s : s, s);
+    spr.zIndex = 99000;
+    stage.addChild(spr);
+    return spr;
+  } catch (e) { warn("[BlackestNight] KO world sprite failed", e); return null; }
 }
 
-function liftDownedTreatment(h) {
-  if (!h) return;
-  try { if (h.cm) h.mesh.filters = (h.mesh.filters ?? []).filter((f) => f !== h.cm); } catch (_) {}
-  try { h.vid?.play?.(); } catch (_) {}
+function destroyKoWorldSprite(spr) {
+  if (!spr) return;
+  try { spr.destroy(); } catch (_) {}
 }
 
-// Hide the real token under the DOM overlay. Per the proven recipe: a
-// one-shot `renderable=false` gets undone by Foundry's per-frame refresh, so
+// Hide the real token under the overlays. Per the proven recipe: a one-shot
+// `renderable=false` gets undone by Foundry's per-frame refresh, so
 // re-assert every tick; restore = remove guard + renderFlags refresh.
 function hideToken(token) {
   if (!token) return null;
@@ -388,6 +416,15 @@ function tokenScreenRect(token) {
   return { x: c.x, y: c.y, w: (token.w ?? 100) * scale, h: (token.h ?? 100) * scale };
 }
 
+// Injected media must zero out border/outline/box-shadow — a global
+// stylesheet decorates every <img> with a border otherwise.
+function nakedImg(img) {
+  img.style.border = "none";
+  img.style.outline = "none";
+  img.style.boxShadow = "none";
+  img.style.background = "transparent";
+}
+
 function mountSpriteOverlay(token, url) {
   try {
     unmountSpriteOverlay();
@@ -413,6 +450,7 @@ function mountSpriteOverlay(token, url) {
       transform: CFG.spriteFlipX ? "scaleX(-1)" : "none",
       filter: "drop-shadow(0 0 18px rgba(120,20,160,0.55))",
     });
+    nakedImg(img);
     bob.appendChild(img);
     root.appendChild(bob);
     document.body.appendChild(root);
@@ -464,7 +502,7 @@ async function heartbeatSpan(spanMs, intervalMs, spriteEl) {
   }
 }
 
-// ─── Zero Power cut-in (portrait slides across over the dim) ──────────────
+// ─── Zero Power cut-in (full-height portrait slides across over the dim) ──
 function playCutin(url, inMs, holdMs, outMs) {
   return new Promise((resolve) => {
     try {
@@ -483,13 +521,14 @@ function playCutin(url, inMs, holdMs, outMs) {
         transform: "translate(-110%, -50%)",
         filter: "drop-shadow(0 0 30px rgba(0,0,0,0.8))",
       });
+      nakedImg(img);
       document.body.appendChild(img);
       const total = inMs + holdMs + outMs;
       const anim = img.animate(
         [
           { transform: "translate(-110%, -50%)" },
-          { transform: "translate(18vw, -50%)",  offset: inMs / total },
-          { transform: "translate(24vw, -50%)",  offset: (inMs + holdMs) / total }, // slow drift on hold
+          { transform: "translate(14vw, -50%)",  offset: inMs / total },
+          { transform: "translate(20vw, -50%)",  offset: (inMs + holdMs) / total }, // slow drift on hold
           { transform: "translate(110vw, -50%)" },
         ],
         { duration: total, easing: "linear", fill: "forwards" }
@@ -519,7 +558,7 @@ function fireNamecard(title) {
         showIcon: true, iconOverride: "💥", iconScale: 0.93, iconGapPx: 10,
         xAlign: "center", offsetX: 0, offsetY: 64,
         fixedWidth: 640, autoWidth: false, cardScale: 1.0,
-        inMs: 350, holdMs: 1700, outMs: 400, enterFrom: "left",
+        inMs: 350, holdMs: CFG.namecardHoldMs, outMs: 400, enterFrom: "left",
         maxFontPx: 30, minFontPx: 16, letterSpacing: 0.06, fontWeight: 700,
         upperCase: false, fontFamily: "Pixel Operator, system-ui, sans-serif",
         textShadowStrength: 0.0, textStrokePx: 0.1, textStrokeColor: "rgba(0,0,0,0.55)",
@@ -767,6 +806,49 @@ function preloadImages(urls) {
       img.decode?.().catch(() => {});
     } catch (_) {}
   }
+}
+
+// ─── Aura explosion (battle-sprite clone scales out over the screen) ──────
+// Clones the token's LIVE mesh texture (webm textures stay playing — the
+// clone shares the video), starts at token size / 50% opacity, scales out
+// until it covers the viewport while fading to 0. "Geist's aura exploding."
+function playAuraExplosion(token, durMs) {
+  try {
+    const mesh = token?.mesh;
+    const stage = canvas?.stage;
+    if (!mesh?.texture || !stage || !token?.center) return;
+    stage.sortableChildren = true;
+
+    const tex = mesh.texture;
+    const spr = new PIXI.Sprite(tex);
+    spr.anchor.set(0.5);
+    spr.position.set(token.center.x, token.center.y);
+    // Match the rendered mesh's facing (mesh sign folds in mirror + facing).
+    const flip = Math.sign(mesh.scale?.x ?? 1) || 1;
+    const s0 = (token.h ?? 100) / tex.height;
+    spr.scale.set(s0 * flip, s0);
+    spr.alpha = CFG.explodeAlpha;
+    spr.zIndex = 100001;
+    stage.addChild(spr);
+
+    // Grow until the clone's height covers the screen (world units).
+    const screenWorldH = (canvas.app?.renderer?.height ?? window.innerHeight) / (stage.scale.y || 1);
+    const growTo = Math.max(3, (screenWorldH / (token.h ?? 100)) * 1.15);
+
+    const t0 = performance.now();
+    const tick = () => {
+      const k = Math.min(1, (performance.now() - t0) / durMs);
+      const e = 1 - Math.pow(1 - k, 3);   // easeOutCubic
+      const s = s0 * (1 + (growTo - 1) * e);
+      spr.scale.set(s * flip, s);
+      spr.alpha = CFG.explodeAlpha * (1 - k);
+      if (k >= 1) {
+        canvas.app.ticker.remove(tick);
+        try { spr.destroy(); } catch (_) {}
+      }
+    };
+    canvas.app.ticker.add(tick);
+  } catch (e) { warn("[BlackestNight] aura explosion failed", e); }
 }
 
 // ─── Rise burst (generated PIXI, red/violet — Dark Knight theme) ──────────
