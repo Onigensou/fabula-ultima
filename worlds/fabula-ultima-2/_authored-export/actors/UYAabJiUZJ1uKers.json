@@ -1362,7 +1362,61 @@
           "defense_target_type": "def",
           "description": "<p>Consume <strong>25%</strong> <strong>Current HP </strong>to summon <strong>Living Shadow</strong></p><p><strong>Living Shadow </strong>always acts after <strong>Geist </strong>and mimic his 【⚔️Attack】</p><section id=\"secret-a1jVQV8Iu62apb9g\" class=\"secret\"><p><em>(If Geist is afflicted with any debuff at the time of summon, the debuff is moved to the living shadow instead)</em></p></section>",
           "duration": "Scene",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "lsh_hpcost",
+              "grant_amount": "0 - floor(CUR_HP * 0.25)",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            },
+            "1": {
+              "effect_kind": "summon",
+              "effect_label": "lsh_summon",
+              "summon_actor": "Living Shadow",
+              "summon_count": "1",
+              "summon_overrides": {
+                "current_hp": "floor(CUR_HP * 0.25)",
+                "max_hp": "floor(CUR_HP * 0.25)"
+              }
+            },
+            "2": {
+              "auto_select": "true",
+              "effect_kind": "transfer_ae",
+              "effect_label": "lsh_debuffs",
+              "filter_tag": "debuff",
+              "from_ref": "self",
+              "target_ref": "lsh_summon"
+            },
+            "3": {
+              "effect_kind": "take_turn_next",
+              "effect_label": "lsh_act",
+              "target_ref": "lsh_summon"
+            },
+            "4": {
+              "auto_target": "skip",
+              "candidate_source": "own_summons",
+              "effect_kind": "targeting",
+              "effect_label": "lsh_mine",
+              "mode": "all",
+              "target_filter": "AE_COUNT_LIVING_SHADOW > 0"
+            },
+            "5": {
+              "effect_kind": "take_turn_next",
+              "effect_label": "lsh_next",
+              "target_ref": "lsh_mine"
+            },
+            "6": {
+              "chain_steps": "lsh_mine,lsh_next",
+              "effect_kind": "chain",
+              "effect_label": "lsh_after"
+            },
+            "7": {
+              "chain_steps": "lsh_summon,lsh_hpcost,lsh_debuffs,lsh_act",
+              "effect_kind": "chain",
+              "effect_label": "lsh_root"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -1374,9 +1428,17 @@
           "level": "1",
           "max_level": "1",
           "name": "Living Shadow",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "lsh_root",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "OWN_SUMMON_COUNT >= 1",
+              "reaction_effect_ref": "lsh_after",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -2183,7 +2245,7 @@
         },
         "kFPcc3xDPvPXIGum": {
           "active_cost": "30 MP",
-          "active_description": "<p>Unleash the full force of darkness, Perform <strong>Shadow Strike </strong>until <strong>HP </strong>falls to <strong>1</strong> or up to <strong>3 times.</strong></p>",
+          "active_description": "<p><strong>Shadowbringers.</strong> Geist performs <strong>Shadow Strike</strong> up to <strong>【3】</strong> times in a row — each one rolls its own d12, empowers the chosen attack with <strong>+【twice the roll】</strong> Dark damage and costs <strong>【five times the roll】 HP</strong>. The chain continues hit or miss, and ends early if Geist's HP would fall to 60 or below.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
