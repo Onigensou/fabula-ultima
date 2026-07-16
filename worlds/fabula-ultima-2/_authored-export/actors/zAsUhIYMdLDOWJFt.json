@@ -1,10 +1,10 @@
 {
-  "_id": "UYAabJiUZJ1uKers",
+  "_id": "zAsUhIYMdLDOWJFt",
   "_stats": {
-    "compendiumSource": null,
+    "compendiumSource": "Actor.UYAabJiUZJ1uKers",
     "coreVersion": "12.343",
-    "createdTime": 1767927738587,
-    "duplicateSource": null,
+    "createdTime": 1784191155208,
+    "duplicateSource": "Actor.UYAabJiUZJ1uKers",
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
@@ -175,7 +175,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1783959633500,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -248,7 +248,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1783717356810,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -321,7 +321,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1783963798355,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -417,7 +417,7 @@
       "_stats": {
         "compendiumSource": "Item.A87i0WJvlVD1w3E7",
         "coreVersion": "12.343",
-        "createdTime": 1783968120105,
+        "createdTime": null,
         "duplicateSource": "Item.yWlkWZC2vLf4J5Pv",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -490,7 +490,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1783958253062,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -563,7 +563,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1783717356810,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -636,7 +636,7 @@
       "_stats": {
         "compendiumSource": "Item.YAMrjKy6d6hgGP1F",
         "coreVersion": "12.343",
-        "createdTime": 1783717356810,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -709,7 +709,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1783717356810,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -782,7 +782,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1783960161356,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -878,7 +878,7 @@
       "_stats": {
         "compendiumSource": "Item.A87i0WJvlVD1w3E7",
         "coreVersion": "12.343",
-        "createdTime": 1783971261810,
+        "createdTime": null,
         "duplicateSource": "Item.yWlkWZC2vLf4J5Pv",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -951,7 +951,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1783717356810,
+        "createdTime": null,
         "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1024,7 +1024,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1783717356810,
+        "createdTime": null,
         "duplicateSource": "Item.UKzHkmIJcjXZ4GFR",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1095,7 +1095,7 @@
       "type": "equippableItem"
     }
   ],
-  "name": "Geist",
+  "name": "Geist (Overworld)",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
@@ -1290,8 +1290,8 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1.89,
-      "scaleY": 1.89,
+      "scaleX": 1.17,
+      "scaleY": 1.17,
       "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/*",
       "tint": "#ffffff"
     },
@@ -1323,7 +1323,7 @@
           "id": "${item.id}",
           "name": "Souleater",
           "roll": "",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.TNYXBbOxhHCXZZ5S"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.TNYXBbOxhHCXZZ5S"
         },
         "bUu8h4C4kis0z3QL": {
           "active_target": "One Creature",
@@ -1333,7 +1333,7 @@
           "id": "${item.id}",
           "name": "Dark Bane",
           "roll": "",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.bUu8h4C4kis0z3QL"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.bUu8h4C4kis0z3QL"
         },
         "jFDqULDfaJIyCqp0": {
           "active_target": "Up to three creature",
@@ -1343,7 +1343,7 @@
           "id": "${item.id}",
           "name": "Torcleaver",
           "roll": "",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.jFDqULDfaJIyCqp0"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.jFDqULDfaJIyCqp0"
         }
       },
       "attribute": "DARK",
@@ -1453,7 +1453,7 @@
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
-      "id": "UYAabJiUZJ1uKers",
+      "id": "zAsUhIYMdLDOWJFt",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Standard.png",
       "init": "6",
       "ins_base": "8",
@@ -1497,7 +1497,7 @@
       "mig_current": 12,
       "mimic": false,
       "minimum_critical_dice": 6,
-      "name": "Geist",
+      "name": "Geist (Overworld)",
       "normal_spell_list": {
         "hwRQZH4zxC0vB8wh": {
           "cost": "30 MP",
@@ -1507,7 +1507,7 @@
           "roll": "",
           "spell_description": "<p>Consume <strong>25% Current HP </strong>to summon <strong>3</strong> <strong>Dark Soul</strong></p><p><strong>Dark Soul </strong>comes into play with <strong>Random Debuff</strong>, they <strong>cursed </strong>others with their affliction when they leave the battlefield unless <strong>Exorcised</strong></p>",
           "spell_target": "Self",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.hwRQZH4zxC0vB8wh"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.hwRQZH4zxC0vB8wh"
         },
         "slPJ2kAvobcND9QL": {
           "cost": "30 MP",
@@ -1517,7 +1517,7 @@
           "roll": "",
           "spell_description": "<p>Convert <strong>25%</strong> of <strong>Current HP </strong>into <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Shield</a></p><p>At the end of this round, Consume any remaing <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Shield</a>&nbsp;to deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\">Dark</a>&nbsp;damage to All Enemy equal to<strong> 【The amount of </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a><strong>&nbsp;consumed】</strong></p>",
           "spell_target": "Self",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.slPJ2kAvobcND9QL"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.slPJ2kAvobcND9QL"
         },
         "tkplYk5nVtf3nu66": {
           "cost": "30 MP",
@@ -1527,7 +1527,7 @@
           "roll": "",
           "spell_description": "<p>Consume <strong>25%</strong> <strong>Current HP </strong>to summon <strong>Living Shadow</strong></p><p><strong>Living Shadow </strong>always acts after <strong>Geist </strong>and mimic his 【⚔️Attack】</p><section id=\"secret-a1jVQV8Iu62apb9g\" class=\"secret\"><p><em>(If Geist is afflicted with any debuff at the time of summon, the debuff is moved to the living shadow instead)</em></p></section>",
           "spell_target": "Self",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.tkplYk5nVtf3nu66"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.tkplYk5nVtf3nu66"
         }
       },
       "npc_rank": "champion",
@@ -1556,7 +1556,7 @@
           "id": "${item.id}",
           "name": "Shadow Strike",
           "roll": "",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.S01TD1lW8JUnapHh"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.S01TD1lW8JUnapHh"
         },
         "kFPcc3xDPvPXIGum": {
           "active_cost": "30 MP",
@@ -1566,7 +1566,7 @@
           "id": "${item.id}",
           "name": "Shadowbringers",
           "roll": "",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.kFPcc3xDPvPXIGum"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.kFPcc3xDPvPXIGum"
         },
         "xc1wLkLVukf7ouTD": {
           "active_cost": "6 Zero Power",
@@ -1576,7 +1576,7 @@
           "id": "${item.id}",
           "name": "Zero Power: The Blackest Night",
           "roll": "",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.xc1wLkLVukf7ouTD"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.xc1wLkLVukf7ouTD"
         }
       },
       "skill_passive_list": {
@@ -1585,21 +1585,21 @@
           "name": "Living Dead",
           "passive_description": "<p>When <strong>Geist </strong>is <strong>defeated, </strong>he became <strong>invulnerable </strong>and<strong> gain Unlimited MP, </strong>in this state, he act for <strong>1 more round, </strong>in which afterward he is certainly <strong>defeated</strong></p>",
           "roll": "",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.204P2m0SDx8ypBrJ"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.204P2m0SDx8ypBrJ"
         },
         "LgcM4WQ3tsbvRMkG": {
           "id": "${item.id}",
           "name": "Blood Weapon",
           "passive_description": "<p><strong>Geist</strong> deals <strong>1%</strong> <strong>bonus damage </strong>for each percentage of his missing HP</p>",
           "roll": "",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.LgcM4WQ3tsbvRMkG"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.LgcM4WQ3tsbvRMkG"
         },
         "vu1WOzGmFq5DxXNY": {
           "id": "${item.id}",
           "name": "Zero Trigger: Adversity",
           "passive_description": "<p>At the beginning of his turn, <strong>Geist </strong>gain <strong>1 Zero Power </strong>for each <strong>debuff inflicted on his soul</strong>. (<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>counts as 1)</p>",
           "roll": "",
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.vu1WOzGmFq5DxXNY"
+          "uuid": "Actor.zAsUhIYMdLDOWJFt.Item.vu1WOzGmFq5DxXNY"
         }
       },
       "spear_ef": "75",
@@ -1617,7 +1617,7 @@
       "traits": "Dark Knight loyal to the crown",
       "ultima_point": "0",
       "unique": false,
-      "uuid": "Actor.UYAabJiUZJ1uKers",
+      "uuid": "Actor.zAsUhIYMdLDOWJFt",
       "wlp_base": "8",
       "wlp_current": 8,
       "zenit_reward_max": "1250",

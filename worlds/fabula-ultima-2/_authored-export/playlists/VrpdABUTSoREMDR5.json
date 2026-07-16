@@ -23,10 +23,26 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 863,
+  "seed": 631,
   "sort": 0,
   "sorting": "a",
   "sounds": [
+    {
+      "_id": "1uSAul7WwBrvXjew",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Geist_Battle",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Geist_Battle.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.52
+    },
     {
       "_id": "3iyVwTQ7wOmOzsmr",
       "channel": "music",

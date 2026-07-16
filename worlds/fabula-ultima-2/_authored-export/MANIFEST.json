@@ -16291,6 +16291,62 @@
         "effects": 0
       },
       {
+        "id": "zAsUhIYMdLDOWJFt",
+        "name": "Geist (Overworld)",
+        "type": "character",
+        "items": [
+          {
+            "id": "LgcM4WQ3tsbvRMkG",
+            "name": "Blood Weapon"
+          },
+          {
+            "id": "bUu8h4C4kis0z3QL",
+            "name": "Dark Bane"
+          },
+          {
+            "id": "hwRQZH4zxC0vB8wh",
+            "name": "Dark Missionary"
+          },
+          {
+            "id": "204P2m0SDx8ypBrJ",
+            "name": "Living Dead"
+          },
+          {
+            "id": "tkplYk5nVtf3nu66",
+            "name": "Living Shadow"
+          },
+          {
+            "id": "S01TD1lW8JUnapHh",
+            "name": "Shadow Strike"
+          },
+          {
+            "id": "slPJ2kAvobcND9QL",
+            "name": "Shadow Wall"
+          },
+          {
+            "id": "kFPcc3xDPvPXIGum",
+            "name": "Shadowbringers"
+          },
+          {
+            "id": "TNYXBbOxhHCXZZ5S",
+            "name": "Souleater"
+          },
+          {
+            "id": "jFDqULDfaJIyCqp0",
+            "name": "Torcleaver"
+          },
+          {
+            "id": "xc1wLkLVukf7ouTD",
+            "name": "Zero Power: The Blackest Night"
+          },
+          {
+            "id": "vu1WOzGmFq5DxXNY",
+            "name": "Zero Trigger: Adversity"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "TnOKgQbmyxFzD6Oe",
         "name": "Generic NPC",
         "type": "character",
@@ -16917,15 +16973,15 @@
             "name": "Avatar of Vengeance"
           },
           {
-            "id": "ojhjj5rwEcDUULwE",
+            "id": "L4wwppSUXQysmX5r",
             "name": "Avatar of Vengeance: Dismiss"
           },
           {
-            "id": "VfvSYb1r8r32ZHOW",
+            "id": "pt99hrAGvobdcqTp",
             "name": "Avatar of Vengeance: Merge"
           },
           {
-            "id": "cO0XV8LLrIo0EA10",
+            "id": "0Vo8hmiv3p0LFjN4",
             "name": "Avatar of Vengeance: Pulse"
           },
           {
@@ -22800,7 +22856,7 @@
       {
         "id": "VrpdABUTSoREMDR5",
         "name": "The Legend of Dragonslayer",
-        "sounds": 19
+        "sounds": 20
       },
       {
         "id": "nXC5wp5sOxn42vJl",
