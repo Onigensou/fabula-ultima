@@ -455,7 +455,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "wkNlrgImrWe33oy9"
       },
@@ -584,7 +584,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "xFcOrEIikOsnOMne"
       },
@@ -706,7 +706,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "jqykkhAB5m9durso"
       },
@@ -876,7 +876,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "5k5hVdG6evBzruNM"
       },
@@ -967,7 +967,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "wWrePzzYfpE3bEVV"
       },
@@ -1056,7 +1056,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "pcVQKM3teguaitRy"
       },
@@ -1169,7 +1169,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "xkeIviw9s7Ri1Vm4"
       },
@@ -1275,7 +1275,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "Y8J71qhXnk5hJbKb"
       },
@@ -1442,7 +1442,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "D32pUz6M6e1smWrB"
       },
@@ -1559,7 +1559,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "QXgHt7VEXEaVdPz1"
       },
@@ -1703,7 +1703,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "kMbhsJ2cDIFndrKy"
       },
@@ -1753,6 +1753,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
+              "condition_formula": "HIT_COUNT > 0",
               "reaction_action_intent": "",
               "reaction_effect_ref": "mor_recover",
               "reaction_passive_mode": "force",
@@ -2149,7 +2150,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "G8fBxPWSabEzD5V6"
       },
@@ -2282,7 +2283,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "6f3U2Cz826kB5ZIp"
       },
@@ -2416,7 +2417,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "fXTiW1mHRFBGSGR8"
       },
@@ -2550,7 +2551,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "Hurc7SbzCtjIAaC3"
       },
@@ -2694,7 +2695,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "9vM7Xu5q3cj7EFQt"
       },
@@ -2784,7 +2785,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "a7QM5eiDwGGrBPL4"
       },
@@ -3093,7 +3094,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "vH6Q88n3beOHjxKq"
       },
@@ -3475,7 +3476,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "3QBrbZe41Yx2UAWD"
       },
@@ -3609,7 +3610,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "KoC4PHdQrp7r4rM9"
       },
@@ -3702,7 +3703,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "X9SaWakWp1Tl8xPA"
       },
@@ -3831,7 +3832,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "IbVSfCGXPcZdZHHV"
       },
@@ -3920,7 +3921,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "hZYczwkEFHoKULAL"
       },
@@ -4049,7 +4050,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "lhEd56bwUno81lcz"
       },
@@ -4176,7 +4177,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "gq1sBw2xPhQTVcxT"
       },
@@ -4324,7 +4325,6 @@
           "effect_table": {},
           "heroic_requirement": "",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/fey_illumination2.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -4392,7 +4392,6 @@
               "target_ref": "trigger_subject"
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "isCheck": false,
           "name": "Dragontrap Bow (Passive)",
           "on_activate_effect_ref": "",
@@ -4555,7 +4554,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "Y2ItFIBB8PtKttz8"
       },
@@ -4684,7 +4683,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "xJdDdjPYgccjyK7Y"
       },
@@ -4796,7 +4795,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "ky7HMdQIZBJxlPqx"
       },

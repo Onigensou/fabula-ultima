@@ -51,13 +51,48 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Trigger</a>&nbsp;When this creature <strong>Half-Life</strong> stack reaches <strong>0</strong></p></li></ul><p>Reduce this creature to <strong>0 HP </strong>and inflicts its <strong>debuffs </strong>to <strong>All Creature </strong>on the battlefield.</p>",
-          "details_roller": "Show",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "charge_ae_name": "Half-Life",
+              "charge_amount": "1",
+              "charge_operation": "subtract",
+              "effect_kind": "adjust_charges",
+              "effect_label": "ls_tick",
+              "target_ref": "self"
+            },
+            "1": {
+              "allow_empty": true,
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "effect_kind": "targeting",
+              "effect_label": "ls_all",
+              "exclude_self": true,
+              "mode": "all"
+            },
+            "2": {
+              "effect_kind": "transfer_ae",
+              "effect_label": "ls_spread",
+              "filter_tag": "debuff",
+              "from_ref": "self",
+              "keep_source": true,
+              "target_ref": "ls_all"
+            },
+            "3": {
+              "effect_kind": "grant",
+              "effect_label": "ls_die",
+              "grant_amount": "0 - CUR_HP",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            },
+            "4": {
+              "chain_steps": "ls_all,ls_spread,ls_die",
+              "effect_kind": "chain",
+              "effect_label": "ls_pop"
+            }
+          },
           "heroic_requirement": "",
-          "id": "u8RRkOVtKngpFhMy",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -69,7 +104,22 @@
           "name": "Lingering Scorn",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "AE_CHARGES_HALF_LIFE > 1",
+              "reaction_effect_ref": "ls_tick",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "turn_end"
+            },
+            "1": {
+              "condition_formula": "AE_CHARGES_HALF_LIFE == 1",
+              "reaction_effect_ref": "ls_pop",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "turn_end"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -79,8 +129,7 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.RSJgsnKyUcVICLpn.Item.u8RRkOVtKngpFhMy"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -99,6 +148,63 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "F1ic9nWzDyXkALVy",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1784241827176,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.affinity_class_strike",
+              "mode": 5,
+              "priority": 20,
+              "value": "IM"
+            }
+          ],
+          "description": "<p>This creature is <strong>immune</strong> to <strong>Strike Damage</strong> (any damage that targets its <strong>Defense</strong>). Magic damage (vs MDEF) affects it normally.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "F1ic9nWzDyXkALVy",
+              "originalParentId": "WCLdX38KZdJiosAq",
+              "originalUuid": "Actor.RSJgsnKyUcVICLpn.Item.WCLdX38KZdJiosAq.ActiveEffect.F1ic9nWzDyXkALVy"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "name": "Ethereal",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -124,13 +230,10 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>This creature is <strong>immune to </strong><a class=\"content-link\" data-uuid=\"JournalEntry.ZunRGiMDSgAapm5G\" data-id=\"ZunRGiMDSgAapm5G\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Strike Damage</a></p>",
-          "details_roller": "Show",
           "duration": "-",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "WCLdX38KZdJiosAq",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -152,8 +255,7 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.RSJgsnKyUcVICLpn.Item.WCLdX38KZdJiosAq"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -350,7 +452,7 @@
     "activeConditionalModifierGroups": [],
     "props": {
       "action_pattern_table": {},
-      "activation": "1",
+      "activation": "0",
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",

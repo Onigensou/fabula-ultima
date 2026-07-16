@@ -856,7 +856,8 @@
                 "reaction_trigger": "turn_start"
               }
             }
-          }
+          },
+          "stackMode": "add"
         },
         "statuscounter": {
           "config": {
@@ -2488,27 +2489,7 @@
           "chargeKey": "bane",
           "charges": 3,
           "chargesMax": 3,
-          "lifetimeMode": "target_turn_end",
-          "reactionConfig": {
-            "effect_table": {
-              "0": {
-                "damage_amount": "0.5",
-                "damage_operation": "multiply",
-                "damage_stage": "outgoing",
-                "effect_kind": "adjust_damage",
-                "effect_label": "bane_dmg_half"
-              }
-            },
-            "reaction_config_table": {
-              "0": {
-                "reaction_action_kind": "Attack",
-                "reaction_effect_ref": "bane_dmg_half",
-                "reaction_passive_mode": "force",
-                "reaction_source": "self",
-                "reaction_trigger": "creature_will_deal_damage"
-              }
-            }
-          }
+          "lifetimeMode": "target_turn_end"
         },
         "statuscounter": {
           "config": {

@@ -18588,6 +18588,26 @@
         "effects": 0
       },
       {
+        "id": "fTyS72uDFqHwUy18",
+        "name": "Living Shadow",
+        "type": "character",
+        "items": [
+          {
+            "id": "VkoDkTvLomb0mgJG",
+            "name": "Dark Bane"
+          },
+          {
+            "id": "x0NPuDuJSDlpsjX4",
+            "name": "Souleater"
+          },
+          {
+            "id": "71qyK1Od5JzJA99r",
+            "name": "Torcleaver"
+          }
+        ],
+        "effects": 1
+      },
+      {
         "id": "sr56xgKsKlkgdBXt",
         "name": "Looker",
         "type": "character",
