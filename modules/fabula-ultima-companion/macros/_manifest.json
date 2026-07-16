@@ -25,6 +25,7 @@
     { "path": "macros/Diagnostics/TestPhantasmEchoFlow.js",        "name": "TestPhantasmEchoFlow" },
     { "path": "macros/Diagnostics/TraceReactionMatch.js",          "name": "TraceReactionMatch" },
     { "path": "macros/Diagnostics/[Macro] WF Ambush — Test Panel.js", "name": "⭐ WF Ambush — Test Panel" },
+    { "path": "macros/Diagnostics/[Macro] Blackest Night — Test Panel.js", "name": "🌑 Blackest Night — Test Panel" },
     { "path": "macros/Command Buttons/[Macro] Attack.js",          "name": "Attack" },
     { "path": "macros/Command Buttons/[Macro] Attack - NPC.js",    "name": "Attack - NPC" },
     { "path": "macros/Command Buttons/[Macro] Attack - Player.js", "name": "Attack - Player" },
