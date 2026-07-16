@@ -66,6 +66,7 @@ const ASSETS = {
   flashSfx: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Flash1.ogg",
   cutinSfx: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Overdrive.wav",
   riseSfx:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/MG_DEATH_BLUR01.wav",
+  downSfx:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_DOWNC.wav",
 };
 
 // Geist's dedicated boss track (playlist sound name, any playlist). Started
@@ -78,6 +79,7 @@ const GEIST_BGM = "Geist_Battle";
 const CFG = {
   full: {
     downedSettleMs:   700,    // beat 1 — let the death land before the "win"
+    fakeHoldMs:       2500,   // fake "GM operating the victory screen" pause
     victoryPanMs:     2800,   // camera drift to the party
     victoryPanScale:  1.7,
     victoryHoldMs:    2300,   // savor the fake win (fanfare playing)
@@ -96,6 +98,7 @@ const CFG = {
     cutinInMs:        380,    // beat 7 — Zero Power cut-in slide-in
     cutinHoldMs:      2300,   // (+1s per review)
     cutinOutMs:       380,
+    gatherMs:         1300,   // beat 7.5 — purple energy converges into Geist
     burstMs:          1000,   // beat 8 — rise burst
     explodeMs:        950,    // aura-explosion clone scale-out
     shakeMs:          700,
@@ -121,7 +124,7 @@ const CFG = {
   },
   heartbeatVol: 0.9,
   riseSfxVol:   0.5,
-  explodeAlpha: 0.5,          // aura clone starting opacity
+  explodeAlpha: 0.7,          // aura clone starting opacity (raised per review)
   // Overlay sprite sizing/facing. Art faces LEFT; enemies face RIGHT on this
   // battlefield → mirror horizontally.
   spriteFlipX: true,
@@ -191,10 +194,20 @@ export async function playBlackestNightCinematic({
   };
 
   // World-level BGM stop FIRST (propagates to all clients via the playlist
-  // doc), then broadcast the visual timeline.
+  // doc), then broadcast the visual timeline. Whatever is playing when Geist
+  // falls (boss BGM, generic battle BGM, anything) must die for the fake-out
+  // to read — sweep EVERY playing playlist sound by handle. playlist.stopAll()
+  // is unreliable in this world, so stop per-sound via stopSound instead.
   if (mode === "full") {
     try { await stopBattleBgm(director?.ctx?.payload?.battleConfig?.bgm); }
     catch (e) { warn("[BlackestNight] stopBattleBgm threw", e); }
+    try {
+      for (const pl of (game.playlists ?? [])) {
+        for (const snd of (pl.sounds ?? [])) {
+          if (snd.playing) { try { await pl.stopSound(snd); } catch (_) {} }
+        }
+      }
+    } catch (e) { warn("[BlackestNight] playlist sweep threw", e); }
   }
 
   try { _socket?.executeForOthers?.(ACTION_PLAY, payload); }
@@ -247,6 +260,7 @@ async function playLocal(payload, gmExtras) {
 
   try {
     // ── beat 1: he lies defeated — KO sprite REPLACES the token outright ──
+    playSfx(ASSETS.downSfx, 0.8);
     if (bossToken) {
       koWorld = await mountKoWorldSprite(bossToken, ASSETS.ko);
       if (koWorld) tokenHide = hideToken(bossToken);
@@ -254,6 +268,10 @@ async function playLocal(payload, gmExtras) {
     await wait(t.downedSettleMs);
 
     if (mode === "full") {
+      // Fake hold — sell "the GM is clicking through the victory screen"
+      // before the fanfare/pan begin. Dead air on purpose.
+      await wait(t.fakeHoldMs);
+
       // ── beat 2: the fake victory ──
       if (fanfareUrl) fanfare = startFanfare(fanfareUrl, CFG.full.fanfareVol);
       const target = panTargetId ? canvas.tokens?.get?.(panTargetId) : null;
@@ -297,6 +315,11 @@ async function playLocal(payload, gmExtras) {
       playSfx(ASSETS.cutinSfx, 0.8);
       if (isGM) fireNamecard(gmExtras.bannerTitle);
       await playCutin(cutinUrl, t.cutinInMs, t.cutinHoldMs, t.cutinOutMs);
+
+      // ── beat 7.5: the gather — one final pulse, energy converges into him ──
+      heartbeat();
+      if (spriteEl) pulseSprite(spriteEl);
+      if (bossToken) await playEnergyGather(bossToken, t.gatherMs);
 
       // ── beat 8: THE RISE ──
       if (isGM && typeof gmExtras.onRise === "function") {
@@ -808,126 +831,170 @@ function preloadImages(urls) {
   }
 }
 
-// ─── Aura explosion (battle-sprite clone scales out over the screen) ──────
-// Clones the token's LIVE mesh texture (webm textures stay playing — the
-// clone shares the video), starts at token size / 50% opacity, scales out
-// until it covers the viewport while fading to 0. "Geist's aura exploding."
+// ─── DOM FX layer ──────────────────────────────────────────────────────────
+// The rise happens while the near-black dim (DOM) is still up, and PIXI
+// renders UNDER every DOM element — so the gather, the aura explosion, and
+// the burst all render on the DOM side, ABOVE the dim (per review). Camera
+// is static through these beats, so a one-time token→screen projection holds.
+
+// Full-screen 2D canvas for particle work (additive compositing). Each
+// effect creates its own and removes it when done.
+function makeFxCanvas() {
+  const c = document.createElement("canvas");
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  Object.assign(c.style, {
+    position: "fixed", inset: "0", zIndex: "99984", pointerEvents: "none",
+  });
+  document.body.appendChild(c);
+  const ctx = c.getContext("2d");
+  ctx.globalCompositeOperation = "lighter";
+  return { c, ctx, done: () => { try { c.remove(); } catch (_) {} } };
+}
+
+function drawGlow(ctx, x, y, r, rgb, alpha) {
+  if (r <= 0 || alpha <= 0) return;
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, `rgba(${rgb},${alpha})`);
+  g.addColorStop(1, `rgba(${rgb},0)`);
+  ctx.fillStyle = g;
+  ctx.fillRect(x - r, y - r, r * 2, r * 2);
+}
+
+const VIOLET = "190,90,255";
+const RED    = "255,60,80";
+const WHITE  = "255,255,255";
+
+// ─── Energy gather (beat 7.5) — purple motes converge into Geist ──────────
+function playEnergyGather(token, durMs) {
+  return new Promise((resolve) => {
+    try {
+      const r = tokenScreenRect(token);
+      const fx = makeFxCanvas();
+      const R0 = Math.min(window.innerWidth, window.innerHeight) * 0.48;
+      const N = 30;
+      const parts = [];
+      for (let i = 0; i < N; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        parts.push({
+          ang,
+          r0: R0 * (0.7 + Math.random() * 0.5),
+          size: 6 + Math.random() * 12,
+          delay: Math.random() * 0.35,            // staggered departures
+          swirl: (Math.random() - 0.5) * 1.6,     // spiral-in curvature
+          rgb: (i % 3) ? VIOLET : RED,
+        });
+      }
+      const t0 = performance.now();
+      const tick = () => {
+        const k = Math.min(1, (performance.now() - t0) / durMs);
+        fx.ctx.clearRect(0, 0, fx.c.width, fx.c.height);
+        for (const p of parts) {
+          const kk = Math.min(1, Math.max(0, (k - p.delay) / (1 - p.delay)));
+          const e = kk * kk * kk;                 // easeInCubic — accelerate inward
+          const rad = p.r0 * (1 - e);
+          const ang = p.ang + p.swirl * e;
+          const x = r.x + Math.cos(ang) * rad;
+          const y = r.y + Math.sin(ang) * rad;
+          drawGlow(fx.ctx, x, y, p.size * (1 + e * 1.5), p.rgb, 0.25 + 0.65 * e);
+        }
+        // Growing core glow as the energy lands.
+        drawGlow(fx.ctx, r.x, r.y, r.h * 0.55 * k, VIOLET, 0.35 * k);
+        if (k >= 1) { fx.done(); resolve(); }
+        else requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      setTimeout(() => { try { fx.done(); } catch (_) {} resolve(); }, durMs + 500); // failsafe
+    } catch (e) { warn("[BlackestNight] energy gather failed", e); resolve(); }
+  });
+}
+
+// ─── Aura explosion — battle-sprite clone scales out over the screen ──────
+// DOM clone (video for webm, img otherwise) of the token's texture source,
+// starting at token screen size / CFG.explodeAlpha opacity, scaling out to
+// cover the viewport while fading to 0. Renders above the dim.
 function playAuraExplosion(token, durMs) {
   try {
-    const mesh = token?.mesh;
-    const stage = canvas?.stage;
-    if (!mesh?.texture || !stage || !token?.center) return;
-    stage.sortableChildren = true;
-
-    const tex = mesh.texture;
-    const spr = new PIXI.Sprite(tex);
-    spr.anchor.set(0.5);
-    spr.position.set(token.center.x, token.center.y);
+    const src = String(token?.document?.texture?.src ?? "");
+    if (!src) return;
+    const r = tokenScreenRect(token);
+    const isVideo = /\.(webm|mp4|m4v|ogv)(\?|$)/i.test(src);
+    const el = isVideo ? document.createElement("video") : document.createElement("img");
+    if (isVideo) {
+      el.muted = true; el.autoplay = true; el.loop = true; el.playsInline = true;
+      el.src = src;
+      el.play?.().catch(() => {});
+    } else {
+      el.src = src;
+    }
     // Match the rendered mesh's facing (mesh sign folds in mirror + facing).
-    const flip = Math.sign(mesh.scale?.x ?? 1) || 1;
-    const s0 = (token.h ?? 100) / tex.height;
-    spr.scale.set(s0 * flip, s0);
-    spr.alpha = CFG.explodeAlpha;
-    spr.zIndex = 100001;
-    stage.addChild(spr);
-
-    // Grow until the clone's height covers the screen (world units).
-    const screenWorldH = (canvas.app?.renderer?.height ?? window.innerHeight) / (stage.scale.y || 1);
-    const growTo = Math.max(3, (screenWorldH / (token.h ?? 100)) * 1.15);
-
-    const t0 = performance.now();
-    const tick = () => {
-      const k = Math.min(1, (performance.now() - t0) / durMs);
-      const e = 1 - Math.pow(1 - k, 3);   // easeOutCubic
-      const s = s0 * (1 + (growTo - 1) * e);
-      spr.scale.set(s * flip, s);
-      spr.alpha = CFG.explodeAlpha * (1 - k);
-      if (k >= 1) {
-        canvas.app.ticker.remove(tick);
-        try { spr.destroy(); } catch (_) {}
-      }
-    };
-    canvas.app.ticker.add(tick);
+    const flip = Math.sign(token?.mesh?.scale?.x ?? 1) || 1;
+    Object.assign(el.style, {
+      position: "fixed",
+      left: `${Math.round(r.x)}px`,
+      top: `${Math.round(r.y)}px`,
+      height: `${Math.round(r.h)}px`,
+      width: "auto",
+      zIndex: "99983",
+      pointerEvents: "none",
+      opacity: String(CFG.explodeAlpha),
+      transform: `translate(-50%, -50%) scale(${flip}, 1)`,
+    });
+    nakedImg(el);
+    document.body.appendChild(el);
+    const growTo = Math.max(3, (window.innerHeight / Math.max(1, r.h)) * 1.2);
+    const anim = el.animate(
+      [
+        { transform: `translate(-50%, -50%) scale(${flip}, 1)`, opacity: CFG.explodeAlpha },
+        { transform: `translate(-50%, -50%) scale(${flip * growTo}, ${growTo})`, opacity: 0 },
+      ],
+      { duration: durMs, easing: "cubic-bezier(0.33, 1, 0.68, 1)", fill: "forwards" } // easeOutCubic
+    );
+    anim.onfinish = () => { try { el.remove(); } catch (_) {} };
+    setTimeout(() => { try { el.remove(); } catch (_) {} }, durMs + 400); // failsafe
   } catch (e) { warn("[BlackestNight] aura explosion failed", e); }
 }
 
-// ─── Rise burst (generated PIXI, red/violet — Dark Knight theme) ──────────
-function radialTexture(inner, outer) {
-  const c = document.createElement("canvas");
-  c.width = c.height = 256;
-  const g = c.getContext("2d");
-  const grad = g.createRadialGradient(128, 128, 10, 128, 128, 128);
-  grad.addColorStop(0, inner);
-  grad.addColorStop(1, outer);
-  g.fillStyle = grad;
-  g.fillRect(0, 0, 256, 256);
-  return PIXI.Texture.from(c);
-}
-
+// ─── Rise burst — core bloom + shockwave ring + embers (red/violet) ────────
 function playRiseBurst(token, durMs) {
   try {
-    const stage = canvas?.stage;
-    if (!stage || !token?.center) return;
-    stage.sortableChildren = true;
-
-    const size = Math.max(token.w ?? 100, token.h ?? 100);
-    const texRed    = radialTexture("rgba(255,60,80,0.95)",  "rgba(120,0,20,0)");
-    const texViolet = radialTexture("rgba(190,90,255,0.95)", "rgba(70,0,120,0)");
-    const texCore   = radialTexture("rgba(255,255,255,0.95)", "rgba(170,80,255,0)");
-
-    const sprites = [];
-    const mk = (tex, x, y, s0, alpha0) => {
-      const s = new PIXI.Sprite(tex);
-      s.anchor.set(0.5);
-      s.position.set(x, y);
-      s.width = s.height = s0;
-      s.alpha = alpha0;
-      s.zIndex = 100000;
-      s.blendMode = PIXI.BLEND_MODES.ADD;
-      stage.addChild(s);
-      sprites.push(s);
-      return s;
-    };
-
-    // Core bloom + expanding shockwave ring.
-    const core = mk(texCore, token.center.x, token.center.y, size * 0.4, 1);
-    const ring = mk(texViolet, token.center.x, token.center.y, size * 0.6, 0.9);
-
-    // Radial particles — red/violet embers thrown outward.
+    const r = tokenScreenRect(token);
+    const fx = makeFxCanvas();
+    const size = Math.max(r.w, r.h);
     const N = 34;
     const parts = [];
     for (let i = 0; i < N; i++) {
       const ang = (i / N) * Math.PI * 2 + Math.random() * 0.35;
-      const speed = size * (1.2 + Math.random() * 1.6);
-      const p = mk(
-        (i % 2) ? texRed : texViolet,
-        token.center.x, token.center.y,
-        size * (0.10 + Math.random() * 0.14),
-        1
-      );
-      parts.push({ p, ang, speed, drift: (Math.random() - 0.5) * size * 0.4 });
+      parts.push({
+        ang,
+        speed: size * (1.2 + Math.random() * 1.6),
+        size: size * (0.10 + Math.random() * 0.14),
+        drift: (Math.random() - 0.5) * size * 0.4,
+        rgb: (i % 2) ? RED : VIOLET,
+      });
     }
-
     const t0 = performance.now();
     const tick = () => {
       const k = Math.min(1, (performance.now() - t0) / durMs);
       const e = 1 - Math.pow(1 - k, 3);   // easeOutCubic
-      core.width = core.height = size * (0.4 + 2.2 * e);
-      core.alpha = 1 - k;
-      ring.width = ring.height = size * (0.6 + 3.4 * e);
-      ring.alpha = 0.9 * (1 - k);
-      for (const { p, ang, speed, drift } of parts) {
-        p.position.set(
-          token.center.x + Math.cos(ang) * speed * e + drift * e,
-          token.center.y + Math.sin(ang) * speed * e - size * 0.5 * e * e   // slight upward lift
-        );
-        p.alpha = 1 - k;
+      fx.ctx.clearRect(0, 0, fx.c.width, fx.c.height);
+      // Core bloom + expanding shockwave ring.
+      drawGlow(fx.ctx, r.x, r.y, size * (0.4 + 2.2 * e) * 0.5, WHITE, 1 - k);
+      fx.ctx.strokeStyle = `rgba(${VIOLET},${0.9 * (1 - k)})`;
+      fx.ctx.lineWidth = Math.max(1, size * 0.09 * (1 - k));
+      fx.ctx.beginPath();
+      fx.ctx.arc(r.x, r.y, size * (0.3 + 1.7 * e), 0, Math.PI * 2);
+      fx.ctx.stroke();
+      // Embers thrown outward with a slight upward lift.
+      for (const p of parts) {
+        const x = r.x + Math.cos(p.ang) * p.speed * e + p.drift * e;
+        const y = r.y + Math.sin(p.ang) * p.speed * e - size * 0.5 * e * e;
+        drawGlow(fx.ctx, x, y, p.size * 0.5, p.rgb, 1 - k);
       }
-      if (k >= 1) {
-        canvas.app.ticker.remove(tick);
-        for (const s of sprites) { try { s.destroy(); } catch (_) {} }
-      }
+      if (k >= 1) fx.done();
+      else requestAnimationFrame(tick);
     };
-    canvas.app.ticker.add(tick);
+    requestAnimationFrame(tick);
+    setTimeout(() => { try { fx.done(); } catch (_) {} }, durMs + 500); // failsafe
   } catch (e) { warn("[BlackestNight] rise burst failed", e); }
 }
