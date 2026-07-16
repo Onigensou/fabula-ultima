@@ -6,10 +6,12 @@
       "Blanche",
       "Hina",
       "Keren",
+      "Test Caster",
+      "Test Target Ally",
       "Zarg"
     ],
     "enemyTarget": "Salamander",
-    "count": 52,
+    "count": 58,
     "engineVersion": "1.0.423",
     "override": {
       "SL": 5,
@@ -59,7 +61,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 48,
+          "damage": 55,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -82,7 +84,7 @@
         {
           "affinity": "NE",
           "damage": 0,
-          "grant": 50,
+          "grant": 60,
           "grantRes": "hp",
           "hit": true,
           "resource": null
@@ -112,7 +114,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 21,
+          "damage": 26,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -138,19 +140,6 @@
       "perTarget": [],
       "roll": null,
       "skill": "Protect",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Blanche / Ripples": {
-      "caster": "Blanche",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Ripples",
       "skillType": "Active",
       "targets": 1
     },
@@ -204,7 +193,7 @@
         {
           "affinity": "NE",
           "damage": 0,
-          "grant": 58,
+          "grant": 65,
           "grantRes": "hp",
           "hit": true,
           "resource": null
@@ -226,6 +215,50 @@
       "roll": null,
       "skill": "Acceleration",
       "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Avatar of Vengeance: Dismiss": {
+      "caster": "Hina",
+      "element": "fire",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "RS",
+          "damage": 16,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": null,
+      "skill": "Avatar of Vengeance: Dismiss",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Hina / Avatar of Vengeance: Pulse": {
+      "caster": "Hina",
+      "element": null,
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Avatar of Vengeance: Pulse",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Hina / Bind and Summon": {
+      "caster": "Hina",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Bind and Summon",
+      "skillType": "Active",
       "targets": 1
     },
     "Hina / Cleanse": {
@@ -347,7 +380,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 23,
+          "damage": 24,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -373,7 +406,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 16,
+          "damage": 17,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -399,7 +432,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 31,
+          "damage": 32,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -425,7 +458,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 31,
+          "damage": 32,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -452,7 +485,7 @@
         {
           "affinity": "NE",
           "damage": 0,
-          "grant": 50,
+          "grant": 60,
           "grantRes": "hp",
           "hit": true,
           "resource": null
@@ -489,6 +522,19 @@
       "skillType": "Spell",
       "targets": 1
     },
+    "Hina / Lift off": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Lift off",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Hina / Starfall": {
       "caster": "Hina",
       "element": "",
@@ -512,7 +558,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 18,
+          "damage": 19,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -703,6 +749,32 @@
       "skillType": "Active",
       "targets": 1
     },
+    "Keren / Soul Steal": {
+      "caster": "Keren",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Soul Steal",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Keren / Zero Power: Last Den of Cinders": {
       "caster": "Keren",
       "element": "fire",
@@ -738,6 +810,15 @@
       "skillType": "Active",
       "targets": 1
     },
+    "Zarg / Bat Dance": {
+      "caster": "Zarg",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Bat Dance",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Zarg / Gadgets": {
       "caster": "Zarg",
       "element": "",
@@ -753,14 +834,19 @@
     },
     "Zarg / Golem Dance": {
       "caster": "Zarg",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
       "skill": "Golem Dance",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Griffin Dance": {
+      "caster": "Zarg",
+      "offensive": true,
+      "ok": false,
+      "reason": "timeout",
+      "skill": "Griffin Dance",
       "skillType": "Active",
       "targets": 1
     },
@@ -844,12 +930,21 @@
     },
     "Zarg / Unicorn Dance": {
       "caster": "Zarg",
-      "element": "",
+      "element": "hp",
       "hasDamage": false,
-      "hasHealing": false,
+      "hasHealing": true,
       "offensive": true,
       "ok": true,
-      "perTarget": [],
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 20,
+          "grantRes": "hp",
+          "hit": true,
+          "resource": null
+        }
+      ],
       "roll": null,
       "skill": "Unicorn Dance",
       "skillType": "Active",

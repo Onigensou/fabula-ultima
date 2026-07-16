@@ -7860,7 +7860,10 @@ function recordCapturedRemovals(ctx, label, names) {
 // remaining charges / turnsRemaining / directorAppliedBy stamp. Unlike apply_ae
 // (which clones a fresh template and resets the charge to the template default),
 // transfer_ae carries the live instance over — so a 2-charge mark stays a
-// 2-charge mark on its new bearer.
+// 2-charge mark on its new bearer. A target_ref resolving to MULTIPLE tokens
+// fans each matched AE out to every destination (Lingering Scorn: the dying
+// Dark Soul inflicts its debuffs on all creatures); a MOVE deletes the source
+// instance once, after at least one copy landed.
 //
 // Two selection modes:
 //   • `ae_template_ref: "<Name>"` — move the one AE with that name.
@@ -7903,6 +7906,18 @@ async function applyTransferAeEffect(row, ctx) {
     const chargeKey = String(eff?.flags?.[FLAG_NS]?.chargeKey ?? "").trim().toLowerCase();
     return filterTags.some((t) => tags.includes(t) || (chargeKey && chargeKey === t));
   };
+  // keep_source: COPY instead of MOVE — the matched AEs stay on the source and
+  // are ALSO applied to the destination. Turns transfer_ae into a copy/share
+  // primitive (Geist's Souleater "share the debuffs between you and the target":
+  // two keep_source copies, self→target and target→self, so both end with the
+  // union). Charges/reactionConfig still ride along on the copy.
+  const keepSource = row.keep_source === true || String(row.keep_source ?? "").trim().toLowerCase() === "true";
+  // auto_select: MANDATORY transfer — take every match (up to `count`) without
+  // the interactive picker, even on an active cast. For rows where the move is
+  // a rule, not a choice (Living Shadow: any debuff on Geist at summon time is
+  // moved to the shadow). Passive/auto contexts already skip the picker.
+  const autoSelect = row.auto_select === true || String(row.auto_select ?? "").trim().toLowerCase() === "true";
+
   // How many to move: ""/all = every match; N = up to N (multi-select picker).
   const countRaw = String(row.count ?? "").trim().toLowerCase();
   const takeAll = countRaw === "" || countRaw === "all";
@@ -7915,23 +7930,44 @@ async function applyTransferAeEffect(row, ctx) {
     return { ok: false, kind: "transfer_ae", reason: fromResult.reason ?? "no-source" };
   }
 
-  // Destination — the chosen ally. Honors a cancel from the picker (the player
-  // declined the optional transfer) as a clean no-op.
+  // Destination(s) — honors a cancel from the picker (the player declined the
+  // optional transfer) as a clean no-op. A target_ref that resolves to MULTIPLE
+  // tokens applies each matched AE to EVERY destination (Lingering Scorn: the
+  // dying Dark Soul spreads its debuffs to all creatures on the field); a MOVE
+  // (keep_source absent) deletes from the source once, after the copies land.
   const destResult = await resolveTargetRef(row.target_ref, ctx);
   if (destResult?.cancelled) {
     return { ok: true, kind: "transfer_ae", applied: [], reason: "cancelled", cancelled: true };
   }
-  if (!destResult?.ok || !destResult.tokens.length) {
+  if (!destResult?.ok) {
     return { ok: false, kind: "transfer_ae", reason: destResult?.reason ?? "no-dest" };
   }
-  const dest = destResult.tokens[0]?.actor;
-  if (!dest) return { ok: false, kind: "transfer_ae", reason: "no-dest-actor" };
+  // An ok-but-EMPTY dest (an allow_empty targeting row that matched nobody —
+  // e.g. Lingering Scorn's "every other combatant" when none remain) is a clean
+  // no-op, NOT an abort: later chain steps (the soul still dies) must run.
+  if (!destResult.tokens.length) {
+    return { ok: true, kind: "transfer_ae", applied: [], reason: "no-dest-empty" };
+  }
+  const destActors = [];
+  const seenDest = new Set();
+  for (const t of destResult.tokens) {
+    const a = t?.actor;
+    if (!a || seenDest.has(a.uuid)) continue;
+    seenDest.add(a.uuid);
+    destActors.push(a);
+  }
+  if (!destActors.length) return { ok: false, kind: "transfer_ae", reason: "no-dest-actor" };
+  const dest = destActors[0]; // single-dest fast path keeps its name for the picker subtitle
 
   const moved = [];
   for (const token of fromResult.tokens) {
     const src = token.actor;
     if (!src?.effects) continue;
-    if (src.uuid === dest.uuid) {
+    // Destinations for THIS source — a creature never transfers to itself. With
+    // a single dest that IS the source, the whole source is a no-op (unchanged
+    // single-dest behavior); multi-dest just drops self from the fan-out.
+    const dests = destActors.filter((d) => d.uuid !== src.uuid);
+    if (!dests.length) {
       log(`skill-effects.transfer_ae: source == destination (${src.name}); skipping`);
       continue;
     }
@@ -7948,7 +7984,7 @@ async function applyTransferAeEffect(row, ctx) {
     // PRE-SELECTED when the cap covers every match, so the player just confirms);
     // passive/auto → take all, or the first maxCount.
     let effs = matches;
-    if (useFilter && !ctx.isPassive) {
+    if (useFilter && !ctx.isPassive && !autoSelect) {
       const picked = await pickFromList({
         title: String(row.menu_title ?? "Transfer effects"),
         subtitle: row.menu_subtitle ? String(row.menu_subtitle) : `${src.name} → ${dest.name}`,
@@ -7972,29 +8008,70 @@ async function applyTransferAeEffect(row, ctx) {
       // reactionConfig all ride along). Drop _id so it can re-key on the dest.
       const data = eff.toObject();
       delete data._id;
-      // If the dest already bears this AE, refresh it in place with the moved
-      // (preserved-charge) data; else create. Remove from source either way.
-      const existing = Array.from(dest.effects ?? []).find((e) => e.name === eff.name);
-      try {
-        await src.deleteEmbeddedDocuments("ActiveEffect", [eff.id]);
-      } catch (e) {
-        warn(`skill-effects.transfer_ae: delete from ${src.name} failed`, e);
-        continue;
+      // Apply to EVERY destination. If a dest already bears this AE, refresh it
+      // in place with the moved (preserved-charge) data; else create.
+      let appliedCount = 0;
+      for (const destActor of dests) {
+        const existing = Array.from(destActor.effects ?? []).find((e) => e.name === eff.name);
+        try {
+          if (existing) {
+            // stackMode "add" — declared on the AE (flags.<NS>.stackMode, e.g.
+            // the Burn charge-as-stack model): a transferred duplicate MERGES by
+            // ADDING charges to the bearer's own stack (Burn 5 + moved Burn 3 =
+            // Burn 8, capped at chargesMax when set) instead of the incoming
+            // copy overwriting it. Non-stack AEs keep the refresh-in-place
+            // behavior. Per-dest CLONE — `data` is shared across the fan-out,
+            // and each dest's merged total differs.
+            const stackAdd = String(
+              data.flags?.[FLAG_NS]?.stackMode ?? existing.flags?.[FLAG_NS]?.stackMode ?? ""
+            ).trim().toLowerCase() === "add";
+            let payload = data;
+            if (stackAdd) {
+              payload = foundry.utils.deepClone(data);
+              const cur = Number(existing.flags?.[FLAG_NS]?.charges ?? 0) || 0;
+              const inc = Number(data.flags?.[FLAG_NS]?.charges ?? 0) || 0;
+              const cap = Number(data.flags?.[FLAG_NS]?.chargesMax ?? existing.flags?.[FLAG_NS]?.chargesMax);
+              let merged = cur + inc;
+              if (Number.isFinite(cap) && cap > 0) merged = Math.min(merged, cap);
+              payload.flags = payload.flags ?? {};
+              payload.flags[FLAG_NS] = payload.flags[FLAG_NS] ?? {};
+              payload.flags[FLAG_NS].charges = merged;
+              // Keep the visible statuscounter badge in sync (same opt-in rule
+              // as adjust_charges: only when the author set visible === true).
+              if (payload.flags?.statuscounter?.visible === true) payload.flags.statuscounter.value = merged;
+            }
+            await existing.update(payload);
+            moved.push({
+              from: src.uuid, to: destActor.uuid, name: eff.name, copied: keepSource,
+              charges: payload.flags?.[FLAG_NS]?.charges ?? null, stacked: stackAdd || undefined,
+            });
+          } else {
+            await destActor.createEmbeddedDocuments("ActiveEffect", [data]);
+            moved.push({
+              from: src.uuid, to: destActor.uuid, name: eff.name, copied: keepSource,
+              charges: data.flags?.[FLAG_NS]?.charges ?? null,
+            });
+          }
+          appliedCount++;
+        } catch (e) {
+          warn(`skill-effects.transfer_ae: apply to ${destActor.name} failed`, e);
+        }
       }
-      try {
-        if (existing) await existing.update(data);
-        else await dest.createEmbeddedDocuments("ActiveEffect", [data]);
-        moved.push({
-          from: src.uuid, to: dest.uuid, name: eff.name,
-          charges: data.flags?.[FLAG_NS]?.charges ?? null,
-        });
-      } catch (e) {
-        warn(`skill-effects.transfer_ae: apply to ${dest.name} failed`, e);
+      // MOVE = remove from the source once the copies have landed (COPY leaves
+      // it in place). If every apply failed, keep the source instance — a MOVE
+      // must never destroy the only remaining copy.
+      if (!keepSource && appliedCount) {
+        try {
+          await src.deleteEmbeddedDocuments("ActiveEffect", [eff.id]);
+        } catch (e) {
+          warn(`skill-effects.transfer_ae: delete from ${src.name} failed`, e);
+        }
       }
     }
   }
   if (moved.length) {
-    log(`skill-effects.transfer_ae: moved ${moved.length} AE(s) to ${dest.name}`);
+    const destNames = [...new Set(moved.map((m) => m.to))].length;
+    log(`skill-effects.transfer_ae: ${keepSource ? "copied" : "moved"} ${moved.length} AE application(s) across ${destNames} destination(s)`);
   }
   return { ok: true, kind: "transfer_ae", applied: moved };
 }
@@ -8051,6 +8128,40 @@ async function applySummonEffect(row, ctx) {
   // front of the caster: one cell toward the centre of the scene, the way it
   // faces. Opt out with "formation" to use the old top-quarter battle slot.
   const placeAtCasterFront = String(row.summon_at ?? "").trim().toLowerCase() !== "formation";
+
+  // summon_overrides — general per-spawn stat override: a map (object or JSON
+  // string) of system.props keys → FORMULA strings, evaluated ONCE against the
+  // CASTER's resolver at summon time and written onto each spawned copy's
+  // synthetic actor (unlinked token → actor delta; the master actor is never
+  // touched). One field covers any prop (hp, level, def_mod, …) instead of a
+  // per-stat field zoo. First user: Living Shadow spawns with HP equal to the
+  // 25% Current HP its summoner is about to spend —
+  //   summon_overrides: { current_hp: "floor(CUR_HP * 0.25)", max_hp: "floor(CUR_HP * 0.25)" }
+  // (order the summon row BEFORE the cost row so CUR_HP is the pre-cost value).
+  let overrides = null;
+  const ovRaw = row.summon_overrides;
+  if (ovRaw != null && ovRaw !== "") {
+    let ovMap = ovRaw;
+    if (typeof ovRaw === "string") {
+      try { ovMap = JSON.parse(ovRaw); } catch {
+        warn(`skill-effects.summon: summon_overrides on "${row.effect_label}" is not valid JSON — ignoring`);
+        ovMap = null;
+      }
+    }
+    if (ovMap && typeof ovMap === "object" && !Array.isArray(ovMap)) {
+      const casterActor = ctx.reactorActor ?? null;
+      const resolver = ctx.resolver ?? (casterActor
+        ? buildSkillResolver({ actor: casterActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? ctx.director?.dCombat?.round ?? 0 })
+        : null);
+      overrides = {};
+      for (const [k, v] of Object.entries(ovMap)) {
+        const key = String(k).trim().replace(/[^\w]/g, ""); // bare props keys only — no path escapes
+        if (!key) continue;
+        overrides[key] = resolver != null ? evaluateFormula(String(v), resolver, 0) : 0;
+      }
+      if (!Object.keys(overrides).length) overrides = null;
+    }
+  }
 
   const director = ctx.director
     ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
@@ -8163,7 +8274,15 @@ async function applySummonEffect(row, ctx) {
           ...(asPhantasm ? { [`flags.${FLAG_NS}.isPhantasm`]: true } : {}),
         });
       } catch (e) { warn(`skill-effects.summon: tag write failed for ${actor.name}`, e); }
-      applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound, asPhantasm });
+      // summon_overrides → the spawned copy's props (values pre-evaluated above;
+      // stored as strings, matching the props convention).
+      if (overrides && tokenDoc.actor) {
+        const upd = {};
+        for (const [k, v] of Object.entries(overrides)) upd[`system.props.${k}`] = String(v);
+        try { await tokenDoc.actor.update(upd); }
+        catch (e) { warn(`skill-effects.summon: summon_overrides write failed for ${actor.name}`, e); }
+      }
+      applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound, asPhantasm, ...(overrides ? { overrides } : {}) });
       spawnedDocs.push(tokenDoc);
       liveCount++;
     }

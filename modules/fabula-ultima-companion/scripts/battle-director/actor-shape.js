@@ -69,6 +69,13 @@ export function getActorKind(actor) {
 export function getNpcAttackItems(actor) {
   const items = actor?.items?.contents ?? [];
   return items.filter((it) => {
+    // An item living INSIDE another item (`system.container` — the gear
+    // `_skill` / launcher-strike pattern, e.g. Geist's Shadowbringers Strike
+    // inside its launcher skill) is not a top-level attack option: it is
+    // performed via its container (a free_action preset), never picked
+    // directly. Preset paths resolve the item by UUID and are unaffected;
+    // this only hides it from the Attack picker + sheet-facing lists.
+    if (String(it?.system?.container ?? "").trim()) return false;
     const p = it?.system?.props ?? {};
     const t = String(p.skill_type ?? "").trim().toLowerCase();
     if (t === SKILL_TYPE_ATTACK) return true;

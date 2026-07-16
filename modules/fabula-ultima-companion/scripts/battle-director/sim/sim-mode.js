@@ -64,6 +64,8 @@ const _state = {
   elementFallback: null, // card-scoped: best element vs the current target
   focus: null,          // the party's called target (tokenUuid)
   blocked: new Map(),   // turnKey → Set<action name that bounced>
+  scripts: [],          // scripted directives (skill-under-test) — see scripted-action.js
+  dice: null,           // { queue, restore } — the forced-dice override, when armed
 };
 
 // ── The ONI shims ───────────────────────────────────────────────────────────
@@ -139,6 +141,36 @@ function restoreShims() {
   _state.saved = null;
 }
 
+// ── Forced dice (scripted skill-under-test) ─────────────────────────────────
+// A scripted directive can pin an accuracy outcome (crit / hit / miss / raw faces).
+// Foundry V12 draws die faces from CONFIG.Dice.randomUniform (a Mersenne-Twister
+// wrapper), NOT Math.random — face = ceil((1 - v) * N), so to force face R out of
+// dN we return v = 1 - (R - 0.5)/N. We wrap randomUniform for the whole run and
+// drain a FIFO queue: each armed pair feeds the next check's two draws, then the
+// override transparently falls back to the real generator. Same math as the
+// isolated harness's installRollOverride; installed once so any number of scripted
+// casts across the fight can each arm their own outcome. Restored on end().
+function installDiceOverride() {
+  if (_state.dice) return;   // already installed
+  const queue = [];
+  const original = CONFIG.Dice.randomUniform;
+  CONFIG.Dice.randomUniform = function simForcedRandomUniform() {
+    const next = queue.shift();
+    if (!next) return original();
+    return 1 - (next.R - 0.5) / next.N;
+  };
+  _state.dice = {
+    queue,
+    restore() { CONFIG.Dice.randomUniform = original; },
+  };
+}
+
+function restoreDiceOverride() {
+  if (!_state.dice) return;
+  try { _state.dice.restore(); } catch {}
+  _state.dice = null;
+}
+
 export const SimMode = {
   get active() { return _state.active; },
   get config() { return _state.config; },
@@ -155,7 +187,9 @@ export const SimMode = {
     _state.hint = null;
     _state.elementFallback = null;
     _state.focus = null;
+    _state.scripts = [];
     _state.active = true;
+    installDiceOverride();
 
     // STANDALONE reactions (turn_start / turn_end / conflict_start / round_*) ride the
     // pre-existing harness override: `dispatchReactionMenu` checks this global and
@@ -186,8 +220,10 @@ export const SimMode = {
   end() {
     if (!_state.active) return;
     _state.active = false;
+    _state.scripts = [];
     try { delete globalThis.__FU_HARNESS_ACCEPT_PASSIVES__; } catch { globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ = undefined; }
     restoreShims();
+    restoreDiceOverride();
     log(`[SIM] end — ${_state.transcript.length} event(s) in ${((Date.now() - _state.startedAt) / 1000).toFixed(1)}s`);
   },
 
@@ -272,6 +308,45 @@ export const SimMode = {
   // takes 3.
   setFocus(tokenUuid) { _state.focus = tokenUuid ?? null; },
   focus() { return _state.focus ?? null; },
+
+  // ── Scripted actions (skill-under-test) ────────────────────────────────────
+  // The runner registers directives that FORCE a named combatant to cast a named
+  // skill on chosen targets (optionally with a forced dice outcome), so a specific
+  // skill can be exercised through the live FSM instead of waiting for a brain to
+  // choose it. Consumed by scripted-action.js at the DECLARE chokepoint.
+  //
+  // A directive: { match: { name, uuid }, skill, targets, force, once, _spent }.
+  setScripts(directives) {
+    _state.scripts = Array.isArray(directives) ? directives.filter(Boolean) : [];
+    if (_state.scripts.length) log(`[SIM] ${_state.scripts.length} scripted directive(s) armed`);
+  },
+  hasScripts() { return _state.scripts.length > 0; },
+
+  // First live directive whose match names this actor (by base name or UUID).
+  scriptFor({ name, uuid } = {}) {
+    const want = String(name ?? "").replace(/\s*\[SIM\]\s*$/i, "").trim().toLowerCase();
+    for (const d of _state.scripts) {
+      if (d._spent) continue;
+      const m = d.match ?? {};
+      const byName = m.name && String(m.name).replace(/\s*\[SIM\]\s*$/i, "").trim().toLowerCase() === want;
+      const byUuid = m.uuid && uuid && m.uuid === uuid;
+      if (byName || byUuid) return d;
+    }
+    return null;
+  },
+
+  // Retire a `once` directive after it fires.
+  exhaustScript(directive) { if (directive) directive._spent = true; },
+
+  // ── Forced dice ────────────────────────────────────────────────────────────
+  // Arm the next accuracy check's two die draws. Faces R over dN each; drained by
+  // the randomUniform override installed for the run. A no-op if the override isn't
+  // installed (i.e. not in a sim), so callers needn't guard.
+  armDice(rA, dA, rB, dB) {
+    if (!_state.dice) return;
+    if (Number.isFinite(rA) && Number.isFinite(dA)) _state.dice.queue.push({ R: rA, N: dA });
+    if (Number.isFinite(rB) && Number.isFinite(dB)) _state.dice.queue.push({ R: rB, N: dB });
+  },
 
   pace() {
     return PACE[_state.config.pace] ?? PACE.fast;

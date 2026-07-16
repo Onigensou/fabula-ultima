@@ -582,6 +582,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "MAX_MP": return readProp(actor, "max_mp");
       case "CUR_IP": return readProp(actor, "current_ip");
       case "MAX_IP": return readProp(actor, "max_ip");
+      // Remaining shield buffer (shield_value resource). Symmetric read-token for
+      // the grant/set_resource "shield" writers (resources.js) — nothing else
+      // could read the live shield before this. Powers "consume any remaining
+      // Shield to deal damage equal to the amount consumed" (Geist's Shadow Wall):
+      // a round_end row reads CUR_SHIELD for the AoE amount, then zeroes it.
+      case "CUR_SHIELD": return readProp(actor, "shield_value");
       // Boss Zero Power pool (Fafnir). CUR_ZERO_POWER / ZERO_POWER read the
       // current stack count; used to cap an accumulator trigger (Zero Trigger:
       // Suffering gains ZP only while ZERO_POWER < 3).
@@ -868,6 +874,15 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (!subjectUuid) return 0;
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
+      }
+      // Remaining shield buffer of the trigger's SUBJECT (the current target).
+      // Twin of CUR_SHIELD resolved against subjectActorUuid, for per-victim
+      // shield reads in the outgoing-damage pass.
+      case "TARGET_CUR_SHIELD": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return subject ? (Number(subject?.system?.props?.shield_value ?? 0) || 0) : 0;
       }
       // Magic Defense (derived) of the trigger's SUBJECT creature (the current
       // target). Twin of TARGET_MAX_HP (same subjectActorUuid resolve), reading
@@ -1481,7 +1496,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             if (!a) continue;
             const effects = a?.effects?.contents ?? Array.from(a?.effects ?? []);
             const total = effects
-              .filter((e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle)
+              .filter((e) => !e.disabled && aeNameForNeedle(e?.name) === needle)
               .reduce((sum, e) => sum + (Number(e?.flags?.["fabula-ultima-companion"]?.charges ?? 0) || 0), 0);
             if (total > best) best = total;
           }
@@ -1502,7 +1517,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .trim();
           const effects = actor?.effects?.contents ?? Array.from(actor?.effects ?? []);
           return effects.filter(
-            (e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle
+            (e) => !e.disabled && aeNameForNeedle(e?.name) === needle
           ).length;
         }
         // Dynamic AE_CHARGES_<NAME> — sums charges across all non-disabled
@@ -1519,7 +1534,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .trim();
           const effects = actor?.effects?.contents ?? Array.from(actor?.effects ?? []);
           return effects
-            .filter((e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle)
+            .filter((e) => !e.disabled && aeNameForNeedle(e?.name) === needle)
             .reduce((sum, e) => sum + (Number(e?.flags?.["fabula-ultima-companion"]?.charges ?? 0) || 0), 0);
         }
         // Dynamic TARGET_AE_CHARGES_<NAME> — same as AE_CHARGES_<NAME> but
@@ -1542,12 +1557,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             const snap = payload?.subjectSnapshot;
             if (!snap?.effects) return 0;
             return snap.effects
-              .filter((e) => String(e?.name ?? "").trim().toLowerCase() === needle)
+              .filter((e) => aeNameForNeedle(e?.name) === needle)
               .reduce((sum, e) => sum + (Number(e?.charges ?? 0) || 0), 0);
           }
           const effects = subject?.effects?.contents ?? Array.from(subject?.effects ?? []);
           return effects
-            .filter((e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle)
+            .filter((e) => !e.disabled && aeNameForNeedle(e?.name) === needle)
             .reduce((sum, e) => sum + (Number(e?.flags?.["fabula-ultima-companion"]?.charges ?? 0) || 0), 0);
         }
         // Dynamic TARGET_AE_COUNT_<NAME> — counts non-disabled AEs with the
@@ -1571,11 +1586,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             // (presence count). See captureSubjectSnapshot in snapshot.js.
             const snap = payload?.subjectSnapshot;
             if (!snap?.effects) return 0;
-            return snap.effects.filter((e) => String(e?.name ?? "").trim().toLowerCase() === needle).length;
+            return snap.effects.filter((e) => aeNameForNeedle(e?.name) === needle).length;
           }
           const effects = subject?.effects?.contents ?? Array.from(subject?.effects ?? []);
           return effects.filter(
-            (e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle
+            (e) => !e.disabled && aeNameForNeedle(e?.name) === needle
           ).length;
         }
         // Dynamic SPECIES_IS_<X> — 1 when the RESOLVER ACTOR's own species
@@ -1979,6 +1994,15 @@ function _resolveActorByUuidSync(uuid) {
   } catch (_e) { return null; }
 }
 
+// AE-name → identifier-needle normalization. Identifier names can only carry
+// [A-Z0-9_] (underscores decode to spaces), so an AE named with a HYPHEN —
+// "Half-Life" — would otherwise be unreachable by the whole AE_*_<NAME>
+// identifier family (needle "half life" ≠ raw "half-life"). Hyphens in the AE
+// name normalize to spaces (runs collapse) before comparing.
+function aeNameForNeedle(name) {
+  return String(name ?? "").replace(/-/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
 // True if the actor carries a non-disabled status/AE matching `needle`
 // (lowercased, spaces). Matches by FU status id — `statuses[]` contains the
 // needle as a substring, so "weak" matches both "weak" and "fud-weak" — or by
@@ -1990,7 +2014,7 @@ function actorHasNamedStatus(actor, needle) {
     if (e.disabled) continue;
     const statuses = e.statuses ? Array.from(e.statuses) : [];
     if (statuses.some((s) => String(s).toLowerCase().includes(needle))) return true;
-    if (String(e?.name ?? "").trim().toLowerCase() === needle) return true;
+    if (aeNameForNeedle(e?.name) === needle) return true;
   }
   return false;
 }
@@ -2006,7 +2030,7 @@ export function actorHasNamedStatusFromApplier(actor, needle, applierTokenUuid, 
     if (e.disabled) continue;
     const statuses = e.statuses ? Array.from(e.statuses) : [];
     const matches = statuses.some((s) => String(s).toLowerCase().includes(needle))
-      || String(e?.name ?? "").trim().toLowerCase() === needle;
+      || aeNameForNeedle(e?.name) === needle;
     if (!matches) continue;
     const by = e.flags?.["fabula-ultima-companion"]?.directorAppliedBy;
     if (!by) continue;

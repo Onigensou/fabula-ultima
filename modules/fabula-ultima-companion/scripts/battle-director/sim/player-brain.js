@@ -269,11 +269,49 @@ function bestAttackTargets(actorDoc, foes, focusUuid = null, cap = 1) {
   return out;
 }
 
+// ── NPC basic attack ─────────────────────────────────────────────────────────
+// A monster has no equipped hand — its swings are `skill_type: "attack"` ITEMS
+// (Geist: Torcleaver / Souleater / Dark Bane). resolveAttackMode returns null for
+// these, so without this an NPC that is handed a free "Attack" (Shadow Strike,
+// Shadowbringers) — or that simply has no rotation left — could never swing, and
+// the sim would silently forfeit the whole boss combo. Pick the attack whose
+// element lands best on the called target, exactly like bestAttackTargets does.
+function bestNpcAttack(actorDoc, foes, focusUuid = null) {
+  const attacks = (actorDoc?.items ?? []).filter(
+    (i) => String(i?.system?.props?.skill_type ?? "").trim().toLowerCase() === "attack"
+      // Containered strikes (launcher pattern) are performed via their
+      // container's preset, never as a basic-attack pick — mirrors
+      // actor-shape.getNpcAttackItems.
+      && !String(i?.system?.container ?? "").trim()
+  );
+  if (!attacks.length) return null;
+
+  let best = null;
+  for (const item of attacks) {
+    const p = item?.system?.props ?? {};
+    const el = String(p.type_damage ?? p.weapon1_damagetype ?? "").trim().toLowerCase();
+    const scored = foes.map((dc) => {
+      let aff = "NA";
+      try { if (el) aff = AR.getAffinityForType(dc.actorDoc, el) ?? "NA"; } catch { /* neutral */ }
+      return { dc, aff: String(aff).toUpperCase(), affScore: AFFINITY_SCORE[String(aff).toUpperCase()] ?? 1, hp: hpOf(dc) };
+    });
+    const viable = scored.filter((s) => s.affScore > 0);
+    const pool = (viable.length ? viable : scored).slice().sort((a, b) => (b.affScore - a.affScore) || (a.hp - b.hp));
+    const called = focusUuid ? pool.find((s) => s.dc.tokenUuid === focusUuid) : null;
+    const target = called ?? pool[0];
+    if (!target) continue;
+    if (!best || target.affScore > best.target.affScore) best = { item, target };
+  }
+  return best;
+}
+
 // ── Bundle builders (PC shapes) ──────────────────────────────────────────────
 // A PC weapon attack is `attackMode: "main"` with NO item uuid — TARGET derives
 // the weapon from the equipped hand. (An NPC attack is the other shape entirely:
 // attackMode "npc" + npcAttackItemUuid. Don't cross the two.)
 const attackBundle = (targetUuids, attackMode = "main") => ({ command: "Attack", attackMode, targetUuids });
+const npcAttackBundle = (targetUuids, npcAttackItemUuid, name) =>
+  ({ command: "Attack", attackMode: "npc", npcAttackItemUuid, targetUuids, _name: name });
 
 function castBundle(item, targetUuids) {
   const st = String(item?.system?.props?.skill_type ?? "").trim().toLowerCase();
@@ -802,6 +840,16 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), gr
 
   const mode = resolveAttackMode(actorDoc);
   if (!mode) {
+    // No PC weapon — but a monster attacks with its `skill_type: "attack"` items.
+    // This is the landing spot for an NPC's granted free Attack (Shadow Strike,
+    // Shadowbringers): compose the best-landing one instead of forfeiting it.
+    const npc = bestNpcAttack(actorDoc, foes, SimMode.focus());
+    if (npc) {
+      const uuid = tokenUuidOf(npc.target.dc);
+      if (!uuid) return null;
+      SimMode.note("attack", `${snap?.name} attacks with ${npc.item.name} → ${npc.target.dc.name} [${npc.target.aff}] (npc attack)`);
+      return npcAttackBundle([uuid], npc.item.uuid, npc.item.name);
+    }
     log(`[SIM] player-brain: ${snap?.name} has nothing to attack with`);
     return null;
   }

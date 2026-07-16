@@ -385,6 +385,34 @@ export async function autopilotPickCombatant(director, eligible) {
 // actionable. Real play is untouched: outside a sim this still returns null and
 // the GM gets the Octopath menu exactly as before.
 export async function autopilotDecideAction(director, snap) {
+  // A live free-action grant (Shadow Strike / Shadowbringers free Attack, Barrage,
+  // Dance…) carries an allow-list of what it may be spent on. ActionReader is
+  // grant-BLIND: for a PATTERNED NPC (a boss) it would ignore the grant and re-pick a
+  // whole new turn action from the pattern — silently discarding the granted Attack, so
+  // the free-attack half of a combo never fires. A PC has no pattern, so this never bit
+  // the party; it only surfaces on monsters. When a grant is live, route straight to the
+  // grant-aware fallback (which honours enabledLabels) instead of the pattern. The
+  // orphaned-grant clear in DECLARE runs just before this, so a grant present here is a
+  // legitimate free-action frame.
+  if (SimMode.active) {
+    // Skill-under-test: a scripted directive FORCES this combatant to cast a chosen
+    // skill (see sim/scripted-action.js). Checked before everything else so the
+    // directive wins over both the free-action fallback and the pattern table. When
+    // it doesn't apply — no directive, unaffordable, no target, or it already bounced
+    // this turn — it returns null and the normal chain below takes over.
+    try {
+      const { scriptedBundleFor } = await import("./sim/scripted-action.js");
+      const scripted = await scriptedBundleFor(director, snap);
+      if (scripted) return scripted;
+    } catch (e) { warn("autopilotDecideAction: scripted-action check threw", e); }
+
+    try {
+      const { freeActions } = await import("./free-actions.js");
+      const grant = freeActions.get?.(snap?.actorId) ?? null;
+      if (grant?.enabledLabels?.length) return await simFallbackBundle(director, snap);
+    } catch (e) { warn("autopilotDecideAction: free-action grant check threw", e); }
+  }
+
   const bundle = await decideViaActionReader(director, snap);
   if (bundle) return bundle;
   if (!SimMode.active) return null;   // real play — manual fallback, unchanged
