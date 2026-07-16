@@ -29,7 +29,7 @@ import {
 } from "./battle-end/battle-followup.js";
 import { registerWanderingFlameAmbush } from "./battle-end/followups/wandering-flame-ambush.js";
 import { initWanderingFlameEntrance } from "./battle-end/followups/wandering-flame-entrance.js";
-import { getPendingClaim, clearPendingClaim, listUndyingRules } from "./battle-end/undying/undying.js";
+import { getPendingClaim, clearPendingClaim, listUndyingRules, isForceCinematic, setForceCinematic } from "./battle-end/undying/undying.js";
 import { registerBlackestNight, blackestNightReactor } from "./battle-end/undying/geist-blackest-night.js";
 import { initBlackestNightCinematic } from "./battle-end/undying/blackest-night-cinematic.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
@@ -991,6 +991,10 @@ Hooks.once("ready", () => {
       clearPending: () => clearPendingClaim(),
       listRules: () => listUndyingRules().map((r) => ({ id: r.id, label: r.label ?? "" })),
       triggers: () => _instance?.ctx?._undyingTriggers ?? 0,
+      // Dev: lean test battles revive inline (no cinematic) — flip this on to
+      // preview the full fake-out from the Test Battle tool.
+      forceCinematic: (on) => setForceCinematic(on),
+      isForceCinematic: () => isForceCinematic(),
     },
     // Manual recovery — removes any tokens still flagged as director-spawned
     // on the given scene (or canvas.scene by default). Normally fires

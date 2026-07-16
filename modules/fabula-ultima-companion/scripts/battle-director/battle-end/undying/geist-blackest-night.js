@@ -33,6 +33,7 @@ import {
   getPendingClaim,
   setPendingClaim,
   clearPendingClaim,
+  isForceCinematic,
 } from "./undying.js";
 import { playBlackestNightCinematic } from "./blackest-night-cinematic.js";
 
@@ -213,7 +214,7 @@ export async function blackestNightReactor(director, cfg, extra) {
     const n = (num(director.ctx._undyingTriggers) ?? 0) + 1;
     director.ctx._undyingTriggers = n;
 
-    if (isLeanMode(director)) {
+    if (isLeanMode(director) && !isForceCinematic()) {
       // Sim path: restore inline, un-latch a side-wipe that may have raced
       // in (e.g. adds were already dead), keep the battle running.
       log(`[BlackestNight] lean mode — inline revive #${n}`);

@@ -71,6 +71,22 @@ export async function clearPendingClaim() {
   await writeState(s);
 }
 
+// Dev toggle: lean/sim battles normally revive INLINE (no cinematic) so
+// automated playtests never block on visuals. The Test Battle tool launches
+// lean, which makes the cinematic impossible to preview — this flag forces
+// the full claim → BATTLE_ENDING → cinematic path even in lean mode.
+// GM: FUCompanion.api.experimental.battleDirector.undying.forceCinematic(true)
+export function isForceCinematic() {
+  return !!readState().forceCinematic;
+}
+export async function setForceCinematic(on) {
+  const s = readState();
+  s.forceCinematic = !!on;
+  await writeState(s);
+  log(`[Undying] forceCinematic=${!!on}`);
+  return !!on;
+}
+
 // ─── Battle-End hook ─────────────────────────────────────────────────────
 //
 // Called by the orchestrator BEFORE the victory prompt and BEFORE follow-up
