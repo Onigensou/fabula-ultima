@@ -59,6 +59,7 @@ const CFG = {
     riseFlashMs:      450,    // beat 6 — color floods back
     riseTailMs:       700,    // hold on the risen boss before control returns
     vignetteOutMs:    600,
+    resetPanMs:       900,    // camera home to the default battle view
   },
   short: {
     downedSettleMs:   250,
@@ -72,6 +73,7 @@ const CFG = {
     riseFlashMs:      350,
     riseTailMs:       400,
     vignetteOutMs:    350,
+    resetPanMs:       650,
   },
   heartbeatVol: 0.9,
 };
@@ -231,6 +233,10 @@ async function playLocal(payload, gmExtras) {
     }
     await wait(t.riseTailMs);
     hideVignette(t.vignetteOutMs);
+    // Camera home — the cinematic ends where the battle camera lives, not
+    // zoomed into Geist's face. Every client pans back on its own.
+    const home = battleCameraTarget();
+    if (home) await panTo({ x: home.x, y: home.y }, home.scale, t.resetPanMs);
     await wait(t.vignetteOutMs);
   } catch (e) {
     warn("[BlackestNight] cinematic threw (cleaning up)", e);
@@ -275,6 +281,23 @@ function liftDownedTreatment(h) {
 }
 
 // ─── Camera ────────────────────────────────────────────────────────────────
+// Default battle view: the director's PREP-time viewport snapshot when one
+// exists, else the scene's configured Initial View Position. Null → skip
+// (leave the camera wherever it is).
+function battleCameraTarget() {
+  try {
+    const vp = game.settings.get(MODULE_ID, "bdBattleSceneViewport");
+    if (vp && Number.isFinite(Number(vp.x)) && Number.isFinite(Number(vp.y))) {
+      return { x: Number(vp.x), y: Number(vp.y), scale: Number(vp.scale) || canvas.stage.scale.x };
+    }
+  } catch (_) {}
+  const init = canvas?.scene?.initial;
+  if (init && Number.isFinite(Number(init.x)) && Number.isFinite(Number(init.y))) {
+    return { x: Number(init.x), y: Number(init.y), scale: Number(init.scale) || 1 };
+  }
+  return null;
+}
+
 async function panTo(center, scale, durationMs) {
   try {
     await Promise.race([
