@@ -178,3 +178,19 @@ export const checkVsDefense = (r, defense) => ({
 export const checkVsThreshold = (r, dl) => ({
   success: r.isCrit ? true : r.isFumble ? false : r.total >= Number(dl),
 });
+
+// Single source of truth for "does this action hit this target?" given a
+// possibly-overridden accuracy `total` and a possibly-overridden `defense`.
+// `roll` is the action's accuracy roll, or NULL when the action has no accuracy
+// check — a guaranteed hit. Encodes FU's terminal outcomes in one place: no
+// check → auto-hit; a Critical always hits; a Fumble always misses; otherwise
+// total ≥ defense. The adjust_accuracy / adjust_defense card-mutations and their
+// recompute mirrors all route through this, so the rule (and the auto-hit
+// invariant that keeps a checkless action from ever being recomputed into a
+// miss) can never drift or be forgotten at one site. Callers own the ARITHMETIC
+// (compose the new total / new defense); this owns only the DECISION.
+export const decideHit = (roll, total, defense) =>
+  !roll ? true
+  : roll.isCrit ? true
+  : roll.isFumble ? false
+  : Number(total) >= Number(defense ?? 10);

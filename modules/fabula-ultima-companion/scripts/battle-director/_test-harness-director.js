@@ -440,7 +440,7 @@ function summarize(ar) {
 
 async function runDirectorSkillCompute({
   skillUuid, casterTokenUuid, targetTokenUuids, force = null,
-  picks = null, harnessNumbers = null,
+  picks = null, harnessNumbers = null, override = null,
 } = {}) {
   if (!game.user?.isGM) {
     return { ok: false, reason: "gm_only" };
@@ -521,6 +521,13 @@ async function runDirectorSkillCompute({
     targetSnaps,
   });
   const rollOverride = installRollOverride(resolvedForce, dA, dB);
+  // Identifier overrides (SL / CHAR_LEVEL / BOND_COUNT / BOND_STRENGTH) — pin the
+  // formula identifiers CSB would otherwise derive from live actor state, so a
+  // compute-mode test is deterministic regardless of the caster's current level /
+  // bonds. Previously ONLY the simulate wrappers installed these, so compute-mode
+  // callers (the skill-regression harness) silently ran with real actor state and
+  // their goldens drifted whenever a caster leveled. Mirrors runDirectorSkillSimulate.
+  const formulaOverrides = installFormulaOverrides(override);
   try {
     await computeHandler.onEnter(synthDirector, {
       triggerIntent: { type: INTENTS.TARGET_PICKED,
@@ -528,6 +535,7 @@ async function runDirectorSkillCompute({
     });
   } finally {
     rollOverride.restore();
+    formulaOverrides.restore();
   }
 
   const finalAr = synthDirector.ctx.actionResult;

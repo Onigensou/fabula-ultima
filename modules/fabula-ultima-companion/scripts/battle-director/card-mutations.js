@@ -39,7 +39,7 @@
 
 import { log, warn } from "./logger.js";
 import { resolveTargetRef as resolveBdTargetRef, makeChainContext as makeBdChainContext } from "./skill-targeting.js";
-import { deriveCheck } from "./check.js";
+import { deriveCheck, decideHit } from "./check.js";
 import { resolvesVsMagicDefense } from "./snapshot.js";
 
 const FLAG_NS = "fabula-ultima-companion";
@@ -713,6 +713,12 @@ async function resolveReactionReactorSkill(ctx, cand) {
 // hit would need full HR/damage recompute; left out until a skill needs it.)
 // Records `ctx.accuracyOverride` so the caller + card UI can show "Blocked".
 async function applyAdjustAccuracyMutation(ctx, cand, row) {
+  // No accuracy check → the action auto-hits every target (roll is null,
+  // hitTokenUuids = all targets). Rewriting a non-existent total to compare
+  // against defense would flip those guaranteed hits to misses, so bail — the
+  // same guard check_reroll / set_check_die already use.
+  if (!ctx.ar?.roll) { log("adjust_accuracy: no accuracy roll on this action — skipping (auto-hit)"); return "failed"; }
+
   const { readAdjustment } = await import("./skill-formulas.js");
   const { op, amountFormula } = readAdjustment(row, "accuracy", { defaultOp: "set" });
   if (!ACCURACY_OPS.has(op)) {
@@ -753,16 +759,14 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
   const stepDelta = newTotal - runningTotal;
   const via = cand?.carrierName ?? cand?.reactorActorName ?? "reaction";
   const isCrit = !!ctx.ar?.roll?.isCrit;
-  const isFumble = !!ctx.ar?.roll?.isFumble;
 
   for (let i = 0; i < ctx.perTargets.length; i++) {
     const pt = ctx.perTargets[i];
     if (!pt) continue;
     const def = Number(pt.defense ?? 10);
-    // Crit always hits, fumble always misses; otherwise compare the new total
-    // to this target's defense. (Crossfire's condition gate already excludes
-    // crits, but keep the rule here so the primitive is self-consistent.)
-    const newHit = isCrit ? true : (!isFumble && newTotal >= def);
+    // Decide this target's hit against the composed total (shared rule: crit
+    // hits, fumble misses, else total ≥ def — and a checkless action auto-hits).
+    const newHit = decideHit(ctx.ar?.roll, newTotal, def);
     ctx.perTargets[i] = {
       ...pt,
       hit: newHit,
@@ -1004,6 +1008,12 @@ function applyDefenseOp(def, op, amount) {
 }
 
 async function applyAdjustDefenseMutation(ctx, cand, row) {
+  // No accuracy check → the action auto-hits (roll is null). Raising the
+  // reactor's defense can only flip a hit→miss when there's a total to compare;
+  // with no roll the comparison is against 0 and would wrongly negate a
+  // guaranteed hit. Bail, matching adjust_accuracy / check_reroll / set_check_die.
+  if (!ctx.ar?.roll) { log("adjust_defense: no accuracy roll on this action — skipping (auto-hit)"); return "failed"; }
+
   // Resolve the reactor (the creature raising its OWN defense). Third-party
   // reactions (Protect/Grappling, reaction_source ally/enemy) carry a stamped
   // `reactorActorUuid`; a SELF reaction (Verónica, reaction_source "self") comes
@@ -1056,10 +1066,9 @@ async function applyAdjustDefenseMutation(ctx, cand, row) {
   // Compare the (possibly accuracy-adjusted) roll total to the NEW defense.
   const accuracyTotal = Number(ctx.accuracyOverride?.to ?? ctx.ar?.roll?.total ?? 0);
   const isCrit = !!ctx.ar?.roll?.isCrit;
-  const isFumble = !!ctx.ar?.roll?.isFumble;
   const oldDef = Number(pt.defense ?? 10);
   const newDef = applyDefenseOp(oldDef, op, amount);
-  const newHit = isCrit ? true : (!isFumble && accuracyTotal >= newDef);
+  const newHit = decideHit(ctx.ar?.roll, accuracyTotal, newDef);
   const via = cand?.carrierName ?? cand?.reactorActorName ?? "reaction";
 
   ctx.perTargets[idx] = {
