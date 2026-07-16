@@ -10,273 +10,11 @@
   },
   "effects": [
     {
-      "_id": "8j8UBMSa5Xp4bk3y",
+      "_id": "oTNEJLv9rYeoLluI",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784205843359,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Pases:</em> Adoration Clock — fills on enemy misses, resets when you take damage.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "xaJdAkD2wJVFYXWX",
-          "originalParentId": "iYTRG3YcHC2PVLYm",
-          "originalUuid": "Item.iYTRG3YcHC2PVLYm.ActiveEffect.xaJdAkD2wJVFYXWX"
-        },
-        "fabula-ultima-companion": {
-          "chargeKey": "adoration",
-          "charges": 5,
-          "chargesMax": 5,
-          "directorAppliedBy": {
-            "appliedAtRound": 3,
-            "effectLabel": "ado_reset",
-            "lifetimeMode": "persistent_counter",
-            "reactorActorUuid": "Actor.uJFaNQCSvwwsr2AW",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.8Sm0KjWZWKYbzy11",
-            "skillUuid": "Actor.uJFaNQCSvwwsr2AW.Item.WBMByjJUKDlD8TmE",
-            "turnsRemaining": null
-          },
-          "lifetimeMode": "persistent_counter"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/emboite.png",
-      "name": "Adoration Clock",
-      "origin": "Actor.uJFaNQCSvwwsr2AW.Item.WBMByjJUKDlD8TmE",
-      "sort": 0,
-      "statuses": [
-        "fud-adoration-clock"
-      ],
-      "system": {
-        "tags": [
-          "resource"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "EawaVq3d2l10oIqY",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1784210603285,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "affinity_1",
-          "mode": 5,
-          "priority": 20,
-          "value": "aeAffinityFloor(\"RS\")"
-        },
-        {
-          "key": "affinity_2",
-          "mode": 5,
-          "priority": 20,
-          "value": "aeAffinityFloor(\"RS\")"
-        },
-        {
-          "key": "affinity_3",
-          "mode": 5,
-          "priority": 20,
-          "value": "aeAffinityFloor(\"RS\")"
-        },
-        {
-          "key": "affinity_4",
-          "mode": 5,
-          "priority": 20,
-          "value": "aeAffinityFloor(\"RS\")"
-        },
-        {
-          "key": "affinity_5",
-          "mode": 5,
-          "priority": 20,
-          "value": "aeAffinityFloor(\"RS\")"
-        },
-        {
-          "key": "affinity_6",
-          "mode": 5,
-          "priority": 20,
-          "value": "aeAffinityFloor(\"RS\")"
-        },
-        {
-          "key": "affinity_7",
-          "mode": 5,
-          "priority": 20,
-          "value": "aeAffinityFloor(\"RS\")"
-        },
-        {
-          "key": "affinity_8",
-          "mode": 5,
-          "priority": 20,
-          "value": "aeAffinityFloor(\"RS\")"
-        },
-        {
-          "key": "affinity_9",
-          "mode": 5,
-          "priority": 20,
-          "value": "aeAffinityFloor(\"RS\")"
-        }
-      ],
-      "description": "<p><em>Guard:</em> Resistance to all damage + 2 to Opposed Checks until your next turn.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "core": {
-          "statusId": "guard"
-        },
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "SScnL9efkIzMzApL",
-          "originalParentId": "nNmdYuOvyNcBjpjb",
-          "originalUuid": "Item.nNmdYuOvyNcBjpjb.ActiveEffect.SScnL9efkIzMzApL"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "directorAppliedBy": {
-            "appliedAtRound": 7,
-            "effectLabel": "guard_self",
-            "reactorActorUuid": "Actor.uJFaNQCSvwwsr2AW",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.8Sm0KjWZWKYbzy11",
-            "skillUuid": "Item.nNmdYuOvyNcBjpjb",
-            "turnsRemaining": 1
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/shield_oath.png",
-      "name": "Guard",
-      "origin": "Item.nNmdYuOvyNcBjpjb",
-      "sort": 0,
-      "statuses": [
-        "guard"
-      ],
-      "system": {
-        "tags": [
-          "buff"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "GW9W8seWNuknutT4",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1784208896495,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p>This creature has less than 50% HP</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "4ldx00srGNv5AJBr",
-          "originalParentId": "0gIBYzSpjdXS6f25",
-          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-crisis",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": false
-        },
-        "fabula-ultima-companion": {
-          "bdCrisis": true,
-          "derivedStatus": {
-            "byRules": [
-              "core-crisis"
-            ],
-            "forStatus": "Crisis"
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
-      "name": "Crisis",
-      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
-      "sort": 0,
-      "statuses": [
-        "5jkr80zqdzaR003d"
-      ],
-      "system": {
-        "tags": []
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "Vb61FXrVpoLuZvHJ",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1784205843728,
+        "createdTime": 1784211808704,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -289,7 +27,7 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": null,
+        "startTime": 298800,
         "startTurn": null,
         "turns": null
       },
@@ -305,7 +43,7 @@
           "charges": 1,
           "chargesMax": 1,
           "directorAppliedBy": {
-            "appliedAtRound": 7,
+            "appliedAtRound": 8,
             "effectLabel": "cp_refresh",
             "lifetimeMode": "on_activation",
             "reactorActorUuid": "Actor.uJFaNQCSvwwsr2AW",
@@ -337,11 +75,11 @@
       "type": "base"
     },
     {
-      "_id": "XC34APEpd6f5zYmv",
+      "_id": "T5EaCFOM3EnpZwn0",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784205844145,
+        "createdTime": 1784211809970,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -354,7 +92,7 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": null,
+        "startTime": 298800,
         "startTurn": null,
         "turns": null
       },
@@ -370,7 +108,7 @@
           "charges": 1,
           "chargesMax": 1,
           "directorAppliedBy": {
-            "appliedAtRound": 7,
+            "appliedAtRound": 8,
             "effectLabel": "protect_refill",
             "reactorActorUuid": "Actor.uJFaNQCSvwwsr2AW",
             "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.8Sm0KjWZWKYbzy11",
@@ -7867,7 +7605,7 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 69,
+      "current_hp": "164",
       "current_ip": "10",
       "current_mp": "74",
       "curse_status": 0,

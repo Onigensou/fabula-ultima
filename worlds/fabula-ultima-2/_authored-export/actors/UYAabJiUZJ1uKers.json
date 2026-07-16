@@ -205,13 +205,10 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>When <strong>Geist </strong>is <strong>defeated, </strong>he became <strong>invulnerable </strong>and<strong> gain Unlimited MP, </strong>in this state, he act for <strong>1 more round, </strong>in which afterward he is certainly <strong>defeated</strong></p>",
-          "details_roller": "Show",
           "duration": "-",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "204P2m0SDx8ypBrJ",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/living_dead.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -233,8 +230,7 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.204P2m0SDx8ypBrJ"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -278,7 +274,6 @@
           "damage_bonus": "42",
           "defense_target_type": "def",
           "description": "<p>On <strong>hit, </strong>inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a></span>&nbsp;to the target</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -290,9 +285,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "bUu8h4C4kis0z3QL",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -323,8 +316,7 @@
           "skill_target": "One Creature",
           "skill_type": "Attack",
           "type_damage": "Physical",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.bUu8h4C4kis0z3QL"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -391,13 +383,10 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Consume <strong>25% Current HP </strong>to summon <strong>3</strong> <strong>Dark Soul</strong></p><p><strong>Dark Soul </strong>comes into play with <strong>Random Debuff</strong>, they <strong>cursed </strong>others with their affliction when they leave the battlefield unless <strong>Exorcised</strong></p>",
-          "details_roller": "Show",
           "duration": "1 Round",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "hwRQZH4zxC0vB8wh",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/dark_mind.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -419,8 +408,7 @@
           "skill_target": "Self",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.hwRQZH4zxC0vB8wh"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -464,7 +452,6 @@
           "damage_bonus": "40",
           "defense_target_type": "mdef",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Multi</a>&nbsp;<strong>3</strong></p></li></ul><p>Deal heavy <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\">Dark</a>&nbsp;damage to three target, On <strong>hit, </strong>inflicts a <strong>Random Basic Debuff </strong>to the target</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -476,9 +463,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "jFDqULDfaJIyCqp0",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Torcleaver.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -509,8 +494,7 @@
           "skill_target": "Up to three creature",
           "skill_type": "Attack",
           "type_damage": "Dark",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.jFDqULDfaJIyCqp0"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -535,7 +519,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1784209103067,
+            "createdTime": 1784211908939,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -662,7 +646,6 @@
           "damage_bonus": "",
           "defense_target_type": "mdef",
           "description": "<p><strong>Shadowbringers.</strong> Geist performs <strong>Shadow Strike</strong> up to <strong>【3】</strong> times in a row — each one rolls its own d12, empowers the chosen attack with <strong>+【twice the roll】</strong> Dark damage and costs <strong>【five times the roll】 HP</strong>. The chain continues hit or miss, and ends early if Geist's HP would fall to 60 or below.</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -685,9 +668,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "kFPcc3xDPvPXIGum",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/shadowbringer.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -709,8 +690,7 @@
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.kFPcc3xDPvPXIGum"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -754,7 +734,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p><strong>Geist</strong> deals <strong>1%</strong> <strong>bonus damage </strong>for each percentage of his missing HP</p>",
-          "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -766,9 +745,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "LgcM4WQ3tsbvRMkG",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blood_weapon.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -797,8 +774,7 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.LgcM4WQ3tsbvRMkG"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -823,7 +799,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1784142907366,
+            "createdTime": 1784211914095,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -870,6 +846,14 @@
                   }
                 }
               }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/flood_of_darkness.png",
@@ -916,7 +900,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You have learned to channel your vital force into your attacks. You may use an action to perform a <strong>Shadow Strike</strong>: roll your current <strong>Might</strong> die and lose an amount of Hit Points equal to <strong>【the number rolled on your Might die x 5】</strong>. If this didn't reduce your Hit Points to 0, you may perform a <strong>free attack</strong> with a weapon you have equipped: if this attack hits one or more targets, it deals extra damage equal to <strong>【The number rolled on your Might die x 2】</strong>. However, all damage dealt by this attack becomes <strong>dark</strong> and its damage type cannot be changed.</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -955,9 +938,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "S01TD1lW8JUnapHh",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/flood_of_darkness.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -969,6 +950,7 @@
           "name": "Shadow Strike",
           "on_activate_effect_ref": "ss_root",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -978,8 +960,7 @@
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.S01TD1lW8JUnapHh"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1004,7 +985,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1784121807189,
+            "createdTime": 1784211915212,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1116,7 +1097,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Convert <strong>25%</strong> of <strong>Current HP </strong>into <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Shield</a></p><p>At the end of this round, Consume any remaing <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Shield</a>&nbsp;to deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\">Dark</a>&nbsp;damage to All Enemy equal to<strong> 【The amount of </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a><strong>&nbsp;consumed】</strong></p>",
-          "details_roller": "Show",
           "duration": "1 Round",
           "effect_table": {
             "0": {
@@ -1147,9 +1127,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "slPJ2kAvobcND9QL",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/shadow_wall.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -1171,8 +1149,7 @@
           "skill_target": "Self",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.slPJ2kAvobcND9QL"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1239,13 +1216,10 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Consume <strong>25%</strong> <strong>Current HP </strong>to summon <strong>Living Shadow</strong></p><p><strong>Living Shadow </strong>always acts after <strong>Geist </strong>and mimic his 【⚔️Attack】</p><section id=\"secret-a1jVQV8Iu62apb9g\" class=\"secret\"><p><em>(If Geist is afflicted with any debuff at the time of summon, the debuff is moved to the living shadow instead)</em></p></section>",
-          "details_roller": "Show",
           "duration": "Scene",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "tkplYk5nVtf3nu66",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/living_shadow.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -1267,8 +1241,7 @@
           "skill_target": "Self",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.tkplYk5nVtf3nu66"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1312,7 +1285,6 @@
           "damage_bonus": "30",
           "defense_target_type": "mdef",
           "description": "<p>On hit, <strong>Equalized </strong>the debuff between you and the target</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -1338,9 +1310,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "TNYXBbOxhHCXZZ5S",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/souleater.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -1371,8 +1341,7 @@
           "skill_target": "One Creature",
           "skill_type": "Attack",
           "type_damage": "Dark",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.TNYXBbOxhHCXZZ5S"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1416,7 +1385,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>At the beginning of his turn, <strong>Geist </strong>gain <strong>1 Zero Power </strong>for each <strong>debuff inflicted on his soul</strong>. (<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>counts as 1)</p>",
-          "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -1428,9 +1396,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "vu1WOzGmFq5DxXNY",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/MagicResistanceMasteryR.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -1459,8 +1425,7 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.vu1WOzGmFq5DxXNY"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1504,13 +1469,10 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Trigger</a>&nbsp;When <strong>Geist </strong>is reduce to <strong>0 HP</strong></p></li></ul><p><strong>Geist </strong>sacrifice part of his <strong>soul</strong> to<strong> </strong>recovers <strong>HP</strong> and<strong> MP</strong></p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "xc1wLkLVukf7ouTD",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/the_blackest_night.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -1534,8 +1496,7 @@
           "type_damage": "",
           "undying_restore_decay": "0.7",
           "undying_zp_cost": "6",
-          "use_optional_params": false,
-          "uuid": "Actor.UYAabJiUZJ1uKers.Item.xc1wLkLVukf7ouTD"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,

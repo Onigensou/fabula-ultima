@@ -322,7 +322,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "SUYqRKHBGXUhiOL1"
       },
@@ -550,7 +550,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "IXjVrp7Lp60nMmAR"
       },
@@ -1214,7 +1214,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "UUWalUbZ5HIZyRnQ"
       },
@@ -1328,7 +1328,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "mw4wizzYTBtqsW8s"
       },
@@ -1371,7 +1371,6 @@
               "target_ref": "trigger_subject"
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13039.gif",
           "isCheck": false,
           "name": "Poisoned Dagger (gear skill)",
           "on_activate_effect_ref": "",
