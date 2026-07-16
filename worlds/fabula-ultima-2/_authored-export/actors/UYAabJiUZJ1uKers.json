@@ -280,7 +280,15 @@
           "description": "<p>On <strong>hit, </strong>inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a></span>&nbsp;to the target</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Bane",
+              "effect_kind": "apply_ae",
+              "effect_label": "darkbane_apply",
+              "target_ref": "hit_action_targets"
+            }
+          },
           "heroic_requirement": "",
           "id": "bUu8h4C4kis0z3QL",
           "ignore_hr": false,
@@ -296,7 +304,16 @@
           "name": "Dark Bane",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TRIGGER_IS_SELF == 1",
+              "reaction_effect_ref": "darkbane_apply",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Dark Bane",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
           "skill_animation_default": "",
@@ -449,7 +466,15 @@
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Multi</a>&nbsp;<strong>3</strong></p></li></ul><p>Deal heavy <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\">Dark</a>&nbsp;damage to three target, On <strong>hit, </strong>inflicts a <strong>Random Basic Debuff </strong>to the target</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_name_pool": "Slow,Dazed,Weak,Shaken,Enraged,Poisoned",
+              "effect_kind": "apply_ae",
+              "effect_label": "torcleaver_debuff",
+              "target_ref": "hit_action_targets"
+            }
+          },
           "heroic_requirement": "",
           "id": "jFDqULDfaJIyCqp0",
           "ignore_hr": false,
@@ -465,7 +490,16 @@
           "name": "Torcleaver",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TRIGGER_IS_SELF == 1",
+              "reaction_effect_ref": "torcleaver_debuff",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Torcleaver",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
           "skill_animation_default": "",
@@ -474,7 +508,7 @@
           "skill_range": "Range",
           "skill_target": "Up to three creature",
           "skill_type": "Attack",
-          "type_damage": "Physical",
+          "type_damage": "Dark",
           "use_optional_params": false,
           "uuid": "Actor.UYAabJiUZJ1uKers.Item.jFDqULDfaJIyCqp0"
         },
@@ -495,6 +529,111 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "L49zqA06yGwyf5ga",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1784209103067,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Shadowbringers combo — performs <strong>Shadow Strike</strong> after each of Geist's attacks completes (hit or miss), up to 【3】 total, stopping before HP would fall to 60 or below.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "L49zqA06yGwyf5ga",
+              "originalParentId": "kFPcc3xDPvPXIGum",
+              "originalUuid": "Actor.UYAabJiUZJ1uKers.Item.kFPcc3xDPvPXIGum.ActiveEffect.L49zqA06yGwyf5ga"
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "shadowbringers",
+              "charges": 1,
+              "chargesMax": 3,
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "charge_ae_name": "Shadowbringers",
+                    "charge_amount": "1",
+                    "charge_operation": "add",
+                    "effect_kind": "adjust_charges",
+                    "effect_label": "sb_count",
+                    "target_ref": "self"
+                  },
+                  "1": {
+                    "action_ref": "Shadow Strike",
+                    "effect_kind": "free_action",
+                    "effect_label": "sb_next"
+                  },
+                  "2": {
+                    "chain_steps": "sb_count,sb_next",
+                    "effect_kind": "chain",
+                    "effect_label": "sb_repeat"
+                  },
+                  "3": {
+                    "count": "all",
+                    "effect_kind": "remove_tagged_ae",
+                    "effect_label": "sb_cleanup",
+                    "filter_tag": "shadowbringers",
+                    "target_ref": "self"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "AE_CHARGES_SHADOWBRINGERS < 3 && CUR_HP > 60",
+                    "reaction_effect_ref": "sb_repeat",
+                    "reaction_passive_mode": "on",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_completes_attack"
+                  },
+                  "1": {
+                    "reaction_effect_ref": "sb_cleanup",
+                    "reaction_passive_mode": "on",
+                    "reaction_source": "",
+                    "reaction_trigger": "round_end"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/shadowbringer.png",
+          "name": "Shadowbringers",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-shadowbringers"
+          ],
+          "system": {
+            "tags": [
+              "shadowbringers"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -509,20 +648,42 @@
       },
       "sort": 0,
       "system": {
+        "container": null,
         "props": {
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_script": "",
-          "check_bonus": "0",
+          "availability_formula": "CUR_HP > 60",
+          "availability_reason": "Requires more than 60 HP",
+          "check_bonus": "",
           "class": "NPC",
           "cost": "30 MP",
           "damage_bonus": "",
-          "defense_target_type": "def",
-          "description": "<p>Unleash the full force of darkness, Perform <strong>Shadow Strike </strong>until <strong>HP </strong>falls to <strong>1</strong> or up to <strong>3 times.</strong></p>",
+          "defense_target_type": "mdef",
+          "description": "<p><strong>Shadowbringers.</strong> Geist performs <strong>Shadow Strike</strong> up to <strong>【3】</strong> times in a row — each one rolls its own d12, empowers the chosen attack with <strong>+【twice the roll】</strong> Dark damage and costs <strong>【five times the roll】 HP</strong>. The chain continues hit or miss, and ends early if Geist's HP would fall to 60 or below.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "1",
+              "ae_template_ref": "Shadowbringers",
+              "effect_kind": "apply_ae",
+              "effect_label": "sb_mark",
+              "target_ref": "self"
+            },
+            "1": {
+              "action_ref": "Shadow Strike",
+              "effect_kind": "free_action",
+              "effect_label": "sb_strike"
+            },
+            "2": {
+              "chain_steps": "sb_mark,sb_strike",
+              "effect_kind": "chain",
+              "effect_label": "sb_root"
+            }
+          },
           "heroic_requirement": "",
           "id": "kFPcc3xDPvPXIGum",
           "ignore_hr": false,
@@ -536,15 +697,15 @@
           "level": "1",
           "max_level": "1",
           "name": "Shadowbringers",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "sb_root",
           "optional_params": {},
           "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
-          "skill_range": "Any",
+          "skill_range": "Range",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
@@ -595,7 +756,15 @@
           "description": "<p><strong>Geist</strong> deals <strong>1%</strong> <strong>bonus damage </strong>for each percentage of his missing HP</p>",
           "details_roller": "Show",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "damage_amount": "floor(RAW_DAMAGE * ((MAX_HP - CUR_HP) / MAX_HP))",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "blood_weapon_bonus"
+            }
+          },
           "heroic_requirement": "",
           "id": "LgcM4WQ3tsbvRMkG",
           "ignore_hr": false,
@@ -611,7 +780,14 @@
           "name": "Blood Weapon",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "blood_weapon_bonus",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -641,6 +817,78 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "7LnhxF8zm9Dafcn6",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1784142907366,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Your next <strong>Attack</strong> deals extra <strong>Dark</strong> damage equal to <strong>【twice this counter】</strong> <em>(the Might die rolled × 2)</em>, and its damage becomes <strong>Dark</strong>.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "7LnhxF8zm9Dafcn6",
+              "originalParentId": "S01TD1lW8JUnapHh",
+              "originalUuid": "Actor.UYAabJiUZJ1uKers.Item.S01TD1lW8JUnapHh.ActiveEffect.7LnhxF8zm9Dafcn6"
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "shadow_strike",
+              "charges": 1,
+              "chargesMax": 12,
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "count": "all",
+                    "effect_kind": "remove_tagged_ae",
+                    "effect_label": "ss_cleanup",
+                    "filter_tag": "shadow_strike",
+                    "target_ref": "self"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "ss_cleanup",
+                    "reaction_passive_mode": "on",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_completes_attack"
+                  }
+                }
+              }
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/flood_of_darkness.png",
+          "name": "Shadow Strike",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-shadow-strike"
+          ],
+          "system": {
+            "tags": [
+              "shadow_strike"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -660,6 +908,8 @@
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_script": "",
+          "availability_formula": "CUR_HP > 60",
+          "availability_reason": "Requires more than 60 HP",
           "check_bonus": "0",
           "class": "Darkblade",
           "cost": "X HP",
@@ -668,7 +918,42 @@
           "description": "<p>You have learned to channel your vital force into your attacks. You may use an action to perform a <strong>Shadow Strike</strong>: roll your current <strong>Might</strong> die and lose an amount of Hit Points equal to <strong>【the number rolled on your Might die x 5】</strong>. If this didn't reduce your Hit Points to 0, you may perform a <strong>free attack</strong> with a weapon you have equipped: if this attack hits one or more targets, it deals extra damage equal to <strong>【The number rolled on your Might die x 2】</strong>. However, all damage dealt by this attack becomes <strong>dark</strong> and its damage type cannot be changed.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "dice_count": "1",
+              "dice_faces": "12",
+              "effect_kind": "roll_dice",
+              "effect_label": "ss_roll",
+              "prompt_var": "mig_die"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "VAR_MIG_DIE",
+              "ae_template_ref": "Shadow Strike",
+              "effect_kind": "apply_ae",
+              "effect_label": "ss_store",
+              "target_ref": "self"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "ss_hpcost",
+              "grant_amount": "0 - (AE_CHARGES_SHADOW_STRIKE * 5)",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            },
+            "3": {
+              "action_ref": "Attack",
+              "damage_bonus_formula": "2 * AE_CHARGES_SHADOW_STRIKE",
+              "effect_kind": "free_action",
+              "effect_label": "ss_freeattack",
+              "element_override": "dark"
+            },
+            "4": {
+              "chain_steps": "ss_roll,ss_store,ss_hpcost,ss_freeattack",
+              "effect_kind": "chain",
+              "effect_label": "ss_root"
+            }
+          },
           "heroic_requirement": "",
           "id": "S01TD1lW8JUnapHh",
           "ignore_hr": false,
@@ -682,9 +967,8 @@
           "level": "1",
           "max_level": "1",
           "name": "Shadow Strike",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "ss_root",
           "optional_params": {},
-          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -714,6 +998,99 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "17aiJKC3JbwPtNPI",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1784121807189,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "At the end of this round, remaining Shield is consumed to deal Dark damage to all enemies.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "17aiJKC3JbwPtNPI",
+              "originalParentId": "slPJ2kAvobcND9QL",
+              "originalUuid": "Actor.UYAabJiUZJ1uKers.Item.slPJ2kAvobcND9QL.ActiveEffect.17aiJKC3JbwPtNPI"
+            },
+            "fabula-ultima-companion": {
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "candidate_source": "combat",
+                    "category": "enemy",
+                    "effect_kind": "targeting",
+                    "effect_label": "sw_targets",
+                    "exclude_self": true,
+                    "mode": "all"
+                  },
+                  "1": {
+                    "damage_amount": "CUR_SHIELD",
+                    "damage_cause": "damage",
+                    "damage_element": "Dark",
+                    "effect_kind": "deal_damage",
+                    "effect_label": "sw_aoe",
+                    "target_ref": "sw_targets"
+                  },
+                  "2": {
+                    "effect_kind": "grant",
+                    "effect_label": "sw_drain",
+                    "grant_amount": "0 - CUR_SHIELD",
+                    "grant_resource": "shield",
+                    "target_ref": "self"
+                  },
+                  "3": {
+                    "chain_steps": "sw_targets,sw_aoe,sw_drain",
+                    "effect_kind": "chain",
+                    "effect_label": "sw_detonate"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "consume_self": true,
+                    "reaction_effect_ref": "sw_detonate",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "",
+                    "reaction_trigger": "round_end"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/shadow_wall.png",
+          "name": "Shadow Wall",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -741,7 +1118,34 @@
           "description": "<p>Convert <strong>25%</strong> of <strong>Current HP </strong>into <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Shield</a></p><p>At the end of this round, Consume any remaing <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Shield</a>&nbsp;to deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\">Dark</a>&nbsp;damage to All Enemy equal to<strong> 【The amount of </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a><strong>&nbsp;consumed】</strong></p>",
           "details_roller": "Show",
           "duration": "1 Round",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "sw_gain_shield",
+              "grant_amount": "floor(CUR_HP * 0.25)",
+              "grant_resource": "shield",
+              "target_ref": "self"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "sw_hp_cost",
+              "grant_amount": "0 - floor(CUR_HP * 0.25)",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Shadow Wall",
+              "effect_kind": "apply_ae",
+              "effect_label": "sw_mark",
+              "target_ref": "self"
+            },
+            "3": {
+              "chain_steps": "sw_gain_shield,sw_hp_cost,sw_mark",
+              "effect_kind": "chain",
+              "effect_label": "sw_root"
+            }
+          },
           "heroic_requirement": "",
           "id": "slPJ2kAvobcND9QL",
           "ignore_hr": false,
@@ -755,7 +1159,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Shadow Wall",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "sw_root",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -910,7 +1314,29 @@
           "description": "<p>On hit, <strong>Equalized </strong>the debuff between you and the target</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "effect_kind": "transfer_ae",
+              "effect_label": "soul_share_to_target",
+              "filter_tag": "debuff",
+              "from_ref": "self",
+              "keep_source": true,
+              "target_ref": "hit_action_targets"
+            },
+            "1": {
+              "effect_kind": "transfer_ae",
+              "effect_label": "soul_share_to_self",
+              "filter_tag": "debuff",
+              "from_ref": "hit_action_targets",
+              "keep_source": true,
+              "target_ref": "self"
+            },
+            "2": {
+              "chain_steps": "soul_share_to_target,soul_share_to_self",
+              "effect_kind": "chain",
+              "effect_label": "soul_share"
+            }
+          },
           "heroic_requirement": "",
           "id": "TNYXBbOxhHCXZZ5S",
           "ignore_hr": false,
@@ -926,7 +1352,16 @@
           "name": "Souleater",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TRIGGER_IS_SELF == 1",
+              "reaction_effect_ref": "soul_share",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Souleater",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
@@ -983,7 +1418,15 @@
           "description": "<p>At the beginning of his turn, <strong>Geist </strong>gain <strong>1 Zero Power </strong>for each <strong>debuff inflicted on his soul</strong>. (<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>counts as 1)</p>",
           "details_roller": "Show",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "adversity_gain_zp",
+              "grant_amount": "STATUS_COUNT + HAS_STATUS_CRISIS",
+              "grant_resource": "zero_power",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "id": "vu1WOzGmFq5DxXNY",
           "ignore_hr": false,
@@ -999,7 +1442,14 @@
           "name": "Zero Trigger: Adversity",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "adversity_gain_zp",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -1299,7 +1749,74 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "action_pattern_table": {},
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "3",
+          "action_pattern_name": "Shadowbringers",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "3",
+          "action_pattern_name": "Shadow Wall",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "1",
+          "action_pattern_name": "Shadow Strike",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "3": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Torcleaver",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "4": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "2",
+          "action_pattern_name": "Souleater",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "5": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "2",
+          "action_pattern_name": "Dark Bane",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
       "activation": "1",
       "affinity_1": "NA",
       "affinity_2": "NA",

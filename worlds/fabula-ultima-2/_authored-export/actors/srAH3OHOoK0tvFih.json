@@ -1753,6 +1753,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
+              "condition_formula": "HIT_COUNT > 0",
               "reaction_action_intent": "",
               "reaction_effect_ref": "mor_recover",
               "reaction_passive_mode": "force",

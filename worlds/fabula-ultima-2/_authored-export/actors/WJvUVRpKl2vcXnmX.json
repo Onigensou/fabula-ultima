@@ -950,7 +950,7 @@
               "reaction_trigger": "creature_deals_damage"
             },
             "2": {
-              "condition_formula": "AE_COUNT_SCYTHE_LOCK == 0",
+              "condition_formula": "AE_COUNT_SCYTHE_LOCK == 0 && HIT_COUNT > 0",
               "reaction_effect_ref": "scythe_chain2",
               "reaction_passive_mode": "on",
               "reaction_source": "self",
