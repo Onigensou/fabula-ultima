@@ -7912,6 +7912,11 @@ async function applyTransferAeEffect(row, ctx) {
   // two keep_source copies, self→target and target→self, so both end with the
   // union). Charges/reactionConfig still ride along on the copy.
   const keepSource = row.keep_source === true || String(row.keep_source ?? "").trim().toLowerCase() === "true";
+  // auto_select: MANDATORY transfer — take every match (up to `count`) without
+  // the interactive picker, even on an active cast. For rows where the move is
+  // a rule, not a choice (Living Shadow: any debuff on Geist at summon time is
+  // moved to the shadow). Passive/auto contexts already skip the picker.
+  const autoSelect = row.auto_select === true || String(row.auto_select ?? "").trim().toLowerCase() === "true";
 
   // How many to move: ""/all = every match; N = up to N (multi-select picker).
   const countRaw = String(row.count ?? "").trim().toLowerCase();
@@ -7979,7 +7984,7 @@ async function applyTransferAeEffect(row, ctx) {
     // PRE-SELECTED when the cap covers every match, so the player just confirms);
     // passive/auto → take all, or the first maxCount.
     let effs = matches;
-    if (useFilter && !ctx.isPassive) {
+    if (useFilter && !ctx.isPassive && !autoSelect) {
       const picked = await pickFromList({
         title: String(row.menu_title ?? "Transfer effects"),
         subtitle: row.menu_subtitle ? String(row.menu_subtitle) : `${src.name} → ${dest.name}`,
@@ -8124,6 +8129,40 @@ async function applySummonEffect(row, ctx) {
   // faces. Opt out with "formation" to use the old top-quarter battle slot.
   const placeAtCasterFront = String(row.summon_at ?? "").trim().toLowerCase() !== "formation";
 
+  // summon_overrides — general per-spawn stat override: a map (object or JSON
+  // string) of system.props keys → FORMULA strings, evaluated ONCE against the
+  // CASTER's resolver at summon time and written onto each spawned copy's
+  // synthetic actor (unlinked token → actor delta; the master actor is never
+  // touched). One field covers any prop (hp, level, def_mod, …) instead of a
+  // per-stat field zoo. First user: Living Shadow spawns with HP equal to the
+  // 25% Current HP its summoner is about to spend —
+  //   summon_overrides: { current_hp: "floor(CUR_HP * 0.25)", max_hp: "floor(CUR_HP * 0.25)" }
+  // (order the summon row BEFORE the cost row so CUR_HP is the pre-cost value).
+  let overrides = null;
+  const ovRaw = row.summon_overrides;
+  if (ovRaw != null && ovRaw !== "") {
+    let ovMap = ovRaw;
+    if (typeof ovRaw === "string") {
+      try { ovMap = JSON.parse(ovRaw); } catch {
+        warn(`skill-effects.summon: summon_overrides on "${row.effect_label}" is not valid JSON — ignoring`);
+        ovMap = null;
+      }
+    }
+    if (ovMap && typeof ovMap === "object" && !Array.isArray(ovMap)) {
+      const casterActor = ctx.reactorActor ?? null;
+      const resolver = ctx.resolver ?? (casterActor
+        ? buildSkillResolver({ actor: casterActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? ctx.director?.dCombat?.round ?? 0 })
+        : null);
+      overrides = {};
+      for (const [k, v] of Object.entries(ovMap)) {
+        const key = String(k).trim().replace(/[^\w]/g, ""); // bare props keys only — no path escapes
+        if (!key) continue;
+        overrides[key] = resolver != null ? evaluateFormula(String(v), resolver, 0) : 0;
+      }
+      if (!Object.keys(overrides).length) overrides = null;
+    }
+  }
+
   const director = ctx.director
     ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
     ?? null;
@@ -8235,7 +8274,15 @@ async function applySummonEffect(row, ctx) {
           ...(asPhantasm ? { [`flags.${FLAG_NS}.isPhantasm`]: true } : {}),
         });
       } catch (e) { warn(`skill-effects.summon: tag write failed for ${actor.name}`, e); }
-      applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound, asPhantasm });
+      // summon_overrides → the spawned copy's props (values pre-evaluated above;
+      // stored as strings, matching the props convention).
+      if (overrides && tokenDoc.actor) {
+        const upd = {};
+        for (const [k, v] of Object.entries(overrides)) upd[`system.props.${k}`] = String(v);
+        try { await tokenDoc.actor.update(upd); }
+        catch (e) { warn(`skill-effects.summon: summon_overrides write failed for ${actor.name}`, e); }
+      }
+      applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound, asPhantasm, ...(overrides ? { overrides } : {}) });
       spawnedDocs.push(tokenDoc);
       liveCount++;
     }
