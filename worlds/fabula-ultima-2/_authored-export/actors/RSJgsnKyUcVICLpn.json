@@ -282,7 +282,7 @@
     },
     "detectionModes": [],
     "displayBars": 50,
-    "displayName": 0,
+    "displayName": 50,
     "disposition": -1,
     "flags": {
       "barbrawl": {
@@ -372,6 +372,10 @@
             "subdivisionsOwner": false
           }
         }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
       }
     },
     "height": 1,
@@ -534,9 +538,9 @@
       "damage_receiving_mod_physical": 0,
       "damage_receiving_mod_poison": 0,
       "damage_receiving_mod_range": 0,
-      "def_mod": "+10",
+      "def_mod": "+4",
       "default_facing_direction": "right",
-      "defense": 16,
+      "defense": 10,
       "dex_base": "6",
       "dex_current": 6,
       "enmity": 100,

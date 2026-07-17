@@ -27,7 +27,7 @@
     }
   },
   "folder": "xMVY94FXuACmcFkd",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/DALL%C2%B7E%202024-12-22%2018.08.40%20-%20An%20anime-style%2C%20cel-shaded%20illustration%20of%20a%20cursed%20sword%20with%20a%20dark%2C%20ominous%20aura.%20The%20sword%20should%20have%20a%20sleek%2C%20slightly%20jagged%20design%2C%20with%20a%20dar.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Great%20Sword/Icon-Force_Stealer.webp",
   "name": "Cursed Sword",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -44,6 +44,7 @@
       "beast_ef": "100",
       "category": "Sword",
       "celestial_ef": "100",
+      "check": "Check",
       "check_bonus": "1",
       "construct_ef": "100",
       "damage_bonus": "25",
@@ -62,6 +63,8 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
+      "id": "Y9y95j2PQAwF2K3H",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Great%20Sword/Icon-Force_Stealer.webp",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
@@ -84,6 +87,8 @@
       "name": "Cursed Sword",
       "optional_params": {},
       "plant_ef": "100",
+      "refine_count": "0",
+      "refine_level": "0",
       "reptilian_ef": "100",
       "rolled_atr1": "MIG",
       "rolled_atr2": "MIG",
@@ -93,6 +98,7 @@
       "spirit_ef": "100",
       "type_damage": "Dark",
       "undead_ef": "100",
+      "uuid": "Item.Y9y95j2PQAwF2K3H",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },
