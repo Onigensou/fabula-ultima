@@ -239,14 +239,19 @@ async function think(token, range) {
 // Chain the pipeline for a single token, stopping before AnnounceResult. Returns
 // the ActionReader context (with chosenAction + chosenTargets) or null on any
 // stage failure. Never throws.
-async function runActionReader({ token, combat, combatant }) {
+async function runActionReader({ token, combat, combatant, activationIndex }) {
   try {
     let ctx = ActionReaderCore.createBaseContext();
 
     await resolveActionReaderPerformer(ctx, { token, combat, combatant });
     if (!ctx.performer?.actor) { log("autopilot: ActionReader resolvePerformer produced no actor"); return null; }
 
-    await buildActionReaderContext(ctx);
+    // The `activation` pattern condition reads this override (1-based slot of
+    // the performer's current round). Absent/0 = condition fails closed.
+    const overrides = Number.isFinite(activationIndex) && activationIndex > 0
+      ? { activationIndex: Math.trunc(activationIndex) }
+      : {};
+    await buildActionReaderContext(ctx, { overrides });
     await readActionReaderPatternTable(ctx);
     await evaluateActionReaderConditions(ctx);
     await matchAndPickActionReaderAction(ctx);
@@ -523,6 +528,14 @@ async function decideViaActionReader(director, snap) {
     const combat = director?.combat ?? game.combat ?? null;
     const combatant = combat?.combatants?.find?.((c) => c.tokenId === snap.tokenId) ?? null;
 
+    // Which activation of this combatant's round is this? (1-based.) nextTurn
+    // decrements turnsRemaining AFTER the turn completes, so mid-turn the
+    // current activation is still counted in turnsRemaining.
+    const dc = director?.dCombat?.findByTokenId?.(snap?.tokenId) ?? null;
+    const activationIndex = dc && Number.isFinite(dc.turnsPerRound) && Number.isFinite(dc.turnsRemaining)
+      ? Math.max(1, dc.turnsPerRound - dc.turnsRemaining + 1)
+      : 0;
+
     // Show the pip WHILE the AI deliberates + for a jittered "reading" beat, so
     // the pause overlaps the actual compute rather than adding pure dead time.
     // In a sim both the pip and the jitter follow the run's pace (nil on fast).
@@ -530,7 +543,7 @@ async function decideViaActionReader(director, snap) {
     const pip = (inSim && !SimMode.showPip()) ? { remove() {} } : showThinkingPip(token);
     let ctx = null;
     try {
-      ctx = await runActionReader({ token, combat, combatant });
+      ctx = await runActionReader({ token, combat, combatant, activationIndex });
       await jitterDelay(inSim ? SimMode.thinkRange() : AUTOPILOT_TIMING.decision);
     } finally {
       pip.remove();

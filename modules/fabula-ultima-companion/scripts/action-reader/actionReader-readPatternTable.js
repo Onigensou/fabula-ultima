@@ -79,7 +79,11 @@ const CONDITION_ALIASES = Object.freeze({
 
   random: "random",
   "random %": "random",
-  "random percent": "random"
+  "random percent": "random",
+
+  activation: "activation",
+  "activation no.": "activation",
+  "activation no": "activation"
 });
 
 function getModuleApiContainer(moduleId) {
@@ -124,6 +128,7 @@ function getConditionLabel(conditionKey) {
     case "creature_has_status": return "Creature Has Status";
     case "effect_stacks": return "Effect Stacks";
     case "random": return "Random %";
+    case "activation": return "Activation No.";
     default: return AR.titleCase(conditionKey.replace(/_/g, " "));
   }
 }

@@ -413,6 +413,40 @@ function evaluateEffectStacks(context, row) {
   };
 }
 
+/*
+ * Performer's activation slot within the current round vs an inclusive v1–v2
+ * range. The index (1-based: 1 = first activation this round) is supplied by
+ * the Battle Director through the autopilot as an override; outside a BD
+ * battle it is unknown (0) and the condition fails closed, letting `always`
+ * fallback rows act instead.
+ */
+function evaluateActivationSlot(context, row) {
+  const label = "Activation No.";
+  const activationIndex = AR.toInteger(context?.actorData?.overrides?.activationIndex, 0);
+  const range = normalizeRange(row?.value1, row?.value2);
+
+  if (activationIndex <= 0) {
+    return {
+      passed: false,
+      conditionKey: "activation",
+      conditionLabel: label,
+      reason: "No activation index available (not running inside a Battle Director turn).",
+      details: { activationIndex, min: range.min, max: range.max }
+    };
+  }
+
+  const passed = isValueInInclusiveRange(activationIndex, range.min, range.max);
+  return {
+    passed,
+    conditionKey: "activation",
+    conditionLabel: label,
+    reason: passed
+      ? `Activation ${activationIndex} is within ${range.min}–${range.max}.`
+      : `Activation ${activationIndex} is outside ${range.min}–${range.max}.`,
+    details: { activationIndex, min: range.min, max: range.max }
+  };
+}
+
 /* Pure random gate: v1 = percent chance (0–100). */
 function evaluateRandomChance(context, row) {
   const chance = AR.clamp(AR.toInteger(row?.value1, 0), 0, 100);
@@ -529,6 +563,9 @@ function evaluateOneCondition(context, row, options = {}) {
 
     case "random":
       return evaluateRandomChance(context, row);
+
+    case "activation":
+      return evaluateActivationSlot(context, row);
 
     default:
       return {
