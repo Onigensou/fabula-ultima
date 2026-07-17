@@ -10,8 +10,8 @@
       "Test Target Ally",
       "Zarg"
     ],
-    "enemyTarget": "Salamander",
-    "count": 58,
+    "enemyTarget": "Test Target Enemy",
+    "count": 56,
     "engineVersion": "1.0.423",
     "override": {
       "SL": 5,
@@ -153,10 +153,10 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 0,
+          "damage": 35,
           "grant": null,
           "grantRes": null,
-          "hit": false,
+          "hit": true,
           "resource": "hp"
         }
       ],
@@ -217,46 +217,15 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Avatar of Vengeance: Dismiss": {
+    "Hina / Bind and Summon": {
       "caster": "Hina",
-      "element": "fire",
-      "hasDamage": true,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "RS",
-          "damage": 16,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": null,
-      "skill": "Avatar of Vengeance: Dismiss",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Hina / Avatar of Vengeance: Pulse": {
-      "caster": "Hina",
-      "element": null,
+      "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
-      "skill": "Avatar of Vengeance: Pulse",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Hina / Bind and Summon": {
-      "caster": "Hina",
-      "offensive": true,
-      "ok": false,
-      "reason": "timeout",
       "skill": "Bind and Summon",
       "skillType": "Active",
       "targets": 1
@@ -406,7 +375,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 17,
+          "damage": 22,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -432,7 +401,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 32,
+          "damage": 42,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -458,7 +427,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 32,
+          "damage": 42,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -506,7 +475,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 24,
+          "damage": 32,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -558,7 +527,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 19,
+          "damage": 25,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -784,8 +753,8 @@
       "ok": true,
       "perTarget": [
         {
-          "affinity": "RS",
-          "damage": 10,
+          "affinity": "NE",
+          "damage": 20,
           "grant": null,
           "grantRes": null,
           "hit": true,
