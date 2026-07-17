@@ -167,6 +167,37 @@ function isCandidateActionBlocked(candidate, blockedLabels) {
   return blockedLabels.has(candidateActionLabel(candidate));
 }
 
+/* -------------------------------------------------------------------------- */
+/* Self-cost HP reserve: don't pick a move that could KO the performer.        */
+/* -------------------------------------------------------------------------- */
+
+// The performer's live current HP (resources snapshot from BuildContext, with a
+// fallback to the raw actor prop for standalone runs). null when unknowable.
+function getPerformerCurrentHp(context) {
+  const snap = context?.actorData?.resources?.hp;
+  if (snap && Number.isFinite(AR.toNumber(snap.current, NaN))) {
+    return AR.toNumber(snap.current, 0);
+  }
+  const actor = context?.performer?.actor ?? context?.actorData?.actor ?? null;
+  const raw = actor?.system?.props?.[AR.keys.hpCurrent];
+  const n = AR.toNumber(raw, NaN);
+  return Number.isFinite(n) ? n : null;
+}
+
+// A row's optional `action_pattern_hp_reserve` — the minimum current HP the
+// performer must have to pick it (a self-cost safety margin for HP-paying moves
+// like Geist's Shadow Strike / Shadowbringers). Blocked when currentHp < reserve.
+// Blank/0 reserve, or unknowable HP, never blocks (fail-open, legacy behavior).
+function candidateHpReserve(candidate) {
+  return AR.toInteger(candidate?.row?.hpReserve, 0);
+}
+
+function isCandidateHpReserved(candidate, currentHp) {
+  if (currentHp == null) return false;
+  const reserve = candidateHpReserve(candidate);
+  return reserve > 0 && currentHp < reserve;
+}
+
 /*
  * Returns { feasible, reasons[] }. Checks:
  *   - resource cost (MP/IP) vs the performer's current pools
@@ -576,9 +607,36 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
       });
     }
 
+    // --- Self-cost HP reserve hard filter (#6) -------------------------- //
+    // Runs BEFORE feasibility (like #5) so an HP-paying move that could KO the
+    // performer (Geist's Shadow Strike / Shadowbringers) can never be picked —
+    // and, critically, is never resurrected by the feasibility graceful-fallback
+    // (an HP move with no MP/IP cost reads as "free"). If this empties a slot,
+    // the lower-priority `always` fallback rows remain and the actor still acts.
+    const currentHp = getPerformerCurrentHp(context);
+    const affordableCandidates = [];
+    let hpReservedCount = 0;
+    for (const candidate of legalCandidates) {
+      if (isCandidateHpReserved(candidate, currentHp)) {
+        candidate.hpReserved = true;
+        candidate.hpReserveValue = candidateHpReserve(candidate);
+        hpReservedCount++;
+      } else {
+        candidate.hpReserved = false;
+        affordableCandidates.push(candidate);
+      }
+    }
+    if (hpReservedCount) {
+      ARD.addWarning(context, stage, "Some matched actions were withheld — HP too low to pay their self-cost.", {
+        currentHp,
+        hpReservedCandidates: hpReservedCount,
+        affordableCandidates: affordableCandidates.length
+      });
+    }
+
     // --- Feasibility filter (#1) ---------------------------------------- //
     const feasibility = new Map();
-    const feasibleCandidates = legalCandidates.filter(candidate => {
+    const feasibleCandidates = affordableCandidates.filter(candidate => {
       const result = assessCandidateFeasibility(candidate, context);
       feasibility.set(candidate, result);
       candidate.feasible = result.feasible;
@@ -589,16 +647,17 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
     let workingCandidates = feasibleCandidates;
     let feasibilityFallbackUsed = false;
 
-    if (!workingCandidates.length && legalCandidates.length) {
+    if (!workingCandidates.length && affordableCandidates.length) {
       // Graceful fallback: prefer no-cost actions so the actor still does
       // *something* (e.g. a basic attack) instead of erroring out. NOTE: draws
-      // from legalCandidates ONLY — never resurrect a debuff-blocked action.
-      const freeCandidates = legalCandidates.filter(isCandidateFree);
-      workingCandidates = freeCandidates.length ? freeCandidates : legalCandidates;
+      // from affordableCandidates ONLY — never resurrect a debuff-blocked (#5)
+      // or HP-reserved (#6) action.
+      const freeCandidates = affordableCandidates.filter(isCandidateFree);
+      workingCandidates = freeCandidates.length ? freeCandidates : affordableCandidates;
       feasibilityFallbackUsed = true;
 
       ARD.addWarning(context, stage, "No fully-feasible action; using graceful fallback.", {
-        legalCandidates: legalCandidates.length,
+        affordableCandidates: affordableCandidates.length,
         freeFallbackCount: freeCandidates.length
       });
     }

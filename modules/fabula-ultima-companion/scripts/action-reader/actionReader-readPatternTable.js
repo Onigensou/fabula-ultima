@@ -157,6 +157,9 @@ function normalizePatternRow(rawRow = {}) {
   const value2 = AR.toInteger(value2Raw, 0);
   const priority = AR.toInteger(priorityRaw, DEFAULT_PRIORITY);
 
+  const hpReserveRaw = data?.[AR.keys.actionPatternHpReserveKey] ?? "";
+  const hpReserve = AR.toInteger(hpReserveRaw, 0);
+
   let isUsable = true;
   let skipReason = "";
 
@@ -194,6 +197,9 @@ function normalizePatternRow(rawRow = {}) {
 
     priorityRaw,
     priority,
+
+    hpReserveRaw,
+    hpReserve,
 
     raw: AR.duplicateSafe(data)
   };

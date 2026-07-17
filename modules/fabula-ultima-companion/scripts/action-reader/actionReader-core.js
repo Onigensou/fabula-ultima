@@ -85,7 +85,11 @@ export const ACTION_READER_KEYS = Object.freeze({
   // New optional pattern-row columns (blank => legacy behavior)
   actionPatternWeightKey: "action_pattern_weight",
   actionPatternCooldownKey: "action_pattern_cooldown",
-  actionPatternTargetFocusKey: "action_pattern_target_focus"
+  actionPatternTargetFocusKey: "action_pattern_target_focus",
+  // Min current-HP required to pick this row — a self-cost safety reserve so a
+  // move that pays HP (Geist's Shadow Strike / Shadowbringers) is never picked
+  // when it could KO the performer. Blank / 0 => no HP guard (legacy).
+  actionPatternHpReserveKey: "action_pattern_hp_reserve"
 });
 
 /* Foundry module id (used for effect-charge stack flags + combatant memory). */
