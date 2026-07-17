@@ -833,6 +833,32 @@ Hooks.on("canvasTearDown", () => {
 // ── public API ────────────────────────────────────────────────────────────────
 
 /**
+ * The db-resolved party roster — actor ids from the game DB's member_id_1..4
+ * (the same source the Battle Prompt resolves at PREP). This is what "party
+ * member" means for the HUD: mid-battle resume paths (undying revive, WF
+ * in-place reinforce) rebuild entries from dCombat's party SIDE, which also
+ * carries summons and scene allies — filter those entries against this set so
+ * the resource HUD only ever shows the actual party. Returns an empty Set on
+ * DB failure; callers should treat empty as "no filter" rather than blank
+ * the HUD.
+ */
+export async function dbPartyActorIds() {
+  try {
+    const result = await window.FUCompanion?.api?.getCurrentGameDb?.();
+    const props = result?.db?.system?.props ?? {};
+    const ids = new Set();
+    for (let i = 1; i <= 4; i++) {
+      const raw = String(props[`member_id_${i}`] ?? "").trim();
+      if (raw) ids.add(raw.replace(/^Actor\./i, ""));
+    }
+    return ids;
+  } catch (e) {
+    warn("dbPartyActorIds: DB resolve failed — returning empty set", e);
+    return new Set();
+  }
+}
+
+/**
  * Build the player HUD on all clients and write reload-gate scene flags.
  * Call from the GM after entrance animations complete; fire-and-forget is safe.
  *

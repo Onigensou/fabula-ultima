@@ -30,7 +30,7 @@ import { preloadDirectorCutins } from "./director-cutin.js";
 import { playSfx } from "./director-sfx.js";
 import { playBattleStartBanner } from "./director-round-banner.js";
 import { showBattleLoader, hideBattleLoader } from "./director-battle-loader.js";
-import { buildDirectorHud } from "./director-player-hud.js";
+import { buildDirectorHud, dbPartyActorIds } from "./director-player-hud.js";
 import { extractAnimationUrlsFromActors } from "./director-animation.js";
 
 const MODULE_ID = "fabula-ultima-companion";
@@ -970,9 +970,16 @@ async function runInPlaceReinforceInit(payload, battleScene) {
   // 3e. Rebuild the player resource HUD. BATTLE_ENDING.onEnter destroyed it
   // before this re-entry; the full PREP rebuilds it at step 10.5, but the
   // in-place path skips that, so rebuild here. Fire-and-forget (mirrors PREP).
+  // Entries are filtered to the DB-resolved party roster (member_id_1..4):
+  // the adopted friendly tokens also include summons / scene allies, which
+  // must not get resource HUDs.
   try {
+    const partyIds = await dbPartyActorIds();
     buildDirectorHud(
-      partyTokens.map((t) => ({ actor: t.actor, token: t })).filter((e) => e.actor),
+      partyTokens
+        .filter((t) => partyIds.size === 0 || partyIds.has(t.actor?.id))
+        .map((t) => ({ actor: t.actor, token: t }))
+        .filter((e) => e.actor),
       battleScene
     ).catch((e) => warn("in-place reinforce: buildDirectorHud threw", e));
   } catch (e) { warn("in-place reinforce: buildDirectorHud dispatch threw", e); }

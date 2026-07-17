@@ -46,6 +46,7 @@
 
 import { log, warn } from "../../logger.js";
 import { stopBattleBgm, playBattleBgm } from "../../director-vfx.js";
+import { setCrestsHiddenLocal } from "../../domination-crest.js";
 
 const MODULE_ID   = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_BLACKEST_NIGHT_PLAY";
@@ -255,6 +256,11 @@ async function playLocal(payload, gmExtras) {
   let tokenHide = null;
   let koWorld = null;    // world-anchored PIXI KO sprite (camera-tracking)
 
+  // Dominance crest pips vanish for the duration — a "defeated" boss with a
+  // visible super-armor gauge undercuts the fake-out. Local per client (this
+  // timeline runs on every client); restored in the finally.
+  try { setCrestsHiddenLocal(true); } catch (_) {}
+
   // Warm the overlay art while the fake victory plays (fire-and-forget).
   preloadImages([ASSETS.ko, ASSETS.revive, cutinUrl]);
 
@@ -381,6 +387,7 @@ async function playLocal(payload, gmExtras) {
     try { hideDim(200); } catch (_) {}
     try { hideVignette(200); } catch (_) {}
     try { document.getElementById(CUTIN_ID)?.remove(); } catch (_) {}
+    try { setCrestsHiddenLocal(false); } catch (_) {}
     unlock();
   }
 }

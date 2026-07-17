@@ -290,17 +290,40 @@ export const blackestNightUndyingRule = {
     director.ctx.endOfRound  = false;
 
     // BATTLE_ENDING.onEnter destroyed the player HUD — rebuild it (mirrors
-    // the in-place reinforce init). Fire-and-forget, like PREP.
+    // the in-place reinforce init). Fire-and-forget, like PREP. Entries are
+    // filtered to the DB-resolved party roster: the party SIDE also carries
+    // summons and scene allies, which must not get resource HUDs.
     try {
       const scene = dc.scene ?? canvas?.scene ?? null;
+      const { buildDirectorHud, dbPartyActorIds } = await import("../../director-player-hud.js");
+      const partyIds = await dbPartyActorIds();
       const entries = dc.combatants
         .filter((c) => c.side === "party")
+        .filter((c) => partyIds.size === 0 || partyIds.has(c.actorDoc?.id))
         .map((c) => ({ actor: c.actorDoc, token: c.tokenDoc }))
         .filter((e) => e.actor && e.token);
-      const { buildDirectorHud } = await import("../../director-player-hud.js");
       buildDirectorHud(entries, scene)
         .catch((e) => warn("[BlackestNight] buildDirectorHud threw", e));
     } catch (e) { warn("[BlackestNight] HUD rebuild dispatch threw", e); }
+
+    // HP-bar reveal — the visual tell that he's back but NOT at full: the
+    // boss bar starts full and drains to the restored cap as gameplay
+    // resumes. Ungated emit (broadcasts itself): this is a deliberate
+    // reveal, not subject to the studied gate.
+    try {
+      const maxHp = Number(restored?.maxHp) || 0;
+      const hp = Number(restored?.hp) || 0;
+      if (maxHp > 0 && geist.tokenUuid) {
+        const { emitNpcHpBarUnchecked } = await import("../../damage-numbers/director-hp-bar.js");
+        emitNpcHpBarUnchecked({
+          tokenUuid: geist.tokenUuid,
+          fromFrac: 1,
+          toFrac: Math.max(0, Math.min(1, hp / maxHp)),
+          fromShield: 0,
+          toShield: 0,
+        });
+      }
+    } catch (e) { warn("[BlackestNight] HP-bar reveal threw", e); }
 
     // Hand the FSM its resume target; states.js routes INTERNAL_DONE here.
     director.ctx.pendingUndying = {
