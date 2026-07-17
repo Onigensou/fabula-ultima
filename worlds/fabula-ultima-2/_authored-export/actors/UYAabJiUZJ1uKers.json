@@ -1195,6 +1195,7 @@
               "originalUuid": "Actor.UYAabJiUZJ1uKers.Item.slPJ2kAvobcND9QL.ActiveEffect.17aiJKC3JbwPtNPI"
             },
             "fabula-ultima-companion": {
+              "directorPermanent": true,
               "reactionConfig": {
                 "effect_table": {
                   "0": {
@@ -1206,7 +1207,7 @@
                     "mode": "all"
                   },
                   "1": {
-                    "damage_amount": "CUR_SHIELD",
+                    "damage_amount": "CASTER_SHIELD",
                     "damage_cause": "damage",
                     "damage_element": "Dark",
                     "effect_kind": "deal_damage",

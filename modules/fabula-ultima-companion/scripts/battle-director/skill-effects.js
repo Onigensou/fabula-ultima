@@ -4817,6 +4817,16 @@ async function dealDamageApply(row, ctx, d) {
   const _casterLevel = Number(
     (ctx.reactorActor ?? ctx.liveAttacker ?? applierActor)?.system?.props?.level ?? 0
   ) || 0;
+  // CASTER_SHIELD — the ACTING creature's live shield buffer, injected so a
+  // caster-scoped shield formula reads the CASTER's remaining shield even though
+  // the per-target resolver below binds `actor` to the VICTIM. `CUR_SHIELD` there
+  // would read the victim's (usually 0) shield — the wrong actor. Powers Geist's
+  // Shadow Wall detonate: "deal Dark to all enemies = the caster's REMAINING
+  // shield at round-end" (evaluated at fire-time, so chipping the shield during
+  // the round lowers the blast). Same `vars`-hook pattern as CASTER_LEVEL.
+  const _casterShield = Number(
+    (ctx.reactorActor ?? ctx.liveAttacker ?? applierActor)?.system?.props?.shield_value ?? 0
+  ) || 0;
   const applied = [];
   for (const token of targetResult.tokens) {
     const actor = token.actor;
@@ -4827,7 +4837,7 @@ async function dealDamageApply(row, ctx, d) {
       payload: ctx.payload,
       skill: ctx.skill,
       round: ctx.dCombat?.round ?? 0,
-      vars: { CASTER_LEVEL: _casterLevel },
+      vars: { CASTER_LEVEL: _casterLevel, CASTER_SHIELD: _casterShield },
     });
     const amount = Math.floor(Number(evaluateFormula(amountFormula, resolver, 0)) || 0);
     if (amount <= 0) {
@@ -5685,7 +5695,7 @@ async function applyApplyAeEffect(row, ctx) {
     // Flame's 22 (10% of 220) onto every Burn it applied, dealing 22 to any victim.
     // SL and other apply-time-stable ids stay resolvable at fire-time via the AE's
     // origin skill (see firePreAcceptedCandidate), so they don't need baking.
-    const REACTION_FORMULA_VOLATILE = /AE_CHARGES_|AE_COUNT_|TARGET_|MAX_HP|MAX_MP|MAX_IP|CUR_HP|CUR_MP|CUR_IP|HP_DEALT|MP_DEALT|SHIELD_DEALT|DAMAGE_DEALT|STATUS_COUNT|HIT_/;
+    const REACTION_FORMULA_VOLATILE = /AE_CHARGES_|AE_COUNT_|TARGET_|MAX_HP|MAX_MP|MAX_IP|CUR_HP|CUR_MP|CUR_IP|CUR_SHIELD|CASTER_SHIELD|HP_DEALT|MP_DEALT|SHIELD_DEALT|DAMAGE_DEALT|STATUS_COUNT|HIT_/;
     const rcfg = data.flags?.[FLAG_NS]?.reactionConfig;
     const rcfgTable = rcfg?.effect_table ?? rcfg?.reaction_effect_table;
     if (rcfgTable && typeof rcfgTable === "object") {
