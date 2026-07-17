@@ -143,40 +143,28 @@
     return list.filter(t => t?.document?.actorId === sourceActorId);
   }
 
+  // The single authoritative client for float. TokenMagic filters persist on the
+  // token document flag and auto-replicate, so exactly ONE writer (the active GM)
+  // must set/clear them; every other client renders from the synced flag.
+  function isFloatAuthority() {
+    const activeGM = game.users?.find(u => u.isGM && u.active);
+    return !!activeGM && game.user === activeGM;
+  }
+
   // ==========================================================================
-  // FLOAT (TokenMagic) — OnSelected approach (same style as Idle Float.js) :contentReference[oaicite:1]{index=1}
+  // FLOAT (TokenMagic) — authoritative targeted apply (persistent, auto-synced flag)
   // ==========================================================================
   const FLOAT_FILTER_ID = "oniIdleFloat";
 
   function hasTokenMagic() {
     return !!globalThis.TokenMagic
-      && typeof TokenMagic.addUpdateFiltersOnSelected === "function"
-      && typeof TokenMagic.deleteFiltersOnSelected === "function";
+      && typeof TokenMagic.addUpdateFilters === "function"
+      && typeof TokenMagic.deleteFilters === "function";
   }
 
-  async function withTempControl(token, fn) {
-    // Hard safety: token may have been deleted between queue and run
-    if (!tokenExists(token)) throw new Error(`Token "${token?.id}" does not exist on canvas`);
-
-    const previously = canvas.tokens.controlled.map(t => t.id);
-    const wasControlled = token.controlled;
-
-    try {
-      canvas.tokens.releaseAll();
-      token.control({ releaseOthers: true });
-
-      // check again after control (very defensive)
-      if (!tokenExists(token)) throw new Error(`Token "${token?.id}" does not exist after control`);
-
-      await fn();
-    } finally {
-      // Restore controls (only if canvas still exists)
-      if (canvas?.tokens) {
-        canvas.tokens.releaseAll();
-        for (const id of previously) canvas.tokens.get(id)?.control({ releaseOthers: false });
-        if (!wasControlled) token.release?.();
-      }
-    }
+  function floatFilterPresent(token) {
+    try { return TokenMagic.hasFilterId?.(token, FLOAT_FILTER_ID) === true; }
+    catch { return false; }
   }
 
   async function applyFloatOnce(token) {
@@ -184,23 +172,33 @@
     const st = getTokenState(token.id);
 
     if (!hasTokenMagic()) {
-      warn("Float requested, but TokenMagic OnSelected APIs are not available.");
+      warn("Float requested, but TokenMagic APIs are not available.");
       return;
     }
 
-    // DENY if already ON or currently applying
-    if (st.floatOn) {
-      dbg("Float apply denied (already ON)", { token: token.name, tokenId: token.id });
+    // Only the authoritative client writes the persistent filter flag; other
+    // clients render float from the replicated flag, so they no-op here.
+    if (!isFloatAuthority()) {
+      st.floatOn = floatFilterPresent(token);
+      dbg("Float apply skipped (not authority; renders from synced flag)", { token: token.name, tokenId: token.id });
       return;
     }
+
     if (st.floatLock) {
       dbg("Float apply denied (LOCKED / in-progress)", { token: token.name, tokenId: token.id });
       return;
     }
 
+    // Idempotent against the source of truth (the flag), not just in-memory state.
+    if (floatFilterPresent(token)) {
+      st.floatOn = true;
+      dbg("Float apply skipped (filter already present)", { token: token.name, tokenId: token.id });
+      return;
+    }
+
     st.floatLock = true;
 
-    // Based on your Idle Float.js params :contentReference[oaicite:2]{index=2}
+    // Params from the original Idle Float.js: a gentle vertical cos oscillation.
     const params = [{
       filterType: "transform",
       filterId: FLOAT_FILTER_ID,
@@ -212,12 +210,10 @@
     }];
 
     try {
-      await withTempControl(token, async () => {
-        await TokenMagic.addUpdateFiltersOnSelected(params);
-      });
-
+      // Targeted apply — no selection/control needed, works headlessly on the GM.
+      await TokenMagic.addUpdateFilters(token, params);
       st.floatOn = true;
-      dbg("Float applied (ONCE)", { token: token.name, tokenId: token.id });
+      dbg("Float applied (authority)", { token: token.name, tokenId: token.id });
     } catch (e) {
       err("Failed to apply Float", e);
     } finally {
@@ -231,40 +227,30 @@
 
     if (!globalThis.TokenMagic) return;
 
-    // DENY if already OFF or currently removing/applying
-    if (!st.floatOn) {
-      dbg("Float remove denied (already OFF)", { token: token.name, tokenId: token.id });
+    if (!isFloatAuthority()) {
+      st.floatOn = floatFilterPresent(token);
+      dbg("Float remove skipped (not authority)", { token: token.name, tokenId: token.id });
       return;
     }
+
     if (st.floatLock) {
       dbg("Float remove denied (LOCKED / in-progress)", { token: token.name, tokenId: token.id });
+      return;
+    }
+
+    // Nothing to remove if the flag isn't there.
+    if (!floatFilterPresent(token)) {
+      st.floatOn = false;
+      dbg("Float remove skipped (no filter present)", { token: token.name, tokenId: token.id });
       return;
     }
 
     st.floatLock = true;
 
     try {
-      // Prefer targeted deleteFilters if available (doesn't rely on selection)
-      if (typeof TokenMagic.deleteFilters === "function") {
-        try {
-          await TokenMagic.deleteFilters(token, FLOAT_FILTER_ID);
-          st.floatOn = false;
-          dbg("Float removed (targeted deleteFilters)", { token: token.name, tokenId: token.id });
-          return;
-        } catch {
-          // fallback to OnSelected
-        }
-      }
-
-      if (typeof TokenMagic.deleteFiltersOnSelected === "function") {
-        await withTempControl(token, async () => {
-          await TokenMagic.deleteFiltersOnSelected();
-        });
-
-        st.floatOn = false;
-        dbg("Float removed (OnSelected)", { token: token.name, tokenId: token.id });
-        return;
-      }
+      await TokenMagic.deleteFilters(token, FLOAT_FILTER_ID);
+      st.floatOn = false;
+      dbg("Float removed (authority)", { token: token.name, tokenId: token.id });
     } catch (e) {
       err("Failed to remove Float", e);
     } finally {
@@ -307,6 +293,9 @@
         const phase = ((g.timeMs + st.phaseOffsetMs) % BOUNCE_PERIOD_MS) / BOUNCE_PERIOD_MS;
         const scaleY = 1 + BOUNCE_AMP * Math.sin(phase * twoPi);
         token.mesh.scale.y = st.baseScaleY * scaleY;
+        // Remember what WE wrote, so refreshBounceToken can tell an animated
+        // frame apart from a genuine Foundry mesh-rebuild reset.
+        st.lastAppliedY = token.mesh.scale.y;
       }
 
       if (!g.active.size) {
@@ -341,7 +330,12 @@
     token.mesh.anchor.set(0.5, 1.0);
     const phaseOffsetMs = Math.floor(Math.random() * BOUNCE_PERIOD_MS);
 
-    g.active.set(token.id, { original, baseScaleY: token.mesh.scale.y, phaseOffsetMs });
+    g.active.set(token.id, {
+      original,
+      baseScaleY: token.mesh.scale.y,
+      lastAppliedY: token.mesh.scale.y,
+      phaseOffsetMs
+    });
     st.bounceOn = true;
 
     ensureBounceTicker();
@@ -377,9 +371,20 @@
     if (!token?.mesh) return;
 
     token.mesh.anchor.set(0.5, 1.0);
-    b.baseScaleY = token.mesh.scale.y;
 
-    dbg("Bounce refreshed (mesh rebuild)", { token: token.name, tokenId: token.id });
+    // CRITICAL: only re-capture the base when Foundry actually rebuilt the mesh
+    // and reset scale.y to the token's TRUE (un-animated) value. If scale.y still
+    // holds the value our ticker last wrote, the mesh was NOT reset — recapturing
+    // it would fold the current bounce offset into the base and compound it every
+    // frame. That runaway is exactly the "keeps drifting / super squash" seen on
+    // remote clients, which receive refreshToken far more often than the owner.
+    const live = token.mesh.scale.y;
+    if (b.lastAppliedY === undefined || Math.abs(live - b.lastAppliedY) > 1e-5) {
+      b.baseScaleY = live;
+      b.original.scaleX = token.mesh.scale.x;
+      b.original.scaleY = live;
+      dbg("Bounce base re-captured (true mesh reset)", { token: token.name, tokenId: token.id, base: live });
+    }
   }
 
   // ==========================================================================
