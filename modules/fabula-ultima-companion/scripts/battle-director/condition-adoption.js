@@ -41,30 +41,18 @@ const FLAG_NS = "fabula-ultima-companion";
 let _installed = false;
 let _getActiveDirector = null;
 
-// The TokenDocument the AE's bearer is standing on, if any (for the VFX anchor).
-// Synthetic (unlinked) token actors expose `.token`; linked actors resolve via
-// the running combat's combatant list.
+// The TokenDocument uuid to anchor the IM cue on. Synthetic (unlinked) token
+// actors expose `.token` directly; a linked/world actor resolves via its active
+// canvas token(s). Deliberately does NOT read `game.combat` — inside a BD battle
+// that is null (the director keeps its own combat model), which was the original
+// bug. Best-effort: a null uuid just floats the cue with no anchor.
 function bearerTokenUuid(bearer) {
   if (bearer?.token?.uuid) return bearer.token.uuid;
-  const combat = game.combat;
-  for (const c of combat?.combatants ?? []) {
-    if (c.actor?.id === bearer?.id) return c.token?.uuid ?? null;
-  }
+  try {
+    const tok = bearer?.getActiveTokens?.(false, true)?.[0];
+    if (tok?.uuid) return tok.uuid;
+  } catch { /* ignore */ }
   return null;
-}
-
-// Is the AE's bearer a participant in the running combat? Matches an unlinked
-// token by its TokenDocument uuid and a linked/world actor by id (many unlinked
-// tokens can share one base actor — an id match is intentionally permissive).
-function bearerIsCombatant(bearer) {
-  const combat = game.combat;
-  if (!combat) return false;
-  const tokUuid = bearer?.token?.uuid ?? null;
-  for (const c of combat.combatants) {
-    if (tokUuid && c.token?.uuid === tokUuid) return true;
-    if (c.actor?.id === bearer?.id) return true;
-  }
-  return false;
 }
 
 // Install once on ready. `getActiveDirector` returns the running BattleDirector
@@ -86,7 +74,10 @@ export function installConditionAdoptionWatcher({ getActiveDirector } = {}) {
       const ns = effect.flags?.[FLAG_NS] ?? {};
       if (ns.directorAppliedBy || ns.bdAdopted) return;
 
-      if (!bearerIsCombatant(bearer)) return;
+      // No combatant-membership gate: `game.combat` is null inside a BD battle
+      // (director owns its combat model), and battle-live + the RS/IM affinity
+      // filter below already scope this tightly enough. A condition on a
+      // non-combatant is an accepted edge — adopting it is harmless.
 
       // THE FILTER: only RS/IM-flagged conditions. null covers non-condition
       // AEs and NA conditions → leave them exactly as they are today.
