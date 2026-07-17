@@ -5757,48 +5757,12 @@ async function applyApplyAeEffect(row, ctx) {
     // as a bearer-turn charge countdown (`target_turn_end` + `ae_initial_charges`)
     // so the BD charge badge shows N → … → 1 on the token, without a per-skill copy.
     const lifetimeMode = String(row.ae_lifetime_mode ?? flagsNS.lifetimeMode ?? "").trim().toLowerCase();
-    // Per-AE lifecycle mode (homebrew):
-    //   - lifetimeMode === "round_end"  → expires via tickDirectorAEsAtRoundEnd
-    //     at the END of the round it was applied in (Rampart). The
-    //     applier-turn tick skips it (turnsRemaining stays null).
-    //   - directorPermanent === true    → never expires (legacy trait pattern).
-    //   - Otherwise                     → applier-turn tick decrements
-    //     turnsRemaining (default 3, override via duration.rounds).
-    let turnsRemaining;
-    if (flagsNS.directorPermanent === true) {
-      turnsRemaining = null;  // opt-out: never expires
-    } else if (lifetimeMode === "round_end") {
-      turnsRemaining = null;  // owned by round-end sweep, not applier-turn tick
-    } else if (lifetimeMode === "on_activation") {
-      turnsRemaining = null;  // charge-governed: expires when charges deplete on fire, not by turn-tick
-    } else if (lifetimeMode === "persistent_counter") {
-      turnsRemaining = null;  // clock / points pool (Brainwave, Grave, Adoration): rests at 0,
-                              // never turn-ticked, NOT deleted when charges empty (see
-                              // skill-charges.isPersistentCounter); cleared by scene-end sweep.
-    } else if (lifetimeMode === "target_turn_end" || lifetimeMode === "target_turn_start") {
-      // "Lasts N of the AFFECTED creature's turns, decrement at the END (…_end)
-      // or START (…_start) of each of the bearer's turns." `target_turn_end` is
-      // the homebrew action-gating Advanced Debuffs (Frightened/Silence/…);
-      // `target_turn_start` is the bearer-turn-START twin (Searing Brand's mark,
-      // which must tick BEFORE the same turn's transfer prompt). Counted here
-      // (default 3, override via duration.rounds) but ticked by the matching
-      // bearer ticker (tickDirectorAEsForBearerTurnEnd at TURN_END /
-      // tickDirectorAEsForBearerTurnStart at TURN_START), NOT by the
-      // applier-turn-start tick (which skips both modes).
-      turnsRemaining = Number.isFinite(explicit) && explicit > 0 ? explicit : 3;
-    } else if (Number.isFinite(explicit) && explicit > 0) {
-      turnsRemaining = explicit;
-    } else {
-      turnsRemaining = 3;
-    }
-    // RS (resist): clamp the turn counter so a chargeless condition falls off
-    // after ~1 round instead of the default 3. Null modes (permanent /
-    // round_end / on_activation / persistent_counter) are left alone —
-    // charge-governed AEs were already clamped via the charges path above.
-    if (conditionAffinity === "RS" && Number.isFinite(turnsRemaining) && turnsRemaining > 1) {
-      log(`skill-effects.apply_ae: ${actor.name} resists "${template.name}" — turnsRemaining ${turnsRemaining} clamped to 1`);
-      turnsRemaining = 1;
-    }
+    // Per-AE lifecycle mode → invisible turn counter. Shared with the condition-
+    // adoption path (buildAdoptedConditionData) so "how long does a BD condition
+    // last" has exactly ONE definition. RS clamps a >1 counter to 1.
+    const turnsRemaining = computeConditionTurnsRemaining({
+      flagsNS, explicitRounds: explicit, lifetimeMode, affinity: conditionAffinity,
+    });
     data.flags[FLAG_NS].directorAppliedBy = {
       skillUuid: ctx.skill?.uuid ?? null,
       reactorActorUuid: ctx.reactorActor?.uuid ?? null,
@@ -5986,6 +5950,99 @@ async function resolveAeTemplate(aeRef, ctx) {
     warn(`skill-effects.resolveAeTemplate: "${aeRef}" matched ${matches.length} containers — using "${matches[0].container}". Use the full ActiveEffect UUID for explicit selection.`);
   }
   return matches[0].effect.toObject();
+}
+
+// Resolve the CANONICAL condition template (the charge/reactionConfig-bearing
+// AE curated in an `activeEffectContainer` Item — "Debuff"/"Buff"/…) for a set
+// of Foundry status ids. This is how the adoption path recovers a full BD
+// condition from a bare CONFIG.statusEffects clone: e.g. an AEM-applied Bane
+// carries only status `gX1fA3onNG7wsyap` and no charges, but the Debuff
+// container's Bane carries `charges:3` + `lifetimeMode:target_turn_end` + its
+// stat `changes`. Matches by status id (robust across name drift). Synchronous
+// (reads already-loaded world Items) so it's safe to call inside a
+// `preCreateActiveEffect` hook. Returns a plain AE object or null.
+export function resolveCanonicalConditionTemplate(statuses) {
+  const list = statuses
+    ? (typeof statuses.has === "function" ? Array.from(statuses)
+      : Array.isArray(statuses) ? statuses : [])
+    : [];
+  if (!list.length) return null;
+  const want = new Set(list.map((s) => String(s)));
+  for (const it of game.items ?? []) {
+    if (it.type !== "activeEffectContainer") continue;
+    for (const eff of it.effects ?? []) {
+      const est = eff.statuses;
+      const ids = est ? (typeof est.has === "function" ? Array.from(est) : (Array.isArray(est) ? est : [])) : [];
+      if (ids.some((s) => want.has(String(s)))) return eff.toObject();
+    }
+  }
+  return null;
+}
+
+// The ONE definition of "how many turns does a BD-applied condition last".
+// Shared by apply_ae and the adoption path. Null lifecycle modes (permanent /
+// round_end / on_activation / persistent_counter) return null — those AEs
+// aren't turn-ticked (they're charge- or round-governed). Everything else
+// defaults to `explicitRounds` (template `duration.rounds`) or 3. RS (resist)
+// clamps a >1 counter to 1 so a resisted chargeless condition falls off after
+// ~1 round.
+export function computeConditionTurnsRemaining({ flagsNS = {}, explicitRounds, lifetimeMode = "", affinity = null } = {}) {
+  const explicit = Number(explicitRounds);
+  let turnsRemaining;
+  if (flagsNS.directorPermanent === true) turnsRemaining = null;
+  else if (lifetimeMode === "round_end") turnsRemaining = null;
+  else if (lifetimeMode === "on_activation") turnsRemaining = null;
+  else if (lifetimeMode === "persistent_counter") turnsRemaining = null;
+  else if (lifetimeMode === "target_turn_end" || lifetimeMode === "target_turn_start")
+    turnsRemaining = Number.isFinite(explicit) && explicit > 0 ? explicit : 3;
+  else if (Number.isFinite(explicit) && explicit > 0) turnsRemaining = explicit;
+  else turnsRemaining = 3;
+  if (affinity === "RS" && Number.isFinite(turnsRemaining) && turnsRemaining > 1) turnsRemaining = 1;
+  return turnsRemaining;
+}
+
+// Turn a canonical condition template into AE-creation data shaped exactly like
+// what apply_ae produces: core Foundry duration cleared (BD owns the lifecycle
+// via `directorAppliedBy`), `transfer:false`, and a `directorAppliedBy` stamp
+// carrying the template's `lifetimeMode` (falling back to `target_turn_end` —
+// bearer-keyed — since an adopted condition has no meaningful "applier" whose
+// turns an applier-tied default mode would count). RS clamps charges>1 → 1 and
+// the turn counter → 1; chargeless conditions stay chargeless (duration-clamped
+// only). Used by the condition-adoption hook to reconstitute a bare
+// non-BD-applied condition (AEM UI, etc.) into a proper BD condition that the
+// existing turn/charge tickers can expire.
+export function buildAdoptedConditionData(template, { affinity = null } = {}) {
+  const data = foundry.utils.deepClone(template);
+  delete data._id;
+  if (data.duration) {
+    data.duration.rounds = null; data.duration.turns = null; data.duration.seconds = null;
+    data.duration.startRound = null; data.duration.startTurn = null;
+  }
+  data.transfer = false;
+  data.flags = data.flags ?? {};
+  const ns = data.flags[FLAG_NS] = data.flags[FLAG_NS] ?? {};
+  const flagsNS = template.flags?.[FLAG_NS] ?? {};
+  // Bearer-keyed default: a manually-applied condition has no applier, so the
+  // applier-turn-start tick (default mode) would never fire. Fall back to
+  // target_turn_end so it ticks on the victim's own turns.
+  const lifetimeMode = String(flagsNS.lifetimeMode ?? "").trim().toLowerCase() || "target_turn_end";
+  // RS: charge-governed conditions land with at most 1 charge; chargeless stay
+  // chargeless (their duration is handled by the turn counter below).
+  if (affinity === "RS" && Number(ns.charges) > 1) ns.charges = 1;
+  const turnsRemaining = computeConditionTurnsRemaining({
+    flagsNS, explicitRounds: template.duration?.rounds, lifetimeMode, affinity,
+  });
+  ns.bdAdopted = true;   // recursion guard — the adoption hook skips AEs carrying this
+  ns.directorAppliedBy = {
+    skillUuid: null,
+    reactorActorUuid: null,
+    reactorTokenUuid: null,
+    effectLabel: `adopted:${data.name ?? "condition"}`,
+    appliedAtRound: game.combat?.round ?? 0,
+    turnsRemaining,
+    ...(lifetimeMode ? { lifetimeMode } : {}),
+  };
+  return data;
 }
 
 function findDuplicateAe(actor, template, scope = null) {

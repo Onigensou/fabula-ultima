@@ -23,11 +23,12 @@
 // buffs, …) resolve to no condition_* prop and return null, so appliers can
 // call this unconditionally.
 //
-// Callers: battle-director/skill-effects.js (apply_ae gate + RS clamps),
-// ActiveEffectManager-api.js applyEffects (covers the legacy reaction system,
-// which funnels through it, and manual AEM UI applies — bypass via
-// options.ignoreAffinity), opportunity-effect-affliction. Keep them reading
-// from here, not from local copies.
+// Callers (all inside Battle Director — the scope is deliberately BD-only for
+// now): skill-effects.js `apply_ae` (IM skip + RS charge/turn clamps for
+// BD-applied conditions) and condition-adoption.js (the preCreateActiveEffect
+// hook that gates/reshapes conditions applied mid-battle by non-BD paths).
+// `clampEffectDataForResist` is currently unused — reserved for the deferred
+// out-of-battle (whole-game) handling. Keep callers reading from here.
 // ============================================================================
 (() => {
   globalThis.FUCompanion = globalThis.FUCompanion || {};

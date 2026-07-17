@@ -1371,37 +1371,6 @@
         const queueKey = identityQueueKey(identity, effectData);
 
         try {
-          // Condition-affinity gate (shared/condition-affinity.js). IM skips
-          // the effect for this actor; RS clamps the raw data (charges > 1 →
-          // 1, else native duration → 1). Covers every applyEffects consumer —
-          // legacy reaction system, AEM UI, macros — in one place; buffs and
-          // custom AEs resolve to no condition_* prop and pass through.
-          // options.ignoreAffinity force-applies (deliberate GM override).
-          const condApi = globalThis.FUCompanion?.api?.conditionAffinity;
-          const condAffinity = (!options.ignoreAffinity && condApi)
-            ? condApi.getConditionAffinity(actor, {
-                statuses: identity?.statuses ?? effectData?.statuses,
-                name: identity?.name ?? effectData?.name
-              })
-            : null;
-          if (condAffinity === "IM") {
-            results.push({
-              ok: true,
-              status: "skipped",
-              reason: "condition_immune",
-              actor: compactActor(actor),
-              effect: makeEffectResultInfo(effectData, identity),
-              duplicates: []
-            });
-            if (!options.quiet) {
-              ui.notifications?.info?.(`${actor.name} is immune to ${effectData?.name ?? "that condition"}.`);
-            }
-            continue;
-          }
-          if (condAffinity === "RS") {
-            condApi.clampEffectDataForResist?.(effectData);
-          }
-
           const dupReport = await findDuplicatesOnActor(actor, identity, options);
           const duplicates = dupReport.duplicates ?? [];
 

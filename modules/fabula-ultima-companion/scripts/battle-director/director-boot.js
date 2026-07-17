@@ -17,6 +17,7 @@ import { log, warn } from "./logger.js";
 import { BattleDirector } from "./director.js";
 import { STATE_HANDLERS, installGuardHpWatcher, installApplierReaperWatcher, installSideWipeWatcher, checkSideWipe } from "./state-handlers.js";
 import { installGrappledCoverWatcher } from "./grappled.js";
+import { installConditionAdoptionWatcher } from "./condition-adoption.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
 import { showBattleEndPrompt } from "./battle-end/battle-end-prompt.js";
@@ -918,6 +919,12 @@ Hooks.once("ready", () => {
   // Session-global, idempotent — install once here (path-independent of
   // fresh-start vs resume). See [[project_grappled_advanced_debuff]].
   installGrappledCoverWatcher();
+  // Condition immunity/resistance for conditions applied INSIDE a battle by a
+  // non-BD path (AEM UI, token-HUD, macros): IM blocks, RS reshapes into a
+  // charge/turn-clamped BD condition so it expires. Only touches AEs whose
+  // bearer has an explicit RS/IM affinity for that condition. Idempotent.
+  // See [[project_condition_affinity]] / condition-adoption.js.
+  installConditionAdoptionWatcher({ getActiveDirector });
   // Generic rider-AE linkage: an AE flagged `riderOf: "<parent>"` is removed
   // when its parent AE leaves the bearer (first consumer: Draconic Domination
   // riding Charmed). Session-global, idempotent. See [[reference_rider_ae_linkage]].
