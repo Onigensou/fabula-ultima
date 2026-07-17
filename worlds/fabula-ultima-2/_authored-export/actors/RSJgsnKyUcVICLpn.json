@@ -11,10 +11,16 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "idleAnimation": {
+        "bounce": true,
+        "float": false
+      }
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
-  "img": "icons/svg/mystery-man.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
   "items": [
     {
       "_id": "u8RRkOVtKngpFhMy",
@@ -373,9 +379,25 @@
           }
         }
       },
+      "fabula-ultima-companion": {
+        "dominanceCrestOffset": {
+          "x": 0,
+          "y": 0
+        }
+      },
       "hex-size-support": {
         "hideBorder": true,
         "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
       }
     },
     "height": 1,
@@ -417,7 +439,7 @@
         "background": null,
         "ring": null
       },
-      "effects": 1,
+      "effects": 0,
       "enabled": false,
       "subject": {
         "scale": 1,
@@ -446,7 +468,7 @@
       "rotation": 0,
       "scaleX": 1,
       "scaleY": 1,
-      "src": "icons/svg/mystery-man.svg",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -576,7 +598,7 @@
       "icon_offset_y": "",
       "icon_scale": "",
       "id": "RSJgsnKyUcVICLpn",
-      "img": "icons/svg/mystery-man.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dark_Soul_Standard.png",
       "init": "6",
       "ins_base": "6",
       "ins_current": 6,
