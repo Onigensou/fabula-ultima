@@ -59,10 +59,9 @@ export function getActorKind(actor) {
 // offensive spells (`isOffensiveSpell === true` + `isCheck === true`)
 // so NPC spellcasters can use their Spell-type skills as attack options.
 //
-// Note (v1): `buildPseudoWeaponFromNpcAttack` does not forward
-// `defense_target_type`, so all NPC attacks check against DEF. Spells
-// that should check against MDEF will use the wrong defense stat until
-// the pseudo-weapon shape is extended.
+// `buildPseudoWeaponFromNpcAttack` forwards `defense_target_type`, so an NPC
+// Attack (or offensive spell) tagged `mdef` resolves its check vs Magic Defense
+// and classifies as Magic damage; blank falls back to DEF.
 //
 // Returns an array of Item docs in the order they appear on the actor.
 // Empty array = no attack item; caller surfaces "no attack available".
@@ -114,6 +113,13 @@ export function buildPseudoWeaponFromNpcAttack(item) {
     damageType,
     range,
     weaponType: String(p.weapon_type ?? p.category ?? ""),
+    // Defense stat this attack resolves against ("def" | "mdef"). Mirrors the PC
+    // weapon snapshot (resolveAttackerWeapon, snapshot.js) so an NPC Attack tagged
+    // `defense_target_type: "mdef"` (Geist's Torcleaver, any magic monster attack)
+    // resolves its check vs MDEF AND classifies as Magic — via resolvesVsMagicDefense,
+    // the single source of truth for the hit test, the Strike/Magic card icon, and
+    // the damage-class affinity. Blank falls back to DEF (the default for attacks).
+    defenseTargetType: String(p.defense_target_type ?? "").trim().toLowerCase(),
     imageUrl: item?.img ?? null,
     // Effect prose (e.g. "On hit, inflicts Bleed") — surfaced in the action
     // card's Effect section. Normal Attacks can carry on-hit effects too, so
