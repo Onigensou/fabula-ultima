@@ -947,6 +947,60 @@ async function installPreAppliedAEs(preApply) {
   return { created, cleanup };
 }
 
+// Seed live resource props on actors before a run, and revert them in finally.
+// Unlike `override` (which installs a non-mutating formula-resolver map for
+// SL / level / bonds), this mutates ACTUAL sheet props — needed for state that
+// a live-read identifier pulls off the actor at fire-time and that no override
+// map covers. The canonical case is a `round_end` skill whose detonate reads a
+// resource the round is meant to chip (Shadow Wall reads CUR_SHIELD =
+// `system.props.shield_value`): seed the shield to the "already chipped" value
+// and the whole detonate math becomes a focused, round-free unit test.
+//
+// The prior value of each seeded key is recorded and restored on cleanup, so a
+// seed of a resource the actor already has (e.g. current_hp) leaves the sheet
+// exactly as it was. Keys that didn't exist before are removed via `-=`.
+//
+// Shape: [{ actorUuid: "Actor.X", props: { shield_value: 8, current_hp: 40 } }]
+async function installSeededProps(seed) {
+  const applied = [];
+  if (!Array.isArray(seed) || !seed.length) return { applied, cleanup: async () => {} };
+  for (const entry of seed) {
+    const props = entry?.props;
+    if (!props || typeof props !== "object") continue;
+    try {
+      const actor = await fromUuid(entry.actorUuid).catch(() => null);
+      if (!actor) continue;
+      const patch = {};
+      const prev = {};
+      for (const [key, val] of Object.entries(props)) {
+        const path = `system.props.${key}`;
+        const had = foundry.utils.hasProperty(actor, path);
+        prev[key] = had ? foundry.utils.getProperty(actor, path) : undefined;
+        patch[path] = val;
+      }
+      await actor.update(patch);
+      applied.push({ actorUuid: actor.uuid, actorName: actor.name, prev });
+    } catch (e) {
+      console.warn(`${TAG} seed failed:`, e);
+    }
+  }
+  const cleanup = async () => {
+    for (const s of applied) {
+      try {
+        const actor = await fromUuid(s.actorUuid).catch(() => null);
+        if (!actor) continue;
+        const patch = {};
+        for (const [key, prevVal] of Object.entries(s.prev)) {
+          if (prevVal === undefined) patch[`system.props.-=${key}`] = null;
+          else patch[`system.props.${key}`] = prevVal;
+        }
+        if (Object.keys(patch).length) await actor.update(patch);
+      } catch {}
+    }
+  };
+  return { applied, cleanup };
+}
+
 async function runDirectorSkillSimulate(args = {}) {
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
 
@@ -960,9 +1014,15 @@ async function runDirectorSkillSimulate(args = {}) {
   // the finally, they leak. The finally below covers normal paths.
   const preApplied = await installPreAppliedAEs(args.preApply);
 
+  // Step 0c — seed live resource props (e.g. shield_value / current_hp) so a
+  // formula that live-reads the sheet resolves deterministically. Mutating;
+  // reverted in every cleanup path below alongside preApply.
+  const seeded = await installSeededProps(args.seed);
+
   // Step 1 — COMPUTE (this also validates inputs + produces actionResult).
   const compute = await runDirectorSkillCompute(args);
   if (!compute.ok) {
+    await seeded.cleanup();
     await preApplied.cleanup();
     formulaOverrides.restore();
     return compute;
@@ -1036,6 +1096,7 @@ async function runDirectorSkillSimulate(args = {}) {
     if (!resolveHandler?.onEnter) {
       restore();
       passiveAcceptor.restore();
+      await seeded.cleanup();
       await preApplied.cleanup();
       formulaOverrides.restore();
       return { ok: false, reason: "resolve_handler_missing" };
@@ -1048,6 +1109,7 @@ async function runDirectorSkillSimulate(args = {}) {
   } finally {
     restore();
     passiveAcceptor.restore();
+    await seeded.cleanup();
     await preApplied.cleanup();
     formulaOverrides.restore();
   }
@@ -1332,6 +1394,10 @@ async function runDirectorPassiveTriggerTest(args = {}) {
 
   const formulaOverrides = installFormulaOverrides(args.override);
   const preApplied = await installPreAppliedAEs(args.preApply);
+  // Seed AFTER preApply so a seeded resource wins over anything an AE's
+  // apply might have written, and is reverted in the SAME finally (before
+  // the AE is torn down — order is symmetric with install).
+  const seeded = await installSeededProps(args.seed);
   const acceptPassives = args.acceptPassives ?? false;
   const passiveAcceptor = installPassiveAutoAcceptor(acceptPassives);
   const { captures, restore } = installWriteCaptures();
@@ -1353,6 +1419,7 @@ async function runDirectorPassiveTriggerTest(args = {}) {
   } finally {
     restore();
     passiveAcceptor.restore();
+    await seeded.cleanup();
     await preApplied.cleanup();
     formulaOverrides.restore();
   }
@@ -1649,6 +1716,7 @@ if (typeof game !== "undefined" && game?.ready) registerHarness();
 else Hooks.once("ready", registerHarness);
 
 export {
+  installSeededProps,
   runDirectorPassiveTriggerTest,
   runDirectorSkillCompute,
   runDirectorSkillSimulate,
