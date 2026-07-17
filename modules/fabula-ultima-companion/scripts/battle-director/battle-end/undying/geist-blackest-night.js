@@ -36,6 +36,9 @@ import {
   isForceCinematic,
 } from "./undying.js";
 import { playBlackestNightCinematic } from "./blackest-night-cinematic.js";
+// Automated-playtest flag — a sim always revives inline (see the reactor's
+// lean branch): no claim, no BATTLE_ENDING, no cinematic in a headless run.
+import { SimMode } from "../../sim/sim-mode.js";
 // The healing system's live-verified debuff detector (matches "debuff" across
 // system.tags / e.tags / module + CSB flag tags; skips disabled AEs and
 // equipment-managed permanents) — the revive cleanses exactly what a
@@ -215,13 +218,27 @@ export async function blackestNightReactor(director, cfg, extra) {
     const n = (num(director.ctx._undyingTriggers) ?? 0) + 1;
     director.ctx._undyingTriggers = n;
 
-    if (isLeanMode(director) && !isForceCinematic()) {
-      // Sim path: restore inline, un-latch a side-wipe that may have raced
-      // in (e.g. adds were already dead), keep the battle running.
-      log(`[BlackestNight] lean mode — inline revive #${n}`);
-      await applyBlackestNightRestore(director, { triggerIndex: n, actorUuid: actor.uuid });
-      if (director.dCombat?.ended) director.dCombat.ended = false;
-      director.ctx.endOfCombat = false;
+    // A sim ALWAYS revives inline, even under forceCinematic: a headless
+    // playtest must never register a claim, route to BATTLE_ENDING, or attempt
+    // a multi-second cinematic. Outside a sim, forceCinematic still forces the
+    // claim path in lean so the Test Battle tool can preview the cinematic.
+    const inline = SimMode.active || (isLeanMode(director) && !isForceCinematic());
+    if (inline) {
+      // Restore inline, un-latch a side-wipe that may have raced in (e.g. adds
+      // were already dead), keep the battle running. `_undyingInProgress` is a
+      // transient marker the sim runner's ended-poll reads so it can't tear the
+      // battle down during this window — the side-wipe watcher latched
+      // dc.ended synchronously BEFORE this reactor ran. Set before the first
+      // await; cleared in finally after the un-latch.
+      log(`[BlackestNight] ${SimMode.active ? "sim" : "lean"} mode — inline revive #${n}`);
+      director.ctx._undyingInProgress = true;
+      try {
+        await applyBlackestNightRestore(director, { triggerIndex: n, actorUuid: actor.uuid });
+        if (director.dCombat?.ended) director.dCombat.ended = false;
+        director.ctx.endOfCombat = false;
+      } finally {
+        director.ctx._undyingInProgress = false;
+      }
       return;
     }
 
