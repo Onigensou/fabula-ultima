@@ -36,6 +36,11 @@ import {
   isForceCinematic,
 } from "./undying.js";
 import { playBlackestNightCinematic } from "./blackest-night-cinematic.js";
+// The healing system's live-verified debuff detector (matches "debuff" across
+// system.tags / e.tags / module + CSB flag tags; skips disabled AEs and
+// equipment-managed permanents) — the revive cleanses exactly what a
+// Turbo Tonic would.
+import { isDebuffEffect } from "../../../healing-system/healing-cleanse.js";
 
 export const RULE_ID = "geist-blackest-night";
 
@@ -156,17 +161,20 @@ export async function applyBlackestNightRestore(director, claim) {
     [PATH_ZP]: 0,
   });
 
-  // Clear the defeat reactor's KO marker AE(s) — same filter it reconciles on.
-  const koIds = (actor.effects?.contents ?? [])
-    .filter((e) => e?.flags?.[NS]?.bdDefeated === true)
-    .map((e) => e.id)
-    .filter(Boolean);
-  if (koIds.length) {
-    try { await actor.deleteEmbeddedDocuments("ActiveEffect", koIds); }
-    catch (e) { warn("[BlackestNight] KO clear threw", e); }
+  // Clear the defeat reactor's KO marker AE(s) — same filter it reconciles on
+  // — AND cleanse every debuff (v2): the sacrifice burns his afflictions away
+  // with the rest. Buffs and untagged AEs survive. One delete call.
+  const effects = actor.effects?.contents ?? [];
+  const removeIds = [...new Set([
+    ...effects.filter((e) => e?.flags?.[NS]?.bdDefeated === true).map((e) => e.id),
+    ...effects.filter(isDebuffEffect).map((e) => e.id),
+  ])].filter(Boolean);
+  if (removeIds.length) {
+    try { await actor.deleteEmbeddedDocuments("ActiveEffect", removeIds); }
+    catch (e) { warn("[BlackestNight] KO/debuff clear threw", e); }
   }
 
-  log(`[BlackestNight] restore #${n}: hp ${hp}/${maxHp}, mp full, zp spent`);
+  log(`[BlackestNight] restore #${n}: hp ${hp}/${maxHp}, mp full, zp spent, ${removeIds.length} AE(s) cleared`);
   return { hp, maxHp, triggerIndex: n };
 }
 
