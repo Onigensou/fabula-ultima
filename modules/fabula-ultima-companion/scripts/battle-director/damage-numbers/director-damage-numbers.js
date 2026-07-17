@@ -126,6 +126,7 @@ function ensureStyle() {
 .fud-dn-tag--weak   { background: #e8331f; }
 .fud-dn-tag--resist { background: #3a5b80; }
 .fud-dn-tag--immune { background: #2a3140; }
+.fud-dn-tag--status-immune { background: #5b2e8f; }
 .fud-dn-tag--absorb { background: #0d6c8c; }
 .fud-dn-tag--miss   { background: #444a55; }
 .fud-dn-num {

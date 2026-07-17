@@ -599,6 +599,22 @@ export function playImmuneVfx({ tokenUuid } = {}) {
   }
 }
 
+// ── Status-immune VFX (condition AE refused by IM condition affinity) ──────
+//
+// Distinct from playImmuneVfx (damage IM): a violet "<STATUS> NULLIFIED"
+// float so a blocked debuff never reads as zeroed damage. Without it the
+// refusal is invisible — the AE simply never appears. Same
+// broadcasts-to-all-clients + graceful no-op rules; reuses the warmed
+// parry/resist cue.
+export function playStatusImmuneVfx({ tokenUuid, statusName = "" } = {}) {
+  try {
+    emitDamageNumber({ kind: "status-immune", tokenUuid, statusName });
+    throttledSfx(IMMUNE_SFX_URL, 0.5);
+  } catch (e) {
+    warn("playStatusImmuneVfx threw", e);
+  }
+}
+
 // ── Absorb VFX (AB affinity flips damage to healing) ──────────────────────
 //
 // Distinct from a plain heal so an absorb doesn't masquerade as one: a cyan

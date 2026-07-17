@@ -26,7 +26,7 @@ import { resolveResourceDef } from "./resources.js";
 import { deriveCheck, decideHit } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp, describeGrant,
-  isTargetImmuneToStatuses } from "./skill-effects.js";
+  getConditionAffinityFor } from "./skill-effects.js";
 
 // Resolve an open_action_menu (+ nested chains) down to the concrete leaf rows for
 // the player's CHOSEN option(s), matched by display label. Mirrors card-mutations'
@@ -938,10 +938,13 @@ export async function computeActionProfile(input) {
     for (const row of perTarget) {
       if (hitOnly && !row.outcome?.hit) continue;
       const tActor = await fromUuid(row.target.actorUuid).catch(() => null);
-      const immune = tActor ? isTargetImmuneToStatuses(tActor, [eff.status]) : false;
+      // Full affinity code alongside the boolean: "IM" (won't land — mirrors
+      // the apply_ae skip), "RS" (lands clamped to 1 charge / 1 turn), null.
+      const statusAffinity = tActor ? getConditionAffinityFor(tActor, { statuses: [eff.status] }) : null;
       row.effects.push({
         type: "status", status: eff.status, valence: eff.valence,
-        source: eff.source, targetRef: eff.targetRef, immune,
+        source: eff.source, targetRef: eff.targetRef,
+        immune: statusAffinity === "IM", statusAffinity,
       });
     }
   }

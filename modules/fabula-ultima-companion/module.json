@@ -25,6 +25,7 @@
     "scripts/shared-utils.js",
     "scripts/shared/primary-gm.js",
     "scripts/shared/ae-lifetime.js",
+    "scripts/shared/condition-affinity.js",
     "scripts/scene-prefetch.js",
     "scripts/reload-broadcast.js",
     "scripts/reload-button.js",

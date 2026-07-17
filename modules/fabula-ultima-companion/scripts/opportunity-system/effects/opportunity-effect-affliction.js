@@ -266,6 +266,23 @@
           return;
         }
 
+        // Condition-affinity gate (shared/condition-affinity.js): IM targets
+        // refuse the affliction outright; RS targets take it clamped to 1
+        // charge (or 1-unit native duration for chargeless AEs).
+        const condApi = globalThis.FUCompanion?.api?.conditionAffinity;
+        const condAffinity = condApi?.getConditionAffinity?.(targetActor, {
+          statuses: effectData.statuses,
+          name: effectData.name
+        }) ?? null;
+        if (condAffinity === "IM") {
+          console.debug(TAG, "[post] target immune to", effectData.name, "— affliction nullified");
+          ui.notifications?.info?.(`${targetActor.name} is immune to ${effectData.name}.`);
+          return;
+        }
+        if (condAffinity === "RS") {
+          condApi.clampEffectDataForResist?.(effectData);
+        }
+
         // Pre-stamp identity so CSB's _onCreateOperation skips its 4 extra setFlag calls
         const effectId   = foundry.utils.randomID();
         const effectUuid = `${targetActor.uuid}.ActiveEffect.${effectId}`;

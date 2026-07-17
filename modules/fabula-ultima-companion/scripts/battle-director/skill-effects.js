@@ -351,6 +351,19 @@ function fireResourceLossVfx(opts) {
   }
 }
 
+// Status-immune counterpart — violet "<STATUS> NULLIFIED" float when a
+// condition AE is refused by IM condition affinity (deliberately distinct
+// from the damage IMMUNE slab). Same lazy fire-and-forget contract.
+function fireStatusImmuneVfx(opts) {
+  try {
+    import("./director-vfx.js")
+      .then((m) => m.playStatusImmuneVfx?.(opts))
+      .catch((e) => warn("fireStatusImmuneVfx import failed", e));
+  } catch (e) {
+    warn("fireStatusImmuneVfx threw", e);
+  }
+}
+
 // Gain counterpart — floats a recover number on a heal / restore. Same
 // lazy fire-and-forget contract as fireResourceLossVfx.
 function fireResourceGainVfx(opts) {
@@ -5206,36 +5219,22 @@ async function writeResourceDelta(actor, resourceDef, delta) {
 
 // ── apply_ae ───────────────────────────────────────────────────────────
 
-// Status-immunity gate. Returns true if any of `statuses` resolves to a
-// `condition_<slug>` prop on `actor` whose value is "IM" (immune). Used by
-// apply_ae to refuse applying a status AE to an actor that's immune (Rampart's
-// "cannot suffer status effects" mechanic + per-actor permanent immunities).
-//
-// `statuses` entries may be canonical slugs ("slow", "dazed") OR Foundry status
-// ids ("hhqoSNhWfVD4KR7g") — AEs cloned from CONFIG.statusEffects carry the
-// opaque id, so we resolve id → registered name → slug before the lookup. The
-// CSB template carries the `condition_<slug>` fields as `label` type (post
-// 2026-06-03 surgery) so AEs/sheets can write "NA" / "RS" / "IM" / "AB".
+// Condition-affinity lookup ("IM" | "RS" | null) — thin wrapper over the
+// shared resolver (scripts/shared/condition-affinity.js), which owns the
+// status-id → CONFIG.statusEffects name → `condition_<slug>` prop resolution
+// plus the name/slug alias map (Doomed→doom, Cursed→curse, …). apply_ae uses
+// IM to refuse the AE entirely and RS to clamp charges/turnsRemaining to 1.
 //
 // Custom non-status ids ("fud-bodyguard", "reinforced-slow", …) resolve to no
-// `condition_*` prop, so the lookup returns nothing and the gate doesn't trigger.
+// `condition_*` prop, so the lookup returns null and no gate triggers.
+export function getConditionAffinityFor(actor, { statuses, name } = {}) {
+  const api = globalThis.FUCompanion?.api?.conditionAffinity;
+  return api?.getConditionAffinity?.(actor, { statuses, name }) ?? null;
+}
+
+// Back-compat boolean form (action-profile's per-target preview flag).
 export function isTargetImmuneToStatuses(actor, statuses) {
-  if (!actor) return false;
-  if (!Array.isArray(statuses) || !statuses.length) return false;
-  const props = actor.system?.props ?? {};
-  const cfg = globalThis.CONFIG?.statusEffects ?? [];
-  const immuneToSlug = (slug) => {
-    const key = `condition_${slug}`;
-    return (key in props) && String(props[key] ?? "").trim().toUpperCase() === "IM";
-  };
-  for (const sid of statuses) {
-    const raw = String(sid ?? "").trim();
-    if (!raw) continue;
-    if (immuneToSlug(raw.toLowerCase())) return true;                 // already a slug
-    const entry = cfg.find((e) => e.id === raw);                      // Foundry status id → name → slug
-    if (entry?.name && immuneToSlug(String(entry.name).trim().toLowerCase())) return true;
-  }
-  return false;
+  return getConditionAffinityFor(actor, { statuses }) === "IM";
 }
 
 // True iff a string value looks like a NUMERIC formula (worth baking) rather
@@ -5430,15 +5429,18 @@ async function applyApplyAeEffect(row, ctx) {
       return Number.isFinite(n) ? n : null;
     };
 
-    // Status-immunity gate (engine-gap #4 stub — Rampart's "cannot suffer
-    // status effects" lands as `condition_<status> = "IM"` AE writes on
-    // the target). When the cloned template carries `statuses` AND the
-    // target's `condition_<id>` reads "IM", skip the entire AE for this
-    // target. The gate only fires when the prop EXISTS — non-status
-    // template ids like "fud-bodyguard" have no matching prop so they
-    // pass through.
-    if (isTargetImmuneToStatuses(actor, template.statuses)) {
-      log(`skill-effects.apply_ae: ${actor.name} immune to "${template.name}" (condition_<id>=IM matches a status)`);
+    // Condition-affinity gate (per-actor `condition_<slug>` props; also how
+    // Rampart's "cannot suffer status effects" lands, via IM AE writes).
+    //   IM — skip the entire AE for this target + float the status-immune cue
+    //        (otherwise the refusal is invisible on the battlefield).
+    //   RS — the AE lands, but clamped: at most 1 charge per application /
+    //        turnsRemaining 1 (see the clamp sites below).
+    // Only fires when the prop EXISTS — non-status template ids like
+    // "fud-bodyguard" have no matching prop so they pass through.
+    const conditionAffinity = getConditionAffinityFor(actor, { statuses: template.statuses, name: template.name });
+    if (conditionAffinity === "IM") {
+      log(`skill-effects.apply_ae: ${actor.name} immune to "${template.name}" (condition_<slug>=IM)`);
+      fireStatusImmuneVfx({ tokenUuid: token?.document?.uuid ?? token?.uuid ?? null, statusName: template.name });
       continue;
     }
 
@@ -5458,9 +5460,15 @@ async function applyApplyAeEffect(row, ctx) {
       const existing = findDuplicateAe(actor, template, null);
       if (existing) {
         const curCharges = Number(existing.flags?.[FLAG_NS]?.charges ?? 0) || 0;
-        const addCharges = (rowChargesAdd != null && Number.isFinite(rowChargesAdd))
+        let addCharges = (rowChargesAdd != null && Number.isFinite(rowChargesAdd))
           ? rowChargesAdd
           : (Number(template.flags?.[FLAG_NS]?.charges ?? 0) || 0);
+        // RS (resist): each application grants at most 1 charge — a resisted
+        // Burn-stacker only ever adds 1 per hit no matter the formula.
+        if (conditionAffinity === "RS" && addCharges > 1) {
+          log(`skill-effects.apply_ae add_charges: ${actor.name} resists "${template.name}" — +${addCharges} clamped to +1`);
+          addCharges = 1;
+        }
         const maxCharges = (rowChargesMax != null && Number.isFinite(rowChargesMax))
           ? rowChargesMax
           : (Number(existing.flags?.[FLAG_NS]?.chargesMax ?? template.flags?.[FLAG_NS]?.chargesMax ?? 99999) || 99999);
@@ -5529,6 +5537,17 @@ async function applyApplyAeEffect(row, ctx) {
         data.flags[FLAG_NS].charges = rowC;
         if (rowCMax != null && Number.isFinite(rowCMax)) {
           data.flags[FLAG_NS].chargesMax = rowCMax;
+        }
+      }
+      // RS (resist): a fresh application lands with at most 1 charge (row
+      // override or template default, whichever ended up on the clone).
+      // Chargeless AEs stay chargeless — never stamp a charges flag here;
+      // their duration is handled by the turnsRemaining clamp below.
+      if (conditionAffinity === "RS") {
+        const cur = Number(data.flags?.[FLAG_NS]?.charges);
+        if (Number.isFinite(cur) && cur > 1) {
+          log(`skill-effects.apply_ae: ${actor.name} resists "${template.name}" — initial charges ${cur} clamped to 1`);
+          data.flags[FLAG_NS].charges = 1;
         }
       }
     }
@@ -5771,6 +5790,14 @@ async function applyApplyAeEffect(row, ctx) {
       turnsRemaining = explicit;
     } else {
       turnsRemaining = 3;
+    }
+    // RS (resist): clamp the turn counter so a chargeless condition falls off
+    // after ~1 round instead of the default 3. Null modes (permanent /
+    // round_end / on_activation / persistent_counter) are left alone —
+    // charge-governed AEs were already clamped via the charges path above.
+    if (conditionAffinity === "RS" && Number.isFinite(turnsRemaining) && turnsRemaining > 1) {
+      log(`skill-effects.apply_ae: ${actor.name} resists "${template.name}" — turnsRemaining ${turnsRemaining} clamped to 1`);
+      turnsRemaining = 1;
     }
     data.flags[FLAG_NS].directorAppliedBy = {
       skillUuid: ctx.skill?.uuid ?? null,
