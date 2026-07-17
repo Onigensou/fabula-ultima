@@ -32,12 +32,23 @@ const SCRATCH_FOLDER = "BD Sim";
 const SCENE_NAME = "Training Ground";
 const POLL_MS = 400;
 const STALL_TIMEOUT_MS = 180_000;   // no observable progress for 3 min → abort
+const ZP_PATH = "system.props.zero_power_value";
 
 function api() {
   return globalThis.FUCompanion?.api?.experimental?.battleDirector ?? null;
 }
 
 function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+// True while an undying boss (Geist's Blackest Night) is mid-revive: the
+// reactor sets a transient ctx marker before it un-latches dc.ended, and a
+// forceCinematic claim (never set in a sim, but cheap to guard) parks a pending
+// state. Either means "the combat only LOOKS ended — a revive is coming".
+function undyingInFlight(director) {
+  if (director?.ctx?._undyingInProgress) return true;
+  try { return !!game.settings.get("fabula-ultima-companion", "bdUndyingState")?.pending; }
+  catch { return false; }
+}
 
 async function resolveActor(ref) {
   if (!ref) return null;
@@ -115,6 +126,63 @@ async function stockFeathers(clones, count) {
     }
   }
   log(`[SIM] party stocked with ${n} Phoenix Feather(s) — carried by ${carriers[0].name}`);
+}
+
+// ── Boss Zero Power ───────────────────────────────────────────────────────────
+// Enemies are NOT cloned — they spawn straight from the world actor — so the only
+// way to walk a boss in with a charged limit break (e.g. to exercise Geist's
+// "Zero Power: The Blackest Night" revive, which only fires with ZP full) is to
+// set it on the WORLD actor before spawn; the unlinked token inherits it at
+// creation. Like Phoenix Feathers, how charged a boss is is a SCENARIO variable,
+// not a property of the actor, so it comes from the run config. The prior value
+// is captured and restored in the runner's `finally` — even on a crash — so a
+// charged boss can never leak into real play.
+//
+// `enemyZp` is either a number (applied to every enemy in the group) or a map
+// keyed by uuid / id / (case-insensitive) name → value. An actor with no
+// existing zero_power_value prop is skipped: it has no ZP concept to charge, and
+// skipping sidesteps a restore that would have to write `undefined` back.
+function resolveZpFor(actor, enemyZp) {
+  if (typeof enemyZp === "number") return Number.isFinite(enemyZp) ? enemyZp : null;
+  if (enemyZp && typeof enemyZp === "object") {
+    const byName = {};
+    for (const [k, v] of Object.entries(enemyZp)) byName[String(k).trim().toLowerCase()] = v;
+    const v = enemyZp[actor.uuid] ?? enemyZp[actor.id] ?? byName[String(actor.name).trim().toLowerCase()];
+    const n = Number(v);
+    return v == null || !Number.isFinite(n) ? null : n;
+  }
+  return null;
+}
+
+async function chargeEnemyZp(manualPicks, enemyZp) {
+  if (enemyZp == null) return [];
+  const restore = [];
+  const seen = new Set();
+  for (const p of manualPicks) {
+    if (seen.has(p.actorUuid)) continue;   // one world actor even at quantity > 1
+    seen.add(p.actorUuid);
+    const actor = await fromUuid(p.actorUuid).catch(() => null);
+    if (!actor) continue;
+    const want = resolveZpFor(actor, enemyZp);
+    if (want == null) continue;
+    const prev = foundry.utils.getProperty(actor, ZP_PATH);
+    if (prev == null) continue;   // no ZP concept on this actor — nothing to charge/restore
+    try {
+      await actor.update({ [ZP_PATH]: want });
+      restore.push({ uuid: actor.uuid, prev });
+      log(`[SIM] charged ${actor.name} Zero Power → ${want} (was ${prev})`);
+    } catch (e) { warn(`[SIM] could not charge ${actor.name} Zero Power`, e); }
+  }
+  return restore;
+}
+
+async function restoreEnemyZp(restore) {
+  for (const r of (restore ?? [])) {
+    const actor = await fromUuid(r.uuid).catch(() => null);
+    if (!actor) continue;
+    try { await actor.update({ [ZP_PATH]: r.prev }); }
+    catch (e) { warn(`[SIM] could not restore Zero Power on ${actor?.name ?? r.uuid}`, e); }
+  }
 }
 
 // ── Party cloning ───────────────────────────────────────────────────────────
@@ -258,6 +326,7 @@ export async function run({
   phoenixFeathers = 0,   // how many the party walks in carrying
   startingZp = 0,        // Zero Power each PC walks in with (6 = a charged limit break)
   fabulaPoints = 3,      // Fabula Points each PC walks in with (invokes spend these)
+  enemyZp = null,        // Zero Power to charge a boss with — number (all foes) or {ref: value}
   scripts = null,        // skill-under-test directives — force a caster's action(s)
 } = {}) {
   const a = api();
@@ -300,6 +369,7 @@ export async function run({
   }
 
   let clones = [];
+  let zpRestore = [];
   let result = null;
 
   try {
@@ -309,7 +379,7 @@ export async function run({
     // which the matcher strips). Registered AFTER begin() clears prior state.
     const directives = await normalizeScripts(scripts);
     if (directives.length) SimMode.setScripts(directives);
-    Journal.begin(foundry.utils.randomID(), { pace, reactions, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, scripts: directives.length });
+    Journal.begin(foundry.utils.randomID(), { pace, reactions, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, enemyZp, scripts: directives.length });
 
     clones = await cloneParty(refs, startingZp, fabulaPoints);
     if (!clones.length) throw new Error("no party clones were created");
@@ -327,6 +397,10 @@ export async function run({
 
     const foeLabel = manualPicks.map((p) => `${p.name}×${p.quantity}`).join(" + ");
     SimMode.note("start", `${members.length} PC(s) vs ${foeLabel}`);
+    // Charge any boss ZP on the world actor BEFORE spawn (the unlinked token
+    // inherits it); restored in `finally`.
+    zpRestore = await chargeEnemyZp(manualPicks, enemyZp);
+    if (zpRestore.length) SimMode.note("start", `charged ${zpRestore.length} boss(es) Zero Power`);
     await a.start({ payload });
 
     // ── Watch it play ─────────────────────────────────────────────────────
@@ -340,6 +414,7 @@ export async function run({
     let final = null;
     let overtime = false;
     let stalled = false;
+    let endConfirm = 0;   // consecutive polls that observed a STABLE end
 
     for (;;) {
       const director = a.getActiveDirector?.() ?? globalThis.__fuDirector_lastInstance ?? null;
@@ -350,7 +425,20 @@ export async function run({
         const sig = `${snap.round}|${snap.combatants.map((c) => `${c.name}:${c.hp}:${c.defeated}`).join(",")}`;
         if (sig !== lastSig) { lastSig = sig; lastProgress = Date.now(); }
 
-        if (snap.ended) { SimMode.note("end", `combat ended in round ${snap.round}`); break; }
+        // Combat end, undying-aware. A revive boss (Geist's Blackest Night)
+        // latches dc.ended at 0 HP a beat BEFORE its settle-pass reactor
+        // revives inline and un-latches it — so a SINGLE `ended` reading is not
+        // terminal. Never end while a revive is mid-flight (the reactor's
+        // transient marker or a pending claim), and otherwise require `ended`
+        // to hold across TWO consecutive polls before believing it. Costs one
+        // extra poll (~POLL_MS) on a normal end; buys immunity to the race.
+        if (snap.ended && !undyingInFlight(director)) {
+          if (++endConfirm >= 2) { SimMode.note("end", `combat ended in round ${snap.round}`); break; }
+          SimMode.note("end?", `combat reads ended in round ${snap.round} — confirming`);
+        } else {
+          if (endConfirm) SimMode.note("resume", "end un-latched (undying revive) — battle continues");
+          endConfirm = 0;
+        }
 
         // The design budget. Past this round the fight has failed to resolve
         // either way, which IS the finding — so stop and report it rather than
@@ -390,7 +478,7 @@ export async function run({
       durationSec: Math.round((Date.now() - started) / 1000),
       combatants: final?.combatants ?? [],
       transcript: [...SimMode.transcript],
-      config: { pace, reactions, expectedRounds, maxRounds, phoenixFeathers, startingZp, fabulaPoints },
+      config: { pace, reactions, expectedRounds, maxRounds, phoenixFeathers, startingZp, fabulaPoints, enemyZp },
     };
 
     try { result.journalPath = await Journal.flush({ outcome, rounds: result.rounds, partyHpRemaining: hpLeft }); } catch {}
@@ -406,6 +494,9 @@ export async function run({
     // is gone. Then leave sim mode LAST and unconditionally — if the flag stayed
     // set, the next real card a GM opened would confirm itself.
     try { if (api()?.isRunning?.()) await api().stop(); } catch (e) { warn("[SIM] stop threw", e); }
+    // Put any charged boss ZP back on the world actor — before the clones are
+    // swept and unconditionally, so a charged boss never leaks into real play.
+    try { await restoreEnemyZp(zpRestore); } catch (e) { warn("[SIM] restore boss ZP threw", e); }
     await deleteClones(clones);
     forceEndSim("run complete");
   }
@@ -495,7 +586,7 @@ export async function testSkill({
   // Skill tests want to WATCH the skill land, not be cut short by a round budget —
   // so expectedRounds defaults high. Everything else mirrors `run`'s defaults.
   pace = "fast", reactions = "apply", expectedRounds = 30, maxRounds = 30,
-  phoenixFeathers = 0, startingZp = 6, fabulaPoints = 3,
+  phoenixFeathers = 0, startingZp = 6, fabulaPoints = 3, enemyZp = null,
 } = {}) {
   if (!caster || !skill) {
     ui.notifications?.error("[SIM] testSkill needs { caster, skill }.");
@@ -533,7 +624,7 @@ export async function testSkill({
     enemies: enemyGroup,
     party: partyRefs,
     pace, reactions, expectedRounds, maxRounds,
-    phoenixFeathers, startingZp, fabulaPoints,
+    phoenixFeathers, startingZp, fabulaPoints, enemyZp,
     scripts: [{ caster: casterActor.uuid, skill, targets, force, once }],
   });
 }

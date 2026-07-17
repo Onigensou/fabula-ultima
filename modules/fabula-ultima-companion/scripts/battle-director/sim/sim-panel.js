@@ -127,6 +127,9 @@ async function openPanel() {
         <input class="fud-sim-fp" type="number" min="0" max="10" value="${saved.fabulaPoints ?? 3}" title="Fabula Points each PC starts with">
       </div>
 
+      <label class="fud-sim-lbl">Boss Zero Power <em>(blank = leave as-is; charges every enemy)</em></label>
+      <input class="fud-sim-bosszp" type="number" min="0" max="10" placeholder="e.g. 6 to exercise Geist's revive" value="${saved.enemyZp ?? ""}" title="Charge every enemy's Zero Power on the world actor for the run (restored after). Needed to trigger Geist's Blackest Night in a sim.">
+
       <label class="fud-sim-lbl">Expected rounds <em>(unresolved by here = badly designed)</em></label>
       <input class="fud-sim-exp" type="number" min="2" max="40" value="${Number(saved.expectedRounds) || 7}">
 
@@ -204,16 +207,19 @@ async function openPanel() {
     const phoenixFeathers = Math.max(0, Number(root.querySelector(".fud-sim-feathers").value) || 0);
     const startingZp = Math.max(0, Number(root.querySelector(".fud-sim-zp").value) || 0);
     const fabulaPoints = Math.max(0, Number(root.querySelector(".fud-sim-fp").value) || 0);
+    // Blank = leave enemy ZP untouched; any number (incl. 0) charges every foe.
+    const bossZpRaw = root.querySelector(".fud-sim-bosszp").value.trim();
+    const enemyZp = bossZpRaw === "" ? null : Math.max(0, Number(bossZpRaw) || 0);
     const pace = root.querySelector(".fud-sim-pace").value;
     const reactions = root.querySelector(".fud-sim-react").checked ? "apply" : "skip";
 
     if (!group.length) { setStatus("Add at least one enemy to the encounter.", "err"); return; }
     if (!party.length) { setStatus("Pick at least one party member.", "err"); return; }
 
-    saveConfig({ enemies: group, party, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, pace, reactions });
+    saveConfig({ enemies: group, party, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, enemyZp, pace, reactions });
     setStatus("Running… the fight plays itself. Nothing here needs clicking.", "busy");
 
-    const res = await simRun({ enemies: group, party, pace, reactions, expectedRounds, phoenixFeathers, startingZp, fabulaPoints });
+    const res = await simRun({ enemies: group, party, pace, reactions, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, enemyZp });
     if (!res) { setStatus("Run failed — see the console.", "err"); return; }
 
     const pct = res.partyHpRemaining == null ? "?" : `${Math.round(res.partyHpRemaining * 100)}%`;
