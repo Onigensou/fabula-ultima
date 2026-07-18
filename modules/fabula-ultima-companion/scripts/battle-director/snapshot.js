@@ -1228,6 +1228,12 @@ export function applyAllegianceOverride(naturalSide, tokenUuid, actorUuid, overr
 // Snapshot eligible targets read from a DirectorCombat (the no-Foundry-doc
 // path). Same returned shape as `snapshotEligibleTargets` so callers can swap
 // without changing downstream code.
+// A Guest (bdGuest) is a visual-only round-end helper — it can never be targeted,
+// hit by an AoE, or picked by any action. Excluded from every eligible/target pool
+// (it still ACTS via its own round_end reaction, which resolves ITS targets, not itself).
+const BD_GUEST_FLAG = "flags.fabula-ultima-companion.bdGuest";
+function isGuestActor(actor) { return !!foundry.utils.getProperty(actor ?? {}, BD_GUEST_FLAG); }
+
 export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { category = "any" } = {}) {
   const combatants = dCombat?.combatants ?? [];
   const attackerDisp = attackerSnapshot?.disposition ?? 0;
@@ -1271,6 +1277,7 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
     const token = c.tokenDoc;
     const actor = c.actorDoc;
     if (!token || !actor) continue;
+    if (isGuestActor(actor)) continue; // visual-only guest — never targetable
     const disp = c.disposition ?? token.disposition ?? 0;
     const hp = readPropNum(actor, ["current_hp", "hp"]);
     if (hp <= 0) continue;
@@ -1605,6 +1612,7 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
     const token = c.token;
     const actor = c.actor;
     if (!token || !actor) continue;
+    if (isGuestActor(actor)) continue; // visual-only guest — never targetable
     const disp = token.disposition;
     const hp = readPropNum(actor, ["current_hp", "hp"]);
     if (hp <= 0) continue; // defeated combatants are not targetable in v1

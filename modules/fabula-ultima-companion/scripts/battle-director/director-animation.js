@@ -359,6 +359,63 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   director.enqueue({ type: INTENTS.INTERNAL_DONE });
 }
 
+// ── Reaction-path play (round_end guest actions, etc.) ───────────────────
+//
+// Play a skill ITEM's authored animation_script for a caster→targets, awaiting
+// the SAME damage-timing gate the FSM ANIMATION state uses, then return. Unlike
+// playDirectorAnimation there is NO director / FSM / INTERNAL_DONE — this is for
+// effect-engine callers (the `play_animation` effect_kind) that run OUTSIDE a
+// turn, e.g. a round_end reaction. Chaining a deal_damage AFTER this makes the
+// hit land at the script's impact moment, exactly like a turn action. Reuses
+// resolveAnimationSpec (spec from the item's props) + executeAnimationScript
+// (script run + selection bridge + gate). Returns { played: bool, reason? }.
+export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTokenUuids = [] } = {}) {
+  if (!skillUuid) return { played: false, reason: "no-skill" };
+  const spec = await resolveAnimationSpec({ skillUuid });
+  if (!spec.hasScript) return { played: false, reason: "no-script" };
+
+  // `endPromise` resolves when the script emits `oni:animationEnd` — the TRUE end
+  // of the full cinematic (after the return-home motion), NOT the damage gate.
+  // executeAnimationScript below returns at the GATE (drop-stop) so a chained
+  // deal_damage lands at impact; but the reaction/round_end caller wants to wait
+  // for the WHOLE animation before advancing. It stashes endPromise on ctx and
+  // awaits it after the chain (see applyPlayAnimationEffect / firePreAcceptedCandidate).
+  // Registered BEFORE the script runs so the emit is never missed. Failsafe matches
+  // the 35s animation timeout so a script that never emits can't hang the round.
+  //
+  // `oni:animationEnd` is a GLOBAL hook — a concurrent cinematic (undying/blackest
+  // night, another actor's animation) could fire one during our wait. Scope the
+  // resolve to THIS caster: our outer script emits `sourceTokenId = caster token id`.
+  // If the payload lacks that field (a non-conforming script), accept it so we never
+  // hang; the failsafe is the final backstop.
+  const casterId = String(casterTokenUuid ?? "").split(".Token.").pop() || null;
+  let endResolve;
+  const endPromise = new Promise((res) => { endResolve = res; });
+  let settled = false;
+  const onEnd = (evtPayload) => {
+    const src = evtPayload?.sourceTokenId ?? null;
+    if (casterId && src && src !== casterId) return; // a different animation's end — ignore
+    if (settled) return;
+    settled = true;
+    Hooks.off("oni:animationEnd", onEnd);
+    endResolve();
+  };
+  Hooks.on("oni:animationEnd", onEnd);
+  const endFailsafe = setTimeout(() => onEnd(), 35000);
+  endPromise.finally(() => clearTimeout(endFailsafe));
+
+  await executeAnimationScript({
+    script: spec.script,
+    timingMode: spec.timingMode,
+    timingOffset: spec.timingOffset,
+    casterTokenUuid,
+    targetTokenUuids,
+    abortPromise: null,
+    timeoutMs: 35000,
+  });
+  return { played: true, endPromise };
+}
+
 // ── Anim Studio preview entry ────────────────────────────────────────────
 //
 // Runs an animation exactly like the FSM would — same payload shape, same

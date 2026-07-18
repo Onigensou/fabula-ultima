@@ -558,9 +558,16 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
     const td = proto?.toObject?.() ?? {};
     const battleSprite = String(actor.system?.props?.sprite_battle ?? "").trim();
     if (battleSprite) td.texture = { ...(td.texture ?? {}), src: battleSprite };
-    if (disposition === -1) {
+    // Deterministic facing by disposition (authored sprites are left-facing):
+    // party faces LEFT toward the enemies (+|scaleX|), enemies are mirrored to
+    // face RIGHT (-|scaleX|). Normalizing from |scaleX| — rather than only
+    // mirroring enemies and leaving party as-authored — makes a token whose ACTOR
+    // was authored for the OTHER side face the right way: a reanimated enemy now
+    // fighting as a party ally inherits the enemy prototype's mirrored scaleX, so
+    // the old "party = leave as-is" path left it facing right.
+    {
       const baseSx = Math.abs(Number(td.texture?.scaleX) || 1) || 1;
-      td.texture = { ...(td.texture ?? {}), scaleX: -baseSx };
+      td.texture = { ...(td.texture ?? {}), scaleX: disposition === -1 ? -baseSx : baseSx };
     }
     const width = td.width ?? 1, height = td.height ?? 1;
     const center = freeCell();
@@ -1174,8 +1181,17 @@ export async function runDirectorInit(payload) {
   // animations complete (or after lean token reveal). Fire-and-forget so the
   // 420ms ease runs in parallel with battle-stance loops and the BATTLE START
   // banner. Scene flags are written inside buildDirectorHud for reload survival.
+  // Entries are filtered to the DB-resolved party roster (member_id_1..4) — the
+  // definition of "party member" for the HUD — so party-side non-PCs (guest
+  // NPCs, summons, scene allies) never get a resource card. Mirrors the in-place
+  // reinforce + undying resume paths, which already apply this filter. Empty set
+  // (DB failure) means "no filter" so the HUD never silently blanks.
+  const hudPartyIds = await dbPartyActorIds();
   buildDirectorHud(
-    partyTokens.map(t => ({ actor: t.actor, token: t })).filter(e => e.actor),
+    partyTokens
+      .filter(t => hudPartyIds.size === 0 || hudPartyIds.has(t.actor?.id))
+      .map(t => ({ actor: t.actor, token: t }))
+      .filter(e => e.actor),
     battleScene
   ).catch(e => warn("PREP: buildDirectorHud threw", e));
 

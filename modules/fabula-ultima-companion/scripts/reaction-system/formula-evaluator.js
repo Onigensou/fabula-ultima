@@ -356,6 +356,7 @@ Hooks.once("ready", () => {
     let n = 0;
     const consider = (a, disp) => {
       if (!a || a === reactorActor || seen.has(a)) return;
+      if (foundry.utils.getProperty(a ?? {}, "flags.fabula-ultima-companion.bdGuest")) return; // guest is inert — never counted
       const d = Number(disp);
       if (!Number.isFinite(d) || d * myDisp >= 0) return; // not an enemy
       seen.add(a); n++;
@@ -369,6 +370,51 @@ Hooks.once("ready", () => {
       consider(t?.actor, t.document?.disposition ?? t.disposition);
     }
     return n;
+  }
+
+  // True if any ALLY (strict same-sign disposition, self excluded) is in Crisis
+  // — the canonical "Crisis" AE (bdCrisis flag or literal name). Mirror of
+  // _countEnemies' enumeration, ally side. Backs ANY_ALLY_IN_CRISIS for the
+  // Guest system's heal gate. Short-circuits on the first crisis ally found.
+  function _anyAllyInCrisis(reactorActor, reactorToken, combat) {
+    const myDisp = Number(
+      reactorToken?.document?.disposition
+      ?? reactorToken?.disposition
+      ?? combat?.combatants?.find?.((c) => c.actor === reactorActor)?.token?.disposition
+      ?? reactorActor?.prototypeToken?.disposition
+    );
+    if (!Number.isFinite(myDisp) || myDisp === 0) return false;
+    const inCrisis = (a) => {
+      const hasAe = (a?.effects?.contents ?? []).some((e) => {
+        if (e?.disabled) return false;
+        if (e?.flags?.["fabula-ultima-companion"]?.bdCrisis === true) return true;
+        return String(e?.name ?? "").trim().toLowerCase() === "crisis";
+      });
+      if (hasAe) return true;
+      const cur = Number(a?.system?.props?.current_hp);
+      const max = Number(a?.system?.props?.max_hp);
+      return Number.isFinite(cur) && Number.isFinite(max) && max > 0 && cur * 2 <= max;
+    };
+    const seen = new Set();
+    const consider = (a, disp) => {
+      if (!a || a === reactorActor || seen.has(a)) return false;
+      if (foundry.utils.getProperty(a ?? {}, "flags.fabula-ultima-companion.bdGuest")) return false; // guest is inert — never counted
+      const d = Number(disp);
+      if (!Number.isFinite(d) || d * myDisp <= 0) return false; // ally = same-sign
+      seen.add(a);
+      return inCrisis(a);
+    };
+    const roster = (combat ?? game.combat)?.combatants;
+    if (roster && (roster.size || roster.length)) {
+      for (const c of roster) {
+        if (consider(c.actor, c.token?.disposition ?? c.actor?.prototypeToken?.disposition)) return true;
+      }
+      return false;
+    }
+    for (const t of (globalThis.canvas?.tokens?.placeables ?? [])) {
+      if (consider(t?.actor, t.document?.disposition ?? t.disposition)) return true;
+    }
+    return false;
   }
 
   function _countBondsWithEmotion(reactorActor, emotion) {
@@ -474,6 +520,9 @@ Hooks.once("ready", () => {
       // fallback. Backs Army Wrecker's Overflow ("+1 Accuracy per enemy").
       // 0 out of combat / no reactor token.
       case "ENEMY_COUNT": return _countEnemies(reactorActor, ctx.reactorToken ?? null, combat);
+      // 1 if any ALLY of the reactor is in Crisis (Guest system heal gate).
+      case "ALLY_IN_CRISIS":
+      case "ANY_ALLY_IN_CRISIS": return _anyAllyInCrisis(reactorActor, ctx.reactorToken ?? null, combat) ? 1 : 0;
       // Status effects suffered by the reactor (debuff-classified, non-disabled,
       // non-suppressed). Delegates classification to the AEM registry's
       // inferCategory() so a single source of truth governs what counts as a
@@ -559,6 +608,7 @@ Hooks.once("ready", () => {
       { name: "CLASS_COUNT",       description: "Number of distinct classes the reactor owns (CSB class_list table, class_name unioned case-insensitively). Backs Ring of Onions." },
       { name: "TARGET_MDEF",       description: "Magic Defense (derived) of the trigger's subject creature (the current target). 0 when no subject token is threaded. Backs Witchbane." },
       { name: "ENEMY_COUNT",       description: "Number of enemy creatures on the scene relative to the reactor (opposite disposition; combat roster preferred, canvas-token fallback). 0 out of combat. Backs Army Wrecker." },
+      { name: "ANY_ALLY_IN_CRISIS", description: "1 if any ALLY of the reactor (strict same-sign disposition, self excluded) is in Crisis (the canonical Crisis AE), else 0. Backs the Guest system heal gate. Alias: ALLY_IN_CRISIS." },
       { name: "DAMAGE_DEALT",  description: "Damage value from the triggering event's payload (post-affinity). Each affected target gets its own event with its own value." },
       { name: "HP_DEALT",      description: "Same but 0 unless the event's valueType is hp." },
       { name: "MP_DEALT",      description: "Same but 0 unless the event's valueType is mp." },
