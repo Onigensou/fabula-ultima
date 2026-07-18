@@ -3,10 +3,10 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1765673862201,
+    "createdTime": 1784302167207,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
-    "systemVersion": "4.8.4"
+    "systemVersion": "4.8.5"
   },
   "channel": "music",
   "description": "",
@@ -23,7 +23,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 353,
+  "seed": 847,
   "sort": 0,
   "sorting": "a",
   "sounds": [
@@ -138,22 +138,6 @@
       "repeat": true,
       "sort": 0,
       "volume": 0.03
-    },
-    {
-      "_id": "IXTUKB7kXjMWUEZd",
-      "channel": "music",
-      "description": "",
-      "fade": null,
-      "flags": {
-        "monks-sound-enhancements": {
-          "hide-name": true
-        }
-      },
-      "name": "Ancient_Path",
-      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Ancient_Path.mp3",
-      "repeat": true,
-      "sort": 0,
-      "volume": 0.3
     },
     {
       "_id": "l6vviXPgQkuOdLkt",

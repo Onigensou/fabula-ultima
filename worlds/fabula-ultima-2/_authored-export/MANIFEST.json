@@ -12229,6 +12229,62 @@
         "effects": 0
       },
       {
+        "id": "UYAabJiUZJ1uKers",
+        "name": "⭐️ Geist",
+        "type": "character",
+        "items": [
+          {
+            "id": "LgcM4WQ3tsbvRMkG",
+            "name": "Blood Weapon"
+          },
+          {
+            "id": "P1XEk7W46IJkjIox",
+            "name": "Cursed Sword"
+          },
+          {
+            "id": "bUu8h4C4kis0z3QL",
+            "name": "Dark Bane"
+          },
+          {
+            "id": "hwRQZH4zxC0vB8wh",
+            "name": "Dark Missionary"
+          },
+          {
+            "id": "tkplYk5nVtf3nu66",
+            "name": "Living Shadow"
+          },
+          {
+            "id": "S01TD1lW8JUnapHh",
+            "name": "Shadow Strike"
+          },
+          {
+            "id": "slPJ2kAvobcND9QL",
+            "name": "Shadow Wall"
+          },
+          {
+            "id": "kFPcc3xDPvPXIGum",
+            "name": "Shadowbringers"
+          },
+          {
+            "id": "TNYXBbOxhHCXZZ5S",
+            "name": "Souleater"
+          },
+          {
+            "id": "jFDqULDfaJIyCqp0",
+            "name": "Torcleaver"
+          },
+          {
+            "id": "xc1wLkLVukf7ouTD",
+            "name": "Zero Power: The Blackest Night"
+          },
+          {
+            "id": "vu1WOzGmFq5DxXNY",
+            "name": "Zero Trigger: Adversity"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "VceM9tFpaVT9Z9fT",
         "name": "⭐️ Gryphon",
         "type": "character",
@@ -16230,62 +16286,6 @@
           {
             "id": "ZwaoHFmtbK9FhVwA",
             "name": "Spiked Plate"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "UYAabJiUZJ1uKers",
-        "name": "Geist",
-        "type": "character",
-        "items": [
-          {
-            "id": "LgcM4WQ3tsbvRMkG",
-            "name": "Blood Weapon"
-          },
-          {
-            "id": "P1XEk7W46IJkjIox",
-            "name": "Cursed Sword"
-          },
-          {
-            "id": "bUu8h4C4kis0z3QL",
-            "name": "Dark Bane"
-          },
-          {
-            "id": "hwRQZH4zxC0vB8wh",
-            "name": "Dark Missionary"
-          },
-          {
-            "id": "tkplYk5nVtf3nu66",
-            "name": "Living Shadow"
-          },
-          {
-            "id": "S01TD1lW8JUnapHh",
-            "name": "Shadow Strike"
-          },
-          {
-            "id": "slPJ2kAvobcND9QL",
-            "name": "Shadow Wall"
-          },
-          {
-            "id": "kFPcc3xDPvPXIGum",
-            "name": "Shadowbringers"
-          },
-          {
-            "id": "TNYXBbOxhHCXZZ5S",
-            "name": "Souleater"
-          },
-          {
-            "id": "jFDqULDfaJIyCqp0",
-            "name": "Torcleaver"
-          },
-          {
-            "id": "xc1wLkLVukf7ouTD",
-            "name": "Zero Power: The Blackest Night"
-          },
-          {
-            "id": "vu1WOzGmFq5DxXNY",
-            "name": "Zero Trigger: Adversity"
           }
         ],
         "effects": 0
@@ -22448,7 +22448,7 @@
       {
         "id": "3RdJ30rU43jtnkFF",
         "name": "Ancient Temple - Enemies",
-        "results": 8
+        "results": 9
       },
       {
         "id": "8nBjRB3WAjyRGhKr",
@@ -22860,7 +22860,7 @@
       {
         "id": "VrpdABUTSoREMDR5",
         "name": "The Legend of Dragonslayer",
-        "sounds": 20
+        "sounds": 19
       },
       {
         "id": "nXC5wp5sOxn42vJl",

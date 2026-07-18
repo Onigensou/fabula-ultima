@@ -72,7 +72,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717324687,
+        "createdTime": 1784356578870,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -8732,7 +8732,7 @@
       "critical_dice_range": 0,
       "current_hp": "94",
       "current_ip": "8",
-      "current_mp": "108",
+      "current_mp": 98,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",

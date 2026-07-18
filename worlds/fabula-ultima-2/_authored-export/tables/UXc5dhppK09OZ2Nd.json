@@ -10,7 +10,11 @@
   },
   "description": "",
   "displayRoll": true,
-  "flags": {},
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
   "folder": "9LaJVdEJbCUtGA5b",
   "formula": "1d8",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
@@ -70,7 +74,7 @@
       "_id": "El9Xa960K7tsDgmK",
       "documentCollection": "Item",
       "documentId": "xktj2JJX7QZ5z6jA",
-      "drawn": false,
+      "drawn": true,
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
       "range": [
@@ -85,7 +89,7 @@
       "_id": "rnNG4y1A4RbIvTOt",
       "documentCollection": "Item",
       "documentId": "vifu2MB7Q9daEa8I",
-      "drawn": false,
+      "drawn": true,
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1231.gif",
       "range": [
@@ -115,7 +119,7 @@
       "_id": "vJCBg5Czldc7wYm7",
       "documentCollection": "Item",
       "documentId": "8mXI5OJRvKbBpmsm",
-      "drawn": false,
+      "drawn": true,
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1626.gif",
       "range": [
