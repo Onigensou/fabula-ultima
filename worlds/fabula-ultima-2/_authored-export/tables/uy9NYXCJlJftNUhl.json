@@ -29,7 +29,7 @@
       "_id": "7VNVLsQIq2KaJcTq",
       "documentCollection": "Item",
       "documentId": "6vnqLdS9ER3gWiSc",
-      "drawn": false,
+      "drawn": true,
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Bandit_Gloves.webp",
       "range": [
@@ -74,7 +74,7 @@
       "_id": "pWEV1hpLZYtblKUy",
       "documentCollection": "Item",
       "documentId": "y8noOLFXVNhH9Ubp",
-      "drawn": false,
+      "drawn": true,
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
       "range": [

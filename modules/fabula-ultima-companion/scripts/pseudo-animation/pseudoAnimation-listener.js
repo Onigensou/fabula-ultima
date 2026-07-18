@@ -128,6 +128,12 @@ try {
       // Only handle our message type
       if (!msg || msg.type !== "oni.pseudo.play") return;
 
+      // If this tab isn't the active one, drop the VFX. A hidden tab pauses
+      // rAF and throttles timers, so accumulated animations would otherwise all
+      // burst at once on refocus. Game state syncs separately; nothing to catch
+      // up on. (See FUCompanion.api.vfxSuppressed.)
+      if (globalThis.FUCompanion?.api?.vfxSuppressed?.()) return;
+
       const runId = msg.runId ?? "NO_RUNID";
 
       // Dedupe guard

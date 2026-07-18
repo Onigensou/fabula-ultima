@@ -360,6 +360,10 @@ function renderedFrac(el, track) {
 // critical.
 export function renderNpcHpBarLocal(payload = {}) {
   try {
+    // Drop on a hidden/non-active tab — see FUCompanion.api.vfxSuppressed. This
+    // ghost bar is transient (animates then vanishes); the token's real bar
+    // reflects current HP when the tab returns.
+    if (globalThis.FUCompanion?.api?.vfxSuppressed?.()) return;
     ensureStyle();
     const tokenUuid = payload?.tokenUuid;
     if (!tokenUuid) return;

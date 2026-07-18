@@ -116,6 +116,30 @@
     _cachedTagOverrides = null;
   };
 
+  // ─────────────────────────────────────────────────────────────────────────────
+  // VFX SUPPRESSION: true when THIS tab is not the active/visible one.
+  //
+  // Cosmetic, broadcast VFX (skill animations, damage numbers, impact/hurt FX,
+  // HP-bar ghost, cut-ins, name-card banners) render fire-and-forget on every
+  // client from socket broadcasts. A browser fully pauses requestAnimationFrame
+  // and throttles timers in a hidden (backgrounded / non-active) tab, so those
+  // effects accumulate un-painted and then all flush at once when the tab
+  // regains focus — a jarring burst of stale animations.
+  //
+  // Since game state (HP, effects, positions) syncs independently through
+  // Foundry, a hidden tab can safely DROP these effects at the render entry
+  // point: when it returns it simply shows current authoritative state, no
+  // backlog. `visibilityState === "hidden"` is exactly "not the active tab"
+  // (true on tab-switch, false for a merely-occluded-but-visible tab that still
+  // paints), which is the precise signal we want. Single source of truth so the
+  // signal can be tuned in one place. Reachable from both ESM and IIFE VFX files
+  // via `FUCompanion.api.vfxSuppressed()`.
+  // ─────────────────────────────────────────────────────────────────────────────
+  FUCompanion.api.vfxSuppressed = () => {
+    try { return (globalThis.document?.visibilityState === "hidden"); }
+    catch { return false; }
+  };
+
   // Settings registration. Must run in "init" — settings are not yet available
   // at file-load time, and game.settings.register itself errors before "init".
   if (typeof Hooks !== "undefined") {

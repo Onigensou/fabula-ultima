@@ -10,7 +10,11 @@
   },
   "description": "You catch a glittering light amidst your peripheral vision. Whatever could it be....?",
   "displayRoll": true,
-  "flags": {},
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
   "folder": "9LaJVdEJbCUtGA5b",
   "formula": "1d15",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",

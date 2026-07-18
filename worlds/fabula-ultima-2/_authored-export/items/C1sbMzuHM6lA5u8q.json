@@ -54,7 +54,6 @@
       "beast_ef": "100",
       "category": "Arcane",
       "celestial_ef": "100",
-      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "0",
@@ -72,8 +71,6 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "id": "C1sbMzuHM6lA5u8q",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
       "insect_ef": "100",
       "ip_cost": "3",
       "isEquipped": false,
@@ -97,7 +94,7 @@
           "skill_cost": "-",
           "skill_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
           "skill_maxLevel": 1,
-          "uuid": "Item.Y8MD5DnW2rHkhxIV"
+          "uuid": ""
         }
       },
       "item_type": "consumable",
@@ -106,14 +103,12 @@
       "name": "Elixir",
       "optional_params": {},
       "plant_ef": "100",
-      "refine_count": "0",
-      "refine_level": "0",
       "related_item_list": {
         "Y8MD5DnW2rHkhxIV": {
           "id": "${item.id}",
           "name": "Elixir",
           "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
-          "uuid": "Item.Y8MD5DnW2rHkhxIV"
+          "uuid": ""
         }
       },
       "reptilian_ef": "100",
@@ -125,7 +120,6 @@
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
-      "uuid": "Item.C1sbMzuHM6lA5u8q",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },

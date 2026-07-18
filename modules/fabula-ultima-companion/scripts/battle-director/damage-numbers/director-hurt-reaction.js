@@ -171,6 +171,8 @@ async function extractTokenImageSrc(token) {
 // Async because the webm snapshot (extract.base64) is async in PIXI 7.4.
 export async function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) {
   try {
+    // Drop on a hidden/non-active tab — see FUCompanion.api.vfxSuppressed.
+    if (globalThis.FUCompanion?.api?.vfxSuppressed?.()) return;
     if (typeof PIXI === "undefined" || !canvas?.ready) return;
     const token = canvasTokenFromUuid(tokenUuid);
     if (!token || token.destroyed) return;

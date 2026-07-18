@@ -44,7 +44,7 @@
       "_id": "fgqOIZgOLlG9SvA5",
       "documentCollection": "Item",
       "documentId": "S1Wdikp3QcyfRvCs",
-      "drawn": false,
+      "drawn": true,
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
       "range": [
@@ -74,7 +74,7 @@
       "_id": "iZilmztV9fW9ytah",
       "documentCollection": "Item",
       "documentId": "ALjvA9L7HbOEbuCS",
-      "drawn": false,
+      "drawn": true,
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/armor.png",
       "range": [

@@ -2,11 +2,11 @@
   "_id": "pfNO17vplycHndhW",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
-    "createdTime": 1744863673944,
+    "coreVersion": "12.343",
+    "createdTime": 1784302167460,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
-    "systemVersion": "2.4.4"
+    "systemVersion": "4.8.5"
   },
   "channel": "music",
   "description": "",
@@ -16,6 +16,7 @@
   "mode": 0,
   "name": "Temp",
   "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
     "WQGFvLStTZeWGpak": 3,
     "default": 0
   },

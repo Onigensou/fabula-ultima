@@ -235,7 +235,15 @@ let _draining = false;
 const _pending = new Set();
 
 function queueReconcile(actor) {
-  if (!actor?.id || !game.user?.isGM) return;              // GM authority only
+  if (!actor?.id) return;
+  // Multi-GM dedupe: this safety net installs on EVERY client at ready and its
+  // hooks (updateActor/AE) fire on BOTH GM clients — in AND out of combat. A
+  // plain isGM gate lets both GMs reconcile → both check-then-act → both
+  // createEmbeddedDocuments → two Crisis AEs. Restrict to the single primary GM.
+  // (Prong A / BD settle stays ungated — its host is the director-holding GM,
+  // which may be the Co-DM.) Fail-open to isGM if the helper isn't loaded.
+  const primary = globalThis.FUCompanion?.isPrimaryGM;
+  if (primary ? !primary() : !game.user?.isGM) return;     // primary GM authority only
   _pending.add(actor);
   if (_draining) return;
   _draining = true;

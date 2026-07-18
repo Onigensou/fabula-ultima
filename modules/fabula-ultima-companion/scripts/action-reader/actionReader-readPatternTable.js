@@ -160,6 +160,9 @@ function normalizePatternRow(rawRow = {}) {
   const hpReserveRaw = data?.[AR.keys.actionPatternHpReserveKey] ?? "";
   const hpReserve = AR.toInteger(hpReserveRaw, 0);
 
+  const hpCeilingRaw = data?.[AR.keys.actionPatternHpCeilingKey] ?? "";
+  const hpCeiling = AR.toInteger(hpCeilingRaw, 0);
+
   let isUsable = true;
   let skipReason = "";
 
@@ -200,6 +203,9 @@ function normalizePatternRow(rawRow = {}) {
 
     hpReserveRaw,
     hpReserve,
+
+    hpCeilingRaw,
+    hpCeiling,
 
     raw: AR.duplicateSafe(data)
   };

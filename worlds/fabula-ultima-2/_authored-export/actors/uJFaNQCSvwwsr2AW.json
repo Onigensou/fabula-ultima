@@ -36,7 +36,7 @@
         "bounce": false,
         "float": false
       },
-      "skill_level_bonus_provoke": 5
+      "skill_level_bonus_provoke": 6
     },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/5faea496f17c50c47382d838/Blanche%201.png",
@@ -7475,7 +7475,7 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 130,
+      "current_hp": "164",
       "current_ip": "10",
       "current_mp": "74",
       "curse_status": 0,

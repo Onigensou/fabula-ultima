@@ -640,15 +640,30 @@ function startFanfare(url, vol) {
 function fadeOutFanfare(a, fadeMs) {
   return new Promise((resolve) => {
     if (!a) return resolve();
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      try { a.volume = 0; } catch (_) {}
+      try { a.pause(); } catch (_) {}
+      resolve();
+    };
     const v0 = a.volume;
     const t0 = performance.now();
     const step = () => {
+      if (done) return;
       const k = Math.min(1, (performance.now() - t0) / fadeMs);
       try { a.volume = v0 * (1 - k); } catch (_) {}
-      if (k >= 1) { try { a.pause(); } catch (_) {} resolve(); }
+      if (k >= 1) finish();
       else requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
+    // Failsafe: rAF is fully paused in a hidden/backgrounded tab, so this fade
+    // loop never advances there — and this promise is awaited mid-timeline, so
+    // without a guard a tabbed-out client (GM included) hangs the whole revive
+    // sequence here until refocus. A throttled setTimeout still fires: force the
+    // resolve (and kill the audio) so the timeline can never stall on the fade.
+    setTimeout(finish, fadeMs + 500);
   });
 }
 
