@@ -184,6 +184,21 @@ function getPerformerCurrentHp(context) {
   return Number.isFinite(n) ? n : null;
 }
 
+// The performer's live HP as a percentage (0–100), from the same BuildContext
+// resources snapshot the `hp` condition reads, with a raw-prop fallback for
+// standalone runs. null when unknowable (→ ceiling never blocks, fail-open).
+function getPerformerCurrentHpPercent(context) {
+  const snap = context?.actorData?.resources?.hp;
+  if (snap && Number.isFinite(AR.toNumber(snap.percent, NaN))) {
+    return AR.toNumber(snap.percent, 0);
+  }
+  const actor = context?.performer?.actor ?? context?.actorData?.actor ?? null;
+  const cur = AR.toNumber(actor?.system?.props?.[AR.keys.hpCurrent], NaN);
+  const max = AR.toNumber(actor?.system?.props?.[AR.keys.hpMax], NaN);
+  if (!Number.isFinite(cur) || !Number.isFinite(max) || max <= 0) return null;
+  return AR.percentCeil(cur, max);
+}
+
 // A row's optional `action_pattern_hp_reserve` — the minimum current HP the
 // performer must have to pick it (a self-cost safety margin for HP-paying moves
 // like Geist's Shadow Strike / Shadowbringers). Blocked when currentHp < reserve.
@@ -196,6 +211,21 @@ function isCandidateHpReserved(candidate, currentHp) {
   if (currentHp == null) return false;
   const reserve = candidateHpReserve(candidate);
   return reserve > 0 && currentHp < reserve;
+}
+
+// A row's optional `action_pattern_hp_ceiling` — the maximum current HP % the
+// performer may have to pick it (the mirror of hp_reserve: a "only when hurt"
+// gate, e.g. Geist's Shadow Wall that should only open when he is at/below 60%).
+// Blocked when currentHpPct > ceiling. Blank/0 ceiling, or unknowable HP%, never
+// blocks (fail-open, legacy behavior).
+function candidateHpCeiling(candidate) {
+  return AR.toInteger(candidate?.row?.hpCeiling, 0);
+}
+
+function isCandidateHpCeilinged(candidate, currentHpPct) {
+  if (currentHpPct == null) return false;
+  const ceiling = candidateHpCeiling(candidate);
+  return ceiling > 0 && currentHpPct > ceiling;
 }
 
 /*
@@ -607,29 +637,48 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
       });
     }
 
-    // --- Self-cost HP reserve hard filter (#6) -------------------------- //
-    // Runs BEFORE feasibility (like #5) so an HP-paying move that could KO the
-    // performer (Geist's Shadow Strike / Shadowbringers) can never be picked —
-    // and, critically, is never resurrected by the feasibility graceful-fallback
-    // (an HP move with no MP/IP cost reads as "free"). If this empties a slot,
-    // the lower-priority `always` fallback rows remain and the actor still acts.
+    // --- HP hard filters (#6): self-cost reserve + low-HP ceiling ------- //
+    // Runs BEFORE feasibility (like #5) so neither an HP-paying move that could
+    // KO the performer (reserve: Geist's Shadow Strike / Shadowbringers) nor an
+    // "only when hurt" move gated above a threshold (ceiling: Geist's Shadow
+    // Wall, opener-slot but only at ≤60% HP) can be picked — and, critically,
+    // neither is resurrected by the feasibility graceful-fallback (an HP move
+    // with no MP/IP cost reads as "free"). Reserve blocks below its floor;
+    // ceiling blocks above its cap. If this empties a slot, the lower-priority
+    // `always` fallback rows remain and the actor still acts.
     const currentHp = getPerformerCurrentHp(context);
+    const currentHpPct = getPerformerCurrentHpPercent(context);
     const affordableCandidates = [];
     let hpReservedCount = 0;
+    let hpCeilingCount = 0;
     for (const candidate of legalCandidates) {
       if (isCandidateHpReserved(candidate, currentHp)) {
         candidate.hpReserved = true;
         candidate.hpReserveValue = candidateHpReserve(candidate);
         hpReservedCount++;
-      } else {
-        candidate.hpReserved = false;
-        affordableCandidates.push(candidate);
+        continue;
       }
+      if (isCandidateHpCeilinged(candidate, currentHpPct)) {
+        candidate.hpCeilinged = true;
+        candidate.hpCeilingValue = candidateHpCeiling(candidate);
+        hpCeilingCount++;
+        continue;
+      }
+      candidate.hpReserved = false;
+      candidate.hpCeilinged = false;
+      affordableCandidates.push(candidate);
     }
     if (hpReservedCount) {
       ARD.addWarning(context, stage, "Some matched actions were withheld — HP too low to pay their self-cost.", {
         currentHp,
         hpReservedCandidates: hpReservedCount,
+        affordableCandidates: affordableCandidates.length
+      });
+    }
+    if (hpCeilingCount) {
+      ARD.addWarning(context, stage, "Some matched actions were withheld — HP above their low-HP ceiling.", {
+        currentHpPct,
+        hpCeilingCandidates: hpCeilingCount,
         affordableCandidates: affordableCandidates.length
       });
     }

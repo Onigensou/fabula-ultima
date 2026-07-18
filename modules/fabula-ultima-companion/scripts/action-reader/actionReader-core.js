@@ -89,7 +89,12 @@ export const ACTION_READER_KEYS = Object.freeze({
   // Min current-HP required to pick this row — a self-cost safety reserve so a
   // move that pays HP (Geist's Shadow Strike / Shadowbringers) is never picked
   // when it could KO the performer. Blank / 0 => no HP guard (legacy).
-  actionPatternHpReserveKey: "action_pattern_hp_reserve"
+  actionPatternHpReserveKey: "action_pattern_hp_reserve",
+
+  // Optional per-row max HP % (inclusive) a performer may have to pick the row —
+  // the mirror of hpReserve: a "only when hurt" ceiling. Row is dropped when the
+  // performer's HP% is ABOVE it. Blank / 0 => no ceiling (legacy, never blocks).
+  actionPatternHpCeilingKey: "action_pattern_hp_ceiling"
 });
 
 /* Foundry module id (used for effect-charge stack flags + combatant memory). */
