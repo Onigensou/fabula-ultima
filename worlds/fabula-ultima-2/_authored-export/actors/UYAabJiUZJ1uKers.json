@@ -579,7 +579,7 @@
               "effect_label": "torcleaver_debuff",
               "from_resource": "",
               "menu_label": "",
-              "target_ref": "hit_action_targets",
+              "target_ref": "trigger_subject",
               "to_resource": ""
             }
           },

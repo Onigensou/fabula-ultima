@@ -8,6 +8,78 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "eh9H7yiUv0UFYmvU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784373593883,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "bdCrisis": true,
+          "derivedStatus": {
+            "byRules": [
+              "core-crisis"
+            ],
+            "forStatus": "Crisis"
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.4"
@@ -7303,7 +7375,7 @@
       "bond_5": "Zenit",
       "bond_6": "",
       "bond_temp": "",
-      "bonus_defense": 7,
+      "bonus_defense": 12,
       "bonus_dex": 0,
       "bonus_hp": 5,
       "bonus_ins": 0,
@@ -7475,7 +7547,7 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "164",
+      "current_hp": 30,
       "current_ip": "10",
       "current_mp": "74",
       "curse_status": 0,
@@ -7510,7 +7582,7 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 19,
+      "defense": 24,
       "delayed_status": 0,
       "despair_status": 0,
       "dex_base": "10",
@@ -8680,7 +8752,7 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I"
         }
       },
-      "skill_class_filter": "Invoker",
+      "skill_class_filter": "Matador",
       "skill_hideEffect": false,
       "skill_type_filter": "All",
       "slow_status": 0,
