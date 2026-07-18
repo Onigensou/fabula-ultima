@@ -18,13 +18,18 @@
       "actorLink": false
     },
     {
-      "name": "Geist",
-      "actorId": "UYAabJiUZJ1uKers",
+      "name": "King Seigfried",
+      "actorId": "wqfGUTRInZUS2MNY",
       "actorLink": true
     },
     {
-      "name": "King Seigfried",
-      "actorId": "wqfGUTRInZUS2MNY",
+      "name": "Princess Hilde",
+      "actorId": "yghaJlx5fcj6DtfX",
+      "actorLink": true
+    },
+    {
+      "name": "Geist",
+      "actorId": "zAsUhIYMdLDOWJFt",
       "actorLink": true
     }
   ],
@@ -137,130 +142,8 @@
       "hidden": true,
       "sort": 2,
       "_id": "5xQEw6eoxWd7qKMs",
-      "x": 225,
-      "y": 480,
-      "elevation": 0,
-      "locked": false,
-      "_regions": [
-        "PRIzRQ9LO4RARjYL"
-      ]
-    },
-    {
-      "name": "Geist",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": 1.17,
-        "scaleY": 1.17,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 0,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": null
-      },
-      "bar2": {
-        "attribute": null
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.5,
-        "angle": 360,
-        "bright": 0,
-        "color": null,
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": null,
-          "speed": 5,
-          "intensity": 5,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 0,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {}
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": true
-        },
-        "fabula-ultima-companion": {
-          "idleAnimToken": {
-            "float": false,
-            "bounce": false
-          }
-        }
-      },
-      "actorId": "UYAabJiUZJ1uKers",
-      "hidden": false,
-      "sort": 2,
-      "_id": "SaIUj3eFUOUSsByL",
-      "x": 252,
-      "y": 266,
+      "x": 87,
+      "y": 214,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -372,7 +255,7 @@
         }
       },
       "actorId": "N4hYREOor4xOIaT1",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "_id": "WDOmL3Gt7PGXWURe",
       "x": 164,
@@ -488,7 +371,7 @@
         }
       },
       "actorId": "N4hYREOor4xOIaT1",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "x": 292,
       "y": 245,
@@ -498,6 +381,122 @@
         "PRIzRQ9LO4RARjYL"
       ],
       "_id": "gIL7i8rbBhO2B6UO"
+    },
+    {
+      "name": "Princess Hilde",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": -1.1,
+        "scaleY": 1.1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "yghaJlx5fcj6DtfX",
+      "hidden": false,
+      "sort": 2,
+      "_id": "pQDvutJ7319ew68B",
+      "x": 203,
+      "y": 321,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "PRIzRQ9LO4RARjYL"
+      ]
     },
     {
       "name": "Villager",
@@ -614,6 +613,132 @@
       "_regions": [
         "PRIzRQ9LO4RARjYL"
       ]
+    },
+    {
+      "name": "Geist",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.17,
+        "scaleY": 1.17,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "dominanceCrestOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "zAsUhIYMdLDOWJFt",
+      "hidden": false,
+      "sort": 1,
+      "_id": "wziEtQRkC0wEPbM5",
+      "x": 269,
+      "y": 322,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [
+        "PRIzRQ9LO4RARjYL"
+      ]
     }
   ],
   "notes": [],
@@ -717,7 +842,8 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": []
+        "sequence": [],
+        "isTriggered": false
       },
       "levels": {
         "backgroundElevation": 0,
@@ -754,7 +880,21 @@
       "fabula-ultima-companion": {
         "oniFabula": {
           "general": {
-            "cameraFollowToken": false
+            "cameraFollowToken": false,
+            "sceneMode": "none",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "sceneVisited": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
           },
           "sceneNetwork": "[{\"name\":\"Eisendrache Castle (Scene)\",\"id\":\"Scene.pUnXd1fJPC3wnVMB\"}]"
         },
@@ -775,7 +915,25 @@
             "consumable": "",
             "item": "",
             "treasure": "",
-            "zenit": ""
+            "zenit": "",
+            "material": ""
+          },
+          "threatLevel": "medium"
+        },
+        "campSceneUuid": ""
+      },
+      "fxmaster": {
+        "filters": {
+          "core_oldfilm": {
+            "type": "oldfilm",
+            "options": {
+              "belowTokens": false,
+              "sepia": 1,
+              "noise": 0,
+              "noiseSize": 0,
+              "scratchDensity": 0.1,
+              "scratch": 0.05
+            }
           }
         }
       }
@@ -787,7 +945,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1766124574416,
-      "modifiedTime": 1781425619844,
+      "modifiedTime": 1784379653088,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "FAsgNrS2ICl9yZmj",
