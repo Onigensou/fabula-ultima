@@ -69,6 +69,22 @@ function isTransientAE(eff) {
   return false;
 }
 
+// Classify an AE as a cleansable buff/debuff — the shared predicate used by
+// `remove_tagged_ae` (Cleanse/Dispel) AND the on-KO cleanse in defeat-reactor.js
+// so the two can't drift. True only if the effect is ACTIVE and opts in via
+// `system.tags` ("buff" or "debuff"), and is NOT a resource tracker:
+// `lifetimeMode: "persistent_counter"` (clocks / point-pools — Prophecy Points,
+// class clocks) are never buffs/debuffs by construction, exactly as guarded in
+// applyRemoveTaggedAeEffect. Equipment/passive/trait AEs carry no buff/debuff
+// tag → excluded. The Crisis AE (tags []) and the KO marker AE → excluded.
+export function isBuffOrDebuffAE(eff) {
+  if (!eff || eff.disabled === true) return false;
+  const lifetimeMode = String(eff?.flags?.[FLAG_NS]?.lifetimeMode ?? "").trim().toLowerCase();
+  if (lifetimeMode === "persistent_counter") return false;
+  const tags = eff?.system?.tags;
+  return Array.isArray(tags) && (tags.includes("buff") || tags.includes("debuff"));
+}
+
 // Sweep every TRANSIENT AE from every actor in the world. Used by
 // `director-boot.stop()` to clean up battle-applied AEs and other
 // duration-bearing effects when the scene/battle ends. Passive AEs
