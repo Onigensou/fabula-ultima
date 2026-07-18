@@ -4,7 +4,7 @@
 // to 0 HP with his Zero Power full, he sacrifices part of his soul — spends
 // ALL his ZP and rises again. Each revival restores him only up to a cap that
 // decays multiplicatively per revive AND ramps — each rise keeps a smaller
-// slice than the last (~70% → 42% → 21% → 9% off max), so overstaying past
+// slice than the last (~70% → 43% → 23% → 11% off max), so overstaying past
 // 2–3 revives collapses hard. His max-HP ceiling is never
 // touched (his low-HP damage passive keys off the ratio). MP restores in
 // full. ZP regeneration is owned elsewhere (Zero Trigger: Adversity); this
@@ -21,9 +21,9 @@
 // item's props without touching code:
 //   undying_zp_cost        (default 6)
 //   undying_restore_decay  (default 0.7 — cap fraction multiplier per trigger)
-//   undying_restore_ramp   (default 0.85 — extra per-revive decay ramp, applied
+//   undying_restore_ramp   (default 0.88 — extra per-revive decay ramp, applied
 //                           as ramp^(n(n-1)/2); 1.0 = off/static, <1 punishes
-//                           successive revives harder: 730/434/219/94/34/10)
+//                           successive revives harder: 730/450/244/116/48/18)
 //
 // Per-battle escalation counter lives on director.ctx (_undyingTriggers) —
 // battle-scoped by construction, no stale-state cleanup needed. Known v1
@@ -60,7 +60,7 @@ const SKILL_NAME_RX  = /blackest\s+night/i;    // fallback if the id ever change
 
 const DEFAULT_ZP_COST = 6;
 const DEFAULT_DECAY   = 0.7;
-const DEFAULT_RAMP    = 0.85;   // extra per-revive ramp (see header); hard-coded
+const DEFAULT_RAMP    = 0.88;   // extra per-revive ramp (see header); hard-coded
                                 // default so a CSB re-stamp strip can't revert it
 
 const PATH_HP     = "system.props.current_hp";
