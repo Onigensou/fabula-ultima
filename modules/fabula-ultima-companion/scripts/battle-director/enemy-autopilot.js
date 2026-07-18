@@ -26,6 +26,7 @@ import { log, warn } from "./logger.js";
 import { registerDevTool } from "./dev-tools-menu.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { decidePlayerAction } from "./sim/player-brain.js";
+import { freeActions } from "./free-actions.js";
 
 // ── ActionReader pipeline (direct ESM import — same singleton the world macro
 //    drives through the module API). We run every stage EXCEPT AnnounceResult:
@@ -418,6 +419,30 @@ export async function autopilotDecideAction(director, snap) {
     } catch (e) { warn("autopilotDecideAction: free-action grant check threw", e); }
   }
 
+  // Real-play free-action frame (Option B → A ladder). If a compose-style
+  // free-action grant is live for this actor, the FSM is inside a
+  // FREE_ACTION_WINDOW and this DECLARE must spend the grant on what it PERMITS —
+  // NOT re-read the whole turn pattern. Running decideViaActionReader here is
+  // exactly the Shadowbringers bug: it is grant-BLIND, re-picks a fresh turn
+  // action (e.g. Shadowbringers again), and applyComposedBundleAndAdvance injects
+  // it straight past the grant's Octopath allow-list → the granting skill
+  // re-fires → infinite loop, turn never advances. So on a free frame we resolve
+  // the grant directly (auto); if we can't do it cleanly we return null → the
+  // GM's grant-filtered compose menu (manual, the last-resort rung). Either way we
+  // NEVER fall through to the pattern read below. The sim path above already does
+  // the equivalent via simFallbackBundle; this is the real-play twin.
+  //
+  // A grant readable HERE is a reliable "we are in a free frame" signal: DECLARE's
+  // orphan guard clears any stray grant on a normal turn BEFORE autopilot runs,
+  // and a `preset` grant is consumed by DECLARE's preset shortcut BEFORE this — so
+  // whatever survives to this point is a legitimate compose-style free action.
+  if (!SimMode.active) {
+    const grant = freeActions.get(snap?.actorId) ?? null;
+    if (grant && !grant.preset) {
+      return await decideFreeActionBundle(director, snap, grant);
+    }
+  }
+
   const bundle = await decideViaActionReader(director, snap);
   if (bundle) return bundle;
   if (!SimMode.active) return null;   // real play — manual fallback, unchanged
@@ -580,6 +605,164 @@ async function decideViaActionReader(director, snap) {
     return bundle;
   } catch (e) {
     warn("autopilotDecideAction threw", e);
+    return null;
+  }
+}
+
+// ── Free-action grant resolver (Option B — auto; Option A — manual last resort) ─
+// A compose-style free-action grant hands the actor a mini-turn restricted to the
+// grant's allow-list (`enabledLabels` / `allowedSkillRefs`) — e.g. Shadow Strike's
+// free Attack, or Counter Pass's free Pass. It is NOT a licence to run the whole
+// turn pattern again. This resolver composes exactly what the grant permits and
+// picks targets with ActionReader's own targeting stages, so an AI-controlled boss
+// spends its granted sub-actions by itself. Anything it can't resolve cleanly (an
+// ambiguous "any Skill/Spell" grant with no named ref, an unaffordable or
+// action-gated pick, no legal target, no basic attack) returns null → DECLARE
+// falls through to the GM's grant-filtered compose menu. It NEVER returns a bundle
+// outside the grant's allow-list — that constraint is what makes the Shadowbringers
+// loop structurally impossible rather than merely unlikely.
+
+// Normalize enabledLabels → a lowercase Set, or null for "unrestricted".
+function normalizeLabelSet(enabledLabels) {
+  if (!Array.isArray(enabledLabels) || !enabledLabels.length) return null;
+  const set = new Set(enabledLabels.map((l) => String(l).trim().toLowerCase()).filter(Boolean));
+  return set.size ? set : null;
+}
+
+// null allow = unrestricted → permits anything.
+function labelPermits(allow, command) {
+  return !allow || allow.has(String(command).trim().toLowerCase());
+}
+
+// skill_type → canonical compose command. Mirrors toBundle / matchAndPickAction.
+function commandForItem(item) {
+  const st = String(item?.system?.props?.[ActionReaderCore.keys.skillType] ?? "").trim().toLowerCase();
+  if (st === "attack") return "Attack";
+  if (st === "spell") return "Spell";
+  return "Skill"; // active / blank → Skill
+}
+
+function buildGrantBundle(command, itemUuid, targetUuids) {
+  if (command === "Attack") return { command: "Attack", attackMode: "npc", npcAttackItemUuid: itemUuid, targetUuids };
+  if (command === "Spell") return { command: "Spell", skillUuid: itemUuid, sourceItemUuid: itemUuid, targetUuids };
+  return { command: "Skill", skillUuid: itemUuid, sourceItemUuid: itemUuid, targetUuids };
+}
+
+// Can the actor pay for this item right now? Reads the ActionReader context's
+// resource snapshot (mp/ip). Unknown/free cost never blocks (fail-open, matching
+// the pattern feasibility filter in matchAndPickAction).
+function grantItemAffordable(item, ctx) {
+  try {
+    const cost = ActionReaderCore.parseActionCost(item?.system?.props?.[ActionReaderCore.keys.cost]);
+    if (cost.free) return true;
+    if (cost.resource === "mp" || cost.resource === "ip") {
+      const pool = cost.resource === "mp" ? ctx?.actorData?.resources?.mp : ctx?.actorData?.resources?.ip;
+      const current = ActionReaderCore.toNumber(pool?.current, 0);
+      return current >= cost.amount;
+    }
+    return true;
+  } catch { return true; }
+}
+
+// Resolve grant.allowedSkillRefs (names or uuids) to the first legal, permitted,
+// affordable item on the actor. null when none qualify.
+function pickNamedGrantItem(actor, refs, allow, ctx, snap) {
+  const items = actor?.items ? Array.from(actor.items) : [];
+  for (const it of items) {
+    const nm = String(it?.name ?? "").trim().toLowerCase();
+    const uid = String(it?.uuid ?? "").trim().toLowerCase();
+    if (!refs.includes(nm) && !refs.includes(uid)) continue;
+    const command = commandForItem(it);
+    if (!labelPermits(allow, command)) continue;
+    if ((snap?.blockedActions ?? []).some((b) => b?.label === command)) continue;
+    if (!grantItemAffordable(it, ctx)) continue;
+    return it;
+  }
+  return null;
+}
+
+// The actor's basic NPC attack item (first of snap.npcAttackItems), resolved to a
+// live doc. null for actors with no NPC attack (casters, PC-shaped guests).
+async function resolveFirstNpcAttackItem(snap) {
+  const list = Array.isArray(snap?.npcAttackItems) ? snap.npcAttackItems : [];
+  if (!list.length) return null;
+  try { return await fromUuid(list[0].uuid); } catch { return null; }
+}
+
+async function decideFreeActionBundle(director, snap, grant) {
+  try {
+    const token = canvas?.tokens?.get(snap?.tokenId) ?? null;
+    if (!token) { log("autopilot: free-action frame has no canvas token — manual fallback"); return null; }
+
+    const combat = director?.combat ?? game.combat ?? null;
+    const combatant = combat?.combatants?.find?.((c) => c.tokenId === snap.tokenId) ?? null;
+
+    let actor = null;
+    try { actor = await fromUuid(snap?.actorUuid); } catch {}
+    if (!actor) { log("autopilot: free-action frame — actor doc unresolved — manual fallback"); return null; }
+
+    const allow = normalizeLabelSet(grant?.enabledLabels);
+    const refs = Array.isArray(grant?.allowedSkillRefs)
+      ? grant.allowedSkillRefs.map((r) => String(r).trim().toLowerCase()).filter(Boolean)
+      : [];
+
+    // One ActionReader context, reused for affordability + targeting.
+    let ctx = ActionReaderCore.createBaseContext();
+    await resolveActionReaderPerformer(ctx, { token, combat, combatant });
+    if (!ctx.performer?.actor) { log("autopilot: free-action frame — resolvePerformer produced no actor — manual fallback"); return null; }
+    await buildActionReaderContext(ctx, {});
+
+    // Choose the granted item: a named skill first, else a basic Attack when the
+    // grant permits one. An ambiguous "any Skill/Spell" grant with no named ref is
+    // deliberately left to the GM — we don't guess which skill an enemy should burn
+    // a free action on.
+    let item = null;
+    if (refs.length) item = pickNamedGrantItem(actor, refs, allow, ctx, snap);
+    if (!item && labelPermits(allow, "Attack")) item = await resolveFirstNpcAttackItem(snap);
+    if (!item) {
+      log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" for ${snap.name} not auto-resolvable (allow=${allow ? [...allow].join("/") : "any"}) — manual fallback`);
+      return null;
+    }
+
+    const command = commandForItem(item);
+    if (!labelPermits(allow, command)) {
+      log(`autopilot: free-action pick ${command} "${item.name}" not permitted by grant — manual fallback`);
+      return null;
+    }
+    if ((snap?.blockedActions ?? []).some((b) => b?.label === command)) {
+      log(`autopilot: free-action pick ${command} "${item.name}" is action-gated — manual fallback`);
+      return null;
+    }
+
+    // Targets: a locked target wins; otherwise ActionReader targeting on the item.
+    let targetUuids = null;
+    if (grant?.lockedTargetTokenUuid) {
+      targetUuids = [grant.lockedTargetTokenUuid];
+    } else {
+      ctx.chosenAction = {
+        item,
+        name: item.name,
+        skillType: String(item.system?.props?.[ActionReaderCore.keys.skillType] ?? ""),
+        skillTarget: ActionReaderCore.getActionTargetText(item),
+      };
+      await parseActionReaderTargetRule(ctx);
+      await buildAndPickActionReaderTargets(ctx);
+      targetUuids = targetUuidsFrom(ctx.chosenTargets ?? []);
+    }
+    if (!targetUuids?.length) {
+      log(`autopilot: free-action ${command} "${item.name}" resolved no target — manual fallback`);
+      return null;
+    }
+
+    // UX parity with the pattern path — a brief "thinking" beat + pip.
+    await think(token, AUTOPILOT_TIMING.decision);
+
+    const bundle = buildGrantBundle(command, item.uuid, targetUuids);
+    log(`autopilot: ${snap.name} free action → ${command} "${item.name}" on ${targetUuids.length} target(s) [grant "${grant?.sourceLabel ?? "?"}"]`);
+    SimMode.note("decide", `${snap.name} free action → ${command} "${item.name}" on ${targetUuids.length} target(s)`);
+    return bundle;
+  } catch (e) {
+    warn("autopilot: decideFreeActionBundle threw — manual fallback", e);
     return null;
   }
 }
