@@ -141,6 +141,8 @@ function playCritSfx(volume = 0.8) {
 // ── local render (runs on every client via socket) ───────────────────────
 async function playDirectorCutinLocal(payload = {}) {
   try {
+    // Drop on a hidden/non-active tab — see FUCompanion.api.vfxSuppressed.
+    if (globalThis.FUCompanion?.api?.vfxSuppressed?.()) return;
     const {
       url,
       enterFrom = "right",

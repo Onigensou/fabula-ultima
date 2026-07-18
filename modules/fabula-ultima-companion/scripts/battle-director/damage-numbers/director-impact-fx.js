@@ -97,6 +97,8 @@ function worldToClient(ax, ay) {
 //   durationMs : hard cap on the burst (mirrors Sequencer's .duration())
 export function playImpactFxLocal({ tokenUuid, file, scale = 1.0, durationMs = 1000 } = {}) {
   try {
+    // Drop on a hidden/non-active tab — see FUCompanion.api.vfxSuppressed.
+    if (globalThis.FUCompanion?.api?.vfxSuppressed?.()) return;
     if (!file) return;
     if (typeof PIXI === "undefined" || !canvas?.ready) return;
     const token = canvasTokenFromUuid(tokenUuid);

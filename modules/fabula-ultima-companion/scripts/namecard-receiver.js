@@ -140,6 +140,11 @@ function hexOrRgba(col, alpha="1"){
 
   // ---------- Local draw function ----------
   async function showNameCardLocal(title, opts = {}) {
+    // If this tab isn't the active one, drop the banner. A hidden tab pauses
+    // rAF and stalls this serial queue at its `await nextFrame()`, so cards
+    // pile up and drain in a burst on refocus. Same treatment as every other
+    // broadcast visual. (See FUCompanion.api.vfxSuppressed.)
+    if (window.FUCompanion?.api?.vfxSuppressed?.()) return;
     ensureBootstrap();
 
     const layer = document.getElementById(LAYER_ID);
@@ -305,6 +310,19 @@ function hexOrRgba(col, alpha="1"){
       if (!data || data.type !== "namecard") return;
       const { title, options } = data;
       showNameCardLocal(title, options);
+    });
+
+    // Belt-and-suspenders for the serial queue: the entry guard drops banners
+    // that ARRIVE while hidden, but one card can already be mid-flight in the
+    // queue (stalled at `await nextFrame()`) at the instant the tab goes hidden
+    // and would resume/play late on return. When this tab goes hidden, wipe the
+    // banner slate — detach pending cards and remove any in-flight DOM — so
+    // nothing stale plays when it comes back.
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "hidden") return;
+      window._oniNameCardQueue = Promise.resolve();
+      try { document.querySelectorAll(".oni-namecard").forEach((el) => el.remove()); }
+      catch (e) { console.warn("[NameCard] hidden-tab cleanup failed:", e); }
     });
   });
 })();

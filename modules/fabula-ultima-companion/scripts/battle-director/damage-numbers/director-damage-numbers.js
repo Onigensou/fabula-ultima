@@ -208,6 +208,9 @@ const _nextSlot = new Map();
 // Silently no-ops if the token isn't on the active canvas — flavor, never critical.
 export function renderDamageNumberLocal(payload = {}) {
   try {
+    // Drop on a hidden/non-active tab — see FUCompanion.api.vfxSuppressed. rAF
+    // is paused there, so accumulated floats would all burst on refocus.
+    if (globalThis.FUCompanion?.api?.vfxSuppressed?.()) return;
     ensureStyle();
     const tokenUuid = payload?.tokenUuid;
     if (!tokenUuid) { return; }
