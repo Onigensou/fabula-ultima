@@ -36,7 +36,7 @@
         "bounce": false,
         "float": false
       },
-      "skill_level_bonus_provoke": 6
+      "skill_level_bonus_provoke": 7
     },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/5faea496f17c50c47382d838/Blanche%201.png",
@@ -2760,19 +2760,31 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+          "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
               "$deleted": false,
+              "consume_self": false,
               "effect_kind": "grant",
               "effect_label": "heal_hp",
+              "from_resource": "",
               "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
+              "grant_operation": "",
               "grant_resource": "hp",
-              "target_ref": "action_targets"
+              "grant_round": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "LMnXdh32LS4ZRCn5",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -2793,10 +2805,13 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
+          "skill_tags": "",
           "skill_target": "",
           "skill_type": "Spell",
+          "target_eligibility": "",
           "type_damage": "healing",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.LMnXdh32LS4ZRCn5"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -7475,7 +7490,7 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "164",
+      "current_hp": "148",
       "current_ip": "10",
       "current_mp": "74",
       "curse_status": 0,

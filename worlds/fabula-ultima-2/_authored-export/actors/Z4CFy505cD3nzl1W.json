@@ -47,7 +47,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.A7BUkFk1sCG49sEz",
+            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.2xBKBevSpCDbhEoh",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },
@@ -109,7 +109,7 @@
             "appliedAtRound": 1,
             "effectLabel": "dance_apply",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.A7BUkFk1sCG49sEz",
+            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.2xBKBevSpCDbhEoh",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
             "turnsRemaining": null
           },
@@ -9847,7 +9847,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "2",
+      "fabula_point": 1,
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
