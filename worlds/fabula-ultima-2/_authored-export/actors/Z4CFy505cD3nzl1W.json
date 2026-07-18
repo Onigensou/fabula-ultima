@@ -10,6 +10,77 @@
   },
   "effects": [
     {
+      "_id": "HdR5OiJQ4CuGzevh",
+      "_stats": {
+        "compendiumSource": "Actor.dafTLBUscCDNgq8H.ActiveEffect.bdDayp3hYqBF5nGZ",
+        "coreVersion": "12.343",
+        "createdTime": 1784379400223,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": null,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "bdDayp3hYqBF5nGZ",
+          "originalParentId": "dafTLBUscCDNgq8H",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.bdDayp3hYqBF5nGZ"
+        },
+        "fabula-ultima-companion": {
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "G0tvPWqwJHkdwoFQ",
+            "family": "sour",
+            "instant": {},
+            "tier": 1
+          },
+          "foodBuff": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
+      "name": "Tangy Trailside Skewer",
+      "origin": "Item.G0tvPWqwJHkdwoFQ",
+      "sort": 0,
+      "statuses": [
+        "permanent"
+      ],
+      "system": {
+        "tags": [
+          "food"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "irFQUIW0qFC2sPmm",
       "_stats": {
         "compendiumSource": null,
@@ -47,7 +118,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.2xBKBevSpCDbhEoh",
+            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.YvLGwHS76BvAmdpi",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },
@@ -75,17 +146,95 @@
       "type": "base"
     },
     {
-      "_id": "OUBOicA7AYz8cl0w",
+      "_id": "PCONB9rT0PResF7l",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784274091400,
+        "createdTime": 1784398324480,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "check_mod_all",
+          "mode": 2,
+          "priority": 1,
+          "value": "3"
+        }
+      ],
       "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "PCONB9rT0PResF7l",
+          "originalParentId": "Z4CFy505cD3nzl1W",
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.PCONB9rT0PResF7l"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "",
+          "charges": null,
+          "chargesMax": null,
+          "crossScene": false,
+          "directorPermanent": false,
+          "hudResourceColor": "#ff6a00",
+          "lifetimeMode": "",
+          "reactionConfig": {
+            "effect_table": {},
+            "name": "",
+            "reaction_config_table": {}
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "check_mod_accuracy",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "TGqXoU2eaBzpC29R",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784403871368,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_check",
+          "mode": 2,
+          "priority": 20,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Bonus to next Check equal to the Spiritist's Bond strength toward this creature.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -99,21 +248,37 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "bvcEIFX8gLRDL1aq",
-          "originalParentId": "8lF3aCEt5wsYxleL",
-          "originalUuid": "Item.8lF3aCEt5wsYxleL.ActiveEffect.bvcEIFX8gLRDL1aq"
+          "originalId": "1kYcwjLglF6tBQ9v",
+          "originalParentId": "9aOTCoRiI7e0FB04",
+          "originalUuid": "Item.9aOTCoRiI7e0FB04.ActiveEffect.1kYcwjLglF6tBQ9v"
         },
         "fabula-ultima-companion": {
-          "category": "Other",
+          "category": "buff",
+          "chargeKey": "support-magic",
+          "charges": 1,
+          "chargesMax": 1,
+          "crossScene": true,
           "directorAppliedBy": {
-            "appliedAtRound": 1,
-            "effectLabel": "dance_apply",
-            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.2xBKBevSpCDbhEoh",
-            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
+            "appliedAtRound": 8,
+            "effectLabel": "support_magic_apply",
+            "lifetimeMode": "on_activation",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.dMVPDtC1ouX0KF31",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE",
             "turnsRemaining": null
           },
-          "directorPermanent": true
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {},
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "",
+                "reaction_passive_mode": "on",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_check"
+              }
+            }
+          }
         },
         "statuscounter": {
           "config": {
@@ -124,14 +289,16 @@
           "visible": false
         }
       },
-      "img": "icons/svg/upgrade.svg",
-      "name": "Dance",
-      "origin": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
+      "name": "Support Magic",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE",
       "sort": 0,
-      "statuses": [],
+      "statuses": [
+        "fud-support-magic"
+      ],
       "system": {
         "tags": [
-          "dance-token"
+          "buff"
         ]
       },
       "tint": "#ffffff",
@@ -283,7 +450,7 @@
       "name": "",
       "optalign": "top",
       "settings": {
-        "emote": null,
+        "emote": "serious",
         "textcolor": null,
         "textflyin": "typewriter",
         "textfont": "Caslon",
@@ -481,7 +648,7 @@
             }
           ],
           "description": "<p><strong>+20 Max HP</strong></p>",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -583,7 +750,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isIngredient": false,
           "isKey": false,
           "isMartial": false,
@@ -675,6 +842,132 @@
       "type": "equippableItem"
     },
     {
+      "_id": "3bCg146gRGCjsFza",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784388336327,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7458.gif",
+      "name": "Charred Bone",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>Bone blackened and brittle from searing flame, still faintly warm and carrying the acrid scent of cinders.</em></p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "4Ew4B2v0hxhzGnpE",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7458.gif",
+          "ingredient_taste": "bitter",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "70",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Charred Bone",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.4Ew4B2v0hxhzGnpE",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "4Ew4B2v0hxhzGnpE"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "4HAJia1ADJ8RijE8",
       "_stats": {
         "compendiumSource": "Item.oAP85eeLJCliYm2E",
@@ -760,7 +1053,7 @@
           "item_cost": "100",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": "1",
+          "item_quantity": 2,
           "item_rarity": "Common",
           "item_type": "material",
           "mimic_ef": "100",
@@ -783,6 +1076,401 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "oAP85eeLJCliYm2E"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "563HNr1ZBCnztbKj",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784383390873,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "8fzwA6IEc23Urgw6",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "Until the start of your next turn, all damage from your attacks and spells becomes light.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "change_element": "light",
+                    "effect_kind": "change_damage_element",
+                    "effect_label": "angel_light_override"
+                  }
+                },
+                "name": "Angel Dance (Light)",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                    "reaction_effect_ref": "angel_light_override",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/holy/light-beam-explosion-yellow.webp",
+          "name": "Angel Dance (Light Element)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-angel-dance-light"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "Kwy7oQGIVt6hvBTu",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_8",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "Until the start of your next turn, you have Resistance to light damage.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/holy/barrier-shield-winged-blue.webp",
+          "name": "Angel Dance (Light Resist)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-angel-dance-light"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_step.png",
+      "name": "Angel Dance",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Dancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\">Light</a> damage.</li><li>All damage dealt by your attacks and spells becomes <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\">Light</a>.</li></ul>",
+          "details_roller": "Show",
+          "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "angel_pick",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Gain Resistance to Light|All your damage becomes Light",
+              "menu_option_refs": "angel_resist, angel_element",
+              "menu_pick_count": "",
+              "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+              "menu_title": "Angel Dance",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "1": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Angel Dance (Light Resist)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "angel_resist",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Angel Dance (Light Element)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "angel_element",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
+          "heroic_requirement": "",
+          "id": "563HNr1ZBCnztbKj",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_step.png",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Angel Dance",
+          "on_activate_effect_ref": "angel_pick",
+          "optional_params": {},
+          "pre_activate_effect_ref": "angel_pick",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_tags": "dance, managed",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "target_eligibility": "",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.563HNr1ZBCnztbKj"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "bYfhha6p8FwBG8SD"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "5EENOHfrftUEVX4f",
+      "_stats": {
+        "compendiumSource": "Item.oAP85eeLJCliYm2E",
+        "coreVersion": "12.343",
+        "createdTime": 1784391290590,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/4cf9a65cd38218340be2753675d98da5_1405866062245277046.webp",
+      "name": "Ember Petal",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A petal that smolders with quiet inner warmth, glowing faintly orange like a coal that refuses to fade.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "oAP85eeLJCliYm2E",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/4cf9a65cd38218340be2753675d98da5_1405866062245277046.webp",
+          "ingredient_taste": "sweet",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "55",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Ember Petal",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.oAP85eeLJCliYm2E",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "UI9WP1hyxQomHxJb"
       },
       "type": "equippableItem"
     },
@@ -1145,7 +1833,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -2309,7 +2997,7 @@
           "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isIngredient": false,
           "isKey": false,
           "isMartial": true,
@@ -2688,7 +3376,7 @@
               "to_resource": ""
             },
             "1": {
-              "ae_duplicate_mode": "replace_family",
+              "ae_duplicate_mode": "replace",
               "ae_family": "dance",
               "ae_initial_charges": "",
               "ae_initial_charges_max": "",
@@ -2702,7 +3390,7 @@
               "to_resource": ""
             },
             "2": {
-              "ae_duplicate_mode": "replace_family",
+              "ae_duplicate_mode": "replace",
               "ae_family": "dance",
               "ae_initial_charges": "",
               "ae_initial_charges_max": "",
@@ -2717,7 +3405,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "euVcGY076CFXmq9R",
+          "id": "AzCQXiZHS2rACuFN",
           "ignore_hr": false,
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
           "isCheck": false,
@@ -2743,7 +3431,7 @@
           "skill_type": "Active",
           "type_damage": "",
           "use_optional_params": false,
-          "uuid": "Item.euVcGY076CFXmq9R"
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.AzCQXiZHS2rACuFN"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3899,6 +4587,132 @@
       "type": "equippableItem"
     },
     {
+      "_id": "FKfXfIFIWl8QPIru",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784391289853,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/939.gif",
+      "name": "Insect Stinger",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A barbed stinger pried from a giant insect, its needle tip still beaded with a glistening drop of venom.</em></p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "IXjVrp7Lp60nMmAR",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/939.gif",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "50",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Insect Stinger",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.IXjVrp7Lp60nMmAR",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "IXjVrp7Lp60nMmAR"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "gVovemTOophkXbck",
       "_stats": {
         "compendiumSource": "Item.5h2gvjbvw26dQSU4",
@@ -4613,6 +5427,117 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "lmVVp510JjCT0H0c"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "jzOXjJXsUWUNXRI3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784402201598,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "Y9y95j2PQAwF2K3H",
+            "itemName": "Cursed Sword",
+            "pickedOldProps": {
+              "cost": "4444",
+              "martial": true
+            },
+            "ts": 1769647435457
+          }
+        }
+      },
+      "folder": "xMVY94FXuACmcFkd",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Great%20Sword/Icon-Force_Stealer.webp",
+      "name": "Cursed Sword",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Sword",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "25",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>At the start of your turn, you lose <strong>20%</strong> of your <strong>MaxHP.</strong></li><li>This item cannot be <strong>unequip </strong>during <strong>conflict</strong></li><li>This item cannot be sold. Any attempt to discard this item will only make the sword reappear in your inventory 4 hour later.</li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<blockquote>\n<p>Forged in darkness, this blade thirsts for its wielder's soul.</p>\n</blockquote>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "Y9y95j2PQAwF2K3H",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Great%20Sword/Icon-Force_Stealer.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "4444",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Legendary",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Cursed Sword",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Dark",
+          "undead_ef": "100",
+          "uuid": "Item.Y9y95j2PQAwF2K3H",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "Y9y95j2PQAwF2K3H"
       },
       "type": "equippableItem"
     },
@@ -5359,6 +6284,139 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "3Un5X30CM2z5J1pl"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "mAQopLhkj1OlePlj",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784392740133,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "FRwmrAhwe8xSLEXZ",
+            "itemName": "Glacial Staff",
+            "pickedOldProps": {
+              "cost": "2000",
+              "martial": false
+            },
+            "ts": 1769646981414
+          }
+        }
+      },
+      "folder": "QGuy8DVLgrvQqs1c",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Rods/Icon-Ice_Rod.webp",
+      "name": "Glacial Staff",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "5",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>You may cast the spell 【<strong>⚡ Icicle Lance </strong>】</p><hr contenteditable=\"false\"></li></ul><details><summary><strong>⚡ Icicle Lance</strong></summary><p><strong>Cost:</strong> 15 x T MP</p><p><strong>Target:</strong> Up to three creatures</p><p><strong>Duration:</strong> Instantaneous</p><p><strong>Check:【WLP】</strong> + <strong>【WLP】</strong></p><ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p></li></ul><p>You summon a glacier spears to strike your foes, Each target hit my this spell suffers <strong>【HR + 20】</strong>ice damage.</p><p></p></details>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "FRwmrAhwe8xSLEXZ",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Rods/Icon-Ice_Rod.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Glacial Staff",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "WLP",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Ice",
+          "undead_ef": "100",
+          "uuid": "Item.FRwmrAhwe8xSLEXZ",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "FRwmrAhwe8xSLEXZ"
       },
       "type": "equippableItem"
     },
@@ -6430,6 +7488,124 @@
       "type": "equippableItem"
     },
     {
+      "_id": "Q08hw2qju0mUF6ih",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784393262150,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Bandit_Gloves.webp",
+      "name": "Bandit Gloves",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Whenever you perform the skill 【💥Soul Steal】You may perform a <strong>Free Attack </strong>on the target with a <strong>melee weapon</strong> you have equipped, Treat your <strong>HR </strong>as 0 when calculating damage dealt by this attack</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "6vnqLdS9ER3gWiSc",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Bandit_Gloves.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Bandit Gloves",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.6vnqLdS9ER3gWiSc",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "6vnqLdS9ER3gWiSc"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "Q1cdHygweV51GezS",
       "_stats": {
         "compendiumSource": "Item.PgdBTVEzsdaiRNiE",
@@ -6789,7 +7965,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -7686,7 +8862,7 @@
           },
           "changes": [],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -7823,7 +8999,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -8910,7 +10086,7 @@
           "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isIngredient": false,
           "isKey": false,
           "isMartial": true,
@@ -9450,10 +10626,10 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "accessory2_details": "<ul>\n<li>When you take damage for the&nbsp;<strong>first time&nbsp;</strong>in a&nbsp;<strong>conflict,&nbsp;</strong>reduce that damage to&nbsp;<strong>0</strong></li>\n</ul>",
-      "accessory2_name": "Ninja Log",
-      "accessory_details": "<ul><li><p>+20 <strong>Max HP</strong></p></li><li>You can speak and communicate with creatures belonging to the <strong>Monster </strong>species.</li></ul>",
-      "accessory_name": "Behemoth Horn",
+      "accessory2_details": "<ul><li><p>Gain +3 to your Accuracy check</p></li><li><p>The first <strong>Range Attack on each round </strong>against your party must target you.</p></li></ul>",
+      "accessory2_name": "Apple o' Archer",
+      "accessory_details": "<ul><li>Decrease IP usage by 1 when creating a <strong>Potion </strong>or <strong>Magisphere</strong> <em>(to a minimum of 1)</em></li></ul>",
+      "accessory_name": "Maid cap",
       "activation": 1,
       "affinity_1": "NA",
       "affinity_2": "NA",
@@ -9473,7 +10649,7 @@
       "armor_name": "Combat Tunic",
       "backstory": "",
       "bane_status": 0,
-      "base_defense": 10,
+      "base_defense": 8,
       "base_magic_defense": 8,
       "battle_facing_direction": "left",
       "berserk_status": 0,
@@ -9487,7 +10663,7 @@
       "bond_6": "Wanderring flame",
       "bond_temp": "",
       "bonus_defense": 2,
-      "bonus_dex": 0,
+      "bonus_dex": -2,
       "bonus_hp": 0,
       "bonus_ins": 0,
       "bonus_magic_defense": 1,
@@ -9504,7 +10680,7 @@
       "character_zenit_multiplier": 1,
       "charm_status": 0,
       "check_mod_accuracy": 0,
-      "check_mod_all": 0,
+      "check_mod_all": 3,
       "check_mod_init": 0,
       "check_mod_magic": 0,
       "check_mod_melee": 0,
@@ -9752,9 +10928,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "129",
-      "current_ip": "7",
-      "current_mp": "39",
+      "current_hp": 110,
+      "current_ip": "4",
+      "current_mp": "55",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",
@@ -9787,11 +10963,11 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 12,
+      "defense": 10,
       "delayed_status": 0,
       "despair_status": 0,
       "dex_base": "10",
-      "dex_current": 10,
+      "dex_current": 8,
       "disarmed_status": 0,
       "doom_status": 0,
       "elementalism": false,
@@ -9820,11 +10996,11 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "6.23",
-      "experience": "6.23",
+      "exp_meter": "9.13",
+      "experience": 6.92,
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 0,
+      "extra_damage_mod_all": 1,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
@@ -9847,7 +11023,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": 1,
+      "fabula_point": "1",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -10013,6 +11189,13 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.OPGC3l2sGAxkAfk2"
         },
+        "Q08hw2qju0mUF6ih": {
+          "acess_description": "<ul><li><p>Whenever you perform the skill 【💥Soul Steal】You may perform a <strong>Free Attack </strong>on the target with a <strong>melee weapon</strong> you have equipped, Treat your <strong>HR </strong>as 0 when calculating damage dealt by this attack</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Bandit Gloves",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.Q08hw2qju0mUF6ih"
+        },
         "QfaU0E6iq829nPxO": {
           "acess_description": "<ul><li>Decrease IP usage by 1 when creating a <strong>Potion </strong>or <strong>Magisphere</strong> <em>(to a minimum of 1)</em></li></ul>",
           "id": "${item.id}",
@@ -10149,19 +11332,26 @@
       },
       "item_restore_mod": 20,
       "key_list": {},
-      "level": "39",
+      "level": 41,
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 9,
       "magic_defense_mod": "1",
       "main_attrib_1": "DEX",
       "main_attrib_2": "INS",
-      "main_details": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.2mX266qZdTJYJXCy]{Zarg's Bow - Light}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Multi (2) — <i>Attacks strike up to 2 different targets.</i></li><li><b>Slot 2:</b> <span style=\"opacity:.6\">(empty)</span></li></ul>",
-      "main_hand": "+5 Zarg's Bow",
+      "main_details": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.GYrsWYBQ6Hu7DnuA]{Zarg's Bow}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>\n<!-- ORBMENT:START -->\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Multi (2) — <i>Attacks strike up to 2 different targets.</i></li><li><b>Slot 2:</b> <span style=\"opacity:.6\">(empty)</span></li></ul>",
+      "main_hand": "+5 Zarg's Bow - Light",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
       "material_list": {
+        "3bCg146gRGCjsFza": {
+          "id": "${item.id}",
+          "key_description": "<p><em>Bone blackened and brittle from searing flame, still faintly warm and carrying the acrid scent of cinders.</em></p>",
+          "name": "Charred Bone",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.3bCg146gRGCjsFza"
+        },
         "4HAJia1ADJ8RijE8": {
           "id": "${item.id}",
           "key_description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
@@ -10169,12 +11359,26 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.4HAJia1ADJ8RijE8"
         },
+        "5EENOHfrftUEVX4f": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A petal that smolders with quiet inner warmth, glowing faintly orange like a coal that refuses to fade.</em></p>",
+          "name": "Ember Petal",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.5EENOHfrftUEVX4f"
+        },
         "5tDdAHyLCzGO91ti": {
           "id": "${item.id}",
           "key_description": "<p><em>Essence that can be obtained from monsters in the flame area in the ecological environment.</em></p>",
           "name": "Flame Essence",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.5tDdAHyLCzGO91ti"
+        },
+        "FKfXfIFIWl8QPIru": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A barbed stinger pried from a giant insect, its needle tip still beaded with a glistening drop of venom.</em></p>",
+          "name": "Insect Stinger",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.FKfXfIFIWl8QPIru"
         },
         "FPBSkcRFbU88XRSp": {
           "id": "${item.id}",
@@ -10254,9 +11458,9 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.ynvsqZxmSc2Eqsld"
         }
       },
-      "max_hp": 129,
+      "max_hp": 110,
       "max_ip": 10,
-      "max_mp": 79,
+      "max_mp": 80,
       "memories_list": {
         "0": {
           "$deleted": false,
@@ -10455,6 +11659,18 @@
           "name": "Superior Infusion",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.4MzWlAWjsjd60WCl"
+        },
+        "563HNr1ZBCnztbKj": {
+          "active_class": "Dancer",
+          "active_cost": "",
+          "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\">Light</a> damage.</li><li>All damage dealt by your attacks and spells becomes <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\">Light</a>.</li></ul>",
+          "active_duration": "Until the start of your next turn",
+          "active_level": 1,
+          "active_target": "Self",
+          "id": "${item.id}",
+          "name": "Angel Dance",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.563HNr1ZBCnztbKj"
         },
         "62wNY7bslntnoL7o": {
           "active_class": "Tinkerer",
@@ -11030,7 +12246,7 @@
       "weapon1_base_damage": "21",
       "weapon1_base_mod": "1",
       "weapon1_damage": 21,
-      "weapon1_damagetype": "Physical",
+      "weapon1_damagetype": "Light",
       "weapon1_mod": 1,
       "weapon2_damagetype": "-",
       "weapon_list": {
@@ -11250,6 +12466,18 @@
           "weapon_martial": "♦️",
           "weapon_range": "Ranged"
         },
+        "jzOXjJXsUWUNXRI3": {
+          "id": "${item.id}",
+          "name": "Cursed Sword",
+          "quantity": "",
+          "roll": "",
+          "type": "Sword",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.jzOXjJXsUWUNXRI3",
+          "weapon_description": "<p><ul><li>At the start of your turn, you lose <strong>20%</strong> of your <strong>MaxHP.</strong></li><li>This item cannot be <strong>unequip </strong>during <strong>conflict</strong></li><li>This item cannot be sold. Any attempt to discard this item will only make the sword reappear in your inventory 4 hour later.</li></ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "♦️",
+          "weapon_range": "Melee"
+        },
         "kD1n2Ywv4tIaBnTa": {
           "id": "${item.id}",
           "name": "Zarg's Bow - Light",
@@ -11261,6 +12489,18 @@
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
           "weapon_range": "Ranged"
+        },
+        "mAQopLhkj1OlePlj": {
+          "id": "${item.id}",
+          "name": "Glacial Staff",
+          "quantity": "",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.mAQopLhkj1OlePlj",
+          "weapon_description": "<p><ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>You may cast the spell 【<strong>⚡ Icicle Lance </strong>】</p><hr contenteditable=\"false\"></li></ul><details><summary><strong>⚡ Icicle Lance</strong></summary><p><strong>Cost:</strong> 15 x T MP</p><p><strong>Target:</strong> Up to three creatures</p><p><strong>Duration:</strong> Instantaneous</p><p><strong>Check:【WLP】</strong> + <strong>【WLP】</strong></p><ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p></li></ul><p>You summon a glacier spears to strike your foes, Each target hit my this spell suffers <strong>【HR + 20】</strong>ice damage.</p><p></p></details></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_range": "Melee"
         },
         "mL5cQiUE7upypy8f": {
           "id": "${item.id}",
@@ -11352,7 +12592,7 @@
       "wlp_base": "8",
       "wlp_current": 8,
       "your_class_name": "Hunter",
-      "zenit": "50",
+      "zenit": 2201,
       "zero_label": "Zero Power",
       "zero_power_description": "<p><strong>Zero Scourge</strong></p><p>Special rule: when you select this effect for your Zero Power, choose a damage type</p><p>among air, bolt, dark, earth, fire, ice, light, and poison; then, choose two status effects</p><p>among dazed, shaken, slow, and weak.</p><p>Choose any number of creatures you can see: each of them suffers damage of then</p><p>chosen type equal to【30 + half your level】and suffers the chosen status effects.</p>",
       "zero_power_macro": "",

@@ -2588,7 +2588,7 @@
         "id": "U3Lw5E3E2OvH0X0D",
         "name": "Angel Dance",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "oAP85eeLJCliYm2E",
@@ -13580,6 +13580,10 @@
             "name": "Air Pendant"
           },
           {
+            "id": "7P7ndMXxUVayfqAN",
+            "name": "Animal Fang"
+          },
+          {
             "id": "CMeAGFkIizTUlysk",
             "name": "Animal Fang"
           },
@@ -13594,6 +13598,10 @@
           {
             "id": "rHPTeOLgkOLtgZIy",
             "name": "Castigo"
+          },
+          {
+            "id": "plL46K0znL53yTjk",
+            "name": "Charred Bone"
           },
           {
             "id": "r4G9YFC4MXYL8lC3",
@@ -13628,6 +13636,10 @@
             "name": "Fortress"
           },
           {
+            "id": "4cNJLm7MxnhIToEe",
+            "name": "Frill"
+          },
+          {
             "id": "vEo4cizZIusEH80B",
             "name": "Grace Under Pressure"
           },
@@ -13660,6 +13672,14 @@
             "name": "Matador Cape"
           },
           {
+            "id": "JFKwNvEQPxHTM5Ap",
+            "name": "Mega-Remedy"
+          },
+          {
+            "id": "qGDOMAtenjvpbAeC",
+            "name": "Mega-Remedy"
+          },
+          {
             "id": "ya38b6iI7xoO4Jur",
             "name": "Moonfish"
           },
@@ -13686,6 +13706,10 @@
           {
             "id": "XrwiCo9dqjD1UGJi",
             "name": "Ruby Pendant"
+          },
+          {
+            "id": "rR5hLV8QzLY0vk9k",
+            "name": "Starfruit"
           },
           {
             "id": "s7GhfXoC9ZMy71wM",
@@ -13732,7 +13756,7 @@
             "name": "Zero Trigger: Motivation"
           }
         ],
-        "effects": 1
+        "effects": 2
       },
       {
         "id": "UXagcMfhhqcSz7OZ",
@@ -15317,10 +15341,6 @@
             "name": "Apple Juice Recipe"
           },
           {
-            "id": "0IxbfRYnSHIKvRuS",
-            "name": "Bandit Gloves"
-          },
-          {
             "id": "NCj1L7FcFxeZsc5k",
             "name": "Black Belt"
           },
@@ -15331,6 +15351,10 @@
           {
             "id": "w0y1ZM62oTMtAKlE",
             "name": "Blazing Sword"
+          },
+          {
+            "id": "E9YDulXdaXmUHTLi",
+            "name": "Bloodied Coin"
           },
           {
             "id": "CNKnuIJzsIVPR0GD",
@@ -15363,6 +15387,10 @@
           {
             "id": "wCSJTNqVjW9ZweJk",
             "name": "Draconic Claw"
+          },
+          {
+            "id": "sI0jQUPGfgBa08OH",
+            "name": "Dragonslayer Pendant"
           },
           {
             "id": "P6VI53iKqeVaeciW",
@@ -15411,6 +15439,10 @@
           {
             "id": "xKB174OGzyfeque1",
             "name": "Hornet"
+          },
+          {
+            "id": "QcFLkPkYOROiqpLz",
+            "name": "Icarus Wing"
           },
           {
             "id": "G0bzxh7zKGOsiHuI",
@@ -16937,6 +16969,10 @@
             "name": "Animal Fang"
           },
           {
+            "id": "4Lo8gr20LL6SOAdK",
+            "name": "Animal Fur"
+          },
+          {
             "id": "0EA2ziqCOEmJWUCK",
             "name": "Apple Juice"
           },
@@ -16969,12 +17005,28 @@
             "name": "Automaton Suit"
           },
           {
+            "id": "UHYsH5KfgNmSzywt",
+            "name": "Avatar of Vengeance"
+          },
+          {
+            "id": "W9XLWch5BdPXVNXA",
+            "name": "Avatar of Vengeance: Dismiss"
+          },
+          {
+            "id": "J73bonzoQZBStwbl",
+            "name": "Avatar of Vengeance: Merge"
+          },
+          {
+            "id": "BlUyFnoWm15YzRgB",
+            "name": "Avatar of Vengeance: Pulse"
+          },
+          {
             "id": "H0DADhpEoUIbwhex",
             "name": "Bimagus"
           },
           {
-            "id": "Mav3EErTtfTiCLIM",
-            "name": "Bind and Summon"
+            "id": "wDBlzFRY5Advy8lD",
+            "name": "Bind and Summon (variant)"
           },
           {
             "id": "t9BfF2mxmREPRFuf",
@@ -16999,6 +17051,10 @@
           {
             "id": "KHWUWYvTzbYyHPs7",
             "name": "Dark Blood"
+          },
+          {
+            "id": "NkbKLXbsq4lwouRY",
+            "name": "Dark Orbit"
           },
           {
             "id": "gUqhsZUi9Adk4Ly6",
@@ -17043,10 +17099,6 @@
           {
             "id": "rUMhVvIctoWDowBh",
             "name": "Ember Petal"
-          },
-          {
-            "id": "UZ4SrdfJoCexQWd4",
-            "name": "Emergency Arcanum"
           },
           {
             "id": "IJPsdKmEyzpLjJu6",
@@ -17097,6 +17149,10 @@
             "name": "Golden Apple"
           },
           {
+            "id": "ho6kGg72Gcvnx7uD",
+            "name": "Golem Heart"
+          },
+          {
             "id": "h5q0pBru1vCPJ6Pr",
             "name": "Grape Juice"
           },
@@ -17117,7 +17173,7 @@
             "name": "Heart of Darkness"
           },
           {
-            "id": "2rMxW49Y5ZoD5jiY",
+            "id": "7S9f0RR7IfYa0lIv",
             "name": "Icarus Wing"
           },
           {
@@ -17185,8 +17241,24 @@
             "name": "Prophetic Defender"
           },
           {
+            "id": "aAf0DxKZobiGsXxW",
+            "name": "Protect"
+          },
+          {
+            "id": "Un5BpzDlecnnBd2z",
+            "name": "Quick Summoning"
+          },
+          {
+            "id": "QZzNOaJbOtsQSiIU",
+            "name": "Regret"
+          },
+          {
             "id": "gMHVtSecAgiriC6S",
             "name": "Ring of Magma"
+          },
+          {
+            "id": "s0jiGXVmnBX0k0wi",
+            "name": "Ritual Arcanism (variant)"
           },
           {
             "id": "2QV4dfxKeibAejia",
@@ -17225,6 +17297,10 @@
             "name": "Starfall Comet"
           },
           {
+            "id": "h90r10rRIoC6fXkb",
+            "name": "Starfruit"
+          },
+          {
             "id": "z1GsqcJC8bh4TOAs",
             "name": "Stop"
           },
@@ -17239,6 +17315,14 @@
           {
             "id": "p7WldKGSMumLxC4p",
             "name": "Symptom Shift"
+          },
+          {
+            "id": "SCdL3yGW9VO3LnOC",
+            "name": "The Selfless"
+          },
+          {
+            "id": "QmIFANXxx3ns597A",
+            "name": "Vismagus"
           },
           {
             "id": "720wa4E0ldJEqXG4",
@@ -17257,7 +17341,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 4
+        "effects": 5
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -17434,6 +17518,13 @@
           }
         ],
         "effects": 1
+      },
+      {
+        "id": "YlQpjVGCJwPVIOU7",
+        "name": "Hironia",
+        "type": "character",
+        "items": [],
+        "effects": 0
       },
       {
         "id": "cEENPHma69ROe7sE",
@@ -18183,6 +18274,14 @@
             "name": "Frill"
           },
           {
+            "id": "ujmt7QnAEe0dWLyc",
+            "name": "Frozen Envy"
+          },
+          {
+            "id": "5Og29tisnmhrTUjM",
+            "name": "Golem Heart"
+          },
+          {
             "id": "5zZBwJJrhmnUx79o",
             "name": "Golem Heart"
           },
@@ -18199,12 +18298,20 @@
             "name": "Illusory Shield"
           },
           {
+            "id": "8RNjrxaNsGiiVbPU",
+            "name": "Jellopy"
+          },
+          {
             "id": "sCu9dnBvUe1qsY4v",
             "name": "Jellopy"
           },
           {
             "id": "fWSnV0BKWLOPGZnq",
             "name": "Life Transference"
+          },
+          {
+            "id": "cutyfv9C0bkBgtS2",
+            "name": "Magician Necklace"
           },
           {
             "id": "LwbHBK0twVXmekz0",
@@ -18263,6 +18370,10 @@
             "name": "Starfruit"
           },
           {
+            "id": "FXVgHBYwPV3hTonM",
+            "name": "Starfruit"
+          },
+          {
             "id": "RSnilc4zgPeVi4ib",
             "name": "Steel Dagger"
           },
@@ -18283,7 +18394,7 @@
             "name": "Zero Trigger: Shattered Phantasm"
           }
         ],
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "EHyFlGpLQLriK65C",
@@ -22166,6 +22277,10 @@
             "name": "+5 Zarg's Bow - Light"
           },
           {
+            "id": "563HNr1ZBCnztbKj",
+            "name": "Angel Dance"
+          },
+          {
             "id": "4HAJia1ADJ8RijE8",
             "name": "Animal Fang"
           },
@@ -22176,6 +22291,10 @@
           {
             "id": "6ef3fWjmWMYTG9Kz",
             "name": "Apple o' Archer"
+          },
+          {
+            "id": "Q08hw2qju0mUF6ih",
+            "name": "Bandit Gloves"
           },
           {
             "id": "mv4dNcGM84BH46mZ",
@@ -22198,12 +22317,20 @@
             "name": "Café au Lait"
           },
           {
+            "id": "3bCg146gRGCjsFza",
+            "name": "Charred Bone"
+          },
+          {
             "id": "L9l5Wqh1mhLdLmmv",
             "name": "Charred Bone"
           },
           {
             "id": "PS5zlTZIJ2yXog8S",
             "name": "Cheap Shot"
+          },
+          {
+            "id": "jzOXjJXsUWUNXRI3",
+            "name": "Cursed Sword"
           },
           {
             "id": "B5EA1iq4j0wYzpo5",
@@ -22226,6 +22353,10 @@
             "name": "Dodge"
           },
           {
+            "id": "5EENOHfrftUEVX4f",
+            "name": "Ember Petal"
+          },
+          {
             "id": "HiXFAkSm35bBGHfM",
             "name": "Emergency Item"
           },
@@ -22244,6 +22375,10 @@
           {
             "id": "H663NG14lmAbBtzp",
             "name": "Gadgets"
+          },
+          {
+            "id": "mAQopLhkj1OlePlj",
+            "name": "Glacial Staff"
           },
           {
             "id": "w8lI13Gc2aisTVes",
@@ -22268,6 +22403,10 @@
           {
             "id": "KlUH81m312QcYsr1",
             "name": "High Speed"
+          },
+          {
+            "id": "FKfXfIFIWl8QPIru",
+            "name": "Insect Stinger"
           },
           {
             "id": "wx93KT48Ixf3JMCP",
@@ -22406,7 +22545,7 @@
             "name": "Zero Trigger: Strategy"
           }
         ],
-        "effects": 2
+        "effects": 4
       },
       {
         "id": "eovuAdwJdbtn8rOr",

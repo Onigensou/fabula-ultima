@@ -23,7 +23,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 50,
+  "seed": 137,
   "sort": 0,
   "sorting": "a",
   "sounds": [
@@ -41,7 +41,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Geist_Battle.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.52
+      "volume": 0.3
     },
     {
       "_id": "3iyVwTQ7wOmOzsmr",
@@ -137,7 +137,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Dragonslayer_Title.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.03
+      "volume": 0.06
     },
     {
       "_id": "l6vviXPgQkuOdLkt",
@@ -185,7 +185,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Ancient_Path.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.25
+      "volume": 0.13
     },
     {
       "_id": "oKpkOR6xSBQW1VQ4",

@@ -111,7 +111,7 @@
         },
         "fabula-ultima-companion": {
           "chargeKey": "lucky_number",
-          "charges": 3,
+          "charges": 7,
           "chargesMax": 12,
           "crossScene": false,
           "directorAppliedBy": {
@@ -123,7 +123,7 @@
           "directorPermanent": true,
           "hudResourceColor": "#ff6a00",
           "lifetimeMode": "",
-          "luckySevenUsedScene": "isNns96tHEmlXfxi",
+          "luckySevenUsedScene": "u4UwSVZ6JOzyJ0tl",
           "reactionConfig": {
             "effect_table": {
               "0": {
@@ -264,7 +264,7 @@
         },
         "fabula-ultima-companion": {
           "chargeKey": "instability",
-          "charges": 0,
+          "charges": 5,
           "chargesMax": 10,
           "crossScene": true,
           "directorPermanent": true,
@@ -369,7 +369,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.CmOeXNS0mV7cKDZJ",
+            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.dMVPDtC1ouX0KF31",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -392,6 +392,95 @@
         "fud-heart-of-darkness-ready"
       ],
       "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "plXJYOiCC6DqZMyo",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784403070476,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_check",
+          "mode": 2,
+          "priority": 20,
+          "value": "0"
+        }
+      ],
+      "description": "<p>Bonus to next Check equal to the Spiritist's Bond strength toward this creature.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "1kYcwjLglF6tBQ9v",
+          "originalParentId": "9aOTCoRiI7e0FB04",
+          "originalUuid": "Item.9aOTCoRiI7e0FB04.ActiveEffect.1kYcwjLglF6tBQ9v"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "support-magic",
+          "charges": 1,
+          "chargesMax": 1,
+          "crossScene": true,
+          "directorAppliedBy": {
+            "appliedAtRound": 8,
+            "effectLabel": "support_magic_apply",
+            "lifetimeMode": "on_activation",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.dMVPDtC1ouX0KF31",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE",
+            "turnsRemaining": null
+          },
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {},
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "",
+                "reaction_passive_mode": "on",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_check"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
+      "name": "Support Magic",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE",
+      "sort": 0,
+      "statuses": [
+        "fud-support-magic"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -565,7 +654,7 @@
       "name": "",
       "optalign": "top",
       "settings": {
-        "emote": "happy",
+        "emote": "meh",
         "textcolor": null,
         "textflyin": "typewriter",
         "textfont": null,
@@ -956,293 +1045,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "2rMxW49Y5ZoD5jiY",
-      "_stats": {
-        "compendiumSource": "Item.KtD7PgidI510dvHa",
-        "coreVersion": "12.343",
-        "createdTime": 1783795002933,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "effects": [
-        {
-          "_id": "nfyTB7h842rjR4BU",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1783877758726,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": true,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "nfyTB7h842rjR4BU",
-              "originalParentId": "2rMxW49Y5ZoD5jiY",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.nfyTB7h842rjR4BU"
-            },
-            "fabula-ultima-companion": {
-              "tags": [
-                "buff"
-              ]
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-          "name": "Flying",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "CVxHWmDb0gQsob1q"
-          ],
-          "system": {
-            "tags": [
-              "icarus-flying"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "Z4n4fsHHfLGvldLf",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1783877758726,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": true,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "Z4n4fsHHfLGvldLf",
-              "originalParentId": "2rMxW49Y5ZoD5jiY",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.Z4n4fsHHfLGvldLf"
-            },
-            "fabula-ultima-companion": {
-              "reactionConfig": {
-                "effect_table": {
-                  "0": {
-                    "ae_duplicate_mode": "replace_same_status",
-                    "ae_template_ref": "Flying",
-                    "effect_kind": "apply_ae",
-                    "effect_label": "iw_fly",
-                    "target_ref": "self"
-                  },
-                  "1": {
-                    "count": "all",
-                    "effect_kind": "remove_tagged_ae",
-                    "effect_label": "iw_ground",
-                    "filter_tag": "icarus-flying",
-                    "target_ref": "self"
-                  }
-                },
-                "name": "Icarus Wing",
-                "reaction_config_table": {
-                  "0": {
-                    "reaction_effect_ref": "iw_fly",
-                    "reaction_passive_mode": "force",
-                    "reaction_source": "self",
-                    "reaction_trigger": "conflict_start"
-                  },
-                  "1": {
-                    "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
-                    "reaction_cause_filter": "damage",
-                    "reaction_effect_ref": "iw_ground",
-                    "reaction_passive_mode": "force",
-                    "reaction_resource_filter": "hp",
-                    "reaction_source": "self",
-                    "reaction_trigger": "creature_lose_resource"
-                  }
-                }
-              },
-              "tags": [
-                "buff"
-              ]
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-          "name": "Icarus Wing",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {},
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "accessory",
-            "fromTemplate": "r0yZpLPAK9VXhM2p",
-            "itemId": "KtD7PgidI510dvHa",
-            "itemName": "Icarus Wing",
-            "pickedOldProps": {
-              "cost": "900",
-              "def_bonus": "",
-              "defense": "0",
-              "defense_include_dex": false,
-              "initiative": "0",
-              "magic_defense": "0",
-              "magic_defense_include_ins": false,
-              "mdef_bonus": ""
-            },
-            "ts": 1769647435805
-          }
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-      "name": "Icarus Wing",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 7500000,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a><strong>&nbsp;</strong>damage</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "KtD7PgidI510dvHa",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "900",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Uncommon",
-          "item_type": "accessory",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Icarus Wing",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Item.KtD7PgidI510dvHa",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "KtD7PgidI510dvHa"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "3jT2QfRSixKYGLMZ",
       "_stats": {
         "compendiumSource": null,
@@ -1385,7 +1187,7 @@
             }
           ],
           "description": "<p>Increase Zenit Gain by 50%</p>",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -1465,7 +1267,7 @@
           "human_ef": "100",
           "humanoid_ef": "100",
           "insect_ef": "100",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -1500,6 +1302,124 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "wJBq8w0Xuh7suRqm"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "4Lo8gr20LL6SOAdK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784391282774,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/914.gif",
+      "name": "Animal Fur",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A Fur of a beast-type monster, it's the core material for making winter garments</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "OfQc5hgDif7XsRH8",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/914.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "200",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Animal Fur",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.OfQc5hgDif7XsRH8",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "OfQc5hgDif7XsRH8"
       },
       "type": "equippableItem"
     },
@@ -2067,6 +1987,293 @@
       "type": "equippableItem"
     },
     {
+      "_id": "7S9f0RR7IfYa0lIv",
+      "_stats": {
+        "compendiumSource": "Item.KtD7PgidI510dvHa",
+        "coreVersion": "12.343",
+        "createdTime": 1784393681897,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "nfyTB7h842rjR4BU",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "nfyTB7h842rjR4BU",
+              "originalParentId": "2rMxW49Y5ZoD5jiY",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.nfyTB7h842rjR4BU"
+            },
+            "fabula-ultima-companion": {
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "name": "Flying",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
+          "system": {
+            "tags": [
+              "icarus-flying"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "Z4n4fsHHfLGvldLf",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Z4n4fsHHfLGvldLf",
+              "originalParentId": "2rMxW49Y5ZoD5jiY",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.Z4n4fsHHfLGvldLf"
+            },
+            "fabula-ultima-companion": {
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "ae_duplicate_mode": "replace_same_status",
+                    "ae_template_ref": "Flying",
+                    "effect_kind": "apply_ae",
+                    "effect_label": "iw_fly",
+                    "target_ref": "self"
+                  },
+                  "1": {
+                    "count": "all",
+                    "effect_kind": "remove_tagged_ae",
+                    "effect_label": "iw_ground",
+                    "filter_tag": "icarus-flying",
+                    "target_ref": "self"
+                  }
+                },
+                "name": "Icarus Wing",
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "iw_fly",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "conflict_start"
+                  },
+                  "1": {
+                    "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
+                    "reaction_cause_filter": "damage",
+                    "reaction_effect_ref": "iw_ground",
+                    "reaction_passive_mode": "force",
+                    "reaction_resource_filter": "hp",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_lose_resource"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "name": "Icarus Wing",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "KtD7PgidI510dvHa",
+            "itemName": "Icarus Wing",
+            "pickedOldProps": {
+              "cost": "900",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435805
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+      "name": "Icarus Wing",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 7500000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a><strong>&nbsp;</strong>damage</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "KtD7PgidI510dvHa",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "900",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Icarus Wing",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.KtD7PgidI510dvHa",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "KtD7PgidI510dvHa"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "7vAXk1MSNgYfTjQx",
       "_stats": {
         "compendiumSource": null,
@@ -2376,6 +2583,93 @@
       "type": "equippableItem"
     },
     {
+      "_id": "aAf0DxKZobiGsXxW",
+      "_stats": {
+        "compendiumSource": "Item.gTXdzJjV4Lmwfm7i",
+        "coreVersion": "12.343",
+        "createdTime": 1784391019883,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/equipment/chest/robe-layered-blue.webp",
+      "name": "Protect",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": "SCdL3yGW9VO3LnOC",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>// ============================================================================</p><p>// Protect - Sequencer (Pipeline Version + PSEUDO \"Move to Front\" + Return + Conditional Flip)</p><p>//</p><p>// Change requested:</p><p>// ✅ Everything that's NOT VFX/SFX is now handled via ONI Pseudo Animation</p><p>// - Caster moves to \"front of target\" using pseudo clone (X + Y)</p><p>// - Optional flip happens on the pseudo clone AFTER arriving, then flips back AFTER returning</p><p>// - No token document movement, so snap guarantee removed</p><p>//</p><p>// VFX/SFX still done by Sequencer:</p><p>// - Protect FX + sound</p><p>//</p><p>// UPDATE NOTE:</p><p>// Your header says \"Protect FX scale = 1\"</p><p>// Your code uses .scale(0.3) with a comment \"requested scaling\"</p><p>// I preserved your ACTUAL code behavior: scale(0.3).</p><p>// If you want scale(1), change that one line.</p><p>//</p><p>// ============================================================================</p><p>(async () =&gt; {</p><p>const TAG = \"[Protect]\";</p><p>try {</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>ui.notifications.error(\"Sequencer module is not active.\");</p><p>return;</p><p>}</p><p>// --- Require ONI Pseudo Animation API ---</p><p>if (!game.ONI?.pseudo?.play) {</p><p>ui.notifications.error(\"ONI Pseudo Animation API not found (game.ONI.pseudo.play).\");</p><p>console.error(TAG, \"Missing game.ONI.pseudo.play\");</p><p>return;</p><p>}</p><p>// Minimal ONI.emit helper</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!ONI.emit) {</p><p>ONI.emit = function (eventName, payload = {}, options = {}) {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, payload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload });</p><p>};</p><p>}</p><p>// --- Payload ---</p><p>const payload = globalThis.__PAYLOAD ?? {};</p><p>// --- Helpers ---</p><p>const isUuid = (v) =&gt; typeof v === \"string\" &amp;&amp; v.includes(\".\");</p><p>async function resolveToken(ref) {</p><p>if (!ref) return null;</p><p>if (ref?.document &amp;&amp; ref?.object) return ref;</p><p>if (ref?.id &amp;&amp; canvas.tokens?.get(ref.id)) return canvas.tokens.get(ref.id);</p><p>if (isUuid(ref)) {</p><p>const doc = await fromUuid(ref);</p><p>if (!doc) return null;</p><p>if (doc.object) return doc.object;</p><p>if (doc.document?.object) return doc.document.object;</p><p>return null;</p><p>}</p><p>if (typeof ref === \"string\") return canvas.tokens.get(ref) ?? null;</p><p>return null;</p><p>}</p><p>function pickTargetsFromPayload(p) {</p><p>if (Array.isArray(p.targetTokenIds) &amp;&amp; p.targetTokenIds.length) return p.targetTokenIds;</p><p>if (Array.isArray(p.targets) &amp;&amp; p.targets.length) {</p><p>const out = [];</p><p>for (const t of p.targets) {</p><p>if (typeof t === \"string\") out.push(t);</p><p>else if (t?.tokenId) out.push(t.tokenId);</p><p>else if (t?.tokenUuid) out.push(t.tokenUuid);</p><p>}</p><p>return out.filter(Boolean);</p><p>}</p><p>if (Array.isArray(p.rows)) {</p><p>const out = [];</p><p>for (const r of p.rows) {</p><p>if (r?.targetTokenId) out.push(r.targetTokenId);</p><p>if (r?.targetTokenUuid) out.push(r.targetTokenUuid);</p><p>}</p><p>if (out.length) return out;</p><p>}</p><p>return [];</p><p>}</p><p>// --- Resolve caster &amp; targets ---</p><p>const sourceRef =</p><p>payload.sourceTokenUuid ??</p><p>payload.sourceTokenId ??</p><p>payload.casterTokenUuid ??</p><p>payload.casterTokenId ??</p><p>payload.attackerTokenUuid ??</p><p>payload.attackerTokenId ??</p><p>null;</p><p>const targetRefs = pickTargetsFromPayload(payload);</p><p>// Fallbacks for testing</p><p>const fallbackSource = canvas.tokens.controlled?.[0] ?? null;</p><p>const fallbackTargets = Array.from(game.user.targets ?? []);</p><p>const sourceToken = (await resolveToken(sourceRef)) ?? fallbackSource;</p><p>const targets = [];</p><p>for (const r of targetRefs) {</p><p>const tok = await resolveToken(r);</p><p>if (tok) targets.push(tok);</p><p>}</p><p>if (!targets.length &amp;&amp; fallbackTargets.length) targets.push(...fallbackTargets);</p><p>if (!sourceToken) {</p><p>ui.notifications.warn(\"Protect: No caster token (payload missing and nothing selected).\");</p><p>return;</p><p>}</p><p>if (!targets.length) {</p><p>ui.notifications.warn(\"Protect: No targets (payload missing and nothing targeted).\");</p><p>return;</p><p>}</p><p>// Single-target</p><p>const targetToken = targets[0];</p><p>// --- Dispositions ---</p><p>const casterDisposition =</p><p>sourceToken?.actor?.document?.disposition ??</p><p>sourceToken?.document?.disposition ??</p><p>0;</p><p>const targetDisposition =</p><p>targetToken?.actor?.document?.disposition ??</p><p>targetToken?.document?.disposition ??</p><p>0;</p><p>const casterHostile = casterDisposition === -1;</p><p>const targetHostile = targetDisposition === -1;</p><p>// --- \"Front of target\" (JRPG side rule) ---</p><p>// Target hostile (-1) is on LEFT and faces RIGHT =&gt; front is RIGHT of target</p><p>// Target friendly (not -1) is on RIGHT and faces LEFT =&gt; front is LEFT of target</p><p>const frontIsRightOfTarget = targetHostile;</p><p>// --- Movement (X + Y, fast) ---</p><p>const squares = 0.60; // tweak</p><p>const offsetPx = canvas.grid.size * squares;</p><p>const destFront = {</p><p>x: targetToken.document.x + (frontIsRightOfTarget ? +offsetPx : -offsetPx),</p><p>y: targetToken.document.y,</p><p>};</p><p>const moveOutMs = 220;</p><p>const moveBackMs = 220;</p><p>// --- Conditional flip rule ---</p><p>// \"friendly unit protect a hostile target\" =&gt; caster friendly AND target hostile AND differ</p><p>const shouldFlipCaster =</p><p>(casterDisposition !== -1) &amp;&amp; (targetDisposition === -1) &amp;&amp; (casterDisposition !== targetDisposition);</p><p>// Mirror state of the REAL token (for reference / logging only)</p><p>const originalMirrorX = sourceToken.document.mirrorX ?? false;</p><p>// --- Broadcast start ---</p><p>ONI.emit(</p><p>\"oni:animationStart\",</p><p>{</p><p>type: \"skillProtect\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: [targetToken.id],</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now(),</p><p>meta: { casterHostile, targetHostile, frontIsRightOfTarget, shouldFlipCaster },</p><p>},</p><p>{ local: true, world: false }</p><p>);</p><p>// --- Assets ---</p><p>const FX_PROTECT =</p><p>\"modules/JB2A_DnD5e/Library/Generic/Conditions/Boon01/ConditionBoon01_012_Green_600x600.webm\";</p><p>const SFX_PROTECT = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Shield2.wav\";</p><p>// --- PSEUDO: move to front -&gt; (optional flip) -&gt; hold -&gt; move back -&gt; (optional unflip) ---</p><p>// Hold should cover: FX start + your scripted wait(2000) + moveBack time window.</p><p>// We'll keep pseudo \"holding in front\" for exactly 2000ms (your original hold),</p><p>// and Sequencer will time its VFX so it plays while the pseudo clone is in front.</p><p>const holdMs = 2000;</p><p>const scriptSource = `</p><p>const { casterToken, params } = ctx;</p><p>if (!casterToken) throw new Error(\"Need casterToken\");</p><p>function easeInOutCubic(t) {</p><p>return t &lt; 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;</p><p>}</p><p>function animate(obj, fromX, fromY, toX, toY, durMs) {</p><p>return new Promise(resolve =&gt; {</p><p>const start = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - start) / durMs;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeInOutCubic(t);</p><p>obj.x = fromX + (toX - fromX) * e;</p><p>obj.y = fromY + (toY - fromY) * e;</p><p>if (t &gt;= 1) { ticker.remove(update); resolve(); }</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>async function createClone(token) {</p><p>const baseObj = token.mesh ?? token.icon;</p><p>const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5);</p><p>sprite.x = token.center.x;</p><p>sprite.y = token.center.y;</p><p>if (baseObj) { sprite.width = baseObj.width; sprite.height = baseObj.height; }</p><p>sprite.zIndex = 5000;</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>return sprite;</p><p>}</p><p>const toX = Number(params.toX);</p><p>const toY = Number(params.toY);</p><p>const moveOutMs = Number(params.moveOutMs ?? 220);</p><p>const holdMs = Number(params.holdMs ?? 0);</p><p>const moveBackMs = Number(params.moveBackMs ?? 220);</p><p>const shouldFlip = Boolean(params.shouldFlip ?? false);</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>let sprite;</p><p>try {</p><p>sprite = await createClone(casterToken);</p><p>// Hide real token locally (once)</p><p>if (baseMesh) baseMesh.visible = false;</p><p>casterToken.visible = false;</p><p>const homeX = sprite.x, homeY = sprite.y;</p><p>// Move OUT (X + Y)</p><p>await animate(sprite, homeX, homeY, toX, toY, moveOutMs);</p><p>// Flip AFTER arriving (only on pseudo clone)</p><p>if (shouldFlip) sprite.scale.x = -Math.abs(sprite.scale.x);</p><p>// Hold in front</p><p>if (holdMs &gt; 0) await wait(holdMs);</p><p>// Flip back BEFORE returning (so return looks normal)</p><p>if (shouldFlip) sprite.scale.x = Math.abs(sprite.scale.x);</p><p>// Move BACK</p><p>await animate(sprite, toX, toY, homeX, homeY, moveBackMs);</p><p>} finally {</p><p>if (sprite) { canvas.stage.removeChild(sprite); sprite.destroy(); }</p><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>casterToken.visible = originalTokenVisible;</p><p>}</p><p>`;</p><p>// Convert destFront token-doc coords -&gt; stage (center) coords for the sprite.</p><p>// Token center = document x/y + (w/2,h/2) grid pixels</p><p>const wPx = (sourceToken.document.width ?? 1) * canvas.grid.size;</p><p>const hPx = (sourceToken.document.height ?? 1) * canvas.grid.size;</p><p>const frontCenterX = destFront.x + wPx / 2;</p><p>const frontCenterY = destFront.y + hPx / 2;</p><p>game.ONI.pseudo.play({</p><p>scriptId: \"oni.protect.moveToFrontHoldReturn\",</p><p>scriptSource,</p><p>casterTokenUuid: sourceToken.document.uuid,</p><p>targetTokenUuids: [targetToken.document.uuid],</p><p>params: {</p><p>toX: frontCenterX,</p><p>toY: frontCenterY,</p><p>moveOutMs,</p><p>holdMs,</p><p>moveBackMs,</p><p>shouldFlip: shouldFlipCaster,</p><p>},</p><p>meta: { source: \"Protect\", shouldFlipCaster, originalMirrorX },</p><p>});</p><p>// --- MAIN SEQUENCE (VFX/SFX only) ---</p><p>const seq = new Sequence();</p><p>// Wait until pseudo arrival completes, then play FX/SFX (matches original \"after arriving\")</p><p>seq.wait(moveOutMs);</p><p>// FX on target + sound</p><p>seq.sound()</p><p>.file(SFX_PROTECT)</p><p>.volume(0.95);</p><p>seq.effect()</p><p>.file(FX_PROTECT)</p><p>.atLocation(targetToken)</p><p>.scale(0.3) // ⬅ preserved from your code; change to 1.0 if you want header behavior</p><p>.opacity(1.0);</p><p>// Hold (same as your original)</p><p>seq.wait(holdMs);</p><p>// Wait the remainder of pseudo return time so animationEnd happens after everything is done</p><p>seq.wait(moveBackMs);</p><p>await seq.play();</p><p>// --- Broadcast end ---</p><p>ONI.emit(</p><p>\"oni:animationEnd\",</p><p>{</p><p>type: \"skillProtect\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: [targetToken.id],</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now(),</p><p>},</p><p>{ local: true, world: false }</p><p>);</p><p>console.log(TAG, \"END\", { moveOutMs, holdMs, moveBackMs, shouldFlipCaster });</p><p>} catch (err) {</p><p>console.error(`${TAG} Animation crashed:`, err);</p><p>// Still emit animationEnd so pipeline won't hang</p><p>try {</p><p>globalThis.ONI?.emit?.(</p><p>\"oni:animationEnd\",</p><p>{ type: \"skillProtect\", error: true, timestamp: Date.now() },</p><p>{ local: true }</p><p>);</p><p>} catch (_) {}</p><p>}</p><p>})();</p><p></p>",
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>When another creature is threatened by an <strong>attack, spell</strong> or <strong>other danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you <strong>twice</strong> (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "img": "icons/equipment/chest/robe-layered-blue.webp",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Protect",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_action_intent": "harmful",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "",
+              "reaction_source": "ally",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_targeted_by_action"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "YBTRLqaFzBFu5xyt"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "BGBKm7rItmmvzf31",
       "_stats": {
         "compendiumSource": null,
@@ -2660,6 +2954,65 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Ydbba6k0hFjWZvJv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BlUyFnoWm15YzRgB",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784403562728,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Avatar of Vengeance: Pulse",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "UHYsH5KfgNmSzywt",
+        "props": {
+          "arcanum_role": "pulse",
+          "class": "Arcanist",
+          "cost": "",
+          "description": "<p>You channel the Avatar's flame, inflicting <strong>3 stacks of Burn</strong> on up to <strong>three creatures</strong> you can see.</p>",
+          "details_roller": "Show",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "3",
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "aov_pulse",
+              "target_ref": "action_targets"
+            }
+          },
+          "id": "jhd1fKKHvVFuzKqB",
+          "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "level": "1",
+          "max_level": "1",
+          "menu_hidden": false,
+          "name": "Avatar of Vengeance: Pulse",
+          "on_activate_effect_ref": "aov_pulse",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Active",
+          "uuid": "Item.jhd1fKKHvVFuzKqB"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "jhd1fKKHvVFuzKqB"
       },
       "type": "equippableItem"
     },
@@ -4555,17 +4908,17 @@
               "key": "flags.fabula-ultima-companion.affinity_class_strike",
               "mode": 5,
               "priority": 20,
-              "value": "IM"
+              "value": "${isEquipped ? 'IM' : 'NA'}$"
             },
             {
               "key": "flags.fabula-ultima-companion.damage_taken_mult",
               "mode": 1,
               "priority": 20,
-              "value": "2"
+              "value": "${isEquipped ? 2 : 1}$"
             }
           ],
           "description": "<p>Gain resistance to <span style=\"text-decoration:underline\"><span style=\"font-family:Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;scrollbar-color:var(--color-scrollbar) var(--color-scrollbar-track);cursor:pointer;--content-link-background:rgba(0, 0, 0, 0.1);background-image:none !important;background-position:initial !important;background-size:initial !important;background-repeat:initial !important;background-attachment:initial !important;background-origin:initial !important;background-clip:initial !important;background-color:rgb(102, 102, 102);padding:0px !important;border:none !important;border-radius:2px;white-space:nowrap;word-break:break-all;color:rgb(72, 199, 116) !important;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(168, 255, 187) 0px 0px 4px;font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;letter-spacing:normal;orphans:2;text-align:start;text-indent:0px;text-transform:none;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px\"><strong><span style=\"text-decoration:underline\">Air</span></strong></a><strong><span style=\"text-decoration:underline\"> </span></strong><span style=\"text-decoration:underline\">damage</span></span></span></p>",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -4647,6 +5000,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -4654,6 +5008,7 @@
           "demon_ef": "100",
           "description": "<ul><li>You are immune to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.ZunRGiMDSgAapm5G\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(235, 75, 7) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Strike Damage</span></strong></a></span></li><li>You takes <strong>200%</strong> damage from all source</li></ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -4665,9 +5020,14 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "GLE6h2EmyLBSYgRX",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Ghastly%20Sheet.webp",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -4679,7 +5039,7 @@
           "item_cost": "3000",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": 1,
+          "item_quantity": "1",
           "item_rarity": "Rare",
           "item_type": "armor",
           "mimic_ef": "100",
@@ -4687,14 +5047,22 @@
           "name": "Ghostly Sheet",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.GLE6h2EmyLBSYgRX",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5534,6 +5902,230 @@
       "type": "equippableItem"
     },
     {
+      "_id": "h90r10rRIoC6fXkb",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784391281527,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Sunsettia.webp",
+      "name": "Starfruit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "The dried peel of a starfruit — intensely tart, prized by travelling chefs.",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "zF6faTFO5nlTBVt8",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Sunsettia.webp",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "0",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Starfruit",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.zF6faTFO5nlTBVt8",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "zF6faTFO5nlTBVt8"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ho6kGg72Gcvnx7uD",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784388329045,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/953.gif",
+      "name": "Golem Heart",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p>A heart made of stone, a core material in creating a golem</p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "QD5q9qkMu11On4UP",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/953.gif",
+          "ingredient_taste": "salty",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "200",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Golem Heart",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.QD5q9qkMu11On4UP",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "QD5q9qkMu11On4UP"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "hxPlRSwOxHShzdRK",
       "_stats": {
         "compendiumSource": "Item.YpRxmj2S5mNfkal2",
@@ -6220,6 +6812,177 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "WeoIipMyJ8Iq9jx4"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "J73bonzoQZBStwbl",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784403562728,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "RY0zLg4kFC5ayOtd",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Merged with the <strong>Avatar of Vengeance</strong>. You recover HP &amp; MP whenever <strong>Burn</strong> triggers.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "RY0zLg4kFC5ayOtd",
+              "originalParentId": "UoFV3k6ELMKMLhRB",
+              "originalUuid": "Item.UoFV3k6ELMKMLhRB.ActiveEffect.RY0zLg4kFC5ayOtd"
+            },
+            "fabula-ultima-companion": {
+              "arcanumMerge": true,
+              "arcanumUniqueId": "i2iiWtzT0FMQHRqj",
+              "directorPermanent": true,
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "action_ref": "merged_arcanum:dismiss",
+                    "effect_kind": "free_action",
+                    "effect_label": "dismiss_free"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "dismiss_free",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_trigger": "turn_start"
+                  },
+                  "1": {
+                    "reaction_effect_ref": "dismiss_free",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_trigger": "turn_end"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "name": "Avatar of Vengeance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-arcanum-merge"
+          ],
+          "system": {
+            "tags": [
+              "arcanum-merge",
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Avatar of Vengeance: Merge",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "UHYsH5KfgNmSzywt",
+        "props": {
+          "arcanum_role": "merge",
+          "class": "Arcanist",
+          "cost": "",
+          "description": "<p>You <strong>merge</strong> with the Avatar of Vengeance. While merged, whenever <strong>any creature's Burn</strong> triggers, you recover <strong>【2% of your Max HP】</strong> and <strong>【2% of your Max MP】</strong> <em>(rounded up)</em>.</p>",
+          "details_roller": "Show",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Avatar of Vengeance",
+              "effect_kind": "apply_ae",
+              "effect_label": "aov_merge_apply",
+              "target_ref": "self"
+            },
+            "1": {
+              "chain_steps": "aov_regen_hp,aov_regen_mp",
+              "effect_kind": "chain",
+              "effect_label": "aov_regen"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "aov_regen_hp",
+              "grant_amount": "ceil(MAX_HP * 0.02)",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            },
+            "3": {
+              "effect_kind": "grant",
+              "effect_label": "aov_regen_mp",
+              "grant_amount": "ceil(MAX_MP * 0.02)",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "id": "UoFV3k6ELMKMLhRB",
+          "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "level": "1",
+          "max_level": "1",
+          "menu_hidden": true,
+          "name": "Avatar of Vengeance: Merge",
+          "on_activate_effect_ref": "aov_merge_apply",
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "aov_regen",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_status_filter": "Burn",
+              "reaction_trigger": "creature_status_triggered"
+            }
+          },
+          "skill_target": "",
+          "skill_type": "Passive",
+          "uuid": "Item.UoFV3k6ELMKMLhRB"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "UoFV3k6ELMKMLhRB"
       },
       "type": "equippableItem"
     },
@@ -7530,80 +8293,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "Mav3EErTtfTiCLIM",
-      "_stats": {
-        "compendiumSource": "Item.PPbGO3BZOBtULyxy",
-        "coreVersion": "12.343",
-        "createdTime": 1783717308784,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/akh_morn.png",
-      "name": "Bind and Summon",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0,
-        "yL2PQxh3R9ddt0te": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "check_bonus": "0",
-          "class": "Arcanist",
-          "cost": "",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>You call upon one of your bound <strong>Arcana</strong>, <strong>merging</strong> with it by paying its summon cost in <strong>Mind Points</strong>. While merged, you may use that Arcanum's skills.</p><p>Only one Arcanum may be merged at a time — you must <strong>Dismiss</strong> your current Arcanum before summoning another.</p>",
-          "duration": "",
-          "effect_table": {
-            "0": {
-              "effect_kind": "open_action_menu",
-              "effect_label": "arcanum_control",
-              "menu_dynamic_source": "arcanum",
-              "menu_subtitle": "Choose an Arcanum",
-              "menu_title": "Bind and Summon",
-              "summon_cost_formula": "40 - HAS_STATUS_CRISIS * SL_EMERGENCY_ARCANUM * 5"
-            }
-          },
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "0",
-          "max_level": "1",
-          "name": "Bind and Summon",
-          "on_activate_effect_ref": "arcanum_control",
-          "optional_params": {},
-          "pre_activate_effect_ref": "arcanum_control",
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "",
-          "skill_target": "Self",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "PPbGO3BZOBtULyxy"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "mNOQFKdgnyhiGTBx",
       "_stats": {
         "compendiumSource": "Item.iFhrsC0cnyChDhgw",
@@ -7888,6 +8577,116 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "oAP85eeLJCliYm2E"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NkbKLXbsq4lwouRY",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784392654054,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "LVLxu1HPQNbpB0Hx",
+            "itemName": "Dark Orbit",
+            "pickedOldProps": {
+              "cost": "2250",
+              "martial": false
+            },
+            "ts": 1769647435463
+          }
+        }
+      },
+      "folder": "TKsKO5bSd6lWa3UE",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "name": "Dark Orbit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 900000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Thrown",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "4",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>You gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong></li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "LVLxu1HPQNbpB0Hx",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2250",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Dark Orbit",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Dark",
+          "undead_ef": "100",
+          "uuid": "Item.LVLxu1HPQNbpB0Hx",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "LVLxu1HPQNbpB0Hx"
       },
       "type": "equippableItem"
     },
@@ -8961,6 +9760,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -8978,9 +9778,12 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "qicvF0JiQQkBupVA",
+          "img": "https://cdna.artstation.com/p/assets/images/images/024/014/374/large/marko-bubalo-jetpack-novi2.jpg?1581033568",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -8992,22 +9795,42 @@
           "item_cost": "800",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": 1,
+          "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "H7HyFkQ2cH7rzf44": {
+              "id": "${item.id}",
+              "name": "Lift off",
+              "skill_cost": "1 IP",
+              "skill_description": "Spend 1 Inventory Point to gain Flying for three turns.",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.H7HyFkQ2cH7rzf44"
+            }
+          },
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Jetpack",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "H7HyFkQ2cH7rzf44": {
+              "id": "${item.id}",
+              "name": "Lift off",
+              "related_item_description": "Spend 1 Inventory Point to gain Flying for three turns.",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.H7HyFkQ2cH7rzf44"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
+          "skill_tags": "",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.qicvF0JiQQkBupVA",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -9015,6 +9838,234 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "Ll5YDptyYjmwjuhW"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "QmIFANXxx3ns597A",
+      "_stats": {
+        "compendiumSource": "Actor.h6f2zG39e1ALpwvH.Item.ddsgq7AVx0Krt69K",
+        "coreVersion": "12.343",
+        "createdTime": 1784406235813,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_BLM/manaward.png",
+      "name": "Vismagus",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you cast a spell, if you don't have enough Mind Points to pay for its total cost, you may choose to spend <strong>twice as many Hit Points instead</strong>. You cannot use this Skill if doing so would reduce you to 0 HP. If the spell would cause you to recover HP, you recover no HP <em>(the spell still works on other targets).</em></p>",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "substitute_cost",
+              "effect_label": "vismagus_swap",
+              "from_resource": "mp",
+              "menu_description": "",
+              "menu_label": "",
+              "min_remaining": 1,
+              "multiplier": 2,
+              "target_ref": "self",
+              "to_resource": "hp"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Vismagus",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_action_intent": "",
+              "reaction_action_target": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "vismagus_swap",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "caster_short_on_mp",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "eW2d3HmbS2ur9hax"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "QZzNOaJbOtsQSiIU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784388327259,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Illusory_Leafcoil.webp",
+      "name": "Regret",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A coil of crystallized longing left behind by what could have been. It is said to taste of every choice never made.</em></p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "D1UEXDIcjCsAs85o",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Illusory_Leafcoil.webp",
+          "ingredient_taste": "bitter",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "50",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 2,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Regret",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.D1UEXDIcjCsAs85o",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "D1UEXDIcjCsAs85o"
       },
       "type": "equippableItem"
     },
@@ -9407,6 +10458,77 @@
       "type": "equippableItem"
     },
     {
+      "_id": "s0jiGXVmnBX0k0wi",
+      "_stats": {
+        "compendiumSource": "Item.x2HmuRVSAnpKVoex",
+        "coreVersion": "12.343",
+        "createdTime": 1784406514473,
+        "duplicateSource": "Item.NqgJHogtrenPHxPP",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/ruin_II.png",
+      "name": "Ritual Arcanism (variant)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 150000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may perform Rituals of the <strong>Arcanism</strong> discipline, as long as their effects fall within the domains of one or more Arcana you have bound.</p><p>Arcanism Rituals use <strong>【WLP + WLP】</strong> for the Magic Check.</p>",
+          "details_roller": "Show",
+          "duration": "",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "s0jiGXVmnBX0k0wi",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/ruin_II.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ritual Arcanism (variant)",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.s0jiGXVmnBX0k0wi"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "x2HmuRVSAnpKVoex"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "SAMjPDBx3kmr7zU4",
       "_stats": {
         "compendiumSource": "Item.YdYhFx1vrvod4P2Y",
@@ -9645,6 +10767,411 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YdYhFx1vrvod4P2Y"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SCdL3yGW9VO3LnOC",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784391018348,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "RKHqcFIn6RGZFqUr",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_magic_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_magic_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "RKHqcFIn6RGZFqUr",
+              "originalParentId": "SJSmfMW8C8gzwsuT",
+              "originalUuid": "Item.SJSmfMW8C8gzwsuT.ActiveEffect.RKHqcFIn6RGZFqUr"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-mdef-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+          "name": "Armor MDEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "T2iYfFgUMOfXpqHT",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "T2iYfFgUMOfXpqHT",
+              "originalParentId": "SJSmfMW8C8gzwsuT",
+              "originalUuid": "Item.SJSmfMW8C8gzwsuT.ActiveEffect.T2iYfFgUMOfXpqHT"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-def-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Armor DEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        },
+        "fabula-ultima-companion": {
+          "armorDefMdefAeMassPatchBackup_v1": {
+            "createdAt": 1777705756886,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "T2iYfFgUMOfXpqHT",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "RKHqcFIn6RGZFqUr",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemName": "The Selfless",
+            "itemUuid": "Item.SJSmfMW8C8gzwsuT",
+            "parentName": "",
+            "parentType": "World"
+          },
+          "defMdefHelperKeyPatchBackup_v1": {
+            "createdAt": 1777708466750,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "T2iYfFgUMOfXpqHT",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "RKHqcFIn6RGZFqUr",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemId": "SJSmfMW8C8gzwsuT",
+            "itemName": "The Selfless",
+            "itemType": "armor",
+            "itemUuid": "Item.SJSmfMW8C8gzwsuT",
+            "owner": {
+              "actor": "",
+              "actorUuid": "",
+              "source": "World Item"
+            }
+          }
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "armor",
+            "fromTemplate": "5Z0gKtN5R51ebJOa",
+            "itemId": "SJSmfMW8C8gzwsuT",
+            "itemName": "The Selfless",
+            "pickedOldProps": {
+              "cost": "1800",
+              "def_bonus": "+2",
+              "defense": "0",
+              "defense_include_dex": true,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": true,
+              "martial": false,
+              "mdef_bonus": "+2",
+              "shield": false
+            },
+            "ts": 1769647436561
+          }
+        }
+      },
+      "folder": "cSLVeZ3TavIe40F1",
+      "img": "icons/equipment/chest/robe-layered-blue.webp",
+      "name": "The Selfless",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3400000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>You gain 【<strong>Protect】</strong> Skill.</p></li><li><p>When you regain <strong>HP</strong>, you may choose another creature, you and that creature regain half of that amount instead. <em>(rounded up)</em></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "SJSmfMW8C8gzwsuT",
+          "img": "icons/equipment/chest/robe-layered-blue.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": true,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1800",
+          "item_def_bonus": "+2",
+          "item_mdef_bonus": "+2",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_skill_active": {
+            "YBTRLqaFzBFu5xyt": {
+              "id": "${item.id}",
+              "name": "Protect",
+              "skill_cost": "",
+              "skill_description": "<p>When another creature is threatened by an <strong>attack, spell</strong> or <strong>other danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you <strong>twice</strong> (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.YBTRLqaFzBFu5xyt"
+            }
+          },
+          "item_type": "armor",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "The Selfless",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "YBTRLqaFzBFu5xyt": {
+              "id": "${item.id}",
+              "name": "Protect",
+              "related_item_description": "<p>When another creature is threatened by an <strong>attack, spell</strong> or <strong>other danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you <strong>twice</strong> (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p>",
+              "uuid": "Item.YBTRLqaFzBFu5xyt"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.SJSmfMW8C8gzwsuT",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "SJSmfMW8C8gzwsuT"
       },
       "type": "equippableItem"
     },
@@ -10979,6 +12506,50 @@
       "type": "equippableItem"
     },
     {
+      "_id": "UHYsH5KfgNmSzywt",
+      "_stats": {
+        "compendiumSource": "Item.i2iiWtzT0FMQHRqj",
+        "coreVersion": "12.343",
+        "createdTime": 1784403562728,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "isArcanum": true
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Avatar of Vengeance",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "class": "Arcanum",
+          "description": "<p><strong>Domain:</strong> Vengeance, Burn.</p><p>An Arcanum of wrathful flame. While merged with the <strong>Avatar of Vengeance</strong>, every <strong>Burn</strong> that flares across the battlefield feeds your fury — spread the flames with <strong>Pulse</strong>, then release the Avatar in a blaze with <strong>Dismiss</strong>.</p>",
+          "domain": "Vengeance, Burn",
+          "element": "fire",
+          "id": "i2iiWtzT0FMQHRqj",
+          "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "name": "Avatar of Vengeance",
+          "uuid": "Item.i2iiWtzT0FMQHRqj"
+        },
+        "template": "5TXvwHYuBKpa2L4N",
+        "templateSystemUniqueVersion": 4207140005,
+        "unique": true,
+        "uniqueId": "i2iiWtzT0FMQHRqj"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "uK8MN1c3SDjR2Pgs",
       "_stats": {
         "compendiumSource": null,
@@ -11021,6 +12592,77 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "WZ0LtCp3xwiAAa3x"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Un5BpzDlecnnBd2z",
+      "_stats": {
+        "compendiumSource": "Item.qTPwunpyLYSM958Z",
+        "coreVersion": "12.343",
+        "createdTime": 1784406500247,
+        "duplicateSource": "Item.soSETT1ahFCMf5Aa",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/crimson_cyclone.png",
+      "name": "Quick Summoning",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you summon an Arcanum on your turn during a conflict, choose up to two options:</p>\n<ul>\n  <li>reduce its MP cost by <strong>[SL × 5]</strong>;</li>\n  <li>after you summon the Arcanum, if you are merged with it, immediately perform its <em>pulse</em>.</li>\n</ul>\n<p>If you choose at least one option, you cannot willingly dismiss that Arcanum until the start of your next turn; if you choose both options, that Arcanum’s dismiss effect will not be available for this summoning.</p>\n",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "Un5BpzDlecnnBd2z",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/crimson_cyclone.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "6",
+          "name": "Quick Summoning",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<p></p><table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>MP Cost Reduction</strong></p></td></tr><tr><td><p>1</p></td><td><p>5 MP</p></td></tr><tr><td><p>2</p></td><td><p>10 MP</p></td></tr></tbody></table><p></p><p></p>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.Un5BpzDlecnnBd2z"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "qTPwunpyLYSM958Z"
       },
       "type": "equippableItem"
     },
@@ -11140,68 +12782,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "mw4wizzYTBtqsW8s"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "UZ4SrdfJoCexQWd4",
-      "_stats": {
-        "compendiumSource": "Item.jdL4K9MGkt9tiVaN",
-        "coreVersion": "12.343",
-        "createdTime": 1783796467847,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/revelation.png",
-      "name": "Emergency Arcanum",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0,
-        "yL2PQxh3R9ddt0te": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "check_bonus": "0",
-          "class": "Arcanist",
-          "cost": "",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>As long as you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, the cost for summoning your Arcana is reduced by <strong>【SL × 5】</strong> Mind Points.</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "level": "0",
-          "max_level": "6",
-          "name": "Emergency Arcanum",
-          "optional_params": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "jdL4K9MGkt9tiVaN"
       },
       "type": "equippableItem"
     },
@@ -11570,6 +13150,235 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "WNWoQrisHlUuxSny"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "W9XLWch5BdPXVNXA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784403562728,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Avatar of Vengeance: Dismiss",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "UHYsH5KfgNmSzywt",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>// =============================================================================</p><p>// ⭐ Wandering Flame — Zero Power: Meteor Impact (cinematic finisher)</p><p>// =============================================================================</p><p>// OUTER script: runs on the GM client (BD ANIMATION state). Resolves the</p><p>// caster + party targets, builds the PIXI \"scriptSource\", and broadcasts it to</p><p>// every client via game.ONI.pseudo.play. A per-run doneHook fires at the</p><p>// meteor's impact (whiteout peak); the outer then emits oni:animationEnd so BD</p><p>// applies the skill's damage on impact. All beats are drawn as PIXI objects on</p><p>// canvas.stage and driven by canvas.app.ticker tweens.</p><p>//</p><p>// Never emits on the reserved \"world\" socket (host-crash class) — cross-client</p><p>// playback is the pseudo channel; hook emits are local-only.</p><p>// -----------------------------------------------------------------------------</p><p>(async () =&gt; {</p><p></p><p>const TAG = \"[ONI][Anim][ZeroPower][MeteorImpact]\";</p><p>const ANIM_KEY = \"oni.zeroPower.meteorImpact\";</p><p></p><p>// ── Assets ───────────────────────────────────────────────────────────────</p><p>const METEOR_URL = \"modules/JB2A_DnD5e/Library/Generic/Celestial_Bodies/PlanetAtmo_05_Regular_Red_800x800.webm\";</p><p>const EXPLOSION_URL = \"modules/boss-loot-assets-free/artwork/05-spell/level3/fireaball/Fireball_1_CARTOON_EXPLOSION_ORANGE_1200x1200.webm\";</p><p>const WF_FALLBACK = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/WanderingFlame_Standard.png\";</p><p></p><p>const CUTIN_SFX = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Overdrive.wav\"; // universal cut-in sting</p><p>const JUMP_SFX = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_HighJump.ogg\";</p><p>const CHARGE_SFX = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/ChargingA.wav\";</p><p>const WHOOSH_SFX = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Fire1.ogg\";</p><p>const IMPACT_SFX = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Amalthea_Explosion.ogg\";</p><p>const LAND_SFX = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_DOWNC.wav\";</p><p></p><p>// ── Tuning (all timings ms, all sizes are screen fractions/px) ─────────────</p><p>// Pacing target: \"slow but impending\" — long menacing build, ominous holds.</p><p>const CFG = {</p><p>// Beat 0 — boss cut-in (token sprite as portrait)</p><p>cutinDimAlpha: 0.74, cutinDimFadeMs: 340,</p><p>cutinSlideInMs: 620, cutinHoldMs: 1500, cutinSlideOutMs: 520,</p><p>cutinPortraitHeightRatio: 0.94, cutinPortraitX: 0.34, cutinPortraitY: 0.54,</p><p>// Beat 1 — jump (fast, snappy)</p><p>jumpCrouchMs: 170, jumpUpMs: 320,</p><p>// Beat 2 — hard cut to sky, then boss slowly slides down = camera pan-up illusion</p><p>cutToBlackMs: 150, cutFromBlackMs: 240, skySlideInMs: 1750, wfSettleHoldMs: 320,</p><p>// Beat 3 — STUTTERED meteor charge (grows huge, overflows top of screen)</p><p>meteorGrowSteps: 6, meteorStepGrowMs: 230, meteorStepHoldMs: 300, meteorHoldMs: 900,</p><p>// Beat 3b — camera zoom-out reveal (shrink WF + meteor together)</p><p>zoomOutMs: 640, zoomOutScale: 0.26, zoomHoldMs: 460, zoomCenterX: 0.5, zoomCenterY: 0.5,</p><p>// Beat 4 — throw (diagonal SE)</p><p>throwWindupMs: 500, throwMs: 680,</p><p>// Beat 5 — pan down to black, then lift a black curtain up (pan-down illusion)</p><p>panDownMs: 660, panBlackHoldMs: 260, panRevealMs: 1550, battlefieldHoldMs: 360,</p><p>// Beat 6 — crash (larger + slower descent = impending impact)</p><p>crashHangMs: 520, crashInMs: 1750,</p><p>// Beat 7 — whiteout (damage lands here); hold full white before fading back</p><p>whiteInMs: 240, whiteHoldMs: 3000, whiteOutMs: 680,</p><p>// Beat 8 — WF falls back to its spot</p><p>fallInMs: 860, landSquashMs: 240, endPadMs: 340,</p><p></p><p>// Sizes (× screen height, converted to world px at runtime)</p><p>wfSkySizeH: 0.32, meteorStartSizeH: 0.06, meteorMaxSizeH: 3.4, meteorGlowMul: 1.12,</p><p>crashStartSizeH: 0.45, crashEndSizeH: 0.92, explosionSizeH: 1.1, dustSizeH: 0.34, shadowMaxSizeH: 0.62,</p><p></p><p>// Screen-fraction anchors</p><p>wfSkyX: 0.42, wfSkyY: 0.80,</p><p>// meteor DRIFTS upward as it grows: starts low &amp; visible (no empty early</p><p>// phase), ends centered high so at absurd size its lower half looms over the</p><p>// boss while the boss stays visible beneath it (chucking it).</p><p>meteorSkyX: 0.44, meteorSkyYStart: 0.10, meteorSkyYEnd: -1.0,</p><p>throwOffX: 1.6, throwOffY: 1.7,</p><p>crashStartX: 0.10, crashStartY: -0.22,</p><p>impactFallbackX: 0.5, impactFallbackY: 0.60,</p><p></p><p>// Audio</p><p>cutinSfxVol: 0.85, jumpVol: 0.7, chargeVol: 0.6, whooshVol: 0.5, impactVol: 0.9, landVol: 0.5,</p><p></p><p>// Layers (z on canvas.stage)</p><p>zSky: 3000, zShadow: 3350, zProjectile: 3400, zExplosion: 3500, zCaster: 3600,</p><p>zCutinDim: 9000, zCutin: 9050, zWhite: 999999,</p><p></p><p>totalTimeoutMs: 30000,</p><p>};</p><p></p><p>// ── Token resolution (from BD payload / globals) ───────────────────────────</p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p></p><p>function tokFromUuid(u) {</p><p>try { const d = fromUuidSync?.(u); return d?.object ?? (d?.documentName === \"Token\" ? d.object : null) ?? null; }</p><p>catch (_) { return null; }</p><p>}</p><p>function resolveSource() {</p><p>const cands = [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid];</p><p>for (const c of cands) { const t = tokFromUuid(c); if (t) return t; }</p><p>const ctrl = canvas?.tokens?.controlled?.[0];</p><p>return ctrl ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>const out = [];</p><p>const arg = Array.isArray(targets) ? targets : [];</p><p>for (const t of arg) if (t?.center) out.push(t);</p><p>if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS))</p><p>for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>if (!out.length)</p><p>for (const u of (P?.targetTokenUuids ?? [])) { const t = tokFromUuid(u); if (t) out.push(t); }</p><p>const seen = new Set();</p><p>return out.filter(t =&gt; { const k = t?.document?.uuid ?? t?.id; if (!k || seen.has(k)) return false; seen.add(k); return true; });</p><p>}</p><p></p><p>const sourceToken = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>if (!sourceToken) { console.warn(TAG, \"no caster token — aborting\"); return; }</p><p>if (typeof game?.ONI?.pseudo?.play !== \"function\") { console.error(TAG, \"ONI Pseudo API missing\"); return; }</p><p></p><p>const wfUrl = sourceToken.actor?.img || WF_FALLBACK;</p><p></p><p>const doneHook = ANIM_KEY + \".done.\" + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p></p><p>function onceHook(name, timeoutMs) {</p><p>return new Promise((resolve) =&gt; {</p><p>let settled = false;</p><p>const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(name, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(name, h); resolve(d ?? { ok: true }); };</p><p>Hooks.on(name, h);</p><p>});</p><p>}</p><p>function emitLocal(name, data) { try { Hooks.callAll(name, data); } catch (_) {} }</p><p></p><p>// ── Inner PIXI script (runs on EVERY client) ───────────────────────────────</p><p>// NOTE: no backticks and no ${ } inside this template — it is String.raw'd.</p><p>const scriptSource = String.raw`</p><p>const caster = ctx.casterToken;</p><p>const targetTokens = ctx.targetTokens || [];</p><p>const cfg = ctx.params.cfg;</p><p>const A = ctx.params.assets;</p><p></p><p>if (!caster) { throw new Error(\"MeteorImpact pseudo: missing casterToken\"); }</p><p></p><p>const stage = canvas.stage;</p><p>stage.sortableChildren = true;</p><p>const ticker = canvas.app.ticker;</p><p>const W = canvas.app.renderer.screen.width;</p><p>const H = canvas.app.renderer.screen.height;</p><p></p><p>// Snapshot the camera transform once (camera is never moved — all motion is</p><p>// overlays, so a per-client camera lock/offset can't desync us).</p><p>const WT = stage.worldTransform.clone();</p><p>const ZOOM = Math.abs(stage.scale?.x || 1) || 1;</p><p>const S2W = (fx, fy) =&gt; WT.applyInverse(new PIXI.Point(fx * W, fy * H));</p><p>const wLen = (screenPx) =&gt; screenPx / ZOOM; // screen px -&gt; world px</p><p>const hPx = (frac) =&gt; wLen(frac * H); // screen-height fraction -&gt; world px</p><p></p><p>const waitMs = (ms) =&gt; new Promise(r =&gt; setTimeout(r, Number(ms) || 0));</p><p>const clamp = (n, a, b) =&gt; Math.max(a, Math.min(b, n));</p><p>const lerp = (a, b, t) =&gt; a + (b - a) * t;</p><p>const easeOutCubic = (t) =&gt; 1 - Math.pow(1 - t, 3);</p><p>const easeInCubic = (t) =&gt; t * t * t;</p><p>const easeInOutCubic = (t) =&gt; t &lt; 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;</p><p></p><p>const spawned = [];</p><p>function track(o) { if (o) spawned.push(o); return o; }</p><p>function alive(o) { return !!o &amp;&amp; !o.destroyed &amp;&amp; !!o.position; }</p><p>function addChildTo(parent, o, z) { o.zIndex = Number(z)||0; parent.sortableChildren = true; parent.addChild(o); parent.sortChildren?.(); return o; }</p><p>function destroyObj(o) {</p><p>try { if (o &amp;&amp; o._vid) { o._vid.pause(); o._vid.src = \"\"; o._vid.load?.(); } } catch(_) {}</p><p>try { if (o?.parent) o.parent.removeChild(o); } catch(_) {}</p><p>try { o?.destroy?.({ children: true }); } catch(_) {}</p><p>}</p><p></p><p>function tween(onUpdate, from, to, durMs, easeFn) {</p><p>easeFn = easeFn || easeInOutCubic;</p><p>return new Promise(resolve =&gt; {</p><p>const start = performance.now();</p><p>const dur = Math.max(1, Number(durMs) || 1);</p><p>const step = () =&gt; {</p><p>const t = clamp((performance.now() - start) / dur, 0, 1);</p><p>try { onUpdate(lerp(from, to, easeFn(t)), t); }</p><p>catch (e) { ticker.remove(step); resolve(false); return; }</p><p>if (t &gt;= 1) { ticker.remove(step); resolve(true); }</p><p>};</p><p>ticker.add(step);</p><p>});</p><p>}</p><p>function fadeAlpha(o, from, to, durMs, easeFn) {</p><p>if (!alive(o)) return Promise.resolve(false);</p><p>o.alpha = from;</p><p>return tween(v =&gt; { if (!alive(o)) throw 0; o.alpha = v; }, from, to, durMs, easeFn || easeOutCubic);</p><p>}</p><p>function tweenXY(o, fromX, toX, fromY, toY, durMs, easeFn, onStep) {</p><p>if (!alive(o)) return Promise.resolve(false);</p><p>return tween((_v, t) =&gt; {</p><p>if (!alive(o)) throw 0;</p><p>const e = (easeFn || easeInOutCubic)(t);</p><p>o.x = lerp(fromX, toX, e); o.y = lerp(fromY, toY, e);</p><p>try { onStep &amp;&amp; onStep(t, e); } catch(_) {}</p><p>}, 0, 1, durMs, (x)=&gt;x);</p><p>}</p><p></p><p>const loadTex = globalThis.loadTextureSafe ?? loadTexture;</p><p></p><p>async function makeImageSprite(url) {</p><p>const tex = await loadTex(url);</p><p>const sp = new PIXI.Sprite(tex);</p><p>sp.anchor.set(0.5);</p><p>return sp;</p><p>}</p><p>// Fresh per use so we never mutate Foundry's shared texture cache.</p><p>async function makeVideoSprite(url, loop) {</p><p>const vid = document.createElement(\"video\");</p><p>vid.src = url; vid.muted = true; vid.loop = !!loop; vid.playsInline = true;</p><p>vid.autoplay = true; vid.preload = \"auto\"; vid.crossOrigin = \"anonymous\";</p><p>try { await vid.play(); } catch(_) {}</p><p>const tex = PIXI.Texture.from(vid);</p><p>const sp = new PIXI.Sprite(tex);</p><p>sp.anchor.set(0.5);</p><p>sp._vid = vid;</p><p>return sp;</p><p>}</p><p>function sizeSquare(sp, worldPx) { sp.width = worldPx; sp.height = worldPx; }</p><p></p><p>function playAudio(src, vol, rate) {</p><p>try {</p><p>const a = new Audio(src); a.preload = \"auto\";</p><p>a.volume = clamp(Number(vol)||0, 0, 1);</p><p>a.playbackRate = clamp(Number(rate)||1, 0.5, 4);</p><p>a.play().catch(()=&gt;{});</p><p>return a;</p><p>} catch(_) { return null; }</p><p>}</p><p></p><p>// Screenshake on the rendered board (overlays live in it, so they shake too).</p><p>const SHAKE_STYLE_ID = \"fud-meteor-shake-style\";</p><p>function ensureShakeStyle() {</p><p>if (document.getElementById(SHAKE_STYLE_ID)) return;</p><p>const css = \"@keyframes fud-meteor-shake{0%,100%{transform:translate(0,0)}\"</p><p>+ \"10%{transform:translate(-12px,9px)}20%{transform:translate(11px,-8px)}\"</p><p>+ \"30%{transform:translate(-9px,-10px)}40%{transform:translate(9px,9px)}\"</p><p>+ \"50%{transform:translate(-8px,6px)}60%{transform:translate(8px,-6px)}\"</p><p>+ \"70%{transform:translate(-5px,5px)}80%{transform:translate(5px,4px)}\"</p><p>+ \"90%{transform:translate(-3px,-3px)}}\"</p><p>+ \".fud-meteor-shake{animation:fud-meteor-shake .62s cubic-bezier(.36,.07,.19,.97) both;}\";</p><p>const st = document.createElement(\"style\"); st.id = SHAKE_STYLE_ID; st.textContent = css;</p><p>document.head.appendChild(st);</p><p>}</p><p>function screenShake() {</p><p>try {</p><p>ensureShakeStyle();</p><p>const board = canvas.app?.view ?? document.getElementById(\"board\");</p><p>if (!board) return;</p><p>board.classList.remove(\"fud-meteor-shake\");</p><p>void board.offsetWidth;</p><p>board.classList.add(\"fud-meteor-shake\");</p><p>setTimeout(() =&gt; { try { board.classList.remove(\"fud-meteor-shake\"); } catch(_){} }, 720);</p><p>} catch(_) {}</p><p>}</p><p></p><p>// Radial glow / dust puff sprite from a generated canvas texture.</p><p>function makeRadial(colorInner, colorOuter) {</p><p>const cv = document.createElement(\"canvas\"); cv.width = 256; cv.height = 256;</p><p>const g = cv.getContext(\"2d\");</p><p>const grd = g.createRadialGradient(128,128,0,128,128,128);</p><p>grd.addColorStop(0, colorInner); grd.addColorStop(0.5, colorOuter); grd.addColorStop(1, \"rgba(0,0,0,0)\");</p><p>g.fillStyle = grd; g.beginPath(); g.arc(128,128,128,0,Math.PI*2); g.fill();</p><p>const sp = new PIXI.Sprite(PIXI.Texture.from(cv));</p><p>sp.anchor.set(0.5); sp.blendMode = PIXI.BLEND_MODES.ADD;</p><p>return sp;</p><p>}</p><p>// Night-to-ember sky gradient covering the viewport (+margins).</p><p>function makeSkyGradient(worldW, worldH) {</p><p>const cv = document.createElement(\"canvas\"); cv.width = 8; cv.height = 256;</p><p>const g = cv.getContext(\"2d\");</p><p>const grd = g.createLinearGradient(0,0,0,256);</p><p>grd.addColorStop(0, \"#05060f\"); grd.addColorStop(0.55, \"#0c0a1c\"); grd.addColorStop(1, \"#3a1220\");</p><p>g.fillStyle = grd; g.fillRect(0,0,8,256);</p><p>const sp = new PIXI.Sprite(PIXI.Texture.from(cv));</p><p>sp.anchor.set(0,0); sp.width = worldW; sp.height = worldH;</p><p>return sp;</p><p>}</p><p></p><p>// Facing sign taken from the RENDERED mesh scale (folds in Mirror-Horizontal +</p><p>// texture.scaleX + facing) — the ground truth for which way the token looks.</p><p>const baseMesh = caster.mesh ?? caster.icon;</p><p>const casterSignX = Math.sign(baseMesh?.scale?.x || 1) || 1;</p><p>const casterSignY = Math.sign(baseMesh?.scale?.y || 1) || 1;</p><p></p><p>// ── Caster clone (matches the rendered token sprite, incl. flip) ───────────</p><p>function makeCasterClone() {</p><p>const sp = new PIXI.Sprite(baseMesh?.texture ?? PIXI.Texture.EMPTY);</p><p>sp.anchor.set(0.5);</p><p>sp.x = caster.center.x; sp.y = caster.center.y;</p><p>if (baseMesh) {</p><p>sp.width = Math.abs(baseMesh.width); sp.height = Math.abs(baseMesh.height); sp.angle = baseMesh.angle ?? 0;</p><p>}</p><p>sp.scale.x = Math.abs(sp.scale.x) * casterSignX;</p><p>sp.scale.y = Math.abs(sp.scale.y) * casterSignY;</p><p>return sp;</p><p>}</p><p></p><p>// ── State / cleanup ────────────────────────────────────────────────────────</p><p>const origTokRenderable = caster.renderable ?? true;</p><p>const origMeshRenderable = baseMesh?.renderable ?? true;</p><p>let doneFired = false;</p><p>function fireDone(res) { if (doneFired) return; doneFired = true; try { Hooks.callAll(ctx.params.doneHook, res || { ok: true }); } catch(_) {} }</p><p></p><p>// Hide the WHOLE token container via 'renderable' (not 'visible'): Foundry's</p><p>// refresh recomputes 'visible' from the vision system and would un-hide the</p><p>// token the moment the clone leaves, and setting visible=false sticks so the</p><p>// token never comes back. renderable=false isn't touched by refresh, and a</p><p>// per-tick guard re-asserts it against any cull pass. Restore un-sets it and</p><p>// fires a renderFlags refresh so Foundry recomputes the correct final state.</p><p>let hideGuard = null;</p><p>function startHideGuard() {</p><p>if (hideGuard) return;</p><p>hideGuard = () =&gt; { try { caster.renderable = false; if (baseMesh) baseMesh.renderable = false; } catch(_){} };</p><p>ticker.add(hideGuard);</p><p>}</p><p>function stopHideGuard() { if (hideGuard) { try { ticker.remove(hideGuard); } catch(_){} hideGuard = null; } }</p><p>function restoreCaster() {</p><p>stopHideGuard();</p><p>try {</p><p>caster.renderable = origTokRenderable;</p><p>if (baseMesh) { baseMesh.renderable = origMeshRenderable; baseMesh.visible = true; }</p><p>caster.renderFlags?.set?.({ refreshVisibility: true, refreshMesh: true, refreshState: true });</p><p>} catch(_){}</p><p>}</p><p>function cleanupAll() { for (const o of spawned.splice(0)) destroyObj(o); }</p><p></p><p>// Impact point (party centroid, else fallback anchor) in world coords.</p><p>let impactW;</p><p>if (targetTokens.length) {</p><p>let sx = 0, sy = 0;</p><p>for (const t of targetTokens) { sx += t.center.x; sy += t.center.y; }</p><p>impactW = { x: sx / targetTokens.length, y: sy / targetTokens.length };</p><p>} else {</p><p>impactW = S2W(cfg.impactFallbackX, cfg.impactFallbackY);</p><p>}</p><p></p><p>// ── The sky \"view\" container (pans as one unit) ────────────────────────────</p><p>const skyView = new PIXI.Container();</p><p>skyView.sortableChildren = true;</p><p>const H_world = wLen(H) * 1.35; // one screen-height (+margin) in world px</p><p>const coverTL = S2W(-0.18, -0.18);</p><p>const coverW = S2W(1.18, -0.18).x - coverTL.x;</p><p>const coverH = S2W(-0.18, 1.18).y - coverTL.y;</p><p></p><p>try {</p><p>ensureShakeStyle();</p><p>startHideGuard(); // keep the real token hidden for the whole sequence</p><p></p><p>// ---- Beat 0: boss cut-in (token sprite as portrait) ------------------</p><p>const cutDim = new PIXI.Graphics();</p><p>cutDim.beginFill(0x000000, 1); cutDim.drawRect(coverTL.x, coverTL.y, coverW, coverH); cutDim.endFill();</p><p>cutDim.alpha = 0;</p><p>addChildTo(stage, cutDim, cfg.zCutinDim); track(cutDim);</p><p>await fadeAlpha(cutDim, 0, cfg.cutinDimAlpha, cfg.cutinDimFadeMs, easeOutCubic);</p><p>playAudio(A.cutin, cfg.cutinSfxVol, 1.0);</p><p></p><p>const portrait = await makeImageSprite(A.wf);</p><p>const pH = hPx(cfg.cutinPortraitHeightRatio);</p><p>const pAspect = (portrait.texture.width &amp;&amp; portrait.texture.height) ? (portrait.texture.width / portrait.texture.height) : 0.72;</p><p>portrait.height = pH; portrait.width = pH * pAspect;</p><p>portrait.scale.x = Math.abs(portrait.scale.x) * casterSignX;</p><p>const pRest = S2W(cfg.cutinPortraitX, cfg.cutinPortraitY);</p><p>const pOff = S2W(-0.45, cfg.cutinPortraitY);</p><p>portrait.x = pOff.x; portrait.y = pRest.y;</p><p>addChildTo(stage, portrait, cfg.zCutin); track(portrait);</p><p>await tweenXY(portrait, portrait.x, pRest.x, portrait.y, pRest.y, cfg.cutinSlideInMs, easeOutCubic);</p><p>await waitMs(cfg.cutinHoldMs);</p><p>const pExit = S2W(1.45, cfg.cutinPortraitY);</p><p>await tweenXY(portrait, portrait.x, pExit.x, portrait.y, pRest.y, cfg.cutinSlideOutMs, easeInCubic);</p><p>destroyObj(portrait);</p><p>await fadeAlpha(cutDim, cfg.cutinDimAlpha, 0, cfg.cutinDimFadeMs, easeInCubic);</p><p>destroyObj(cutDim);</p><p></p><p>// ---- Beat 1: quick crouch + fast leap off the top --------------------</p><p>const clone = track(makeCasterClone());</p><p>addChildTo(stage, clone, cfg.zCaster);</p><p>const homeX = clone.x, homeY = clone.y;</p><p>const baseSy = clone.scale.y, baseSx = clone.scale.x;</p><p></p><p>await tween(v =&gt; { if (!alive(clone)) throw 0; clone.scale.y = baseSy * v; clone.y = homeY + (1 - v) * hPx(0.02); },</p><p>1, 0.80, cfg.jumpCrouchMs, easeOutCubic);</p><p>playAudio(A.jump, cfg.jumpVol, 1.0);</p><p>const topY = S2W(0.5, -0.4).y;</p><p>await Promise.all([</p><p>tweenXY(clone, homeX, homeX + hPx(0.01), homeY, topY, cfg.jumpUpMs, easeInCubic),</p><p>tween(v =&gt; { if (!alive(clone)) throw 0; clone.scale.y = v; clone.scale.x = baseSx &lt; 0 ? -Math.abs(v) : Math.abs(v); },</p><p>Math.abs(baseSy) * 0.80, Math.abs(baseSy) * 1.06, cfg.jumpUpMs, easeOutCubic),</p><p>]);</p><p>destroyObj(clone);</p><p></p><p>// ---- Beat 2: hard cut to the sky, then boss SLOWLY slides down --------</p><p>// (the slow descent from the top sells a slow upward camera pan).</p><p>const cutBlack = new PIXI.Graphics();</p><p>cutBlack.beginFill(0x000000, 1); cutBlack.drawRect(coverTL.x, coverTL.y, coverW, coverH); cutBlack.endFill();</p><p>cutBlack.alpha = 0;</p><p>addChildTo(stage, cutBlack, cfg.zCutinDim); track(cutBlack);</p><p>await fadeAlpha(cutBlack, 0, 1, cfg.cutToBlackMs, easeInCubic);</p><p></p><p>// Build the sky (static) with WF parked above the top edge.</p><p>const sky = makeSkyGradient(coverW, coverH);</p><p>sky.x = coverTL.x; sky.y = coverTL.y;</p><p>addChildTo(skyView, sky, 0);</p><p>const wfSky = await makeImageSprite(A.wf);</p><p>const wfW = hPx(cfg.wfSkySizeH);</p><p>const wfAspect = (wfSky.texture.height &amp;&amp; wfSky.texture.width) ? (wfSky.texture.height / wfSky.texture.width) : 1.35;</p><p>wfSky.width = wfW; wfSky.height = wfW * wfAspect;</p><p>wfSky.scale.x = Math.abs(wfSky.scale.x) * casterSignX; // match token facing</p><p>const wfRest = S2W(cfg.wfSkyX, cfg.wfSkyY);</p><p>const wfTop = S2W(cfg.wfSkyX, -0.4);</p><p>wfSky.x = wfRest.x; wfSky.y = wfTop.y; wfSky.alpha = 1;</p><p>addChildTo(skyView, wfSky, 2); track(wfSky);</p><p>addChildTo(stage, skyView, cfg.zSky); track(skyView);</p><p>skyView.y = 0; // static — the pan illusion comes from WF sliding, not the layer</p><p></p><p>await fadeAlpha(cutBlack, 1, 0, cfg.cutFromBlackMs, easeOutCubic);</p><p>destroyObj(cutBlack);</p><p></p><p>// Slow descent into frame (camera pan-up illusion).</p><p>await tweenXY(wfSky, wfSky.x, wfRest.x, wfSky.y, wfRest.y, cfg.skySlideInMs, easeOutCubic);</p><p>await waitMs(cfg.wfSettleHoldMs);</p><p></p><p>// ---- Beat 3: STUTTERED meteor charge (grows huge + DRIFTS upward) -----</p><p>playAudio(A.charge, cfg.chargeVol, 1.0);</p><p>const mCx = S2W(cfg.meteorSkyX, 0).x; // constant x</p><p>const mYStart = S2W(cfg.meteorSkyX, cfg.meteorSkyYStart).y; // low + visible</p><p>const mYEnd = S2W(cfg.meteorSkyX, cfg.meteorSkyYEnd).y; // high (final loom)</p><p>const glow = makeRadial(\"rgba(255,220,150,0.95)\", \"rgba(255,90,20,0.5)\");</p><p>glow.x = mCx; glow.y = mYStart;</p><p>const startS = hPx(cfg.meteorStartSizeH);</p><p>const maxS = hPx(cfg.meteorMaxSizeH);</p><p>sizeSquare(glow, startS * cfg.meteorGlowMul); glow.alpha = 0;</p><p>addChildTo(skyView, glow, 3); track(glow);</p><p></p><p>const meteor = await makeVideoSprite(A.meteor, true);</p><p>meteor.x = mCx; meteor.y = mYStart; meteor.alpha = 0;</p><p>sizeSquare(meteor, startS);</p><p>addChildTo(skyView, meteor, 4); track(meteor);</p><p></p><p>fadeAlpha(meteor, 0, 1, 280, easeOutCubic);</p><p>fadeAlpha(glow, 0, 0.85, 280, easeOutCubic);</p><p></p><p>// As the meteor swells it drifts up (center rises), so its lower cap stays in</p><p>// frame the whole time and the top overflows more the bigger it gets.</p><p>const fracs = [0.14, 0.28, 0.44, 0.62, 0.82, 1.0];</p><p>const steps = Math.min(cfg.meteorGrowSteps, fracs.length);</p><p>let curS = startS, curY = mYStart;</p><p>for (let i = 0; i &lt; steps; i++) {</p><p>const nextS = startS + (maxS - startS) * fracs[i];</p><p>const nextY = lerp(mYStart, mYEnd, fracs[i]);</p><p>const s0 = curS, s1 = nextS, y0 = curY, y1 = nextY;</p><p>// spurt: snap larger while drifting up</p><p>await tween((_v, t) =&gt; {</p><p>if (!alive(meteor)) throw 0;</p><p>const e = easeOutCubic(t);</p><p>const s = lerp(s0, s1, e), yy = lerp(y0, y1, e);</p><p>sizeSquare(meteor, s); meteor.x = mCx; meteor.y = yy; meteor.rotation += 0.004;</p><p>if (alive(glow)) { sizeSquare(glow, s * cfg.meteorGlowMul); glow.x = mCx; glow.y = yy; }</p><p>}, 0, 1, cfg.meteorStepGrowMs, (x)=&gt;x);</p><p>curS = nextS; curY = nextY;</p><p>// stutter: shudder in place during the hold</p><p>const jx = mCx, jy = curY; const amp = hPx(0.007);</p><p>await tween((_v, t) =&gt; { if (!alive(meteor)) throw 0; const k = amp * (1 - t); meteor.x = jx + (Math.random()*2-1)*k; meteor.y = jy + (Math.random()*2-1)*k; if (alive(glow)) { glow.x = meteor.x; glow.y = meteor.y; } },</p><p>0, 1, cfg.meteorStepHoldMs, (x)=&gt;x);</p><p>meteor.x = jx; meteor.y = jy; if (alive(glow)) { glow.x = jx; glow.y = jy; }</p><p>}</p><p>await waitMs(cfg.meteorHoldMs);</p><p></p><p>// ---- Beat 3b: camera ZOOM-OUT reveal ---------------------------------</p><p>// Quickly shrink WF + meteor + glow together toward a common center so the</p><p>// FULL meteor comes into frame — hammering its scale before the throw.</p><p>playAudio(A.charge, cfg.chargeVol * 0.6, 0.8);</p><p>const C = S2W(cfg.zoomCenterX, cfg.zoomCenterY);</p><p>const mHome = { x: meteor.x, y: meteor.y, s: Math.abs(meteor.width) };</p><p>const wHome = { x: wfSky.x, y: wfSky.y, w: Math.abs(wfSky.width), h: Math.abs(wfSky.height) };</p><p>await tween((f) =&gt; {</p><p>if (!alive(meteor)) throw 0;</p><p>meteor.x = (mHome.x - C.x) * f + C.x; meteor.y = (mHome.y - C.y) * f + C.y;</p><p>sizeSquare(meteor, mHome.s * f);</p><p>if (alive(glow)) { glow.x = meteor.x; glow.y = meteor.y; sizeSquare(glow, mHome.s * f * cfg.meteorGlowMul); }</p><p>if (alive(wfSky)) {</p><p>wfSky.x = (wHome.x - C.x) * f + C.x; wfSky.y = (wHome.y - C.y) * f + C.y;</p><p>wfSky.width = wHome.w * f; wfSky.height = wHome.h * f;</p><p>wfSky.scale.x = Math.abs(wfSky.scale.x) * casterSignX;</p><p>}</p><p>}, 1, cfg.zoomOutScale, cfg.zoomOutMs, easeInOutCubic);</p><p>await waitMs(cfg.zoomHoldMs);</p><p></p><p>// ---- Beat 4: throw the meteor diagonally SE (shrinks with distance) ---</p><p>const wfHomeX = wfSky.x;</p><p>await tweenXY(wfSky, wfHomeX, wfHomeX - hPx(0.04), wfSky.y, wfSky.y, cfg.throwWindupMs, easeOutCubic);</p><p>playAudio(A.whoosh, cfg.whooshVol, 0.9);</p><p>const throwEnd = S2W(cfg.throwOffX, cfg.throwOffY);</p><p>const throwS = Math.abs(meteor.width) || maxS;</p><p>await Promise.all([</p><p>tweenXY(wfSky, wfSky.x, wfHomeX + hPx(0.03), wfSky.y, wfSky.y, cfg.throwMs * 0.45, easeOutCubic),</p><p>tweenXY(meteor, meteor.x, throwEnd.x, meteor.y, throwEnd.y, cfg.throwMs, easeInCubic,</p><p>(t) =&gt; { const s = throwS * lerp(1, 0.26, t); sizeSquare(meteor, s); if (alive(glow)) { glow.x = meteor.x; glow.y = meteor.y; sizeSquare(glow, s * cfg.meteorGlowMul); } meteor.rotation += 0.06; }),</p><p>]);</p><p>destroyObj(meteor); destroyObj(glow);</p><p></p><p>// ---- Beat 5: pan down to BLACK, then lift the curtain ----------------</p><p>// A black curtain sits BELOW the sky so sliding the sky up reveals BLACK, not</p><p>// the live scene (fixes the \"overlay peeling off a static battlefield\" look).</p><p>// Then the curtain lifts up + fades = camera-pan-down illusion. No real camera</p><p>// motion, so any per-client camera lock/zoom can't desync it.</p><p>const curtain = new PIXI.Graphics();</p><p>const cuTL = S2W(-0.25, -0.3), cuBR = S2W(1.25, 1.3);</p><p>curtain.beginFill(0x000000, 1);</p><p>curtain.drawRect(cuTL.x, cuTL.y, cuBR.x - cuTL.x, cuBR.y - cuTL.y);</p><p>curtain.endFill();</p><p>addChildTo(stage, curtain, cfg.zSky - 2); track(curtain);</p><p></p><p>// Pan to black: slide the sky up off the top → the curtain (black) shows.</p><p>await tween(v =&gt; { if (!alive(skyView)) throw 0; skyView.y = v; }, 0, -H_world, cfg.panDownMs, easeInOutCubic);</p><p>destroyObj(skyView);</p><p>await waitMs(cfg.panBlackHoldMs);</p><p></p><p>// Reveal: lift the curtain up + fade out → battlefield \"slides\" into view.</p><p>await tween((_v, t) =&gt; {</p><p>if (!alive(curtain)) throw 0;</p><p>const e = easeInOutCubic(t);</p><p>curtain.y = -H_world * e; // slide up by a full screen height</p><p>curtain.alpha = 1 - e; // fade as it lifts</p><p>}, 0, 1, cfg.panRevealMs, (x)=&gt;x);</p><p>destroyObj(curtain);</p><p>await waitMs(cfg.battlefieldHoldMs);</p><p></p><p>// ---- Beat 6: the meteor crashes onto the party (big, slow, impending) -</p><p>const crashStart = S2W(cfg.crashStartX, cfg.crashStartY);</p><p>// Growing ground-shadow telegraph under the impact point.</p><p>const shadow = makeRadial(\"rgba(15,8,4,0.8)\", \"rgba(15,8,4,0.35)\");</p><p>shadow.blendMode = PIXI.BLEND_MODES.NORMAL;</p><p>shadow.x = impactW.x; shadow.y = impactW.y;</p><p>sizeSquare(shadow, hPx(0.05)); shadow.scale.y *= 0.5; shadow.alpha = 0;</p><p>addChildTo(stage, shadow, cfg.zShadow); track(shadow);</p><p></p><p>const crash = await makeVideoSprite(A.meteor, true);</p><p>crash.x = crashStart.x; crash.y = crashStart.y;</p><p>sizeSquare(crash, hPx(cfg.crashStartSizeH));</p><p>addChildTo(stage, crash, cfg.zProjectile); track(crash);</p><p>const ctrail = makeRadial(\"rgba(255,210,140,0.9)\", \"rgba(255,80,10,0.55)\");</p><p>addChildTo(stage, ctrail, cfg.zProjectile - 1); track(ctrail);</p><p></p><p>// Hang ominously at the top, then plunge (easeIn = slow → SLAM).</p><p>await waitMs(cfg.crashHangMs);</p><p>playAudio(A.whoosh, cfg.whooshVol * 0.8, 0.7);</p><p>await tweenXY(crash, crashStart.x, impactW.x, crashStart.y, impactW.y, cfg.crashInMs, easeInCubic,</p><p>(t) =&gt; {</p><p>const s = hPx(lerp(cfg.crashStartSizeH, cfg.crashEndSizeH, t));</p><p>sizeSquare(crash, s); crash.rotation += 0.05;</p><p>if (alive(ctrail)) { ctrail.x = crash.x; ctrail.y = crash.y; sizeSquare(ctrail, s * 1.5); ctrail.alpha = 0.85 * (1 - t) + 0.15; }</p><p>if (alive(shadow)) { const ss = hPx(lerp(0.05, cfg.shadowMaxSizeH, t)); shadow.width = ss; shadow.height = ss * 0.5; shadow.alpha = 0.2 + 0.65 * t; }</p><p>});</p><p>destroyObj(crash); destroyObj(ctrail); destroyObj(shadow);</p><p></p><p>// Impact: explosion + shake + boom.</p><p>const boom = await makeVideoSprite(A.explosion, false);</p><p>boom.x = impactW.x; boom.y = impactW.y;</p><p>sizeSquare(boom, hPx(cfg.explosionSizeH));</p><p>addChildTo(stage, boom, cfg.zExplosion); track(boom);</p><p>screenShake();</p><p>playAudio(A.impact, cfg.impactVol, 1.0);</p><p>if (boom._vid) boom._vid.addEventListener(\"ended\", () =&gt; destroyObj(boom), { once: true });</p><p></p><p>// ---- Beat 7: whiteout — damage lands here ----------------------------</p><p>const white = new PIXI.Graphics();</p><p>white.beginFill(0xffffff, 1);</p><p>white.drawRect(coverTL.x, coverTL.y, coverW, coverH);</p><p>white.endFill();</p><p>white.alpha = 0;</p><p>addChildTo(stage, white, cfg.zWhite); track(white);</p><p>await fadeAlpha(white, 0, 1, cfg.whiteInMs, easeInOutCubic);</p><p></p><p>fireDone({ ok: true }); // &lt;-- BD applies the skill's damage now</p><p></p><p>await waitMs(cfg.whiteHoldMs);</p><p>destroyObj(boom);</p><p></p><p>// ---- Beat 8: WF falls back to its original position ------------------</p><p>const faller = track(makeCasterClone());</p><p>faller.x = homeX; faller.y = S2W(0.5, -0.3).y;</p><p>addChildTo(stage, faller, cfg.zCaster);</p><p></p><p>await fadeAlpha(white, 1, 0, cfg.whiteOutMs, easeInOutCubic);</p><p>destroyObj(white);</p><p></p><p>await tweenXY(faller, faller.x, homeX, faller.y, homeY, cfg.fallInMs, easeInCubic);</p><p>// landing squash + dust</p><p>playAudio(A.land, cfg.landVol, 1.0);</p><p>const dust = makeRadial(\"rgba(255,230,190,0.85)\", \"rgba(180,120,70,0.4)\");</p><p>dust.x = homeX; dust.y = homeY + hPx(0.02);</p><p>sizeSquare(dust, hPx(cfg.dustSizeH) * 0.5); dust.alpha = 0.9;</p><p>addChildTo(stage, dust, cfg.zCaster - 1); track(dust);</p><p>await Promise.all([</p><p>tween(v =&gt; { if (!alive(faller)) throw 0; faller.scale.y = Math.abs(faller.scale.y) * (v &lt; 0.5 ? lerp(1, 0.8, v*2) : lerp(0.8, 1, (v-0.5)*2)); }, 0, 1, cfg.landSquashMs, easeInOutCubic),</p><p>tween(v =&gt; { if (alive(dust)) { sizeSquare(dust, hPx(cfg.dustSizeH) * (0.5 + v)); dust.alpha = 0.9 * (1 - v); } }, 0, 1, cfg.landSquashMs * 2, easeOutCubic),</p><p>]);</p><p>destroyObj(dust);</p><p></p><p>restoreCaster();</p><p>destroyObj(faller);</p><p>await waitMs(cfg.endPadMs);</p><p>cleanupAll();</p><p>} catch (err) {</p><p>console.error(\"[ONI][Pseudo][MeteorImpact]\", err);</p><p>fireDone({ ok: false, error: String(err &amp;&amp; err.message || err) });</p><p>} finally {</p><p>restoreCaster();</p><p>cleanupAll();</p><p>}</p><p>`;</p><p></p><p>// ── Orchestration (GM) ─────────────────────────────────────────────────────</p><p>try {</p><p>emitLocal(\"oni:animationStart\", { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });</p><p></p><p>const waitDone = onceHook(doneHook, CFG.totalTimeoutMs);</p><p></p><p>await game.ONI.pseudo.play({</p><p>scriptId: ANIM_KEY,</p><p>scriptSource,</p><p>casterTokenUuid: sourceToken.document.uuid,</p><p>targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>params: {</p><p>doneHook,</p><p>cfg: CFG,</p><p>assets: {</p><p>wf: wfUrl, meteor: METEOR_URL, explosion: EXPLOSION_URL,</p><p>cutin: CUTIN_SFX, jump: JUMP_SFX, charge: CHARGE_SFX, whoosh: WHOOSH_SFX, impact: IMPACT_SFX, land: LAND_SFX,</p><p>},</p><p>},</p><p>meta: { source: \"Zero Power: Meteor Impact\" },</p><p>});</p><p></p><p>const result = await waitDone;</p><p>if (!result?.ok) console.warn(TAG, \"pseudo reported non-OK / timeout\", result);</p><p>} catch (err) {</p><p>console.error(TAG, \"orchestration crashed\", err);</p><p>} finally {</p><p>emitLocal(\"oni:animationEnd\", { type: ANIM_KEY, timestamp: Date.now() });</p><p>}</p><p></p><p>})();</p><p></p>",
+          "arcanum_role": "dismiss",
+          "check_bonus": "0",
+          "check_mode": "none",
+          "class": "Arcanist",
+          "cost": "",
+          "damage_bonus": "30",
+          "defense_target_type": "def",
+          "description": "<p><em>As a free action, before or after your action on your turn,</em> you release the Avatar in a final blaze, dealing <strong>【30】 Fire damage</strong> to <strong>all enemies</strong> and ending the merge.</p><p>As you do, you may spend <strong>【6 Zero Power】</strong> to deal additional <strong>Fire damage</strong> to each enemy equal to <strong>【10 × their Burn stacks】</strong>, then remove all <strong>Burn</strong> from those enemies.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "consume_self": false,
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "aov_dismiss_unmerge",
+              "filter_tag": "arcanum-merge",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "self",
+              "to_resource": ""
+            },
+            "1": {
+              "chain_steps": "aov_overload_cost,aov_overload_dmg,aov_overload_consume",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "aov_overload",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "2": {
+              "consume_amount": "6",
+              "consume_resource": "zero_power",
+              "consume_self": false,
+              "effect_kind": "consume_resource",
+              "effect_label": "aov_overload_cost",
+              "from_resource": "",
+              "grant_amount": "",
+              "grant_resource": "",
+              "menu_label": "",
+              "on_empty": "abort",
+              "target_ref": "self",
+              "to_resource": ""
+            },
+            "3": {
+              "consume_self": false,
+              "damage_amount": "TARGET_AE_CHARGES_BURN * 10",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "aov_overload_dmg",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "4": {
+              "consume_self": false,
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "aov_overload_consume",
+              "filter_tag": "burn",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
+          "heroic_requirement": "",
+          "id": "exBxZ5rirKCIKQJq",
+          "ignore_hr": false,
+          "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "menu_hidden": true,
+          "name": "Avatar of Vengeance: Dismiss",
+          "on_activate_effect_ref": "aov_dismiss_unmerge",
+          "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TRIGGER_IS_SELF == 1",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "aov_overload",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Avatar of Vengeance: Dismiss",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_will_deal_damage",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_tags": "",
+          "skill_target": "All enemies",
+          "skill_type": "Active",
+          "target_eligibility": "",
+          "type_damage": "fire",
+          "use_optional_params": false,
+          "uuid": "Item.exBxZ5rirKCIKQJq"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "exBxZ5rirKCIKQJq"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "wDBlzFRY5Advy8lD",
+      "_stats": {
+        "compendiumSource": "Item.WVC5pXW6w1WHVJSm",
+        "coreVersion": "12.343",
+        "createdTime": 1784406496083,
+        "duplicateSource": "Item.PPbGO3BZOBtULyxy",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/akh_morn.png",
+      "name": "Bind and Summon (variant)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 200000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "details_roller": "Show",
+          "duration": "",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "wDBlzFRY5Advy8lD",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/akh_morn.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Bind and Summon (variant)",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.wDBlzFRY5Advy8lD"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "WVC5pXW6w1WHVJSm"
       },
       "type": "equippableItem"
     },
@@ -12816,8 +14625,8 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "accessory2_details": "<ul><li><p><strong>+50% Zenit Gain </strong>after conflict</p></li></ul>",
-      "accessory2_name": "Golden Apple",
+      "accessory2_details": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a><strong>&nbsp;</strong>damage</p></li></ul>",
+      "accessory2_name": "Icarus Wing",
       "accessory_details": "<ul><li>You <strong>Absorb</strong> fire damage but have <strong>Vulnerability</strong> to ice damage.</li></ul>",
       "accessory_name": "Ring of Magma",
       "activation": 1,
@@ -12834,12 +14643,12 @@
       "anomaly_status": 0,
       "arcane_ef": "100",
       "arcanism": false,
-      "armor_details": "<ul><li>You are immune to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.ZunRGiMDSgAapm5G\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(235, 75, 7) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Strike Damage</span></strong></a></span></li><li>You takes <strong>200%</strong> damage from all source</li></ul>",
-      "armor_mod": "0",
-      "armor_name": "Ghostly Sheet",
+      "armor_details": "<ul><li><p>You gain 【<strong>Protect】</strong> Skill.</p></li><li><p>When you regain <strong>HP</strong>, you may choose another creature, you and that creature regain half of that amount instead. <em>(rounded up)</em></p></li></ul>",
+      "armor_mod": 2,
+      "armor_name": "The Selfless",
       "backstory": "<p>เด็กสาวธรรมดาที่ถูกลักพาตัวไปโดยองค์กรชั่วร้ายซึ่งได้ทำการทดลองหวังว่าจะให้เธอได้กลายเป็นร่างทรงของเทพีแห่งราตรี แต่การทดลองถูกขัดขวางลงในขั้นตอนสุดท้ายโดยกลุ่มคนที่บุกมาช่วยทำให้การเป็นภาชนะไม่สมบูรณ์ ชิ้นส่วนของเทพีแห่งราตรี Frenio ติดอยู่ในร่าง Hina กลายเป็นคนสองบุคลิก หลังจากเหตุการณ์นั้นมาก็เริ่มมีอาการมองเห็นทางแยกของอนาคตเป็นพักๆ จึงใช้มันออกเดินทางช่วยเหลือผู้คน รวมไปถึงหาวิธีการแยกเทพีแห่งราตรีออกจากตัวเองด้วย</p>",
       "bane_status": 0,
-      "base_defense": 6,
+      "base_defense": 13,
       "base_magic_defense": 12,
       "battle_facing_direction": "left",
       "berserk_status": 0,
@@ -12850,7 +14659,7 @@
       "bond_3": "Zarg",
       "bond_4": "Keren",
       "bond_5": "Wandering Flame",
-      "bond_6": "",
+      "bond_6": "Geist",
       "bond_temp": "Wandering Flame",
       "bonus_defense": 0,
       "bonus_dex": 0,
@@ -12869,7 +14678,7 @@
       "camp_activity_name_2": "Combat Lesson ",
       "char_identity": "Traveler, Fortune Teller, Possessed",
       "character_exp_multiplier": 1,
-      "character_zenit_multiplier": 1.5,
+      "character_zenit_multiplier": 1,
       "charm_status": 0,
       "check_mod_accuracy": 0,
       "check_mod_all": 0,
@@ -12904,7 +14713,7 @@
           "$deleted": false,
           "benefit": "mp",
           "class_name": "Spiritist",
-          "level": "6"
+          "level": "7"
         },
         "5": {
           "$deleted": false,
@@ -12916,7 +14725,7 @@
           "$deleted": false,
           "benefit": "mp",
           "class_name": "Arcanist",
-          "level": "2"
+          "level": "3"
         }
       },
       "clock_adoration": "0",
@@ -13238,9 +15047,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "86",
-      "current_ip": "2",
-      "current_mp": 94,
+      "current_hp": "93",
+      "current_ip": "6",
+      "current_mp": "56",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -13248,7 +15057,7 @@
       "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/cutin%20placeholder/hina_Cut-in001.png",
       "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
-      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_all": 3,
       "damage_receiving_mod_bolt": 0,
       "damage_receiving_mod_dark": 0,
       "damage_receiving_mod_earth": 0,
@@ -13273,7 +15082,7 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 6,
+      "defense": 13,
       "delayed_status": 0,
       "despair_status": 0,
       "dex_base": "6",
@@ -13298,7 +15107,7 @@
       "emotion_5_3": "",
       "emotion_6_1": "",
       "emotion_6_2": "",
-      "emotion_6_3": "",
+      "emotion_6_3": "hatred",
       "emotion_temp_1": "",
       "emotion_temp_2": "",
       "emotion_temp_3": "hatred",
@@ -13306,8 +15115,8 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "6.23",
-      "experience": "6.23",
+      "exp_meter": "6.92",
+      "experience": "6.92",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 1,
@@ -13347,7 +15156,7 @@
       "id": "dafTLBUscCDNgq8H",
       "illusionism": false,
       "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/h1.png",
-      "init_penalty": "0",
+      "init_penalty": 0,
       "ins_base": "12",
       "ins_current": 12,
       "inventory_label": "💼 Inventory",
@@ -13491,6 +15300,14 @@
           "name": "Sage Robe",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.SAMjPDBx3kmr7zU4"
+        },
+        "SCdL3yGW9VO3LnOC": {
+          "armor_description": "<p><ul><li><p>You gain 【<strong>Protect】</strong> Skill.</p></li><li><p>When you regain <strong>HP</strong>, you may choose another creature, you and that creature regain half of that amount instead. <em>(rounded up)</em></p></li></ul></p>",
+          "armor_martial": "",
+          "id": "${item.id}",
+          "name": "The Selfless",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.SCdL3yGW9VO3LnOC"
         },
         "SPgbsI7LijRor4gi": {
           "armor_description": "<p><ul><li><p><em>No Quality</em></p></li></ul></p>",
@@ -13736,6 +15553,13 @@
           "name": "Dragonskull Helm",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.5yOJF1XG0lbOqvFH"
+        },
+        "7S9f0RR7IfYa0lIv": {
+          "acess_description": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a><strong>&nbsp;</strong>damage</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Icarus Wing",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.7S9f0RR7IfYa0lIv"
         },
         "9v7BO7nZyoFh2f43": {
           "acess_description": "<ul><li><p><strong>+50% Zenit Gain </strong>after conflict</p></li></ul>",
@@ -14084,11 +15908,11 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.ERBLg9oQAHRlJ8wZ"
         }
       },
-      "level": "39",
+      "level": "41",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 12,
-      "magic_defense_mod": "0",
+      "magic_defense_mod": 2,
       "main_attrib_1": "DEX",
       "main_attrib_2": "WLP",
       "main_details": "<ul>\n<li>Once per round, when you&nbsp;<strong>hit&nbsp;</strong>one or more creature with this weapon, you may have it deal <strong>0</strong> damage, if you do, choose an ally other than yourself who have the <strong>Chanter </strong>or <strong>Dancer</strong>&nbsp;class, that ally perform a&nbsp;<strong>Free Action,&nbsp;</strong>that action must be used to perform a&nbsp;<strong>Magichant </strong>or<strong> Dance.</strong></li>\n</ul>",
@@ -14097,6 +15921,13 @@
       "manadrain_percentage": 0,
       "manadrain_value": 0,
       "material_list": {
+        "4Lo8gr20LL6SOAdK": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A Fur of a beast-type monster, it's the core material for making winter garments</em></p>",
+          "name": "Animal Fur",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.4Lo8gr20LL6SOAdK"
+        },
         "N2LU8xcuzqMHsLup": {
           "id": "${item.id}",
           "key_description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
@@ -14110,6 +15941,13 @@
           "name": "Ash",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.QZmOHqLk8Zx9ePAk"
+        },
+        "QZzNOaJbOtsQSiIU": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A coil of crystallized longing left behind by what could have been. It is said to taste of every choice never made.</em></p>",
+          "name": "Regret",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.QZzNOaJbOtsQSiIU"
         },
         "SzMEB4panlh7XBF6": {
           "id": "${item.id}",
@@ -14139,6 +15977,20 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.gRdBI4ejraL4eRnD"
         },
+        "h90r10rRIoC6fXkb": {
+          "id": "${item.id}",
+          "key_description": "The dried peel of a starfruit — intensely tart, prized by travelling chefs.",
+          "name": "Starfruit",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.h90r10rRIoC6fXkb"
+        },
+        "ho6kGg72Gcvnx7uD": {
+          "id": "${item.id}",
+          "key_description": "<p>A heart made of stone, a core material in creating a golem</p>",
+          "name": "Golem Heart",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.ho6kGg72Gcvnx7uD"
+        },
         "rUMhVvIctoWDowBh": {
           "id": "${item.id}",
           "key_description": "<p><em>A petal that smolders with quiet inner warmth, glowing faintly orange like a coal that refuses to fade.</em></p>",
@@ -14147,9 +15999,9 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.rUMhVvIctoWDowBh"
         }
       },
-      "max_hp": 86,
+      "max_hp": 108,
       "max_ip": 6,
-      "max_mp": 114,
+      "max_mp": 116,
       "memories_list": {
         "0": {
           "$deleted": false,
@@ -14829,6 +16681,18 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.0OCE2n8Axtv463yq"
         },
+        "0VY4JIdvHgbv6dLd": {
+          "active_class": "Arcanist",
+          "active_cost": "",
+          "active_description": "<p>You <strong>merge</strong> with the Avatar of Vengeance. While merged, whenever <strong>any creature's Burn</strong> triggers, you recover <strong>【2% of your Max HP】</strong> and <strong>【2% of your Max MP】</strong> <em>(rounded up)</em>.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Avatar of Vengeance: Merge",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.0VY4JIdvHgbv6dLd"
+        },
         "0Y4TgCZZz1vv1pn6": {
           "active_class": "",
           "active_cost": "5 MP",
@@ -15033,6 +16897,18 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.H0DADhpEoUIbwhex"
         },
+        "HxZ1AHWf60uo9eFT": {
+          "active_class": "Arcanist",
+          "active_cost": "",
+          "active_description": "<p><em>As a free action, before or after your action on your turn,</em> you release the Avatar in a final blaze, dealing <strong>【30】 Fire damage</strong> to <strong>all enemies</strong> and ending the merge.</p><p>As you do, you may spend <strong>【6 Zero Power】</strong> to deal additional <strong>Fire damage</strong> to each enemy equal to <strong>【10 × their Burn stacks】</strong>, then remove all <strong>Burn</strong> from those enemies.</p>",
+          "active_duration": "-",
+          "active_level": 1,
+          "active_target": "All enemies",
+          "id": "${item.id}",
+          "name": "Avatar of Vengeance: Dismiss",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.HxZ1AHWf60uo9eFT"
+        },
         "Jfwp8uU0Ntyqhcjj": {
           "active_class": "NPC",
           "active_cost": "-",
@@ -15105,6 +16981,18 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.Mav3EErTtfTiCLIM"
         },
+        "QmIFANXxx3ns597A": {
+          "active_class": "Spiritist",
+          "active_cost": "",
+          "active_description": "<p>When you cast a spell, if you don't have enough Mind Points to pay for its total cost, you may choose to spend <strong>twice as many Hit Points instead</strong>. You cannot use this Skill if doing so would reduce you to 0 HP. If the spell would cause you to recover HP, you recover no HP <em>(the spell still works on other targets).</em></p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Vismagus",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.QmIFANXxx3ns597A"
+        },
         "RBdT18zr2DzwwA0E": {
           "active_class": "Elementalist",
           "active_cost": "",
@@ -15128,6 +17016,18 @@
           "name": "Elemental Magic",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.RRTO6uRQtUQ2o4Er"
+        },
+        "S05xjAYYKoZ34gQT": {
+          "active_class": "Arcanist",
+          "active_cost": "",
+          "active_description": "<p>You channel the Avatar's flame, inflicting <strong>3 stacks of Burn</strong> on up to <strong>three creatures</strong> you can see.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "Up to three creatures",
+          "id": "${item.id}",
+          "name": "Avatar of Vengeance: Pulse",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.S05xjAYYKoZ34gQT"
         },
         "SuE7ERem0thYurVC": {
           "active_class": "Spiritist",
@@ -15188,6 +17088,18 @@
           "name": "Emergency Arcanum",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.UZ4SrdfJoCexQWd4"
+        },
+        "Un5BpzDlecnnBd2z": {
+          "active_class": "Arcanist Variant",
+          "active_cost": "-",
+          "active_description": "<p>When you summon an Arcanum on your turn during a conflict, choose up to two options:</p>\n<ul>\n  <li>reduce its MP cost by <strong>[SL × 5]</strong>;</li>\n  <li>after you summon the Arcanum, if you are merged with it, immediately perform its <em>pulse</em>.</li>\n</ul>\n<p>If you choose at least one option, you cannot willingly dismiss that Arcanum until the start of your next turn; if you choose both options, that Arcanum’s dismiss effect will not be available for this summoning.</p>\n",
+          "active_duration": "-",
+          "active_level": 1,
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Quick Summoning",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.Un5BpzDlecnnBd2z"
         },
         "V8AiiQ8vD4YIdMZY": {
           "active_class": "Darkblade",
@@ -15417,6 +17329,18 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.rOdq8hhYJpSutkre"
         },
+        "s0jiGXVmnBX0k0wi": {
+          "active_class": "Arcanist Variant",
+          "active_cost": "",
+          "active_description": "<p>You may perform Rituals of the <strong>Arcanism</strong> discipline, as long as their effects fall within the domains of one or more Arcana you have bound.</p><p>Arcanism Rituals use <strong>【WLP + WLP】</strong> for the Magic Check.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Ritual Arcanism (variant)",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.s0jiGXVmnBX0k0wi"
+        },
         "uK8MN1c3SDjR2Pgs": {
           "active_class": "Spiritist",
           "active_cost": "",
@@ -15452,6 +17376,18 @@
           "name": "Lucky Seven",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ"
+        },
+        "wDBlzFRY5Advy8lD": {
+          "active_class": "Arcanist Variant",
+          "active_cost": "",
+          "active_description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Bind and Summon (variant)",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.wDBlzFRY5Advy8lD"
         },
         "wQPUQTJDFJK8Jsm3": {
           "active_class": "Spiritist",
@@ -15993,6 +17929,18 @@
           "weapon_description": "<p><ul><li><p>Attack with this weapon ignores <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span></p></li><li><p>You may cast the spell <strong>【</strong>⚡<strong>Starfall】</strong></p></li></ul></p>",
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
+          "weapon_range": "Ranged"
+        },
+        "NkbKLXbsq4lwouRY": {
+          "id": "${item.id}",
+          "name": "Dark Orbit",
+          "quantity": "",
+          "roll": "",
+          "type": "Thrown",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.NkbKLXbsq4lwouRY",
+          "weapon_description": "<p><ul>\n<li>You gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong></li>\n</ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
           "weapon_range": "Ranged"
         },
         "NomesRmOSAElWzk6": {
@@ -16685,13 +18633,13 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "Night Guidance",
-      "zenit": "9908",
+      "zenit": "11452",
       "zero_label": "Zero Power",
       "zero_power_description": "<p style=\"text-align: center\"><strong>Choose and trigger 3 oppertunity choice.</strong></p>",
       "zero_power_macro": "",
       "zero_power_name": "A MILLION POSSIBILITY",
       "zero_power_showMacro": false,
-      "zero_power_value": "4",
+      "zero_power_value": "0",
       "zero_trigger_description": "<p>When Hina change the outcome of check (fail&gt; success or success&gt;fail), she gain 1 zero trigger.</p>",
       "zero_trigger_label": "Trigger",
       "zombie_status": 0

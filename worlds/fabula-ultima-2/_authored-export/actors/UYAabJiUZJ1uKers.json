@@ -1145,52 +1145,88 @@
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "<p>// @desc Geist — Shadow Strike: dark energy gathers inward, sprite shimmers (oni)</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    moteColor: \"rgba(150,70,240,0.95)\",</p><p>    moteCount: 22,</p><p>    moteStartR: 190,   // gather radius (px)</p><p>    moteSize: 20,</p><p>    gatherMs: 950,</p><p>    shimmerColor: 0x9a4dff,</p><p>    shimmerMs: 1050,</p><p>    shimmerAlpha: 0.55,</p><p>    coreColor: \"rgba(120,50,220,0.9)\",</p><p>    coreSize: 150,</p><p>    sfx: null,          // no SFX specified for this skill</p><p>    volume: 0.8,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const caster = oni.caster;</p><p>    if (!caster) { oni.fireDone(); return; }</p><p>    const layer = oni.layer({ zIndex: 94000 });</p><p>    const cx = caster.center.x, cy = caster.center.y;</p><p>    if (cfg.sfx) oni.sfx(cfg.sfx, { volume: cfg.volume });</p><p></p><p>    // Shimmer: additive tinted clone overlaid on the (still-visible) token.</p><p>    const shimmer = oni.cloneToken(caster, { parent: layer });</p><p>    if (shimmer) { shimmer.blendMode = PIXI.BLEND_MODES.ADD; shimmer.tint = cfg.shimmerColor; shimmer.alpha = 0; }</p><p></p><p>    // Dark core glow that swells as the power gathers.</p><p>    const core = new PIXI.Sprite(oni.radialTexture(cfg.coreColor, 'rgba(0,0,0,0)', { size: 256 }));</p><p>    core.anchor.set(0.5); core.blendMode = PIXI.BLEND_MODES.ADD;</p><p>    core.width = core.height = 0; core.position.set(cx, cy);</p><p>    layer.addChild(core);</p><p></p><p>    // Motes seeded on a ring; each spirals inward to the caster.</p><p>    const motes = [];</p><p>    for (let i = 0; i &lt; cfg.moteCount; i++) {</p><p>      const m = new PIXI.Sprite(oni.radialTexture(cfg.moteColor, 'rgba(0,0,0,0)', { size: 48 }));</p><p>      m.anchor.set(0.5); m.blendMode = PIXI.BLEND_MODES.ADD;</p><p>      m.width = m.height = cfg.moteSize * (0.6 + Math.random() * 0.8);</p><p>      m._a0 = Math.random() * Math.PI * 2;</p><p>      m._r0 = cfg.moteStartR * (0.7 + Math.random() * 0.3);</p><p>      m._spin = (1.5 + Math.random() * 1.5) * (Math.random() &lt; 0.5 ? -1 : 1);</p><p>      m._delay = Math.random() * 0.35;</p><p>      layer.addChild(m);</p><p>      motes.push(m);</p><p>    }</p><p></p><p>    let fired = false;</p><p>    await oni.tween({</p><p>      from: 0, to: 1, duration: cfg.gatherMs, ease: oni.EASE.inCubic,</p><p>      onUpdate: (v) =&gt; {</p><p>        for (const m of motes) {</p><p>          const t = Math.max(0, (v - m._delay) / (1 - m._delay));</p><p>          const r = m._r0 * (1 - t);</p><p>          const a = m._a0 + m._spin * t;</p><p>          m.position.set(cx + Math.cos(a) * r, cy + Math.sin(a) * r);</p><p>          m.alpha = Math.sin(Math.min(1, t) * Math.PI) * 0.9 + 0.1;</p><p>        }</p><p>        core.width = core.height = cfg.coreSize * v;</p><p>        core.alpha = v;</p><p>        if (shimmer) shimmer.alpha = Math.sin(v * Math.PI) * cfg.shimmerAlpha;</p><p>        if (!fired &amp;&amp; v &gt;= 0.75) { fired = true; oni.fireDone(); }</p><p>      },</p><p>    });</p><p>    if (!fired) oni.fireDone();</p><p></p><p>    // Quick settle: core + shimmer fade out.</p><p>    await oni.tween({</p><p>      from: 1, to: 0, duration: 260, ease: oni.EASE.inQuad,</p><p>      onUpdate: (v) =&gt; { core.alpha = v; if (shimmer) shimmer.alpha = v * cfg.shimmerAlpha; },</p><p>    });</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"geist/shadow-strike\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: [],</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.gatherMs + 4000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
+          "animation_script": "<p>// @desc Geist — Shadow Strike: dark energy gathers inward, sprite shimmers (oni)</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    moteColor: \"rgba(150,70,240,0.95)\",</p><p>    moteCount: 22,</p><p>    moteStartR: 190,   // gather radius (px)</p><p>    moteSize: 20,</p><p>    gatherMs: 950,</p><p>    shimmerColor: 0x9a4dff,</p><p>    shimmerMs: 1050,</p><p>    shimmerAlpha: 0.55,</p><p>    coreColor: \"rgba(120,50,220,0.9)\",</p><p>    coreSize: 150,</p><p>    sfx: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Blind.ogg\",  // Blind SFX</p><p>    volume: 0.5,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const caster = oni.caster;</p><p>    if (!caster) { oni.fireDone(); return; }</p><p>    const layer = oni.layer({ zIndex: 94000 });</p><p>    const cx = caster.center.x, cy = caster.center.y;</p><p>    if (cfg.sfx) oni.sfx(cfg.sfx, { volume: cfg.volume });</p><p></p><p>    // Shimmer: additive tinted clone overlaid on the (still-visible) token.</p><p>    const shimmer = oni.cloneToken(caster, { parent: layer });</p><p>    if (shimmer) { shimmer.blendMode = PIXI.BLEND_MODES.ADD; shimmer.tint = cfg.shimmerColor; shimmer.alpha = 0; }</p><p></p><p>    // Dark core glow that swells as the power gathers.</p><p>    const core = new PIXI.Sprite(oni.radialTexture(cfg.coreColor, 'rgba(0,0,0,0)', { size: 256 }));</p><p>    core.anchor.set(0.5); core.blendMode = PIXI.BLEND_MODES.ADD;</p><p>    core.width = core.height = 0; core.position.set(cx, cy);</p><p>    layer.addChild(core);</p><p></p><p>    // Motes seeded on a ring; each spirals inward to the caster.</p><p>    const motes = [];</p><p>    for (let i = 0; i &lt; cfg.moteCount; i++) {</p><p>      const m = new PIXI.Sprite(oni.radialTexture(cfg.moteColor, 'rgba(0,0,0,0)', { size: 48 }));</p><p>      m.anchor.set(0.5); m.blendMode = PIXI.BLEND_MODES.ADD;</p><p>      m.width = m.height = cfg.moteSize * (0.6 + Math.random() * 0.8);</p><p>      m._a0 = Math.random() * Math.PI * 2;</p><p>      m._r0 = cfg.moteStartR * (0.7 + Math.random() * 0.3);</p><p>      m._spin = (1.5 + Math.random() * 1.5) * (Math.random() &lt; 0.5 ? -1 : 1);</p><p>      m._delay = Math.random() * 0.35;</p><p>      layer.addChild(m);</p><p>      motes.push(m);</p><p>    }</p><p></p><p>    let fired = false;</p><p>    await oni.tween({</p><p>      from: 0, to: 1, duration: cfg.gatherMs, ease: oni.EASE.inCubic,</p><p>      onUpdate: (v) =&gt; {</p><p>        for (const m of motes) {</p><p>          const t = Math.max(0, (v - m._delay) / (1 - m._delay));</p><p>          const r = m._r0 * (1 - t);</p><p>          const a = m._a0 + m._spin * t;</p><p>          m.position.set(cx + Math.cos(a) * r, cy + Math.sin(a) * r);</p><p>          m.alpha = Math.sin(Math.min(1, t) * Math.PI) * 0.9 + 0.1;</p><p>        }</p><p>        core.width = core.height = cfg.coreSize * v;</p><p>        core.alpha = v;</p><p>        if (shimmer) shimmer.alpha = Math.sin(v * Math.PI) * cfg.shimmerAlpha;</p><p>        if (!fired &amp;&amp; v &gt;= 0.75) { fired = true; oni.fireDone(); }</p><p>      },</p><p>    });</p><p>    if (!fired) oni.fireDone();</p><p></p><p>    // Quick settle: core + shimmer fade out.</p><p>    await oni.tween({</p><p>      from: 1, to: 0, duration: 260, ease: oni.EASE.inQuad,</p><p>      onUpdate: (v) =&gt; { core.alpha = v; if (shimmer) shimmer.alpha = v * cfg.shimmerAlpha; },</p><p>    });</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"geist/shadow-strike\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: [],</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.gatherMs + 4000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
           "check_bonus": "0",
           "class": "Darkblade",
           "cost": "X HP",
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You have learned to channel your vital force into your attacks. You may use an action to perform a <strong>Shadow Strike</strong>: roll your current <strong>Might</strong> die and lose an amount of Hit Points equal to <strong>【the number rolled on your Might die x 5】</strong>. If this didn't reduce your Hit Points to 0, you may perform a <strong>free attack</strong> with a weapon you have equipped: if this attack hits one or more targets, it deals extra damage equal to <strong>【The number rolled on your Might die x 2】</strong>. However, all damage dealt by this attack becomes <strong>dark</strong> and its damage type cannot be changed.</p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
+              "consume_self": false,
               "dice_count": "1",
               "dice_faces": "12",
               "effect_kind": "roll_dice",
               "effect_label": "ss_roll",
-              "prompt_var": "mig_die"
+              "from_resource": "",
+              "menu_label": "",
+              "prompt_var": "mig_die",
+              "roll_interactive": false,
+              "roll_label": "",
+              "to_resource": ""
             },
             "1": {
               "ae_duplicate_mode": "replace",
+              "ae_family": "",
               "ae_initial_charges": "VAR_MIG_DIE",
+              "ae_initial_charges_max": "",
               "ae_template_ref": "Shadow Strike",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "ss_store",
-              "target_ref": "self"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "self",
+              "to_resource": ""
             },
             "2": {
+              "consume_self": false,
               "effect_kind": "grant",
               "effect_label": "ss_hpcost",
+              "from_resource": "",
               "grant_amount": "0 - (AE_CHARGES_SHADOW_STRIKE * 5)",
+              "grant_operation": "",
               "grant_resource": "hp",
-              "target_ref": "self"
+              "grant_round": "",
+              "menu_label": "",
+              "target_ref": "self",
+              "to_resource": ""
             },
             "3": {
               "action_ref": "Attack",
+              "chain": false,
+              "consume_self": false,
               "damage_bonus_formula": "2 * AE_CHARGES_SHADOW_STRIKE",
               "effect_kind": "free_action",
               "effect_label": "ss_freeattack",
-              "element_override": "dark"
+              "element_override": "dark",
+              "free_of_cost": false,
+              "from_resource": "",
+              "menu_label": "",
+              "on_hit_effect_refs": "",
+              "performer_ref": "",
+              "to_resource": ""
             },
             "4": {
               "chain_steps": "ss_roll,ss_store,ss_hpcost,ss_freeattack",
+              "consume_self": false,
               "effect_kind": "chain",
-              "effect_label": "ss_root"
+              "effect_label": "ss_root",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "S01TD1lW8JUnapHh",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/flood_of_darkness.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -1202,6 +1238,7 @@
           "name": "Shadow Strike",
           "on_activate_effect_ref": "ss_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
@@ -1209,10 +1246,13 @@
           "skill_animation_mode": "default",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>Damage</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>【1 + the number rolled on your Might die】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>【2 + the number rolled on your Might die】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>【3 + the number rolled on your Might die】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>【4 + the number rolled on your Might die】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>【5 + the number rolled on your Might die】</strong></p></td></tr></tbody></table>",
           "skill_range": "Any",
+          "skill_tags": "",
           "skill_target": "Self",
           "skill_type": "Active",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.UYAabJiUZJ1uKers.Item.S01TD1lW8JUnapHh"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -2134,7 +2174,7 @@
           "action_pattern_value_2": "1"
         },
         "3": {
-          "$deleted": false,
+          "$deleted": true,
           "action_pattern_condition": "activation",
           "action_pattern_cooldown": "1",
           "action_pattern_hp_ceiling": "0",
@@ -2314,6 +2354,45 @@
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "1",
           "action_pattern_value_2": "1"
+        },
+        "17": {
+          "$deleted": false,
+          "action_pattern_condition": "activation",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Souleater",
+          "action_pattern_priority": "10",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "2",
+          "action_pattern_value_2": "2"
+        },
+        "18": {
+          "$deleted": false,
+          "action_pattern_condition": "activation",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Torcleaver",
+          "action_pattern_priority": "10",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "2",
+          "action_pattern_value_2": "2"
+        },
+        "19": {
+          "$deleted": false,
+          "action_pattern_condition": "activation",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Dark Bane",
+          "action_pattern_priority": "10",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "2",
+          "action_pattern_value_2": "2"
         }
       },
       "activation": "4",
@@ -2325,7 +2404,7 @@
       "affinity_6": "NA",
       "affinity_7": "NA",
       "affinity_8": "VU",
-      "affinity_9": "IM",
+      "affinity_9": "RS",
       "animation_table": {},
       "arcane_ef": "100",
       "attack_list": {

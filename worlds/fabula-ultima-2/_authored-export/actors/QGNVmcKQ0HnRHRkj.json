@@ -101,6 +101,7 @@
       },
       "sort": 0,
       "system": {
+        "container": null,
         "props": {
           "active_effect_config_table": {},
           "check_bonus": "0",
