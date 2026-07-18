@@ -163,7 +163,7 @@
           "threatLevel": "medium",
           "encounterTable": "RollTable.wcdUb4RPnvw1uTTO",
           "enemiesTable": "RollTable.3RdJ30rU43jtnkFF",
-          "battleMap": "",
+          "battleMap": "Scene.cuv0etY2LHsVmveW",
           "battleBGM": "",
           "bossBGM": "",
           "event": {
@@ -304,7 +304,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398852837,
-      "modifiedTime": 1783777821821,
+      "modifiedTime": 1784342586350,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

@@ -328,6 +328,44 @@ function buildKoData() {
     flags: { "fabula-ultima-companion": { bdDefeated: true, preventFreeAttack: true } },
   };
 }
+// Canonical PC test in this codebase: absence of `npc_rank` → player character
+// (mirrors invoke-core.getInvokeCapability, "no npc_rank → player character").
+// Excludes bosses/Champions, Soldier/Elite monsters, and companion/ally NPCs —
+// all of which carry a rank. Used to scope the on-KO cleanse to PCs (v1).
+function isPlayerCharacter(actor) {
+  return !String(get(actor, PATH_NPC_RANK, "") ?? "").trim();
+}
+
+// On-KO cleanse (v1: Player Characters only). When a PC reaches 0 HP, every
+// buff/debuff AE on them is removed. Uses the shared `isBuffOrDebuffAE`
+// classifier (skill-effects.js) — the SAME predicate as remove_tagged_ae — so
+// only opt-in `system.tags` buff/debuff effects go, while resource trackers
+// (persistent_counter clocks / point-pools), passive/equipment AEs, the Crisis
+// AE (tags []), and the KO marker are all preserved. Imported dynamically to
+// avoid a static circular import (skill-effects already imports this module's
+// isActorDefeated), matching the emitCreatureDefeated dynamic-import pattern.
+// GM-only, mirroring performDefeat. The caller fires this only on the KO
+// transition edge (no existing KO AE yet), so it runs once per KO.
+async function cleanseBuffsDebuffsOnKO(actor) {
+  if (!game.user?.isGM || !actor) return;
+  let isBuffOrDebuffAE;
+  try {
+    ({ isBuffOrDebuffAE } = await import("./skill-effects.js"));
+  } catch (e) {
+    warn("defeat-reactor: could not load isBuffOrDebuffAE for on-KO cleanse", e);
+    return;
+  }
+  const doomed = (actor.effects?.contents ?? []).filter(isBuffOrDebuffAE);
+  if (!doomed.length) return;
+  const ids = doomed.map((e) => e.id).filter(Boolean);
+  try {
+    await actor.deleteEmbeddedDocuments("ActiveEffect", ids);
+    log(`defeat-reactor: on-KO cleanse removed ${doomed.length} buff/debuff AE(s) from ${actor.name} — ${doomed.map((e) => e.name).join(", ")}`);
+  } catch (e) {
+    warn(`defeat-reactor: on-KO cleanse delete failed on ${actor.name}`, e);
+  }
+}
+
 // Reconcile ONE surviving actor's Defeated AE against current HP. Idempotent:
 // applies once at HP ≤ 0, removes at HP > 0, collapses accidental duplicates.
 async function evaluateDefeatStatus(actor) {
@@ -338,6 +376,11 @@ async function evaluateDefeatStatus(actor) {
   const down = hp <= 0;
   const existing = findKoAEs(actor);
   if (down && existing.length === 0) {
+    // On KO, a Player Character loses every buff/debuff (v1: PCs only — monsters
+    // are already removed by evaluateDefeat before this, and bosses/Champions
+    // survive but intentionally keep their effects). Cleanse BEFORE creating the
+    // KO marker so the marker itself is never a cleanse candidate.
+    if (isPlayerCharacter(actor)) await cleanseBuffsDebuffsOnKO(actor);
     await actor.createEmbeddedDocuments("ActiveEffect", [buildKoData()]);
     log(`defeat-reactor: applied Defeated status to ${actor.name} (hp ${hp})`);
     return "applied";

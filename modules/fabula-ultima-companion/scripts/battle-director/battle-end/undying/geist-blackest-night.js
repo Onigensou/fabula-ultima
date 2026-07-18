@@ -3,7 +3,9 @@
 // Skill (Actor.UYAabJiUZJ1uKers.Item.xc1wLkLVukf7ouTD): when Geist is reduced
 // to 0 HP with his Zero Power full, he sacrifices part of his soul — spends
 // ALL his ZP and rises again. Each revival restores him only up to a cap that
-// decays multiplicatively (70% → 49% → 34% → …). His max-HP ceiling is never
+// decays multiplicatively per revive AND ramps — each rise keeps a smaller
+// slice than the last (~70% → 43% → 23% → 11% off max), so overstaying past
+// 2–3 revives collapses hard. His max-HP ceiling is never
 // touched (his low-HP damage passive keys off the ratio). MP restores in
 // full. ZP regeneration is owned elsewhere (Zero Trigger: Adversity); this
 // rule only gates on "ZP full" and spends it to zero.
@@ -19,6 +21,9 @@
 // item's props without touching code:
 //   undying_zp_cost        (default 6)
 //   undying_restore_decay  (default 0.7 — cap fraction multiplier per trigger)
+//   undying_restore_ramp   (default 0.88 — extra per-revive decay ramp, applied
+//                           as ramp^(n(n-1)/2); 1.0 = off/static, <1 punishes
+//                           successive revives harder: 730/450/244/116/48/18)
 //
 // Per-battle escalation counter lives on director.ctx (_undyingTriggers) —
 // battle-scoped by construction, no stale-state cleanup needed. Known v1
@@ -55,6 +60,8 @@ const SKILL_NAME_RX  = /blackest\s+night/i;    // fallback if the id ever change
 
 const DEFAULT_ZP_COST = 6;
 const DEFAULT_DECAY   = 0.7;
+const DEFAULT_RAMP    = 0.88;   // extra per-revive ramp (see header); hard-coded
+                                // default so a CSB re-stamp strip can't revert it
 
 const PATH_HP     = "system.props.current_hp";
 const PATH_MAX_HP = "system.props.max_hp";
@@ -78,10 +85,13 @@ function readSkillTuning(actor) {
   const p = item?.system?.props ?? {};
   const cost  = num(p.undying_zp_cost);
   const decay = num(p.undying_restore_decay);
+  const ramp  = num(p.undying_restore_ramp);
   return {
     item,
     zpCost: (cost != null && cost > 0) ? Math.floor(cost) : DEFAULT_ZP_COST,
     decay:  (decay != null && decay > 0 && decay < 1) ? decay : DEFAULT_DECAY,
+    // ramp == 1 is a valid "static / no ramp" setting; only fall back on junk.
+    ramp:   (ramp != null && ramp > 0 && ramp <= 1) ? ramp : DEFAULT_RAMP,
   };
 }
 
@@ -152,11 +162,16 @@ export async function applyBlackestNightRestore(director, claim) {
     game.actors?.get?.(GEIST_ACTOR_ID) ?? null;
   if (!actor) { warn("[BlackestNight] restore: Geist actor not found"); return null; }
 
-  const { decay } = readSkillTuning(actor);
+  const { decay, ramp } = readSkillTuning(actor);
   const maxHp = num(get(actor, PATH_MAX_HP)) ?? 0;
   const maxMp = num(get(actor, PATH_MAX_MP)) ?? 0;
   const n     = Math.max(1, num(claim?.triggerIndex) ?? 1);
-  const hp    = Math.max(1, Math.floor(maxHp * Math.pow(decay, n)));
+  // Cap = maxHp × decay^n × ramp^(n(n-1)/2). The triangular exponent is 0 at
+  // n=1 (revive #1 unchanged) and grows quadratically, so each successive
+  // revive keeps a progressively smaller slice — the tail collapses fast and
+  // the small late lives can't re-bank ZP before dying (self-terminating).
+  const tri   = (n * (n - 1)) / 2;
+  const hp    = Math.max(1, Math.floor(maxHp * Math.pow(decay, n) * Math.pow(ramp, tri)));
 
   await actor.update({
     [PATH_HP]: hp,
@@ -322,6 +337,21 @@ export const blackestNightUndyingRule = {
       buildDirectorHud(entries, scene)
         .catch((e) => warn("[BlackestNight] buildDirectorHud threw", e));
     } catch (e) { warn("[BlackestNight] HUD rebuild dispatch threw", e); }
+
+    // Restore the docked round banner (turn tracker). BATTLE_ENDING.onEnter
+    // called hideRoundBanner() on the way into the fake-out, and this same-round
+    // resume routes to TURN_START — so ROUND_START (the only thing that redraws
+    // the banner) never fires and the HUD would stay gone until the next round.
+    // showRoundBannerForResume re-docks it + repopulates the icons from live
+    // combat and broadcasts to all clients. Instant (no entrance cinematic) so
+    // it doesn't fire a second "ROUND N" flourish on top of the revive. Skip
+    // when the resume wrapped rounds — ROUND_START will draw a fresh one.
+    if (!r?.wrappedRound) {
+      try {
+        const { showRoundBannerForResume } = await import("../../director-round-banner.js");
+        await showRoundBannerForResume(dc, { animate: false });
+      } catch (e) { warn("[BlackestNight] round-banner restore threw", e); }
+    }
 
     // HP-bar reveal — the visual tell that he's back but NOT at full: the
     // boss bar starts full and drains to the restored cap as gameplay

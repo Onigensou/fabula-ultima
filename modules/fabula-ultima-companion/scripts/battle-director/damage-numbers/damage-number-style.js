@@ -110,6 +110,18 @@ export function resolveDamageNumberStyle(payload = {}) {
       spec.color = "#bcd2e8";
       break;
 
+    case "status-immune":
+      // A condition AE refused by IM condition affinity. Deliberately NOT the
+      // damage IMMUNE slab: violet + the condition's own name above a
+      // "NULLIFIED" word, so "immune to Poisoned" never reads as "the damage
+      // was zeroed".
+      spec.tag = String(payload.statusName ?? "STATUS").toUpperCase();
+      spec.tagVariant = "status-immune";
+      spec.bigWord = "NULLIFIED";
+      spec.color = "#c9a7f5";
+      spec.fontPx = 34;
+      break;
+
     case "absorb":
       // Green number to mirror the heal pattern (an absorb IS a heal), but keep
       // the ABSORB tag so it never reads as a plain heal.

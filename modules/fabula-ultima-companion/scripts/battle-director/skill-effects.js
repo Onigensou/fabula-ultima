@@ -69,6 +69,22 @@ function isTransientAE(eff) {
   return false;
 }
 
+// Classify an AE as a cleansable buff/debuff — the shared predicate used by
+// `remove_tagged_ae` (Cleanse/Dispel) AND the on-KO cleanse in defeat-reactor.js
+// so the two can't drift. True only if the effect is ACTIVE and opts in via
+// `system.tags` ("buff" or "debuff"), and is NOT a resource tracker:
+// `lifetimeMode: "persistent_counter"` (clocks / point-pools — Prophecy Points,
+// class clocks) are never buffs/debuffs by construction, exactly as guarded in
+// applyRemoveTaggedAeEffect. Equipment/passive/trait AEs carry no buff/debuff
+// tag → excluded. The Crisis AE (tags []) and the KO marker AE → excluded.
+export function isBuffOrDebuffAE(eff) {
+  if (!eff || eff.disabled === true) return false;
+  const lifetimeMode = String(eff?.flags?.[FLAG_NS]?.lifetimeMode ?? "").trim().toLowerCase();
+  if (lifetimeMode === "persistent_counter") return false;
+  const tags = eff?.system?.tags;
+  return Array.isArray(tags) && (tags.includes("buff") || tags.includes("debuff"));
+}
+
 // Sweep every TRANSIENT AE from every actor in the world. Used by
 // `director-boot.stop()` to clean up battle-applied AEs and other
 // duration-bearing effects when the scene/battle ends. Passive AEs
@@ -348,6 +364,19 @@ function fireResourceLossVfx(opts) {
       .catch((e) => warn("fireResourceLossVfx import failed", e));
   } catch (e) {
     warn("fireResourceLossVfx threw", e);
+  }
+}
+
+// Status-immune counterpart — violet "<STATUS> NULLIFIED" float when a
+// condition AE is refused by IM condition affinity (deliberately distinct
+// from the damage IMMUNE slab). Same lazy fire-and-forget contract.
+function fireStatusImmuneVfx(opts) {
+  try {
+    import("./director-vfx.js")
+      .then((m) => m.playStatusImmuneVfx?.(opts))
+      .catch((e) => warn("fireStatusImmuneVfx import failed", e));
+  } catch (e) {
+    warn("fireStatusImmuneVfx threw", e);
   }
 }
 
@@ -5300,36 +5329,22 @@ async function writeResourceDelta(actor, resourceDef, delta) {
 
 // ── apply_ae ───────────────────────────────────────────────────────────
 
-// Status-immunity gate. Returns true if any of `statuses` resolves to a
-// `condition_<slug>` prop on `actor` whose value is "IM" (immune). Used by
-// apply_ae to refuse applying a status AE to an actor that's immune (Rampart's
-// "cannot suffer status effects" mechanic + per-actor permanent immunities).
-//
-// `statuses` entries may be canonical slugs ("slow", "dazed") OR Foundry status
-// ids ("hhqoSNhWfVD4KR7g") — AEs cloned from CONFIG.statusEffects carry the
-// opaque id, so we resolve id → registered name → slug before the lookup. The
-// CSB template carries the `condition_<slug>` fields as `label` type (post
-// 2026-06-03 surgery) so AEs/sheets can write "NA" / "RS" / "IM" / "AB".
+// Condition-affinity lookup ("IM" | "RS" | null) — thin wrapper over the
+// shared resolver (scripts/shared/condition-affinity.js), which owns the
+// status-id → CONFIG.statusEffects name → `condition_<slug>` prop resolution
+// plus the name/slug alias map (Doomed→doom, Cursed→curse, …). apply_ae uses
+// IM to refuse the AE entirely and RS to clamp charges/turnsRemaining to 1.
 //
 // Custom non-status ids ("fud-bodyguard", "reinforced-slow", …) resolve to no
-// `condition_*` prop, so the lookup returns nothing and the gate doesn't trigger.
+// `condition_*` prop, so the lookup returns null and no gate triggers.
+export function getConditionAffinityFor(actor, { statuses, name } = {}) {
+  const api = globalThis.FUCompanion?.api?.conditionAffinity;
+  return api?.getConditionAffinity?.(actor, { statuses, name }) ?? null;
+}
+
+// Back-compat boolean form (action-profile's per-target preview flag).
 export function isTargetImmuneToStatuses(actor, statuses) {
-  if (!actor) return false;
-  if (!Array.isArray(statuses) || !statuses.length) return false;
-  const props = actor.system?.props ?? {};
-  const cfg = globalThis.CONFIG?.statusEffects ?? [];
-  const immuneToSlug = (slug) => {
-    const key = `condition_${slug}`;
-    return (key in props) && String(props[key] ?? "").trim().toUpperCase() === "IM";
-  };
-  for (const sid of statuses) {
-    const raw = String(sid ?? "").trim();
-    if (!raw) continue;
-    if (immuneToSlug(raw.toLowerCase())) return true;                 // already a slug
-    const entry = cfg.find((e) => e.id === raw);                      // Foundry status id → name → slug
-    if (entry?.name && immuneToSlug(String(entry.name).trim().toLowerCase())) return true;
-  }
-  return false;
+  return getConditionAffinityFor(actor, { statuses }) === "IM";
 }
 
 // True iff a string value looks like a NUMERIC formula (worth baking) rather
@@ -5524,15 +5539,18 @@ async function applyApplyAeEffect(row, ctx) {
       return Number.isFinite(n) ? n : null;
     };
 
-    // Status-immunity gate (engine-gap #4 stub — Rampart's "cannot suffer
-    // status effects" lands as `condition_<status> = "IM"` AE writes on
-    // the target). When the cloned template carries `statuses` AND the
-    // target's `condition_<id>` reads "IM", skip the entire AE for this
-    // target. The gate only fires when the prop EXISTS — non-status
-    // template ids like "fud-bodyguard" have no matching prop so they
-    // pass through.
-    if (isTargetImmuneToStatuses(actor, template.statuses)) {
-      log(`skill-effects.apply_ae: ${actor.name} immune to "${template.name}" (condition_<id>=IM matches a status)`);
+    // Condition-affinity gate (per-actor `condition_<slug>` props; also how
+    // Rampart's "cannot suffer status effects" lands, via IM AE writes).
+    //   IM — skip the entire AE for this target + float the status-immune cue
+    //        (otherwise the refusal is invisible on the battlefield).
+    //   RS — the AE lands, but clamped: at most 1 charge per application /
+    //        turnsRemaining 1 (see the clamp sites below).
+    // Only fires when the prop EXISTS — non-status template ids like
+    // "fud-bodyguard" have no matching prop so they pass through.
+    const conditionAffinity = getConditionAffinityFor(actor, { statuses: template.statuses, name: template.name });
+    if (conditionAffinity === "IM") {
+      log(`skill-effects.apply_ae: ${actor.name} immune to "${template.name}" (condition_<slug>=IM)`);
+      fireStatusImmuneVfx({ tokenUuid: token?.document?.uuid ?? token?.uuid ?? null, statusName: template.name });
       continue;
     }
 
@@ -5552,9 +5570,15 @@ async function applyApplyAeEffect(row, ctx) {
       const existing = findDuplicateAe(actor, template, null);
       if (existing) {
         const curCharges = Number(existing.flags?.[FLAG_NS]?.charges ?? 0) || 0;
-        const addCharges = (rowChargesAdd != null && Number.isFinite(rowChargesAdd))
+        let addCharges = (rowChargesAdd != null && Number.isFinite(rowChargesAdd))
           ? rowChargesAdd
           : (Number(template.flags?.[FLAG_NS]?.charges ?? 0) || 0);
+        // RS (resist): each application grants at most 1 charge — a resisted
+        // Burn-stacker only ever adds 1 per hit no matter the formula.
+        if (conditionAffinity === "RS" && addCharges > 1) {
+          log(`skill-effects.apply_ae add_charges: ${actor.name} resists "${template.name}" — +${addCharges} clamped to +1`);
+          addCharges = 1;
+        }
         const maxCharges = (rowChargesMax != null && Number.isFinite(rowChargesMax))
           ? rowChargesMax
           : (Number(existing.flags?.[FLAG_NS]?.chargesMax ?? template.flags?.[FLAG_NS]?.chargesMax ?? 99999) || 99999);
@@ -5651,6 +5675,17 @@ async function applyApplyAeEffect(row, ctx) {
           if (data.flags?.statuscounter?.visible === true && data.flags.statuscounter.config) {
             data.flags.statuscounter.config.max = rowCMax;
           }
+        }
+      }
+      // RS (resist): a fresh application lands with at most 1 charge (row
+      // override or template default, whichever ended up on the clone).
+      // Chargeless AEs stay chargeless — never stamp a charges flag here;
+      // their duration is handled by the turnsRemaining clamp below.
+      if (conditionAffinity === "RS") {
+        const cur = Number(data.flags?.[FLAG_NS]?.charges);
+        if (Number.isFinite(cur) && cur > 1) {
+          log(`skill-effects.apply_ae: ${actor.name} resists "${template.name}" — initial charges ${cur} clamped to 1`);
+          data.flags[FLAG_NS].charges = 1;
         }
       }
     }
@@ -5860,40 +5895,12 @@ async function applyApplyAeEffect(row, ctx) {
     // as a bearer-turn charge countdown (`target_turn_end` + `ae_initial_charges`)
     // so the BD charge badge shows N → … → 1 on the token, without a per-skill copy.
     const lifetimeMode = String(row.ae_lifetime_mode ?? flagsNS.lifetimeMode ?? "").trim().toLowerCase();
-    // Per-AE lifecycle mode (homebrew):
-    //   - lifetimeMode === "round_end"  → expires via tickDirectorAEsAtRoundEnd
-    //     at the END of the round it was applied in (Rampart). The
-    //     applier-turn tick skips it (turnsRemaining stays null).
-    //   - directorPermanent === true    → never expires (legacy trait pattern).
-    //   - Otherwise                     → applier-turn tick decrements
-    //     turnsRemaining (default 3, override via duration.rounds).
-    let turnsRemaining;
-    if (flagsNS.directorPermanent === true) {
-      turnsRemaining = null;  // opt-out: never expires
-    } else if (lifetimeMode === "round_end") {
-      turnsRemaining = null;  // owned by round-end sweep, not applier-turn tick
-    } else if (lifetimeMode === "on_activation") {
-      turnsRemaining = null;  // charge-governed: expires when charges deplete on fire, not by turn-tick
-    } else if (lifetimeMode === "persistent_counter") {
-      turnsRemaining = null;  // clock / points pool (Brainwave, Grave, Adoration): rests at 0,
-                              // never turn-ticked, NOT deleted when charges empty (see
-                              // skill-charges.isPersistentCounter); cleared by scene-end sweep.
-    } else if (lifetimeMode === "target_turn_end" || lifetimeMode === "target_turn_start") {
-      // "Lasts N of the AFFECTED creature's turns, decrement at the END (…_end)
-      // or START (…_start) of each of the bearer's turns." `target_turn_end` is
-      // the homebrew action-gating Advanced Debuffs (Frightened/Silence/…);
-      // `target_turn_start` is the bearer-turn-START twin (Searing Brand's mark,
-      // which must tick BEFORE the same turn's transfer prompt). Counted here
-      // (default 3, override via duration.rounds) but ticked by the matching
-      // bearer ticker (tickDirectorAEsForBearerTurnEnd at TURN_END /
-      // tickDirectorAEsForBearerTurnStart at TURN_START), NOT by the
-      // applier-turn-start tick (which skips both modes).
-      turnsRemaining = Number.isFinite(explicit) && explicit > 0 ? explicit : 3;
-    } else if (Number.isFinite(explicit) && explicit > 0) {
-      turnsRemaining = explicit;
-    } else {
-      turnsRemaining = 3;
-    }
+    // Per-AE lifecycle mode → invisible turn counter. Shared with the condition-
+    // adoption path (buildAdoptedConditionData) so "how long does a BD condition
+    // last" has exactly ONE definition. RS clamps a >1 counter to 1.
+    const turnsRemaining = computeConditionTurnsRemaining({
+      flagsNS, explicitRounds: explicit, lifetimeMode, affinity: conditionAffinity,
+    });
     data.flags[FLAG_NS].directorAppliedBy = {
       skillUuid: ctx.skill?.uuid ?? null,
       reactorActorUuid: ctx.reactorActor?.uuid ?? null,
@@ -6081,6 +6088,99 @@ async function resolveAeTemplate(aeRef, ctx) {
     warn(`skill-effects.resolveAeTemplate: "${aeRef}" matched ${matches.length} containers — using "${matches[0].container}". Use the full ActiveEffect UUID for explicit selection.`);
   }
   return matches[0].effect.toObject();
+}
+
+// Resolve the CANONICAL condition template (the charge/reactionConfig-bearing
+// AE curated in an `activeEffectContainer` Item — "Debuff"/"Buff"/…) for a set
+// of Foundry status ids. This is how the adoption path recovers a full BD
+// condition from a bare CONFIG.statusEffects clone: e.g. an AEM-applied Bane
+// carries only status `gX1fA3onNG7wsyap` and no charges, but the Debuff
+// container's Bane carries `charges:3` + `lifetimeMode:target_turn_end` + its
+// stat `changes`. Matches by status id (robust across name drift). Synchronous
+// (reads already-loaded world Items) so it's safe to call inside a
+// `preCreateActiveEffect` hook. Returns a plain AE object or null.
+export function resolveCanonicalConditionTemplate(statuses) {
+  const list = statuses
+    ? (typeof statuses.has === "function" ? Array.from(statuses)
+      : Array.isArray(statuses) ? statuses : [])
+    : [];
+  if (!list.length) return null;
+  const want = new Set(list.map((s) => String(s)));
+  for (const it of game.items ?? []) {
+    if (it.type !== "activeEffectContainer") continue;
+    for (const eff of it.effects ?? []) {
+      const est = eff.statuses;
+      const ids = est ? (typeof est.has === "function" ? Array.from(est) : (Array.isArray(est) ? est : [])) : [];
+      if (ids.some((s) => want.has(String(s)))) return eff.toObject();
+    }
+  }
+  return null;
+}
+
+// The ONE definition of "how many turns does a BD-applied condition last".
+// Shared by apply_ae and the adoption path. Null lifecycle modes (permanent /
+// round_end / on_activation / persistent_counter) return null — those AEs
+// aren't turn-ticked (they're charge- or round-governed). Everything else
+// defaults to `explicitRounds` (template `duration.rounds`) or 3. RS (resist)
+// clamps a >1 counter to 1 so a resisted chargeless condition falls off after
+// ~1 round.
+export function computeConditionTurnsRemaining({ flagsNS = {}, explicitRounds, lifetimeMode = "", affinity = null } = {}) {
+  const explicit = Number(explicitRounds);
+  let turnsRemaining;
+  if (flagsNS.directorPermanent === true) turnsRemaining = null;
+  else if (lifetimeMode === "round_end") turnsRemaining = null;
+  else if (lifetimeMode === "on_activation") turnsRemaining = null;
+  else if (lifetimeMode === "persistent_counter") turnsRemaining = null;
+  else if (lifetimeMode === "target_turn_end" || lifetimeMode === "target_turn_start")
+    turnsRemaining = Number.isFinite(explicit) && explicit > 0 ? explicit : 3;
+  else if (Number.isFinite(explicit) && explicit > 0) turnsRemaining = explicit;
+  else turnsRemaining = 3;
+  if (affinity === "RS" && Number.isFinite(turnsRemaining) && turnsRemaining > 1) turnsRemaining = 1;
+  return turnsRemaining;
+}
+
+// Turn a canonical condition template into AE-creation data shaped exactly like
+// what apply_ae produces: core Foundry duration cleared (BD owns the lifecycle
+// via `directorAppliedBy`), `transfer:false`, and a `directorAppliedBy` stamp
+// carrying the template's `lifetimeMode` (falling back to `target_turn_end` —
+// bearer-keyed — since an adopted condition has no meaningful "applier" whose
+// turns an applier-tied default mode would count). RS clamps charges>1 → 1 and
+// the turn counter → 1; chargeless conditions stay chargeless (duration-clamped
+// only). Used by the condition-adoption hook to reconstitute a bare
+// non-BD-applied condition (AEM UI, etc.) into a proper BD condition that the
+// existing turn/charge tickers can expire.
+export function buildAdoptedConditionData(template, { affinity = null } = {}) {
+  const data = foundry.utils.deepClone(template);
+  delete data._id;
+  if (data.duration) {
+    data.duration.rounds = null; data.duration.turns = null; data.duration.seconds = null;
+    data.duration.startRound = null; data.duration.startTurn = null;
+  }
+  data.transfer = false;
+  data.flags = data.flags ?? {};
+  const ns = data.flags[FLAG_NS] = data.flags[FLAG_NS] ?? {};
+  const flagsNS = template.flags?.[FLAG_NS] ?? {};
+  // Bearer-keyed default: a manually-applied condition has no applier, so the
+  // applier-turn-start tick (default mode) would never fire. Fall back to
+  // target_turn_end so it ticks on the victim's own turns.
+  const lifetimeMode = String(flagsNS.lifetimeMode ?? "").trim().toLowerCase() || "target_turn_end";
+  // RS: charge-governed conditions land with at most 1 charge; chargeless stay
+  // chargeless (their duration is handled by the turn counter below).
+  if (affinity === "RS" && Number(ns.charges) > 1) ns.charges = 1;
+  const turnsRemaining = computeConditionTurnsRemaining({
+    flagsNS, explicitRounds: template.duration?.rounds, lifetimeMode, affinity,
+  });
+  ns.bdAdopted = true;   // recursion guard — the adoption hook skips AEs carrying this
+  ns.directorAppliedBy = {
+    skillUuid: null,
+    reactorActorUuid: null,
+    reactorTokenUuid: null,
+    effectLabel: `adopted:${data.name ?? "condition"}`,
+    appliedAtRound: game.combat?.round ?? 0,
+    turnsRemaining,
+    ...(lifetimeMode ? { lifetimeMode } : {}),
+  };
+  return data;
 }
 
 function findDuplicateAe(actor, template, scope = null) {

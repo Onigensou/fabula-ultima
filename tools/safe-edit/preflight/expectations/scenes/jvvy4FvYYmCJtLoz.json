@@ -492,8 +492,8 @@
         "lockPanInit": false,
         "lockZoom": false,
         "lockZoomInit": false,
-        "boundingBox": false,
-        "boundingBoxInit": false,
+        "boundingBox": true,
+        "boundingBoxInit": true,
         "autoScale": "0",
         "rotation": "0",
         "sidebar": "noChange",
@@ -1469,14 +1469,15 @@
             "consumable": "",
             "item": "",
             "treasure": "",
-            "zenit": ""
+            "zenit": "",
+            "material": ""
           },
           "threatLevel": "medium"
         },
         "oniFabula": {
           "general": {
             "cameraFollowToken": false,
-            "sceneMode": "none",
+            "sceneMode": "conflict",
             "scanRadius": null,
             "fastTravelEnabled": true,
             "disableTransition": false,
@@ -1484,7 +1485,12 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false
+            "sceneVisited": true,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
           },
           "sceneNetwork": "[]"
         },
@@ -1517,7 +1523,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1762515389849,
-      "modifiedTime": 1783772795706,
+      "modifiedTime": 1784340940307,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

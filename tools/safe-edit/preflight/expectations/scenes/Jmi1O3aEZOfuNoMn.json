@@ -1,0 +1,209 @@
+{
+  "sceneId": "Jmi1O3aEZOfuNoMn",
+  "name": "Valley_Map001",
+  "tokens": [],
+  "tokensFull": [],
+  "notes": [],
+  "tileCount": 0,
+  "full": {
+    "name": "Valley_Map001",
+    "navName": "Valley of the Dragon",
+    "navigation": false,
+    "folder": "RBurzhUXBqf46PbU",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Valley_Map001.png",
+      "anchorX": 0,
+      "anchorY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "fit": "fill",
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "alphaThreshold": 0
+    },
+    "width": 1404,
+    "height": 873,
+    "padding": 0,
+    "backgroundColor": "#000000",
+    "tokenVision": false,
+    "grid": {
+      "type": 0,
+      "size": 100,
+      "style": "solidLines",
+      "thickness": 1,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m"
+    },
+    "fog": {
+      "exploration": true,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "environment": {
+      "globalLight": {
+        "enabled": false,
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "luminosity": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "darknessLevel": 0,
+      "darknessLock": false,
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "initial": {
+      "x": 694,
+      "y": 474,
+      "scale": 1.429925451030928
+    },
+    "flags": {
+      "fabula-ultima-companion": {
+        "oniFabula": {
+          "general": {
+            "sceneMode": "exploration",
+            "cameraFollowToken": true,
+            "fastTravelEnabled": true,
+            "scanRadius": null,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "",
+            "sceneVisited": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true
+          },
+          "sceneNetwork": "[]"
+        },
+        "campSceneUuid": "",
+        "oniDungeon": {
+          "threatLevel": "medium",
+          "encounterTable": "",
+          "enemiesTable": "",
+          "battleMap": "",
+          "battleBGM": "",
+          "bossBGM": "",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "zenit": "",
+            "treasure": "",
+            "material": ""
+          }
+        }
+      },
+      "LockView": {
+        "editViewbox": false,
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": false,
+        "lockZoomInit": false,
+        "boundingBox": true,
+        "boundingBoxInit": true,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": false,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        }
+      },
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "isTriggered": false,
+        "sequence": []
+      },
+      "wall-height": {
+        "advancedVision": true
+      },
+      "fxmaster": {
+        "effects": {},
+        "filters": {
+          "core_lightning": {
+            "type": "lightning",
+            "options": {
+              "belowTokens": false,
+              "frequency": 1645,
+              "spark_duration": 1310,
+              "brightness": 1.3
+            }
+          }
+        }
+      }
+    },
+    "_id": "Jmi1O3aEZOfuNoMn",
+    "active": false,
+    "navOrder": 0,
+    "foreground": null,
+    "foregroundElevation": 8,
+    "thumb": "worlds/fabula-ultima-2/assets/scenes/Jmi1O3aEZOfuNoMn-thumb.webp",
+    "playlist": "VrpdABUTSoREMDR5",
+    "playlistSound": "G7YMGjDtEfqDEV0I",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 0,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": null,
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1784341931883,
+      "modifiedTime": 1784342070880,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    }
+  }
+}
