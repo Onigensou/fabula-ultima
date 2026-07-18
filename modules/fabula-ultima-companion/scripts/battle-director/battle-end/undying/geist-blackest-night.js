@@ -338,6 +338,21 @@ export const blackestNightUndyingRule = {
         .catch((e) => warn("[BlackestNight] buildDirectorHud threw", e));
     } catch (e) { warn("[BlackestNight] HUD rebuild dispatch threw", e); }
 
+    // Restore the docked round banner (turn tracker). BATTLE_ENDING.onEnter
+    // called hideRoundBanner() on the way into the fake-out, and this same-round
+    // resume routes to TURN_START — so ROUND_START (the only thing that redraws
+    // the banner) never fires and the HUD would stay gone until the next round.
+    // showRoundBannerForResume re-docks it + repopulates the icons from live
+    // combat and broadcasts to all clients. Instant (no entrance cinematic) so
+    // it doesn't fire a second "ROUND N" flourish on top of the revive. Skip
+    // when the resume wrapped rounds — ROUND_START will draw a fresh one.
+    if (!r?.wrappedRound) {
+      try {
+        const { showRoundBannerForResume } = await import("../../director-round-banner.js");
+        await showRoundBannerForResume(dc, { animate: false });
+      } catch (e) { warn("[BlackestNight] round-banner restore threw", e); }
+    }
+
     // HP-bar reveal — the visual tell that he's back but NOT at full: the
     // boss bar starts full and drains to the restored cap as gameplay
     // resumes. Ungated emit (broadcasts itself): this is a deliberate
