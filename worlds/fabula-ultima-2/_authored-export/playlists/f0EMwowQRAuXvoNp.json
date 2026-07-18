@@ -2,11 +2,11 @@
   "_id": "f0EMwowQRAuXvoNp",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.343",
-    "createdTime": 1784302167287,
+    "coreVersion": "12.331",
+    "createdTime": 1681780581846,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
-    "systemVersion": "4.8.5"
+    "systemVersion": "2.4.4"
   },
   "channel": "music",
   "description": "",
