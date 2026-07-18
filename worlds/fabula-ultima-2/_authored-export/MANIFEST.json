@@ -13732,7 +13732,7 @@
             "name": "Zero Trigger: Motivation"
           }
         ],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "UXagcMfhhqcSz7OZ",
@@ -18028,6 +18028,34 @@
           }
         ],
         "effects": 1
+      },
+      {
+        "id": "JNewwFN6zvDk7Bfn",
+        "name": "Kalina",
+        "type": "character",
+        "items": [
+          {
+            "id": "uo5X0wsuKZv7dIVJ",
+            "name": "Dragonfire Dive"
+          },
+          {
+            "id": "ww3HMBYCQDamW2yK",
+            "name": "Dragonskull Helm"
+          },
+          {
+            "id": "C6uFFJWoqLcPIAQi",
+            "name": "Guest"
+          },
+          {
+            "id": "nRB08nYx6AnzY9Tr",
+            "name": "Remedy"
+          },
+          {
+            "id": "hf3NWmwqZgSB90o9",
+            "name": "Skyfall Dive"
+          }
+        ],
+        "effects": 0
       },
       {
         "id": "gdJZ1L1kv5mjTTMr",

@@ -1,0 +1,1222 @@
+{
+  "_id": "JNewwFN6zvDk7Bfn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1784376076126,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "bdGuest": true,
+      "damage_dealt_mult_all": 1,
+      "damage_dealt_mult_attack": 1,
+      "damage_dealt_mult_skill": 1,
+      "damage_dealt_mult_spell": 1,
+      "damage_taken_increased_air": 0,
+      "damage_taken_increased_bolt": 0,
+      "damage_taken_increased_dark": 0,
+      "damage_taken_increased_earth": 0,
+      "damage_taken_increased_fire": 0,
+      "damage_taken_increased_ice": 0,
+      "damage_taken_increased_light": 0,
+      "damage_taken_increased_physical": 0,
+      "damage_taken_increased_poison": 0,
+      "damage_taken_mult": 1,
+      "idleAnimation": {
+        "bounce": false,
+        "float": false
+      }
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Portrair002.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": ""
+        },
+        "annoyed": {
+          "insert": ""
+        },
+        "awe-struck": {
+          "insert": ""
+        },
+        "blushing": {
+          "insert": ""
+        },
+        "carefree": {
+          "insert": ""
+        },
+        "confused": {
+          "insert": ""
+        },
+        "cry": {
+          "insert": ""
+        },
+        "custom1": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Portrair001.png",
+          "label": "Hat",
+          "name": "custom1"
+        },
+        "dissatisfied": {
+          "insert": ""
+        },
+        "dizzy": {
+          "insert": ""
+        },
+        "frown": {
+          "insert": ""
+        },
+        "frustrated": {
+          "insert": ""
+        },
+        "grin": {
+          "insert": ""
+        },
+        "happy": {
+          "insert": ""
+        },
+        "happytears": {
+          "insert": ""
+        },
+        "hearts": {
+          "insert": ""
+        },
+        "idea": {
+          "insert": ""
+        },
+        "innocent": {
+          "insert": ""
+        },
+        "kiss": {
+          "insert": ""
+        },
+        "laughing": {
+          "insert": ""
+        },
+        "laughingsquint": {
+          "insert": ""
+        },
+        "meh": {
+          "insert": ""
+        },
+        "mischevious": {
+          "insert": ""
+        },
+        "panic": {
+          "insert": ""
+        },
+        "playful": {
+          "insert": ""
+        },
+        "rofl": {
+          "insert": ""
+        },
+        "sad": {
+          "insert": ""
+        },
+        "scared": {
+          "insert": ""
+        },
+        "serious": {
+          "insert": ""
+        },
+        "sleeping": {
+          "insert": ""
+        },
+        "smile": {
+          "insert": ""
+        },
+        "smug": {
+          "insert": ""
+        },
+        "speechless": {
+          "insert": ""
+        },
+        "surprised": {
+          "insert": ""
+        },
+        "thinking": {
+          "insert": ""
+        },
+        "tongue": {
+          "insert": ""
+        },
+        "wink": {
+          "insert": ""
+        },
+        "worried": {
+          "insert": ""
+        }
+      },
+      "name": "Kalina",
+      "optalign": "top",
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "Nd8LnosrPid1eX1r",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kalina/Kalina_Standard.png",
+  "items": [
+    {
+      "_id": "C6uFFJWoqLcPIAQi",
+      "_stats": {
+        "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "name": "Guest",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>This creature act automatically at the end of each round.</p>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "allow_empty": true,
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "category": "ally",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "g_crisis_ally",
+              "exclude_self": true,
+              "focus_max_formula": "MAX_HP - CUR_HP",
+              "mode": "exact",
+              "target_filter": "CUR_HP * 2 <= MAX_HP"
+            },
+            "1": {
+              "allow_empty": true,
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "category": "enemy",
+              "effect_kind": "targeting",
+              "effect_label": "g_all_enemies",
+              "exclude_self": true,
+              "mode": "all"
+            },
+            "2": {
+              "allow_empty": true,
+              "auto_target": "skip",
+              "candidate_source": "combat",
+              "category": "enemy",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "g_one_enemy",
+              "exclude_self": true,
+              "mode": "random"
+            },
+            "3": {
+              "effect_kind": "grant",
+              "effect_label": "g_remedy",
+              "grant_amount": "50",
+              "grant_resource": "hp",
+              "target_ref": "g_crisis_ally"
+            },
+            "4": {
+              "attacker_name": "Kalina",
+              "damage_amount": "20",
+              "damage_cause": "damage",
+              "damage_element": "fire",
+              "effect_kind": "deal_damage",
+              "effect_label": "g_dragonfire",
+              "target_ref": "g_all_enemies"
+            },
+            "5": {
+              "attacker_name": "Kalina",
+              "damage_amount": "40",
+              "damage_cause": "damage",
+              "damage_element": "air",
+              "effect_kind": "deal_damage",
+              "effect_label": "g_skyfall",
+              "target_ref": "g_one_enemy"
+            },
+            "6": {
+              "action_ref": "Dragonfire Dive",
+              "effect_kind": "play_animation",
+              "effect_label": "g_dragonfire_anim",
+              "target_ref": "g_all_enemies"
+            },
+            "7": {
+              "chain_steps": "g_dragonfire_anim,g_dragonfire",
+              "effect_kind": "chain",
+              "effect_label": "g_dragonfire_chain"
+            },
+            "8": {
+              "action_ref": "Skyfall Dive",
+              "effect_kind": "play_animation",
+              "effect_label": "g_skyfall_anim",
+              "target_ref": "g_one_enemy"
+            },
+            "9": {
+              "chain_steps": "g_skyfall_anim,g_skyfall",
+              "effect_kind": "chain",
+              "effect_label": "g_skyfall_chain"
+            },
+            "10": {
+              "action_ref": "Remedy",
+              "effect_kind": "play_animation",
+              "effect_label": "g_remedy_anim",
+              "target_ref": "g_crisis_ally"
+            },
+            "11": {
+              "chain_steps": "g_remedy_anim,g_remedy",
+              "effect_kind": "chain",
+              "effect_label": "g_remedy_chain"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Guest",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ANY_ALLY_IN_CRISIS >= 1",
+              "reaction_effect_ref": "g_remedy_chain",
+              "reaction_passive_mode": "on",
+              "reaction_source": "",
+              "reaction_trigger": "round_end"
+            },
+            "1": {
+              "condition_formula": "ANY_ALLY_IN_CRISIS == 0 && ENEMY_COUNT >= 3",
+              "reaction_effect_ref": "g_dragonfire_chain",
+              "reaction_passive_mode": "on",
+              "reaction_source": "",
+              "reaction_trigger": "round_end"
+            },
+            "2": {
+              "condition_formula": "ANY_ALLY_IN_CRISIS == 0 && ENEMY_COUNT < 3",
+              "reaction_effect_ref": "g_skyfall_chain",
+              "reaction_passive_mode": "on",
+              "reaction_source": "",
+              "reaction_trigger": "round_end"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "iFdNNGp4OVZVMEcB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "hf3NWmwqZgSB90o9",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Skyfall Dive",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": 1650,
+          "animation_damage_timing_options": "timing_offset",
+          "animation_script": "<p>// ============================================================================</p><p>// Skyfall Dive - Guest Dive (unified 5-phase cinematic)</p><p>// Shared skeleton (see PHASE banners in the client sub-script):</p><p>//   PHASE 0  token -&gt; webm stand-in</p><p>//   PHASE 1  jump (home -&gt; offscreen up)</p><p>//   PHASE 2  wait (~1s hold at peak)</p><p>//   PHASE 3  dive (top-right -&gt; bottom-left onto impact)</p><p>//   PHASE 3b impact FX (base always; bomb only if configured)</p><p>//   PHASE 4  jump back (impact -&gt; home) + restore token</p><p>// Differences are CFG-only: IMPACT_MODE (target|formation), BOMB_FX/BOMB_SFX.</p><p>// ============================================================================</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    SCRIPT_ID: \"oni.guestDive.skyfall\",</p><p>    SOURCE: \"Skyfall Dive\",</p><p>    EVENT_TYPE: \"skyfallDive\",</p><p>    BANNER_ENABLED: true,  // move-name banner (part of the animation)</p><p>    BANNER_TITLE: \"Skyfall Dive\",  // banner text</p><p>    BANNER_ICON: \"\\uD83D\\uDCA5\",  // banner icon (skill)</p><p>    BANNER_ACCENT: \"#7fb5ff\",  // banner accent (blue)</p><p>    BANNER_LEAD_MS: 500,  // appear this long BEFORE motion (phase 0)</p><p>    BANNER_HOLD_MS: 2000,  // on-screen hold; total visible ~= 350+hold+400</p><p>    CASTER_WEBM: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Battler001.webm\",  // PHASE 0 stand-in sprite</p><p>    IMPACT_MODE: \"target\",  // single target center</p><p>    BASE_FX: \"modules/JB2A_DnD5e/Library/Generic/Impact/Impact_10_Regular_Orange_400x400.webm\",  // PHASE 3b base hit</p><p>    BASE_FX_SCALE: 1,</p><p>    BASE_SFX: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Hit_SlashingB.wav\",</p><p>    BASE_SFX_VOL: 0.9,</p><p>    BOMB_FX: \"\",  // no bomb for Skyfall</p><p>    BOMB_FX_SCALE: 2,</p><p>    BOMB_SFX: \"\",</p><p>    BOMB_SFX_VOL: 0.9,</p><p>    PREP_SQUASH_RATIO: 0.8,  // PHASE 0b crouch to 80% height</p><p>    PREP_SQUASH_MS: 160,  // squash down (fast-out)</p><p>    PREP_HOLD_MS: 220,  // hold the crouch</p><p>    PREP_RELEASE_MS: 120,  // spring back into the jump (ease-in)</p><p>    JUMP_UP_MS: 220,  // PHASE 1 (lower = faster launch)</p><p>    PEAK_HOLD_MS: 700,  // PHASE 2 (was 1000, -30%)</p><p>    DIVE_MS: 170,  // PHASE 3 (lower = faster dive)</p><p>    LAND_HOLD_MS: 0,  // PHASE 3c stay still after landing (0 = off)</p><p>    JUMPBACK_MS: 400,  // PHASE 4 arc duration (lower = faster arc)</p><p>    JUMPBACK_APEX: 260,  // arc peak height (px)</p><p>    JUMPBACK_LAND_FRAC: 0.72,  // fraction of the way home she lands; rest is slide</p><p>    SLIDE_MS: 450,  // PHASE 4b slide-back duration (higher = stronger ease-out)</p><p>    OFFSCREEN_PADDING: 300,</p><p>    DIVE_LATERAL_OFFSET: 600,  // top-right start offset (px)</p><p>    FORCE_SCALE_RATIO: 1.38,</p><p>    FORCE_ANCHOR: { x: 0.5, y: 0.7 },</p><p>    FORCE_FLIP_H: true,  // fallback flip when FACE_TARGET off</p><p>    FACE_TARGET: true,  // auto-face the target side (L/R), held every phase</p><p>    SPRITE_DEFAULT_FACES: \"left\",  // which way the unflipped webm faces</p><p>    SILHOUETTE: false,  // no black tint on the sprite</p><p>    AFTERIMAGE_COUNT: 5,  // motion-trail ghosts (dive -&gt; return)</p><p>    AFTERIMAGE_LAG_MS: 20,  // each ghost lags the one before it (ms)</p><p>    AFTERIMAGE_ALPHA: 0.6,  // ghost opacity</p><p>    AFTERIMAGE_COLOR_NEAR: 0x3399FF,  // nearest ghost tint (blue)</p><p>    AFTERIMAGE_COLOR_FAR: 0x000000,  // farthest ghost tint (black)</p><p>  };</p><p>  const TAG = '[ONI][Anim][SkyfallDive]';</p><p>  function wait(ms){ return new Promise(function(r){ setTimeout(r, Math.max(0, ms)); }); }</p><p>  globalThis.ONI = globalThis.ONI || {};</p><p>  if (!ONI.emit){ ONI.emit = function(n,p,o){ p=p||{}; o=o||{}; if(o.local!==false) Hooks.callAll(n,p); if(o.world===true) game.socket.emit('world',{action:n,payload:p}); }; }</p><p>  async function resolveTokenPlaceable(x){</p><p>    if (!x) return null;</p><p>    if (x.isToken) return x;</p><p>    if (typeof x === 'string'){ try { var d = await fromUuid(x); if (d &amp;&amp; d.object) return d.object; } catch(e){} return null; }</p><p>    if (x.object &amp;&amp; x.object.isToken) return x.object;</p><p>    return null;</p><p>  }</p><p>  const P = globalThis.__PAYLOAD || {};</p><p>  let caster = await resolveTokenPlaceable(P.casterTokenUuid || P.attackerUuid || P.sourceTokenUuid || null);</p><p>  if (!caster) caster = (canvas.tokens.controlled &amp;&amp; canvas.tokens.controlled[0]) || null;</p><p>  let targetTokens = [];</p><p>  const liveTargets = Array.from(game.user.targets || []);</p><p>  if (liveTargets.length){ targetTokens = liveTargets; }</p><p>  else {</p><p>    const uuids = P.targetTokenUuids || P.targetUuids || P.targets || [];</p><p>    for (const u of uuids){ const tk = await resolveTokenPlaceable(u); if (tk) targetTokens.push(tk); }</p><p>  }</p><p>  if (!caster){ ui.notifications.warn(TAG + ' No caster token.'); return; }</p><p>  if (!targetTokens.length){ ui.notifications.warn(TAG + ' No target token(s).'); return; }</p><p>  const targetIds = targetTokens.map(function(t){ return t.id; });</p><p>  // ---- move-name banner: part of the animation. Fires BEFORE motion, self-expires. ----</p><p>  if (CFG.BANNER_ENABLED) {</p><p>    try {</p><p>      const _api = window.FUCompanion &amp;&amp; window.FUCompanion.api;</p><p>      if (_api &amp;&amp; _api.namecardBroadcast) {</p><p>        _api.namecardBroadcast({ title: CFG.BANNER_TITLE, options: {</p><p>          bg: '#000000', accent: CFG.BANNER_ACCENT, text: ['#ffffff', '#e9f2ff'],</p><p>          glowColor: '#ffffff', border: 'rgba(255,255,255,.10)', dropShadow: '0 10px 22px rgba(0,0,0,.35)',</p><p>          maskEdges: true, edgeFade: 0.12,</p><p>          showIcon: !!CFG.BANNER_ICON, iconOverride: CFG.BANNER_ICON, iconScale: 0.93, iconGapPx: 10,</p><p>          xAlign: 'center', offsetX: 0, offsetY: 64, fixedWidth: 640, autoWidth: false, cardScale: 1.0,</p><p>          inMs: 350, holdMs: CFG.BANNER_HOLD_MS, outMs: 400, enterFrom: 'left',</p><p>          maxFontPx: 30, minFontPx: 16, letterSpacing: 0.06, fontWeight: 700, upperCase: false,</p><p>          fontFamily: 'Pixel Operator, system-ui, sans-serif', textStrokePx: 0.1, textStrokeColor: 'rgba(0,0,0,0.55)',</p><p>          baselineVh: 900, scaleMin: 0.75, scaleMax: 1.75, scaleMode: 'vh',</p><p>        } }); // NOT awaited: the banner runs its own in/hold/out timer regardless of the motion</p><p>      }</p><p>    } catch(e){ console.warn(TAG, 'banner failed', e); }</p><p>  }</p><p>  if (CFG.BANNER_LEAD_MS &gt; 0) await wait(CFG.BANNER_LEAD_MS); // banner leads the motion</p><p>  ONI.emit('oni:animationStart', { type: CFG.EVENT_TYPE, sourceTokenId: caster.id, targetTokenIds: targetIds, sceneId: canvas.scene ? canvas.scene.id : null, timestamp: Date.now() }, { local:true, world:false });</p><p>  const SUB = [\"const TAG = '[ONI][Pseudo][GuestDive]';\",\"const c = ctx;\",\"const casterToken = c.casterToken;\",\"const targetTokens = c.targetTokens || [];\",\"const params = c.params || {};\",\"if (!casterToken) throw new Error('Need casterToken');\",\"\",\"const CASTER_WEBM = String(params.casterWebm || '');\",\"const IMPACT_MODE = String(params.impactMode || 'target');\",\"const BASE_FX = String(params.baseFx || '');\",\"const BASE_FX_SCALE = Number(params.baseFxScale != null ? params.baseFxScale : 1);\",\"const BASE_SFX = String(params.baseSfx || '');\",\"const BASE_SFX_VOL = Number(params.baseSfxVol != null ? params.baseSfxVol : 0.9);\",\"const BOMB_FX = String(params.bombFx || '');\",\"const BOMB_FX_SCALE = Number(params.bombFxScale != null ? params.bombFxScale : 2);\",\"const BOMB_SFX = String(params.bombSfx || '');\",\"const BOMB_SFX_VOL = Number(params.bombSfxVol != null ? params.bombSfxVol : 0.9);\",\"const jumpUpMs = Number(params.jumpUpMs || 350);\",\"const peakHoldMs = Number(params.peakHoldMs != null ? params.peakHoldMs : 1000);\",\"const diveMs = Number(params.diveMs || 260);\",\"const landHoldMs = Number(params.landHoldMs != null ? params.landHoldMs : 500);\",\"const jumpbackMs = Number(params.jumpbackMs || 620);\",\"const jumpbackApex = Number(params.jumpbackApex != null ? params.jumpbackApex : 260);\",\"const jumpbackLandFrac = Number(params.jumpbackLandFrac != null ? params.jumpbackLandFrac : 0.72);\",\"const slideMs = Number(params.slideMs != null ? params.slideMs : 260);\",\"const offscreenPadding = Number(params.offscreenPadding || 300);\",\"const diveLateralOffset = Number(params.diveLateralOffset != null ? params.diveLateralOffset : 600);\",\"const forceScaleRatio = Number(params.forceScaleRatio || 1.38);\",\"const forceAnchor = params.forceAnchor || { x: 0.5, y: 0.7 };\",\"const forceFlipH = params.forceFlipH !== false;\",\"const faceTarget = params.faceTarget !== false;\",\"const spriteDefaultFacesLeft = String(params.spriteDefaultFaces || 'right') === 'left';\",\"const silhouette = params.silhouette === true;\",\"const aiCount = Math.max(0, Math.floor(Number(params.afterimageCount != null ? params.afterimageCount : 5)));\",\"const aiLagMs = Number(params.afterimageLagMs != null ? params.afterimageLagMs : 100);\",\"const aiAlpha = Number(params.afterimageAlpha != null ? params.afterimageAlpha : 0.6);\",\"const aiNear = Number(params.afterimageColorNear != null ? params.afterimageColorNear : 0x3399FF);\",\"const aiFar = Number(params.afterimageColorFar != null ? params.afterimageColorFar : 0x000000);\",\"const prepSquashRatio = Number(params.prepSquashRatio != null ? params.prepSquashRatio : 0.8);\",\"const prepSquashMs = Number(params.prepSquashMs != null ? params.prepSquashMs : 160);\",\"const prepHoldMs = Number(params.prepHoldMs != null ? params.prepHoldMs : 220);\",\"const prepReleaseMs = Number(params.prepReleaseMs != null ? params.prepReleaseMs : 120);\",\"\",\"function wait(ms){ return new Promise(function(r){ setTimeout(r, Math.max(0, ms)); }); }\",\"function clamp01(n){ return Math.min(Math.max(n,0),1); }\",\"function easeInCubic(t){ return t*t*t; }\",\"function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }\",\"function easeOutBack(t){ var c1=1.70158; var c3=c1+1; return 1 + c3*Math.pow(t-1,3) + c1*Math.pow(t-1,2); }\",\"function makeSettleEase(m0){\",\"  // cubic e(t): e(0)=0, e(1)=1, e'(0)=m0 (normalized entry speed), e'(1)=0 (stops).\",\"  // clamp m0 to [0,3] to stay monotonic (no overshoot).\",\"  m0 = Math.max(0, Math.min(3, m0));\",\"  var a = m0 - 2, b = 3 - 2*m0, c = m0;\",\"  return function(t){ return ((a*t) + b)*t*t + c*t; };\",\"}\",\"function animateXY(obj, from, to, durMs, easeFn){\",\"  return new Promise(function(resolve){\",\"    var start = performance.now();\",\"    var ticker = canvas.app.ticker;\",\"    var update = function(){\",\"      if (!obj || obj.destroyed){ ticker.remove(update); resolve(); return; }\",\"      var t = clamp01((performance.now()-start)/Math.max(1,durMs));\",\"      var e = easeFn ? easeFn(t) : t;\",\"      obj.x = from.x + (to.x-from.x)*e;\",\"      obj.y = from.y + (to.y-from.y)*e;\",\"      if (t&gt;=1){ ticker.remove(update); resolve(); }\",\"    };\",\"    ticker.add(update);\",\"  });\",\"}\",\"function animateHeightPin(obj, fromH, toH, bottomY, anchorY, durMs, easeFn){\",\"  // animate height while holding the sprite's BOTTOM edge fixed (feet planted).\",\"  return new Promise(function(resolve){\",\"    var start = performance.now();\",\"    var ticker = canvas.app.ticker;\",\"    var update = function(){\",\"      if (!obj || obj.destroyed){ ticker.remove(update); resolve(); return; }\",\"      var t = clamp01((performance.now()-start)/Math.max(1,durMs));\",\"      var e = easeFn ? easeFn(t) : t;\",\"      var h = fromH + (toH-fromH)*e;\",\"      obj.height = h;\",\"      obj.y = bottomY - (1 - anchorY) * h;\",\"      if (t&gt;=1){ ticker.remove(update); resolve(); }\",\"    };\",\"    ticker.add(update);\",\"  });\",\"}\",\"function animateArc(obj, from, to, apex, durMs, easeXFn){\",\"  // horizontal eases out (loses speed); vertical = linear baseline + parabolic hump peaking 'apex' up.\",\"  return new Promise(function(resolve){\",\"    var start = performance.now();\",\"    var ticker = canvas.app.ticker;\",\"    var update = function(){\",\"      if (!obj || obj.destroyed){ ticker.remove(update); resolve(); return; }\",\"      var t = clamp01((performance.now()-start)/Math.max(1,durMs));\",\"      var ex = easeXFn ? easeXFn(t) : t;\",\"      obj.x = from.x + (to.x-from.x)*ex;\",\"      var baseY = from.y + (to.y-from.y)*t;\",\"      var hump = -apex * 4 * t * (1-t);\",\"      obj.y = baseY + hump;\",\"      if (t&gt;=1){ ticker.remove(update); resolve(); }\",\"    };\",\"    ticker.add(update);\",\"  });\",\"}\",\"async function createVideoSpriteForced(url, tok){\",\"  var texture = await loadTexture(url);\",\"  var s = new PIXI.Sprite(texture);\",\"  s.anchor.set(forceAnchor.x, forceAnchor.y);\",\"  s.width = tok.w * forceScaleRatio;\",\"  s.height = tok.h * forceScaleRatio;\",\"  if (spriteFlip) s.scale.x *= -1;\",\"  canvas.stage.sortableChildren = true;\",\"  s.zIndex = 999999;\",\"  canvas.stage.addChild(s);\",\"  canvas.stage.sortChildren();\",\"  return s;\",\"}\",\"function destroySpriteSafe(s){ if(!s) return; try{ canvas.stage.removeChild(s); }catch(e){} try{ s.destroy(); }catch(e){} }\",\"function faceSprite(s){ if(!s || s.destroyed) return; var m = Math.abs(s.scale.x) || 1; s.scale.x = spriteFlip ? -m : m; }\",\"// ---- afterimage motion trail (active dive -&gt; return) ----\",\"var trail = { active:false, hist:[], sprites:[], ticker:null };\",\"function lerpColor(a, b, t){\",\"  var ar=(a&gt;&gt;16)&amp;255, ag=(a&gt;&gt;8)&amp;255, ab=a&amp;255;\",\"  var br=(b&gt;&gt;16)&amp;255, bg=(b&gt;&gt;8)&amp;255, bb=b&amp;255;\",\"  var r=Math.round(ar+(br-ar)*t), g=Math.round(ag+(bg-ag)*t), bl=Math.round(ab+(bb-ab)*t);\",\"  return (r&lt;&lt;16)|(g&lt;&lt;8)|bl;\",\"}\",\"function sampleHist(hist, t){\",\"  if (!hist.length) return null;\",\"  if (t &lt;= hist[0].t) return null;\",\"  for (var i=hist.length-1;i&gt;=0;i--){\",\"    if (hist[i].t &lt;= t){\",\"      var a = hist[i], b = hist[Math.min(i+1, hist.length-1)];\",\"      if (b.t === a.t) return { x:a.x, y:a.y };\",\"      var f = (t - a.t)/(b.t - a.t);\",\"      return { x: a.x + (b.x-a.x)*f, y: a.y + (b.y-a.y)*f };\",\"    }\",\"  }\",\"  return null;\",\"}\",\"function startTrail(main){\",\"  if (aiCount &lt;= 0 || !main) return;\",\"  for (var i=0;i&lt;aiCount;i++){\",\"    var s = new PIXI.Sprite(main.texture);\",\"    s.anchor.set(main.anchor.x, main.anchor.y);\",\"    s.scale.x = main.scale.x; s.scale.y = main.scale.y;\",\"    s.zIndex = (main.zIndex||0) - (i+1);\",\"    var tcol = aiCount &gt; 1 ? i/(aiCount-1) : 0;\",\"    s.tint = lerpColor(aiNear, aiFar, tcol);\",\"    s.alpha = aiAlpha;\",\"    s.visible = false;\",\"    canvas.stage.addChild(s);\",\"    trail.sprites.push(s);\",\"  }\",\"  canvas.stage.sortableChildren = true; canvas.stage.sortChildren();\",\"  trail.active = true; trail.hist = [];\",\"  var tick = function(){\",\"    if (!main || main.destroyed) return;\",\"    var now = performance.now();\",\"    trail.hist.push({ t: now, x: main.x, y: main.y });\",\"    var maxAge = aiCount*aiLagMs + 200;\",\"    while (trail.hist.length &gt; 2 &amp;&amp; (now - trail.hist[0].t) &gt; maxAge) trail.hist.shift();\",\"    for (var i=0;i&lt;trail.sprites.length;i++){\",\"      var pos = sampleHist(trail.hist, now - (i+1)*aiLagMs);\",\"      if (pos){ trail.sprites[i].visible = true; trail.sprites[i].x = pos.x; trail.sprites[i].y = pos.y; }\",\"    }\",\"  };\",\"  trail.ticker = tick;\",\"  canvas.app.ticker.add(tick);\",\"}\",\"function hardStopTrail(){\",\"  if (trail.ticker){ try { canvas.app.ticker.remove(trail.ticker); } catch(e){} trail.ticker = null; }\",\"  for (var i=0;i&lt;trail.sprites.length;i++){ try{ canvas.stage.removeChild(trail.sprites[i]); }catch(e){} try{ trail.sprites[i].destroy(); }catch(e){} }\",\"  trail.sprites = []; trail.active = false;\",\"}\",\"async function stopTrail(){\",\"  if (!trail.active) return;\",\"  await wait(aiCount*aiLagMs + 60);\",\"  hardStopTrail();\",\"}\",\"async function snapTokenAlphaHard(token, a){\",\"  try { if(token.mesh) token.mesh.alpha=a; if(token.icon) token.icon.alpha=a; token.alpha=a; } catch(e){}\",\"  if (game.user.isGM){ try { await token.document.update({ alpha: a }, { animate:false }); } catch(e){ try{ await token.document.update({ alpha: a }); }catch(e2){} } }\",\"  try { token.renderFlags &amp;&amp; token.renderFlags.set &amp;&amp; token.renderFlags.set({ refreshMesh:true, refreshState:true }); } catch(e){}\",\"  try { token.refresh &amp;&amp; token.refresh(); } catch(e){}\",\"  await new Promise(function(r){ requestAnimationFrame(r); });\",\"  try { if(token.mesh) token.mesh.alpha=a; if(token.icon) token.icon.alpha=a; token.alpha=a; } catch(e){}\",\"}\",\"function centerOf(t){ return { x: t.center.x, y: t.center.y }; }\",\"\",\"var impact = null;\",\"if (IMPACT_MODE === 'formation' &amp;&amp; targetTokens.length){\",\"  var sx=0, sy=0;\",\"  targetTokens.forEach(function(t){ sx+=t.center.x; sy+=t.center.y; });\",\"  impact = { x: sx/targetTokens.length, y: sy/targetTokens.length };\",\"} else if (targetTokens[0]){\",\"  impact = centerOf(targetTokens[0]);\",\"} else { throw new Error('Need at least 1 target token'); }\",\"\",\"var home = centerOf(casterToken);\",\"// facing: flip so the webm faces the target (impact) side; held constant every phase.\",\"var spriteFlip = faceTarget ? ((impact.x &lt;= home.x) !== spriteDefaultFacesLeft) : forceFlipH;\",\"var sprite = null;\",\"try {\",\"  console.log(TAG, 'START', { mode: IMPACT_MODE, targets: targetTokens.length });\",\"\",\"  // ===== PHASE 0 - TOKEN -&gt; WEBM =====\",\"  await snapTokenAlphaHard(casterToken, 0);\",\"  sprite = await createVideoSpriteForced(CASTER_WEBM, casterToken);\",\"  if (silhouette) sprite.tint = 0x000000;\",\"  sprite.alpha = 1;\",\"  sprite.x = home.x; sprite.y = home.y;\",\"  faceSprite(sprite);\",\"\",\"  // ===== PHASE 0b - PREP (anticipation crouch ~0.5s, feet planted) =====\",\"  // squash height (fast-out), hold, then spring back (ease-in) launching the jump.\",\"  // bottom edge is pinned throughout so it reads as crouching on the ground.\",\"  var baseH = sprite.height;\",\"  var anchorY = forceAnchor.y;\",\"  var bottomY = sprite.y + (1 - anchorY) * baseH;\",\"  await animateHeightPin(sprite, baseH, baseH * prepSquashRatio, bottomY, anchorY, prepSquashMs, easeOutCubic);\",\"  if (prepHoldMs &gt; 0) await wait(prepHoldMs);\",\"  await animateHeightPin(sprite, sprite.height, baseH, bottomY, anchorY, prepReleaseMs, easeInCubic);\",\"\",\"  // ===== PHASE 1 - JUMP (home -&gt; offscreen up) =====\",\"  var upPoint = { x: home.x, y: -(sprite.height) - offscreenPadding };\",\"  await animateXY(sprite, home, upPoint, jumpUpMs, easeOutCubic);\",\"\",\"  // ===== PHASE 2 - WAIT (hold at peak) =====\",\"  if (peakHoldMs &gt; 0) await wait(peakHoldMs);\",\"\",\"  // ===== PHASE 3 - DIVE (top-right -&gt; bottom-left onto impact) =====\",\"  var diveStart = { x: impact.x + diveLateralOffset, y: -(sprite.height) - offscreenPadding };\",\"  sprite.x = diveStart.x; sprite.y = diveStart.y;\",\"  startTrail(sprite); // afterimages begin at the dive, follow through to the return\",\"  await animateXY(sprite, diveStart, impact, diveMs, easeInCubic);\",\"\",\"  // ===== PHASE 3b - IMPACT FX (base always; bomb only if configured) =====\",\"  if (silhouette) sprite.tint = 0xFFFFFF;\",\"  if (game.modules.get('sequencer') &amp;&amp; game.modules.get('sequencer').active){\",\"    var seq = new Sequence();\",\"    if (BASE_FX){ seq.effect().file(BASE_FX).atLocation(impact).scale(BASE_FX_SCALE); }\",\"    if (BASE_SFX){ seq.sound().file(BASE_SFX).volume(BASE_SFX_VOL); }\",\"    if (BOMB_FX){ seq.effect().file(BOMB_FX).atLocation(impact).scale(BOMB_FX_SCALE); }\",\"    if (BOMB_SFX){ seq.sound().file(BOMB_SFX).volume(BOMB_SFX_VOL); }\",\"    await seq.play();\",\"  }\",\"\",\"  // ===== PHASE 3c - LAND HOLD (stay still on the target) =====\",\"  if (landHoldMs &gt; 0) await wait(landHoldMs);\",\"\",\"  // ===== PHASE 4 - JUMP BACK (arc to the ground, then slide home) =====\",\"  // keep facing the target while retreating (movement goes the other way).\",\"  faceSprite(sprite);\",\"  var backFrom = { x: sprite.x, y: sprite.y };\",\"  // land short of home; horizontal is LINEAR (constant speed), touch down at ground (home.y).\",\"  var landX = impact.x + (home.x - impact.x) * jumpbackLandFrac;\",\"  await animateArc(sprite, backFrom, { x: landX, y: home.y }, jumpbackApex, jumpbackMs, null);\",\"  faceSprite(sprite);\",\"  // ===== PHASE 4b - SLIDE (ground): enter at the arc's horizontal speed, decelerate to rest =====\",\"  var dxArc = landX - backFrom.x;\",\"  var dxSlide = home.x - landX;\",\"  var vArc = jumpbackMs &gt; 0 ? dxArc / jumpbackMs : 0;\",\"  var m0 = (Math.abs(dxSlide) &gt; 0.5 &amp;&amp; slideMs &gt; 0) ? (vArc * slideMs / dxSlide) : 0;\",\"  await animateXY(sprite, { x: landX, y: home.y }, home, slideMs, makeSettleEase(m0));\",\"  faceSprite(sprite);\",\"  await stopTrail(); // let the lagging ghosts collapse into home, then remove them\",\"  await snapTokenAlphaHard(casterToken, 1);\",\"  console.log(TAG, 'DONE');\",\"} catch(err){\",\"  console.error(TAG, 'ERROR', err);\",\"} finally {\",\"  hardStopTrail();\",\"  destroySpriteSafe(sprite);\",\"}\",\"// Signal TRUE motion completion (runId-matched) so the outer wrapper emits\",\"// oni:animationEnd at the real end, not a fixed guess. game.ONI.pseudo.play is\",\"// fire-and-forget (returns a runId, not a promise), so this is the only precise\",\"// end signal. Hooks are per-client; the GM-local run reaches the GM-local outer.\",\"try { Hooks.callAll('oni:pseudoDone', { runId: (c &amp;&amp; c.runId) ? c.runId : null }); } catch(e){}\"];</p><p>  const scriptSource = SUB.join('\\n');</p><p>  try {</p><p>    if (game.ONI &amp;&amp; game.ONI.pseudo &amp;&amp; game.ONI.pseudo.play){</p><p>      const r = game.ONI.pseudo.play({</p><p>        scriptId: CFG.SCRIPT_ID,</p><p>        scriptSource: scriptSource,</p><p>        casterTokenUuid: caster.document.uuid,</p><p>        targetTokenUuids: targetTokens.map(function(t){ return t.document.uuid; }),</p><p>        params: {</p><p>          casterWebm: CFG.CASTER_WEBM,</p><p>          impactMode: CFG.IMPACT_MODE,</p><p>          baseFx: CFG.BASE_FX, baseFxScale: CFG.BASE_FX_SCALE,</p><p>          baseSfx: CFG.BASE_SFX, baseSfxVol: CFG.BASE_SFX_VOL,</p><p>          bombFx: CFG.BOMB_FX, bombFxScale: CFG.BOMB_FX_SCALE,</p><p>          bombSfx: CFG.BOMB_SFX, bombSfxVol: CFG.BOMB_SFX_VOL,</p><p>          jumpUpMs: CFG.JUMP_UP_MS, peakHoldMs: CFG.PEAK_HOLD_MS,</p><p>          diveMs: CFG.DIVE_MS, landHoldMs: CFG.LAND_HOLD_MS,</p><p>          jumpbackMs: CFG.JUMPBACK_MS, jumpbackApex: CFG.JUMPBACK_APEX, jumpbackLandFrac: CFG.JUMPBACK_LAND_FRAC, slideMs: CFG.SLIDE_MS,</p><p>          offscreenPadding: CFG.OFFSCREEN_PADDING, diveLateralOffset: CFG.DIVE_LATERAL_OFFSET,</p><p>          forceScaleRatio: CFG.FORCE_SCALE_RATIO, forceAnchor: CFG.FORCE_ANCHOR, forceFlipH: CFG.FORCE_FLIP_H,</p><p>          faceTarget: CFG.FACE_TARGET, spriteDefaultFaces: CFG.SPRITE_DEFAULT_FACES,</p><p>          prepSquashRatio: CFG.PREP_SQUASH_RATIO, prepSquashMs: CFG.PREP_SQUASH_MS, prepHoldMs: CFG.PREP_HOLD_MS, prepReleaseMs: CFG.PREP_RELEASE_MS,</p><p>          afterimageCount: CFG.AFTERIMAGE_COUNT, afterimageLagMs: CFG.AFTERIMAGE_LAG_MS, afterimageAlpha: CFG.AFTERIMAGE_ALPHA,</p><p>          afterimageColorNear: CFG.AFTERIMAGE_COLOR_NEAR, afterimageColorFar: CFG.AFTERIMAGE_COLOR_FAR,</p><p>          silhouette: CFG.SILHOUETTE,</p><p>        },</p><p>        meta: { source: CFG.SOURCE },</p><p>      });</p><p>      // pseudo.play returns a runId string (fire-and-forget), NOT a promise — so</p><p>      // wait for the sub-script's runId-matched oni:pseudoDone = the TRUE motion end.</p><p>      await new Promise(function(resolve){</p><p>        var done = false;</p><p>        var onDone = function(p){ if (done) return; if (p &amp;&amp; p.runId &amp;&amp; r &amp;&amp; p.runId !== r) return; done = true; Hooks.off('oni:pseudoDone', onDone); resolve(); };</p><p>        Hooks.on('oni:pseudoDone', onDone);</p><p>        setTimeout(function(){ if(!done){ done = true; Hooks.off('oni:pseudoDone', onDone); resolve(); } }, 15000);</p><p>      });</p><p>    } else {</p><p>      ui.notifications.error(TAG + ' Pseudo API missing (game.ONI.pseudo.play).');</p><p>    }</p><p>  } catch(err){</p><p>    console.error(TAG, 'CRASHED', err);</p><p>  } finally {</p><p>    ONI.emit('oni:animationEnd', { type: CFG.EVENT_TYPE, sourceTokenId: caster.id, targetTokenIds: targetIds, sceneId: canvas.scene ? canvas.scene.id : null, timestamp: Date.now() }, { local:true, world:false });</p><p>  }</p><p>})();</p>",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Dive down to a target enemy. Deals <strong>【40】</strong><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\">Air</a>&nbsp;damage to the enemy.</p>",
+          "duration": "-",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Skyfall Dive",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One enemy",
+          "skill_type": "Active",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "nRB08nYx6AnzY9Tr",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
+      "name": "Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": 350,
+          "animation_damage_timing_options": "timing_offset",
+          "animation_script": "<p>// ============================================================================</p><p>// Remedy - Guest heal cinematic. Banner + a healing sparkle on the crisis ally.</p><p>// Sequencer auto-broadcasts to all clients; no pseudo.play needed. Heal number</p><p>// lands at HEAL_BLOOM_MS (item timing_offset). animationEnd = seq end, so the</p><p>// round waits for it (see firePreAcceptedCandidate pendingAnimations).</p><p>// ============================================================================</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    BANNER_ENABLED: true,  // move-name banner</p><p>    BANNER_TITLE: \"Remedy\",  // banner text</p><p>    BANNER_ICON: \"\\u2728\",  // sparkles</p><p>    BANNER_ACCENT: \"#7fe08a\",  // banner accent (green)</p><p>    BANNER_LEAD_MS: 400,  // appear this long before the sparkle</p><p>    BANNER_HOLD_MS: 1600,  // on-screen hold</p><p>    HEAL_VFX: \"modules/JB2A_DnD5e/Library/Generic/Healing/HealingAbility_01_Yellow_200x200.webm\",  // healing effect on the ally</p><p>    HEAL_SCALE: 1.4,  // scaleToObject ratio (relative to token)</p><p>    HEAL_TINT: \"#9dff8f\",  // green tint; empty string = original yellow</p><p>    FADE_IN_MS: 150,</p><p>    FADE_OUT_MS: 300,</p><p>    HEAL_SFX: \"\",  // optional sound (empty = none)</p><p>    HEAL_SFX_VOL: 0.8,</p><p>    HEAL_BLOOM_MS: 350,  // heal number lands here (item timing_offset)</p><p>  };</p><p>  const TAG = '[ONI][Anim][Remedy]';</p><p>  function wait(ms){ return new Promise(function(r){ setTimeout(r, Math.max(0, ms)); }); }</p><p>  globalThis.ONI = globalThis.ONI || {};</p><p>  if (!ONI.emit){ ONI.emit = function(n,p,o){ p=p||{}; o=o||{}; if(o.local!==false) Hooks.callAll(n,p); if(o.world===true) game.socket.emit('world',{action:n,payload:p}); }; }</p><p>  async function resolveTokenPlaceable(x){</p><p>    if (!x) return null;</p><p>    if (x.isToken) return x;</p><p>    if (typeof x === 'string'){ try { var d = await fromUuid(x); if (d &amp;&amp; d.object) return d.object; } catch(e){} return null; }</p><p>    if (x.object &amp;&amp; x.object.isToken) return x.object;</p><p>    return null;</p><p>  }</p><p>  const P = globalThis.__PAYLOAD || {};</p><p>  let caster = await resolveTokenPlaceable(P.casterTokenUuid || P.sourceTokenUuid || null);</p><p>  if (!caster) caster = (canvas.tokens.controlled &amp;&amp; canvas.tokens.controlled[0]) || null;</p><p>  let targetTokens = [];</p><p>  const liveTargets = Array.from(game.user.targets || []);</p><p>  if (liveTargets.length){ targetTokens = liveTargets; }</p><p>  else {</p><p>    const uuids = P.targetTokenUuids || P.targetUuids || P.targets || [];</p><p>    for (const u of uuids){ const tk = await resolveTokenPlaceable(u); if (tk) targetTokens.push(tk); }</p><p>  }</p><p>  if (!targetTokens.length &amp;&amp; caster) targetTokens = [caster];</p><p>  if (!targetTokens.length){ ui.notifications.warn(TAG + ' No target.'); return; }</p><p>  const targetIds = targetTokens.map(function(t){ return t.id; });</p><p>  // ---- banner (fire-and-forget, self-expiring) ----</p><p>  if (CFG.BANNER_ENABLED) {</p><p>    try {</p><p>      const _api = window.FUCompanion &amp;&amp; window.FUCompanion.api;</p><p>      if (_api &amp;&amp; _api.namecardBroadcast) {</p><p>        _api.namecardBroadcast({ title: CFG.BANNER_TITLE, options: {</p><p>          bg: '#000000', accent: CFG.BANNER_ACCENT, text: ['#ffffff', '#e9ffe9'],</p><p>          glowColor: '#ffffff', border: 'rgba(255,255,255,.10)', dropShadow: '0 10px 22px rgba(0,0,0,.35)',</p><p>          maskEdges: true, edgeFade: 0.12,</p><p>          showIcon: !!CFG.BANNER_ICON, iconOverride: CFG.BANNER_ICON, iconScale: 0.93, iconGapPx: 10,</p><p>          xAlign: 'center', offsetX: 0, offsetY: 64, fixedWidth: 640, autoWidth: false, cardScale: 1.0,</p><p>          inMs: 350, holdMs: CFG.BANNER_HOLD_MS, outMs: 400, enterFrom: 'left',</p><p>          maxFontPx: 30, minFontPx: 16, letterSpacing: 0.06, fontWeight: 700, upperCase: false,</p><p>          fontFamily: 'Pixel Operator, system-ui, sans-serif', textStrokePx: 0.1, textStrokeColor: 'rgba(0,0,0,0.55)',</p><p>          baselineVh: 900, scaleMin: 0.75, scaleMax: 1.75, scaleMode: 'vh',</p><p>        } });</p><p>      }</p><p>    } catch(e){ console.warn(TAG, 'banner failed', e); }</p><p>  }</p><p>  if (CFG.BANNER_LEAD_MS &gt; 0) await wait(CFG.BANNER_LEAD_MS);</p><p>  ONI.emit('oni:animationStart', { type: 'remedyHeal', sourceTokenId: caster ? caster.id : null, targetTokenIds: targetIds, sceneId: canvas.scene ? canvas.scene.id : null, timestamp: Date.now() }, { local:true, world:false });</p><p>  try {</p><p>    if (game.modules.get('sequencer') &amp;&amp; game.modules.get('sequencer').active){</p><p>      const seq = new Sequence();</p><p>      for (const t of targetTokens){</p><p>        let e = seq.effect().file(CFG.HEAL_VFX).atLocation(t).scaleToObject(CFG.HEAL_SCALE).fadeIn(CFG.FADE_IN_MS).fadeOut(CFG.FADE_OUT_MS).belowTokens(false);</p><p>        if (CFG.HEAL_TINT) e.tint(CFG.HEAL_TINT);</p><p>      }</p><p>      if (CFG.HEAL_SFX){ seq.sound().file(CFG.HEAL_SFX).volume(CFG.HEAL_SFX_VOL); }</p><p>      await seq.play();</p><p>    } else {</p><p>      await wait(900);</p><p>    }</p><p>  } catch(err){ console.error(TAG, 'CRASHED', err); }</p><p>  finally {</p><p>    ONI.emit('oni:animationEnd', { type: 'remedyHeal', sourceTokenId: caster ? caster.id : null, targetTokenIds: targetIds, sceneId: canvas.scene ? canvas.scene.id : null, timestamp: Date.now() }, { local:true, world:false });</p><p>  }</p><p>})();</p>",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Recover an ally creature for <strong>50</strong> Hit Points.</p>",
+          "duration": "-",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Remedy",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One ally",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uo5X0wsuKZv7dIVJ",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Dragonfire Dive",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": 1650,
+          "animation_damage_timing_options": "timing_offset",
+          "animation_script": "<p>// ============================================================================</p><p>// Dragonfire Dive - Guest Dive (unified 5-phase cinematic)</p><p>// Shared skeleton (see PHASE banners in the client sub-script):</p><p>//   PHASE 0  token -&gt; webm stand-in</p><p>//   PHASE 1  jump (home -&gt; offscreen up)</p><p>//   PHASE 2  wait (~1s hold at peak)</p><p>//   PHASE 3  dive (top-right -&gt; bottom-left onto impact)</p><p>//   PHASE 3b impact FX (base always; bomb only if configured)</p><p>//   PHASE 4  jump back (impact -&gt; home) + restore token</p><p>// Differences are CFG-only: IMPACT_MODE (target|formation), BOMB_FX/BOMB_SFX.</p><p>// ============================================================================</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    SCRIPT_ID: \"oni.guestDive.dragonfire\",</p><p>    SOURCE: \"Dragonfire Dive\",</p><p>    EVENT_TYPE: \"dragonfireDive\",</p><p>    BANNER_ENABLED: true,  // move-name banner (part of the animation)</p><p>    BANNER_TITLE: \"Dragonfire Dive\",  // banner text</p><p>    BANNER_ICON: \"\\uD83D\\uDCA5\",  // banner icon (skill)</p><p>    BANNER_ACCENT: \"#ff5a5a\",  // banner accent (red, matches trail)</p><p>    BANNER_LEAD_MS: 500,  // appear this long BEFORE motion (phase 0)</p><p>    BANNER_HOLD_MS: 2000,  // on-screen hold; total visible ~= 350+hold+400</p><p>    CASTER_WEBM: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Battler001.webm\",  // PHASE 0 stand-in sprite</p><p>    IMPACT_MODE: \"formation\",  // avg center of ALL enemies</p><p>    BASE_FX: \"\",  // dive itself is the hit; explosion is the bomb</p><p>    BASE_FX_SCALE: 1,</p><p>    BASE_SFX: \"\",</p><p>    BASE_SFX_VOL: 0.9,</p><p>    BOMB_FX: \"modules/JB2A_DnD5e/Library/Generic/Explosion/Explosion_05_Regular_Orange_400x400.webm\",  // PHASE 3b bomb</p><p>    BOMB_FX_SCALE: 2,</p><p>    BOMB_SFX: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Amalthea_Explosion.ogg\",</p><p>    BOMB_SFX_VOL: 0.9,</p><p>    PREP_SQUASH_RATIO: 0.8,  // PHASE 0b crouch to 80% height</p><p>    PREP_SQUASH_MS: 160,  // squash down (fast-out)</p><p>    PREP_HOLD_MS: 220,  // hold the crouch</p><p>    PREP_RELEASE_MS: 120,  // spring back into the jump (ease-in)</p><p>    JUMP_UP_MS: 220,  // PHASE 1 (lower = faster launch)</p><p>    PEAK_HOLD_MS: 700,  // PHASE 2 (was 1000, -30%)</p><p>    DIVE_MS: 170,  // PHASE 3 (lower = faster dive)</p><p>    LAND_HOLD_MS: 0,  // PHASE 3c stay still after landing (0 = off)</p><p>    JUMPBACK_MS: 400,  // PHASE 4 arc duration (lower = faster arc)</p><p>    JUMPBACK_APEX: 260,  // arc peak height (px)</p><p>    JUMPBACK_LAND_FRAC: 0.72,  // fraction of the way home she lands; rest is slide</p><p>    SLIDE_MS: 450,  // PHASE 4b slide-back duration (higher = stronger ease-out)</p><p>    OFFSCREEN_PADDING: 300,</p><p>    DIVE_LATERAL_OFFSET: 600,  // top-right start offset (px)</p><p>    FORCE_SCALE_RATIO: 1.38,</p><p>    FORCE_ANCHOR: { x: 0.5, y: 0.7 },</p><p>    FORCE_FLIP_H: true,  // fallback flip when FACE_TARGET off</p><p>    FACE_TARGET: true,  // auto-face the target side (L/R), held every phase</p><p>    SPRITE_DEFAULT_FACES: \"left\",  // which way the unflipped webm faces</p><p>    SILHOUETTE: false,  // no black tint on the sprite</p><p>    AFTERIMAGE_COUNT: 5,  // motion-trail ghosts (dive -&gt; return)</p><p>    AFTERIMAGE_LAG_MS: 20,  // each ghost lags the one before it (ms)</p><p>    AFTERIMAGE_ALPHA: 0.6,  // ghost opacity</p><p>    AFTERIMAGE_COLOR_NEAR: 0xFF3333,  // nearest ghost tint (red)</p><p>    AFTERIMAGE_COLOR_FAR: 0x000000,  // farthest ghost tint (black)</p><p>  };</p><p>  const TAG = '[ONI][Anim][DragonfireDive]';</p><p>  function wait(ms){ return new Promise(function(r){ setTimeout(r, Math.max(0, ms)); }); }</p><p>  globalThis.ONI = globalThis.ONI || {};</p><p>  if (!ONI.emit){ ONI.emit = function(n,p,o){ p=p||{}; o=o||{}; if(o.local!==false) Hooks.callAll(n,p); if(o.world===true) game.socket.emit('world',{action:n,payload:p}); }; }</p><p>  async function resolveTokenPlaceable(x){</p><p>    if (!x) return null;</p><p>    if (x.isToken) return x;</p><p>    if (typeof x === 'string'){ try { var d = await fromUuid(x); if (d &amp;&amp; d.object) return d.object; } catch(e){} return null; }</p><p>    if (x.object &amp;&amp; x.object.isToken) return x.object;</p><p>    return null;</p><p>  }</p><p>  const P = globalThis.__PAYLOAD || {};</p><p>  let caster = await resolveTokenPlaceable(P.casterTokenUuid || P.attackerUuid || P.sourceTokenUuid || null);</p><p>  if (!caster) caster = (canvas.tokens.controlled &amp;&amp; canvas.tokens.controlled[0]) || null;</p><p>  let targetTokens = [];</p><p>  const liveTargets = Array.from(game.user.targets || []);</p><p>  if (liveTargets.length){ targetTokens = liveTargets; }</p><p>  else {</p><p>    const uuids = P.targetTokenUuids || P.targetUuids || P.targets || [];</p><p>    for (const u of uuids){ const tk = await resolveTokenPlaceable(u); if (tk) targetTokens.push(tk); }</p><p>  }</p><p>  if (!caster){ ui.notifications.warn(TAG + ' No caster token.'); return; }</p><p>  if (!targetTokens.length){ ui.notifications.warn(TAG + ' No target token(s).'); return; }</p><p>  const targetIds = targetTokens.map(function(t){ return t.id; });</p><p>  // ---- move-name banner: part of the animation. Fires BEFORE motion, self-expires. ----</p><p>  if (CFG.BANNER_ENABLED) {</p><p>    try {</p><p>      const _api = window.FUCompanion &amp;&amp; window.FUCompanion.api;</p><p>      if (_api &amp;&amp; _api.namecardBroadcast) {</p><p>        _api.namecardBroadcast({ title: CFG.BANNER_TITLE, options: {</p><p>          bg: '#000000', accent: CFG.BANNER_ACCENT, text: ['#ffffff', '#e9f2ff'],</p><p>          glowColor: '#ffffff', border: 'rgba(255,255,255,.10)', dropShadow: '0 10px 22px rgba(0,0,0,.35)',</p><p>          maskEdges: true, edgeFade: 0.12,</p><p>          showIcon: !!CFG.BANNER_ICON, iconOverride: CFG.BANNER_ICON, iconScale: 0.93, iconGapPx: 10,</p><p>          xAlign: 'center', offsetX: 0, offsetY: 64, fixedWidth: 640, autoWidth: false, cardScale: 1.0,</p><p>          inMs: 350, holdMs: CFG.BANNER_HOLD_MS, outMs: 400, enterFrom: 'left',</p><p>          maxFontPx: 30, minFontPx: 16, letterSpacing: 0.06, fontWeight: 700, upperCase: false,</p><p>          fontFamily: 'Pixel Operator, system-ui, sans-serif', textStrokePx: 0.1, textStrokeColor: 'rgba(0,0,0,0.55)',</p><p>          baselineVh: 900, scaleMin: 0.75, scaleMax: 1.75, scaleMode: 'vh',</p><p>        } }); // NOT awaited: the banner runs its own in/hold/out timer regardless of the motion</p><p>      }</p><p>    } catch(e){ console.warn(TAG, 'banner failed', e); }</p><p>  }</p><p>  if (CFG.BANNER_LEAD_MS &gt; 0) await wait(CFG.BANNER_LEAD_MS); // banner leads the motion</p><p>  ONI.emit('oni:animationStart', { type: CFG.EVENT_TYPE, sourceTokenId: caster.id, targetTokenIds: targetIds, sceneId: canvas.scene ? canvas.scene.id : null, timestamp: Date.now() }, { local:true, world:false });</p><p>  const SUB = [\"const TAG = '[ONI][Pseudo][GuestDive]';\",\"const c = ctx;\",\"const casterToken = c.casterToken;\",\"const targetTokens = c.targetTokens || [];\",\"const params = c.params || {};\",\"if (!casterToken) throw new Error('Need casterToken');\",\"\",\"const CASTER_WEBM = String(params.casterWebm || '');\",\"const IMPACT_MODE = String(params.impactMode || 'target');\",\"const BASE_FX = String(params.baseFx || '');\",\"const BASE_FX_SCALE = Number(params.baseFxScale != null ? params.baseFxScale : 1);\",\"const BASE_SFX = String(params.baseSfx || '');\",\"const BASE_SFX_VOL = Number(params.baseSfxVol != null ? params.baseSfxVol : 0.9);\",\"const BOMB_FX = String(params.bombFx || '');\",\"const BOMB_FX_SCALE = Number(params.bombFxScale != null ? params.bombFxScale : 2);\",\"const BOMB_SFX = String(params.bombSfx || '');\",\"const BOMB_SFX_VOL = Number(params.bombSfxVol != null ? params.bombSfxVol : 0.9);\",\"const jumpUpMs = Number(params.jumpUpMs || 350);\",\"const peakHoldMs = Number(params.peakHoldMs != null ? params.peakHoldMs : 1000);\",\"const diveMs = Number(params.diveMs || 260);\",\"const landHoldMs = Number(params.landHoldMs != null ? params.landHoldMs : 500);\",\"const jumpbackMs = Number(params.jumpbackMs || 620);\",\"const jumpbackApex = Number(params.jumpbackApex != null ? params.jumpbackApex : 260);\",\"const jumpbackLandFrac = Number(params.jumpbackLandFrac != null ? params.jumpbackLandFrac : 0.72);\",\"const slideMs = Number(params.slideMs != null ? params.slideMs : 260);\",\"const offscreenPadding = Number(params.offscreenPadding || 300);\",\"const diveLateralOffset = Number(params.diveLateralOffset != null ? params.diveLateralOffset : 600);\",\"const forceScaleRatio = Number(params.forceScaleRatio || 1.38);\",\"const forceAnchor = params.forceAnchor || { x: 0.5, y: 0.7 };\",\"const forceFlipH = params.forceFlipH !== false;\",\"const faceTarget = params.faceTarget !== false;\",\"const spriteDefaultFacesLeft = String(params.spriteDefaultFaces || 'right') === 'left';\",\"const silhouette = params.silhouette === true;\",\"const aiCount = Math.max(0, Math.floor(Number(params.afterimageCount != null ? params.afterimageCount : 5)));\",\"const aiLagMs = Number(params.afterimageLagMs != null ? params.afterimageLagMs : 100);\",\"const aiAlpha = Number(params.afterimageAlpha != null ? params.afterimageAlpha : 0.6);\",\"const aiNear = Number(params.afterimageColorNear != null ? params.afterimageColorNear : 0x3399FF);\",\"const aiFar = Number(params.afterimageColorFar != null ? params.afterimageColorFar : 0x000000);\",\"const prepSquashRatio = Number(params.prepSquashRatio != null ? params.prepSquashRatio : 0.8);\",\"const prepSquashMs = Number(params.prepSquashMs != null ? params.prepSquashMs : 160);\",\"const prepHoldMs = Number(params.prepHoldMs != null ? params.prepHoldMs : 220);\",\"const prepReleaseMs = Number(params.prepReleaseMs != null ? params.prepReleaseMs : 120);\",\"\",\"function wait(ms){ return new Promise(function(r){ setTimeout(r, Math.max(0, ms)); }); }\",\"function clamp01(n){ return Math.min(Math.max(n,0),1); }\",\"function easeInCubic(t){ return t*t*t; }\",\"function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }\",\"function easeOutBack(t){ var c1=1.70158; var c3=c1+1; return 1 + c3*Math.pow(t-1,3) + c1*Math.pow(t-1,2); }\",\"function makeSettleEase(m0){\",\"  // cubic e(t): e(0)=0, e(1)=1, e'(0)=m0 (normalized entry speed), e'(1)=0 (stops).\",\"  // clamp m0 to [0,3] to stay monotonic (no overshoot).\",\"  m0 = Math.max(0, Math.min(3, m0));\",\"  var a = m0 - 2, b = 3 - 2*m0, c = m0;\",\"  return function(t){ return ((a*t) + b)*t*t + c*t; };\",\"}\",\"function animateXY(obj, from, to, durMs, easeFn){\",\"  return new Promise(function(resolve){\",\"    var start = performance.now();\",\"    var ticker = canvas.app.ticker;\",\"    var update = function(){\",\"      if (!obj || obj.destroyed){ ticker.remove(update); resolve(); return; }\",\"      var t = clamp01((performance.now()-start)/Math.max(1,durMs));\",\"      var e = easeFn ? easeFn(t) : t;\",\"      obj.x = from.x + (to.x-from.x)*e;\",\"      obj.y = from.y + (to.y-from.y)*e;\",\"      if (t&gt;=1){ ticker.remove(update); resolve(); }\",\"    };\",\"    ticker.add(update);\",\"  });\",\"}\",\"function animateHeightPin(obj, fromH, toH, bottomY, anchorY, durMs, easeFn){\",\"  // animate height while holding the sprite's BOTTOM edge fixed (feet planted).\",\"  return new Promise(function(resolve){\",\"    var start = performance.now();\",\"    var ticker = canvas.app.ticker;\",\"    var update = function(){\",\"      if (!obj || obj.destroyed){ ticker.remove(update); resolve(); return; }\",\"      var t = clamp01((performance.now()-start)/Math.max(1,durMs));\",\"      var e = easeFn ? easeFn(t) : t;\",\"      var h = fromH + (toH-fromH)*e;\",\"      obj.height = h;\",\"      obj.y = bottomY - (1 - anchorY) * h;\",\"      if (t&gt;=1){ ticker.remove(update); resolve(); }\",\"    };\",\"    ticker.add(update);\",\"  });\",\"}\",\"function animateArc(obj, from, to, apex, durMs, easeXFn){\",\"  // horizontal eases out (loses speed); vertical = linear baseline + parabolic hump peaking 'apex' up.\",\"  return new Promise(function(resolve){\",\"    var start = performance.now();\",\"    var ticker = canvas.app.ticker;\",\"    var update = function(){\",\"      if (!obj || obj.destroyed){ ticker.remove(update); resolve(); return; }\",\"      var t = clamp01((performance.now()-start)/Math.max(1,durMs));\",\"      var ex = easeXFn ? easeXFn(t) : t;\",\"      obj.x = from.x + (to.x-from.x)*ex;\",\"      var baseY = from.y + (to.y-from.y)*t;\",\"      var hump = -apex * 4 * t * (1-t);\",\"      obj.y = baseY + hump;\",\"      if (t&gt;=1){ ticker.remove(update); resolve(); }\",\"    };\",\"    ticker.add(update);\",\"  });\",\"}\",\"async function createVideoSpriteForced(url, tok){\",\"  var texture = await loadTexture(url);\",\"  var s = new PIXI.Sprite(texture);\",\"  s.anchor.set(forceAnchor.x, forceAnchor.y);\",\"  s.width = tok.w * forceScaleRatio;\",\"  s.height = tok.h * forceScaleRatio;\",\"  if (spriteFlip) s.scale.x *= -1;\",\"  canvas.stage.sortableChildren = true;\",\"  s.zIndex = 999999;\",\"  canvas.stage.addChild(s);\",\"  canvas.stage.sortChildren();\",\"  return s;\",\"}\",\"function destroySpriteSafe(s){ if(!s) return; try{ canvas.stage.removeChild(s); }catch(e){} try{ s.destroy(); }catch(e){} }\",\"function faceSprite(s){ if(!s || s.destroyed) return; var m = Math.abs(s.scale.x) || 1; s.scale.x = spriteFlip ? -m : m; }\",\"// ---- afterimage motion trail (active dive -&gt; return) ----\",\"var trail = { active:false, hist:[], sprites:[], ticker:null };\",\"function lerpColor(a, b, t){\",\"  var ar=(a&gt;&gt;16)&amp;255, ag=(a&gt;&gt;8)&amp;255, ab=a&amp;255;\",\"  var br=(b&gt;&gt;16)&amp;255, bg=(b&gt;&gt;8)&amp;255, bb=b&amp;255;\",\"  var r=Math.round(ar+(br-ar)*t), g=Math.round(ag+(bg-ag)*t), bl=Math.round(ab+(bb-ab)*t);\",\"  return (r&lt;&lt;16)|(g&lt;&lt;8)|bl;\",\"}\",\"function sampleHist(hist, t){\",\"  if (!hist.length) return null;\",\"  if (t &lt;= hist[0].t) return null;\",\"  for (var i=hist.length-1;i&gt;=0;i--){\",\"    if (hist[i].t &lt;= t){\",\"      var a = hist[i], b = hist[Math.min(i+1, hist.length-1)];\",\"      if (b.t === a.t) return { x:a.x, y:a.y };\",\"      var f = (t - a.t)/(b.t - a.t);\",\"      return { x: a.x + (b.x-a.x)*f, y: a.y + (b.y-a.y)*f };\",\"    }\",\"  }\",\"  return null;\",\"}\",\"function startTrail(main){\",\"  if (aiCount &lt;= 0 || !main) return;\",\"  for (var i=0;i&lt;aiCount;i++){\",\"    var s = new PIXI.Sprite(main.texture);\",\"    s.anchor.set(main.anchor.x, main.anchor.y);\",\"    s.scale.x = main.scale.x; s.scale.y = main.scale.y;\",\"    s.zIndex = (main.zIndex||0) - (i+1);\",\"    var tcol = aiCount &gt; 1 ? i/(aiCount-1) : 0;\",\"    s.tint = lerpColor(aiNear, aiFar, tcol);\",\"    s.alpha = aiAlpha;\",\"    s.visible = false;\",\"    canvas.stage.addChild(s);\",\"    trail.sprites.push(s);\",\"  }\",\"  canvas.stage.sortableChildren = true; canvas.stage.sortChildren();\",\"  trail.active = true; trail.hist = [];\",\"  var tick = function(){\",\"    if (!main || main.destroyed) return;\",\"    var now = performance.now();\",\"    trail.hist.push({ t: now, x: main.x, y: main.y });\",\"    var maxAge = aiCount*aiLagMs + 200;\",\"    while (trail.hist.length &gt; 2 &amp;&amp; (now - trail.hist[0].t) &gt; maxAge) trail.hist.shift();\",\"    for (var i=0;i&lt;trail.sprites.length;i++){\",\"      var pos = sampleHist(trail.hist, now - (i+1)*aiLagMs);\",\"      if (pos){ trail.sprites[i].visible = true; trail.sprites[i].x = pos.x; trail.sprites[i].y = pos.y; }\",\"    }\",\"  };\",\"  trail.ticker = tick;\",\"  canvas.app.ticker.add(tick);\",\"}\",\"function hardStopTrail(){\",\"  if (trail.ticker){ try { canvas.app.ticker.remove(trail.ticker); } catch(e){} trail.ticker = null; }\",\"  for (var i=0;i&lt;trail.sprites.length;i++){ try{ canvas.stage.removeChild(trail.sprites[i]); }catch(e){} try{ trail.sprites[i].destroy(); }catch(e){} }\",\"  trail.sprites = []; trail.active = false;\",\"}\",\"async function stopTrail(){\",\"  if (!trail.active) return;\",\"  await wait(aiCount*aiLagMs + 60);\",\"  hardStopTrail();\",\"}\",\"async function snapTokenAlphaHard(token, a){\",\"  try { if(token.mesh) token.mesh.alpha=a; if(token.icon) token.icon.alpha=a; token.alpha=a; } catch(e){}\",\"  if (game.user.isGM){ try { await token.document.update({ alpha: a }, { animate:false }); } catch(e){ try{ await token.document.update({ alpha: a }); }catch(e2){} } }\",\"  try { token.renderFlags &amp;&amp; token.renderFlags.set &amp;&amp; token.renderFlags.set({ refreshMesh:true, refreshState:true }); } catch(e){}\",\"  try { token.refresh &amp;&amp; token.refresh(); } catch(e){}\",\"  await new Promise(function(r){ requestAnimationFrame(r); });\",\"  try { if(token.mesh) token.mesh.alpha=a; if(token.icon) token.icon.alpha=a; token.alpha=a; } catch(e){}\",\"}\",\"function centerOf(t){ return { x: t.center.x, y: t.center.y }; }\",\"\",\"var impact = null;\",\"if (IMPACT_MODE === 'formation' &amp;&amp; targetTokens.length){\",\"  var sx=0, sy=0;\",\"  targetTokens.forEach(function(t){ sx+=t.center.x; sy+=t.center.y; });\",\"  impact = { x: sx/targetTokens.length, y: sy/targetTokens.length };\",\"} else if (targetTokens[0]){\",\"  impact = centerOf(targetTokens[0]);\",\"} else { throw new Error('Need at least 1 target token'); }\",\"\",\"var home = centerOf(casterToken);\",\"// facing: flip so the webm faces the target (impact) side; held constant every phase.\",\"var spriteFlip = faceTarget ? ((impact.x &lt;= home.x) !== spriteDefaultFacesLeft) : forceFlipH;\",\"var sprite = null;\",\"try {\",\"  console.log(TAG, 'START', { mode: IMPACT_MODE, targets: targetTokens.length });\",\"\",\"  // ===== PHASE 0 - TOKEN -&gt; WEBM =====\",\"  await snapTokenAlphaHard(casterToken, 0);\",\"  sprite = await createVideoSpriteForced(CASTER_WEBM, casterToken);\",\"  if (silhouette) sprite.tint = 0x000000;\",\"  sprite.alpha = 1;\",\"  sprite.x = home.x; sprite.y = home.y;\",\"  faceSprite(sprite);\",\"\",\"  // ===== PHASE 0b - PREP (anticipation crouch ~0.5s, feet planted) =====\",\"  // squash height (fast-out), hold, then spring back (ease-in) launching the jump.\",\"  // bottom edge is pinned throughout so it reads as crouching on the ground.\",\"  var baseH = sprite.height;\",\"  var anchorY = forceAnchor.y;\",\"  var bottomY = sprite.y + (1 - anchorY) * baseH;\",\"  await animateHeightPin(sprite, baseH, baseH * prepSquashRatio, bottomY, anchorY, prepSquashMs, easeOutCubic);\",\"  if (prepHoldMs &gt; 0) await wait(prepHoldMs);\",\"  await animateHeightPin(sprite, sprite.height, baseH, bottomY, anchorY, prepReleaseMs, easeInCubic);\",\"\",\"  // ===== PHASE 1 - JUMP (home -&gt; offscreen up) =====\",\"  var upPoint = { x: home.x, y: -(sprite.height) - offscreenPadding };\",\"  await animateXY(sprite, home, upPoint, jumpUpMs, easeOutCubic);\",\"\",\"  // ===== PHASE 2 - WAIT (hold at peak) =====\",\"  if (peakHoldMs &gt; 0) await wait(peakHoldMs);\",\"\",\"  // ===== PHASE 3 - DIVE (top-right -&gt; bottom-left onto impact) =====\",\"  var diveStart = { x: impact.x + diveLateralOffset, y: -(sprite.height) - offscreenPadding };\",\"  sprite.x = diveStart.x; sprite.y = diveStart.y;\",\"  startTrail(sprite); // afterimages begin at the dive, follow through to the return\",\"  await animateXY(sprite, diveStart, impact, diveMs, easeInCubic);\",\"\",\"  // ===== PHASE 3b - IMPACT FX (base always; bomb only if configured) =====\",\"  if (silhouette) sprite.tint = 0xFFFFFF;\",\"  if (game.modules.get('sequencer') &amp;&amp; game.modules.get('sequencer').active){\",\"    var seq = new Sequence();\",\"    if (BASE_FX){ seq.effect().file(BASE_FX).atLocation(impact).scale(BASE_FX_SCALE); }\",\"    if (BASE_SFX){ seq.sound().file(BASE_SFX).volume(BASE_SFX_VOL); }\",\"    if (BOMB_FX){ seq.effect().file(BOMB_FX).atLocation(impact).scale(BOMB_FX_SCALE); }\",\"    if (BOMB_SFX){ seq.sound().file(BOMB_SFX).volume(BOMB_SFX_VOL); }\",\"    await seq.play();\",\"  }\",\"\",\"  // ===== PHASE 3c - LAND HOLD (stay still on the target) =====\",\"  if (landHoldMs &gt; 0) await wait(landHoldMs);\",\"\",\"  // ===== PHASE 4 - JUMP BACK (arc to the ground, then slide home) =====\",\"  // keep facing the target while retreating (movement goes the other way).\",\"  faceSprite(sprite);\",\"  var backFrom = { x: sprite.x, y: sprite.y };\",\"  // land short of home; horizontal is LINEAR (constant speed), touch down at ground (home.y).\",\"  var landX = impact.x + (home.x - impact.x) * jumpbackLandFrac;\",\"  await animateArc(sprite, backFrom, { x: landX, y: home.y }, jumpbackApex, jumpbackMs, null);\",\"  faceSprite(sprite);\",\"  // ===== PHASE 4b - SLIDE (ground): enter at the arc's horizontal speed, decelerate to rest =====\",\"  var dxArc = landX - backFrom.x;\",\"  var dxSlide = home.x - landX;\",\"  var vArc = jumpbackMs &gt; 0 ? dxArc / jumpbackMs : 0;\",\"  var m0 = (Math.abs(dxSlide) &gt; 0.5 &amp;&amp; slideMs &gt; 0) ? (vArc * slideMs / dxSlide) : 0;\",\"  await animateXY(sprite, { x: landX, y: home.y }, home, slideMs, makeSettleEase(m0));\",\"  faceSprite(sprite);\",\"  await stopTrail(); // let the lagging ghosts collapse into home, then remove them\",\"  await snapTokenAlphaHard(casterToken, 1);\",\"  console.log(TAG, 'DONE');\",\"} catch(err){\",\"  console.error(TAG, 'ERROR', err);\",\"} finally {\",\"  hardStopTrail();\",\"  destroySpriteSafe(sprite);\",\"}\",\"// Signal TRUE motion completion (runId-matched) so the outer wrapper emits\",\"// oni:animationEnd at the real end, not a fixed guess. game.ONI.pseudo.play is\",\"// fire-and-forget (returns a runId, not a promise), so this is the only precise\",\"// end signal. Hooks are per-client; the GM-local run reaches the GM-local outer.\",\"try { Hooks.callAll('oni:pseudoDone', { runId: (c &amp;&amp; c.runId) ? c.runId : null }); } catch(e){}\"];</p><p>  const scriptSource = SUB.join('\\n');</p><p>  try {</p><p>    if (game.ONI &amp;&amp; game.ONI.pseudo &amp;&amp; game.ONI.pseudo.play){</p><p>      const r = game.ONI.pseudo.play({</p><p>        scriptId: CFG.SCRIPT_ID,</p><p>        scriptSource: scriptSource,</p><p>        casterTokenUuid: caster.document.uuid,</p><p>        targetTokenUuids: targetTokens.map(function(t){ return t.document.uuid; }),</p><p>        params: {</p><p>          casterWebm: CFG.CASTER_WEBM,</p><p>          impactMode: CFG.IMPACT_MODE,</p><p>          baseFx: CFG.BASE_FX, baseFxScale: CFG.BASE_FX_SCALE,</p><p>          baseSfx: CFG.BASE_SFX, baseSfxVol: CFG.BASE_SFX_VOL,</p><p>          bombFx: CFG.BOMB_FX, bombFxScale: CFG.BOMB_FX_SCALE,</p><p>          bombSfx: CFG.BOMB_SFX, bombSfxVol: CFG.BOMB_SFX_VOL,</p><p>          jumpUpMs: CFG.JUMP_UP_MS, peakHoldMs: CFG.PEAK_HOLD_MS,</p><p>          diveMs: CFG.DIVE_MS, landHoldMs: CFG.LAND_HOLD_MS,</p><p>          jumpbackMs: CFG.JUMPBACK_MS, jumpbackApex: CFG.JUMPBACK_APEX, jumpbackLandFrac: CFG.JUMPBACK_LAND_FRAC, slideMs: CFG.SLIDE_MS,</p><p>          offscreenPadding: CFG.OFFSCREEN_PADDING, diveLateralOffset: CFG.DIVE_LATERAL_OFFSET,</p><p>          forceScaleRatio: CFG.FORCE_SCALE_RATIO, forceAnchor: CFG.FORCE_ANCHOR, forceFlipH: CFG.FORCE_FLIP_H,</p><p>          faceTarget: CFG.FACE_TARGET, spriteDefaultFaces: CFG.SPRITE_DEFAULT_FACES,</p><p>          prepSquashRatio: CFG.PREP_SQUASH_RATIO, prepSquashMs: CFG.PREP_SQUASH_MS, prepHoldMs: CFG.PREP_HOLD_MS, prepReleaseMs: CFG.PREP_RELEASE_MS,</p><p>          afterimageCount: CFG.AFTERIMAGE_COUNT, afterimageLagMs: CFG.AFTERIMAGE_LAG_MS, afterimageAlpha: CFG.AFTERIMAGE_ALPHA,</p><p>          afterimageColorNear: CFG.AFTERIMAGE_COLOR_NEAR, afterimageColorFar: CFG.AFTERIMAGE_COLOR_FAR,</p><p>          silhouette: CFG.SILHOUETTE,</p><p>        },</p><p>        meta: { source: CFG.SOURCE },</p><p>      });</p><p>      // pseudo.play returns a runId string (fire-and-forget), NOT a promise — so</p><p>      // wait for the sub-script's runId-matched oni:pseudoDone = the TRUE motion end.</p><p>      await new Promise(function(resolve){</p><p>        var done = false;</p><p>        var onDone = function(p){ if (done) return; if (p &amp;&amp; p.runId &amp;&amp; r &amp;&amp; p.runId !== r) return; done = true; Hooks.off('oni:pseudoDone', onDone); resolve(); };</p><p>        Hooks.on('oni:pseudoDone', onDone);</p><p>        setTimeout(function(){ if(!done){ done = true; Hooks.off('oni:pseudoDone', onDone); resolve(); } }, 15000);</p><p>      });</p><p>    } else {</p><p>      ui.notifications.error(TAG + ' Pseudo API missing (game.ONI.pseudo.play).');</p><p>    }</p><p>  } catch(err){</p><p>    console.error(TAG, 'CRASHED', err);</p><p>  } finally {</p><p>    ONI.emit('oni:animationEnd', { type: CFG.EVENT_TYPE, sourceTokenId: caster.id, targetTokenIds: targetIds, sceneId: canvas.scene ? canvas.scene.id : null, timestamp: Date.now() }, { local:true, world:false });</p><p>  }</p><p>})();</p>",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Dive down at enemy formation. Deals<strong>【20】</strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a>&nbsp;damage to all enemy.</p>",
+          "duration": "-",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dragonfire Dive",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One enemy",
+          "skill_type": "Active",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ww3HMBYCQDamW2yK",
+      "_stats": {
+        "compendiumSource": "Item.YpRxmj2S5mNfkal2",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
+      "name": "Dragonskull Helm",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p><strong>+1 DEF / +1 MDEF</strong></p></li><li><p>You may perform the skill 【💥Draconic Roar】</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>A tribal ornament in the shape of a Dragon Skull, looks very intimidating</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": true,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2500",
+          "item_def_bonus": "1",
+          "item_mdef_bonus": "1",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_skill_active": {
+            "fARmlVMFFUwniWXE": {
+              "id": "${item.id}",
+              "name": "Draconic Roar",
+              "skill_cost": "30 MP",
+              "skill_description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.hIiWUGkuayYqQNeb"
+            },
+            "hIiWUGkuayYqQNeb": {
+              "id": "${item.id}",
+              "name": "Draconic Roar",
+              "skill_cost": "30 MP",
+              "skill_description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.hIiWUGkuayYqQNeb"
+            }
+          },
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Dragonskull Helm",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "fARmlVMFFUwniWXE": {
+              "id": "${item.id}",
+              "name": "Draconic Roar",
+              "related_item_description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+              "uuid": "Item.hIiWUGkuayYqQNeb"
+            },
+            "hIiWUGkuayYqQNeb": {
+              "id": "${item.id}",
+              "name": "Draconic Roar",
+              "related_item_description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+              "uuid": "Item.hIiWUGkuayYqQNeb"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "YpRxmj2S5mNfkal2"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Kalina",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "labelText": "",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "labelText": "",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "labelText": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "attributeBar.zero_power_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "labelPrefix": "",
+            "labelText": "",
+            "maxcolor": "#e3580d",
+            "mincolor": "#ec9736",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "prefix": "",
+            "shareHeight": false,
+            "style": "percent",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideBorderFill": true,
+        "hideFill": true
+      },
+      "token-border-supplements": {
+        "hideBorder": true,
+        "hideBorderFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Kalina_Standard.png"
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "tokenborder": {
+        "hideBorder": true,
+        "hideBorderFill": true
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Kalina",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.7,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.38,
+      "scaleY": 1.38,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kalina/Kalina_Standard.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 2500000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "action_pattern_table": {},
+      "activation": "0",
+      "affinity_1": "NA",
+      "affinity_2": "RS",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "VU",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "VU",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attribute": "WIND",
+      "battle_facing_direction": "left",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "check_mod_all": 0,
+      "check_mod_magic": 0,
+      "check_mod_melee": 0,
+      "check_mod_ranged": 0,
+      "condition_anomaly": "NA",
+      "condition_bane": "IM",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "IM",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "IM",
+      "condition_disarmed": "NA",
+      "condition_doom": "IM",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "IM",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "IM",
+      "condition_silence": "NA",
+      "condition_slow": "IM",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
+      "current_hp": "498",
+      "current_ip": "0",
+      "current_mp": "167",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Cut-In.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Masked.png",
+      "cut_in_offset_y": "170",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Cut-In.png",
+      "dagger_ef": "100",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+1",
+      "default_facing_direction": "right",
+      "defense": 11,
+      "dex_base": "10",
+      "dex_current": 10,
+      "enmity": 100,
+      "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
+      "firearm_ef": "100",
+      "flail_ef": "125",
+      "gorger": false,
+      "heavy_ef": "125",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "id": "JNewwFN6zvDk7Bfn",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kalina/Kalina_Standard.png",
+      "init": "6",
+      "ins_base": "8",
+      "ins_current": 8,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBlacksmith": false,
+      "isBoss": false,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPhantasm": false,
+      "isPoisoned": true,
+      "isShaken": false,
+      "isShop": false,
+      "isSlow": false,
+      "isStolen": true,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "30",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 10,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": "498",
+      "max_ip": "0",
+      "max_mp": "167",
+      "max_zero": "6",
+      "mdef_mod": "+2",
+      "mig_base": "6",
+      "mig_current": 6,
+      "mimic": false,
+      "minimum_critical_dice": 6,
+      "name": "Kalina",
+      "normal_spell_list": {
+        "isbOiFKEFDLJDNYl": {
+          "cost": "15 MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Wind Lance",
+          "roll": "",
+          "spell_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p></li></ul><p>Throw a wind-imbue lance at the target, Deal <strong>【HR+25】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(72, 199, 116) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>&nbsp;damage.</p>",
+          "spell_target": "One Creature",
+          "uuid": "Actor.JNewwFN6zvDk7Bfn.Item.isbOiFKEFDLJDNYl"
+        }
+      },
+      "npc_rank": "champion",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
+      "override_damage_type": "None",
+      "override_spell_damage_type": "None",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "shop_accessory_list": {
+        "ww3HMBYCQDamW2yK": {
+          "accessory_bonusdef": 1,
+          "accessory_bonusmdef": 1,
+          "accessory_buy": "",
+          "accessory_cost": 2500,
+          "accessory_description": "<ul><li><p><strong>+1 DEF / +1 MDEF</strong></p></li><li><p>You may perform the skill 【💥Draconic Roar】</p></li></ul>",
+          "accessory_quantity": 1,
+          "accessory_set": false,
+          "id": "${item.id}",
+          "name": "Dragonskull Helm",
+          "uuid": "Actor.JNewwFN6zvDk7Bfn.Item.ww3HMBYCQDamW2yK"
+        }
+      },
+      "showMacro": false,
+      "skill_active_list": {
+        "hf3NWmwqZgSB90o9": {
+          "active_cost": "-",
+          "active_description": "<p>Dive down to a target enemy. Deals <strong>【40】</strong><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\">Air</a>&nbsp;damage to the enemy.</p>",
+          "active_duration": "-",
+          "active_target": "One enemy",
+          "id": "${item.id}",
+          "name": "Skyfall Dive",
+          "roll": "",
+          "uuid": "Actor.JNewwFN6zvDk7Bfn.Item.hf3NWmwqZgSB90o9"
+        },
+        "nRB08nYx6AnzY9Tr": {
+          "active_cost": "-",
+          "active_description": "<p>Recover an ally creature for <strong>50</strong> Hit Points.</p>",
+          "active_duration": "-",
+          "active_target": "One ally",
+          "id": "${item.id}",
+          "name": "Remedy",
+          "roll": "",
+          "uuid": "Actor.JNewwFN6zvDk7Bfn.Item.nRB08nYx6AnzY9Tr"
+        },
+        "uo5X0wsuKZv7dIVJ": {
+          "active_cost": "-",
+          "active_description": "<p>Dive down at enemy formation. Deals<strong>【20】</strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a>&nbsp;damage to all enemy.</p>",
+          "active_duration": "-",
+          "active_target": "One enemy",
+          "id": "${item.id}",
+          "name": "Dragonfire Dive",
+          "roll": "",
+          "uuid": "Actor.JNewwFN6zvDk7Bfn.Item.uo5X0wsuKZv7dIVJ"
+        }
+      },
+      "skill_passive_list": {
+        "C6uFFJWoqLcPIAQi": {
+          "id": "${item.id}",
+          "name": "Guest",
+          "passive_description": "<p>This creature act automatically at the end of each round.</p>",
+          "roll": "",
+          "uuid": "Actor.JNewwFN6zvDk7Bfn.Item.C6uFFJWoqLcPIAQi"
+        }
+      },
+      "spear_ef": "100",
+      "species": "HUMANOID",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Battler001.webm",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Masked.png",
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "loot_id": "Dragonskull Helm",
+          "loot_percentage": "100"
+        }
+      },
+      "stealable_loot": {
+        "ww3HMBYCQDamW2yK": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p><strong>+1 DEF / +1 MDEF</strong></p></li><li><p>You may perform the skill 【💥Draconic Roar】</p></li></ul>",
+          "name": "Dragonskull Helm",
+          "roll": "",
+          "uuid": "Actor.JNewwFN6zvDk7Bfn.Item.ww3HMBYCQDamW2yK"
+        }
+      },
+      "study_text": "<p>A mysterious masked individuals who attack the party, their motive is still unknown, They strike with a slight <strong>Delay</strong>, be vary of the timing of their attacks.</p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "HUMAN",
+      "sword_ef": "75",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "token_option_persist": true,
+      "traits": "Regret, Responsibility",
+      "ultima_point": "3",
+      "unique": true,
+      "uuid": "Actor.JNewwFN6zvDk7Bfn",
+      "wlp_base": "10",
+      "wlp_current": 8,
+      "zenit_reward_max": "270",
+      "zenit_reward_min": "250",
+      "zero_power_value": "6"
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 2114752673
+  },
+  "type": "character"
+}
