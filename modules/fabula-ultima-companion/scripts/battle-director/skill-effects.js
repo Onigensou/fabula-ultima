@@ -1914,6 +1914,16 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
 
   const r = await applyEffectByLabel(candidate.ref, ctx);
 
+  // Wait for any cinematic started by a `play_animation` step to FULLY finish
+  // before the round advances. The step returns at the damage gate (so deal_damage
+  // lands at impact), but the return-home motion is still playing — without this
+  // the round_end dispatch continues mid-animation. Failsafe-bounded (35s each) so
+  // a stuck script can't hang the round.
+  if (Array.isArray(ctx.pendingAnimations) && ctx.pendingAnimations.length) {
+    try { await Promise.all(ctx.pendingAnimations); }
+    catch (e) { warn("firePreAcceptedCandidate: pending animation await threw", e); }
+  }
+
   // Per-round cap bookkeeping: count this fire so reaction_max_per_round can
   // hide the row once its quota is spent for the round. Only capped rows are
   // counted (keeps the Map small); requires the live director for the round key.
@@ -3509,7 +3519,20 @@ async function applyDestroySummonEffect(row, ctx) {
   // Default off → normal shatter still feeds those reactions.
   const suppressDefeat = row.suppress_defeat === true
     || String(row.suppress_defeat ?? "").trim().toLowerCase() === "true";
+  // only_clones — restrict the destroy set to summon_clone_target spawns (tokens
+  // carrying a `cloneActorUuid`). Lets a broad target_ref like "own_summons"
+  // destroy JUST a reanimated minion / captured monster without also shattering
+  // the caster's Phantasms (Birth of the Cruel's Keren-KO + manual-destroy paths:
+  // she is an Illusionist, so own_summons also contains phantasms). Default off.
+  const onlyClones = row.only_clones === true
+    || String(row.only_clones ?? "").trim().toLowerCase() === "true";
   const tr = await resolveTargetRef(row.target_ref || "self", ctx);
+  if (onlyClones && tr.ok && Array.isArray(tr.tokens)) {
+    tr.tokens = tr.tokens.filter((t) => {
+      const f = t?.flags?.["fabula-ultima-companion"] ?? t?.document?.flags?.["fabula-ultima-companion"] ?? {};
+      return !!f.cloneActorUuid;
+    });
+  }
   if (!tr.ok || !tr.tokens.length) {
     // A silent mass-shatter (suppress_defeat) tolerates an empty/unresolved set:
     // "shatter all my summons" is valid even with zero out, so it must NOT abort
@@ -3523,6 +3546,18 @@ async function applyDestroySummonEffect(row, ctx) {
   const applied = [];
   for (const token of tr.tokens) {
     const actor = token.actor;
+    // Capture clone-cleanup flags BEFORE despawn (the token is gone afterward). A
+    // summon_clone_target spawn carries the persisted clone-actor uuid; delete it
+    // on despawn unless summon_persist archived it.
+    const _cf = token.flags?.["fabula-ultima-companion"] ?? token.document?.flags?.["fabula-ultima-companion"] ?? {};
+    const _cloneUuid = _cf.cloneActorUuid ?? null;
+    // Delete the persisted clone Actor when the token despawns-for-good (non-persist
+    // within-battle clone) OR when a persistent summon is explicitly DESTROYED here
+    // (deleteCloneOnDeath — destroy_summon is an intentional kill, so reclaim it).
+    const _delClone = !!_cloneUuid && (
+      _cf.deleteCloneOnDespawn === true || String(_cf.deleteCloneOnDespawn) === "true"
+      || _cf.deleteCloneOnDeath === true || String(_cf.deleteCloneOnDeath) === "true"
+    );
     // 0. Queue a creature_defeated event onto the resource ledger BEFORE despawn,
     //    so the payload carries the summoner identity even after the token is
     //    gone. It fans out observer-aware (LEDGER_FAMILY) at the post-resolve
@@ -3570,6 +3605,13 @@ async function applyDestroySummonEffect(row, ctx) {
     } else {
       try { await (token.document?.delete?.() ?? token.delete?.()); applied.push(token.uuid); }
       catch (e) { warn("skill-effects.destroy_summon: token delete threw", e); }
+    }
+    // 3. Clone cleanup — delete the persisted clone Actor (summon_clone_target).
+    if (_delClone) {
+      try {
+        const ca = await fromUuid(_cloneUuid).catch(() => null);
+        if (ca?.documentName === "Actor") await ca.delete();
+      } catch (e) { warn("skill-effects.destroy_summon: clone actor delete threw", e); }
     }
   }
   return { ok: true, kind: "destroy_summon", applied };
@@ -3621,6 +3663,56 @@ async function applyDelayEffect(row, ctx) {
   ms = Math.max(0, Math.min(5000, ms));
   if (ms > 0) await new Promise((resolve) => setTimeout(resolve, ms));
   return { ok: true, kind: "delay", ms };
+}
+
+// ── play_animation ─────────────────────────────────────────────────────────
+//
+// Play a referenced skill's authored `animation_script` cinematic from the effect
+// engine. This is the bridge that lets a REACTION (notably a round_end guest
+// action) show the SAME cinematic a normal turn action would — the FSM ANIMATION
+// state is only reached by card-driven turns, so reaction-fired effects otherwise
+// get only the damage-number floats. `action_ref` (an existing effect-row column,
+// reused here) names the skill whose animation to play: a skill NAME on the
+// reactor actor, or a full Item UUID. Caster = the reactor's token; targets =
+// `target_ref` (the same tokens a following deal_damage will hit). AWAITS the
+// animation's damage-timing gate (oni:animationEnd / offset), so authoring a
+// chain [play_animation, deal_damage] lands the hit at the script's impact
+// moment, exactly like a turn action. No-op in capture/preview; never breaks the
+// chain on failure (a missing/blank script just skips).
+async function applyPlayAnimationEffect(row, ctx) {
+  if (ctx?.captureMode || ctx?.mode === "preview") return { ok: true, kind: "play_animation", skipped: true };
+  const reactor = ctx.reactorActor ?? null;
+  const ref = String(row.action_ref ?? "").trim();
+  let skillUuid = /Item\./.test(ref) ? ref : null;
+  if (!skillUuid && ref && reactor) skillUuid = reactor.items?.getName?.(ref)?.uuid ?? null;
+  if (!skillUuid) return { ok: true, kind: "play_animation", skipped: true, reason: "no-skill-ref" };
+
+  const casterTokenUuid = ctx.reactorToken?.uuid
+    ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === reactor?.uuid)?.document?.uuid
+    ?? null;
+
+  let targetTokenUuids = [];
+  try {
+    const tr = await resolveTargetRef(row.target_ref, ctx);
+    targetTokenUuids = (tr?.tokens ?? []).map((t) => t?.uuid ?? t?.document?.uuid).filter(Boolean);
+  } catch (e) { /* a caster-only animation is still fine */ }
+
+  try {
+    const anim = await import("./director-animation.js");
+    const res = await anim.playSkillAnimation({ skillUuid, casterTokenUuid, targetTokenUuids });
+    // playSkillAnimation RETURNS at the damage gate (drop-stop) so a following
+    // deal_damage lands at impact. But the full cinematic (return-home motion) is
+    // still playing — stash its end-promise so the reaction dispatcher waits for
+    // the WHOLE animation before advancing the round (see firePreAcceptedCandidate).
+    if (res?.endPromise) {
+      if (!Array.isArray(ctx.pendingAnimations)) ctx.pendingAnimations = [];
+      ctx.pendingAnimations.push(res.endPromise);
+    }
+    return { ok: true, kind: "play_animation", played: !!res?.played };
+  } catch (e) {
+    warn("skill-effects.play_animation: threw", e);
+    return { ok: true, kind: "play_animation", played: false, reason: "threw" };
+  }
 }
 
 // Data-only kinds (adjust_damage / redirect_target / adjust_accuracy) return ok
@@ -3773,6 +3865,7 @@ const EFFECT_KIND_DISPATCH = {
   // rows (Frightened, consume_self) still fire normally.
   negate_action:       (row) => ({ ok: true, kind: "negate_action", applied: [], reason: "applied-at-card-mutation-phase" }),
   delay:               applyDelayEffect,
+  play_animation:      applyPlayAnimationEffect,
 };
 
 // Canonical effect_kind keys (every kind the engine dispatches). The template
@@ -3841,6 +3934,7 @@ export const EFFECT_KIND_LABELS = {
   adjust_defense:      "Adjust Defense (defender raises own DEF for the action)",
   negate_action:       "Negate Action (block — no outcome/reactions)",
   delay:               "Delay (pause the chain N ms — space out multi-hit effects)",
+  play_animation:      "Play Animation (a referenced skill's cinematic — bridges reaction/round-end actions into the animation system; action_ref = the skill)",
 };
 
 // ── Effect-kind PREVIEW registry (ActionProfile / Action Card) ───────────────
@@ -5489,7 +5583,22 @@ async function applyApplyAeEffect(row, ctx) {
           ? rowChargesMax
           : (Number(existing.flags?.[FLAG_NS]?.chargesMax ?? template.flags?.[FLAG_NS]?.chargesMax ?? 99999) || 99999);
         const newCharges = Math.min(maxCharges, curCharges + addCharges);
-        await existing.update({ [`flags.${FLAG_NS}.charges`]: newCharges });
+        const chargeUpd = { [`flags.${FLAG_NS}.charges`]: newCharges };
+        // For a persistent-counter POOL (Grave Points, Adoration, Fatigue — a
+        // points ceiling, not a transient stack), when the grant row carries an
+        // explicit ceiling (ae_initial_charges_max) keep the AE's stored chargesMax
+        // + any visible badge max in sync with the cap the grant actually enforces —
+        // otherwise the enforced cap (e.g. SL+1) and the displayed cap (a stale
+        // seed's chargesMax) diverge ("4/3"). Scoped to pools so transient stacks
+        // (Burn et al., whose per-application ae_initial_charges_max is a one-shot
+        // cap, not the AE's identity) keep their existing chargesMax semantics.
+        if (isPersistentCounter(existing)
+            && rowChargesMax != null && Number.isFinite(rowChargesMax)
+            && Number(existing.flags?.[FLAG_NS]?.chargesMax ?? NaN) !== rowChargesMax) {
+          chargeUpd[`flags.${FLAG_NS}.chargesMax`] = rowChargesMax;
+          if (existing.flags?.statuscounter?.visible === true) chargeUpd["flags.statuscounter.config.max"] = rowChargesMax;
+        }
+        await existing.update(chargeUpd);
         log(`skill-effects.apply_ae add_charges: "${template.name}" on ${actor.name} charges ${curCharges}+${addCharges}=${newCharges} (max=${maxCharges})`);
         applied.push({ actorUuid: actor.uuid, aeId: existing.id, name: existing.name, chargesAdded: addCharges, newCharges });
         continue;
@@ -5547,12 +5656,25 @@ async function applyApplyAeEffect(row, ctx) {
     {
       const rowC = evalCharge(row.ae_initial_charges);
       const rowCMax = evalCharge(row.ae_initial_charges_max);
-      if (rowC != null && Number.isFinite(rowC) && rowC > 0) {
+      const hasC = rowC != null && Number.isFinite(rowC) && rowC > 0;
+      const hasCMax = rowCMax != null && Number.isFinite(rowCMax);
+      // chargesMax is stamped from ae_initial_charges_max INDEPENDENTLY of
+      // ae_initial_charges — a "seed the pool's ceiling but not its current
+      // level" row (Grave Points' bortd_seed_gp: ae_initial_charges_max "SL + 1",
+      // ae_initial_charges blank) must be able to set the cap. The old guard
+      // required a positive charges value too, so such a seed silently kept the
+      // template's default chargesMax → the enforced cap (SL+1) and the displayed
+      // cap (template's 3) diverged ("4/3").
+      if (hasC || hasCMax) {
         data.flags = data.flags ?? {};
         data.flags[FLAG_NS] = data.flags[FLAG_NS] ?? {};
-        data.flags[FLAG_NS].charges = rowC;
-        if (rowCMax != null && Number.isFinite(rowCMax)) {
+        if (hasC) data.flags[FLAG_NS].charges = rowC;
+        if (hasCMax) {
           data.flags[FLAG_NS].chargesMax = rowCMax;
+          // Keep a visible statuscounter badge's max in sync with the pool cap.
+          if (data.flags?.statuscounter?.visible === true && data.flags.statuscounter.config) {
+            data.flags.statuscounter.config.max = rowCMax;
+          }
         }
       }
       // RS (resist): a fresh application lands with at most 1 charge (row
@@ -8212,7 +8334,9 @@ async function applySummonEffect(row, ctx) {
     return { ok: true, kind: "summon", applied: [], reason: "preview" };
   }
   const refsRaw = String(row.summon_actor ?? "").trim();
-  if (!refsRaw) {
+  const wantsClone = row.summon_clone_target === true
+    || String(row.summon_clone_target ?? "").trim().toLowerCase() === "true";
+  if (!refsRaw && !wantsClone) {
     warn(`skill-effects.summon: missing summon_actor on "${row.effect_label}"`);
     return { ok: false, kind: "summon", reason: "no-actor" };
   }
@@ -8239,6 +8363,29 @@ async function applySummonEffect(row, ctx) {
   // faces. Opt out with "formation" to use the old top-quarter battle slot.
   const placeAtCasterFront = String(row.summon_at ?? "").trim().toLowerCase() !== "formation";
 
+  // ── Clone-a-target summon (general "turn a creature into your ally") ────────
+  // summon_clone_target: spawn a CLONE of each actor resolved by this row's
+  // target_ref (e.g. trigger_subject) instead of the fixed summon_actor. General
+  // enough for reanimation / capture / permanent-charm / doppelganger. When set:
+  //   summon_persist  — keep the cloned Actor after the summon is destroyed
+  //                     (archive in folder). Default: the clone is DELETED on
+  //                     despawn (see destroy_summon), so nothing accumulates.
+  //   summon_folder   — Actor folder for the clone (created if missing).
+  //                     Empty → the caster's own folder.
+  //   summon_strip_types — CSV of item_type values to DROP on the clone
+  //                     (e.g. "weapon,armor,shield,accessory") → keep stats+skills.
+  //   summon_overrides — evaluated against the CLONE (its own props), and values
+  //                     may be LITERALS (species:"undead", npc_rank:"soldier",
+  //                     affinity_4:"IM") or FORMULAS prefixed with "=" (max_hp:
+  //                     "=floor(MAX_HP - (1-RANK_IS_SOLDIER)*MAX_HP*0.5)").
+  const cloneTarget = row.summon_clone_target === true
+    || String(row.summon_clone_target ?? "").trim().toLowerCase() === "true";
+  const persistClone = row.summon_persist === true
+    || String(row.summon_persist ?? "").trim().toLowerCase() === "true";
+  const summonFolderName = String(row.summon_folder ?? "").trim();
+  const stripTypes = String(row.summon_strip_types ?? "")
+    .split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+
   // summon_overrides — general per-spawn stat override: a map (object or JSON
   // string) of system.props keys → FORMULA strings, evaluated ONCE against the
   // CASTER's resolver at summon time and written onto each spawned copy's
@@ -8248,17 +8395,22 @@ async function applySummonEffect(row, ctx) {
   // 25% Current HP its summoner is about to spend —
   //   summon_overrides: { current_hp: "floor(CUR_HP * 0.25)", max_hp: "floor(CUR_HP * 0.25)" }
   // (order the summon row BEFORE the cost row so CUR_HP is the pre-cost value).
+  // `ovMap` is the raw override map (kept for the clone path, which evaluates it
+  // per-clone). `overrides` is the caster-pre-evaluated map used by the legacy
+  // (non-clone) path — behavior unchanged there.
   let overrides = null;
+  let ovMap = null;
   const ovRaw = row.summon_overrides;
   if (ovRaw != null && ovRaw !== "") {
-    let ovMap = ovRaw;
+    ovMap = ovRaw;
     if (typeof ovRaw === "string") {
       try { ovMap = JSON.parse(ovRaw); } catch {
         warn(`skill-effects.summon: summon_overrides on "${row.effect_label}" is not valid JSON — ignoring`);
         ovMap = null;
       }
     }
-    if (ovMap && typeof ovMap === "object" && !Array.isArray(ovMap)) {
+    if (!(ovMap && typeof ovMap === "object" && !Array.isArray(ovMap))) ovMap = null;
+    if (ovMap && !cloneTarget) {
       const casterActor = ctx.reactorActor ?? null;
       const resolver = ctx.resolver ?? (casterActor
         ? buildSkillResolver({ actor: casterActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? ctx.director?.dCombat?.round ?? 0 })
@@ -8277,14 +8429,18 @@ async function applySummonEffect(row, ctx) {
     ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
     ?? null;
   const dc = director?.dCombat;
-  if (!dc?.started || dc.ended) {
+  const scene = dc?.scene ?? null;
+  // A persist-clone summon (Birth of the Cruel reanimating the LAST enemy — killing
+  // it ends the battle SYNCHRONOUSLY via the side-wipe watcher's updateActor hook,
+  // before this creature_defeated reaction's chain runs) tolerates an ended battle:
+  // it still creates the standing clone Actor, which re-joins the owner's NEXT battle
+  // via reAddPersistentSummons — it just can't spawn a live token into a battle that
+  // is already over. Every OTHER summon needs a live battle + scene.
+  const battleActive = !!(dc?.started && !dc.ended && scene);
+  const persistCloneMode = cloneTarget && persistClone && !!dc;
+  if (!battleActive && !persistCloneMode) {
     warn(`skill-effects.summon: no active battle — cannot summon (row "${row.effect_label}")`);
     return { ok: false, kind: "summon", reason: "no-combat" };
-  }
-  const scene = dc.scene;
-  if (!scene) {
-    warn(`skill-effects.summon: director combat has no scene (row "${row.effect_label}")`);
-    return { ok: false, kind: "summon", reason: "no-scene" };
   }
 
   // Side/disposition inherited from the caster — summons are its allies.
@@ -8301,7 +8457,7 @@ async function applySummonEffect(row, ctx) {
   // faces). spawnLiveDirectorTokens fans from here and skips occupied cells, so a
   // multi-summon spreads out next to it. Null unless summon_at: "caster_front".
   let spawnAnchor = null;
-  if (placeAtCasterFront && casterTok) {
+  if (placeAtCasterFront && casterTok && scene) {
     const grid = scene.grid?.size ?? 100;
     const cw = (casterTok.width ?? 1) * grid;
     const ch = (casterTok.height ?? 1) * grid;
@@ -8347,16 +8503,106 @@ async function applySummonEffect(row, ctx) {
   let liveCount = summonMax ? countOwnSummons() : 0;
   let cappedOut = false;
 
+  // ── Build the spawn plan ────────────────────────────────────────────────
+  // Each entry: { actor, cloneOverrides, cloneUuid, deleteOnDespawn }. For the
+  // fixed path this is the resolved summon_actor refs; for the clone path it's a
+  // freshly-created persistent clone per target_ref-resolved source actor.
+  const spawnPlan = [];
+  if (cloneTarget) {
+    // Resolve the actors to clone from this row's target_ref (e.g. trigger_subject).
+    let srcTokens = [];
+    try { srcTokens = (await resolveTargetRef(row.target_ref, ctx))?.tokens ?? []; }
+    catch (e) { warn(`skill-effects.summon: clone_target resolveTargetRef threw`, e); }
+    const srcActors = [];
+    const seenSrc = new Set();
+    for (const t of srcTokens) {
+      const a = t?.actor ?? null;
+      if (a && !seenSrc.has(a.uuid)) { seenSrc.add(a.uuid); srcActors.push(a); }
+    }
+    if (!srcActors.length) {
+      warn(`skill-effects.summon: summon_clone_target resolved no source actor (target_ref "${row.target_ref}")`);
+      return { ok: false, kind: "summon", reason: "no-clone-source" };
+    }
+    // Resolve the destination folder (explicit name, else the caster's folder).
+    let folderId = null;
+    const fname = summonFolderName || ctx.reactorActor?.folder?.name || "";
+    if (fname) {
+      let folder = game.folders?.find?.((f) => f.type === "Actor" && f.name === fname) ?? null;
+      if (!folder) { try { folder = await Folder.create({ name: fname, type: "Actor" }); } catch (e) { warn(`skill-effects.summon: folder create failed`, e); } }
+      folderId = folder?.id ?? null;
+    }
+    for (const src of srcActors) {
+      const data = src.toObject();
+      delete data._id;
+      data.name = `${src.name} (Reanimated)`;
+      if (folderId) data.folder = folderId;
+      if (stripTypes.length && Array.isArray(data.items)) {
+        data.items = data.items.filter((it) => !stripTypes.includes(String(it.system?.props?.item_type ?? "").toLowerCase()));
+      }
+      // A PERSISTED clone is a standing ally of its summoner across battles:
+      // tag the clone ACTOR (tokens are transient — gone between battles) with
+      // the owner link so reAddPersistentSummons can re-instate it when the owner
+      // next fights. (Reanimated minion, captured monster, permanent doppelganger.)
+      if (persistClone) {
+        data.flags = data.flags ?? {};
+        data.flags[FLAG_NS] = { ...(data.flags[FLAG_NS] ?? {}), isPersistentSummon: true, summonOwnerActorUuid: summonerUuid };
+      }
+      let clone = null;
+      try { clone = await Actor.create(data); } catch (e) { warn(`skill-effects.summon: clone create failed for ${src.name}`, e); }
+      if (!clone) continue;
+      // Evaluate overrides against the CLONE (original props): "=" prefix → formula,
+      // else literal (numeric or string). Order-safe: read pre-mutation props.
+      let cloneOv = null;
+      if (ovMap) {
+        const resolver = buildSkillResolver({ actor: clone, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? ctx.director?.dCombat?.round ?? 0 });
+        cloneOv = {};
+        for (const [k, raw] of Object.entries(ovMap)) {
+          const key = String(k).trim().replace(/[^\w]/g, "");
+          if (!key) continue;
+          const s = String(raw).trim();
+          cloneOv[key] = s.startsWith("=") ? String(evaluateFormula(s.slice(1), resolver, 0)) : s;
+        }
+        if (!Object.keys(cloneOv).length) cloneOv = null;
+      }
+      // deleteOnDespawn: non-persist clones vanish on ANY despawn (within-battle).
+      // deleteOnDeath: persist clones survive a plain despawn (battle end) but are
+      // deleted when the creature is actually DESTROYED (0-HP defeat / destroy_summon),
+      // so a persistent ally is reclaimed on death yet re-joins across battles.
+      spawnPlan.push({ actor: clone, cloneOverrides: cloneOv, cloneUuid: clone.uuid, deleteOnDespawn: !persistClone, deleteOnDeath: persistClone });
+    }
+  } else {
+    for (const ref of refs) {
+      const actor = await resolveRef(ref);
+      if (!actor) { warn(`skill-effects.summon: actor "${ref}" not found`); continue; }
+      spawnPlan.push({ actor, cloneOverrides: null, cloneUuid: null, deleteOnDespawn: false, deleteOnDeath: false });
+    }
+  }
+
   const applied = [];
   const spawnedDocs = [];
-  for (const ref of refs) {
-    const actor = await resolveRef(ref);
-    if (!actor) { warn(`skill-effects.summon: actor "${ref}" not found`); continue; }
+  for (const unit of spawnPlan) {
+    const actor = unit.actor;
     for (let i = 0; i < count; i++) {
       if (summonMax && liveCount >= summonMax) {
         cappedOut = true;
         log(`skill-effects.summon: at summon_max=${summonMax} for "${row.effect_label}" — skipping spawn of ${actor.name}`);
         break;
+      }
+      // Clone overrides are applied to the clone ACTOR before spawn so the token
+      // (linked or unlinked) inherits the mutated data.
+      if (unit.cloneOverrides) {
+        const upd = {};
+        for (const [k, v] of Object.entries(unit.cloneOverrides)) upd[`system.props.${k}`] = String(v);
+        try { await actor.update(upd); } catch (e) { warn(`skill-effects.summon: clone override apply failed for ${actor.name}`, e); }
+      }
+      // Battle already over (persistCloneMode): the standing clone Actor is built +
+      // tagged + stat-overridden above; there's no live combat to spawn a token into,
+      // so record it as persisted-only and let reAddPersistentSummons instate it next
+      // battle. (Reanimating the LAST enemy lands here — the kill ended the battle.)
+      if (!battleActive) {
+        applied.push({ actor: actor.name, tokenUuid: null, combatantId: null, side, persistedOnly: true, ...(unit.cloneUuid ? { clone: true } : {}) });
+        liveCount++;
+        continue;
       }
       let tokenDoc = null;
       try {
@@ -8377,22 +8623,29 @@ async function applySummonEffect(row, ctx) {
       } catch (e) { warn(`skill-effects.summon: addCombatant threw for ${actor.name}`, e); }
       // Tag the spawned token so the battle-end summon sweep reaps it (+ isPhantasm
       // so _effectiveActivation pins it to 0 turns and own_summons can find it).
+      // Clone tokens also carry the clone-actor uuid + a delete-on-despawn flag so
+      // destroy_summon can clean the persisted Actor.
       try {
         await tokenDoc.update({
           [`flags.${FLAG_NS}.summonedBy`]: summonerUuid,
           [`flags.${FLAG_NS}.isSummon`]: true,
           ...(asPhantasm ? { [`flags.${FLAG_NS}.isPhantasm`]: true } : {}),
+          ...(unit.cloneUuid ? {
+            [`flags.${FLAG_NS}.cloneActorUuid`]: unit.cloneUuid,
+            [`flags.${FLAG_NS}.deleteCloneOnDespawn`]: unit.deleteOnDespawn,
+            [`flags.${FLAG_NS}.deleteCloneOnDeath`]: !!unit.deleteOnDeath,
+          } : {}),
         });
       } catch (e) { warn(`skill-effects.summon: tag write failed for ${actor.name}`, e); }
-      // summon_overrides → the spawned copy's props (values pre-evaluated above;
-      // stored as strings, matching the props convention).
-      if (overrides && tokenDoc.actor) {
+      // Legacy (non-clone) summon_overrides → the spawned copy's props (values
+      // pre-evaluated against the caster; clone overrides were already applied).
+      if (!unit.cloneOverrides && overrides && tokenDoc.actor) {
         const upd = {};
         for (const [k, v] of Object.entries(overrides)) upd[`system.props.${k}`] = String(v);
         try { await tokenDoc.actor.update(upd); }
         catch (e) { warn(`skill-effects.summon: summon_overrides write failed for ${actor.name}`, e); }
       }
-      applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound, asPhantasm, ...(overrides ? { overrides } : {}) });
+      applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound, asPhantasm, ...(unit.cloneUuid ? { clone: true } : {}) });
       spawnedDocs.push(tokenDoc);
       liveCount++;
     }
@@ -8413,14 +8666,18 @@ async function applySummonEffect(row, ctx) {
     return { ok: false, kind: "summon", reason: "summon_max", applied: [] };
   }
 
-  // Refresh the turn tracker so the new combatant(s) appear immediately.
-  if (applied.length) {
+  // Refresh the turn tracker so the new combatant(s) appear immediately. Only when
+  // the battle is live — a persist-clone built into an ended battle has no roster to
+  // refresh (it re-joins next battle via reAddPersistentSummons).
+  if (applied.length && battleActive) {
     try {
       const { refreshTurnActions } = await import("./director-round-banner.js");
       refreshTurnActions?.(dc);
     } catch (e) { warn("skill-effects.summon: banner refresh threw", e); }
     try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "add" }); } catch (_e) {}
     log(`skill-effects.summon: row "${row.effect_label}" summoned ${applied.length} (${applied.map((a) => a.actor).join(", ")}; actThisRound=${actThisRound})`);
+  } else if (applied.length && !battleActive) {
+    log(`skill-effects.summon: row "${row.effect_label}" created ${applied.length} PERSISTED clone(s) into an ended battle (${applied.map((a) => a.actor).join(", ")}) — will re-join next battle`);
   }
   // Register the spawned tokens under THIS row's effect_label — exactly like a
   // targeting row — so a later chain row can `target_ref: "<this label>"` to act
@@ -8432,6 +8689,65 @@ async function applySummonEffect(row, ctx) {
   // Also expose the most-recent summon for the `last_summoned` candidate_source.
   ctx.lastSummonedTokenUuids = applied.map((a) => a.tokenUuid).filter(Boolean);
   return { ok: true, kind: "summon", applied };
+}
+
+// ── reAddPersistentSummons — battle-start re-instatement of standing allies ──
+// A persist:true clone summon (Birth of the Cruel's reanimated minion; also a
+// captured monster / permanent doppelganger) survives between battles as a world
+// Actor tagged `isPersistentSummon` + `summonOwnerActorUuid`. When its owner next
+// enters a conflict, re-add it to the combat on the owner's side: spawn a fresh
+// token + combatant (the prior battle's token is gone) and re-stamp the summon
+// lifecycle flags (isSummon / summonedBy / cloneActorUuid / deleteCloneOnDeath) so
+// its death cleanup + one-at-a-time gating keep working. Dedup is by the
+// cloneActorUuid token flag (robust to linked/unlinked spawns) so a reload/re-entry
+// never double-adds. Called at conflict_start (after sweepDefeat).
+export async function reAddPersistentSummons(director) {
+  const dc = director?.dCombat;
+  if (!dc?.started || dc.ended || !dc.scene) return { ok: true, added: 0 };
+  if (!game.user?.isGM) return { ok: true, added: 0 };
+  const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+  if (typeof bd?.addCombatant !== "function") return { ok: true, added: 0 };
+
+  // Party-side owners present + clone uuids already in this combat (dedup key).
+  const partyOwners = new Set();
+  const presentCloneUuids = new Set();
+  for (const c of dc.combatants ?? []) {
+    if (c.side === "party" && c.actorDoc?.uuid) partyOwners.add(c.actorDoc.uuid);
+    const cf = c.tokenDoc?.flags?.[FLAG_NS] ?? {};
+    if (cf.cloneActorUuid) presentCloneUuids.add(cf.cloneActorUuid);
+  }
+  if (!partyOwners.size) return { ok: true, added: 0 };
+
+  const toAdd = [];
+  for (const a of (game.actors?.contents ?? [])) {
+    const f = a.flags?.[FLAG_NS] ?? {};
+    if (!f.isPersistentSummon) continue;
+    const owner = String(f.summonOwnerActorUuid ?? "");
+    if (!partyOwners.has(owner)) continue;      // owner not fighting this battle
+    if (presentCloneUuids.has(a.uuid)) continue; // already in combat
+    toAdd.push({ actor: a, owner });
+  }
+
+  let added = 0;
+  for (const { actor, owner } of toAdd) {
+    try {
+      const res = await bd.addCombatant({ actorUuid: actor.uuid, side: "party" });
+      if (!res?.ok || !res.tokenUuid) { warn(`reAddPersistentSummons: addCombatant failed for ${actor.name}: ${res?.error}`); continue; }
+      const td = await fromUuid(res.tokenUuid).catch(() => null);
+      const tdoc = td?.document ?? td ?? null;
+      if (tdoc) {
+        await tdoc.update({
+          [`flags.${FLAG_NS}.isSummon`]: true,
+          [`flags.${FLAG_NS}.summonedBy`]: owner,
+          [`flags.${FLAG_NS}.cloneActorUuid`]: actor.uuid,
+          [`flags.${FLAG_NS}.deleteCloneOnDeath`]: true,
+        });
+      }
+      added++;
+      log(`reAddPersistentSummons: re-added ${actor.name} (owner ${owner})`);
+    } catch (e) { warn(`reAddPersistentSummons: threw for ${actor.name}`, e); }
+  }
+  return { ok: true, added };
 }
 
 // ── take_turn_next — a creature acts IMMEDIATELY after the current turn ──────

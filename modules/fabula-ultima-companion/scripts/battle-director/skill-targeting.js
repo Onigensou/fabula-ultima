@@ -695,12 +695,20 @@ function collectGrappledBySelf(ctx) {
   });
 }
 
+// A Guest (bdGuest) is a visual-only round-end helper — it can never be a target
+// candidate (single, AoE, random, all_allies/all_enemies). Filtered out of every
+// pool here. It still ACTS via its own round_end reaction, which resolves ITS
+// targets (enemies/allies) — those remain in the pool; only the guest itself is dropped.
+function isGuestTokenDoc(td) {
+  return !!foundry.utils.getProperty(td?.actor ?? {}, "flags.fabula-ultima-companion.bdGuest");
+}
+
 function collectCombatTokens(ctx) {
   // Use dCombat as the authoritative combat list (director-native);
   // each combatant carries .tokenDoc.
   const dc = ctx.dCombat;
   if (dc?.combatants?.length) {
-    return dc.combatants.map((c) => c.tokenDoc).filter(Boolean);
+    return dc.combatants.map((c) => c.tokenDoc).filter(Boolean).filter((td) => !isGuestTokenDoc(td));
   }
   // Fallback to game.combat (manual-attach path, rare in director mode).
   const fc = game.combat;
@@ -708,7 +716,7 @@ function collectCombatTokens(ctx) {
     const out = [];
     for (const c of fc.combatants) {
       const t = c.token;
-      if (t) out.push(t);
+      if (t && !isGuestTokenDoc(t)) out.push(t);
     }
     return out;
   }
@@ -716,7 +724,7 @@ function collectCombatTokens(ctx) {
   // card-mutation redirect picker) would otherwise see zero combatants when
   // game.combat is also null — which is the normal BD case (director runs on
   // its own dCombat). Mirrors the enemyActorsOf canvas fallback in skill-formulas.
-  return (globalThis.canvas?.tokens?.placeables ?? []).map((t) => t.document).filter(Boolean);
+  return (globalThis.canvas?.tokens?.placeables ?? []).map((t) => t.document).filter(Boolean).filter((td) => !isGuestTokenDoc(td));
 }
 
 async function uuidsToTokens(uuids) {

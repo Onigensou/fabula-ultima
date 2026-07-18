@@ -41,6 +41,12 @@ const PATH_DB_OPTION = "system.props.option_autoDefeat";
 const PATH_HP = "system.props.current_hp";
 const PATH_NPC_RANK = "system.props.npc_rank";
 const PATH_TOKEN_PERSIST = "system.props.token_option_persist";
+// Guest marker (Guest system) — a GM-owned, party-side NPC that has no HP and
+// can never be defeated. A guest is skipped from BOTH removal (passesActorGates)
+// and the Defeated-status applier (evaluateDefeatStatus), so it stays on the
+// scene regardless of HP. Mirrors the token_option_persist opt-out.
+const PATH_GUEST = "flags.fabula-ultima-companion.bdGuest";
+function isGuest(actor) { return Boolean(get(actor, PATH_GUEST, false)); }
 
 const DEATH_SFX_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Enemy_Death.ogg";
@@ -113,6 +119,7 @@ async function autoDefeatEnabled() {
 // the caller). Returns true only if this creature/token should be removed.
 function passesActorGates(actor) {
   if (!actor) return false;
+  if (isGuest(actor)) return false;               // guests are never removed
   if (Boolean(get(actor, PATH_TOKEN_PERSIST, false))) return false;
   const rank = get(actor, PATH_NPC_RANK, undefined);
   if (rank === undefined || rank === null || String(rank).trim() === "") return false;
@@ -129,6 +136,24 @@ async function performDefeat(director, tokenDoc, actor) {
   const name = tokenDoc?.name ?? actor?.name ?? "Creature";
 
   const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+  // Clone-actor cleanup (summon_clone_target). Capture the flags BEFORE removal —
+  // the token is gone afterward. A cloned summon (reanimated minion, captured
+  // monster) carries the persisted clone-actor uuid + a delete-on-despawn flag;
+  // delete that Actor whenever the token despawns for ANY reason (0-HP defeat,
+  // battle-end, GM reap), so the clone never leaks into the world folder. This is
+  // the general twin of destroy_summon's own clone cleanup — that path only
+  // covers explicit shatter (Detonate / manual destroy), while a minion killed by
+  // damage flows through here. Mirrors destroy_summon's capture semantics.
+  const _cf = tokenDoc?.flags?.["fabula-ultima-companion"] ?? {};
+  const _cloneUuid = _cf.cloneActorUuid ?? null;
+  // Reaching performDefeat means a real 0-HP defeat (removal gates passed), so a
+  // persistent summon (deleteCloneOnDeath) is genuinely destroyed here → reclaim its
+  // clone Actor, same as a within-battle clone (deleteCloneOnDespawn). A persistent
+  // summon that merely LEAVES at battle end never flows through here, so it survives.
+  const _delClone = !!_cloneUuid && (
+    _cf.deleteCloneOnDespawn === true || String(_cf.deleteCloneOnDespawn) === "true"
+    || _cf.deleteCloneOnDeath === true || String(_cf.deleteCloneOnDeath) === "true"
+  );
   const remove = async () => {
     if (typeof bd?.removeCombatant === "function") {
       const res = await bd.removeCombatant({ tokenUuid });
@@ -138,6 +163,12 @@ async function performDefeat(director, tokenDoc, actor) {
       }
     } else {
       try { await tokenDoc.delete(); } catch (e) { warn("defeat-reactor: token delete threw", e); }
+    }
+    if (_delClone) {
+      try {
+        const ca = await fromUuid(_cloneUuid).catch(() => null);
+        if (ca?.documentName === "Actor") await ca.delete();
+      } catch (e) { warn("defeat-reactor: clone actor delete threw", e); }
     }
   };
 
@@ -339,6 +370,7 @@ async function cleanseBuffsDebuffsOnKO(actor) {
 // applies once at HP ≤ 0, removes at HP > 0, collapses accidental duplicates.
 async function evaluateDefeatStatus(actor) {
   if (!actor) return null;
+  if (isGuest(actor)) return null;                // guests never show Defeated
   const hp = num(get(actor, PATH_HP));
   if (hp == null) return null;
   const down = hp <= 0;

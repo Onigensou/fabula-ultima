@@ -12,7 +12,7 @@ import { log, warn, err } from "./logger.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, getMaxActionTargets } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -1383,6 +1383,22 @@ export function resolveTargetPlan({ actor, skill, skillTargetText, eligibleCount
   // Affordability cap — player-choice variable counts only (up_to / random-up-to).
   let capped = false;
   let capNote = null;
+
+  // Fatigue single-target cap. A `max_action_targets` AE (Fatigue Advanced
+  // Debuff → cap 1) no longer BLOCKS a variable "Up to X" action (the picker
+  // keeps it available) — instead it clamps the target count down to the cap, so
+  // the fatigued caster still acts, against a single creature. Only the variable
+  // families are clamped (up_to / random-up-to), mirroring the picker gate:
+  // fixed-multi (All / N creatures / Multi) stay blocked upstream. Runs before
+  // the affordability/MP caps so those still narrow further if needed.
+  if ((mode === "up_to" || (mode === "random" && randomize)) && count > 1) {
+    const { cap, reason } = getMaxActionTargets(actor);
+    if (Number.isFinite(cap) && cap < count) {
+      count = Math.max(1, cap);
+      capped = true;
+      capNote = `${skill?.name ?? "Action"}: ${reason || "restricted"} — limited to ${count} target${count === 1 ? "" : "s"}.`;
+    }
+  }
   if ((mode === "up_to" || (mode === "random" && randomize)) && count > 1) {
     const cap = affordableTargetCount(actor, skill?.system?.props?.cost, count);
     if (cap.capped) {
@@ -6106,12 +6122,12 @@ const ReactionWindow = {
           resumeAt: STATES.REACTION_WINDOW,
           fieldsToSnapshot: ["_reactionWindowTriggers", "_postResolveUsed"],
         });
+        // Survival-only (`skipHistory`): F5-resume through the FAW detour, not a
+        // rewind-list entry. It captured a transient "awaiting free-action drain"
+        // moment between RESOLVE and the next FSM anchor — a rewind target the GM
+        // never wants (they'd rewind to RESOLVE or TURN_START instead).
         try {
-          const sawPhase = rewindPhaseLabel(ctx, director.dCombat?.round);
-          await saveDirectorState(director, {
-            label: `${sawPhase} · reaction action pending`,
-            description: `${freeActionQueue.size()} free action(s) queued by a reaction; awaiting drain`,
-          });
+          await saveDirectorState(director, { skipHistory: true });
         } catch (e) { warn("REACTION_WINDOW: pre-FAW save failed", e); }
         await director.transitionTo(STATES.FREE_ACTION_WINDOW);
         return;
@@ -6415,6 +6431,15 @@ const StandaloneReactionWindow = {
               const { sweepDefeat } = await import("./defeat-reactor.js");
               await sweepDefeat(director);
             } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} defeat sweep threw`, e); }
+            // Re-instate persistent summons (Birth of the Cruel's reanimated minion,
+            // etc.): a party member's standing clone-ally re-joins the battle on their
+            // side. conflict_start only — not turn_start.
+            if (trigger === "conflict_start") {
+              try {
+                const { reAddPersistentSummons } = await import("./skill-effects.js");
+                await reAddPersistentSummons(director);
+              } catch (e) { warn(`STANDALONE_REACTION_WINDOW: reAddPersistentSummons threw`, e); }
+            }
           }
           // FORCED pass — auto-fire force/on (Burn commits + populates the
           // ledger; action-creating grants like High Speed enqueue freeActionQueue).
@@ -6425,12 +6450,15 @@ const StandaloneReactionWindow = {
             await settleInstance(director, { reason: trigger });
           } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} settleInstance threw`, e); }
           // CHECKPOINT — transaction commit point (forced reactions settled).
+          // Survival-only (`skipHistory`): NOT a rewind-list entry. This fired
+          // for EVERY standalone-reaction window (conflict_start / turn_start /
+          // turn_end) even when no forced reaction changed state, so a
+          // state-identical `· settled` entry shadowed the real TURN_START /
+          // TURN_END / RESOLVE anchors right next to it. The label differed, so
+          // the fingerprint dedup didn't collapse it. Keeping the survival write
+          // preserves F5-resume at this commit point without the duplicate.
           try {
-            const lbl = rewindPhaseLabel(ctx, director.dCombat?.round);
-            await saveDirectorState(director, {
-              label: `${lbl} · settled`,
-              description: "Forced reactions settled — awaiting player decision",
-            });
+            await saveDirectorState(director, { skipHistory: true });
           } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} settle checkpoint failed`, e); }
         }
         // ASK pass — surface player-facing reactions only (auto-fires suppressed;
@@ -6483,21 +6511,13 @@ const StandaloneReactionWindow = {
         // sees the frame and routes to top.resumeAt = SRW (after FAW
         // handles its own re-entry detection). Same end state as the
         // live flow.
+        // Survival-only (`skipHistory`): this save exists purely so F5 mid-detour
+        // sees the srwDetour frame + queued free action and resumes correctly (per
+        // the block above). It is NOT a rewind target — the "awaiting player free
+        // action" moment is transient plumbing, and its `· pending` label differed
+        // from neighbours so the fingerprint dedup left a duplicate in the list.
         try {
-          const peek = freeActionQueue.peek();
-          const reactorName = peek?.sourceLabel
-            ? `${peek.sourceLabel}`
-            : "free action";
-          // This save fires AFTER the srwDetour frame is pushed (line
-          // above), so rewindPhaseLabel walks the stack and sees the
-          // conflict_start frame — labels "Conflict Start · …" when
-          // the originating trigger was conflict_start, "Round N · …"
-          // otherwise (turn_start etc.).
-          const sawPhase = rewindPhaseLabel(director.ctx, director.dCombat?.round);
-          await saveDirectorState(director, {
-            label: `${sawPhase} · ${reactorName} pending`,
-            description: `${freeActionQueue.size()} free action(s) queued; awaiting player choice`,
-          });
+          await saveDirectorState(director, { skipHistory: true });
         } catch (e) {
           warn("STANDALONE_REACTION_WINDOW: pre-FAW save failed", e);
         }

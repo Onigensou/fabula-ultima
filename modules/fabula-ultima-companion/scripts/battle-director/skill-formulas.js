@@ -1,9 +1,9 @@
 // Re-export sentinel — bumped whenever a new identifier ships so
 // reload-aware callers can verify they have a fresh enough module.
-// Currently 4 (added TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT identifiers;
-// prev: pow() math function, ALL_TARGETS_HIT identifier).
+// Currently 5 (added ALLY_COUNT / ANY_ALLY_IN_CRISIS identifiers for the Guest
+// system; prev: TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT; pow(); ALL_TARGETS_HIT).
 // Not load-bearing; diagnostic only.
-export const SKILL_FORMULAS_SCHEMA = 7;
+export const SKILL_FORMULAS_SCHEMA = 8;
 
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
@@ -645,6 +645,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // ENEMY_IN_CRISIS (enemyActorsOf: combat roster, canvas-token fallback).
       // 0 out of combat.
       case "ENEMY_COUNT": return enemyActorsOf(actor).length;
+      // Ally head-count / any-ally-in-Crisis, relative to the reactor (strict
+      // same-sign disposition, self excluded). Backs the Guest system's heal
+      // gate. Same enumeration as ENEMY_COUNT, mirrored to the ally side.
+      case "ALLY_COUNT": return allyActorsOf(actor).length;
+      case "ALLY_IN_CRISIS":
+      case "ANY_ALLY_IN_CRISIS": return anyAllyInCrisis(actor) ? 1 : 0;
       // 1 if an ALLY who is THIS actor's focus (carries a Focus AE — status
       // fud-focus — that this actor applied) is currently in Crisis, else 0.
       // Life Transference's eligibility half: "you may heal yourself or an ALLY
@@ -675,6 +681,15 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // ("OWN_PHANTASM_COUNT < 3"). Excludes the Numen, which is a full own-turn
       // summon (no isPhantasm flag) and carries its own one-of-a-kind limit.
       case "OWN_PHANTASM_COUNT": return ownSummonCount(actor, { phantasmOnly: true });
+      // Number of PERSISTENT-summon minions this actor owns — world Actors flagged
+      // `isPersistentSummon` + `summonOwnerActorUuid == me`. Unlike OWN_SUMMON_COUNT
+      // (LIVE tokens only, and includes phantasms), this counts the persisted Actor
+      // so a standing minion blocks a second raise whether or not it's currently on
+      // the field (between battles / not yet re-added), and Phantasms never count.
+      // Birth of the Cruel's authoritative one-at-a-time gate
+      // (OWN_PERSISTENT_SUMMON_COUNT == 0) — independent of the Grave Toll AE, which
+      // can desync from the minion.
+      case "OWN_PERSISTENT_SUMMON_COUNT": return ownPersistentSummonCount(actor);
       case "BOND_STRENGTH": return bondStrengthTowardSubject(actor, payload);
       case "BOND_COUNT": return countBondSlots(actor);
       case "BOND_COUNT_ADMIRATION": return countBondsByEmotion(actor, "admiration");
@@ -1252,6 +1267,18 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // is the summoner's ACTOR uuid (= the reactor's actor uuid).
       case "SUBJECT_IS_MY_PHANTASM": {
         if (!payload?.isPhantasm) return 0;
+        const by = String(payload?.summonedBy ?? "").trim();
+        const me = String(actor?.uuid ?? "").trim();
+        return (by && me && by === me) ? 1 : 0;
+      }
+      // 1 when the trigger SUBJECT is any summon I created (phantasm OR not) —
+      // the phantasm-agnostic twin of SUBJECT_IS_MY_PHANTASM. Reads the event
+      // payload's `summonedBy` (the summoner's ACTOR uuid, stamped on every
+      // director summon token) so it still matches after the summon despawns
+      // (creature_defeated carries summonedBy before token removal). Powers the
+      // reanimated-minion lifecycle (Birth of the Cruel): "when MY minion is
+      // destroyed, restore the Grave Toll" fires regardless of phantasm-ness.
+      case "SUBJECT_IS_MY_SUMMON": {
         const by = String(payload?.summonedBy ?? "").trim();
         const me = String(actor?.uuid ?? "").trim();
         return (by && me && by === me) ? 1 : 0;
@@ -2156,6 +2183,10 @@ function collectDebuffStatusKeys(actor) {
 // runs on its own `dCombat` and often leaves `game.combat` null, so a combat-
 // only scan would miss every enemy mid-battle. Single source for every
 // enemy-iterating formula (ENEMY_DISTINCT_STATUS_COUNT, ENEMY_IN_CRISIS).
+// A Guest (bdGuest) is a visual-only round-end helper — invisible to enemy/ally
+// COUNTS too, so it never sways an enemy's ENEMY_COUNT branch or a PC's ALLY_COUNT.
+function _isGuestActor(a) { return !!foundry.utils.getProperty(a ?? {}, "flags.fabula-ultima-companion.bdGuest"); }
+
 function enemyActorsOf(actor) {
   if (!actor) return [];
   const myDisp = _combatDisposition(actor);
@@ -2164,6 +2195,7 @@ function enemyActorsOf(actor) {
   const seen = new Set();
   const consider = (a, disp) => {
     if (!a || a === actor || seen.has(a)) return;
+    if (_isGuestActor(a)) return; // guest is inert — never counted
     const d = Number(disp);
     if (!Number.isFinite(d) || d * myDisp >= 0) return; // not an enemy
     seen.add(a);
@@ -2201,6 +2233,56 @@ function anyEnemyInCrisis(actor) {
       return String(e?.name ?? "").trim().toLowerCase() === "crisis";
     });
   return enemyActorsOf(actor).some(inCrisis);
+}
+
+// ALLY enumeration — the mirror of enemyActorsOf (same-disposition combatants,
+// excluding self; strict same-sign so neutral 0 is neither ally nor enemy).
+// Backs ALLY_COUNT / ANY_ALLY_IN_CRISIS for the Guest system (a party-side
+// guest heals a PC ally). Same combat-roster-then-canvas fallback as the enemy
+// scan (the Battle Director often leaves game.combat null mid-battle).
+function allyActorsOf(actor) {
+  if (!actor) return [];
+  const myDisp = _combatDisposition(actor);
+  if (myDisp == null || myDisp === 0) return [];
+  const out = [];
+  const seen = new Set();
+  const consider = (a, disp) => {
+    if (!a || a === actor || seen.has(a)) return;
+    if (_isGuestActor(a)) return; // guest is inert — never counted
+    const d = Number(disp);
+    if (!Number.isFinite(d) || d * myDisp <= 0) return; // ally = strict same-sign
+    seen.add(a);
+    out.push(a);
+  };
+  const combat = globalThis.game?.combat;
+  const roster = combat?.combatants;
+  if (roster && (roster.size || roster.length)) {
+    for (const c of roster) consider(c.actor, c.token?.disposition ?? _combatDisposition(c.actor));
+    return out;
+  }
+  for (const t of (globalThis.canvas?.tokens?.placeables ?? [])) {
+    consider(t?.actor, t.document?.disposition ?? t.disposition);
+  }
+  return out;
+}
+
+// True if any ALLY of `actor` is in Crisis. Crisis = the canonical "Crisis" AE
+// (bdCrisis flag or literal name) OR current HP at/below half of max — the
+// fraction fallback so the gate holds even before the crisis-reactor has
+// stamped the AE (and out of a director context). Powers the Guest heal gate.
+function anyAllyInCrisis(actor) {
+  const inCrisis = (a) => {
+    const hasAe = (a?.effects?.contents ?? []).some((e) => {
+      if (e?.disabled) return false;
+      if (e?.flags?.["fabula-ultima-companion"]?.bdCrisis === true) return true;
+      return String(e?.name ?? "").trim().toLowerCase() === "crisis";
+    });
+    if (hasAe) return true;
+    const cur = Number(a?.system?.props?.current_hp);
+    const max = Number(a?.system?.props?.max_hp);
+    return Number.isFinite(cur) && Number.isFinite(max) && max > 0 && cur * 2 <= max;
+  };
+  return allyActorsOf(actor).some(inCrisis);
 }
 
 // 1 if `actor` currently has an Arcanum merged — any active AE flagged
@@ -2271,6 +2353,23 @@ function ownSummonCount(actor, { numenOnly = false, phantasmOnly = false } = {})
     // is a full own-turn summon — no isPhantasm flag — so it never counts here.
     if (phantasmOnly) { if (f.isPhantasm) n++; continue; }
     if (f.isSummon || f.isPhantasm) n++;
+  }
+  return n;
+}
+
+// Count PERSISTENT-summon minions (world Actors flagged isPersistentSummon, owned
+// by this actor via summonOwnerActorUuid) — the cross-battle-authoritative twin of
+// ownSummonCount. Counts the persisted Actor, not a live token, so a standing ally
+// counts whether or not it's on the current field; Phantasms are never flagged
+// isPersistentSummon so they never count. Powers Birth of the Cruel's one-at-a-time.
+function ownPersistentSummonCount(actor) {
+  const meUuid = String(actor?.uuid ?? "").trim();
+  if (!meUuid) return 0;
+  const NS = "fabula-ultima-companion";
+  let n = 0;
+  for (const a of (globalThis.game?.actors?.contents ?? [])) {
+    const f = a?.flags?.[NS] ?? {};
+    if (f.isPersistentSummon && String(f.summonOwnerActorUuid ?? "") === meUuid) n++;
   }
   return n;
 }
