@@ -966,6 +966,16 @@ export function skillTargetIsMulti(skillTargetText) {
   return false;
 }
 
+// Is an action a variable, player-count "Up to X" target ("Up to three
+// creatures", "Up to [SL] enemies")? These are the ONE multi-target family the
+// Fatigue cap does NOT block — instead the count is clamped to the cap (1), so
+// the caster may still perform the action against a single creature. Fixed-multi
+// specs (All / "Two creatures" / Multi) can't collapse to a free choice of one,
+// so they stay blocked. Matches resolveTargetPlan's own `/up\s+to/i` test.
+export function skillTargetIsUpTo(skillTargetText) {
+  return /up\s+to/i.test(String(skillTargetText ?? ""));
+}
+
 // AE-driven turn-action gating. Walks an actor's active effects and collects
 // every change row that disables turn-action type(s) — the engine seam behind
 // the homebrew "action-gating" Advanced Debuffs (Frightened / Silence / Confused

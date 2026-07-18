@@ -15,7 +15,7 @@ import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { analyzeChainCost, estimatePerformReactionCost, isMergedArcanumChild } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
-import { getMaxActionTargets, skillTargetIsMulti } from "./snapshot.js";
+import { getMaxActionTargets, skillTargetIsMulti, skillTargetIsUpTo } from "./snapshot.js";
 
 // Cost badge labels for the config-derived (effect-chain) cost map.
 const COST_RES_LABEL = { hp: "HP", mp: "MP", ip: "IP", fp: "FP", zenit: "Zenit", zero_power: "ZP", enmity: "Enmity" };
@@ -361,12 +361,18 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
   }
   // Single-target restriction (Fatigue Advanced Debuff). When the caster carries
   // a `max_action_targets` cap below 2 and this action is inherently multi-target
-  // (All / Up to N>1 / Multi), dim it with the source-AE name — the same disabled
-  // + reason treatment as an availability block ("you may only perform single-
-  // target actions"). Single-target skills are unaffected.
+  // (All / fixed "Two creatures" / Multi), dim it with the source-AE name — the
+  // same disabled + reason treatment as an availability block ("you may only
+  // perform single-target actions"). Single-target skills are unaffected.
+  //
+  // EXCEPTION — variable "Up to X" targeting stays AVAILABLE. Rather than block
+  // it, resolveTargetPlan clamps its count down to the cap (1), so a fatigued
+  // caster may still perform an "Up to X" action against a single creature.
+  // A fixed-multi spec (All / N creatures) can't collapse to a free choice of
+  // one, so those remain blocked.
   if (!unavailableReason) {
     const { cap, reason } = getMaxActionTargets(actor);
-    if (cap < 2 && skillTargetIsMulti(p.skill_target)) {
+    if (cap < 2 && skillTargetIsMulti(p.skill_target) && !skillTargetIsUpTo(p.skill_target)) {
       unavailableReason = reason || "Restricted";
     }
   }

@@ -12,7 +12,7 @@ import { log, warn, err } from "./logger.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, getMaxActionTargets } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -1383,6 +1383,22 @@ export function resolveTargetPlan({ actor, skill, skillTargetText, eligibleCount
   // Affordability cap — player-choice variable counts only (up_to / random-up-to).
   let capped = false;
   let capNote = null;
+
+  // Fatigue single-target cap. A `max_action_targets` AE (Fatigue Advanced
+  // Debuff → cap 1) no longer BLOCKS a variable "Up to X" action (the picker
+  // keeps it available) — instead it clamps the target count down to the cap, so
+  // the fatigued caster still acts, against a single creature. Only the variable
+  // families are clamped (up_to / random-up-to), mirroring the picker gate:
+  // fixed-multi (All / N creatures / Multi) stay blocked upstream. Runs before
+  // the affordability/MP caps so those still narrow further if needed.
+  if ((mode === "up_to" || (mode === "random" && randomize)) && count > 1) {
+    const { cap, reason } = getMaxActionTargets(actor);
+    if (Number.isFinite(cap) && cap < count) {
+      count = Math.max(1, cap);
+      capped = true;
+      capNote = `${skill?.name ?? "Action"}: ${reason || "restricted"} — limited to ${count} target${count === 1 ? "" : "s"}.`;
+    }
+  }
   if ((mode === "up_to" || (mode === "random" && randomize)) && count > 1) {
     const cap = affordableTargetCount(actor, skill?.system?.props?.cost, count);
     if (cap.capped) {
