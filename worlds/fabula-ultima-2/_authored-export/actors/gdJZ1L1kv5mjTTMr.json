@@ -4149,7 +4149,7 @@
           "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
-              "condition_formula": "(TARGET_SPECIES_IS_BEAST + TARGET_SPECIES_IS_HUMANOID + TARGET_SPECIES_IS_MONSTER + TARGET_SPECIES_IS_PLANT) >= 1 && OWN_PERSISTENT_SUMMON_COUNT == 0 && AE_CHARGES_GRAVE_POINTS >= 2",
+              "condition_formula": "(TARGET_SPECIES_IS_BEAST + TARGET_SPECIES_IS_HUMANOID + TARGET_SPECIES_IS_MONSTER + TARGET_SPECIES_IS_PLANT) >= 1 && TARGET_IS_VILLAIN == 0 && OWN_PERSISTENT_SUMMON_COUNT == 0 && AE_CHARGES_GRAVE_POINTS >= 2",
               "reaction_action_intent": "",
               "reaction_action_kind": "",
               "reaction_action_target": "",
@@ -5044,7 +5044,8 @@
               "effect_kind": "summon",
               "effect_label": "numen_summon",
               "summon_actor": "ZPPCxB0eOJPulEHv",
-              "summon_count": 1
+              "summon_count": 1,
+              "summon_type": "numen"
             },
             "2": {
               "$deleted": false,
@@ -8921,7 +8922,7 @@
       "critical_dice_range": 0,
       "current_hp": 94,
       "current_ip": "8",
-      "current_mp": "43",
+      "current_mp": 109,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",

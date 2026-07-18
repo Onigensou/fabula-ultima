@@ -600,17 +600,65 @@ async function applyShieldRedirectMutation(ctx, cand, row) {
   });
   ctx.perTargets.push(per);
 
-  (ctx.shieldLinks ??= []).push({
-    phantasmTokenUuid: phantTokDoc.uuid,
-    phantasmActorUuid: phantActor.uuid,
-    phantasmName: phantActor.name,
-    defendedTokenUuid: ctx.targets[defIdx]?.tokenUuid ?? null,
-    defendedActorUuid: defendedUuid,
-    defendedName,
-    pv,
-    via: cand.carrierName ?? "Illusory Shield",
-  });
-  log(`shield_redirect: ${phantActor.name} (PV ${pv}) interposes for ${defendedName}; overflow → ${defendedName} forced (via ${shieldedVia.via})`);
+  // ── DAMAGE danger vs. pure CHECK/STATUS danger ───────────────────────────
+  // RAW: the Phantasm "takes their place"; "any Checks that are part of the
+  // danger will be performed against the Phantasm"; and for the defended creature
+  // "all status effects related to the attack are nullified".
+  //  • DAMAGE danger (Attack / damaging Spell): the phantasm soaks up to its PV
+  //    and the OVERFLOW spills to the defended creature — so the defended KEEPS
+  //    its slot (to receive that overflow) but is dropped from the hit list
+  //    (statuses nullified). Recorded as a shieldLink → applyShieldSplit below.
+  //  • CHECK / STATUS danger with NO damage (O'lmek's Stone Gaze: a DL 11 check →
+  //    Petrify, delivered by the danger's OWN `save_check → apply_ae` chain over
+  //    `action_targets`, not by the card's damage/hit pipeline): there is nothing
+  //    to split. The phantasm — already added as a target above — takes the whole
+  //    danger, so the chain's save is rolled against the PHANTASM; the defended is
+  //    removed from the target set entirely, so it escapes both the check and the
+  //    status. `action_targets` at RESOLVE is derived straight from `ar.targets`
+  //    (state-handlers), so splicing the defended out here is exactly what drops
+  //    it from the save. A shieldLink is NOT recorded (no damage → no split).
+  const defTokenUuid = ctx.targets[defIdx]?.tokenUuid ?? null;
+  const arKind = String(ctx.ar?.kind ?? "").toLowerCase();
+  const arDmgType = String(ctx.ar?.damageType ?? "").trim().toLowerCase();
+  // A weapon Attack always deals damage; a Skill/Spell deals damage iff it
+  // declares a damage type (incl. the "Null" element — a non-empty type that
+  // still deals damage). An empty type_damage (Stone Gaze) = a non-damage danger.
+  const isDamageDanger = arKind === "attack" || (!!arDmgType && arDmgType !== "none");
+
+  if (isDamageDanger) {
+    (ctx.shieldLinks ??= []).push({
+      phantasmTokenUuid: phantTokDoc.uuid,
+      phantasmActorUuid: phantActor.uuid,
+      phantasmName: phantActor.name,
+      defendedTokenUuid: defTokenUuid,
+      defendedActorUuid: defendedUuid,
+      defendedName,
+      pv,
+      via: cand.carrierName ?? "Illusory Shield",
+    });
+    // The defended KEEPS its target slot so applyShieldSplit can route the
+    // phantasm's overflow damage into its perTargetResults row (RESOLVE's damage
+    // loop reads perTargetResults, independent of action_targets). But RAW
+    // nullifies EVERY OTHER consequence for it — statuses, saves, and any
+    // `action_targets`-driven chain effect (a damaging attack that ALSO forces a
+    // save / applies a rider). The on-hit rider path already skips it (dropped
+    // from ar.hitTokenUuids by the split); this marks it so RESOLVE also drops it
+    // from the `action_targets` consequence chain. See state-handlers ~L513.
+    const dMark = ctx.targets.findIndex((t) => t?.actorUuid === defendedUuid);
+    if (dMark !== -1) ctx.targets[dMark].shieldedOutOfChain = true;
+    log(`shield_redirect: ${phantActor.name} (PV ${pv}) interposes for ${defendedName}; overflow → ${defendedName} forced, other effects nullified (via ${shieldedVia.via})`);
+  } else {
+    // Full redirect: drop the defended from the action's target set so its own
+    // save_check/apply_ae chain no longer sees it (the check goes to the phantasm,
+    // which stays in the set). Splice both parallel arrays by the defended's ids.
+    const dIdx = ctx.targets.findIndex((t) => t?.actorUuid === defendedUuid);
+    if (dIdx !== -1) ctx.targets.splice(dIdx, 1);
+    const pIdx = ctx.perTargets.findIndex(
+      (p) => (defTokenUuid && p?.tokenUuid === defTokenUuid) || p?.actorUuid === defendedUuid,
+    );
+    if (pIdx !== -1) ctx.perTargets.splice(pIdx, 1);
+    log(`shield_redirect: ${phantActor.name} takes ${defendedName}'s place vs a non-damage danger — check performed against the Phantasm; ${defendedName} removed from the action (via ${shieldedVia.via})`);
+  }
   return "applied";
 }
 
@@ -1543,7 +1591,16 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
       total: Number(accuracyOverride.to),
     };
   }
-  const accuracyIsSpellish = String(ar?.skillType ?? "").toLowerCase() === "spell";
+  // DEF vs MDEF for the re-rendered accuracy fieldset (icon + "vs Defense" text).
+  // Must match buildSkillCard's initial `vsMDef` — i.e. respect an explicit
+  // `defense_target_type: "mdef"` on a NON-Spell action (Soul Steal / Pillage /
+  // Arc Wand). A bare `skillType === "spell"` check reverted those to the Strike
+  // icon + "vs Defense" the moment any check-adjust (accuracy bump / reroll /
+  // set_check_die) re-rendered the fieldset, while the per-target rows kept MDEF.
+  const accuracyIsSpellish = resolvesVsMagicDefense({
+    defenseTargetType: ar?.defenseTargetType,
+    isSpell: String(ar?.skillType ?? "").toLowerCase() === "spell",
+  });
   // Spread the core mutation result FIRST so every override bag it returns
   // (accuracyOverride, grantOverride, costOverride, mutationsApplied, and any
   // future kind) is forwarded automatically — then override only the fields this

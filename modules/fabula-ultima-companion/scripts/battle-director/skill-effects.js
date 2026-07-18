@@ -8347,10 +8347,16 @@ async function applySummonEffect(row, ctx) {
   // summon_type — generic kind tag. "phantasm" = Illusionist summon that NEVER
   // takes its own turn (acts on the summoner's turn per FU rules); the token is
   // stamped isPhantasm so director-combat pins it to 0 turns/round (reload-safe)
-  // and own_summons targeting can find it. Empty / any other value = today's
-  // full own-turn combatant (Numen, Fafnir drakes).
+  // and own_summons targeting can find it. "numen" = a Numen summon: it stamps an
+  // isNumen token flag so OWN_NUMEN_COUNT / own_numen targeting recognise it
+  // regardless of the base actor's CSB template (no isNumen prop column required —
+  // the flag travels with the spawned token). The Numen still keeps whatever
+  // activation its actor grants (typically 0: it acts only via take_turn_next,
+  // "right after the owner"). Empty / any other value = a plain full own-turn
+  // combatant (Fafnir drakes).
   const summonType = String(row.summon_type ?? "").trim().toLowerCase();
   const asPhantasm = summonType === "phantasm";
+  const asNumen = summonType === "numen";
   // summon_max — optional hard cap on how many of THIS kind the caster may have
   // on the field at once. Empty/0/absent = unlimited. Phantasm rows count only
   // own isPhantasm tokens (so the Numen — a full own-turn summon — is excluded);
@@ -8630,6 +8636,7 @@ async function applySummonEffect(row, ctx) {
           [`flags.${FLAG_NS}.summonedBy`]: summonerUuid,
           [`flags.${FLAG_NS}.isSummon`]: true,
           ...(asPhantasm ? { [`flags.${FLAG_NS}.isPhantasm`]: true } : {}),
+          ...(asNumen ? { [`flags.${FLAG_NS}.isNumen`]: true } : {}),
           ...(unit.cloneUuid ? {
             [`flags.${FLAG_NS}.cloneActorUuid`]: unit.cloneUuid,
             [`flags.${FLAG_NS}.deleteCloneOnDespawn`]: unit.deleteOnDespawn,

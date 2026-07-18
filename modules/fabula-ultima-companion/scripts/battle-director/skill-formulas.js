@@ -1689,6 +1689,18 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .trim();
           return species && species === needle ? 1 : 0;
         }
+        // TARGET_IS_VILLAIN — 1 when the trigger SUBJECT (payload.subjectActorUuid)
+        // is a Villain NPC (`system.props.isVillain` truthy), else 0. PCs and
+        // ordinary NPCs → 0. Subject-based twin of TARGET_SPECIES_IS_<X> (reads the
+        // defeated/triggering creature, not the resolver). Powers Birth of the
+        // Cruel's "non-Villain NPC" reanimation gate: `... && TARGET_IS_VILLAIN == 0`.
+        if (name === "TARGET_IS_VILLAIN") {
+          const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+          if (!subjectUuid) return 0;
+          const subject = _resolveActorByUuidSync(subjectUuid);
+          if (!subject) return 0;
+          return subject?.system?.props?.isVillain ? 1 : 0;
+        }
         // Dynamic TARGET_HAS_MY_<STATUS> — PER-TARGET twin of
         // ANY_TARGET_HAS_MY_<STATUS>: 1 when the SINGLE subject being evaluated
         // (payload.subjectActorUuid) carries the named status/AE THAT THIS ACTOR
@@ -2347,7 +2359,11 @@ function ownSummonCount(actor, { numenOnly = false, phantasmOnly = false } = {})
     if (!td?.actor) continue;
     const f = td.flags?.[NS] ?? {};
     if (String(f.summonedBy ?? "") !== meUuid) continue;
-    if (numenOnly) { if (td.actor?.system?.props?.isNumen) n++; continue; }
+    // Numen identity: prefer the isNumen TOKEN flag stamped by the summon effect
+    // (summon_type:"numen"), so the tag travels with the spawned token no matter
+    // what CSB template the base actor uses. Fall back to the legacy actor prop
+    // (system.props.isNumen) for Numen actors that carry it as a template column.
+    if (numenOnly) { if (f.isNumen || td.actor?.system?.props?.isNumen) n++; continue; }
     // phantasmOnly counts only Illusionist Phantasms (token flag isPhantasm,
     // stamped by the summon effect for summon_type:"phantasm" rows). The Numen
     // is a full own-turn summon — no isPhantasm flag — so it never counts here.

@@ -552,7 +552,10 @@ function collectOwnNumen(ctx) {
     if (!t?.actor) continue;
     const f = t.flags?.[NS] ?? {};
     if (String(f.summonedBy ?? "") !== meUuid) continue;
-    if (!t.actor?.system?.props?.isNumen) continue;
+    // Numen identity: the isNumen TOKEN flag stamped by the summon effect
+    // (summon_type:"numen"), with a fallback to the legacy actor prop for Numen
+    // actors that carry it as a CSB template column. Mirrors ownSummonCount.
+    if (!(f.isNumen || t.actor?.system?.props?.isNumen)) continue;
     out.push(t);
   }
   return out;

@@ -47,7 +47,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.A7BUkFk1sCG49sEz",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.n30uv1gTkoxMvj7j",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },
@@ -79,7 +79,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784274091400,
+        "createdTime": 1784398218203,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -109,7 +109,7 @@
             "appliedAtRound": 1,
             "effectLabel": "dance_apply",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.A7BUkFk1sCG49sEz",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.n30uv1gTkoxMvj7j",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
             "turnsRemaining": null
           },
@@ -2229,128 +2229,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "HnPrZDaSrXTKvkWv"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "AQprVL9AoxIbsz3D",
-      "_stats": {
-        "compendiumSource": "Item.2mX266qZdTJYJXCy",
-        "coreVersion": "12.343",
-        "createdTime": 1783717352696,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        },
-        "fabula-ultima-companion": {
-          "orbment": {
-            "baseProps": [
-              {
-                "key": "skill_target",
-                "value": "One creature"
-              }
-            ],
-            "linkGroup": [
-              "xEHcsYyJhPaTCGcJ",
-              "AQprVL9AoxIbsz3D"
-            ],
-            "slots": [
-              {
-                "id": "multi",
-                "param": null
-              },
-              null
-            ],
-            "version": 1
-          }
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Viridescent_Hunt.webp",
-      "name": "+5 Zarg's Bow - Light",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Bow",
-          "celestial_ef": "100",
-          "check_bonus": "1",
-          "construct_ef": "100",
-          "damage_bonus": 21,
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.GYrsWYBQ6Hu7DnuA]{Zarg's Bow}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>\n<!-- ORBMENT:START -->\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Multi (2) — <i>Attacks strike up to 2 different targets.</i></li><li><b>Slot 2:</b> <span style=\"opacity:.6\">(empty)</span></li></ul>",
-          "dragon_ef": "100",
-          "effect_table": {},
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "Two-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "ingredient_taste": "",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isIngredient": false,
-          "isKey": false,
-          "isMartial": true,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": true,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "0",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Rare",
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "+5 Zarg's Bow - Light",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reaction_config_table": {},
-          "recipe_dish_uuid": "",
-          "recipe_kind": "",
-          "refine_count": 7,
-          "refine_level": 5,
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "INS",
-          "set_name": "",
-          "skill_target": "Up to two creatures",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Light",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Ranged"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "2mX266qZdTJYJXCy"
       },
       "type": "equippableItem"
     },
@@ -8844,7 +8722,7 @@
           "version": "4.8.5"
         },
         "fabula-ultima-companion": {
-          "activeForm": 1,
+          "activeForm": 0,
           "orbment": {
             "baseProps": [
               {
@@ -8865,7 +8743,21 @@
             ],
             "version": 1
           },
-          "transformFreeUsedRound": 5
+          "transformFreeUsedRound": 5,
+          "weaponForms": [
+            {
+              "check_bonus": "1",
+              "damage_bonus": 21,
+              "label": "Physical",
+              "type_damage": "Physical"
+            },
+            {
+              "check_bonus": "1",
+              "damage_bonus": 21,
+              "label": "Light",
+              "type_damage": "Light"
+            }
+          ]
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -8928,7 +8820,7 @@
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "+3 Zarg's Bow",
+          "name": "+5 Zarg's Bow",
           "optional_params": {},
           "plant_ef": "100",
           "reaction_config_table": {},
@@ -8950,7 +8842,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "GYrsWYBQ6Hu7DnuA"
       },

@@ -40,7 +40,8 @@
           "effect_kind": "summon",
           "effect_label": "numen_summon",
           "summon_actor": "ZPPCxB0eOJPulEHv",
-          "summon_count": 1
+          "summon_count": 1,
+          "summon_type": "numen"
         },
         "2": {
           "$deleted": false,

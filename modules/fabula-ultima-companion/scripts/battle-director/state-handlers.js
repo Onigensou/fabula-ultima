@@ -510,7 +510,17 @@ async function resolveAction(director, ar, opts = {}) {
   // targets (COMPUTE stamps it that way). For Checks it's the strict
   // subset that passed vs DEF/MDEF (or all on a Crit). Drives the
   // `hit_action_targets` target_ref resolver.
-  const allActionTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+  // `shieldedOutOfChain` — a creature interposed for by Illusory Shield
+  // (shield_redirect) vs a DAMAGING danger keeps its perTargetResults slot to
+  // receive the phantasm's overflow damage, but RAW nullifies every OTHER
+  // consequence for it: statuses, saves, and any `action_targets`-driven chain
+  // effect. Drop it from the consequence chain here (the on-hit rider path
+  // already excludes it via ar.hitTokenUuids). A non-damage danger removes the
+  // defended from ar.targets outright, so this filter is the damage counterpart.
+  // See card-mutations.applyShieldRedirectMutation.
+  const allActionTargetUuids = (ar.targets ?? [])
+    .filter((t) => !t?.shieldedOutOfChain)
+    .map((t) => t.tokenUuid);
   const hitTokenUuids = Array.isArray(ar.hitTokenUuids) ? ar.hitTokenUuids : allActionTargetUuids;
   const chainPayload = {
     targets: allActionTargetUuids,
