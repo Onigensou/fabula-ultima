@@ -1703,11 +1703,21 @@ Hooks.once("ready", () => {
     } catch (e) { warn(`oni:reactionPhase bridge (${payload?.trigger}) threw`, e); }
   });
 
-  // Auto-resume mid-combat reloads. GM-only — the director is GM-side
-  // authoritative, and a player reload should never auto-start anything.
+  // Auto-resume mid-combat reloads. PRIMARY-GM-only — the director is GM-side
+  // authoritative and MUST have exactly one host. The saved director state is a
+  // world-scope scene flag every GM can read, so gating this on `isGM` alone
+  // made BOTH GM clients mount their own `_instance` on an F5/world reload with
+  // two GMs connected — two FSMs driving the same combat, racing document
+  // writes / defeat removal / crisis AEs / saveDirectorState. A second (Co-DM)
+  // GM must edit data, not drive the director, so it falls through to the same
+  // local banner-only self-restore as a player (no mount, no broadcast). We
+  // pick the single host via `isPrimaryGM()` (core `game.users.activeGM`, the
+  // lowest-id active GM), the same dedupe idiom used by derived-status-reactor.
   // Wrapped in setTimeout so the API registration completes first; if
   // resume throws, the rest of the module is still usable.
-  if (game.user?.isGM) {
+  const _amPrimaryGM = () =>
+    globalThis.FUCompanion?.isPrimaryGM ? globalThis.FUCompanion.isPrimaryGM() : !!game.user?.isGM;
+  if (_amPrimaryGM()) {
     setTimeout(() => {
       try {
         const found = findSavedDirectorState();
@@ -1758,9 +1768,11 @@ Hooks.once("ready", () => {
       }
     }, 0);
   } else {
-    // PLAYER reload: the GM is authoritative and won't re-broadcast just because
-    // a player reloaded, so the round HUD would stay blank. Self-restore it
-    // LOCALLY from the persisted scene flag (no director mount, no broadcast).
+    // NON-HOST reload (a player OR a secondary/Co-DM GM): the primary GM is
+    // authoritative and won't re-broadcast just because someone else reloaded,
+    // so the round HUD would stay blank. Self-restore it LOCALLY from the
+    // persisted scene flag (no director mount, no broadcast) — a secondary GM
+    // sees the battle state but never becomes a second host.
     setTimeout(() => {
       try {
         const found = findSavedDirectorState();
