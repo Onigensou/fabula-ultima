@@ -1315,23 +1315,31 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
     }
     // Incoming-damage override (adjust_damage reaction, e.g. Ninja Log "reduce to
     // 0"): card-mutations soaked a target's OWN incoming damage, but buildPerTarget
-    // rebuilt the damage from the roll/profile. Re-apply each overridden slot's op
+    // rebuilt the damage from the roll/profile. Re-apply each overridden slot's op(s)
     // on the rebuilt damage so the soak survives the recompute. PER-TARGET; runs
     // AFTER the defense re-apply (which finalizes hit/miss). Mirrors defenseOverrides.
-    // damageOverrides: [{ tokenUuid, actorUuid, from, to, op, amount, via, reactorName }].
+    // damageOverrides: [{ tokenUuid, actorUuid, from, to, op, amount, ops, via, reactorName }].
     if (Array.isArray(damageOverrides) && damageOverrides.length && Array.isArray(delta?.perTargetResults)) {
       for (const row of delta.perTargetResults) {
         const ov = damageOverrides.find((o) =>
           (o.tokenUuid && o.tokenUuid === row.tokenUuid) || (o.actorUuid && o.actorUuid === row.actorUuid));
         if (!ov) continue;
         const oldDmg = Math.max(0, Number(row.damage ?? 0) || 0);
-        const newDmg = Math.max(0, Math.floor(applyAdjustOp(oldDmg, String(ov.op ?? "set"), Number(ov.amount) || 0)));
+        // Apply EVERY accepted incoming-damage op IN ORDER — two reductions on one
+        // target must BOTH survive the rebuild (a single op dropped every earlier
+        // source). Fall back to the legacy single op/amount when `ops` is absent.
+        const ops = Array.isArray(ov.ops) && ov.ops.length
+          ? ov.ops
+          : [{ op: ov.op ?? "set", amount: ov.amount ?? 0 }];
+        let d = oldDmg;
+        for (const o of ops) d = applyAdjustOp(d, String(o.op ?? "set"), Number(o.amount) || 0);
+        const newDmg = Math.max(0, Math.floor(d));
         let newRaw = Math.max(0, Number(row.rawDamage ?? 0) || 0);
         if (newDmg <= 0) newRaw = 0;
         else if (oldDmg > 0) newRaw = Math.max(0, Math.floor(newRaw * (newDmg / oldDmg)));
         row.damage = newDmg;
         row.rawDamage = newRaw;
-        row.damageOverride = { from: oldDmg, to: newDmg, via: ov.via, reactorName: ov.reactorName ?? null };
+        row.damageOverride = { from: oldDmg, to: newDmg, ops, via: ov.via, reactorName: ov.reactorName ?? null };
       }
     }
     // Grant override (adjust_grant reaction, e.g. Cognitive Focus "+SL×2 healing to
@@ -1344,7 +1352,14 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
         if (typeof row.grantAmount !== "number") continue;
         const ov = grantOverride.perToken[row.tokenUuid];
         if (!ov) continue;
-        row.grantAmount = Math.max(0, applyGrantAdjust(row.grantAmount, { op: ov.op, value: ov.value, round: ov.round }));
+        // Re-run EVERY boost IN ORDER (two adjust_grant on one target both survive);
+        // fall back to the legacy single op/value when `ops` is absent.
+        const ops = Array.isArray(ov.ops) && ov.ops.length
+          ? ov.ops
+          : [{ op: ov.op, value: ov.value, round: ov.round }];
+        let g = row.grantAmount;
+        for (const o of ops) g = applyGrantAdjust(g, { op: o.op, value: o.value, round: o.round });
+        row.grantAmount = Math.max(0, g);
       }
     }
     return delta;

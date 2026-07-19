@@ -1203,14 +1203,23 @@ async function applyAdjustDamageMutation(ctx, cand, row) {
   if (newDmg <= 0) newRaw = 0;
   else if (oldDmg > 0) newRaw = Math.max(0, Math.floor(newRaw * (newDmg / oldDmg)));
 
+  // ACCUMULATE the op onto a per-row LIST — the recompute rebuilds each row's
+  // damage from scratch and re-runs these ops IN ORDER, so two incoming-damage
+  // reductions on the SAME target both survive (a single stored op/amount silently
+  // dropped every earlier source: two −5 soaks yielded −5, not −10). `from` stays
+  // the ORIGINAL pre-any-reduction damage for the display line; the single op/amount
+  // are kept for back-compat with any reader that predates `ops`.
+  const priorOverride = pt.damageOverride ?? null;
+  const priorOps = Array.isArray(priorOverride?.ops) ? priorOverride.ops : [];
+  const ops = [...priorOps, { op, amount, via }];
+  const baseFrom = priorOverride ? Number(priorOverride.from ?? oldDmg) : oldDmg;
   ctx.perTargets[idx] = {
     ...pt,
     damage: newDmg,
     rawDamage: newRaw,
-    // Carry op + amount so the post-recompute re-apply (recomputeActionProfile)
-    // can re-run the operation against the freshly-rebuilt damage — mirrors how
-    // defenseOverride survives the recompute.
-    damageOverride: { from: oldDmg, to: newDmg, op, amount, via, reactorName: cand?.reactorActorName ?? null },
+    // `ops` is the authoritative multi-source list; op/amount/from/to describe the
+    // COMPOSITE (original → latest) for the card's Damage-Mods line + NULLIFIED check.
+    damageOverride: { from: baseFrom, to: newDmg, op, amount, ops, via, reactorName: cand?.reactorActorName ?? null },
   };
   log(`adjust_damage: ${op} ${amount} on ${pt.name ?? reactorUuid} — damage ${oldDmg} → ${newDmg} (via ${via})`);
   return "applied";
@@ -1325,7 +1334,12 @@ async function applyAdjustGrantMutation(ctx, cand, row) {
     const prevTok = perToken[pt.tokenUuid];
     const parts = Array.isArray(prevTok?.parts) ? [...prevTok.parts] : [];
     parts.push({ source: via, amount: to - from });
-    perToken[pt.tokenUuid] = { from: prevTok?.from ?? from, to, op, value: amount, round, parts };
+    // ACCUMULATE the op onto a per-token LIST so the recompute (which rebuilds the
+    // grant from the BASE formula) re-runs EVERY source in order — two heal boosts
+    // on one target both survive (a single stored op/value dropped the earlier one).
+    const priorOps = Array.isArray(prevTok?.ops) ? prevTok.ops : [];
+    const ops = [...priorOps, { op, value: amount, round }];
+    perToken[pt.tokenUuid] = { from: prevTok?.from ?? from, to, ops, op, value: amount, round, parts };
     mutated += 1;
   }
   ctx.grantOverride = { perToken };
