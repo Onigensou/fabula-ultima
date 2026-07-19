@@ -10,77 +10,6 @@
   },
   "effects": [
     {
-      "_id": "HdR5OiJQ4CuGzevh",
-      "_stats": {
-        "compendiumSource": "Actor.dafTLBUscCDNgq8H.ActiveEffect.bdDayp3hYqBF5nGZ",
-        "coreVersion": "12.343",
-        "createdTime": 1784379400223,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "extra_damage_mod_all",
-          "mode": 2,
-          "priority": null,
-          "value": "1"
-        }
-      ],
-      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "bdDayp3hYqBF5nGZ",
-          "originalParentId": "dafTLBUscCDNgq8H",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.bdDayp3hYqBF5nGZ"
-        },
-        "fabula-ultima-companion": {
-          "campRestCharges": 0,
-          "cookingDish": {
-            "dishId": "G0tvPWqwJHkdwoFQ",
-            "family": "sour",
-            "instant": {},
-            "tier": 1
-          },
-          "foodBuff": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
-      "name": "Tangy Trailside Skewer",
-      "origin": "Item.G0tvPWqwJHkdwoFQ",
-      "sort": 0,
-      "statuses": [
-        "permanent"
-      ],
-      "system": {
-        "tags": [
-          "food"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
       "_id": "irFQUIW0qFC2sPmm",
       "_stats": {
         "compendiumSource": null,
@@ -146,24 +75,24 @@
       "type": "base"
     },
     {
-      "_id": "PCONB9rT0PResF7l",
+      "_id": "UftrSX9Ji4BXwZPR",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784398324480,
+        "createdTime": 1784477290526,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [
         {
-          "key": "check_mod_all",
+          "key": "max_mp",
           "mode": 2,
-          "priority": 1,
-          "value": "3"
+          "priority": null,
+          "value": "10"
         }
       ],
-      "description": "",
+      "description": "<p>A simple skillet cake sweetened with wild honey, passed around still warm. Everyone who eats gains <strong>+10 Maximum MP</strong> until the next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -177,23 +106,19 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "PCONB9rT0PResF7l",
+          "originalId": "UftrSX9Ji4BXwZPR",
           "originalParentId": "Z4CFy505cD3nzl1W",
-          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.PCONB9rT0PResF7l"
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.UftrSX9Ji4BXwZPR"
         },
         "fabula-ultima-companion": {
-          "chargeKey": "",
-          "charges": null,
-          "chargesMax": null,
-          "crossScene": false,
-          "directorPermanent": false,
-          "hudResourceColor": "#ff6a00",
-          "lifetimeMode": "",
-          "reactionConfig": {
-            "effect_table": {},
-            "name": "",
-            "reaction_config_table": {}
-          }
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "oel2cAzIcVh85ocz",
+            "family": "sweet",
+            "instant": {},
+            "tier": 1
+          },
+          "foodBuff": true
         },
         "statuscounter": {
           "config": {
@@ -204,101 +129,16 @@
           "visible": false
         }
       },
-      "img": "icons/svg/aura.svg",
-      "name": "check_mod_accuracy",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": []
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "TGqXoU2eaBzpC29R",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1784403871368,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "bonus_check",
-          "mode": 2,
-          "priority": 20,
-          "value": "2"
-        }
-      ],
-      "description": "<p>Bonus to next Check equal to the Spiritist's Bond strength toward this creature.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "1kYcwjLglF6tBQ9v",
-          "originalParentId": "9aOTCoRiI7e0FB04",
-          "originalUuid": "Item.9aOTCoRiI7e0FB04.ActiveEffect.1kYcwjLglF6tBQ9v"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "support-magic",
-          "charges": 1,
-          "chargesMax": 1,
-          "crossScene": true,
-          "directorAppliedBy": {
-            "appliedAtRound": 8,
-            "effectLabel": "support_magic_apply",
-            "lifetimeMode": "on_activation",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.dMVPDtC1ouX0KF31",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE",
-            "turnsRemaining": null
-          },
-          "lifetimeMode": "on_activation",
-          "reactionConfig": {
-            "effect_table": {},
-            "reaction_config_table": {
-              "0": {
-                "reaction_effect_ref": "",
-                "reaction_passive_mode": "on",
-                "reaction_source": "self",
-                "reaction_trigger": "creature_performs_check"
-              }
-            }
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
-      "name": "Support Magic",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Doraemon/1587828177600.webp",
+      "name": "Campfire Cake",
+      "origin": "Item.oel2cAzIcVh85ocz",
       "sort": 0,
       "statuses": [
-        "fud-support-magic"
+        "permanent"
       ],
       "system": {
         "tags": [
-          "buff"
+          "food"
         ]
       },
       "tint": "#ffffff",
@@ -1455,128 +1295,6 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "UI9WP1hyxQomHxJb"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "5tDdAHyLCzGO91ti",
-      "_stats": {
-        "compendiumSource": "Item.oAP85eeLJCliYm2E",
-        "coreVersion": "12.343",
-        "createdTime": 1783783893858,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "36rowiHAcXnIPsKK",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7835.gif",
-      "name": "Flame Essence",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<p><em>Essence that can be obtained from monsters in the flame area in the ecological environment.</em></p>",
-          "dragon_ef": "100",
-          "effect_table": {},
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "ingredient_taste": "sour",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isIngredient": true,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "60",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Common",
-          "item_type": "material",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Flame Essence",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reaction_config_table": {},
-          "recipe_dish_uuid": "",
-          "recipe_kind": "",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "<Set Name>",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "SkgnxeQnq4DVhVVU"
       },
       "type": "equippableItem"
     },
@@ -5359,6 +5077,77 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "Y9y95j2PQAwF2K3H"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "KL2yI8x7voinAVzf",
+      "_stats": {
+        "compendiumSource": "Item.kuqfrsAnzpRaR3ac",
+        "coreVersion": "12.343",
+        "createdTime": 1784478589055,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+      "name": "Myrmidon Dance",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "iLeUVmwqnze8ulOI": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Dancer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></li></ul>",
+          "details_roller": "Show",
+          "duration": "Until the start of your next turn",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "KL2yI8x7voinAVzf",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Myrmidon Dance",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.KL2yI8x7voinAVzf"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "kuqfrsAnzpRaR3ac"
       },
       "type": "equippableItem"
     },
@@ -10472,7 +10261,7 @@
       "armor_name": "Combat Tunic",
       "backstory": "",
       "bane_status": 0,
-      "base_defense": 8,
+      "base_defense": 12,
       "base_magic_defense": 8,
       "battle_facing_direction": "left",
       "berserk_status": 0,
@@ -10486,7 +10275,7 @@
       "bond_6": "Wanderring flame",
       "bond_temp": "",
       "bonus_defense": 2,
-      "bonus_dex": -2,
+      "bonus_dex": 0,
       "bonus_hp": 0,
       "bonus_ins": 0,
       "bonus_magic_defense": 1,
@@ -10503,7 +10292,7 @@
       "character_zenit_multiplier": 1,
       "charm_status": 0,
       "check_mod_accuracy": 0,
-      "check_mod_all": 3,
+      "check_mod_all": 0,
       "check_mod_init": 0,
       "check_mod_magic": 0,
       "check_mod_melee": 0,
@@ -10751,9 +10540,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 110,
+      "current_hp": "111",
       "current_ip": "4",
-      "current_mp": "55",
+      "current_mp": "91",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",
@@ -10786,11 +10575,11 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 10,
+      "defense": 14,
       "delayed_status": 0,
       "despair_status": 0,
-      "dex_base": "10",
-      "dex_current": 8,
+      "dex_base": "12",
+      "dex_current": 12,
       "disarmed_status": 0,
       "doom_status": 0,
       "elementalism": false,
@@ -10800,7 +10589,7 @@
       "emotion_2_1": "admiration",
       "emotion_2_2": "loyalty",
       "emotion_2_3": "affection",
-      "emotion_3_1": "",
+      "emotion_3_1": "admiration",
       "emotion_3_2": "loyalty",
       "emotion_3_3": "affection",
       "emotion_4_1": "admiration",
@@ -10819,11 +10608,11 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "9.13",
-      "experience": 6.92,
+      "exp_meter": "6.92",
+      "experience": "6.92",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 1,
+      "extra_damage_mod_all": 0,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
@@ -11155,7 +10944,7 @@
       },
       "item_restore_mod": 20,
       "key_list": {},
-      "level": 41,
+      "level": "41",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 9,
@@ -11281,9 +11070,9 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.ynvsqZxmSc2Eqsld"
         }
       },
-      "max_hp": 110,
+      "max_hp": 111,
       "max_ip": 10,
-      "max_mp": 80,
+      "max_mp": 91,
       "memories_list": {
         "0": {
           "$deleted": false,
@@ -11626,6 +11415,18 @@
           "name": "High Speed",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.KJ5Lgayv3TWSfyTh"
+        },
+        "KL2yI8x7voinAVzf": {
+          "active_class": "Dancer",
+          "active_cost": "10 MP",
+          "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></li></ul>",
+          "active_duration": "Until the start of your next turn",
+          "active_level": 1,
+          "active_target": "Self",
+          "id": "${item.id}",
+          "name": "Myrmidon Dance",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.KL2yI8x7voinAVzf"
         },
         "KlUH81m312QcYsr1": {
           "active_class": "Rogue",
@@ -12414,8 +12215,8 @@
       "wither_status": 0,
       "wlp_base": "8",
       "wlp_current": 8,
-      "your_class_name": "Hunter",
-      "zenit": 2201,
+      "your_class_name": "Tactical Hunter",
+      "zenit": "2201",
       "zero_label": "Zero Power",
       "zero_power_description": "<p><strong>Zero Scourge</strong></p><p>Special rule: when you select this effect for your Zero Power, choose a damage type</p><p>among air, bolt, dark, earth, fire, ice, light, and poison; then, choose two status effects</p><p>among dazed, shaken, slow, and weak.</p><p>Choose any number of creatures you can see: each of them suffers damage of then</p><p>chosen type equal to【30 + half your level】and suffers the chosen status effects.</p>",
       "zero_power_macro": "",

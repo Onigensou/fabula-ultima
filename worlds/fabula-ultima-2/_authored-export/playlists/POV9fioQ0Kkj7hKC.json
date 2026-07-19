@@ -19,7 +19,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 892,
+  "seed": 416,
   "sort": 200000,
   "sorting": "a",
   "sounds": [
@@ -45,7 +45,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Thicker_than_a_Knife%27s_Blade.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.13
+      "volume": 0.09
     },
     {
       "_id": "3c7KkWm0nrMsrBXG",
@@ -285,7 +285,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Somethings_not_right....mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.16
+      "volume": 0.09
     },
     {
       "_id": "fErLf2oMYBz0TBEg",
@@ -309,7 +309,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Reminisce.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.09
+      "volume": 0.16
     },
     {
       "_id": "fHzF7yTPfS31DtL8",

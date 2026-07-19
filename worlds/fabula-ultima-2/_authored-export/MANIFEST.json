@@ -13668,6 +13668,10 @@
             "name": "Jellopy"
           },
           {
+            "id": "4g616u6RuUiygstR",
+            "name": "Linked Invocation"
+          },
+          {
             "id": "JT5pvl5buIjL9JHX",
             "name": "Matador Cape"
           },
@@ -13678,10 +13682,6 @@
           {
             "id": "qGDOMAtenjvpbAeC",
             "name": "Mega-Remedy"
-          },
-          {
-            "id": "ya38b6iI7xoO4Jur",
-            "name": "Moonfish"
           },
           {
             "id": "F9KcVJMSMXOPrK05",
@@ -13756,7 +13756,7 @@
             "name": "Zero Trigger: Motivation"
           }
         ],
-        "effects": 2
+        "effects": 1
       },
       {
         "id": "UXagcMfhhqcSz7OZ",
@@ -18242,10 +18242,6 @@
             "name": "Diver Goggle"
           },
           {
-            "id": "NnSNV6Eta2BbDxm5",
-            "name": "Ember Petal"
-          },
-          {
             "id": "JOEi8X46SkQ5tRNG",
             "name": "Fairy Ring"
           },
@@ -18394,7 +18390,7 @@
             "name": "Zero Trigger: Shattered Phantasm"
           }
         ],
-        "effects": 4
+        "effects": 3
       },
       {
         "id": "EHyFlGpLQLriK65C",
@@ -22357,10 +22353,6 @@
             "name": "Emergency Item"
           },
           {
-            "id": "5tDdAHyLCzGO91ti",
-            "name": "Flame Essence"
-          },
-          {
             "id": "2mUzQqk9EWEw45yl",
             "name": "Follow my lead"
           },
@@ -22439,6 +22431,10 @@
           {
             "id": "gVovemTOophkXbck",
             "name": "Maid cap (Passive)"
+          },
+          {
+            "id": "KL2yI8x7voinAVzf",
+            "name": "Myrmidon Dance"
           },
           {
             "id": "tImoyJ8c71GeEmSi",
@@ -22541,7 +22537,7 @@
             "name": "Zero Trigger: Strategy"
           }
         ],
-        "effects": 4
+        "effects": 2
       },
       {
         "id": "eovuAdwJdbtn8rOr",

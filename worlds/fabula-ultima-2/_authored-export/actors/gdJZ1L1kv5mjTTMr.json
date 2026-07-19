@@ -107,24 +107,24 @@
       "type": "base"
     },
     {
-      "_id": "ftvo6kEFu1KlbzG9",
+      "_id": "Gqq6U5F48GEhLYuv",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784386593552,
+        "createdTime": 1784477281570,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [
         {
-          "key": "bonus_check",
+          "key": "max_mp",
           "mode": 2,
-          "priority": 20,
-          "value": "3"
+          "priority": null,
+          "value": "10"
         }
       ],
-      "description": "<p>Bonus to next Check equal to the Spiritist's Bond strength toward this creature.</p>",
+      "description": "<p>A simple skillet cake sweetened with wild honey, passed around still warm. Everyone who eats gains <strong>+10 Maximum MP</strong> until the next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -138,37 +138,19 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "1kYcwjLglF6tBQ9v",
-          "originalParentId": "9aOTCoRiI7e0FB04",
-          "originalUuid": "Item.9aOTCoRiI7e0FB04.ActiveEffect.1kYcwjLglF6tBQ9v"
+          "originalId": "Gqq6U5F48GEhLYuv",
+          "originalParentId": "gdJZ1L1kv5mjTTMr",
+          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.Gqq6U5F48GEhLYuv"
         },
         "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "support-magic",
-          "charges": 1,
-          "chargesMax": 1,
-          "crossScene": true,
-          "directorAppliedBy": {
-            "appliedAtRound": 2,
-            "effectLabel": "support_magic_apply",
-            "lifetimeMode": "on_activation",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.4BK3zB8EDgyD3yAM",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE",
-            "turnsRemaining": null
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "oel2cAzIcVh85ocz",
+            "family": "sweet",
+            "instant": {},
+            "tier": 1
           },
-          "lifetimeMode": "on_activation",
-          "reactionConfig": {
-            "effect_table": {},
-            "reaction_config_table": {
-              "0": {
-                "reaction_effect_ref": "",
-                "reaction_passive_mode": "on",
-                "reaction_source": "self",
-                "reaction_trigger": "creature_performs_check"
-              }
-            }
-          }
+          "foodBuff": true
         },
         "statuscounter": {
           "config": {
@@ -179,16 +161,16 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
-      "name": "Support Magic",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Doraemon/1587828177600.webp",
+      "name": "Campfire Cake",
+      "origin": "Item.oel2cAzIcVh85ocz",
       "sort": 0,
       "statuses": [
-        "fud-support-magic"
+        "permanent"
       ],
       "system": {
         "tags": [
-          "buff"
+          "food"
         ]
       },
       "tint": "#ffffff",
@@ -254,77 +236,6 @@
       "statuses": [],
       "system": {
         "tags": []
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "kttiEZ9QkPHrfGll",
-      "_stats": {
-        "compendiumSource": "Actor.dafTLBUscCDNgq8H.ActiveEffect.bdDayp3hYqBF5nGZ",
-        "coreVersion": "12.343",
-        "createdTime": 1784379335297,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "extra_damage_mod_all",
-          "mode": 2,
-          "priority": null,
-          "value": "1"
-        }
-      ],
-      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "bdDayp3hYqBF5nGZ",
-          "originalParentId": "dafTLBUscCDNgq8H",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.bdDayp3hYqBF5nGZ"
-        },
-        "fabula-ultima-companion": {
-          "campRestCharges": 0,
-          "cookingDish": {
-            "dishId": "G0tvPWqwJHkdwoFQ",
-            "family": "sour",
-            "instant": {},
-            "tier": 1
-          },
-          "foodBuff": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
-      "name": "Tangy Trailside Skewer",
-      "origin": "Item.G0tvPWqwJHkdwoFQ",
-      "sort": 0,
-      "statuses": [
-        "permanent"
-      ],
-      "system": {
-        "tags": [
-          "food"
-        ]
       },
       "tint": "#ffffff",
       "transfer": false,
@@ -7299,123 +7210,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "NnSNV6Eta2BbDxm5",
-      "_stats": {
-        "compendiumSource": "Item.oAP85eeLJCliYm2E",
-        "coreVersion": "12.343",
-        "createdTime": 1783783890263,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "36rowiHAcXnIPsKK",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/4cf9a65cd38218340be2753675d98da5_1405866062245277046.webp",
-      "name": "Ember Petal",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<p><em>A petal that smolders with quiet inner warmth, glowing faintly orange like a coal that refuses to fade.</em></p>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "ingredient_taste": "sweet",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isIngredient": true,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "55",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Common",
-          "item_type": "material",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Ember Petal",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "<Set Name>",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "UI9WP1hyxQomHxJb"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "NyzcbeaidAPGjll3",
       "_stats": {
         "compendiumSource": null,
@@ -9583,7 +9377,7 @@
       "activation": 1,
       "affinity_1": "NA",
       "affinity_2": "NA",
-      "affinity_3": "NA",
+      "affinity_3": "VU",
       "affinity_4": "NA",
       "affinity_5": "NA",
       "affinity_6": "RS",
@@ -9599,7 +9393,7 @@
       "armor_name": "Swimsuit",
       "backstory": "",
       "bane_status": 0,
-      "base_defense": 6,
+      "base_defense": 12,
       "base_magic_defense": 12,
       "battle_facing_direction": "left",
       "berserk_status": 0,
@@ -9631,7 +9425,7 @@
       "character_exp_multiplier": 1,
       "character_zenit_multiplier": 1,
       "charm_status": 0,
-      "check_mod_accuracy": 0,
+      "check_mod_accuracy": 3,
       "check_mod_all": 0,
       "check_mod_init": 0,
       "check_mod_magic": 0,
@@ -9766,9 +9560,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "95",
+      "current_hp": "96",
       "current_ip": "8",
-      "current_mp": "55",
+      "current_mp": "121",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",
@@ -9801,11 +9595,11 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 9,
+      "defense": 15,
       "delayed_status": 0,
       "despair_status": 0,
-      "dex_base": "6",
-      "dex_current": 6,
+      "dex_base": "8",
+      "dex_current": 12,
       "disarmed_status": 0,
       "doom_status": 0,
       "elementalism": false,
@@ -9821,7 +9615,7 @@
       "emotion_4_1": "inferiority",
       "emotion_4_2": "loyalty",
       "emotion_4_3": "affection",
-      "emotion_5_1": "",
+      "emotion_5_1": "inferiority",
       "emotion_5_2": "mistrust",
       "emotion_5_3": "affection",
       "emotion_6_1": "",
@@ -9838,7 +9632,7 @@
       "experience": "6.92",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 1,
+      "extra_damage_mod_all": 0,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
@@ -10221,7 +10015,7 @@
       },
       "max_hp": 96,
       "max_ip": 8,
-      "max_mp": 111,
+      "max_mp": 121,
       "memories_list": {},
       "memory": "Memories",
       "mig_base": "6",
@@ -10480,7 +10274,7 @@
       "override_attack_damage_type": "None",
       "override_damage_type": "None",
       "override_defense": 0,
-      "override_dex": 0,
+      "override_dex": 12,
       "override_ins": 0,
       "override_magic_defense": 0,
       "override_mig": 0,
