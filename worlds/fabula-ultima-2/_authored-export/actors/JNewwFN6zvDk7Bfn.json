@@ -210,97 +210,178 @@
           "effect_table": {
             "0": {
               "allow_empty": true,
-              "auto_target": "skip",
+              "auto_confirm_when_obvious": true,
+              "auto_target": true,
               "candidate_source": "combat",
               "category": "ally",
-              "count": 1,
+              "consume_self": false,
+              "count": "1",
               "effect_kind": "targeting",
               "effect_label": "g_crisis_ally",
+              "exclude": "",
+              "exclude_action_targets": false,
               "exclude_self": true,
               "focus_max_formula": "MAX_HP - CUR_HP",
+              "from_resource": "",
+              "iteration_mode": "together",
+              "menu_label": "",
               "mode": "exact",
-              "target_filter": "CUR_HP * 2 <= MAX_HP"
+              "skip_when_passive": true,
+              "target_filter": "CUR_HP * 2 <= MAX_HP",
+              "target_prompt": "",
+              "to_resource": ""
             },
             "1": {
               "allow_empty": true,
-              "auto_target": "skip",
+              "auto_confirm_when_obvious": true,
+              "auto_target": true,
               "candidate_source": "combat",
               "category": "enemy",
+              "consume_self": false,
               "effect_kind": "targeting",
               "effect_label": "g_all_enemies",
+              "exclude": "",
+              "exclude_action_targets": false,
               "exclude_self": true,
-              "mode": "all"
+              "from_resource": "",
+              "iteration_mode": "together",
+              "menu_label": "",
+              "mode": "all",
+              "skip_when_passive": true,
+              "target_filter": "",
+              "target_prompt": "",
+              "to_resource": ""
             },
             "2": {
               "allow_empty": true,
-              "auto_target": "skip",
+              "auto_confirm_when_obvious": true,
+              "auto_target": true,
               "candidate_source": "combat",
               "category": "enemy",
-              "count": 1,
+              "consume_self": false,
+              "count": "1",
               "effect_kind": "targeting",
               "effect_label": "g_one_enemy",
+              "exclude": "",
+              "exclude_action_targets": false,
               "exclude_self": true,
-              "mode": "random"
+              "from_resource": "",
+              "iteration_mode": "together",
+              "menu_label": "",
+              "mode": "exact",
+              "skip_when_passive": true,
+              "target_filter": "",
+              "target_prompt": "",
+              "to_resource": ""
             },
             "3": {
+              "consume_self": false,
               "effect_kind": "grant",
               "effect_label": "g_remedy",
+              "from_resource": "",
               "grant_amount": "50",
+              "grant_operation": "",
               "grant_resource": "hp",
-              "target_ref": "g_crisis_ally"
+              "grant_round": "",
+              "menu_label": "",
+              "target_ref": "g_crisis_ally",
+              "to_resource": ""
             },
             "4": {
               "attacker_name": "Kalina",
+              "consume_self": false,
               "damage_amount": "20",
               "damage_cause": "damage",
               "damage_element": "fire",
+              "damage_ignore_affinity": false,
+              "damage_resource": "hp",
               "effect_kind": "deal_damage",
               "effect_label": "g_dragonfire",
-              "target_ref": "g_all_enemies"
+              "emit_status": "",
+              "emit_trigger": "",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "g_all_enemies",
+              "to_resource": ""
             },
             "5": {
               "attacker_name": "Kalina",
+              "consume_self": false,
               "damage_amount": "40",
               "damage_cause": "damage",
               "damage_element": "air",
+              "damage_ignore_affinity": false,
+              "damage_resource": "hp",
               "effect_kind": "deal_damage",
               "effect_label": "g_skyfall",
-              "target_ref": "g_one_enemy"
+              "emit_status": "",
+              "emit_trigger": "",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "g_one_enemy",
+              "to_resource": ""
             },
             "6": {
               "action_ref": "Dragonfire Dive",
+              "consume_self": false,
               "effect_kind": "play_animation",
               "effect_label": "g_dragonfire_anim",
-              "target_ref": "g_all_enemies"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "g_all_enemies",
+              "to_resource": ""
             },
             "7": {
               "chain_steps": "g_dragonfire_anim,g_dragonfire",
+              "consume_self": false,
               "effect_kind": "chain",
-              "effect_label": "g_dragonfire_chain"
+              "effect_label": "g_dragonfire_chain",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "8": {
               "action_ref": "Skyfall Dive",
+              "consume_self": false,
               "effect_kind": "play_animation",
               "effect_label": "g_skyfall_anim",
-              "target_ref": "g_one_enemy"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "g_one_enemy",
+              "to_resource": ""
             },
             "9": {
               "chain_steps": "g_skyfall_anim,g_skyfall",
+              "consume_self": false,
               "effect_kind": "chain",
-              "effect_label": "g_skyfall_chain"
+              "effect_label": "g_skyfall_chain",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "10": {
               "action_ref": "Remedy",
+              "consume_self": false,
               "effect_kind": "play_animation",
               "effect_label": "g_remedy_anim",
-              "target_ref": "g_crisis_ally"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "g_crisis_ally",
+              "to_resource": ""
             },
             "11": {
               "chain_steps": "g_remedy_anim,g_remedy",
+              "consume_self": false,
               "effect_kind": "chain",
-              "effect_label": "g_remedy_chain"
+              "effect_label": "g_remedy_chain",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -314,27 +395,64 @@
           "name": "Guest",
           "on_activate_effect_ref": "",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
               "condition_formula": "ANY_ALLY_IN_CRISIS >= 1",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
               "reaction_effect_ref": "g_remedy_chain",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "on",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "",
-              "reaction_trigger": "round_end"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "round_end",
+              "requires_skill": ""
             },
             "1": {
               "condition_formula": "ANY_ALLY_IN_CRISIS == 0 && ENEMY_COUNT >= 3",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
               "reaction_effect_ref": "g_dragonfire_chain",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "on",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "",
-              "reaction_trigger": "round_end"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "round_end",
+              "requires_skill": ""
             },
             "2": {
               "condition_formula": "ANY_ALLY_IN_CRISIS == 0 && ENEMY_COUNT < 3",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
               "reaction_effect_ref": "g_skyfall_chain",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "on",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "",
-              "reaction_trigger": "round_end"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "round_end",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "-",
@@ -343,8 +461,10 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "",
+          "skill_tags": "",
           "skill_target": "-",
           "skill_type": "Passive",
+          "target_eligibility": "",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -695,10 +815,10 @@
     "alpha": 1,
     "appendNumber": false,
     "bar1": {
-      "attribute": null
+      "attribute": "attributeBar.current_hp"
     },
     "bar2": {
-      "attribute": null
+      "attribute": "attributeBar.current_mp"
     },
     "detectionModes": [],
     "displayBars": 50,

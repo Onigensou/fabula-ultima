@@ -23,8 +23,6 @@
   "sort": 0,
   "system": {
     "props": {
-      "availability_formula": "OWN_NUMEN_COUNT == 0",
-      "availability_reason": "Numen already active",
       "cost": "50 MP",
       "effect_table": {
         "0": {
@@ -40,7 +38,8 @@
           "effect_kind": "summon",
           "effect_label": "numen_summon",
           "summon_actor": "ZPPCxB0eOJPulEHv",
-          "summon_count": 1
+          "summon_count": 1,
+          "summon_type": "numen"
         },
         "2": {
           "$deleted": false,
@@ -56,6 +55,7 @@
         }
       },
       "isCheck": false,
+      "name": "Create Phantasm: Numen",
       "on_activate_effect_ref": "numen_do",
       "reaction_config_table": {
         "0": {
