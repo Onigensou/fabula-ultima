@@ -2775,7 +2775,14 @@ export function installRiderAeLinkage() {
   _riderLinkageInstalled = true;
   Hooks.on("deleteActiveEffect", (effect, _options, _userId) => {
     try {
-      if (!game.user?.isGM) return;                 // GM owns AE cascades
+      // Multi-GM dedupe: this hook installs on EVERY client at ready and fires
+      // on BOTH GM clients. A plain isGM gate lets both GMs reap the same riders
+      // → both call deleteEmbeddedDocuments (mostly a no-op via the re-existence
+      // filter below, but redundant socket writes). Restrict to the single
+      // primary GM, matching derived-status-reactor. Fail-open to isGM if the
+      // helper isn't loaded.
+      const primary = globalThis.FUCompanion?.isPrimaryGM;
+      if (primary ? !primary() : !game.user?.isGM) return;   // primary GM owns AE cascades
       const actor = effect?.parent;
       if (!actor || actor.documentName !== "Actor") return;
       // Identify the departing AE by name + chargeKey (riders may key on either).
