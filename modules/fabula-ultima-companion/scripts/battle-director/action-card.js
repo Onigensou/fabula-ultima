@@ -2518,6 +2518,30 @@ export function rerenderCardTargetSurfaces(rootEl, { attacker, targets, perTarge
   } catch (e) { warn("rerenderCardTargetSurfaces: target list threw", e); }
 }
 
+// Effective action cost for the card preview — mirrors state-handlers'
+// computeEffectiveCost (additive-only today): base + Σ adjust_cost deltas, clamped
+// ≥ 0 per resource. Kept as a tiny local copy so action-card doesn't import the
+// resolve module (circular). Only resources the action already charges are adjusted
+// (an override lowers/raises an existing cost, it can't conjure one). Returns a
+// { res: amount } map.
+function effectiveCardCost(base, override) {
+  const out = {};
+  const b = base || {};
+  for (const [res, v0] of Object.entries(b)) {
+    let v = Number(v0) || 0;
+    if (override) v += Number(override[res]) || 0;
+    out[res] = Math.max(0, v);
+  }
+  return out;
+}
+// Format a resolved cost map like the CSB cost string ("6 MP", "3 HP · 2 MP", "Free").
+function formatCardCost(costMap) {
+  const parts = Object.entries(costMap || {})
+    .filter(([, amt]) => Number(amt) > 0)
+    .map(([res, amt]) => `${amt} ${String(res).toUpperCase()}`);
+  return parts.length ? parts.join(" · ") : "Free";
+}
+
 export function applyCardTargetMutationDelta(rootEl, delta) {
   if (!rootEl || !delta || !Array.isArray(delta.redirects)) return;
   const { redirects, hasDamageRows, rollTotal, element } = delta;
@@ -2720,6 +2744,29 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
   } else {
     const accTotal = rootEl.querySelector(".fud-bf-acc .total");
     if (accTotal && rollTotal != null) accTotal.textContent = String(rollTotal);
+  }
+  // Cost adjustment (adjust_cost reaction: Hypercognition discount / Cataclysm
+  // overcharge) — repaint the subtitle's cost bullet to the EFFECTIVE cost so the
+  // card matches the debit RESOLVE will apply (previously the card kept the printed
+  // base cost). Both the GM card and the player mirror route through here → the
+  // displayed cost stays in sync. Idempotent: with no override this pass (pill
+  // toggled off) revert to the printed base cost, mirroring the accuracy reset above.
+  const costBullet = rootEl.querySelector(".fud-bf-cost-bullet");
+  if (costBullet) {
+    const baseText = costBullet.getAttribute("data-fud-base-cost");
+    if (delta.cost && delta.cost.effectiveText) {
+      const srcs = Array.isArray(delta.cost.parts)
+        ? [...new Set(delta.cost.parts.map((p) => p?.source).filter(Boolean))] : [];
+      const changed = baseText != null && baseText !== delta.cost.effectiveText;
+      costBullet.innerHTML = changed
+        ? `<s style="opacity:0.55;">${escapeHtml(baseText)}</s> ${escapeHtml(delta.cost.effectiveText)}`
+        : escapeHtml(delta.cost.effectiveText);
+      costBullet.setAttribute("title",
+        srcs.length ? `Base ${baseText ?? "?"} — adjusted by ${srcs.join(", ")}` : `Base ${baseText ?? "?"}`);
+    } else if (baseText != null) {
+      costBullet.innerHTML = escapeHtml(baseText);
+      costBullet.removeAttribute("title");
+    }
   }
   // Study cards have no per-target/damage surfaces — a check-adjusting reaction
   // (Divination reroll / Lucky Seven die-set) changes the total, which changes the
@@ -3736,11 +3783,18 @@ function buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish }) 
     // Treat "Active" as the default and avoid the redundant bullet.
     bullets.push(escapeHtml(cap(stRaw)));
   }
-  if (rawCost) bullets.push(escapeHtml(rawCost));
+  const costIdx = rawCost ? bullets.push(escapeHtml(rawCost)) - 1 : -1;
   if (!bullets.length) return "";
   // Wrap each bullet so the cost line ("5 x T MP") + element pills don't
-  // line-break mid-token when the card is narrower than the joined text.
-  const wrapped = bullets.map((b) => `<span class="bullet">${b}</span>`);
+  // line-break mid-token when the card is narrower than the joined text. The
+  // cost bullet gets a stable hook (`fud-bf-cost-bullet`) + its printed base
+  // string so a live adjust_cost reaction (Hypercognition discount / Cataclysm
+  // overcharge) can repaint it to the EFFECTIVE cost — see the cost block in
+  // applyCardTargetMutationDelta — and cleanly revert when the pill is toggled off.
+  const wrapped = bullets.map((b, i) => {
+    const isCost = i === costIdx;
+    return `<span class="bullet${isCost ? " fud-bf-cost-bullet" : ""}"${isCost ? ` data-fud-base-cost="${escapeHtml(rawCost)}"` : ""}>${b}</span>`;
+  });
   return `<div class="fud-bf-subtitle">${wrapped.join(`<span class="dot">•</span>`)}</div>`;
 }
 
@@ -5321,6 +5375,9 @@ export async function postActionCard({ director, kind, payload }) {
             skillName: base?.skillName ?? null,
             skillType: payload?.skillType ?? null,
             defenseTargetType: payload?.defenseTargetType ?? null,
+            // Printed/base cost (resolved numeric map) so a live adjust_cost reaction
+            // can show the EFFECTIVE cost on the card before Confirm.
+            costSerialized: base?.costSerialized ?? null,
             // Check + damage descriptor fields that the Skill/Spell recompute
             // reads off the ar (describePrimary → ar.damageBonus; computeCheck →
             // ar.isCheck/checkBonus/rolledA1/rolledA2). Omitting them made an
@@ -5473,9 +5530,23 @@ export async function postActionCard({ director, kind, payload }) {
               affinity: entry.affinity ?? null,
             });
           }
+          // Cost adjustment (adjust_cost reaction: Hypercognition discount /
+          // Cataclysm overcharge) — recompute the EFFECTIVE cost from base +
+          // composed override so the card's cost bullet reflects what RESOLVE will
+          // actually debit (previously the card kept the printed base cost). Null
+          // when no cost override this pass → the patcher reverts the bullet.
+          let costDelta = null;
+          if (mutationResult.costOverride && arSnapshot.costSerialized) {
+            const eff = effectiveCardCost(arSnapshot.costSerialized, mutationResult.costOverride);
+            const parts = Array.isArray(mutationResult.costOverride._parts)
+              ? mutationResult.costOverride._parts : [];
+            costDelta = { effectiveText: formatCardCost(eff), parts };
+          }
           const delta = {
             redirects,
             defenseOverrides: defenseOverrideRows,
+            // Effective-cost repaint (adjust_cost) — null reverts the bullet to base.
+            cost: costDelta,
             hasDamageRows,
             // DEF vs MDEF for the redrawn redirect rows (broadcast to player
             // mirrors too — both sides share applyCardTargetMutationDelta).
@@ -5502,17 +5573,30 @@ export async function postActionCard({ director, kind, payload }) {
           };
           applyCardTargetMutationDelta(root, delta);
 
-          // Unified target-surface render — when a mutation CHANGED THE TARGET
-          // SET (redirect; future add_target / change_target), regenerate ALL
-          // target-displaying surfaces (Engagement row, portraits, Result list)
-          // from the post-mutation target list via the canonical builders. This
-          // supersedes applyCardTargetMutationDelta's per-surface, per-uuid
-          // redirect patching (above) — which half-renders a multi-target
-          // redirect onto one reactor — and is correct by construction for any
-          // future target-mutation kind. `redirectedFrom` is merged onto the flat
-          // perTargetResults rows (projectProfileToActionResult drops it). Gated
-          // on damage rows; the helper is internally try/caught per surface.
-          if (Array.isArray(delta.redirects) && delta.redirects.length && hasDamageRows && recomputed.length) {
+          // Unified target-surface render — when a mutation CHANGED THE TARGET SET
+          // (redirect / add_target / shield) OR flipped a NO-DAMAGE skill's per-target
+          // verdict, regenerate ALL target-displaying surfaces (Engagement row,
+          // portraits, Result list) from the post-mutation list via the canonical
+          // builders. Correct by construction for any target-mutation kind, and it
+          // renders ADDED rows (add_target splash / shield phantasm) that the per-uuid
+          // delta patcher can't inject. `redirectedFrom` is merged onto the flat rows
+          // (projectProfileToActionResult drops it). Each surface is try/caught.
+          //
+          // Triggers:
+          //   • a redirect is present, OR
+          //   • the target set GREW (add_target / shield added a slot), OR
+          //   • a NO-DAMAGE skill's verdict flipped (SUCCESS↔FAILED) from a check-adjust
+          //     — the surgical result-span loop below is gated on hasDamageRows and so
+          //     never repaints those. Damage skills keep the surgical + animated path.
+          const targetSetGrew = mutTargets.length > original.length
+            || mutTargets.some((t) => t?.addedVia || t?.shieldedVia);
+          const verdictFlipped = recomputed.some((e, i) =>
+            e && original[i] && (!!e.hit !== !!original[i].hit));
+          const needsSurfaceRebuild =
+            (Array.isArray(delta.redirects) && delta.redirects.length)
+            || targetSetGrew
+            || (!hasDamageRows && verdictFlipped);
+          if (needsSurfaceRebuild && recomputed.length) {
             const rowsSrc = recomputed.map((r, i) => ({
               ...r,
               redirectedFrom: mutTargets[i]?.redirectedFrom ?? r.redirectedFrom ?? null,
