@@ -24,7 +24,7 @@
           "key": "bonus_defense",
           "mode": 2,
           "priority": null,
-          "value": "aeWhen(\"Crisis\", \"${level * 2}$\")"
+          "value": "aeWhen(\"Crisis\", \"${level}$\")"
         }
       ],
       "description": "<p><em>Grace Under Pressure:</em> +SL Defense while in Crisis.</p>",
