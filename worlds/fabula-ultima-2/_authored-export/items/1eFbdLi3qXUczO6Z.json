@@ -44,7 +44,7 @@
       "isFacet": false,
       "isHeroic": true,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "isZeroPower": false,
       "level": "1",
       "max_level": "1",

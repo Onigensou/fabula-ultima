@@ -3,10 +3,10 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1700029218963,
+    "createdTime": 1784302167055,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
-    "systemVersion": "2.4.4"
+    "systemVersion": "4.8.5"
   },
   "channel": "music",
   "description": "",
@@ -19,7 +19,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 399,
+  "seed": 892,
   "sort": 200000,
   "sorting": "a",
   "sounds": [
@@ -45,7 +45,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Thicker_than_a_Knife%27s_Blade.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.06
+      "volume": 0.13
     },
     {
       "_id": "3c7KkWm0nrMsrBXG",
@@ -61,7 +61,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Dungeon_Blitz_Theme_A.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.16
+      "volume": 0.09
     },
     {
       "_id": "4NfL21LeL1gxAMTK",
@@ -285,7 +285,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Somethings_not_right....mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.21
+      "volume": 0.16
     },
     {
       "_id": "fErLf2oMYBz0TBEg",
@@ -501,7 +501,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/OH%20MY%20GOD.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.3
+      "volume": 0.16
     },
     {
       "_id": "jz78noSOcJ1wA1q4",
@@ -649,7 +649,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Ambush.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.35
+      "volume": 0.13
     },
     {
       "_id": "ponpFaAomuQ5uHpc",
@@ -761,7 +761,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/SuspenseA.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.09
+      "volume": 0.06
     },
     {
       "_id": "vnmHgNbYSb9FVC9P",
@@ -853,7 +853,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Goofy%20Moments.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.25
+      "volume": 0.09
     }
   ]
 }

@@ -48,7 +48,7 @@
       "y": 1915,
       "scale": 2.724439313292274
     },
-    "tokenVision": true,
+    "tokenVision": false,
     "fog": {
       "exploration": true,
       "overlay": null,
@@ -304,7 +304,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398852837,
-      "modifiedTime": 1784342586350,
+      "modifiedTime": 1784379280622,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

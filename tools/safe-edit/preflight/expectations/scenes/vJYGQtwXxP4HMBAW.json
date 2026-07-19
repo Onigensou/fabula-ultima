@@ -129,8 +129,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "core": {
         "forceInitialView": true
@@ -150,7 +149,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
             "wellspring_fire": true,
@@ -200,6 +199,178 @@
             }
           }
         }
+      },
+      "world": {
+        "battleInit": {
+          "latestPayload": {
+            "meta": {
+              "schemaVersion": 1,
+              "battleId": "d72FyyNK6U6hvbTu",
+              "createdAt": "2026-07-18T13:01:22.997Z",
+              "debug": {
+                "enabled": true,
+                "trace": [
+                  {
+                    "phase": "prompt",
+                    "at": "2026-07-18T13:01:22.997Z",
+                    "note": "Created initial BattlePayload from GM prompt."
+                  },
+                  {
+                    "phase": "prompt",
+                    "at": "2026-07-18T13:01:22.997Z",
+                    "note": "Clear Battle Log: ok"
+                  }
+                ]
+              }
+            },
+            "context": {
+              "sourceSceneUuid": "Scene.vJYGQtwXxP4HMBAW",
+              "sourceSceneId": "vJYGQtwXxP4HMBAW",
+              "sourceSceneName": "AncientTemple_Map010",
+              "battleSceneUuid": "Scene.cuv0etY2LHsVmveW",
+              "return": {
+                "enabled": true
+              },
+              "lean": false
+            },
+            "battleConfig": {
+              "encounterTableUuid": "RollTable.wcdUb4RPnvw1uTTO",
+              "enemiesTableUuid": "RollTable.3RdJ30rU43jtnkFF",
+              "battleSceneUuid": "Scene.cuv0etY2LHsVmveW",
+              "bgm": ""
+            },
+            "battleConfigDefaults": {
+              "encounterTableUuidDefault": "RollTable.wcdUb4RPnvw1uTTO",
+              "enemiesTableUuidDefault": "RollTable.3RdJ30rU43jtnkFF",
+              "battleSceneUuidDefault": "Scene.cuv0etY2LHsVmveW",
+              "battleBgmDefault": "",
+              "bossBgmDefault": ""
+            },
+            "party": {
+              "mode": "dbPartyMembers",
+              "source": {
+                "gameName": "The Legend of Dragonslayer",
+                "resolvedAt": "2026-07-18T13:01:14.567Z"
+              },
+              "members": [
+                {
+                  "slot": 1,
+                  "actorUuid": "Actor.dafTLBUscCDNgq8H",
+                  "actorId": "dafTLBUscCDNgq8H",
+                  "name": "Hina",
+                  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/h1.png"
+                },
+                {
+                  "slot": 2,
+                  "actorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+                  "actorId": "gdJZ1L1kv5mjTTMr",
+                  "name": "Keren",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Portrait/Keren_Portrait001.png"
+                },
+                {
+                  "slot": 3,
+                  "actorUuid": "Actor.uJFaNQCSvwwsr2AW",
+                  "actorId": "uJFaNQCSvwwsr2AW",
+                  "name": "Blanche",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Portrait/Blanche_Portrait001.png"
+                },
+                {
+                  "slot": 4,
+                  "actorUuid": "Actor.Z4CFy505cD3nzl1W",
+                  "actorId": "Z4CFy505cD3nzl1W",
+                  "name": "Zarg",
+                  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Portrait/Zarg_Portrait.png"
+                }
+              ],
+              "missing": []
+            },
+            "battlePlan": {
+              "type": "boss",
+              "randomChancePercent": 85,
+              "isBoss": true,
+              "initiativeMode": "rolled",
+              "engagement": "normal"
+            },
+            "encounterPlan": {
+              "mode": "manual",
+              "difficultyTag": "boss",
+              "isBoss": true,
+              "manualPicks": [
+                {
+                  "name": "⭐️ Geist",
+                  "quantity": 1,
+                  "actorUuid": "Actor.UYAabJiUZJ1uKers"
+                }
+              ],
+              "roll": {}
+            },
+            "encounterResolved": {
+              "enemies": []
+            },
+            "options": {
+              "battleLog": {
+                "clearOnCreate": true,
+                "report": {
+                  "ok": true,
+                  "dbName": "EXFURSION Party"
+                }
+              },
+              "animations": {
+                "enabled": true
+              },
+              "combat": {
+                "autoStart": true
+              },
+              "unleash": {
+                "enabled": true
+              },
+              "battleSystem": "director",
+              "devMode": false
+            },
+            "layout": {
+              "preset": "party_line__enemy_rows",
+              "spawnZones": {},
+              "placements": {}
+            },
+            "spawnResult": {
+              "partyTokenIds": [],
+              "enemyTokenIds": [],
+              "tokenIdByActorUuid": {}
+            },
+            "combat": {
+              "combatId": null,
+              "combatUuid": null,
+              "started": false
+            },
+            "unleash": {
+              "checked": false,
+              "triggers": []
+            },
+            "rewards": {
+              "exp": {
+                "total": 0,
+                "byEnemy": []
+              },
+              "notes": []
+            },
+            "phases": {
+              "prompt": {
+                "status": "ok",
+                "at": "2026-07-18T13:01:22.997Z"
+              },
+              "directorManager": {
+                "status": "ok",
+                "at": "2026-07-18T13:01:37.206Z",
+                "initialState": "STANDALONE_REACTION_WINDOW",
+                "note": "PREP runs asynchronously after this; check FUCompanion.api.experimental.battleDirector.status() for progress."
+              }
+            },
+            "manager": {
+              "status": "ok",
+              "stoppedAt": "2026-07-18T13:01:37.206Z"
+            }
+          }
+        }
       }
     },
     "_stats": {
@@ -209,7 +380,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398857383,
-      "modifiedTime": 1784342586350,
+      "modifiedTime": 1784379884733,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

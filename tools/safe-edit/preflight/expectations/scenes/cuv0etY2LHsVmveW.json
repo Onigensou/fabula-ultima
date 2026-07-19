@@ -98,7 +98,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
             "wellspring_fire": true,
@@ -158,7 +158,6 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "isTriggered": false,
         "sequence": []
       },
       "wall-height": {
@@ -207,7 +206,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1784341929128,
-      "modifiedTime": 1784342235711,
+      "modifiedTime": 1784379889829,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     }
   }

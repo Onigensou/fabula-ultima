@@ -158,7 +158,7 @@
       "name": "Geist",
       "optalign": "top",
       "settings": {
-        "emote": "custom1",
+        "emote": "smile",
         "textcolor": null,
         "textflyin": "typewriter",
         "textfont": null,
@@ -1311,7 +1311,7 @@
       "affinity_6": "NA",
       "affinity_7": "NA",
       "affinity_8": "VU",
-      "affinity_9": "IM",
+      "affinity_9": "RS",
       "animation_table": {},
       "arcane_ef": "100",
       "attack_list": {

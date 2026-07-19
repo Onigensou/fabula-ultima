@@ -10,17 +10,113 @@
   },
   "effects": [
     {
-      "_id": "eh9H7yiUv0UFYmvU",
+      "_id": "E2taPIV4M261CyVv",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784373593883,
+        "createdTime": 1784400953057,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
-      "description": "<p>This creature has less than 50% HP</p>",
+      "changes": [
+        {
+          "key": "bonus_check",
+          "mode": 2,
+          "priority": 20,
+          "value": "3"
+        }
+      ],
+      "description": "<p>Bonus to next Check equal to the Spiritist's Bond strength toward this creature.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "1kYcwjLglF6tBQ9v",
+          "originalParentId": "9aOTCoRiI7e0FB04",
+          "originalUuid": "Item.9aOTCoRiI7e0FB04.ActiveEffect.1kYcwjLglF6tBQ9v"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "support-magic",
+          "charges": 1,
+          "chargesMax": 1,
+          "crossScene": true,
+          "directorAppliedBy": {
+            "appliedAtRound": 8,
+            "effectLabel": "support_magic_apply",
+            "lifetimeMode": "on_activation",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.dMVPDtC1ouX0KF31",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE",
+            "turnsRemaining": null
+          },
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {},
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "",
+                "reaction_passive_mode": "on",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_check"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
+      "name": "Support Magic",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.XC42Ux911ac3auzE",
+      "sort": 0,
+      "statuses": [
+        "fud-support-magic"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "wQsbOjZxdlLEGlR0",
+      "_stats": {
+        "compendiumSource": "Actor.dafTLBUscCDNgq8H.ActiveEffect.bdDayp3hYqBF5nGZ",
+        "coreVersion": "12.343",
+        "createdTime": 1784379374620,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": null,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -34,27 +130,19 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "4ldx00srGNv5AJBr",
-          "originalParentId": "0gIBYzSpjdXS6f25",
-          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-crisis",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": false
+          "originalId": "bdDayp3hYqBF5nGZ",
+          "originalParentId": "dafTLBUscCDNgq8H",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.bdDayp3hYqBF5nGZ"
         },
         "fabula-ultima-companion": {
-          "bdCrisis": true,
-          "derivedStatus": {
-            "byRules": [
-              "core-crisis"
-            ],
-            "forStatus": "Crisis"
-          }
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "G0tvPWqwJHkdwoFQ",
+            "family": "sour",
+            "instant": {},
+            "tier": 1
+          },
+          "foodBuff": true
         },
         "statuscounter": {
           "config": {
@@ -65,15 +153,17 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
-      "name": "Crisis",
-      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
+      "name": "Tangy Trailside Skewer",
+      "origin": "Item.G0tvPWqwJHkdwoFQ",
       "sort": 0,
       "statuses": [
-        "5jkr80zqdzaR003d"
+        "permanent"
       ],
       "system": {
-        "tags": []
+        "tags": [
+          "food"
+        ]
       },
       "tint": "#ffffff",
       "transfer": false,
@@ -108,7 +198,7 @@
         "bounce": false,
         "float": false
       },
-      "skill_level_bonus_provoke": 6
+      "skill_level_bonus_provoke": 8
     },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/5faea496f17c50c47382d838/Blanche%201.png",
@@ -229,7 +319,7 @@
       "name": "",
       "optalign": "top",
       "settings": {
-        "emote": "dizzy",
+        "emote": "meh",
         "textcolor": null,
         "textflyin": "typewriter",
         "textfont": null,
@@ -715,6 +805,132 @@
       "type": "equippableItem"
     },
     {
+      "_id": "4cNJLm7MxnhIToEe",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784391287950,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/1012.gif",
+      "name": "Frill",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>Some skin from the neck of a lizard which lives in the desert.</em></p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "GrqpyWbTlji23uD5",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/1012.gif",
+          "ingredient_taste": "umami",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "40",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Frill",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.GrqpyWbTlji23uD5",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "GrqpyWbTlji23uD5"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "4E8q3p2h4iMJNTU5",
       "_stats": {
         "compendiumSource": null,
@@ -961,6 +1177,127 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "yVFJkol5V9OWvceZ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "7P7ndMXxUVayfqAN",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784388334448,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7172.gif",
+      "name": "Animal Fang",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "oAP85eeLJCliYm2E",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7172.gif",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "100",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Animal Fang",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.oAP85eeLJCliYm2E",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "oAP85eeLJCliYm2E"
       },
       "type": "equippableItem"
     },
@@ -2150,6 +2487,141 @@
       "type": "equippableItem"
     },
     {
+      "_id": "JFKwNvEQPxHTM5Ap",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784387572415,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+      "name": "Mega-Remedy",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "9vM7Xu5q3cj7EFQt",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+          "insect_ef": "100",
+          "ip_cost": "6",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "600",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_skill_active": {
+            "0gi0e6XOfjVr2S0d": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            }
+          },
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Mega-Remedy",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "0gi0e6XOfjVr2S0d": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.9vM7Xu5q3cj7EFQt",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "9vM7Xu5q3cj7EFQt"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "JT5pvl5buIjL9JHX",
       "_stats": {
         "compendiumSource": "Item.53Usenn5H4oDCDzD",
@@ -2829,22 +3301,34 @@
           "check_bonus": "0",
           "class": "Spiritist",
           "cost": "10 x T MP",
-          "damage_bonus": "0",
+          "damage_bonus": "50",
           "defense_target_type": "def",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+          "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
               "$deleted": false,
+              "consume_self": false,
               "effect_kind": "grant",
               "effect_label": "heal_hp",
+              "from_resource": "",
               "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
+              "grant_operation": "",
               "grant_resource": "hp",
-              "target_ref": "action_targets"
+              "grant_round": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "LMnXdh32LS4ZRCn5",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -2865,10 +3349,13 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
+          "skill_tags": "",
           "skill_target": "",
           "skill_type": "Spell",
+          "target_eligibility": "",
           "type_damage": "healing",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.LMnXdh32LS4ZRCn5"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3373,6 +3860,208 @@
       "type": "equippableItem"
     },
     {
+      "_id": "plL46K0znL53yTjk",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784391288521,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7458.gif",
+      "name": "Charred Bone",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>Bone blackened and brittle from searing flame, still faintly warm and carrying the acrid scent of cinders.</em></p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "4Ew4B2v0hxhzGnpE",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7458.gif",
+          "ingredient_taste": "bitter",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "70",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Charred Bone",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.4Ew4B2v0hxhzGnpE",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "4Ew4B2v0hxhzGnpE"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "qGDOMAtenjvpbAeC",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1784387572943,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "name": "Mega-Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "container": "JFKwNvEQPxHTM5Ap",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "100",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+          "duration": "Instnataneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "megaremedy_heal",
+              "grant_amount": "100",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mega-Remedy",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "Heal",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "0gi0e6XOfjVr2S0d"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "r4G9YFC4MXYL8lC3",
       "_stats": {
         "compendiumSource": "Item.kS8rEaApk4J1WvjU",
@@ -3647,6 +4336,109 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "FU58EwtboDoQ0wS1"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rR5hLV8QzLY0vk9k",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784388335671,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Sunsettia.webp",
+      "name": "Starfruit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "The dried peel of a starfruit — intensely tart, prized by travelling chefs.",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "zF6faTFO5nlTBVt8",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Sunsettia.webp",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "0",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Starfruit",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.zF6faTFO5nlTBVt8",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "zF6faTFO5nlTBVt8"
       },
       "type": "equippableItem"
     },
@@ -7375,7 +8167,7 @@
       "bond_5": "Zenit",
       "bond_6": "",
       "bond_temp": "",
-      "bonus_defense": 12,
+      "bonus_defense": 7,
       "bonus_dex": 0,
       "bonus_hp": 5,
       "bonus_ins": 0,
@@ -7487,6 +8279,14 @@
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.595pI45juUqHSTVP"
         },
+        "JFKwNvEQPxHTM5Ap": {
+          "consume_description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Mega-Remedy",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.JFKwNvEQPxHTM5Ap"
+        },
         "LdVZI55vIq44EGWg": {
           "consume_description": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
           "id": "${item.id}",
@@ -7547,9 +8347,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 30,
-      "current_ip": "10",
-      "current_mp": "74",
+      "current_hp": "123",
+      "current_ip": "5",
+      "current_mp": "25",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Blanche_Cut-in002.png",
       "cut_in_fumble": "",
@@ -7582,7 +8382,7 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 24,
+      "defense": 19,
       "delayed_status": 0,
       "despair_status": 0,
       "dex_base": "10",
@@ -7615,11 +8415,11 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "6.23",
-      "experience": "6.23",
+      "exp_meter": "6.92",
+      "experience": "6.92",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 0,
+      "extra_damage_mod_all": 1,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
@@ -7642,7 +8442,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "9",
+      "fabula_point": "10",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -8065,7 +8865,7 @@
       },
       "item_restore_mod": 0,
       "key_list": {},
-      "level": "39",
+      "level": "41",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 15,
@@ -8078,6 +8878,20 @@
       "manadrain_percentage": 0,
       "manadrain_value": 0,
       "material_list": {
+        "4cNJLm7MxnhIToEe": {
+          "id": "${item.id}",
+          "key_description": "<p><em>Some skin from the neck of a lizard which lives in the desert.</em></p>",
+          "name": "Frill",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.4cNJLm7MxnhIToEe"
+        },
+        "7P7ndMXxUVayfqAN": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
+          "name": "Animal Fang",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.7P7ndMXxUVayfqAN"
+        },
         "CJoznRylkbyoIoVW": {
           "id": "${item.id}",
           "key_description": "<p><em>Essence that can be obtained from monsters in the flame area in the ecological environment.</em></p>",
@@ -8106,6 +8920,20 @@
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.lBjoxCeeS0JmOVhb"
         },
+        "plL46K0znL53yTjk": {
+          "id": "${item.id}",
+          "key_description": "<p><em>Bone blackened and brittle from searing flame, still faintly warm and carrying the acrid scent of cinders.</em></p>",
+          "name": "Charred Bone",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.plL46K0znL53yTjk"
+        },
+        "rR5hLV8QzLY0vk9k": {
+          "id": "${item.id}",
+          "key_description": "The dried peel of a starfruit — intensely tart, prized by travelling chefs.",
+          "name": "Starfruit",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.rR5hLV8QzLY0vk9k"
+        },
         "s7GhfXoC9ZMy71wM": {
           "id": "${item.id}",
           "key_description": "The dried peel of a starfruit — intensely tart, prized by travelling chefs.",
@@ -8128,9 +8956,9 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.ya38b6iI7xoO4Jur"
         }
       },
-      "max_hp": 164,
+      "max_hp": 166,
       "max_ip": 10,
-      "max_mp": 74,
+      "max_mp": 76,
       "memories_list": {},
       "memory": "Memories",
       "mig_base": "12",
@@ -8927,7 +9755,7 @@
       "wlp_base": "6",
       "wlp_current": 6,
       "your_class_name": "Housekeeper",
-      "zenit": "66",
+      "zenit": "1867",
       "zero_label": "Zero Power",
       "zero_power_description": "<p>You and any number of allies you can see recover from all status effects and recover an amount of Hit Points equal to <strong>【40 + half your level】</strong></p>",
       "zero_power_macro": "",

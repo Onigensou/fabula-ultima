@@ -3,10 +3,10 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1734574487261,
+    "createdTime": 1784302167136,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
-    "systemVersion": "2.4.4"
+    "systemVersion": "4.8.5"
   },
   "channel": "music",
   "description": "",
@@ -23,7 +23,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 758,
+  "seed": 860,
   "sort": 100000,
   "sorting": "a",
   "sounds": [
@@ -137,7 +137,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Wind.ogg",
       "repeat": true,
       "sort": 0,
-      "volume": 0.16
+      "volume": 0.03
     },
     {
       "_id": "PE9rJeX4Rb50R5z5",
@@ -153,7 +153,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Storm1.ogg",
       "repeat": true,
       "sort": 0,
-      "volume": 0.35
+      "volume": 0.01
     },
     {
       "_id": "PXkipuLhR9rWhX1M",
@@ -169,7 +169,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/SE_Hardwind_long.wav",
       "repeat": true,
       "sort": 0,
-      "volume": 0.35
+      "volume": 0.06
     },
     {
       "_id": "vAyRzvVeR4BA1QTi",
@@ -185,7 +185,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Darkness.ogg",
       "repeat": true,
       "sort": 0,
-      "volume": 0.09
+      "volume": 0.03
     },
     {
       "_id": "vYmy05nr5oJoINRD",

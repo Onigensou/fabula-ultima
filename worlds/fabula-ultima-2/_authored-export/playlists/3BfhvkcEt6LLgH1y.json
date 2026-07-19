@@ -2,11 +2,11 @@
   "_id": "3BfhvkcEt6LLgH1y",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
-    "createdTime": 1747696078707,
+    "coreVersion": "12.343",
+    "createdTime": 1784302166805,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
-    "systemVersion": "4.4.2"
+    "systemVersion": "4.8.5"
   },
   "channel": "environment",
   "description": "",

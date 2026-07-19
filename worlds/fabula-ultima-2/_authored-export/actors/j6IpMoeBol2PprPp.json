@@ -17,6 +17,16 @@
         "bounce": false,
         "float": false
       }
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
     }
   },
   "folder": "4gMC1IxdJlF59BSi",

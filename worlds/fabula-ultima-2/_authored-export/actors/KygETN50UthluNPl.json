@@ -162,11 +162,18 @@
           "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
+              "condition_formula": "",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
               "reaction_effect_ref": "meteor_burn_bonus",
               "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "self",
               "reaction_source_skill": "Zero Power: Meteor Impact",
-              "reaction_trigger": "creature_will_deal_damage"
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_will_deal_damage",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "-",
