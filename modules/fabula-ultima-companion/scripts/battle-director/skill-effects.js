@@ -7522,12 +7522,43 @@ function buildArcanumMenuOptions(row, ctx) {
   return { options, optionRows };
 }
 
+// ── Quick Summoning (Arcanist passive) ─────────────────────────────────────
+// "When you summon an Arcanum on your turn, choose up to two options: reduce its
+// MP cost by [SL × 5]; after summoning, if merged, immediately Pulse." Both are
+// beneficial, so the current policy applies BOTH when the caster owns the skill.
+// The RAW dismiss consequences (no willing dismiss until next turn; choosing both
+// removes this summon's dismiss) are recorded via `quickSummonNoDismiss` on the
+// merge AE for a later enforcement pass; the player-facing "choose up to two"
+// menu is a follow-up that belongs with the live summon UI.
+const QUICK_SUMMONING_NAME = "quick summoning";
+function findQuickSummoning(actor) {
+  for (const it of (actor?.items ?? [])) {
+    if (!String(it?.system?.props?.skill_type ?? "")) continue;
+    if (String(it.name ?? "").trim().toLowerCase() === QUICK_SUMMONING_NAME) return it;
+  }
+  return null;
+}
+// Exported for unit tests + any future consumer. Returns { level, costReduction }.
+export function quickSummonMods(actor) {
+  const qs = findQuickSummoning(actor);
+  const level = qs ? Math.max(0, Number(qs.system?.props?.level ?? qs.system?.props?.skill_level ?? 0) || 0) : 0;
+  return { owns: !!qs, level, costReduction: level * 5 };
+}
+
 // ── STEP 3 (summon half): debit the cost + apply a specific Arcanum's merge ──
 async function doSummonArcanum(arc, row, ctx) {
   const caster = ctx.reactorActor;
   const costFormula = String(row.summon_cost_formula ?? row.summon_cost ?? "40").trim() || "40";
-  const costRow = { effect_label: "summon:cost", consume_resource: "mp", consume_amount: costFormula, target_ref: "self", on_empty: "abort" };
-  const derived = describeConsumeResource(costRow, ctx);
+  let costRow = { effect_label: "summon:cost", consume_resource: "mp", consume_amount: costFormula, target_ref: "self", on_empty: "abort" };
+  let derived = describeConsumeResource(costRow, ctx);
+  // Quick Summoning option 1 — reduce the summon cost by SL × 5 (floored at 0).
+  const qs = quickSummonMods(caster);
+  if (qs.costReduction > 0) {
+    const reduced = Math.max(0, Number(derived.amount ?? 0) - qs.costReduction);
+    log(`skill-effects.summon_arcanum: Quick Summoning −${qs.costReduction} MP (${derived.amount}→${reduced})`);
+    derived = { ...derived, amount: reduced };
+    costRow = { ...costRow, consume_amount: String(reduced) };
+  }
   const paid = await consumeResourceApply(costRow, ctx, derived);
   if (!paid?.ok) {
     ui.notifications?.warn(`${caster.name} can't afford to summon ${arc.name} (${derived.amount} MP).`);
@@ -7540,7 +7571,22 @@ async function doSummonArcanum(arc, row, ctx) {
   }
   const mres = await runArcanumChild(mergeChild, ctx);
   log(`skill-effects.summon_arcanum: ${caster.name} summoned "${arc.name}" (−${derived.amount} MP)`);
-  return { ok: true, kind: "summon_arcanum", mode: "summon", arcanum: arc.name, mergeResult: mres };
+
+  // Quick Summoning option 2 — immediately Pulse if now merged with this Arcanum.
+  let autoPulsed = false;
+  if (qs.owns && isArcanumMerged(caster, arc)) {
+    const pulseChild = findArcanumChild(caster, arc, "pulse");
+    if (pulseChild) {
+      log(`skill-effects.summon_arcanum: Quick Summoning auto-Pulse "${arc.name}"`);
+      try { await runArcanumChild(pulseChild, ctx); autoPulsed = true; }
+      catch (e) { warn(`skill-effects.summon_arcanum: auto-Pulse failed: ${e.message}`); }
+    }
+    // Record the dismiss-lock consequence for a later enforcement pass.
+    const mergeAe = findMergedArcanumAe(caster);
+    if (mergeAe) { try { await mergeAe.setFlag(FLAG_NS, "quickSummonNoDismiss", true); } catch {} }
+  }
+  return { ok: true, kind: "summon_arcanum", mode: "summon", arcanum: arc.name, mergeResult: mres,
+    quickSummon: qs.owns ? { costReduction: qs.costReduction, autoPulsed } : null };
 }
 
 // ── summon_arcanum — the per-option EXECUTOR ───────────────────────────────
