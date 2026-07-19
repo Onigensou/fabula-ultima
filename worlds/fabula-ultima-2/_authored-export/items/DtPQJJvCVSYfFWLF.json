@@ -8,6 +8,63 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "8ykpcytZxHwPdK2U",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784481289692,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "aeWhen(\"Crisis\", \"2\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "8ykpcytZxHwPdK2U",
+          "originalParentId": "DtPQJJvCVSYfFWLF",
+          "originalUuid": "Item.DtPQJJvCVSYfFWLF.ActiveEffect.8ykpcytZxHwPdK2U"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Elegance Showmanship",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"

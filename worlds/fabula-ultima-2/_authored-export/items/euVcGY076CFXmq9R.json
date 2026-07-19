@@ -8,6 +8,146 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "7334M7wkBSg7qZqS",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784481289788,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_2",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "Until the start of your next turn, you have Resistance to air damage.",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "7334M7wkBSg7qZqS",
+          "originalParentId": "euVcGY076CFXmq9R",
+          "originalUuid": "Item.euVcGY076CFXmq9R.ActiveEffect.7334M7wkBSg7qZqS"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "dance",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+      "name": "Griffin Dance (Air Resist)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-griffin-dance-air"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "seSFNR5oaB24W9xU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784481289796,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "Until the start of your next turn, all damage from your attacks and spells becomes air.",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "seSFNR5oaB24W9xU",
+          "originalParentId": "euVcGY076CFXmq9R",
+          "originalUuid": "Item.euVcGY076CFXmq9R.ActiveEffect.seSFNR5oaB24W9xU"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "dance",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "change_element": "air",
+                "effect_kind": "change_damage_element",
+                "effect_label": "griffin_air_override"
+              }
+            },
+            "name": "Griffin Dance (Air)",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                "reaction_effect_ref": "griffin_air_override",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          },
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+      "name": "Griffin Dance (Air Element)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-griffin-dance-air"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -27,17 +167,68 @@
       "active_effect_config_table": {},
       "check_bonus": "0",
       "class": "Dancer",
-      "cost": "10 MP",
+      "cost": "",
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></li></ul>",
-      "details_roller": "Show",
       "duration": "Until the start of your next turn",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "allowed_types": "",
+          "check_bonus_formula": "",
+          "consume_self": false,
+          "damage_bonus_formula": "",
+          "effect_kind": "open_action_menu",
+          "effect_label": "griffin_pick",
+          "free_hr_as_zero": false,
+          "free_mode": false,
+          "free_of_cost": false,
+          "from_resource": "",
+          "max_mp_cost": "",
+          "menu_hide_disabled": false,
+          "menu_label": "",
+          "menu_option_colors": "",
+          "menu_option_descriptions": "",
+          "menu_option_icons": "",
+          "menu_option_labels": "Gain Resistance to Air|All your damage becomes Air",
+          "menu_option_refs": "griffin_resist, griffin_element",
+          "menu_pick_count": "",
+          "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+          "menu_title": "Griffin Dance",
+          "target_ref": "",
+          "to_resource": ""
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_family": "dance",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Griffin Dance (Air Resist)",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "griffin_resist",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_family": "dance",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Griffin Dance (Air Element)",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "griffin_element",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        }
+      },
       "heroic_requirement": "",
-      "id": "euVcGY076CFXmq9R",
       "ignore_hr": false,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
@@ -47,19 +238,20 @@
       "level": "1",
       "max_level": "1",
       "name": "Griffin Dance",
-      "on_activate_effect_ref": "",
+      "on_activate_effect_ref": "griffin_pick",
       "optional_params": {},
+      "pre_activate_effect_ref": "griffin_pick",
       "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Any",
+      "skill_tags": "dance, managed",
       "skill_target": "Self",
       "skill_type": "Active",
       "type_damage": "",
-      "use_optional_params": false,
-      "uuid": "Item.euVcGY076CFXmq9R"
+      "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

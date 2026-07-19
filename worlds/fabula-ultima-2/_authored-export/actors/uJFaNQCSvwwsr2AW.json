@@ -580,6 +580,63 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "7mJmidS4aRRIy9ns",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1784481572943,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeWhen(\"Crisis\", \"2\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "7mJmidS4aRRIy9ns",
+              "originalParentId": "37hDoSsNnqsIX6vu",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.37hDoSsNnqsIX6vu.ActiveEffect.7mJmidS4aRRIy9ns"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Elegance Showmanship",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.5"
@@ -6073,7 +6130,7 @@
               "key": "bonus_defense",
               "mode": 2,
               "priority": null,
-              "value": "aeWhen(\"Crisis\", \"${level * 2}$\")"
+              "value": "aeWhen(\"Crisis\", \"${level}$\")"
             }
           ],
           "description": "<p><em>Grace Under Pressure:</em> +SL Defense while in Crisis.</p>",

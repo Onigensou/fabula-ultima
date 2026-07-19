@@ -3140,7 +3140,7 @@
         "id": "PgdBTVEzsdaiRNiE",
         "name": "Bat Dance",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "L8Eti1B1z8U6G9fA",
@@ -3326,7 +3326,7 @@
         "id": "1eFbdLi3qXUczO6Z",
         "name": "Birth of the Cruel",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "cy0XWEqKnjvJ9B4c",
@@ -4814,7 +4814,7 @@
         "id": "DtPQJJvCVSYfFWLF",
         "name": "Elegance Showmanship",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "0rMQTKpK0gplQht9",
@@ -6146,7 +6146,7 @@
         "id": "euVcGY076CFXmq9R",
         "name": "Griffin Dance",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "oxDtzHmuwVnCJsVg",
@@ -22282,6 +22282,10 @@
           },
           {
             "id": "6ef3fWjmWMYTG9Kz",
+            "name": "Apple o' Archer"
+          },
+          {
+            "id": "c9atfIPNPEmm0uJA",
             "name": "Apple o' Archer"
           },
           {

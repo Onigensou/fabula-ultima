@@ -1461,6 +1461,63 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "ycn8PvG0AiRApAvd",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1784481571623,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "check_mod_accuracy",
+              "mode": 2,
+              "priority": 20,
+              "value": "${isEquipped ? 3 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "a5akRs5H2L5X0eQH",
+              "originalParentId": "dhGCKitpetFxtw3o",
+              "originalUuid": "Item.dhGCKitpetFxtw3o.ActiveEffect.a5akRs5H2L5X0eQH"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Apple%20o%20Archer.gif",
+          "name": "Apple o' Archer",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -3622,6 +3679,213 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "x7RoCErd12Udc8RZ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "c9atfIPNPEmm0uJA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1784481572345,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "L8bI5UjhFxkxDvhx",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "must_be_targeted_by",
+              "mode": 0,
+              "priority": 20,
+              "value": "ranged"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "sourceItemId": "dhGCKitpetFxtw3o"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Apple%20o%20Archer.gif",
+          "name": "Apple o' Archer Taunt",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "apple-taunt"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Apple%20o%20Archer.gif",
+      "name": "Apple o' Archer",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "6ef3fWjmWMYTG9Kz",
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Gain +3 to your Accuracy check (while equipped).</p></li><li><p>The first <strong>ranged Attack</strong> each round against your party must include you as one of its targets.</p></li></ul>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Apple o' Archer Taunt",
+              "count": "1",
+              "effect_kind": "apply_ae",
+              "effect_label": "apple_arm",
+              "menu_description": "",
+              "menu_label": "",
+              "on_empty": "abort",
+              "target_ref": "apple_self"
+            },
+            "1": {
+              "count": "",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "apple_consume",
+              "filter_tag": "apple-taunt",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "apple_self"
+            },
+            "2": {
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "apple_self",
+              "exclude_self": false,
+              "iteration_mode": "together",
+              "menu_description": "",
+              "menu_label": "",
+              "mode": "exact",
+              "skip_when_passive": true,
+              "target_prompt": ""
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Apple o' Archer",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_effect_ref": "apple_arm",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "round_start",
+              "requires_skill": ""
+            },
+            "1": {
+              "condition_formula": "",
+              "reaction_effect_ref": "apple_arm",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start",
+              "requires_skill": ""
+            },
+            "2": {
+              "condition_formula": "ATTACK_IS_RANGED == 1",
+              "reaction_action_intent": "",
+              "reaction_action_target": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "apple_consume",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_targeted_by_action",
+              "requires_skill": ""
+            },
+            "3": {
+              "condition_formula": "",
+              "reaction_effect_ref": "apple_arm",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_equips_item",
+              "requires_skill": ""
+            },
+            "4": {
+              "condition_formula": "",
+              "reaction_effect_ref": "apple_consume",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_unequips_item",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "ykKEyw9o3OVdHwHY"
       },
       "type": "equippableItem"
     },

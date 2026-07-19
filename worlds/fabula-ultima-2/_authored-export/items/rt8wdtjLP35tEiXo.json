@@ -24,7 +24,7 @@
           "key": "bonus_defense",
           "mode": 2,
           "priority": null,
-          "value": "aeWhen(\"Crisis\", \"${level * 2}$\")"
+          "value": "aeWhen(\"Crisis\", \"${level}$\")"
         }
       ],
       "description": "<p><em>Grace Under Pressure:</em> +SL Defense while in Crisis.</p>",
@@ -89,17 +89,11 @@
       "isReaction": false,
       "level": 1,
       "max_level": "2",
+      "name": "Grace Under Pressure",
       "on_activate_effect_ref": "",
-      "passive_check_bonus_formula": "",
-      "passive_damage_bonus_formula": "",
       "passive_logic_action": "",
-      "post_damage_effect_ref": "",
       "pre_activate_effect_ref": "",
       "reaction_config_table": {},
-      "recipe": "",
-      "recipe_amount": "",
-      "recipe_resource": "",
-      "recipe_target": "",
       "skill_target": "",
       "skill_type": "Passive"
     },
