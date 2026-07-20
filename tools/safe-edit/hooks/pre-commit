@@ -51,5 +51,40 @@ for col in $staged_cols; do
   git add "worlds/${WORLD}/data/${col}"
 done
 git add "worlds/${WORLD}/_authored-export"
-echo "[world-export] ✓ no losses; export + data re-staged consistently."
+
+# Manifest-integrity gate. Every LevelDB store's CURRENT must name a MANIFEST-*
+# that is ALSO present in the tree being committed (read from the index, ":path",
+# NOT the working dir — the working dir can look fine while the commit is missing
+# the file). A dangling CURRENT means the store won't open on pull: the world
+# breaks for the co-dev with no content actually lost. Root cause seen 2026-07-20
+# (commit 6737e5c3): the co-dev-owned stores are gitignored-for-new-files and held
+# by `git update-index --skip-worktree`; when that bit is cleared (e.g. by the
+# `git reset --hard` in an overlay merge) a broad `git add` stages their CURRENT
+# bump + old-MANIFEST delete, while the NEW manifest is gitignored and never added.
+# This runs on git objects only, so it also catches it while Foundry is open.
+manifest_bad=""
+stores=$(git ls-files "worlds/${WORLD}/data" "worlds/${WORLD}/packs" \
+  | sed -n "s#^\(worlds/${WORLD}/\(data\|packs\)/[^/]*\)/CURRENT\$#\1#p" | sort -u)
+for store in $stores; do
+  cur=$(git show ":${store}/CURRENT" 2>/dev/null | tr -d '\r\n')
+  [ -z "$cur" ] && continue
+  if ! git cat-file -e ":${store}/${cur}" 2>/dev/null; then
+    manifest_bad="${manifest_bad}\n  ✗ ${store}/CURRENT -> ${cur} (NOT in commit)"
+  fi
+done
+if [ -n "$manifest_bad" ]; then
+  echo ""
+  echo "[world-export] ⛔ commit blocked: dangling LevelDB manifest pointer(s):"
+  printf '%b\n' "$manifest_bad"
+  echo "  A store's CURRENT names a MANIFEST-* not staged in this commit; the world"
+  echo "  will fail to open on pull. Likely cause: skip-worktree was cleared and a"
+  echo "  broad 'git add' staged co-dev-owned store churn whose new manifest is"
+  echo "  gitignored. Fix: restore each store to HEAD and re-freeze —"
+  echo "      git checkout HEAD -- worlds/${WORLD}/data/<store>"
+  echo "      git ls-files worlds/${WORLD}/data/<store> | xargs git update-index --skip-worktree"
+  echo "  Only bypass with 'git commit --no-verify' if you genuinely intend it."
+  exit 1
+fi
+
+echo "[world-export] ✓ no losses; manifests intact; export + data re-staged consistently."
 exit 0
