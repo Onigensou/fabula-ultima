@@ -211,7 +211,7 @@
             "0": {
               "allow_empty": true,
               "auto_confirm_when_obvious": true,
-              "auto_target": true,
+              "auto_target": "skip",
               "candidate_source": "combat",
               "category": "ally",
               "consume_self": false,
@@ -234,7 +234,7 @@
             "1": {
               "allow_empty": true,
               "auto_confirm_when_obvious": true,
-              "auto_target": true,
+              "auto_target": "skip",
               "candidate_source": "combat",
               "category": "enemy",
               "consume_self": false,
@@ -255,7 +255,7 @@
             "2": {
               "allow_empty": true,
               "auto_confirm_when_obvious": true,
-              "auto_target": true,
+              "auto_target": "skip",
               "candidate_source": "combat",
               "category": "enemy",
               "consume_self": false,
@@ -268,7 +268,7 @@
               "from_resource": "",
               "iteration_mode": "together",
               "menu_label": "",
-              "mode": "exact",
+              "mode": "random",
               "skip_when_passive": true,
               "target_filter": "",
               "target_prompt": "",
