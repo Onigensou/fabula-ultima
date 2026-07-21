@@ -203,16 +203,27 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, requesterUs
   const v = validateSpend(actor, cls, skill);
   if (!v.ok) return v;
 
+  // `class_list` carries ONE benefit column per class row, not one per level,
+  // so the HP/MP/IP choice is only made when the class is first opened. A class
+  // whose `benefit_dropdown` names a fixed benefit never asks at all.
   const isNewClass = !v.mine;
   const chosenBenefit = cls.benefit ?? (["hp", "mp", "ip"].includes(benefit) ? benefit : null);
-  if (!chosenBenefit) return fail("benefit_required", { classBenefit: cls.benefit });
+  if (isNewClass && !chosenBenefit) return fail("benefit_required", { classBenefit: cls.benefit });
 
   try {
     // 1. Class row — create or increment. CSB dynamicTables are keyed objects,
     //    so a new row is a new numeric key rather than an array push.
     const table = foundry.utils.duplicate(actor.system?.props?.[PROP.CLASS_LIST] ?? {});
     if (isNewClass) {
-      table[nextRowKey(table)] = {
+      // Refunding a class to zero leaves a $deleted tombstone (CSB's own
+      // convention for dynamicTable rows). Re-take the same class and we must
+      // revive that row rather than append a fresh key, or a player cycling a
+      // class in and out grows class_list without bound.
+      const tomb = Object.entries(table).find(
+        ([, r]) => r?.$deleted && idKey(r.class_name) === cls.key
+      );
+      const key = tomb ? tomb[0] : nextRowKey(table);
+      table[key] = {
         $deleted: false,
         class_name: cls.name, // canonical spelling, not whatever was typed before
         level: 1,

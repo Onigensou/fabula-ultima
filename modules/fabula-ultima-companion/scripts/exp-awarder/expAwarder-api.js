@@ -191,11 +191,21 @@
         const levelAfter = calc.levelFinal;
 
         // --- Update EXP + Level (Custom System Builder paths) ---
+        // A gained level also mints a Skill Point, spent later in the level-up
+        // window at camp or on the title screen. This is the ONLY place a level
+        // is minted, so it is the only place a point needs to be. Levels lost
+        // (never produced by applyLevelUpOverflow, which clamps at 0) would not
+        // reclaim a point — refunds are the level-up window's job.
+        const pointsBefore = asNumber(actor.system?.props?.skill_point, 0);
+        const pointsAfter = pointsBefore + Math.max(0, calc.levelsGained);
+
         try {
-          await actor.update({
+          const update = {
             "system.props.experience": expAfter,
             "system.props.level": levelAfter,
-          });
+          };
+          if (calc.levelsGained > 0) update["system.props.skill_point"] = pointsAfter;
+          await actor.update(update);
         } catch (e) {
           err(`runId=${runId} Failed to update actor EXP`, actorUuid, e);
           ui.notifications?.error?.(`EXP Awarder: Failed to update ${actor.name}.`);
@@ -222,6 +232,11 @@
           levelBefore,
           levelAfter,
           levelsGained: calc.levelsGained,
+
+          // Skill Points minted by this award — the unspent-SP badge listens
+          // for this rather than polling actor props.
+          skillPointsBefore: pointsBefore,
+          skillPointsAfter: pointsAfter,
 
           // UI snapshot values
           expPctFrom,
