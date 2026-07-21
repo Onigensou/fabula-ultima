@@ -455,10 +455,34 @@ const LevelUpApp = {
     }
     if (!available.length) {
       return `<div class="lu-heroic">${head}
-        <div class="lu-empty">None of your mastered classes have Heroic Skills authored yet.</div></div>`;
+        <div class="lu-empty">No Heroic Skills are authored anywhere yet.</div></div>`;
     }
 
-    const rows = available.map((h) => {
+    // The pool is now every heroic in the game — mastering a class earns the
+    // pick but does not limit it — so it has to be ranked rather than dumped:
+    // takeable first, then ones from classes already being played, then a count
+    // for the rest.
+    const met = available.filter((h) => h.relevance === "met");
+    const close = available.filter((h) => h.relevance === "close");
+    const distant = available.filter((h) => h.relevance === "distant");
+
+    const note = met.length
+      ? ""
+      : `<div class="lu-empty">A slot is open, but you don't yet meet the requirements for any Heroic Skill.</div>`;
+    const divider = met.length && close.length
+      ? `<div class="lu-railhead" style="margin:10px 2px 4px">Not yet available</div>`
+      : "";
+    const tail = distant.length
+      ? `<div class="lu-empty">${distant.length} more need classes you haven't taken.</div>`
+      : "";
+
+    return `<div class="lu-heroic">${head}${note}` +
+      this._heroicRows(s, met) + divider + this._heroicRows(s, close) + tail +
+      `</div>`;
+  },
+
+  _heroicRows(s, list) {
+    return list.map((h) => {
       const from = h.from.map((f) => f.name).join(" / ");
       const req = !h.evaluable
         ? `<p class="lu-req">Requirement needs a GM: “${esc(h.prose)}”</p>`
@@ -474,7 +498,6 @@ const LevelUpApp = {
           ${s.gate.open && h.met ? "" : "disabled"} title="${staged ? "Un-stage" : "Take this Heroic Skill (free)"}">${staged ? "✓" : "★"}</button>
       </div>`;
     }).join("");
-    return `<div class="lu-heroic">${head}${rows}</div>`;
   },
 
   // Secondary window. Kept out of the rail on purpose — 42 classes would bury

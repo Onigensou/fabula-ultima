@@ -234,6 +234,28 @@ Points and want their own track.
 
 ## 4. Heroic Skills
 
+Mastering a class earns a pick. It does **not** restrict what may be picked —
+the rules grant "one Heroic Skill of your choice" (p. 228), and the skill's own
+requirements are the only gate. The candidate pool is therefore every heroic on
+every playable class (~99 after dedup and exclusions), not the mastered class's
+own list.
+
+This matters concretely: Blanche can take `Protective Strike`, offered by
+Slayer — a class she has never taken — because its requirement is "mastered one
+or more Classes among Guardian or Slayer" and she has Guardian at 10. It also
+dissolves the Illusionist problem: mastering a class with no heroics authored
+still earns a pick, usable anywhere.
+
+Because the pool is large, entries are ranked `met` → `close` (blocked, but
+from a class already being played) → `distant` (blocked, class never taken),
+and the window shows the first two with a count for the rest.
+
+**Blank requirements fail safe.** Fifteen heroics carry no requirement text.
+Reading that as "no requirement" would make them freely takeable by anyone with
+a slot, which is certainly not intended — every Heroic Skill in the book states
+one, so a blank is missing data, not permission. Those fall back to requiring
+the offering class to be mastered.
+
 `heroic_requirement` is prose written for humans:
 
 > "you must have mastered the Arcanist Class, and your character must be level
@@ -345,9 +367,10 @@ ceiling before.
 Not bugs, but things the system can only report rather than fix:
 
 - **Five classes have thin or empty heroic lists** — Illusionist has none
-  authored, and Esper, Merchant, Spell Fencer and Tinkerer have one each. A
-  character who masters Illusionist is offered nothing in the picker, even
-  though Keren holds an Illusionist heroic that exists only on her sheet.
+  authored, and Esper, Merchant, Spell Fencer and Tinkerer have one each. This
+  no longer blocks anyone (§4: the pick is not restricted to the mastered
+  class), but those classes contribute nothing to the shared pool, and Keren
+  holds an Illusionist heroic that exists only on her sheet.
 - **Zarg holds 4 heroics against 3 mastered classes.** The likely culprit is
   `Maid cap (Passive)`, which looks equipment-granted but is flagged
   `isHeroic`. Slots clamp at zero rather than guessing.

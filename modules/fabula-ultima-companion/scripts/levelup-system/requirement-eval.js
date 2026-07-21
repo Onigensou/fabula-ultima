@@ -17,7 +17,7 @@
  */
 
 import { LEVELUP, idKey, num } from "./levelup-const.js";
-import { readActorClasses, resolveClass } from "./class-registry.js";
+import { readActorClasses, resolveClass, getRegistry } from "./class-registry.js";
 import { resolveRequirement } from "./requirement-parser.js";
 
 /**
@@ -138,37 +138,74 @@ export function evaluate(actor, skill) {
 /**
  * Heroic Skills the actor could take right now.
  *
- * A Heroic Skill is only offered by a class the actor has MASTERED — the free
- * pick at level 10 — and then only if its own requirements pass. Skills already
- * held are excluded.
+ * Mastering a class earns a pick, but it does NOT restrict what may be picked:
+ * the rules grant "one Heroic Skill of your choice" (core rulebook p. 228), and
+ * the skill's own requirements are the only gate. A character who masters
+ * Illusionist — which has no heroics authored in this world — can still take an
+ * Arcanist heroic, provided they meet its requirements. So the candidate pool
+ * is EVERY heroic on every playable class, not the mastered classes' own.
  *
- * Deduplicated by skill key. The same heroic is authored as a SEPARATE item
- * copy on each class that offers it ("Duel Master" lives on both Rogue and
- * Sharpshooter), so a character who mastered both would otherwise be offered
- * it twice. The surviving entry records every class it came from, which is
- * also what the UI wants to show.
+ * Skills already held are excluded, and the pool is deduplicated by skill key:
+ * the same heroic is authored as a separate item copy on each class offering it
+ * ("Duel Master" lives on both Rogue and Sharpshooter). The surviving entry
+ * records every class it came from, which is what the UI shows.
+ *
+ * UNAUTHORED REQUIREMENTS FAIL SAFE. Fifteen heroics carry no requirement text
+ * at all. Reading that as "no requirement" would make them freely takeable by
+ * anyone with a slot, which is certainly not intended — every Heroic Skill in
+ * the book states a requirement, so a blank one is missing data, not permission.
+ * Those fall back to the old rule: the class offering it must be mastered.
+ *
+ * Each entry carries `relevance` so the UI can rank a 140-entry pool:
+ *   "met"     — takeable now
+ *   "close"   — blocked, but from a class the character already has levels in
+ *   "distant" — blocked, from a class they have never taken
  */
 export function availableHeroics(actor) {
   const held = indexActorSkills(actor);
-  const byKey = new Map();
+  const mine = readActorClasses(actor);
+  const masteredKeySet = new Set(mine.filter((c) => c.mastered).map((c) => (c.class ? c.class.key : c.key)));
+  const ownedKeySet = new Set(mine.map((c) => (c.class ? c.class.key : c.key)));
 
-  for (const c of readActorClasses(actor)) {
-    if (!c.mastered || !c.class) continue;
-    for (const h of c.class.heroics) {
+  const byKey = new Map();
+  for (const cls of getRegistry().list) {
+    for (const h of cls.heroics) {
       if (held.has(h.key)) continue;
       const existing = byKey.get(h.key);
       if (existing) {
-        if (!existing.from.some((f) => f.id === c.class.id)) existing.from.push(c.class);
+        if (!existing.from.some((f) => f.id === cls.id)) existing.from.push(cls);
+        existing._offeredByMastered ||= masteredKeySet.has(cls.key);
+        existing._offeredByOwned ||= ownedKeySet.has(cls.key);
         continue;
       }
-      byKey.set(h.key, { skill: h, from: [c.class], ...evaluate(actor, h) });
+      const ev = evaluate(actor, h);
+      byKey.set(h.key, {
+        skill: h,
+        from: [cls],
+        ...ev,
+        _blank: ev.evaluable && !ev.clauses.length,
+        _offeredByMastered: masteredKeySet.has(cls.key),
+        _offeredByOwned: ownedKeySet.has(cls.key),
+      });
     }
   }
 
-  return [...byKey.values()].sort((a, b) => {
-    if (a.met !== b.met) return a.met ? -1 : 1; // takeable first
-    return a.skill.name.localeCompare(b.skill.name);
-  });
+  const out = [];
+  for (const e of byKey.values()) {
+    // Blank requirement → fall back to "must have mastered the offering class".
+    if (e._blank && !e._offeredByMastered) {
+      e.met = false;
+      e.clauses = [{ kind: "masteredAny", met: false, label: `Master ${e.from.map((f) => f.name).join(" or ")}` }];
+    }
+    e.relevance = e.met ? "met" : e._offeredByOwned ? "close" : "distant";
+    delete e._blank; delete e._offeredByMastered; delete e._offeredByOwned;
+    out.push(e);
+  }
+
+  const rank = { met: 0, close: 1, distant: 2 };
+  return out.sort((a, b) =>
+    (rank[a.relevance] - rank[b.relevance]) || a.skill.name.localeCompare(b.skill.name)
+  );
 }
 
 /**
