@@ -89,7 +89,7 @@ function injectStyles() {
 
 #${ROOT_ID} .lu-head { display: flex; align-items: center; gap: 14px; padding: 10px 14px;
   background: linear-gradient(180deg,#5d4630,#4a371f); color: #f6ecd8; flex: 0 0 auto; }
-#${ROOT_ID} .lu-head img { width: 46px; height: 46px; border-radius: 6px; object-fit: cover;
+#${ROOT_ID} .lu-head > img { width: 46px; height: 46px; border-radius: 6px; object-fit: cover;
   border: 1px solid #29200f; background: #1c1509; }
 #${ROOT_ID} .lu-name { font-size: 19px; font-weight: 700; line-height: 1.1; }
 #${ROOT_ID} .lu-sub { font-size: 12px; opacity: .8; }
@@ -131,7 +131,7 @@ function injectStyles() {
   background: #f2e8d3; border: 1px solid #bda57e; font: inherit; color: inherit; }
 #${ROOT_ID} .lu-cls:hover { background: #fbf4e4; }
 #${ROOT_ID} .lu-cls.on { background: #5d4630; color: #f6ecd8; border-color: #3a2b17; }
-#${ROOT_ID} .lu-cls img { width: 26px; height: 26px; border-radius: 4px; object-fit: cover; flex: 0 0 auto; }
+#${ROOT_ID} .lu-cls > img { width: 26px; height: 26px; border-radius: 4px; object-fit: cover; flex: 0 0 auto; }
 #${ROOT_ID} .lu-cls .n { flex: 1 1 auto; font-size: 13px; font-weight: 600; }
 #${ROOT_ID} .lu-cls .l { font-size: 12px; font-variant-numeric: tabular-nums; opacity: .85; }
 #${ROOT_ID} .lu-cls .star { color: #d9a326; }
@@ -160,7 +160,10 @@ function injectStyles() {
 
 #${ROOT_ID} .lu-learned { font-size: 11.5px; font-weight: 700; font-style: italic;
   opacity: .5; white-space: nowrap; letter-spacing: .02em; }
-#${ROOT_ID} .lu-skill img { width: 34px; height: 34px; border-radius: 5px; object-fit: cover; flex: 0 0 auto; }
+/* Direct child ONLY. As a descendant selector this also matched the inline
+   keyword glyphs inside the description and blew them up to 34px — and at
+   (1,1,1) it outranked the (1,1,0) rule meant to size them. */
+#${ROOT_ID} .lu-skill > img { width: 34px; height: 34px; border-radius: 5px; object-fit: cover; flex: 0 0 auto; }
 #${ROOT_ID} .lu-skill .t { flex: 1 1 auto; min-width: 0; }
 #${ROOT_ID} .lu-skill .t b { font-size: 13.5px; }
 #${ROOT_ID} .lu-skill .t .lu-rt { margin-top: 2px; font-size: 11.5px; opacity: .78; }
@@ -222,7 +225,7 @@ function injectStyles() {
 #${ROOT_ID} .lu-fhead { display: flex; align-items: center; gap: 8px; }
 /* The global sheet stylesheet puts a border on every img; these are inline
    glyphs and must not inherit it. */
-#${ROOT_ID} .lu-fhead img { width: 26px; height: 26px; object-fit: contain; flex: 0 0 auto;
+#${ROOT_ID} .lu-fhead > img { width: 26px; height: 26px; object-fit: contain; flex: 0 0 auto;
   border: 0 !important; outline: 0 !important; background: none; border-radius: 4px; }
 #${ROOT_ID} .lu-fbtn.is-on { background: #dceccb; border-color: #5f8b3c; box-shadow: 0 0 0 1px #5f8b3c inset; }
 #${ROOT_ID} .lu-fbtn.is-on b { color: #2c5216; }

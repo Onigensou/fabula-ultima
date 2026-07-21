@@ -141,8 +141,12 @@ export const keywordRowHTML = (keywords) =>
 export const RICHTEXT_CSS = (scope) => `
 ${scope} .lu-kwrow { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 2px 0 4px; }
 ${scope} .lu-kw { display: inline-flex; align-items: center; gap: 3px; vertical-align: baseline; }
-${scope} .lu-kw-icon { width: 13px; height: 13px; object-fit: contain; border: 0 !important;
-  outline: 0 !important; border-radius: 0; background: none; flex: 0 0 auto; }
+/* Scoped through .lu-kw so this outranks any row-level descendant img rule.
+   A selector like #id .row img scores (1,1,1) and would otherwise win over
+   (1,1,0) — exactly what blew these glyphs up to row-icon size once already. */
+${scope} .lu-kw > .lu-kw-icon { width: 1.05em; height: 1.05em; object-fit: contain;
+  border: 0 !important; outline: 0 !important; border-radius: 0; background: none;
+  flex: 0 0 auto; vertical-align: -0.15em; }
 ${scope} .lu-kw-label { font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 ${scope} .lu-kw.is-keyword { color: #8a5a12; }
 ${scope} .lu-kw.is-keyword .lu-kw-label { text-transform: uppercase; letter-spacing: .03em; font-size: .92em; }
