@@ -950,6 +950,9 @@ const LevelUpApp = {
     // so clicking + then − leaves nothing queued rather than two no-ops that
     // would both hit the actor on Confirm.
     if (act === "spend" || act === "refund") {
+      // Cue the button that was pressed, including when it cancels an opposing
+      // staged op — the sound should follow the click, not the net result.
+      sfx(act === "spend" ? "stageUp" : "stageDown");
       const opposite = act === "spend" ? "refund" : "spend";
       const i = this._pending.findIndex(
         (p) => p.op === opposite && p.skillUuid === btn.dataset.uuid && p.classKey === btn.dataset.key

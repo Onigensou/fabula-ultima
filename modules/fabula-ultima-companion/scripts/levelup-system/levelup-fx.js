@@ -23,12 +23,17 @@ export const SFX = Object.freeze({
   cursor:     BASE + "BattleCursor_4.wav",
   open:       BASE + "bond_start.wav",
   close:      BASE + "bond_cleared.wav",
+  // Staging cues — the click that queues a change, not the write.
+  stageUp:    BASE + "skill_increase.wav",
+  stageDown:  BASE + "cursor_back2.wav",
+  // Payoff cues, played once for the whole batch after Confirm.
   levelUp:    BASE + "skill_levelUp.wav",
   levelDown:  BASE + "skill_levelDown.wav",
 });
 
 const VOL = Object.freeze({
   tab: 0.5, toggle: 0.5, cursor: 0.35, open: 0.6, close: 0.55,
+  stageUp: 0.55, stageDown: 0.5,
   levelUp: 0.75, levelDown: 0.55,
 });
 
