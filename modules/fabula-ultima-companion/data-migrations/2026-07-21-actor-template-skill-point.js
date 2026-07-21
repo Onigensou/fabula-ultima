@@ -44,10 +44,18 @@
  * already have a skill_point prop" always means "was it migrated already"
  * rather than "did something seed a default underneath us".
  *
- * SCOPE: actor templates carrying BOTH a `level` and a `class_list` node —
- *        the PC-template signature. NPC and class templates have neither, and
- *        matching on shape rather than id keeps this correct on forked worlds.
- *        Instances are matched by `system.template`.
+ * SCOPE
+ * -----
+ * TEMPLATE: actor templates carrying BOTH a `level` and a `class_list` node —
+ * the PC-template signature. NPC and class templates have neither, and matching
+ * on shape rather than id keeps this correct on forked worlds.
+ *
+ * INSTANCES: the db-resolved party ONLY — the actors actually being played.
+ * The template shares its shape with a long tail of retired PCs, test dummies
+ * and backups (17 instances here, 4 of them live), and rewriting a 282kB header
+ * onto each of those is pure world-data churn for actors nobody will open. Any
+ * actor that later joins the party is handled by the level-up window itself,
+ * which repairs a missing field on open rather than depending on this one-shot.
  *
  * IDEMPOTENT — every step is gated on observable state. The layout splice is
  * skipped where a `skill_point` node already exists, and an actor that already
@@ -162,6 +170,40 @@ const num = (v, d = 0) => {
   return Number.isFinite(n) ? n : d;
 };
 
+// The live party, per the Database Actor's `member_id_1..4`. Slots are stored
+// inconsistently — some hold a bare id ("dafTLBUscCDNgq8H"), others a UUID
+// ("Actor.gdJZ1L1kv5mjTTMr") — so both forms are accepted. Returns a Set of
+// actor ids; empty when the resolver is unavailable, which makes the caller
+// skip instance work rather than fall back to touching everything.
+async function resolvePartyIds(game, log) {
+  const ids = new Set();
+  try {
+    const api = globalThis.FUCompanion?.api;
+    if (!api?.getCurrentGameDb) {
+      log("  • db-resolver unavailable — no instances will be patched");
+      return ids;
+    }
+    const { db, source } = await api.getCurrentGameDb();
+    const dbActor = source ?? db;
+    if (!dbActor) {
+      log("  • Database actor not found — no instances will be patched");
+      return ids;
+    }
+    const props = dbActor.system?.props ?? {};
+    for (let i = 1; i <= 4; i++) {
+      const raw = String(props[`member_id_${i}`] ?? "").trim();
+      if (!raw) continue;
+      const id = raw.startsWith("Actor.") ? raw.slice("Actor.".length) : raw;
+      const actor = game.actors?.get(id) ?? null;
+      if (actor) ids.add(actor.id);
+      else log(`  • member_id_${i} "${raw}" did not resolve`);
+    }
+  } catch (e) {
+    log(`  • party resolution threw: ${e?.message ?? e}`);
+  }
+  return ids;
+}
+
 function sumClassLevels(actor) {
   const table = actor.system?.props?.class_list ?? {};
   let total = 0;
@@ -217,11 +259,17 @@ export async function migrate(game, log) {
   let instancesPatched = 0;
   let backfilled = 0;
 
+  const partyIds = await resolvePartyIds(game, log);
+  log(`party: ${partyIds.size} actor(s) resolved`);
+
   for (const template of templates) {
     log(`template "${template.name}" [${template.id}]`);
 
     const instances = (game.actors?.contents ?? []).filter(
-      (a) => a.type !== "_template" && a.system?.template === template.id
+      (a) =>
+        a.type !== "_template" &&
+        a.system?.template === template.id &&
+        partyIds.has(a.id)
     );
 
     // 1. Snapshot the back-fill before any write, so "already has the prop"
