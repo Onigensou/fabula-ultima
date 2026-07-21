@@ -138,13 +138,23 @@ function injectStyles() {
 #${ROOT_ID} .lu-railhead { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
   opacity: .65; margin: 8px 4px 4px; }
 
-/* Mode switches */
-#${ROOT_ID} .lu-toolbar { flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-  padding: 5px 12px; background: #e2d3b6; border-bottom: 1px solid #b79c72; }
+/* Mode switches — inline in the header, sized to their labels */
+#${ROOT_ID} .lu-idblock { min-width: 0; }
+#${ROOT_ID} .lu-switches { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; margin-left: 6px; }
 #${ROOT_ID} .lu-sw { display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
-  font: inherit; font-size: 11.5px; font-weight: 600; color: #4a3a22;
-  padding: 3px 9px 3px 4px; border-radius: 12px; border: 1px solid #b79c72; background: #f2e8d3; }
+  font: inherit; font-size: 11.5px; font-weight: 600; color: #4a3a22; white-space: nowrap;
+  padding: 3px 10px 3px 4px; border-radius: 12px; border: 1px solid #b79c72; background: #f2e8d3; }
 #${ROOT_ID} .lu-sw:hover { background: #fbf4e4; }
+
+/* Forget me Nut purse */
+#${ROOT_ID} .lu-purse { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  padding: 2px 10px 2px 4px; border-radius: 12px; border: 1px solid #8a6c45; background: #2b2110; }
+#${ROOT_ID} .lu-purse > img { width: 20px; height: 20px; object-fit: contain; flex: 0 0 auto;
+  border: 0 !important; outline: 0 !important; background: none; }
+#${ROOT_ID} .lu-purse b { font-size: 14px; color: #ffd479; }
+#${ROOT_ID} .lu-purse .lu-pursewas { font-size: 10px; opacity: .65; color: #e8dcc4; }
+#${ROOT_ID} .lu-purse.empty { border-color: #b0553f; }
+#${ROOT_ID} .lu-purse.empty b { color: #ff9c85; }
 #${ROOT_ID} .lu-swtrack { width: 26px; height: 14px; border-radius: 8px; background: #c3ae8b;
   border: 1px solid #9c845f; position: relative; transition: background 120ms; }
 #${ROOT_ID} .lu-swknob { position: absolute; top: 1px; left: 1px; width: 10px; height: 10px;
@@ -152,7 +162,6 @@ function injectStyles() {
 #${ROOT_ID} .lu-sw.on { background: #dceccb; border-color: #5f8b3c; color: #2c5216; }
 #${ROOT_ID} .lu-sw.on .lu-swtrack { background: #5f8b3c; border-color: #47692c; }
 #${ROOT_ID} .lu-sw.on .lu-swknob { left: 13px; }
-#${ROOT_ID} .lu-resetnote { font-size: 11.5px; font-weight: 700; color: #7a3226; margin-left: 2px; }
 /* Reset mode tints the working area, so it is never ambiguous which mode is on. */
 #${ROOT_ID} .lu-body.is-reset .lu-main { background: #f7ece9; }
 
@@ -393,7 +402,12 @@ const LevelUpApp = {
       bump(skillDelta, p.skillUuid, d);
       points -= d;
     }
-    return { classDelta, skillDelta, points, heroics: this._pending.filter((p) => p.op === "heroic") };
+    return {
+      classDelta, skillDelta, points,
+      heroics: this._pending.filter((p) => p.op === "heroic"),
+      // Nuts owed by the staged batch — one per level being given back.
+      refundCount: this._pending.filter((p) => p.op === "refund").length,
+    };
   },
 
   _classLevel(s, cls, proj) { return cls.level + (proj.classDelta.get(cls.key) ?? 0); },
@@ -440,7 +454,7 @@ const LevelUpApp = {
     if (this._pinned && !this._details.has(this._pinned)) this._pinned = null;
 
     panel.innerHTML =
-      this._head(s, proj) + this._toolbar() + this._notes(s) +
+      this._head(s, proj) + this._notes(s) +
       `<div class="lu-body ${this._resetMode ? "is-reset" : ""} ${this._detailMode ? "is-detail" : ""}">
          <div class="lu-rail">${this._rail(s, taken, proj)}</div>
          <div class="lu-mainwrap">
@@ -499,10 +513,12 @@ const LevelUpApp = {
     const staged = proj.points !== s.points.stored;
     return `<div class="lu-head">
       <img src="${esc(s.actor.img)}" alt="">
-      <div>
+      <div class="lu-idblock">
         <div class="lu-name">${esc(s.actor.name)}</div>
         <div class="lu-sub">Level ${esc(s.level)} · ${s.classLevelTotal} class levels · ${gate}</div>
       </div>
+      ${this._switches(s, proj)}
+      <span class="lu-gap"></span>
       <div class="lu-sp ${staged ? "staged" : ""}"><b>${proj.points}</b>
         <span>${staged ? `Skill Points (was ${s.points.stored})` : "Skill Points"}</span></div>
       <div class="lu-tabs">
@@ -515,14 +531,26 @@ const LevelUpApp = {
     </div>`;
   },
 
-  _toolbar() {
+  _switches(s, proj) {
     const sw = (act, on, label, title) =>
       `<button class="lu-sw ${on ? "on" : ""}" data-act="${act}" title="${esc(title)}">
         <span class="lu-swtrack"><span class="lu-swknob"></span></span>${esc(label)}</button>`;
-    return `<div class="lu-toolbar">
+
+    // Nut purse, shown only in Reset mode — it is the price of that mode and
+    // means nothing outside it. Counts down live as levels are staged back.
+    const nuts = s.nuts ?? { count: 0 };
+    const left = nuts.count - proj.refundCount;
+    const purse = this._resetMode
+      ? `<span class="lu-purse ${left <= 0 ? "empty" : ""}" title="${esc(nuts.name ?? "Forget me Nut")} — one per level given back">
+          <img src="${esc(nuts.img ?? "")}" alt="">
+          <b>${left}</b>${proj.refundCount ? `<span class="lu-pursewas">of ${nuts.count}</span>` : ""}
+        </span>`
+      : "";
+
+    return `<div class="lu-switches">
       ${sw("toggledetail", this._detailMode, "Detail", "Show effect text on every row instead of in the panel below")}
-      ${sw("togglereset", this._resetMode, "Reset", "Give skill levels back — hides the spend controls")}
-      ${this._resetMode ? `<span class="lu-resetnote">Reset mode — giving levels back</span>` : ""}
+      ${sw("togglereset", this._resetMode, "Reset", "Give skill levels back, one Forget me Nut each")}
+      ${purse}
     </div>`;
   },
 
@@ -589,6 +617,17 @@ const LevelUpApp = {
       const atMax = lvl >= sk.maxLevel;
       const canBuy = s.gate.open && proj.points > 0 && !atMax
         && clsLevel < s.rules.maxClassLevel && !wouldExceedLimit;
+
+      // Each level given back costs one Forget me Nut, from this character's
+      // own bag. Staged refunds already count against the purse, so the button
+      // stops at the point the batch would outspend it rather than failing at
+      // Confirm.
+      const nutsLeft = (s.nuts?.count ?? 0) - proj.refundCount;
+      const outOfNuts = nutsLeft <= 0;
+      const canRefund = s.gate.open && lvl > 0 && !outOfNuts;
+      const refundTitle = lvl <= 0 ? "Nothing to give back"
+        : outOfNuts ? `No ${s.nuts?.name ?? "Forget me Nut"} left — one is needed per level`
+        : `Give back a level — costs 1 ${s.nuts?.name ?? "Forget me Nut"}`;
       return this._row({
         uuid: sk.uuid, img: sk.img, name: sk.name,
         cls: `${atMax ? "max" : ""} ${lvl === 0 ? "miss" : ""}`,
@@ -597,16 +636,17 @@ const LevelUpApp = {
           meta: `${lvl} / ${sk.maxLevel}${sk.facetGrant ? ` · grants ${sk.facetGrant} Facet${sk.facetGrant === 1 ? "" : "s"} per level` : ""}`,
           description: sk.description,
         },
-        // One control, never both. In Reset mode only the giving-back button
-        // exists; normally only the spend button does.
+        // The − only exists in Reset mode; the + stays put but goes inert, so
+        // the row keeps its shape instead of reflowing when the mode flips.
         right:
-          `<span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>` +
-          this._facetEditBtn(sk) +
           (this._resetMode
             ? `<button class="lu-btn sell" data-act="refund" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
-                ${s.gate.open && lvl > 0 ? "" : "disabled"} title="Give back a level">−</button>`
-            : `<button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
-                ${canBuy ? "" : "disabled"} title="Spend a Skill Point">+</button>`),
+                ${canRefund ? "" : "disabled"} title="${esc(refundTitle)}">−</button>`
+            : "") +
+          `<span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>` +
+          this._facetEditBtn(sk) +
+          `<button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
+            ${canBuy && !this._resetMode ? "" : "disabled"} title="Spend a Skill Point">+</button>`,
       });
     }).join("");
 

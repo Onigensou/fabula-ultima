@@ -98,6 +98,34 @@ export function heroicSlots(actor) {
   };
 }
 
+// ── Forget me Nut ──────────────────────────────────────────────────────────
+//
+// Giving a Skill level back costs one nut, taken from the character doing it —
+// never from a party pool, since it is their level being unwound.
+
+const isNut = (item) => idKey(item?.name) === idKey(LEVELUP.NUT.NAME);
+
+/** Every nut stack the actor holds, and the total across them. */
+export function readNuts(actor) {
+  const stacks = (actor?.items?.contents ?? []).filter(isNut);
+  const count = stacks.reduce((n, i) => n + Math.max(0, num(i.system?.props?.[LEVELUP.NUT.QTY_PROP], 0)), 0);
+  return { count, stacks };
+}
+
+/**
+ * Consume one nut. Follows the convention in action-execution-core's
+ * consumeItemIfNeeded: decrement the stack, delete it when it empties.
+ */
+async function consumeNut(actor) {
+  const { stacks } = readNuts(actor);
+  const stack = stacks.find((i) => num(i.system?.props?.[LEVELUP.NUT.QTY_PROP], 0) > 0);
+  if (!stack) return false;
+  const left = num(stack.system?.props?.[LEVELUP.NUT.QTY_PROP], 0) - 1;
+  if (left > 0) await stack.update({ [`system.props.${LEVELUP.NUT.QTY_PROP}`]: left });
+  else await actor.deleteEmbeddedDocuments("Item", [stack.id]);
+  return true;
+}
+
 /** Non-mastered classes, for the p.227 "at most three" rule. */
 const unmasteredCount = (actor) => readActorClasses(actor).filter((c) => !c.mastered).length;
 
@@ -158,6 +186,7 @@ export function getState(actorUuid) {
     classLevelTotal: sumClassLevels(actor),
     points: { stored, expected, drift: stored !== expected },
     gate: gateState(),
+    nuts: { count: readNuts(actor).count, name: LEVELUP.NUT.NAME, img: LEVELUP.NUT.IMG },
     rules: { maxClassLevel: RULE.MAX_CLASS_LEVEL, maxCharLevel: RULE.MAX_CHAR_LEVEL, maxUnmastered: RULE.MAX_UNMASTERED_CLASSES },
     unmastered: unmasteredCount(actor),
     heroic: {
@@ -352,6 +381,11 @@ async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids }) {
   const broken = heroicsBrokenBy(actor, cls.key, mine.level - 1);
   if (broken.length) return fail("would_orphan_heroic", { broken });
 
+  // The price, checked before anything moves. Charged after the level is
+  // actually given back, so a failure part-way cannot bill for nothing.
+  const nutsBefore = readNuts(actor).count;
+  if (nutsBefore < 1) return fail("no_nuts", { have: nutsBefore, need: 1 });
+
   try {
     // 0. Facets handed back with the level. The window offers the choice from
     //    what the character actually holds; skipping is allowed, which is what
@@ -390,17 +424,20 @@ async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids }) {
       if (!stillGranted) await actor.update({ "system.props.is_martialarmor": false });
     }
 
-    // 4. Credit LAST.
+    // 4. Pay the nut, then credit the point. Both last, after the writes that
+    //    could fail — the same ordering the spend path uses.
+    const paid = await consumeNut(actor);
     await actor.update({
       [`system.props.${PROP.SKILL_POINT}`]: unspentPoints(actor) + 1,
     });
 
-    log(`refund: ${actor.name} → ${cls.name} ${mine.level - 1}, ${skill.name} ${held.level - 1}`);
+    log(`refund: ${actor.name} → ${cls.name} ${mine.level - 1}, ${skill.name} ${held.level - 1} (nut paid: ${paid})`);
     return {
       ok: true,
       classLevel: mine.level - 1,
       skillLevel: held.level - 1,
       pointsLeft: unspentPoints(actor),
+      nutsLeft: readNuts(actor).count,
     };
   } catch (e) {
     err("applyRefund threw", e);

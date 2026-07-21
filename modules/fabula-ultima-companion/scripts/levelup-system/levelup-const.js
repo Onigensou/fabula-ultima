@@ -61,6 +61,16 @@ export const LEVELUP = Object.freeze({
     ip: "Max IP +2",
   }),
 
+  // "Forget me Nut" — the in-world price of giving a Skill level back. One nut
+  // per level. Matched by name rather than uuid, because an actor's copy is a
+  // clone and its uuid is its own; the world item is only the icon source.
+  NUT: Object.freeze({
+    UUID: "Item.fOEeRwVzYy6YQuIN",
+    NAME: "Forget me Nut",
+    IMG: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Nut.png",
+    QTY_PROP: "item_quantity",
+  }),
+
   REQUEST_TIMEOUT_MS: 15000,
 });
 
