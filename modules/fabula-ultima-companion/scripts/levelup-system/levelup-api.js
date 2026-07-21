@@ -64,35 +64,37 @@ function nextRowKey(table) {
 }
 
 /**
- * Heroic Skill slots. One is earned per mastered class, and EVERY held heroic
- * consumes one.
+ * Heroic Skill slots. One is earned per mastered class; only heroics the
+ * character actually PICKED consume one.
  *
- * It is tempting to count only heroics that match one authored on a playable
- * class, so that an equipment-granted passive flagged isHeroic doesn't eat a
- * slot. That is wrong here: the class catalogues are incomplete. Illusionist
- * has no heroics authored at all, Tinkerer and Esper have one each, yet Keren
- * legitimately holds "Create Phantasm: Numen" (Illusionist) and Zarg holds
- * "Deep Pockets" (Tinkerer) — authored directly onto the character. Matching
- * against the catalogue therefore hands out free heroic picks that were already
- * spent (Keren showed 2 phantom slots).
+ * The discriminator is CSB's own grant mechanism, not the skill's name. A skill
+ * granted by a piece of equipment is stored as a contained sub-item — its
+ * `container` prop points at the holder — which is exactly how Zarg's
+ * "Maid cap (Passive)" hangs off the "Maid cap" accessory. It is flagged
+ * isHeroic because it is a heroic-grade passive, but it was never a pick, and
+ * counting it silently ate the slot he earned for mastering Dancer.
  *
- * Counting everything can only ever UNDER-grant, and an under-grant is visible
- * and correctable by a GM, whereas an over-grant silently breaks the rules.
- * `unrecognised` is reported so a GM can see exactly why a count looks off.
+ * Matching against the class catalogues instead would be wrong: they are
+ * incomplete. Illusionist has no heroics authored at all, Tinkerer and Esper
+ * have one each, yet Keren legitimately holds "Create Phantasm: Numen" and Zarg
+ * holds "Deep Pockets", both authored straight onto the character. That
+ * approach handed Keren two phantom slots she had already spent.
+ *
+ * `granted` is reported so a GM can see which heroics were excluded and why.
  */
 export function heroicSlots(actor) {
-  const reg = getRegistry();
-  const known = new Set();
-  for (const c of reg.list) for (const h of c.heroics) known.add(h.key);
+  const contained = (item) =>
+    !!(item?.system?.props?.container ?? item?.system?.container ?? null);
 
   const held = [...indexActorSkills(actor).values()].filter((h) => h.isHeroic);
+  const picked = held.filter((h) => !contained(h.item));
   const earned = readActorClasses(actor).filter((c) => c.mastered).length;
 
   return {
     earned,
-    used: held.length,
-    open: Math.max(0, earned - held.length),
-    unrecognised: held.filter((h) => !known.has(idKey(h.item.name))).map((h) => h.item.name),
+    used: picked.length,
+    open: Math.max(0, earned - picked.length),
+    granted: held.filter((h) => contained(h.item)).map((h) => h.item.name),
   };
 }
 

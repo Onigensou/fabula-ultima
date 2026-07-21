@@ -250,6 +250,28 @@ Because the pool is large, entries are ranked `met` → `close` (blocked, but
 from a class already being played) → `distant` (blocked, class never taken),
 and the window shows the first two with a count for the rest.
 
+### 4a. Which held heroics consume a slot
+
+One slot is earned per mastered class, but only heroics the character **picked**
+consume one. The discriminator is CSB's grant mechanism, not the name: a skill
+granted by equipment is stored as a contained sub-item, with `container`
+pointing at the holder.
+
+Zarg is the case that proved it. He carries `Maid cap (Passive)`, a
+heroic-grade passive hanging off the "Maid cap" accessory. Counting it made
+mastering Dancer appear to award nothing — the slot was eaten by a hat.
+
+```
+Perfect Aim    container: null          → a pick, consumes a slot
+Deep Pockets   container: null          → a pick
+Upgrade        container: null          → a pick
+Maid cap (P.)  container: "Maid cap"    → granted, consumes nothing
+```
+
+Matching against the class catalogues instead is *not* viable — they are
+incomplete (§8), and that approach handed Keren two phantom slots she had
+already spent.
+
 **Blank requirements fail safe.** Fifteen heroics carry no requirement text.
 Reading that as "no requirement" would make them freely takeable by anyone with
 a slot, which is certainly not intended — every Heroic Skill in the book states
@@ -371,9 +393,12 @@ Not bugs, but things the system can only report rather than fix:
   no longer blocks anyone (§4: the pick is not restricted to the mastered
   class), but those classes contribute nothing to the shared pool, and Keren
   holds an Illusionist heroic that exists only on her sheet.
-- **Zarg holds 4 heroics against 3 mastered classes.** The likely culprit is
-  `Maid cap (Passive)`, which looks equipment-granted but is flagged
-  `isHeroic`. Slots clamp at zero rather than guessing.
+- ~~Zarg holds 4 heroics against 3 mastered classes~~ — **resolved.** It was
+  `Maid cap (Passive)`, a heroic-grade passive granted by the "Maid cap"
+  accessory. Equipment grants a skill as a contained sub-item (`container`
+  points at the holder), and slot accounting now excludes those: a granted
+  skill was never a pick, and counting it ate the slot he earned for mastering
+  Dancer. See §4a.
 - **Two class actors are named "Weaponmaster".** The registry keeps the richer
   one (`twJIPhORKNZvbaxK`, 6 skills + 11 heroics) and reports the ignored id.
 - **`member_id_1` stores a bare actor id while slots 2–4 store `Actor.<id>`
