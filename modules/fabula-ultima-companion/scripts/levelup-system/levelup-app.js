@@ -629,27 +629,24 @@ const LevelUpApp = {
       if (at >= 0) f.selected.splice(at, 1);           // re-click deselects
       else if (f.selected.length < f.need) f.selected.push(u);
       else { f.selected.shift(); f.selected.push(u); } // full: oldest drops out
-      f.hold = false;
       // Advance only once the player has nothing left to decide.
       if (f.selected.length === f.need) f.stage = "confirm";
       return this.render();
     }
     if (act === "facetback") {
-      // One step back to the picker, keeping the selection so it can be
-      // adjusted. `hold` stops a still-complete selection bouncing forward.
+      // Back clears the selection and starts the choice over, rather than
+      // returning to a full basket the player has already second-guessed.
+      this._facet.selected = [];
       this._facet.stage = "pick";
-      this._facet.hold = true;
       return this.render();
     }
     if (act === "facetcancel") {
-      const f = this._facet;
+      // A Facet grant cannot be left unresolved: either the player chooses, or
+      // the level is not taken at all. Half-taking it — a level with the grant
+      // skipped — is precisely the drift the picker exists to prevent.
+      // Editing is different: a complete choice already exists, so backing out
+      // simply keeps it.
       this._facet = null;
-      // Skipping a NEW pick still stages the level — the Facet is simply not
-      // taken, which the live data shows is a real situation. Editing an
-      // existing pick leaves it untouched.
-      if (f && f.editIndex < 0) {
-        this._pending.push({ op: f.act, classKey: f.classKey, skillUuid: f.skillUuid });
-      }
       return this.render();
     }
     if (act === "facetok") {
@@ -793,10 +790,9 @@ const LevelUpApp = {
       need,
       pool: pool.map((f) => ({ uuid: f.uuid, name: f.name, cost: f.cost, description: f.description })),
       selected: editIndex >= 0 ? [...(this._pending[editIndex].facetUuids ?? [])] : [],
+      // Auto-advance to the confirmation only ever fires from a toggle, so
+      // opening the editor on an already-complete choice stays on the picker.
       stage: "pick",
-      // Set when stepping BACK from the confirmation so a full selection does
-      // not instantly bounce forward again. Cleared by the next toggle.
-      hold: editIndex >= 0,
     };
     this.render();
     return true;
@@ -859,8 +855,10 @@ const LevelUpApp = {
         }).join("")}
       </div>
       <div class="lu-foot">
-        <span class="lu-foottext">${f.selected.length} of ${f.need} chosen</span>
-        <button class="lu-cta ghost" data-act="facetcancel">${f.editIndex >= 0 ? "Keep as is" : "Skip"}</button>
+        <span class="lu-foottext">${f.selected.length} of ${f.need} chosen${
+          f.editIndex >= 0 ? "" : " — the level is not taken unless you choose"}</span>
+        <button class="lu-cta ghost" data-act="facetcancel">${
+          f.editIndex >= 0 ? "Keep as is" : "Cancel"}</button>
       </div>
     </div></div>`;
   },
