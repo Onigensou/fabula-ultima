@@ -16,6 +16,7 @@
 // ============================================================================
 
 import { LEVELUP } from "./levelup-const.js";
+import { renderDescription, keywordRowHTML, RICHTEXT_CSS } from "./levelup-richtext.js";
 
 const STYLE_ID = "oni-levelup-styles";
 const ROOT_ID = "oni-levelup";
@@ -23,12 +24,22 @@ const ROOT_ID = "oni-levelup";
 const esc = (s) => String(s ?? "")
   .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
-// Strip authored HTML down to readable text for the compact skill cards.
+// Strip authored HTML down to readable text, for titles and tooltips where
+// markup would be noise.
 const plain = (html) => {
   const d = document.createElement("div");
   d.innerHTML = String(html ?? "");
   return (d.textContent ?? "").replace(/\s+/g, " ").trim();
 };
+
+// Authored description → keyword row + formatted prose. Clamping is left to
+// CSS so the markup survives; slicing an HTML string would cut mid-tag.
+function describe(html, { clamp = true } = {}) {
+  const { keywords, bodyHtml } = renderDescription(html);
+  if (!keywords.length && !bodyHtml) return "";
+  return keywordRowHTML(keywords) +
+    (bodyHtml ? `<div class="lu-rt${clamp ? " is-clamped" : ""}">${bodyHtml}</div>` : "");
+}
 
 const api = () => globalThis.FUCompanion?.api?.levelUp ?? null;
 
@@ -124,8 +135,11 @@ function injectStyles() {
 #${ROOT_ID} .lu-skill img { width: 34px; height: 34px; border-radius: 5px; object-fit: cover; flex: 0 0 auto; }
 #${ROOT_ID} .lu-skill .t { flex: 1 1 auto; min-width: 0; }
 #${ROOT_ID} .lu-skill .t b { font-size: 13.5px; }
-#${ROOT_ID} .lu-skill .t p { margin: 2px 0 0; font-size: 11.5px; opacity: .72;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#${ROOT_ID} .lu-skill .t .lu-rt { margin-top: 2px; font-size: 11.5px; opacity: .78; }
+/* Clamp by line box rather than by slicing the HTML — cutting a markup string
+   at N characters lands mid-tag and mangles the formatting. */
+#${ROOT_ID} .lu-rt.is-clamped { display: -webkit-box; -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical; overflow: hidden; }
 #${ROOT_ID} .lu-pips { font-size: 12.5px; font-variant-numeric: tabular-nums; white-space: nowrap; opacity: .8; }
 #${ROOT_ID} .lu-btn { width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 16px;
   line-height: 1; border: 1px solid #8a6c45; background: #e8d9b8; color: #2f2618; flex: 0 0 auto; }
@@ -176,10 +190,16 @@ function injectStyles() {
   background: #f7f0df; border: 1px solid #c6ae87; }
 #${ROOT_ID} .lu-fbtn:hover { background: #fffaec; border-color: #a98a4e; }
 #${ROOT_ID} .lu-fbtn b { font-size: 13.5px; }
-#${ROOT_ID} .lu-fbtn p { margin: 3px 0 0; font-size: 11.5px; opacity: .72; }
+#${ROOT_ID} .lu-fbtn .lu-rt { margin-top: 3px; font-size: 11.5px; opacity: .78; }
+#${ROOT_ID} .lu-fhead { display: flex; align-items: center; gap: 8px; }
+/* The global sheet stylesheet puts a border on every img; these are inline
+   glyphs and must not inherit it. */
+#${ROOT_ID} .lu-fhead img { width: 26px; height: 26px; object-fit: contain; flex: 0 0 auto;
+  border: 0 !important; outline: 0 !important; background: none; border-radius: 4px; }
 #${ROOT_ID} .lu-fbtn.is-on { background: #dceccb; border-color: #5f8b3c; box-shadow: 0 0 0 1px #5f8b3c inset; }
 #${ROOT_ID} .lu-fbtn.is-on b { color: #2c5216; }
 #${ROOT_ID} .lu-btn.edit { background: #e3dcf1; border-color: #7a6aa3; }
+${RICHTEXT_CSS(`#${ROOT_ID}`)}
 `;
   document.head.appendChild(s);
 }
@@ -429,7 +449,7 @@ const LevelUpApp = {
         <img src="${esc(sk.img)}" alt="">
         <div class="t">
           <b>${esc(sk.name)}</b>${sk.cost ? ` <span class="lu-tag">${esc(sk.cost)}</span>` : ""}
-          <p>${esc(plain(sk.description))}</p>
+          ${describe(sk.description)}
         </div>
         <span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>
         ${this._facetEditBtn(sk)}
@@ -543,7 +563,7 @@ const LevelUpApp = {
         <img src="${esc(h.skill.img)}" alt="">
         <div class="t">
           <b>${esc(h.skill.name)}</b> <span class="lu-tag">${esc(from)}</span>${staged ? ` <span class="lu-tag moved">staged</span>` : ""}
-          <p>${esc(plain(h.skill.description))}</p>${req}
+          ${describe(h.skill.description)}${req}
         </div>
         <button class="lu-btn buy" data-act="heroic" data-uuid="${esc(h.skill.uuid)}" data-name="${esc(h.skill.name)}"
           ${s.gate.open && h.met ? "" : "disabled"} title="${staged ? "Un-stage" : "Take this Heroic Skill (free)"}">${staged ? "✓" : "★"}</button>
@@ -788,7 +808,9 @@ const LevelUpApp = {
       act, classKey, skillUuid, editIndex,
       className: cls.name, skillName: skill.name,
       need,
-      pool: pool.map((f) => ({ uuid: f.uuid, name: f.name, cost: f.cost, description: f.description })),
+      pool: pool.map((f) => ({
+        uuid: f.uuid, name: f.name, cost: f.cost, description: f.description, img: f.img,
+      })),
       selected: editIndex >= 0 ? [...(this._pending[editIndex].facetUuids ?? [])] : [],
       // Auto-advance to the confirmation only ever fires from a toggle, so
       // opening the editor on an already-complete choice stays on the picker.
@@ -825,8 +847,9 @@ const LevelUpApp = {
             ? `You will learn ${chosen.length === 1 ? "this" : "these"} ${plural(chosen.length)}:`
             : `You will unlearn ${chosen.length === 1 ? "this" : "these"} ${plural(chosen.length)}:`}</p>
           ${chosen.map((c) => `<div class="lu-fbtn is-on" style="cursor:default">
-            <b>${esc(c.name)}</b>${c.cost ? ` <span class="lu-tag">${esc(c.cost)}</span>` : ""}
-            <p>${esc(plain(c.description).slice(0, 200))}</p></div>`).join("")}
+            <span class="lu-fhead">${c.img ? `<img src="${esc(c.img)}" alt="">` : ""}
+              <b>${esc(c.name)}</b>${c.cost ? ` <span class="lu-tag">${esc(c.cost)}</span>` : ""}</span>
+            ${describe(c.description, { clamp: false })}</div>`).join("")}
         </div>
         <div class="lu-foot">
           <span class="lu-foottext">Nothing is written until you Confirm the whole batch.</span>
@@ -849,8 +872,9 @@ const LevelUpApp = {
         ${f.pool.map((p) => {
           const on = f.selected.includes(p.uuid);
           return `<button class="lu-fbtn ${on ? "is-on" : ""}" data-act="facettoggle" data-uuid="${esc(p.uuid)}">
-            <b>${on ? "✓ " : ""}${esc(p.name)}</b>${p.cost ? ` <span class="lu-tag">${esc(p.cost)}</span>` : ""}
-            <p>${esc(plain(p.description).slice(0, 200))}</p>
+            <span class="lu-fhead">${p.img ? `<img src="${esc(p.img)}" alt="">` : ""}
+              <b>${on ? "✓ " : ""}${esc(p.name)}</b>${p.cost ? ` <span class="lu-tag">${esc(p.cost)}</span>` : ""}</span>
+            ${describe(p.description, { clamp: false })}
           </button>`;
         }).join("")}
       </div>

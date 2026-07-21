@@ -383,9 +383,22 @@ scripts/levelup-system/
   requirement-eval.js     clauses → per-clause verdict for one actor
   levelup-gate.js         camp phase + scene mode → may this actor spend?
   levelup-api.js          getState / spendPoint / refundPoint / pickHeroic
+  levelup-richtext.js     authored prose → keyword/status terms + safe HTML
   levelup-app.js          the skill-tree window
   levelup-badge.js        "Unspent Skill Points"
 ```
+
+Descriptions render through the Battle Director's **`keyword-registry.js`** — the
+same 70-term vocabulary the Action Card uses — so a Dance reads the same in the
+level-up picker as it does mid-combat. Only the registry is shared; the card's
+parser is private and its module is ~7k lines of combat rendering. Terms here
+are not clickable, since this window has no tooltip layer and a chip that looks
+interactive but isn't is worse than plain emphasis.
+
+Authored markup is scrubbed to structural tags — inline styles, font tags,
+wrapper spans and images are stripped, so nothing drags sheet typography into
+the window. Clamping is done by CSS line-box, never by slicing the HTML string,
+which lands mid-tag.
 
 Writes are GM-mediated over a socket, following the existing
 `shopPurchase-handler.js` request/result pattern, and routed through
