@@ -142,6 +142,23 @@ function injectStyles() {
 #${ROOT_ID} .lu-tag { font-size: 10px; padding: 1px 6px; border-radius: 9px; background: #d9c9a6;
   border: 1px solid #b79c72; }
 
+/* staged, unwritten values */
+#${ROOT_ID} .moved { color: #1f6f3f; font-weight: 700; }
+#${ROOT_ID} .lu-sp.staged { border-color: #6f9c55; box-shadow: 0 0 0 1px #6f9c55 inset; }
+#${ROOT_ID} .lu-sp.staged b { color: #b6f08a; }
+#${ROOT_ID} .lu-tag.moved { background: #cfe6bd; border-color: #6f9c55; color: #234f14; }
+
+#${ROOT_ID} .lu-foot { flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; background: #ded0b1; border-top: 2px solid #b79c72; }
+#${ROOT_ID} .lu-foottext { flex: 1 1 auto; font-size: 12px; min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; }
+#${ROOT_ID} .lu-cta { padding: 6px 16px; border-radius: 7px; cursor: pointer; font: inherit;
+  font-size: 13px; font-weight: 600; border: 1px solid #8a6c45; }
+#${ROOT_ID} .lu-cta.go { background: #3f6b23; border-color: #2b4a15; color: #f2ffe6; }
+#${ROOT_ID} .lu-cta.go:hover { background: #4d8029; }
+#${ROOT_ID} .lu-cta.ghost { background: #efe4cd; color: #4a3a22; }
+#${ROOT_ID} .lu-cta.ghost:hover { background: #fbf4e4; }
+
 #${ROOT_ID} .lu-picker { position: absolute; inset: 0; display: flex; align-items: center;
   justify-content: center; background: rgba(0,0,0,.45); }
 #${ROOT_ID} .lu-pickpanel { width: min(620px, 88vw); height: min(640px, 84vh); }
@@ -159,6 +176,16 @@ const LevelUpApp = {
   _selected: null,      // class key — may be a class not yet taken
   _pickerOpen: false,   // the new-class browser, layered over the main window
   _busy: false,
+
+  // Staged, unwritten changes. Nothing touches the actor until Confirm.
+  //
+  // Besides being what a player wants (try a build, back out of it), this is
+  // what keeps the sheet consistent: a spend writes the class row, the skill
+  // and the point counter as three updates, and re-rendering between them
+  // showed a drift warning for the instant the books didn't balance. Batching
+  // means the window never observes a half-applied spend.
+  _pending: [],         // [{ op:"spend"|"refund"|"heroic", classKey, skillUuid, benefit }]
+  _applying: false,
 
   get isOpen() { return Boolean(this._root?.isConnected); },
 
@@ -192,6 +219,8 @@ const LevelUpApp = {
   },
 
   close() {
+    // Staged changes were never written; dropping them is the same as Cancel.
+    this._pending = [];
     document.removeEventListener("keydown", this._onKey);
     if (this._hook) Hooks.off("updateActor", this._hook);
     if (this._itemHook) Hooks.off("createItem", this._itemHook);
@@ -211,10 +240,46 @@ const LevelUpApp = {
     return tok ?? null;
   },
 
+  // ── projection ──────────────────────────────────────────────────────────
+
+  /**
+   * Fold the staged operations over the real state so the window can show what
+   * the character WOULD look like. Returns deltas keyed by class and skill,
+   * plus the resulting Skill Point balance.
+   */
+  _project(s) {
+    const classDelta = new Map();
+    const skillDelta = new Map();
+    let points = s.points.stored;
+    const bump = (m, k, d) => m.set(k, (m.get(k) ?? 0) + d);
+
+    for (const p of this._pending) {
+      if (p.op === "heroic") continue;           // heroics are free
+      const d = p.op === "spend" ? 1 : -1;
+      bump(classDelta, p.classKey, d);
+      bump(skillDelta, p.skillUuid, d);
+      points -= d;
+    }
+    return { classDelta, skillDelta, points, heroics: this._pending.filter((p) => p.op === "heroic") };
+  },
+
+  _classLevel(s, cls, proj) { return cls.level + (proj.classDelta.get(cls.key) ?? 0); },
+  _skillLevel(sk, proj) { return sk.level + (proj.skillDelta.get(sk.uuid) ?? 0); },
+
+  /** Non-mastered classes after staging — for the p.227 three-class limit. */
+  _projectedUnmastered(s, proj) {
+    let n = 0;
+    for (const c of s.classes) {
+      const lvl = this._classLevel(s, c, proj);
+      if (lvl > 0 && lvl < s.rules.maxClassLevel) n += 1;
+    }
+    return n;
+  },
+
   // ── render ──────────────────────────────────────────────────────────────
 
   render() {
-    if (!this.isOpen) return;
+    if (!this.isOpen || this._applying) return;
     const s = api()?.getState(this._actorUuid);
     const panel = this._root.querySelector(".lu-panel");
     if (!s?.ok) {
@@ -222,17 +287,23 @@ const LevelUpApp = {
       return;
     }
 
-    const taken = s.classes.filter((c) => c.taken).sort((a, b) => b.level - a.level || a.name.localeCompare(b.name));
+    const proj = this._project(s);
+    // A class with staged levels counts as "taken" for the rail, so a class
+    // opened this session appears immediately rather than after Confirm.
+    const taken = s.classes
+      .filter((c) => c.taken || this._classLevel(s, c, proj) > 0)
+      .sort((a, b) => b.level - a.level || a.name.localeCompare(b.name));
     if (!this._selected || !s.classes.some((c) => c.key === this._selected)) {
       this._selected = taken[0]?.key ?? null;
     }
 
     panel.innerHTML =
-      this._head(s) + this._notes(s) +
+      this._head(s, proj) + this._notes(s) +
       `<div class="lu-body">
-         <div class="lu-rail">${this._rail(s, taken)}</div>
-         <div class="lu-main">${this._main(s)}</div>
-       </div>`;
+         <div class="lu-rail">${this._rail(s, taken, proj)}</div>
+         <div class="lu-main">${this._main(s, proj)}</div>
+       </div>` +
+      this._footer(s, proj);
 
     // The new-class browser is its own window layered over this one, so the
     // rail stays a short list of what you actually play.
@@ -247,17 +318,19 @@ const LevelUpApp = {
     }
   },
 
-  _head(s) {
+  _head(s, proj) {
     const gate = s.gate.open
       ? `<span class="lu-tag">Spending open — ${esc(s.gate.where)}</span>`
       : `<span class="lu-tag">Viewing only</span>`;
+    const staged = proj.points !== s.points.stored;
     return `<div class="lu-head">
       <img src="${esc(s.actor.img)}" alt="">
       <div>
         <div class="lu-name">${esc(s.actor.name)}</div>
         <div class="lu-sub">Level ${esc(s.level)} · ${s.classLevelTotal} class levels · ${gate}</div>
       </div>
-      <div class="lu-sp"><b>${s.points.stored}</b><span>Skill Points</span></div>
+      <div class="lu-sp ${staged ? "staged" : ""}"><b>${proj.points}</b>
+        <span>${staged ? `Skill Points (was ${s.points.stored})` : "Skill Points"}</span></div>
       <button class="lu-x" data-act="close" title="Close">×</button>
     </div>`;
   },
@@ -267,8 +340,10 @@ const LevelUpApp = {
     if (!s.gate.open) {
       html += `<div class="lu-note warn">${esc(s.gate.reason)} You can still browse and plan.</div>`;
     }
-    // Drift is a GM concern — a player can neither cause nor fix it.
-    if (s.points.drift && game.user?.isGM) {
+    // Drift is a GM concern — a player can neither cause nor fix one. Hidden
+    // while changes are staged: mid-edit the books legitimately don't balance,
+    // and flashing a corruption warning during normal use is just noise.
+    if (s.points.drift && game.user?.isGM && !this._pending.length) {
       html += `<div class="lu-note drift">
         <span>Skill Points read <b>${s.points.stored}</b> but level minus class levels gives <b>${s.points.expected}</b>.</span>
         <button class="lu-btn" style="width:auto;padding:2px 10px" data-act="heal">Fix</button>
@@ -277,12 +352,16 @@ const LevelUpApp = {
     return html;
   },
 
-  _rail(s, taken) {
-    const row = (c) => `<button class="lu-cls ${this._selected === c.key ? "on" : ""}" data-act="pick" data-key="${esc(c.key)}">
-      <img src="${esc(c.img)}" alt="">
-      <span class="n">${c.mastered ? "⭐ " : ""}${esc(c.name)}</span>
-      <span class="l">${c.level}/10</span>
-    </button>`;
+  _rail(s, taken, proj) {
+    const row = (c) => {
+      const lvl = this._classLevel(s, c, proj);
+      const moved = lvl !== c.level;
+      return `<button class="lu-cls ${this._selected === c.key ? "on" : ""}" data-act="pick" data-key="${esc(c.key)}">
+        <img src="${esc(c.img)}" alt="">
+        <span class="n">${lvl >= s.rules.maxClassLevel ? "⭐ " : ""}${esc(c.name)}</span>
+        <span class="l ${moved ? "moved" : ""}">${lvl}/${s.rules.maxClassLevel}</span>
+      </button>`;
+    };
 
     // A class chosen from the browser but not yet paid for shows here as
     // pending, so the rail still explains where the main pane came from.
@@ -292,43 +371,77 @@ const LevelUpApp = {
 
     return `<div class="lu-railhead">Classes</div>` +
       (taken.length ? taken.map(row).join("") : `<div class="lu-empty">No classes yet.</div>`) +
-      (pending ? `<div class="lu-railhead">Starting</div>${row({ ...pending, mastered: false })}` : "") +
+      (pending ? `<div class="lu-railhead">Starting</div>${row(pending)}` : "") +
       `<button class="lu-cls new" data-act="openpicker">＋ New Class</button>`;
   },
 
-  _main(s) {
+  _main(s, proj) {
     const cls = s.classes.find((c) => c.key === this._selected);
     if (!cls) {
       return `<div class="lu-empty">No classes yet — use <b>＋ New Class</b> to start one.</div>`;
     }
 
-    const canSpend = s.gate.open && s.points.stored > 0;
+    const clsLevel = this._classLevel(s, cls, proj);
+    const opening = clsLevel === 0;   // staging the first level would open it
+    const wouldExceedLimit =
+      opening && this._projectedUnmastered(s, proj) >= s.rules.maxUnmastered;
+
     const skills = cls.skills.map((sk) => {
-      const atMax = sk.level >= sk.maxLevel;
-      const canBuy = canSpend && !atMax && cls.level < s.rules.maxClassLevel;
-      return `<div class="lu-skill ${atMax ? "max" : ""} ${sk.level === 0 ? "none" : ""}">
+      const lvl = this._skillLevel(sk, proj);
+      const moved = lvl !== sk.level;
+      const atMax = lvl >= sk.maxLevel;
+      const canBuy = s.gate.open && proj.points > 0 && !atMax
+        && clsLevel < s.rules.maxClassLevel && !wouldExceedLimit;
+      return `<div class="lu-skill ${atMax ? "max" : ""} ${lvl === 0 ? "none" : ""}">
         <img src="${esc(sk.img)}" alt="">
         <div class="t">
           <b>${esc(sk.name)}</b>${sk.cost ? ` <span class="lu-tag">${esc(sk.cost)}</span>` : ""}
           <p>${esc(plain(sk.description))}</p>
         </div>
-        <span class="lu-pips">${sk.level} / ${sk.maxLevel}</span>
+        <span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>
         <button class="lu-btn sell" data-act="refund" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
-          ${s.gate.open && sk.level > 0 ? "" : "disabled"} title="Refund a level">−</button>
+          ${s.gate.open && lvl > 0 ? "" : "disabled"} title="Give back a level">−</button>
         <button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
           ${canBuy ? "" : "disabled"} title="Spend a Skill Point">+</button>
       </div>`;
     }).join("");
 
-    const mastered = cls.level >= s.rules.maxClassLevel;
-    const newNote = !cls.taken
-      ? `<div class="lu-lore">You don't have this class yet — buying any skill below starts it at level 1.</div>`
-      : "";
+    const mastered = clsLevel >= s.rules.maxClassLevel;
+    const note = wouldExceedLimit
+      ? `<div class="lu-note warn" style="border-radius:7px;margin-bottom:10px">You already have ${s.rules.maxUnmastered} unmastered classes — take one to level 10 before starting another.</div>`
+      : opening
+        ? `<div class="lu-lore">You don't have this class yet — buying any skill below starts it at level 1.</div>`
+        : "";
+
     return `<div class="lu-h2"><b>${mastered ? "⭐ " : ""}${esc(cls.name)}</b>
-        <span>${cls.level}/${s.rules.maxClassLevel}${mastered ? " · mastered" : ""}${cls.benefit ? ` · ${esc(LEVELUP.BENEFIT_LABEL[cls.benefit] ?? cls.benefit)}` : ""}</span></div>
-      ${newNote}
+        <span>${clsLevel}/${s.rules.maxClassLevel}${mastered ? " · mastered" : ""}${cls.benefit ? ` · ${esc(LEVELUP.BENEFIT_LABEL[cls.benefit] ?? cls.benefit)}` : ""}</span></div>
+      ${note}
       ${skills || `<div class="lu-empty">This class has no skills authored.</div>`}
       ${this._heroicPane(s)}`;
+  },
+
+  _footer(s, proj) {
+    const n = this._pending.length;
+    if (!n) return "";
+    const summary = this._summarise(s, proj);
+    return `<div class="lu-foot">
+      <span class="lu-foottext">${esc(summary)}</span>
+      <button class="lu-cta ghost" data-act="cancel">Cancel</button>
+      <button class="lu-cta go" data-act="confirm">Confirm ${n} change${n === 1 ? "" : "s"}</button>
+    </div>`;
+  },
+
+  _summarise(s, proj) {
+    const bits = [];
+    for (const [key, d] of proj.classDelta) {
+      if (!d) continue;
+      const c = s.classes.find((x) => x.key === key);
+      bits.push(`${c?.name ?? key} ${c ? c.level : 0} → ${this._classLevel(s, c ?? { key, level: 0 }, proj)}`);
+    }
+    for (const p of proj.heroics) bits.push(`Heroic: ${p.name ?? "skill"}`);
+    const spent = s.points.stored - proj.points;
+    const cost = spent > 0 ? `${spent} point${spent === 1 ? "" : "s"} spent` : `${-spent} point${spent === -1 ? "" : "s"} returned`;
+    return `${bits.join(" · ")}  —  ${cost}`;
   },
 
   _heroicPane(s) {
@@ -350,14 +463,15 @@ const LevelUpApp = {
       const req = !h.evaluable
         ? `<p class="lu-req">Requirement needs a GM: “${esc(h.prose)}”</p>`
         : h.met ? "" : `<p class="lu-req">${h.clauses.filter((c) => !c.met).map((c) => esc(c.label)).join(" · ")}</p>`;
-      return `<div class="lu-skill ${h.met ? "" : "none"}">
+      const staged = this._pending.some((p) => p.op === "heroic" && p.skillUuid === h.skill.uuid);
+      return `<div class="lu-skill ${h.met ? "" : "none"} ${staged ? "max" : ""}">
         <img src="${esc(h.skill.img)}" alt="">
         <div class="t">
-          <b>${esc(h.skill.name)}</b> <span class="lu-tag">${esc(from)}</span>
+          <b>${esc(h.skill.name)}</b> <span class="lu-tag">${esc(from)}</span>${staged ? ` <span class="lu-tag moved">staged</span>` : ""}
           <p>${esc(plain(h.skill.description))}</p>${req}
         </div>
-        <button class="lu-btn buy" data-act="heroic" data-uuid="${esc(h.skill.uuid)}"
-          ${s.gate.open && h.met ? "" : "disabled"} title="Take this Heroic Skill (free)">★</button>
+        <button class="lu-btn buy" data-act="heroic" data-uuid="${esc(h.skill.uuid)}" data-name="${esc(h.skill.name)}"
+          ${s.gate.open && h.met ? "" : "disabled"} title="${staged ? "Un-stage" : "Take this Heroic Skill (free)"}">${staged ? "✓" : "★"}</button>
       </div>`;
     }).join("");
     return `<div class="lu-heroic">${head}${rows}</div>`;
@@ -413,38 +527,98 @@ const LevelUpApp = {
       return this.render();
     }
 
+    // Staging — no writes. A spend and a refund of the same skill annihilate,
+    // so clicking + then − leaves nothing queued rather than two no-ops that
+    // would both hit the actor on Confirm.
+    if (act === "spend" || act === "refund") {
+      const opposite = act === "spend" ? "refund" : "spend";
+      const i = this._pending.findIndex(
+        (p) => p.op === opposite && p.skillUuid === btn.dataset.uuid && p.classKey === btn.dataset.key
+      );
+      if (i >= 0) this._pending.splice(i, 1);
+      else this._pending.push({ op: act, classKey: btn.dataset.key, skillUuid: btn.dataset.uuid });
+      return this.render();
+    }
+
+    if (act === "heroic") {
+      const i = this._pending.findIndex((p) => p.op === "heroic" && p.skillUuid === btn.dataset.uuid);
+      if (i >= 0) this._pending.splice(i, 1);
+      else this._pending.push({ op: "heroic", skillUuid: btn.dataset.uuid, name: btn.dataset.name });
+      return this.render();
+    }
+
+    if (act === "cancel") { this._pending = []; return this.render(); }
+    if (act === "confirm") return this._commit();
+
     const A = api();
     if (!A) return;
     this._busy = true;
     btn.disabled = true;
+    try {
+      if (act === "heal") {
+        const res = await A.healPoints(this._actorUuid);
+        if (res && !res.ok) ui.notifications?.warn?.(explain(res));
+      }
+    } finally {
+      this._busy = false;
+      this.render();
+    }
+  },
+
+  /**
+   * Write the staged operations, in order.
+   *
+   * Refunds go first: they free Skill Points that later spends may rely on, and
+   * they relax the three-unmastered-class limit. Staging "drop Dancer, start
+   * Guardian" with only one point has to work.
+   *
+   * On the first failure the rest are abandoned and left staged, so the window
+   * shows exactly what did not go through. Each operation is individually
+   * atomic GM-side, so a partial apply is a coherent state, not a corrupt one.
+   */
+  async _commit() {
+    const A = api();
+    if (!A || !this._pending.length) return;
+
+    const ordered = [
+      ...this._pending.filter((p) => p.op === "refund"),
+      ...this._pending.filter((p) => p.op === "spend"),
+      ...this._pending.filter((p) => p.op === "heroic"),
+    ];
+
+    this._applying = true;   // suppress re-render while the books are unbalanced
+    this._busy = true;
+    let mastered = false;
 
     try {
-      let res;
-      if (act === "spend") {
-        res = await A.spendPoint({
-          actorUuid: this._actorUuid,
-          classKey: btn.dataset.key,
-          skillUuid: btn.dataset.uuid,
-          benefit: await this._benefitFor(btn.dataset.key),
-        });
-      } else if (act === "refund") {
-        res = await A.refundPoint({
-          actorUuid: this._actorUuid, classKey: btn.dataset.key, skillUuid: btn.dataset.uuid,
-        });
-      } else if (act === "heroic") {
-        res = await A.pickHeroic({ actorUuid: this._actorUuid, skillUuid: btn.dataset.uuid });
-      } else if (act === "heal") {
-        res = await A.healPoints(this._actorUuid);
-      }
+      for (let i = 0; i < ordered.length; i++) {
+        const p = ordered[i];
+        let res;
+        if (p.op === "refund") {
+          res = await A.refundPoint({ actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid });
+        } else if (p.op === "spend") {
+          res = await A.spendPoint({
+            actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid,
+            benefit: p.benefit ?? await this._benefitFor(p.classKey),
+          });
+          if (res?.ok && res.mastered) mastered = true;
+        } else {
+          res = await A.pickHeroic({ actorUuid: this._actorUuid, skillUuid: p.skillUuid });
+        }
 
-      if (res && !res.ok) ui.notifications?.warn?.(explain(res));
-      else if (act === "spend" && res?.mastered) {
-        ui.notifications?.info?.("Class mastered — a Heroic Skill slot is open.");
+        if (!res?.ok) {
+          this._pending = ordered.slice(i);   // keep what didn't apply
+          ui.notifications?.warn?.(explain(res));
+          return;
+        }
       }
+      this._pending = [];
+      if (mastered) ui.notifications?.info?.("Class mastered — a Heroic Skill slot is open.");
     } catch (e) {
       console.error(LEVELUP.TAG, e);
       ui.notifications?.error?.("Level-up failed — see console.");
     } finally {
+      this._applying = false;
       this._busy = false;
       this.render();
     }
