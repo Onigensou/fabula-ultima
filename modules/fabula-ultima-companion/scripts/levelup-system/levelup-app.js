@@ -17,6 +17,10 @@
 
 import { LEVELUP } from "./levelup-const.js";
 import { renderDescription, keywordRowHTML, RICHTEXT_CSS } from "./levelup-richtext.js";
+import {
+  sfx, hoverSfx, resetHover, preloadLevelUpSfx,
+  staggerRows, windowAnim, burst, FX_CSS,
+} from "./levelup-fx.js";
 
 const STYLE_ID = "oni-levelup-styles";
 const ROOT_ID = "oni-levelup";
@@ -290,6 +294,7 @@ function injectStyles() {
 #${ROOT_ID} .lu-fbtn.is-on b { color: #2c5216; }
 #${ROOT_ID} .lu-btn.edit { background: #e3dcf1; border-color: #7a6aa3; }
 ${RICHTEXT_CSS(`#${ROOT_ID}`)}
+${FX_CSS}
 `;
   document.head.appendChild(s);
 }
@@ -347,6 +352,12 @@ const LevelUpApp = {
 
     root.addEventListener("mousedown", (ev) => { if (ev.target === root) this.close(); });
     root.addEventListener("click", (ev) => this._onClick(ev));
+
+    // One cursor blip per interactive element entered, not per mousemove.
+    root.addEventListener("pointerover", (ev) => {
+      const el = ev.target?.closest?.("[data-act]");
+      if (el && !el.disabled) hoverSfx(el);
+    });
     this._onKey = (ev) => { if (ev.key === "Escape") this.close(); };
     document.addEventListener("keydown", this._onKey);
 
@@ -358,12 +369,22 @@ const LevelUpApp = {
     this._itemHook2 = Hooks.on("deleteItem", (i) => { if (i?.parent?.uuid === this._actorUuid) this.render(); });
 
     this.render();
+    preloadLevelUpSfx();
+    sfx("open");
+    windowAnim(this._root.querySelector(".lu-panel"), "in");
   },
 
-  close() {
+  async close() {
+    if (this._closing) return;
+    this._closing = true;
+    sfx("close");
+    await windowAnim(this._root?.querySelector(".lu-panel"), "out");
+    this._closing = false;
+
     // Staged changes were never written; dropping them is the same as Discard.
     this._pending = [];
     this._facet = null;
+    resetHover();
     document.removeEventListener("keydown", this._onKey);
     if (this._hook) Hooks.off("updateActor", this._hook);
     if (this._itemHook) Hooks.off("createItem", this._itemHook);
@@ -467,6 +488,15 @@ const LevelUpApp = {
 
     const list = panel.querySelector(".lu-main");
     if (list) list.scrollTop = keepScroll;
+
+    // Stagger only when the LIST ITSELF changed — a different tab or class.
+    // Re-animating on every render would make each + click flutter the whole
+    // list, which is noise rather than feedback.
+    const listKey = `${this._tab}:${this._selected}:${this._detailMode}`;
+    if (list && listKey !== this._listKey) {
+      this._listKey = listKey;
+      staggerRows(list.querySelectorAll(".lu-row"), "in");
+    }
 
     // Hover updates only the detail panel — re-rendering the whole window on
     // every mouseover would fight the scroll position and feel awful.
@@ -875,9 +905,11 @@ const LevelUpApp = {
 
     if (act === "close") return this.close();
     if (act === "tab") {
+      if (btn.dataset.tab === this._tab) return;
+      sfx("tab");
       this._tab = btn.dataset.tab;
       this._pinned = null; this._hover = null;   // details belong to the old list
-      return this.render();
+      return this._swapList();
     }
     if (act === "pin" || act === "unpin") {
       const u = act === "unpin" ? null : btn.dataset.detail;
@@ -891,17 +923,23 @@ const LevelUpApp = {
       this._paintDetail();
       return;
     }
-    if (act === "toggledetail") { this._detailMode = !this._detailMode; return this.render(); }
+    if (act === "toggledetail") {
+      sfx("toggle");
+      this._detailMode = !this._detailMode;
+      return this._swapList();
+    }
     if (act === "togglereset") {
+      sfx("toggle");
       this._resetMode = !this._resetMode;
       return this.render();
     }
     if (act === "openpicker") { this._pickerOpen = true; return this.render(); }
     if (act === "closepicker") { this._pickerOpen = false; return this.render(); }
     if (act === "pick") {
+      const changed = this._selected !== btn.dataset.key;
       this._selected = btn.dataset.key;
       this._pickerOpen = false;   // choosing from the browser returns to the main pane
-      return this.render();
+      return changed ? this._swapList() : this.render();
     }
 
     // Staging — no writes. A spend and a refund of the same skill annihilate,
@@ -1019,6 +1057,7 @@ const LevelUpApp = {
     this._applying = true;   // suppress re-render while the books are unbalanced
     this._busy = true;
     let mastered = false;
+    const gained = [], lost = [];   // skill uuids, for the celebration afterwards
 
     try {
       for (let i = 0; i < ordered.length; i++) {
@@ -1029,6 +1068,7 @@ const LevelUpApp = {
             actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid,
             facetUuids: p.facetUuids,
           });
+          if (res?.ok) lost.push(p.skillUuid);
         } else if (p.op === "spend") {
           res = await A.spendPoint({
             actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid,
@@ -1036,6 +1076,7 @@ const LevelUpApp = {
             facetUuids: p.facetUuids,
           });
           if (res?.ok && res.mastered) mastered = true;
+          if (res?.ok) gained.push(p.skillUuid);
         } else {
           res = await A.pickHeroic({ actorUuid: this._actorUuid, skillUuid: p.skillUuid });
         }
@@ -1055,7 +1096,29 @@ const LevelUpApp = {
       this._applying = false;
       this._busy = false;
       this.render();
+      this._celebrate(gained, lost);
     }
+  },
+
+  /**
+   * The payoff. Bursts on every row that moved, and one cue for the batch.
+   *
+   * A batch can both spend and refund — trading a level from one skill into
+   * another — and playing both cues over each other sounds like a mistake. The
+   * gain wins: it is the outcome the player was after.
+   */
+  _celebrate(gained, lost) {
+    if (!this.isOpen) return;
+    // Wait a frame so the re-rendered rows have their final positions; the
+    // particles are placed against the viewport and would otherwise aim at
+    // where a row used to be.
+    requestAnimationFrame(() => {
+      const find = (uuid) => this._root?.querySelector(`.lu-row[data-detail="${CSS.escape(uuid)}"]`);
+      for (const u of gained) burst(find(u), { kind: "up" });
+      for (const u of lost) burst(find(u), { kind: "down" });
+      if (gained.length) sfx("levelUp");
+      else if (lost.length) sfx("levelDown");
+    });
   },
 
   /**
@@ -1155,6 +1218,15 @@ const LevelUpApp = {
         ${pinned ? `<button class="lu-btn" data-act="unpin" title="Unpin">📌</button>` : ""}
       </div>
       <div class="lu-dbody">${describe(d.description, { clamp: false })}${d.note ?? ""}</div>`;
+  },
+
+  /** Slide the current rows out, then render the new list in. */
+  async _swapList() {
+    const rows = this._root?.querySelectorAll(".lu-main .lu-row");
+    const wait = staggerRows(rows, "out");
+    if (wait) await new Promise((r) => setTimeout(r, Math.min(wait, 260)));
+    this._listKey = null;   // force the incoming list to stagger in
+    this.render();
   },
 
   _paintDetail() {
