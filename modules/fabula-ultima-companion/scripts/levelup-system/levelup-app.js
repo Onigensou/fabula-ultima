@@ -685,8 +685,14 @@ const LevelUpApp = {
    * on, which is the lag and the cursor desync. This touches just the overlay,
    * so the browser stays responsive no matter how fast you scroll it.
    */
-  _paintPicker(s = null) {
+  _paintPicker(s = null, { chase = false } = {}) {
     if (!this.isOpen) return;
+
+    // Rebuilding the overlay resets the list's scroll to the top, which threw
+    // you back to the top of the alphabet every time you picked a class further
+    // down. Carry the position across the repaint.
+    const keepScroll = this._root.querySelector(".lu-picklist")?.scrollTop ?? 0;
+
     this._root.querySelector(`#${ROOT_ID}-picker`)?.remove();
     if (!this._pickerOpen) { this._updateCursor(); return; }
 
@@ -701,8 +707,14 @@ const LevelUpApp = {
       if (ev.target === p) { sfx("deselect"); this._pickerOpen = false; this._paintPicker(); }
     });
     this._root.appendChild(p);
+
+    const list = p.querySelector(".lu-picklist");
+    if (list) list.scrollTop = keepScroll;
+    // Only chase the selection when the KEYBOARD moved it. On a click the row
+    // is already under the pointer, and scrolling it would slide the list out
+    // from under you.
+    if (chase) p.querySelector(".lu-pickrow.on")?.scrollIntoView({ block: "nearest" });
     this._updateCursor();
-    this._root.querySelector(".lu-pickrow.on")?.scrollIntoView({ block: "nearest" });
   },
 
   _head(s, proj) {
@@ -1074,15 +1086,53 @@ const LevelUpApp = {
       ${atLimit ? `<div class="lu-note warn">You have ${s.unmastered} unmastered classes and the limit is
          ${s.rules.maxUnmastered}. Take one of them to level 10 before starting another.</div>` : ""}
       <div class="lu-pickbody">
-        <div class="lu-previewwrap">
-          <div class="lu-preview">${this._pickPreview(sel, atLimit)}</div>
-          ${sel ? `<div class="lu-pickfoot">
-            <button class="lu-cta go lu-pvgo" data-act="pick" data-key="${esc(sel.key)}" ${atLimit ? "disabled" : ""}>
-              Start ${esc(sel.name)}</button>
-          </div>` : ""}
-        </div>
+        <div class="lu-previewwrap">${this._previewWrap(sel, atLimit)}</div>
         <div class="lu-picklist">${list || `<div class="lu-empty">You already have every class.</div>`}</div>
       </div>`;
+  },
+
+  /** Preview pane + its docked button — the only part that changes on select. */
+  _previewWrap(sel, atLimit) {
+    return `<div class="lu-preview">${this._pickPreview(sel, atLimit)}</div>
+      ${sel ? `<div class="lu-pickfoot">
+        <button class="lu-cta go lu-pvgo" data-act="pick" data-key="${esc(sel.key)}" ${atLimit ? "disabled" : ""}>
+          Start ${esc(sel.name)}</button>
+      </div>` : ""}`;
+  },
+
+  /**
+   * Repaint ONLY the preview pane, leaving the 42-row class list in place.
+   *
+   * Selecting a class changes which row is highlighted and what the preview
+   * shows — the list itself is identical. Rebuilding it was both the bulk of
+   * the remaining ~13ms per click AND the reason the list snapped back to the
+   * top: a fresh list starts at scrollTop 0. Not touching it fixes both.
+   */
+  _paintPreview({ chase = false } = {}) {
+    const p = this._root?.querySelector(`#${ROOT_ID}-picker`);
+    if (!p) return;
+    const s = api()?.getState(this._actorUuid);
+    if (!s?.ok) return;
+
+    const untaken = s.classes.filter((c) => !c.taken).sort((a, b) => a.name.localeCompare(b.name));
+    const sel = untaken.find((c) => c.key === this._pickSel) ?? null;
+    const atLimit = s.unmastered >= s.rules.maxUnmastered;
+
+    // A class with no Unique Mechanic must not leave that tab selected.
+    if (this._pickTab === "unique" && !plain(sel?.mechanic).length) this._pickTab = "overview";
+
+    for (const row of p.querySelectorAll(".lu-pickrow")) {
+      row.classList.toggle("on", row.dataset.key === this._pickSel);
+    }
+    for (const t of p.querySelectorAll(".lu-picktabs [data-act='picktab']")) {
+      t.classList.toggle("on", t.dataset.tab === this._pickTab);
+      if (t.dataset.tab === "unique") t.disabled = !plain(sel?.mechanic).length;
+    }
+    const wrap = p.querySelector(".lu-previewwrap");
+    if (wrap) wrap.innerHTML = this._previewWrap(sel, atLimit);
+
+    if (chase) p.querySelector(".lu-pickrow.on")?.scrollIntoView({ block: "nearest" });
+    this._updateCursor();
   },
 
   _pickPreview(c, atLimit) {
@@ -1197,13 +1247,13 @@ const LevelUpApp = {
     // overlay — cheap, and it keeps the window behind untouched.
     if (act === "openpicker") { sfx("open"); this._pickerOpen = true; return this.render(); }
     if (act === "closepicker") { sfx("deselect"); this._pickerOpen = false; return this.render(); }
-    if (act === "picktab") { sfx("tab"); this._pickTab = btn.dataset.tab; return this._paintPicker(); }
-    if (act === "picksub") { sfx("toggle"); this._pickSub = btn.dataset.sub; return this._paintPicker(); }
+    if (act === "picktab") { sfx("tab"); this._pickTab = btn.dataset.tab; return this._paintPreview(); }
+    if (act === "picksub") { sfx("toggle"); this._pickSub = btn.dataset.sub; return this._paintPreview(); }
     if (act === "pickselect") {
       if (this._pickSel === btn.dataset.key) return;
       sfx("cursor");
       this._pickSel = btn.dataset.key;
-      return this._paintPicker();
+      return this._paintPreview();
     }
     if (act === "pick") {
       const changed = this._selected !== btn.dataset.key;
@@ -1562,7 +1612,7 @@ const LevelUpApp = {
       const i = usable.indexOf(this._pickTab);
       const next = usable[(Math.max(0, i) + dir + usable.length) % usable.length];
       if (next === this._pickTab) return;
-      sfx("tab"); this._pickTab = next; this._paintPicker();
+      sfx("tab"); this._pickTab = next; this._paintPreview();
     };
     if (keyMatch(ev, KEYS.TAB_NEXT) || keyMatch(ev, KEYS.RIGHT)) return cycle(1);
     if (keyMatch(ev, KEYS.TAB_PREV) || keyMatch(ev, KEYS.LEFT)) return cycle(-1);
@@ -1575,7 +1625,7 @@ const LevelUpApp = {
     if (!next || next.dataset.key === this._pickSel) return;   // silent at the ends
     sfx("cursor");
     this._pickSel = next.dataset.key;
-    this._paintPicker();
+    this._paintPreview({ chase: true });
   },
 
   _cycleTab(dir) {
