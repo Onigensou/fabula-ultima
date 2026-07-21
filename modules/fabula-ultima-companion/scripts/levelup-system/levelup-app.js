@@ -164,6 +164,22 @@ function injectStyles() {
 #${ROOT_ID} .lu-pickpanel { width: min(620px, 88vw); height: min(640px, 84vh); }
 #${ROOT_ID} .lu-pickpanel .lu-head { gap: 10px; }
 #${ROOT_ID} .lu-pickpanel .lu-main { flex: 1 1 auto; min-height: 0; }
+
+/* Facet picker — layered above the class browser */
+#${ROOT_ID} .lu-facet { position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; background: rgba(0,0,0,.55); }
+#${ROOT_ID} .lu-facetpanel { width: min(660px, 90vw); height: min(680px, 86vh); }
+#${ROOT_ID} .lu-confirmpanel { height: auto; max-height: min(560px, 82vh); }
+#${ROOT_ID} .lu-facetpanel .lu-main { flex: 1 1 auto; min-height: 0; }
+#${ROOT_ID} .lu-fbtn { display: block; width: 100%; text-align: left; font: inherit; color: inherit;
+  padding: 9px 12px; margin-bottom: 7px; border-radius: 8px; cursor: pointer;
+  background: #f7f0df; border: 1px solid #c6ae87; }
+#${ROOT_ID} .lu-fbtn:hover { background: #fffaec; border-color: #a98a4e; }
+#${ROOT_ID} .lu-fbtn b { font-size: 13.5px; }
+#${ROOT_ID} .lu-fbtn p { margin: 3px 0 0; font-size: 11.5px; opacity: .72; }
+#${ROOT_ID} .lu-fbtn.is-on { background: #dceccb; border-color: #5f8b3c; box-shadow: 0 0 0 1px #5f8b3c inset; }
+#${ROOT_ID} .lu-fbtn.is-on b { color: #2c5216; }
+#${ROOT_ID} .lu-btn.edit { background: #e3dcf1; border-color: #7a6aa3; }
 `;
   document.head.appendChild(s);
 }
@@ -175,6 +191,7 @@ const LevelUpApp = {
   _actorUuid: null,
   _selected: null,      // class key — may be a class not yet taken
   _pickerOpen: false,   // the new-class browser, layered over the main window
+  _facet: null,         // the Facet picker, layered above everything
   _busy: false,
 
   // Staged, unwritten changes. Nothing touches the actor until Confirm.
@@ -219,8 +236,9 @@ const LevelUpApp = {
   },
 
   close() {
-    // Staged changes were never written; dropping them is the same as Cancel.
+    // Staged changes were never written; dropping them is the same as Discard.
     this._pending = [];
+    this._facet = null;
     document.removeEventListener("keydown", this._onKey);
     if (this._hook) Hooks.off("updateActor", this._hook);
     if (this._itemHook) Hooks.off("createItem", this._itemHook);
@@ -316,6 +334,21 @@ const LevelUpApp = {
       p.addEventListener("mousedown", (ev) => { if (ev.target === p) { this._pickerOpen = false; this.render(); } });
       this._root.appendChild(p);
     }
+
+    // Facet picker sits above everything, including the class browser — it is
+    // a decision the player is mid-way through and must resolve or dismiss.
+    this._root.querySelector(`#${ROOT_ID}-facet`)?.remove();
+    if (this._facet) {
+      const wrap = document.createElement("div");
+      wrap.innerHTML = this._facetOverlay();
+      const el = wrap.firstElementChild;
+      if (el) {
+        // The id must land on the element actually appended, or the next
+        // render cannot find it to remove and overlays stack up.
+        el.id = `${ROOT_ID}-facet`;
+        this._root.appendChild(el);
+      }
+    }
   },
 
   _head(s, proj) {
@@ -399,6 +432,7 @@ const LevelUpApp = {
           <p>${esc(plain(sk.description))}</p>
         </div>
         <span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>
+        ${this._facetEditBtn(sk)}
         <button class="lu-btn sell" data-act="refund" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
           ${s.gate.open && lvl > 0 ? "" : "disabled"} title="Give back a level">−</button>
         <button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
@@ -418,6 +452,19 @@ const LevelUpApp = {
       ${note}
       ${skills || `<div class="lu-empty">This class has no skills authored.</div>`}
       ${this._heroicPane(s)}`;
+  },
+
+  // Revisit a Facet choice that is staged but not yet written. Only offered
+  // while the batch is unconfirmed — afterwards the items exist on the sheet
+  // and are the GM's to manage.
+  _facetEditBtn(sk) {
+    const idx = this._pending.findIndex(
+      (p) => p.skillUuid === sk.uuid && Array.isArray(p.facetUuids) && p.facetUuids.length
+    );
+    if (idx < 0) return "";
+    const n = this._pending[idx].facetUuids.length;
+    return `<button class="lu-btn edit" data-act="facetedit" data-idx="${idx}"
+      title="Change the ${n === 1 ? "chosen one" : `${n} chosen`}">✎</button>`;
   },
 
   _footer(s, proj) {
@@ -564,17 +611,63 @@ const LevelUpApp = {
       );
       if (i >= 0) { this._pending.splice(i, 1); return this.render(); }
 
-      // Skills that award Facets ask which, at stage time rather than on
+      // Skills that award Facets ask which, at stage time rather than during
       // Confirm — a batch that stops to ask questions halfway through is worse
-      // than one that asked up front.
-      const facetUuids = await this._facetChoice(act, btn.dataset.key, btn.dataset.uuid);
-      if (facetUuids === null) return;   // cancelled the picker → stage nothing
+      // than one that asked up front. The picker stages the operation itself.
+      if (this._openFacetPicker(act, btn.dataset.key, btn.dataset.uuid)) return;
 
-      this._pending.push({
-        op: act, classKey: btn.dataset.key, skillUuid: btn.dataset.uuid,
-        ...(facetUuids.length ? { facetUuids } : {}),
-      });
+      this._pending.push({ op: act, classKey: btn.dataset.key, skillUuid: btn.dataset.uuid });
       return this.render();
+    }
+
+    // ── facet picker ──────────────────────────────────────────────────────
+    if (act === "facettoggle") {
+      const f = this._facet;
+      if (!f) return;
+      const u = btn.dataset.uuid;
+      const at = f.selected.indexOf(u);
+      if (at >= 0) f.selected.splice(at, 1);           // re-click deselects
+      else if (f.selected.length < f.need) f.selected.push(u);
+      else { f.selected.shift(); f.selected.push(u); } // full: oldest drops out
+      f.hold = false;
+      // Advance only once the player has nothing left to decide.
+      if (f.selected.length === f.need) f.stage = "confirm";
+      return this.render();
+    }
+    if (act === "facetback") {
+      // One step back to the picker, keeping the selection so it can be
+      // adjusted. `hold` stops a still-complete selection bouncing forward.
+      this._facet.stage = "pick";
+      this._facet.hold = true;
+      return this.render();
+    }
+    if (act === "facetcancel") {
+      const f = this._facet;
+      this._facet = null;
+      // Skipping a NEW pick still stages the level — the Facet is simply not
+      // taken, which the live data shows is a real situation. Editing an
+      // existing pick leaves it untouched.
+      if (f && f.editIndex < 0) {
+        this._pending.push({ op: f.act, classKey: f.classKey, skillUuid: f.skillUuid });
+      }
+      return this.render();
+    }
+    if (act === "facetok") {
+      const f = this._facet;
+      this._facet = null;
+      if (f) {
+        if (f.editIndex >= 0) this._pending[f.editIndex].facetUuids = f.selected;
+        else this._pending.push({
+          op: f.act, classKey: f.classKey, skillUuid: f.skillUuid, facetUuids: f.selected,
+        });
+      }
+      return this.render();
+    }
+    if (act === "facetedit") {
+      const idx = Number(btn.dataset.idx);
+      const p = this._pending[idx];
+      if (p) this._openFacetPicker(p.op, p.classKey, p.skillUuid, idx);
+      return;
     }
 
     if (act === "heroic") {
@@ -666,67 +759,110 @@ const LevelUpApp = {
   },
 
   /**
-   * Which Facets this spend grants, or hands back on a refund.
+   * Open the Facet picker for a spend/refund, or to edit an already-staged
+   * choice. Returns false when the skill grants no Facets, so the caller stages
+   * the operation immediately as normal.
    *
-   * Returns [] when the skill grants none (the common case), or `null` when the
-   * player dismissed the picker — the caller then stages nothing, so backing
-   * out of the question backs out of the whole click.
-   *
-   * Already-staged picks are excluded from a spend and included in a refund, so
-   * taking Dance twice in one batch cannot offer the same dance both times.
+   * `editIndex` points at an entry in `_pending` whose choice is being revised;
+   * otherwise the picker stages a NEW operation on confirm.
    */
-  async _facetChoice(act, classKey, skillUuid) {
+  _openFacetPicker(act, classKey, skillUuid, editIndex = -1) {
     const s = api()?.getState(this._actorUuid);
     const cls = s?.classes?.find((c) => c.key === classKey);
     const skill = cls?.skills?.find((k) => k.uuid === skillUuid);
-    if (!cls || !skill || !skill.facetGrant) return [];
+    if (!cls || !skill || !skill.facetGrant) return false;
 
-    const stagedSpends = new Set(
-      this._pending.filter((p) => p.op === "spend").flatMap((p) => p.facetUuids ?? [])
+    // Facets spoken for by OTHER staged operations are unavailable, so taking
+    // Dance twice in one batch cannot offer the same dance both times. The
+    // entry being edited is excluded from that set — its own picks stay
+    // selectable.
+    const spoken = new Set(
+      this._pending
+        .filter((p, i) => i !== editIndex && p.op === act)
+        .flatMap((p) => p.facetUuids ?? [])
     );
-    const stagedRefunds = new Set(
-      this._pending.filter((p) => p.op === "refund").flatMap((p) => p.facetUuids ?? [])
+    const pool = cls.facets.filter((f) =>
+      (act === "spend" ? !f.held : f.held) && !spoken.has(f.uuid)
     );
+    if (!pool.length) return false;
 
-    const pool = act === "spend"
-      ? cls.facets.filter((f) => !f.held && !stagedSpends.has(f.uuid))
-      : cls.facets.filter((f) => f.held && !stagedRefunds.has(f.uuid));
+    const need = Math.min(act === "spend" ? skill.facetGrant : 1, pool.length);
+    this._facet = {
+      act, classKey, skillUuid, editIndex,
+      className: cls.name, skillName: skill.name,
+      need,
+      pool: pool.map((f) => ({ uuid: f.uuid, name: f.name, cost: f.cost, description: f.description })),
+      selected: editIndex >= 0 ? [...(this._pending[editIndex].facetUuids ?? [])] : [],
+      stage: "pick",
+      // Set when stepping BACK from the confirmation so a full selection does
+      // not instantly bounce forward again. Cleared by the next toggle.
+      hold: editIndex >= 0,
+    };
+    this.render();
+    return true;
+  },
 
-    if (!pool.length) return [];   // nothing left to grant or give back
+  _facetNoun(className) {
+    if (className === "Dancer") return "dance";
+    if (className === "Symbolist") return "symbol";
+    if (className === "Mutant") return "therioform";
+    if (className === "Hunter") return "trap";
+    return "facet";
+  },
 
-    const want = act === "spend" ? skill.facetGrant : 1;
-    const max = Math.min(want, pool.length);
-    const noun = cls.name === "Dancer" ? "dance" : cls.name === "Symbolist" ? "symbol" : "option";
+  _facetOverlay() {
+    const f = this._facet;
+    if (!f) return "";
+    const noun = this._facetNoun(f.className);
+    const plural = (n) => `${noun}${n === 1 ? "" : "s"}`;
 
-    return await new Promise((resolve) => {
-      const rows = pool.map((f) => `
-        <label style="display:flex;gap:8px;align-items:flex-start;padding:5px 6px;border-radius:6px;cursor:pointer">
-          <input type="checkbox" value="${esc(f.uuid)}" style="margin-top:3px">
-          <span><b>${esc(f.name)}</b>${f.cost ? ` <em>(${esc(f.cost)})</em>` : ""}
-          <br><span style="opacity:.7;font-size:11px">${esc(plain(f.description).slice(0, 160))}</span></span>
-        </label>`).join("");
+    if (f.stage === "confirm") {
+      const chosen = f.selected
+        .map((u) => f.pool.find((p) => p.uuid === u))
+        .filter(Boolean);
+      return `<div class="lu-facet"><div class="lu-panel lu-facetpanel lu-confirmpanel">
+        <div class="lu-head"><div>
+          <div class="lu-name">${f.act === "spend" ? "Confirm your choice" : "Confirm what you give back"}</div>
+          <div class="lu-sub">${esc(f.skillName)}</div></div></div>
+        <div class="lu-main">
+          <p class="lu-lore">${f.act === "spend"
+            ? `You will learn ${chosen.length === 1 ? "this" : "these"} ${plural(chosen.length)}:`
+            : `You will unlearn ${chosen.length === 1 ? "this" : "these"} ${plural(chosen.length)}:`}</p>
+          ${chosen.map((c) => `<div class="lu-fbtn is-on" style="cursor:default">
+            <b>${esc(c.name)}</b>${c.cost ? ` <span class="lu-tag">${esc(c.cost)}</span>` : ""}
+            <p>${esc(plain(c.description).slice(0, 200))}</p></div>`).join("")}
+        </div>
+        <div class="lu-foot">
+          <span class="lu-foottext">Nothing is written until you Confirm the whole batch.</span>
+          <button class="lu-cta ghost" data-act="facetback">Back</button>
+          <button class="lu-cta go" data-act="facetok">Confirm</button>
+        </div>
+      </div></div>`;
+    }
 
-      new Dialog({
-        title: act === "spend" ? `${skill.name} — choose ${max} ${noun}${max === 1 ? "" : "s"}`
-                               : `${skill.name} — give one back`,
-        content: `<p style="margin:4px 0 8px">${act === "spend"
-          ? `Taking this level grants <b>${max}</b> ${noun}${max === 1 ? "" : "s"}.`
-          : `Choose which to unlearn, or skip to keep them all.`}</p>
-          <div style="max-height:330px;overflow:auto">${rows}</div>`,
-        buttons: {
-          ok: {
-            label: act === "spend" ? "Choose" : "Give back",
-            callback: (html) => {
-              const picked = [...html[0].querySelectorAll("input:checked")].map((i) => i.value);
-              resolve(picked.slice(0, max));
-            },
-          },
-          skip: { label: "Skip", callback: () => resolve([]) },
-        },
-        default: "ok",
-        close: () => resolve(null),   // dismissed → cancel the whole click
-      }, { width: 460 }).render(true);
-    });
+    const left = f.need - f.selected.length;
+    return `<div class="lu-facet"><div class="lu-panel lu-facetpanel">
+      <div class="lu-head"><div>
+        <div class="lu-name">${esc(f.skillName)}</div>
+        <div class="lu-sub">${f.act === "spend"
+          ? `Choose ${f.need} ${plural(f.need)}`
+          : `Choose 1 ${noun} to give back`} — ${left > 0 ? `${left} to go` : "ready"}</div></div>
+        <button class="lu-x" data-act="facetcancel" title="Back to the skill tree">×</button>
+      </div>
+      <div class="lu-main">
+        ${f.pool.map((p) => {
+          const on = f.selected.includes(p.uuid);
+          return `<button class="lu-fbtn ${on ? "is-on" : ""}" data-act="facettoggle" data-uuid="${esc(p.uuid)}">
+            <b>${on ? "✓ " : ""}${esc(p.name)}</b>${p.cost ? ` <span class="lu-tag">${esc(p.cost)}</span>` : ""}
+            <p>${esc(plain(p.description).slice(0, 200))}</p>
+          </button>`;
+        }).join("")}
+      </div>
+      <div class="lu-foot">
+        <span class="lu-foottext">${f.selected.length} of ${f.need} chosen</span>
+        <button class="lu-cta ghost" data-act="facetcancel">${f.editIndex >= 0 ? "Keep as is" : "Skip"}</button>
+      </div>
+    </div></div>`;
   },
 
   // Only asked when a class is opened for the first time, and only when the
