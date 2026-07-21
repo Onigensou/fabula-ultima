@@ -9,9 +9,11 @@
  * by container membership — the three itemContainers on the class sheet all
  * filter the same item template:
  *
- *   skill   → not isHeroic, not isFacet, skill_type in {Active, Passive, Other}
+ *   skill   → not isHeroic, not a facet; skill_type in {Active, Passive, Other}
  *   heroic  → isHeroic
- *   facet   → isFacet   (spells learned via a "learn one <Class> spell" skill)
+ *   facet   → isFacet, OR skill_type "Spell" — see isFacet() for why the flag
+ *             alone is not enough (spells learned via a "learn one <Class>
+ *             spell" skill)
  *
  * IDENTITY
  * --------
@@ -45,7 +47,25 @@ function playableFolderIds() {
 }
 
 const isHeroic = (i) => i.system?.props?.isHeroic === true;
-const isFacet = (i) => i.system?.props?.isFacet === true;
+
+/**
+ * Facet or base skill?
+ *
+ * The `isFacet` checkbox is authoritative when ticked, but it is not reliably
+ * ticked: Spiritist's spell list had it set on three of twelve spells, so Lux,
+ * Torpor, Enrage and the rest were being offered as base skills.
+ *
+ * `skill_type: "Spell"` is the structural signal that never went unset — a
+ * Spell is by definition learned through a spell-granting skill, never picked
+ * directly. Trusting it moves exactly two classes (Spiritist 14/3 → 5/12,
+ * Illusionist 10/9 → 5/14) and lands both on the five base skills that every
+ * other class in the game already has.
+ */
+const isFacet = (i) => {
+  const p = i.system?.props ?? {};
+  if (p.isFacet === true) return true;
+  return String(p.skill_type ?? "") === "Spell";
+};
 
 const stripHtml = (h) => String(h ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
