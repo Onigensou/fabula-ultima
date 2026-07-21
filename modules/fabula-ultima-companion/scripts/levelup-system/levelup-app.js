@@ -291,24 +291,42 @@ function injectStyles() {
 #${ROOT_ID} .lu-pickrow.on { background: #5d4630; color: #f6ecd8; border-color: #3a2b17; }
 #${ROOT_ID} .lu-pickrow i { width: 22px; text-align: center; font-size: 16px; opacity: .85; flex: 0 0 auto; }
 
-/* Overview — portrait spread */
-#${ROOT_ID} .lu-pvart { position: relative; flex: 0 0 auto; display: flex; align-items: flex-end;
-  gap: 12px; min-height: 0; }
-#${ROOT_ID} .lu-pvart > img { height: 260px; width: auto; max-width: 55%; object-fit: contain;
-  border: 0 !important; outline: 0 !important; background: none;
-  filter: drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
-#${ROOT_ID} .lu-pvname { position: absolute; top: 4px; left: 4px; font-size: 26px; font-weight: 800;
-  font-style: italic; color: #5c1f2e; text-shadow: 0 2px 0 #f7f0df, 0 0 10px #f7f0df; }
-#${ROOT_ID} .lu-pvflavor { align-self: center; font-size: 13px; font-style: italic; opacity: .75;
-  text-align: center; max-width: 42%; }
-#${ROOT_ID} .lu-pvmeta { position: absolute; left: 0; bottom: 0; display: flex; flex-direction: column;
-  gap: 4px; font-size: 12px; font-weight: 700; }
-#${ROOT_ID} .lu-pvmeta > div { display: flex; align-items: center; gap: 6px; }
-#${ROOT_ID} .lu-stars i { color: #cbbb9c; font-size: 13px; }
+/* Overview — the art fills the pane; text floats over it.
+   Every overlay carries a glow + stroke so it survives whatever is behind it:
+   the art is different per class and cannot be designed around. */
+#${ROOT_ID} .lu-previewwrap { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+#${ROOT_ID} .lu-pvart { position: relative; flex: 1 1 auto; min-height: 0;
+  background-size: contain; background-position: center top; background-repeat: no-repeat; }
+#${ROOT_ID} .lu-pvart::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 30% 40%, rgba(247,240,223,0) 40%, rgba(247,240,223,.55) 100%); }
+#${ROOT_ID} .lu-pvart > * { position: relative; z-index: 1; }
+
+#${ROOT_ID} .lu-glow, #${ROOT_ID} .lu-pvname, #${ROOT_ID} .lu-pvflavor,
+#${ROOT_ID} .lu-pvalso, #${ROOT_ID} .lu-pvlore, #${ROOT_ID} .lu-pvmeta {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3px rgba(247,240,223,.92);
+  text-shadow: 0 0 8px #f7f0df, 0 0 16px #f7f0df, 0 1px 0 rgba(247,240,223,.9); }
+
+#${ROOT_ID} .lu-pvname { position: absolute; top: 2px; left: 2px; right: 2px;
+  font-size: 30px; font-weight: 800; font-style: italic; color: #5c1f2e; }
+#${ROOT_ID} .lu-pvflavor { position: absolute; top: 46px; right: 6px; width: 44%;
+  font-size: 13px; font-style: italic; color: #4a3a22; text-align: center; }
+#${ROOT_ID} .lu-pvalso { position: absolute; top: 132px; right: 6px; width: 44%;
+  font-size: 11.5px; font-style: italic; color: #5a4a30; text-align: center; }
+#${ROOT_ID} .lu-pvlore { position: absolute; right: 6px; bottom: 6px; width: 46%;
+  max-height: 52%; overflow-y: auto; font-size: 11.5px; color: #3a2f1e; }
+#${ROOT_ID} .lu-pvmeta { position: absolute; left: 4px; bottom: 6px; display: flex;
+  flex-direction: column; gap: 5px; font-size: 12.5px; font-weight: 800; color: #3b2a17; }
+#${ROOT_ID} .lu-pvmeta > div { display: flex; align-items: center; gap: 7px; }
+#${ROOT_ID} .lu-stars i { color: #a99a7c; font-size: 14px; -webkit-text-stroke: 0; }
 #${ROOT_ID} .lu-stars i.on { color: #3b2a17; }
-#${ROOT_ID} .lu-role { padding: 1px 9px; border-radius: 10px; font-size: 11px;
-  background: #f2e8d3; border: 1px solid #8a6c45; }
-#${ROOT_ID} .lu-pvalso { font-size: 11.5px; opacity: .65; font-style: italic; }
+#${ROOT_ID} .lu-role { padding: 1px 10px; border-radius: 10px; font-size: 11px;
+  background: #f2e8d3; border: 1px solid #8a6c45; -webkit-text-stroke: 0; text-shadow: none; }
+
+/* The commit button is docked, not flowed — it must not wander with the text. */
+#${ROOT_ID} .lu-pickfoot { flex: 0 0 auto; padding: 9px 14px;
+  background: #e6dabd; border-top: 2px solid #b79c72; }
+#${ROOT_ID} .lu-pvgo { width: 100%; }
 
 #${ROOT_ID} .lu-pvhead { display: flex; align-items: baseline; gap: 10px; }
 #${ROOT_ID} .lu-pvhead b { font-size: 18px; }
@@ -321,7 +339,15 @@ function injectStyles() {
   border-radius: 7px; background: #f7f0df; border: 1px solid #c6ae87; }
 #${ROOT_ID} .lu-pvrow > img { width: 28px; height: 28px; border-radius: 5px; object-fit: cover;
   flex: 0 0 auto; border: 0 !important; outline: 0 !important; }
-#${ROOT_ID} .lu-pvrow .t { min-width: 0; }
+#${ROOT_ID} .lu-pvrow .t { min-width: 0; flex: 1 1 auto; }
+/* Name outranks its description — same-size text gives the eye nowhere to land. */
+#${ROOT_ID} .lu-pvtitle { display: flex; align-items: center; gap: 7px; }
+#${ROOT_ID} .lu-pvtitle b { font-size: 14px; }
+#${ROOT_ID} .lu-pvrow .lu-rt { font-size: 11px; opacity: .8; margin-top: 2px; }
+/* Max Skill Level, in the rulebook's own shorthand. */
+#${ROOT_ID} .lu-maxlv { flex: 0 0 auto; font-size: 11.5px; font-weight: 800; color: #4b3517;
+  padding: 1px 8px; border-radius: 10px;
+  background: linear-gradient(180deg,#f0d99a,#e0c179); border: 1px solid #8a6c45; }
 #${ROOT_ID} .lu-pvgo { flex: 0 0 auto; align-self: flex-start; }
 
 #${ROOT_ID} .lu-subtabs { display: flex; gap: 5px; }
@@ -390,6 +416,7 @@ const LevelUpApp = {
   _pickSel: null,       // class being previewed in the browser (not yet chosen)
   _pickTab: "overview", // "overview" | "skill" | "unique"
   _pickSub: "skill",    // Facets are a sub-tab of Skill, not a peer
+  _pickFocusEl: null,   // last browser control the pointer touched, for the feather
   _facet: null,         // the Facet picker, layered above everything
   _tab: "skill",        // "skill" | "facet" | "heroic" — what the main pane shows
   _busy: false,
@@ -1023,7 +1050,13 @@ const LevelUpApp = {
       ${atLimit ? `<div class="lu-note warn">You have ${s.unmastered} unmastered classes and the limit is
          ${s.rules.maxUnmastered}. Take one of them to level 10 before starting another.</div>` : ""}
       <div class="lu-pickbody">
-        <div class="lu-preview">${this._pickPreview(sel, atLimit)}</div>
+        <div class="lu-previewwrap">
+          <div class="lu-preview">${this._pickPreview(sel, atLimit)}</div>
+          ${sel ? `<div class="lu-pickfoot">
+            <button class="lu-cta go lu-pvgo" data-act="pick" data-key="${esc(sel.key)}" ${atLimit ? "disabled" : ""}>
+              Start ${esc(sel.name)}</button>
+          </div>` : ""}
+        </div>
         <div class="lu-picklist">${list || `<div class="lu-empty">You already have every class.</div>`}</div>
       </div>`;
   },
@@ -1037,13 +1070,23 @@ const LevelUpApp = {
     }
 
     if (this._pickTab === "skill") {
-      const sub = this._pickSub === "facet" ? "facet" : "skill";
+      // Facets stay a visible sub-tab even with none authored — disabled says
+      // "this class has none", a missing tab says nothing at all.
+      const hasFacets = c.facets.length > 0;
+      const sub = (this._pickSub === "facet" && hasFacets) ? "facet" : "skill";
+
       const rows = (sub === "facet" ? c.facets : c.skills).map((k) => `
         <div class="lu-pvrow">
           <img src="${esc(k.img)}" alt="">
-          <div class="t"><b>${esc(k.name)}</b>${k.cost ? ` <span class="lu-tag">${esc(k.cost)}</span>` : ""}
-            ${sub === "skill" ? `<span class="lu-tag">max ${k.maxLevel}</span>` : ""}
-            ${describe(k.description)}</div>
+          <div class="t">
+            <span class="lu-pvtitle">
+              <b>${esc(k.name)}</b>
+              <span class="lu-gap"></span>
+              ${k.cost ? `<span class="lu-tag">${esc(k.cost)}</span>` : ""}
+              ${sub === "skill" ? `<span class="lu-maxlv" title="Maximum Skill Level">◆${k.maxLevel}</span>` : ""}
+            </span>
+            ${describe(k.description)}
+          </div>
         </div>`).join("");
 
       const free = [
@@ -1053,36 +1096,35 @@ const LevelUpApp = {
       ].filter(Boolean);
 
       return `<div class="lu-pvhead"><b>${esc(c.name)}</b>
-          <span>${c.skills.length} skills${c.facets.length ? ` · ${c.facets.length} facets` : ""}</span></div>
+          <span>${c.skills.length} skills · ${c.facets.length} facets</span></div>
         <div class="lu-pvfree">
           <b>Free benefit:</b> ${esc(c.benefit ? (LEVELUP.BENEFIT_LABEL[c.benefit] ?? c.benefit) : "you choose HP / MP / IP")}
           ${free.length ? ` · equips ${esc(free.join(", "))}` : ""}
         </div>
         <div class="lu-subtabs">
           <button class="lu-subtab ${sub === "skill" ? "on" : ""}" data-act="picksub" data-sub="skill">Skills</button>
-          ${c.facets.length ? `<button class="lu-subtab ${sub === "facet" ? "on" : ""}" data-act="picksub" data-sub="facet">Facets</button>` : ""}
+          <button class="lu-subtab ${sub === "facet" ? "on" : ""}" data-act="picksub" data-sub="facet"
+            ${hasFacets ? "" : "disabled"} title="${hasFacets ? "" : "This class has no Facets"}">Facets</button>
         </div>
         <div class="lu-pvscroll">${rows || `<div class="lu-empty">Nothing authored for this class.</div>`}</div>`;
     }
 
-    // Overview — the portrait spread from the mockup.
+    // Overview — the art IS the page. Everything else floats over it, which is
+    // why each overlay carries its own glow/stroke rather than a flat colour.
     const meta = CLASS_META_DEFAULT;
     const stars = Array.from({ length: meta.difficultyMax }, (_, i) =>
       `<i class="fa-solid fa-star ${i < meta.difficulty ? "on" : ""}"></i>`).join("");
 
-    return `<div class="lu-pvart">
-        <img src="${esc(c.img)}" alt="">
+    return `<div class="lu-pvart" style="background-image:url('${esc(c.img)}')">
         <div class="lu-pvname">${esc(c.name)}</div>
         ${plain(c.flavor).length ? `<div class="lu-pvflavor">${esc(plain(c.flavor))}</div>` : ""}
+        ${c.also ? `<div class="lu-pvalso">Also known as ${esc(c.also)}</div>` : ""}
+        ${plain(c.lore).length ? `<div class="lu-pvlore">${describe(c.lore, { clamp: false })}</div>` : ""}
         <div class="lu-pvmeta">
           <div><span>Difficulty:</span> <span class="lu-stars">${stars}</span></div>
           <div><span>Role:</span> ${meta.roles.map((r) => `<span class="lu-role">${esc(r)}</span>`).join("")}</div>
         </div>
-      </div>
-      ${c.also ? `<div class="lu-pvalso">Also known as ${esc(c.also)}</div>` : ""}
-      ${plain(c.lore).length ? `<div class="lu-pvscroll lore">${describe(c.lore, { clamp: false })}</div>` : ""}
-      <button class="lu-cta go lu-pvgo" data-act="pick" data-key="${esc(c.key)}" ${atLimit ? "disabled" : ""}>
-        Start ${esc(c.name)}</button>`;
+      </div>`;
   },
 
   // ── interaction ─────────────────────────────────────────────────────────
@@ -1443,15 +1485,15 @@ const LevelUpApp = {
 
       // A layered picker gets the keys first — it is the question in front of
       // the player, and the list behind it is not what they are answering.
-      if (this._facet || this._pickerOpen) {
+      if (this._facet) {
         if (keyMatch(ev, KEYS.CANCEL)) {
           sfx("deselect");
-          if (this._facet) this._facet = null;   // same as its Cancel: stage nothing
-          else this._pickerOpen = false;
+          this._facet = null;   // same as its Cancel: stage nothing
           this.render();
         }
         return;
       }
+      if (this._pickerOpen) return void this._pickerKey(ev);
 
       if (keyMatch(ev, KEYS.CANCEL)) return void this.close();
       if (keyMatch(ev, KEYS.TAB_NEXT)) return void this._cycleTab(1);
@@ -1463,6 +1505,51 @@ const LevelUpApp = {
       this._move(dx, dy);
     };
     window.addEventListener("keydown", this._onKey, true);
+  },
+
+  /**
+   * Keyboard inside the class browser. Same vocabulary as the main window:
+   * arrows move, Z commits, X backs out, Q/E cycle the preview tabs.
+   *
+   * The class list is the only navigable column, so up/down walk it and the
+   * preview follows — the preview is a consequence of the selection, never a
+   * separate place to be.
+   */
+  _pickerKey(ev) {
+    if (keyMatch(ev, KEYS.CANCEL)) {
+      sfx("deselect");
+      this._pickerOpen = false;
+      return this.render();
+    }
+    if (keyMatch(ev, KEYS.CONFIRM)) {
+      const go = this._root?.querySelector(".lu-pvgo:not([disabled])");
+      if (go) go.click();
+      return;
+    }
+
+    // Q/E and left/right both cycle the preview tabs; a disabled Unique tab is
+    // skipped rather than landed on.
+    const tabs = ["overview", "skill", "unique"];
+    const usable = tabs.filter((t) => !this._root?.querySelector(`[data-act="picktab"][data-tab="${t}"][disabled]`));
+    const cycle = (dir) => {
+      const i = usable.indexOf(this._pickTab);
+      const next = usable[(Math.max(0, i) + dir + usable.length) % usable.length];
+      if (next === this._pickTab) return;
+      sfx("tab"); this._pickTab = next; this.render();
+    };
+    if (keyMatch(ev, KEYS.TAB_NEXT) || keyMatch(ev, KEYS.RIGHT)) return cycle(1);
+    if (keyMatch(ev, KEYS.TAB_PREV) || keyMatch(ev, KEYS.LEFT)) return cycle(-1);
+
+    const dy = keyMatch(ev, KEYS.DOWN) ? 1 : keyMatch(ev, KEYS.UP) ? -1 : 0;
+    if (!dy) return;
+    const rows = Array.from(this._root?.querySelectorAll(".lu-pickrow") ?? []);
+    const at = rows.findIndex((r) => r.dataset.key === this._pickSel);
+    const next = rows[Math.max(0, Math.min(rows.length - 1, (at < 0 ? 0 : at) + dy))];
+    if (!next || next.dataset.key === this._pickSel) return;   // silent at the ends
+    sfx("cursor");
+    this._pickSel = next.dataset.key;
+    this.render();
+    this._root?.querySelector(".lu-pickrow.on")?.scrollIntoView({ block: "nearest" });
   },
 
   _cycleTab(dir) {
@@ -1526,7 +1613,16 @@ const LevelUpApp = {
    * is the thing selected, which is what Z would act on anyway.
    */
   _syncFocusToPointer(target) {
-    if (!target?.closest || this._facet || this._pickerOpen) return;
+    if (!target?.closest || this._facet) return;
+
+    // Inside the class browser the feather tracks its own controls, so it
+    // never sits over the main window the browser is covering.
+    if (this._pickerOpen) {
+      const el = target.closest(".lu-pickrow, .lu-picktabs [data-act], .lu-subtab, .lu-pvgo, [data-act='closepicker']");
+      if (el) { this._pickFocusEl = el; this._updateCursor(); }
+      return;
+    }
+    this._pickFocusEl = null;
 
     const row = target.closest(".lu-main .lu-row");
     if (row) {
@@ -1556,6 +1652,13 @@ const LevelUpApp = {
 
   /** The element the cursor points at right now. */
   _focusEl() {
+    // While the browser is open it owns the cursor: the selected class row,
+    // or whatever the pointer last touched inside it.
+    if (this._pickerOpen) {
+      return this._root?.querySelector(".lu-pickrow.on")
+        ?? this._pickFocusEl
+        ?? this._root?.querySelector(".lu-pvgo") ?? null;
+    }
     if (this._zone === "head") return this._headBtns()[this._headIdx] ?? null;
     if (this._zone === "rail") return this._railBtns()[this._railIdx] ?? null;
     if (this._zone === "foot") return this._footBtns()[this._footIdx] ?? null;

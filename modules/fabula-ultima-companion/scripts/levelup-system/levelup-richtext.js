@@ -27,7 +27,15 @@ import { lookupTerm } from "../battle-director/keyword-registry.js";
 // layers of styling spans, and once their attributes are stripped those become
 // empty nesting around every term. They are unwrapped unless they are one of
 // the term elements this module built.
-const KEEP = new Set(["P", "BR", "UL", "OL", "LI", "STRONG", "B", "EM", "I", "U", "HR"]);
+// Headings and tables matter for the long-form Unique Mechanic text, which is
+// authored as a document ("<h1>THE ARCANA</h1><h2>MERGING…"). Dropping them
+// unwrapped every heading into a bare run of text butted against the next
+// paragraph, which is what made that tab look like flattened HTML.
+const KEEP = new Set([
+  "P", "BR", "UL", "OL", "LI", "STRONG", "B", "EM", "I", "U", "HR",
+  "H1", "H2", "H3", "H4", "H5", "H6",
+  "TABLE", "THEAD", "TBODY", "TR", "TD", "TH",
+]);
 const DROP = new Set(["SCRIPT", "IFRAME", "OBJECT", "EMBED", "STYLE", "LINK", "IMG"]);
 
 // Elements this module generated, which must survive the scrub that removes
@@ -118,6 +126,11 @@ export function renderDescription(html) {
     for (const list of Array.from(root.querySelectorAll("ul, ol"))) {
       if (!list.querySelector("li")) list.remove();
     }
+    // Authored documents are full of empty spacer paragraphs between headings;
+    // with real heading margins they become double gaps.
+    for (const p of Array.from(root.querySelectorAll("p"))) {
+      if (!p.textContent.trim() && !p.querySelector("img, br")) p.remove();
+    }
 
     return {
       keywords,
@@ -157,4 +170,17 @@ ${scope} .lu-rt ul, ${scope} .lu-rt ol { margin: 2px 0 4px; padding-left: 16px; 
 ${scope} .lu-rt li { margin: 1px 0; }
 ${scope} .lu-rt hr { border: 0; border-top: 1px dashed rgba(90,70,40,.35); margin: 5px 0; }
 ${scope} .lu-rt strong, ${scope} .lu-rt b { font-weight: 700; }
+/* Long-form authored documents (the Unique Mechanic) — headings and tables. */
+${scope} .lu-rt h1, ${scope} .lu-rt h2, ${scope} .lu-rt h3,
+${scope} .lu-rt h4, ${scope} .lu-rt h5, ${scope} .lu-rt h6 {
+  margin: 10px 0 4px; line-height: 1.2; font-weight: 800; color: #5c1f2e;
+  border: 0; letter-spacing: .02em; }
+${scope} .lu-rt h1 { font-size: 1.35em; border-bottom: 2px solid #c0a67c; padding-bottom: 2px; }
+${scope} .lu-rt h2 { font-size: 1.18em; }
+${scope} .lu-rt h3, ${scope} .lu-rt h4 { font-size: 1.05em; color: #7a4a1e; }
+${scope} .lu-rt h5, ${scope} .lu-rt h6 { font-size: 1em; color: #7a4a1e; }
+${scope} .lu-rt > :first-child { margin-top: 0; }
+${scope} .lu-rt table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: .95em; }
+${scope} .lu-rt th, ${scope} .lu-rt td { border: 1px solid #c0a67c; padding: 3px 6px; text-align: left; }
+${scope} .lu-rt th { background: #e6dabd; font-weight: 700; }
 `;
