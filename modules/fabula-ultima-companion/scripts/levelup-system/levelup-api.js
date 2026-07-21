@@ -135,9 +135,16 @@ export function getState(actorUuid) {
           maxLevel: s.maxLevel,
           level: h ? h.level : 0,
           atMax: (h ? h.level : 0) >= s.maxLevel,
+          // >0 → taking a level also awards this many Facets. Zero when the
+          // class has none authored, so Pilot's Personal Vehicle never prompts.
+          facetGrant: cls.facets.length ? s.facetGrant : 0,
         };
       }),
-      facets: cls.facets.map((f) => ({ uuid: f.uuid, key: f.key, name: f.name, img: f.img, held: held.has(f.key) })),
+      facets: cls.facets.map((f) => ({
+        uuid: f.uuid, key: f.key, name: f.name, img: f.img,
+        description: f.description, cost: f.cost,
+        held: held.has(f.key),
+      })),
     };
   });
 
@@ -189,7 +196,7 @@ function validateSpend(actor, cls, skill) {
 
 // ── mutations (GM-side) ────────────────────────────────────────────────────
 
-async function applySpend({ actorUuid, classKey, skillUuid, benefit, requesterUserId }) {
+async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids, requesterUserId }) {
   const gate = gateState();
   if (!gate.open) return fail("gate_closed", { gate });
 
@@ -252,7 +259,26 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, requesterUs
       await actor.createEmbeddedDocuments("Item", [data]);
     }
 
-    // 3. Free benefits on a brand-new class. Only the martial-armor flag is
+    // 3. Facets. Skills like Dance or Elemental Magic award a spell/dance/
+    //    symbol per level ("see Facet"); the window asks which and passes the
+    //    chosen uuids. Anything already held is skipped rather than duplicated.
+    if (Array.isArray(facetUuids) && facetUuids.length) {
+      const heldNow = indexActorSkills(actor);
+      const create = [];
+      for (const uuid of facetUuids) {
+        const src = cls.facets.find((f) => f.uuid === uuid);
+        if (!src || heldNow.has(src.key)) continue;
+        const doc = await fromUuid(uuid);
+        if (!doc) continue;
+        const data = doc.toObject();
+        delete data._id;
+        foundry.utils.setProperty(data, "system.props.level", 1);
+        create.push(data);
+      }
+      if (create.length) await actor.createEmbeddedDocuments("Item", create);
+    }
+
+    // 4. Free benefits on a brand-new class. Only the martial-armor flag is
     //    modelled on the character sheet; the ritual/discipline flags do not
     //    follow from class ownership in this world and stay hand-managed.
     if (isNewClass && cls.free.martialArmor) {
@@ -278,7 +304,7 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, requesterUs
   }
 }
 
-async function applyRefund({ actorUuid, classKey, skillUuid }) {
+async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids }) {
   const gate = gateState();
   if (!gate.open) return fail("gate_closed", { gate });
 
@@ -304,6 +330,21 @@ async function applyRefund({ actorUuid, classKey, skillUuid }) {
   if (broken.length) return fail("would_orphan_heroic", { broken });
 
   try {
+    // 0. Facets handed back with the level. The window offers the choice from
+    //    what the character actually holds; skipping is allowed, which is what
+    //    keeps a pre-existing mismatch (Hina's Elemental Magic 3 against 4
+    //    spells) from being forcibly reconciled by an unrelated refund.
+    if (Array.isArray(facetUuids) && facetUuids.length) {
+      const heldNow = indexActorSkills(actor);
+      const remove = [];
+      for (const uuid of facetUuids) {
+        const src = cls.facets.find((f) => f.uuid === uuid);
+        const hit = src ? heldNow.get(src.key) : null;
+        if (hit) remove.push(hit.item.id);
+      }
+      if (remove.length) await actor.deleteEmbeddedDocuments("Item", remove);
+    }
+
     // 1. Skill down, removed entirely at zero.
     if (held.level <= 1) await held.item.delete();
     else await held.item.update({ "system.props.level": held.level - 1 });

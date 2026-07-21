@@ -47,9 +47,38 @@ function playableFolderIds() {
 const isHeroic = (i) => i.system?.props?.isHeroic === true;
 const isFacet = (i) => i.system?.props?.isFacet === true;
 
+const stripHtml = (h) => String(h ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
+const WORD_COUNT = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5 };
+
+/**
+ * How many Facets a level in this skill awards, or 0 if none.
+ *
+ * The marker is the authored "(see Facet)" pointer, and the count comes from
+ * the sentence around it — "learn a dance" and "learn one Elementalist spell"
+ * are 1, "you learn two symbols" is 2. Anything vaguer ("you progressively
+ * learn…" on Set Trap) falls back to 1, which is both the common case and the
+ * safe direction: awarding too few is visible and correctable, awarding too
+ * many silently inflates a character.
+ *
+ * Read live from the description, so fixing the wording on a skill changes the
+ * behaviour with no migration — the same property that made the Powerful Shot
+ * typo a one-line fix.
+ */
+export function facetGrantCount(description) {
+  const text = stripHtml(description);
+  if (!/see\s+facet/i.test(text)) return 0;
+  const m = text.match(/\blearns?\s+(?:up\s+to\s+)?(a|an|one|two|three|four|five|\d+)\b/i);
+  if (!m) return 1;
+  const raw = m[1].toLowerCase();
+  const n = WORD_COUNT[raw] ?? Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
 function readSkill(item) {
   const p = item.system?.props ?? {};
   return {
+    facetGrant: facetGrantCount(p.description),
     uuid: item.uuid,
     id: item.id,
     key: idKey(item.name),

@@ -426,7 +426,7 @@ const LevelUpApp = {
     const summary = this._summarise(s, proj);
     return `<div class="lu-foot">
       <span class="lu-foottext">${esc(summary)}</span>
-      <button class="lu-cta ghost" data-act="cancel">Cancel</button>
+      <button class="lu-cta ghost" data-act="cancel" title="Throw away the staged changes and keep the window open">Discard</button>
       <button class="lu-cta go" data-act="confirm">Confirm ${n} change${n === 1 ? "" : "s"}</button>
     </div>`;
   },
@@ -439,6 +439,10 @@ const LevelUpApp = {
       bits.push(`${c?.name ?? key} ${c ? c.level : 0} → ${this._classLevel(s, c ?? { key, level: 0 }, proj)}`);
     }
     for (const p of proj.heroics) bits.push(`Heroic: ${p.name ?? "skill"}`);
+    const facetsIn = this._pending.filter((p) => p.op === "spend").flatMap((p) => p.facetUuids ?? []).length;
+    const facetsOut = this._pending.filter((p) => p.op === "refund").flatMap((p) => p.facetUuids ?? []).length;
+    if (facetsIn) bits.push(`+${facetsIn} facet${facetsIn === 1 ? "" : "s"}`);
+    if (facetsOut) bits.push(`−${facetsOut} facet${facetsOut === 1 ? "" : "s"}`);
     const spent = s.points.stored - proj.points;
     const cost = spent > 0 ? `${spent} point${spent === 1 ? "" : "s"} spent` : `${-spent} point${spent === -1 ? "" : "s"} returned`;
     return `${bits.join(" · ")}  —  ${cost}`;
@@ -558,8 +562,18 @@ const LevelUpApp = {
       const i = this._pending.findIndex(
         (p) => p.op === opposite && p.skillUuid === btn.dataset.uuid && p.classKey === btn.dataset.key
       );
-      if (i >= 0) this._pending.splice(i, 1);
-      else this._pending.push({ op: act, classKey: btn.dataset.key, skillUuid: btn.dataset.uuid });
+      if (i >= 0) { this._pending.splice(i, 1); return this.render(); }
+
+      // Skills that award Facets ask which, at stage time rather than on
+      // Confirm — a batch that stops to ask questions halfway through is worse
+      // than one that asked up front.
+      const facetUuids = await this._facetChoice(act, btn.dataset.key, btn.dataset.uuid);
+      if (facetUuids === null) return;   // cancelled the picker → stage nothing
+
+      this._pending.push({
+        op: act, classKey: btn.dataset.key, skillUuid: btn.dataset.uuid,
+        ...(facetUuids.length ? { facetUuids } : {}),
+      });
       return this.render();
     }
 
@@ -618,11 +632,15 @@ const LevelUpApp = {
         const p = ordered[i];
         let res;
         if (p.op === "refund") {
-          res = await A.refundPoint({ actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid });
+          res = await A.refundPoint({
+            actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid,
+            facetUuids: p.facetUuids,
+          });
         } else if (p.op === "spend") {
           res = await A.spendPoint({
             actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid,
             benefit: p.benefit ?? await this._benefitFor(p.classKey),
+            facetUuids: p.facetUuids,
           });
           if (res?.ok && res.mastered) mastered = true;
         } else {
@@ -645,6 +663,70 @@ const LevelUpApp = {
       this._busy = false;
       this.render();
     }
+  },
+
+  /**
+   * Which Facets this spend grants, or hands back on a refund.
+   *
+   * Returns [] when the skill grants none (the common case), or `null` when the
+   * player dismissed the picker — the caller then stages nothing, so backing
+   * out of the question backs out of the whole click.
+   *
+   * Already-staged picks are excluded from a spend and included in a refund, so
+   * taking Dance twice in one batch cannot offer the same dance both times.
+   */
+  async _facetChoice(act, classKey, skillUuid) {
+    const s = api()?.getState(this._actorUuid);
+    const cls = s?.classes?.find((c) => c.key === classKey);
+    const skill = cls?.skills?.find((k) => k.uuid === skillUuid);
+    if (!cls || !skill || !skill.facetGrant) return [];
+
+    const stagedSpends = new Set(
+      this._pending.filter((p) => p.op === "spend").flatMap((p) => p.facetUuids ?? [])
+    );
+    const stagedRefunds = new Set(
+      this._pending.filter((p) => p.op === "refund").flatMap((p) => p.facetUuids ?? [])
+    );
+
+    const pool = act === "spend"
+      ? cls.facets.filter((f) => !f.held && !stagedSpends.has(f.uuid))
+      : cls.facets.filter((f) => f.held && !stagedRefunds.has(f.uuid));
+
+    if (!pool.length) return [];   // nothing left to grant or give back
+
+    const want = act === "spend" ? skill.facetGrant : 1;
+    const max = Math.min(want, pool.length);
+    const noun = cls.name === "Dancer" ? "dance" : cls.name === "Symbolist" ? "symbol" : "option";
+
+    return await new Promise((resolve) => {
+      const rows = pool.map((f) => `
+        <label style="display:flex;gap:8px;align-items:flex-start;padding:5px 6px;border-radius:6px;cursor:pointer">
+          <input type="checkbox" value="${esc(f.uuid)}" style="margin-top:3px">
+          <span><b>${esc(f.name)}</b>${f.cost ? ` <em>(${esc(f.cost)})</em>` : ""}
+          <br><span style="opacity:.7;font-size:11px">${esc(plain(f.description).slice(0, 160))}</span></span>
+        </label>`).join("");
+
+      new Dialog({
+        title: act === "spend" ? `${skill.name} — choose ${max} ${noun}${max === 1 ? "" : "s"}`
+                               : `${skill.name} — give one back`,
+        content: `<p style="margin:4px 0 8px">${act === "spend"
+          ? `Taking this level grants <b>${max}</b> ${noun}${max === 1 ? "" : "s"}.`
+          : `Choose which to unlearn, or skip to keep them all.`}</p>
+          <div style="max-height:330px;overflow:auto">${rows}</div>`,
+        buttons: {
+          ok: {
+            label: act === "spend" ? "Choose" : "Give back",
+            callback: (html) => {
+              const picked = [...html[0].querySelectorAll("input:checked")].map((i) => i.value);
+              resolve(picked.slice(0, max));
+            },
+          },
+          skip: { label: "Skip", callback: () => resolve([]) },
+        },
+        default: "ok",
+        close: () => resolve(null),   // dismissed → cancel the whole click
+      }, { width: 460 }).render(true);
+    });
   },
 
   // Only asked when a class is opened for the first time, and only when the

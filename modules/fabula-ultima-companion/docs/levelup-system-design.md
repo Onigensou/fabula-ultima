@@ -317,6 +317,44 @@ original prose for a GM to adjudicate.
 
 ---
 
+## 4b. Facets
+
+Nine skills award Facets — spells, dances, symbols, therioforms — marked by an
+authored "(see Facet)" pointer. Taking a level opens a picker; refunding one
+offers to hand a Facet back, with Skip available so an unrelated refund cannot
+force-reconcile a pre-existing mismatch.
+
+**The count is read from the sentence**, not assumed to be one, because it
+isn't:
+
+| class · skill | text | grants |
+|---|---|---|
+| Dancer · Dance | "you learn **a** dance" | 1 |
+| Elementalist · Elemental Magic | "learn **one** spell" | 1 |
+| Entropist · Entropic Magic | "learn **one** spell" | 1 |
+| Spiritist · Spiritual Magic | "learn **one** spell" | 1 |
+| Mutant · Theriomorphosis | "you learn **a** therioform" | 1 |
+| Reaper · Soulkeeper's Rite | "learn **one** Reaper's Dirge" | 1 |
+| Symbolist · Symbolism | "you learn **two** symbols" | 2 |
+| Hunter · Set Trap | "learn **two** traps from each SL" | 2 |
+| Pilot · Personal Vehicle | grants *modules* | **0** — none authored |
+
+Anything vaguer falls back to 1: awarding too few is visible and correctable,
+awarding too many silently inflates a character. A class with no facets
+authored never prompts, which is what keeps Pilot quiet — its modules are not
+modelled as facets in this world.
+
+Note the live data does not already obey this. Hina has Elemental Magic 3
+against 4 spells and Spiritual Magic 1 against 0; Zarg has Dance 7 against 6
+dances. The system does not retroactively reconcile — it only keeps new spends
+and refunds honest.
+
+Nine further classes (Invoker, Floralist, Hexer, Matador, Esper, Illusionist,
+Pirate, Revolver, Tinkerer) have facets with **no granting skill at all**, so
+those are acquired by some other route and are never offered here.
+
+---
+
 ## 5. Class identity is not a string
 
 `class_list.class_name` is free text, and it has already drifted. Hina has a
