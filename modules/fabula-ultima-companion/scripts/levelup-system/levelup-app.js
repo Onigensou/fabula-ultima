@@ -489,6 +489,25 @@ const LevelUpApp = {
     root.addEventListener("mousedown", (ev) => { if (ev.target === root) this.close(); });
     root.addEventListener("click", (ev) => this._onClick(ev));
 
+    // The cursor is placed from the focused element's screen rect, so a wheel
+    // scroll slides that element out from under it and strands the feather.
+    // Capture phase, because scroll does not bubble. rAF-coalesced: a wheel
+    // gesture fires far more scroll events than there are frames to draw.
+    root.addEventListener("scroll", () => {
+      // Glued to the row while the gesture runs — the glide that looks right
+      // when focus jumps between rows reads as lag when the row itself is
+      // moving. Restored shortly after scrolling stops.
+      this._cursorEl?.classList.add("no-anim");
+      clearTimeout(this._scrollIdle);
+      this._scrollIdle = setTimeout(() => this._cursorEl?.classList.remove("no-anim"), 140);
+
+      if (this._scrollRaf) return;
+      this._scrollRaf = requestAnimationFrame(() => {
+        this._scrollRaf = 0;
+        this._updateCursor();
+      });
+    }, { capture: true, passive: true });
+
     // One cursor blip per interactive element entered, not per mousemove.
     root.addEventListener("pointerover", (ev) => {
       const el = ev.target?.closest?.("[data-act]");
@@ -532,6 +551,8 @@ const LevelUpApp = {
     this._pending = [];
     this._facet = null;
     resetHover();
+    if (this._scrollRaf) { cancelAnimationFrame(this._scrollRaf); this._scrollRaf = 0; }
+    clearTimeout(this._scrollIdle);
     this._cursorEl?.remove();
     this._cursorEl = null;
     this._cursorReady = false;
@@ -1808,6 +1829,27 @@ const LevelUpApp = {
     el.click();
   },
 
+  /**
+   * The vertical band in which `el` is actually visible, from its scrolling
+   * ancestors. Only the vertical axis is considered: the feather deliberately
+   * overhangs the right edge of a list, so a horizontal test would hide it
+   * while its row is in plain sight.
+   */
+  _clipBand(el) {
+    let node = el?.parentElement ?? null;
+    let top = -Infinity, bottom = Infinity;
+    while (node && node !== document.body) {
+      const oy = getComputedStyle(node).overflowY;
+      if (oy === "auto" || oy === "scroll" || oy === "hidden") {
+        const r = node.getBoundingClientRect();
+        top = Math.max(top, r.top);
+        bottom = Math.min(bottom, r.bottom);
+      }
+      node = node.parentElement;
+    }
+    return { top, bottom };
+  },
+
   _updateCursor() {
     const el = this._cursorEl;
     if (!el) return;
@@ -1815,6 +1857,15 @@ const LevelUpApp = {
     if (!target) { el.classList.remove("is-visible"); return; }
     const r = target.getBoundingClientRect();
     if (!r.width) { el.classList.remove("is-visible"); return; }
+
+    // Scrolled out of its list: the feather goes with the row rather than
+    // hovering over whatever now occupies that spot. It comes back on its own
+    // as soon as the row scrolls into view, or when hover/keyboard move focus.
+    const band = this._clipBand(target);
+    if (r.bottom < band.top + 2 || r.top > band.bottom - 2) {
+      el.classList.remove("is-visible");
+      return;
+    }
 
     // First placement jumps; later ones glide. Without this the feather flies
     // in from the top-left corner the first time it appears.
