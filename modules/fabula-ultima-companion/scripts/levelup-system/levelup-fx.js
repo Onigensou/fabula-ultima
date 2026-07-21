@@ -26,6 +26,10 @@ export const SFX = Object.freeze({
   // Staging cues — the click that queues a change, not the write.
   stageUp:    BASE + "skill_increase.wav",
   stageDown:  BASE + "cursor_back2.wav",
+  // Backing out of a selection. Same file as stageDown by design — both are
+  // "undo the last thing" — but named separately so either can be retuned
+  // without dragging the other with it. preloadSfx dedupes the URL.
+  deselect:   BASE + "cursor_back2.wav",
   // Payoff cues, played once for the whole batch after Confirm.
   levelUp:    BASE + "skill_levelUp.wav",
   levelDown:  BASE + "skill_levelDown.wav",
@@ -33,7 +37,7 @@ export const SFX = Object.freeze({
 
 const VOL = Object.freeze({
   tab: 0.5, toggle: 0.5, cursor: 0.35, open: 0.6, close: 0.55,
-  stageUp: 0.55, stageDown: 0.5,
+  stageUp: 0.55, stageDown: 0.5, deselect: 0.45,
   levelUp: 0.75, levelDown: 0.55,
 });
 

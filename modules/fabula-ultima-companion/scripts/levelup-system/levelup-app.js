@@ -912,9 +912,12 @@ const LevelUpApp = {
       return this._swapList();
     }
     if (act === "pin" || act === "unpin") {
-      sfx("toggle");   // pinning is a select, same family as the mode switches
       const u = act === "unpin" ? null : btn.dataset.detail;
-      this._pinned = (act === "pin" && this._pinned === u) ? null : u;  // click again to release
+      const next = (act === "pin" && this._pinned === u) ? null : u;   // click again to release
+      // Selecting and deselecting are different actions and get different
+      // cues — decided from the RESULT, since clicking a pinned row unpins it.
+      sfx(next ? "toggle" : "deselect");
+      this._pinned = next;
       // Repaint in place rather than re-rendering: pinning changes one border
       // and one panel, and a full rebuild would drop the reader back to the
       // top of the list they were half-way down.
