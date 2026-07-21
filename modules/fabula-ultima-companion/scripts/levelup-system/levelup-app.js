@@ -22,7 +22,7 @@ import {
 import { renderDescription, keywordRowHTML, RICHTEXT_CSS } from "./levelup-richtext.js";
 import {
   sfx, hoverSfx, resetHover, preloadLevelUpSfx,
-  staggerRows, windowAnim, burst, FX_CSS,
+  staggerRows, windowAnim, previewIntro, burst, FX_CSS,
 } from "./levelup-fx.js";
 
 const STYLE_ID = "oni-levelup-styles";
@@ -278,8 +278,18 @@ function injectStyles() {
 
 /* Two panes: preview left, class list right. */
 #${ROOT_ID} .lu-pickbody { flex: 1 1 auto; display: flex; min-height: 0; }
-#${ROOT_ID} .lu-preview { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;
-  padding: 12px 14px; gap: 8px; }
+/* min-height:0 is load-bearing: without it this flex column refuses to shrink
+   below its content, so .lu-pvscroll never gets a bounded height and a long
+   Unique Mechanic overflows instead of scrolling. */
+#${ROOT_ID} .lu-preview { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: hidden;
+  display: flex; flex-direction: column; padding: 12px 14px; gap: 8px; }
+/* Give the long-form tabs a visible, in-theme scrollbar. */
+#${ROOT_ID} .lu-pvscroll { scrollbar-width: thin; scrollbar-color: #a9855a #e6dabd; }
+#${ROOT_ID} .lu-pvscroll::-webkit-scrollbar { width: 10px; }
+#${ROOT_ID} .lu-pvscroll::-webkit-scrollbar-track { background: #e6dabd; border-radius: 6px; }
+#${ROOT_ID} .lu-pvscroll::-webkit-scrollbar-thumb { background: #a9855a; border-radius: 6px;
+  border: 2px solid #e6dabd; }
+#${ROOT_ID} .lu-pvscroll::-webkit-scrollbar-thumb:hover { background: #8a6c45; }
 #${ROOT_ID} .lu-picklist { width: 288px; flex: 0 0 auto; overflow-y: auto; padding: 8px;
   background: #e2d3b6; border-left: 1px solid #b79c72; }
 
@@ -295,11 +305,13 @@ function injectStyles() {
    Every overlay carries a glow + stroke so it survives whatever is behind it:
    the art is different per class and cannot be designed around. */
 #${ROOT_ID} .lu-previewwrap { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
-#${ROOT_ID} .lu-pvart { position: relative; flex: 1 1 auto; min-height: 0;
+#${ROOT_ID} .lu-pvart { position: relative; flex: 1 1 auto; min-height: 0; }
+#${ROOT_ID} .lu-pvartimg { position: absolute; inset: 0; z-index: 0;
   background-size: contain; background-position: center top; background-repeat: no-repeat; }
-#${ROOT_ID} .lu-pvart::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+/* Scrim between art and text, so the overlays read over busy artwork. */
+#${ROOT_ID} .lu-pvart::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: radial-gradient(ellipse at 30% 40%, rgba(247,240,223,0) 40%, rgba(247,240,223,.55) 100%); }
-#${ROOT_ID} .lu-pvart > * { position: relative; z-index: 1; }
+#${ROOT_ID} .lu-pvtext { position: absolute; inset: 0; z-index: 2; }
 
 #${ROOT_ID} .lu-glow, #${ROOT_ID} .lu-pvname, #${ROOT_ID} .lu-pvflavor,
 #${ROOT_ID} .lu-pvalso, #${ROOT_ID} .lu-pvlore, #${ROOT_ID} .lu-pvmeta {
@@ -693,6 +705,9 @@ const LevelUpApp = {
     // down. Carry the position across the repaint.
     const keepScroll = this._root.querySelector(".lu-picklist")?.scrollTop ?? 0;
 
+    // Animate only when the browser is genuinely arriving, not when an
+    // unrelated full render happens to repaint it while it is already up.
+    const wasUp = !!this._root.querySelector(`#${ROOT_ID}-picker`);
     this._root.querySelector(`#${ROOT_ID}-picker`)?.remove();
     if (!this._pickerOpen) { this._updateCursor(); return; }
 
@@ -710,6 +725,13 @@ const LevelUpApp = {
 
     const list = p.querySelector(".lu-picklist");
     if (list) list.scrollTop = keepScroll;
+    if (!wasUp) {
+      windowAnim(p.querySelector(".lu-pickpanel"), "in");
+      // Opening the browser is itself a class page arriving.
+      if (this._pickTab === "overview") {
+        previewIntro(p.querySelector(".lu-pvartimg"), p.querySelector(".lu-pvtext"));
+      }
+    }
     // Only chase the selection when the KEYBOARD moved it. On a click the row
     // is already under the pointer, and scrolling it would slide the list out
     // from under you.
@@ -1108,7 +1130,7 @@ const LevelUpApp = {
    * the remaining ~13ms per click AND the reason the list snapped back to the
    * top: a fresh list starts at scrollTop 0. Not touching it fixes both.
    */
-  _paintPreview({ chase = false } = {}) {
+  _paintPreview({ chase = false, intro = false } = {}) {
     const p = this._root?.querySelector(`#${ROOT_ID}-picker`);
     if (!p) return;
     const s = api()?.getState(this._actorUuid);
@@ -1129,7 +1151,15 @@ const LevelUpApp = {
       if (t.dataset.tab === "unique") t.disabled = !plain(sel?.mechanic).length;
     }
     const wrap = p.querySelector(".lu-previewwrap");
-    if (wrap) wrap.innerHTML = this._previewWrap(sel, atLimit);
+    if (wrap) {
+      wrap.innerHTML = this._previewWrap(sel, atLimit);
+      // Only the Overview is a "class page" — the Skill and Unique tabs are
+      // reference material you flip to, and re-animating them would put a
+      // 700ms wait in front of text you are trying to read.
+      if (intro && this._pickTab === "overview") {
+        previewIntro(wrap.querySelector(".lu-pvartimg"), wrap.querySelector(".lu-pvtext"));
+      }
+    }
 
     if (chase) p.querySelector(".lu-pickrow.on")?.scrollIntoView({ block: "nearest" });
     this._updateCursor();
@@ -1189,14 +1219,20 @@ const LevelUpApp = {
     const stars = Array.from({ length: meta.difficultyMax }, (_, i) =>
       `<i class="fa-solid fa-star ${i < meta.difficulty ? "on" : ""}"></i>`).join("");
 
-    return `<div class="lu-pvart" style="background-image:url('${esc(c.img)}')">
-        <div class="lu-pvname">${esc(c.name)}</div>
-        ${c.also ? `<div class="lu-pvalso"><i>Also known as</i> ${esc(c.also)}</div>` : ""}
-        ${plain(c.flavor).length ? `<div class="lu-pvflavor lu-rt">${renderDescription(c.flavor).bodyHtml}</div>` : ""}
-        ${plain(c.lore).length ? `<div class="lu-pvlore">${describe(c.lore, { clamp: false })}</div>` : ""}
-        <div class="lu-pvmeta">
-          <div><span>Difficulty:</span> <span class="lu-stars">${stars}</span></div>
-          <div><span>Role:</span> ${meta.roles.map((r) => `<span class="lu-role">${esc(r)}</span>`).join("")}</div>
+    // Art and text are separate layers so the entrance can bring the portrait
+    // in first and the prose in after it — they cannot animate apart while the
+    // text sits inside the element carrying the image.
+    return `<div class="lu-pvart">
+        <div class="lu-pvartimg" style="background-image:url('${esc(c.img)}')"></div>
+        <div class="lu-pvtext">
+          <div class="lu-pvname">${esc(c.name)}</div>
+          ${c.also ? `<div class="lu-pvalso"><i>Also known as</i> ${esc(c.also)}</div>` : ""}
+          ${plain(c.flavor).length ? `<div class="lu-pvflavor lu-rt">${renderDescription(c.flavor).bodyHtml}</div>` : ""}
+          ${plain(c.lore).length ? `<div class="lu-pvlore">${describe(c.lore, { clamp: false })}</div>` : ""}
+          <div class="lu-pvmeta">
+            <div><span>Difficulty:</span> <span class="lu-stars">${stars}</span></div>
+            <div><span>Role:</span> ${meta.roles.map((r) => `<span class="lu-role">${esc(r)}</span>`).join("")}</div>
+          </div>
         </div>
       </div>`;
   },
@@ -1251,9 +1287,9 @@ const LevelUpApp = {
     if (act === "picksub") { sfx("toggle"); this._pickSub = btn.dataset.sub; return this._paintPreview(); }
     if (act === "pickselect") {
       if (this._pickSel === btn.dataset.key) return;
-      sfx("cursor");
+      sfx("classPage");
       this._pickSel = btn.dataset.key;
-      return this._paintPreview();
+      return this._paintPreview({ intro: true });
     }
     if (act === "pick") {
       const changed = this._selected !== btn.dataset.key;
@@ -1623,9 +1659,9 @@ const LevelUpApp = {
     const at = rows.findIndex((r) => r.dataset.key === this._pickSel);
     const next = rows[Math.max(0, Math.min(rows.length - 1, (at < 0 ? 0 : at) + dy))];
     if (!next || next.dataset.key === this._pickSel) return;   // silent at the ends
-    sfx("cursor");
+    sfx("classPage");
     this._pickSel = next.dataset.key;
-    this._paintPreview({ chase: true });
+    this._paintPreview({ chase: true, intro: true });
   },
 
   _cycleTab(dir) {
