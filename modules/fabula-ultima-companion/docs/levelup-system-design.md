@@ -4,9 +4,33 @@ A skill-tree front end and its backing rules engine for spending Skill Points:
 one point per character level, spent to raise a Class level and a Skill level
 together, with free Heroic Skills at class mastery.
 
-Status: **planned.** Nothing implemented yet. This document is the contract the
-implementation is written against; the data-model section below is *verified
-against the live world*, not assumed.
+Status: **v1 built, live-verified, not yet played.** Every claim in this document
+was checked against `fabula-ultima-2` rather than assumed, and the write paths
+were exercised against a real party member and reverted to a byte-identical
+state. What has *not* happened is a session where players use it at the table.
+
+### What live testing changed
+
+Four things that reading the code could not have told me:
+
+1. **`reloadTemplate` was the wrong tool.** Actor instances carry their own
+   282kB copy of the template layout and CSB renders against that copy, so a
+   template-only patch reaches no existing sheet. But CSB's own resync marks
+   every prop missing from `getAllProperties()` for deletion — and that returns
+   only the 173 props with declared defaults, while a played-in PC carries ~360.
+   The migration splices two nodes into each instance's header instead.
+2. **The Oxford comma silently corrupted most heroic requirements.** Splitting
+   a class list on `,` before ` and ` turns "Ace of Cards, Darkblade, Entropist,
+   and Spiritist" into a member literally named `"and Spiritist"` — while still
+   looking parsed.
+3. **Heroic slot accounting cannot match against the class catalogues**,
+   because they are incomplete: Illusionist has no heroics authored at all, yet
+   Keren legitimately holds an Illusionist heroic authored onto her sheet.
+   Matching handed her two phantom slots she had already spent.
+4. **Writing immediately made the sheet flash a corruption warning.** A spend is
+   three updates and the window re-rendered between them, catching the books
+   mid-balance. The fix — staging changes until Confirm — turned out to be the
+   better interaction anyway.
 
 ---
 
@@ -151,10 +175,41 @@ in the game reads Skill Points, so nothing else needs to check.
 ```
 class level +1   (create the class_list row if this is a new class)
 skill level +1   (copy the item from the class actor if not already held)
-skill_point −1
+skill_point −1   ← LAST
 ```
 
-Ordered, with a rollback guard: a half-applied spend is worse than a failed one.
+The point is debited **last**, after the two writes that can fail have
+succeeded. A player who paid a point and got no skill has no way to recover it.
+
+Taking a new class is not a separate operation — in Fabula Ultima, putting a
+level into a class *is* gaining one of its skills. Spending on a class the
+character doesn't have creates the `class_list` row, writing the **canonical
+class-actor name**. This also fixes name drift at the source: the only reason
+Hina's sheet reads `"Dark Blade"` against an actor named `"Darkblade"` is that
+it was hand-typed.
+
+Refunding a class to zero leaves a `$deleted` tombstone (CSB's own convention),
+so re-taking that class revives the tombstoned row rather than appending a new
+key — otherwise cycling a class in and out grows `class_list` forever.
+
+### Changes are staged, not written
+
+The window never writes as you click. `+` and `−` adjust a local pending list
+and the UI renders the *projected* class levels, skill levels and point
+balance; **Confirm** applies the batch and **Cancel** discards it.
+
+This started as a bug fix — a spend is three updates, and re-rendering between
+them caught the books mid-balance and flashed the GM drift warning on every
+click — but it is the better interaction regardless: a player can try a build
+and back out of it. Clicking `+` then `−` on one skill annihilates rather than
+queueing two operations.
+
+On Confirm, **refunds apply before spends**: they free the points later spends
+depend on and relax the three-unmastered-class limit, so "drop this class,
+start that one" works on a single point. The first failure abandons the rest
+and leaves them staged, so the window shows exactly what did not go through.
+Each operation is individually atomic GM-side, so a partial apply is a coherent
+character sheet rather than a corrupt one.
 
 **Refund** reverses it, and **blocks rather than cascades**. If dropping a class
 below 10 would orphan a held Heroic Skill, the refund is refused —
@@ -184,28 +239,29 @@ Points and want their own track.
 > "you must have mastered the Arcanist Class, and your character must be level
 > 30 or higher."
 
-There are 170 heroic items, 149 with a non-empty requirement, 67 distinct
-strings. A clause splitter with four patterns — `masteredAny`, `charLevel`,
-`hasSkillLevels`, and a class-list form — covers **127 of 149**. The remainder
-are near-misses, not new shapes: `"two or more classes among A, B, and C"`,
-`"must have acquired the X skill"` with no count, and one
-`"learned all the skills offered by the Sharpshooter class."`
-
-So: parse once in a migration, cache the result as structured data, and keep
-the prose as the display text.
+Across the Classic and Custom class actors there are 143 heroic skills, 128 of
+them with requirement text. **All 128 parse with zero leftovers**, and — the
+check that actually matters — every class name and every skill name the parser
+emits resolves to a real class actor or a real item.
 
 ```
-heroic_requirement   (prose — still what the player reads)
-        ↓ migration
-heroic_req_json      { all: [ {kind:"masteredAny", classes:["Arcanist"]},
-                              {kind:"charLevel", min:30} ] }
-heroic_req_manual    checkbox — hand-authored, never re-parsed
+143 heroic skills · 15 with no requirement · 128 parsed · 0 unparsed
+masteredAny 127 · hasSkill 21 · skillLevel 4 · charLevel 3 · allSkillsOf 1
 ```
 
-Anything that fails to parse lands in a GM report to be filled by hand. The UI
-hard-blocks on structured data and falls back to *show the prose, warn only*
-where none exists yet — a skill nobody has curated should not become
-unpickable.
+**This is not stored anywhere.** The original plan was to parse once in a
+migration and cache structured JSON onto each item. That would write to 149
+world items for data that is static rulebook text and never changes; parsing
+the handful belonging to one class when its panel opens costs microseconds. The
+parser runs live and the prose stays the only stored form.
+
+Clause kinds: `masteredAny{classes,min}`, `charLevel{min}`,
+`skillLevel{skill,min}`, `hasSkill{skill}`, `allSkillsOf{className}`.
+
+A requirement that leaves prose unclaimed returns `evaluable: false`, and
+callers must not read that as a pass — a half-parsed requirement would
+otherwise become a *weaker* gate than its author wrote. The window shows the
+original prose for a GM to adjudicate.
 
 ---
 
@@ -231,37 +287,72 @@ unresolved template literal, present in the live data. **Everything resolves by
 
 ```
 scripts/levelup-system/
-  levelup-const.js       channels, message types, template + folder IDs
-  class-registry.js      playable classes, keyed by actor ID, alias map
-  levelup-gate.js        camp phase + title screen → may this actor spend?
-  requirement-eval.js    heroic_req_json against actor state
-  levelup-api.js         spendPoint / refundPoint / pickHeroic / getState
-  levelup-app.js         the skill-tree window
-  levelup-badge.js       "You have unspent Skill Point"
+  levelup-const.js        channels, message types, rules, idKey()
+  class-registry.js       the 42 playable classes, keyed by idKey(name)
+  requirement-parser.js   heroic prose → clauses
+  requirement-eval.js     clauses → per-clause verdict for one actor
+  levelup-gate.js         camp phase + scene mode → may this actor spend?
+  levelup-api.js          getState / spendPoint / refundPoint / pickHeroic
+  levelup-app.js          the skill-tree window
+  levelup-badge.js        "Unspent Skill Points"
 ```
 
 Writes are GM-mediated over a socket, following the existing
 `shopPurchase-handler.js` request/result pattern, and routed through
 `shared/primary-gm.js` so exactly one GM acts in a dual-GM world.
 
-The badge mounts on the existing camp screen-edge button rather than
-introducing a second floating-UI pattern — camp already owns that screen edge,
-and two systems fighting over it would collide.
+**Identity is `idKey(name)`** — lowercase alphanumerics — everywhere, not the
+raw name and not the actor id. `class_list.class_name` is hand-typed free text
+that has already drifted, and actor ids are absent from `class_list` entirely,
+which is the table the whole system reads. Collapsing to alphanumerics makes
+`"Dark Blade"` and `"Darkblade"` the same key with no alias table.
+
+The rail shows only the classes a character actually has; starting a new one is
+a separate layered window, because 42 entries would bury the four or five in
+play. The badge anchors **above** the camp screen-edge button (camp owns
+`bottom: 80 / left: 20`, 64px) rather than beside it.
 
 ---
 
 ## 7. Migrations
 
-| key | does |
-|---|---|
-| `actor-template-skill-point` | add `skill_point` + `skill_point_bonus`; back-fill every PC with `level − Σ class levels` |
-| `skill-template-heroic-req-struct` | add `heroic_req_json` + `heroic_req_manual` to `j0F5Msw5RZ8aIB3j` |
-| `heroic-req-parse` | parse the 149 prose strings; report what didn't parse |
+**One**, `2026-07-21-actor-template-skill-point-v2`: add `skill_point` +
+`skill_point_bonus` beside LEVEL on the character template *and* on each party
+member's own header copy, then back-fill `level − Σ class levels`.
+
+The two planned heroic-requirement migrations were **dropped** — see §4. The
+parser runs live and nothing about requirements is written to world data.
+
+Instance patching is scoped to the **db-resolved party**, not every actor on the
+template. The template is shared by 17 instances of which 4 are in play; the
+rest are retired PCs, test dummies and backups, and rewriting a 282kB header
+onto each is churn for actors nobody opens. A character who later joins the
+party is repaired by the window on open rather than by this one-shot.
 
 Template edits go through migrations, never `safe-edit patch` — patch
 deep-merges, which silently leaves stale rows behind on populated CSB tables.
-CSB dynamicTable deletion is `$deleted: true`, not key removal.
+CSB dynamicTable deletion is `$deleted: true`, not key removal, and CSB props
+deep-merge on update, so removing a row key needs an explicit `-=` delete.
 
 Copying skill items onto PCs adds world documents. Payload headroom gets
 measured before any bulk back-fill; this world has been near the V8 string
 ceiling before.
+
+---
+
+## 8. Known gaps in world data
+
+Not bugs, but things the system can only report rather than fix:
+
+- **Five classes have thin or empty heroic lists** — Illusionist has none
+  authored, and Esper, Merchant, Spell Fencer and Tinkerer have one each. A
+  character who masters Illusionist is offered nothing in the picker, even
+  though Keren holds an Illusionist heroic that exists only on her sheet.
+- **Zarg holds 4 heroics against 3 mastered classes.** The likely culprit is
+  `Maid cap (Passive)`, which looks equipment-granted but is flagged
+  `isHeroic`. Slots clamp at zero rather than guessing.
+- **Two class actors are named "Weaponmaster".** The registry keeps the richer
+  one (`twJIPhORKNZvbaxK`, 6 skills + 11 heroics) and reports the ignored id.
+- **`member_id_1` stores a bare actor id while slots 2–4 store `Actor.<id>`
+  uuids.** This system accepts both; other consumers doing a plain
+  `game.actors.get(raw)` resolve only slot 1.
