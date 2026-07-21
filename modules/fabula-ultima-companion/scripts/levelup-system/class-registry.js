@@ -63,6 +63,10 @@ const isHeroic = (i) => i.system?.props?.isHeroic === true;
  */
 const isFacet = (i) => {
   const p = i.system?.props ?? {};
+  // A Heroic Skill is never a Facet, even when it is a Spell — Elementalist's
+  // Volcano is both isHeroic and skill_type "Spell", and without this it would
+  // be listed as a heroic AND handed out as a free facet.
+  if (p.isHeroic === true) return false;
   if (p.isFacet === true) return true;
   return String(p.skill_type ?? "") === "Spell";
 };
