@@ -109,18 +109,13 @@ function injectStyles() {
 #${ROOT_ID} .lu-tab:hover { background: #57422a; color: #f2e6cf; }
 #${ROOT_ID} .lu-tab.on { background: #efe4cd; color: #2f2618; border-color: #6b543a; }
 
-/* Facet board — learned at full strength, the rest dimmed underneath */
-#${ROOT_ID} .lu-fgrid { display: grid; gap: 8px;
-  grid-template-columns: repeat(auto-fill, minmax(228px, 1fr)); }
-#${ROOT_ID} .lu-fcell { padding: 9px 11px; border-radius: 8px; border: 1px solid #c6ae87;
-  background: #f7f0df; }
-#${ROOT_ID} .lu-fcell.have { border-color: #5f8b3c; background: #eef6e5;
-  box-shadow: 0 0 0 1px rgba(95,139,60,.35) inset; }
-#${ROOT_ID} .lu-fcell.away { border-color: #a3706f; background: #f6e9e9; opacity: .8; }
-#${ROOT_ID} .lu-fcell.miss { opacity: .42; filter: saturate(.35); }
-#${ROOT_ID} .lu-fcell.miss:hover { opacity: .72; filter: saturate(.7); }
-#${ROOT_ID} .lu-fcell .lu-fhead { flex-wrap: wrap; gap: 6px; }
-#${ROOT_ID} .lu-fcell .lu-rt { margin-top: 4px; font-size: 11px; opacity: .8; }
+/* Facet list — same row as a skill; learned at full strength, rest dimmed */
+#${ROOT_ID} .lu-frow.have { border-color: #5f8b3c; background: #eef6e5;
+  box-shadow: 0 0 0 1px rgba(95,139,60,.3) inset; }
+#${ROOT_ID} .lu-frow.have .lu-pips { color: #3f6b23; font-weight: 700; }
+#${ROOT_ID} .lu-frow.away { border-color: #a3706f; background: #f6e9e9; }
+#${ROOT_ID} .lu-frow.miss { opacity: .45; filter: saturate(.3); }
+#${ROOT_ID} .lu-frow.miss:hover { opacity: .78; filter: saturate(.7); }
 
 #${ROOT_ID} .lu-note { padding: 7px 14px; font-size: 12.5px; flex: 0 0 auto; }
 #${ROOT_ID} .lu-note.warn { background: #f6e2b8; border-bottom: 1px solid #c9a768; color: #4a3306; }
@@ -573,16 +568,24 @@ const LevelUpApp = {
     const sorted = [...cls.facets].sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
     const have = cls.facets.filter((f) => (f.held && !givingBack.has(f.uuid)) || staged.has(f.uuid)).length;
 
-    const cell = (f) => {
+    // Same one-column row as the skill list — this is the same kind of thing
+    // being read, and two layouts for one class would just look like two pages.
+    const row = (f) => {
       const r = rank(f);
-      const tag = r === 0 ? `<span class="lu-tag moved">staged</span>`
+      const note = r === 0 ? `<span class="lu-tag moved">staged</span>`
         : r === 2 ? `<span class="lu-tag">giving back</span>` : "";
-      return `<div class="lu-fcell ${r <= 1 ? "have" : r === 2 ? "away" : "miss"}">
-        <span class="lu-fhead">${f.img ? `<img src="${esc(f.img)}" alt="">` : ""}
-          <b>${esc(f.name)}</b>${f.cost ? ` <span class="lu-tag">${esc(f.cost)}</span>` : ""}${tag}</span>
-        ${describe(f.description)}
+      return `<div class="lu-skill lu-frow ${r <= 1 ? "have" : r === 2 ? "away" : "miss"}">
+        <img src="${esc(f.img)}" alt="">
+        <div class="t">
+          <b>${esc(f.name)}</b>${f.cost ? ` <span class="lu-tag">${esc(f.cost)}</span>` : ""}${note}
+          ${describe(f.description)}
+        </div>
+        <span class="lu-pips">${r <= 1 ? "✓" : "—"}</span>
       </div>`;
     };
+
+    const learned = sorted.filter((f) => rank(f) <= 1);
+    const rest = sorted.filter((f) => rank(f) > 1);
 
     // The grant is what a player needs to know to collect more of these.
     const granter = cls.skills.find((k) => k.facetGrant > 0);
@@ -592,7 +595,9 @@ const LevelUpApp = {
 
     return `<div class="lu-h2"><b>${esc(cls.name)}</b><span>${have} of ${cls.facets.length} learned</span></div>
       ${hint}
-      <div class="lu-fgrid">${sorted.map(cell).join("")}</div>`;
+      ${learned.map(row).join("")}
+      ${rest.length && learned.length ? `<div class="lu-railhead" style="margin:10px 2px 5px">Not yet learned</div>` : ""}
+      ${rest.map(row).join("")}`;
   },
 
   _heroicPane(s) {
