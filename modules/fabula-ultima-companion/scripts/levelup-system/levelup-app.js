@@ -309,10 +309,13 @@ function injectStyles() {
 
 #${ROOT_ID} .lu-pvname { position: absolute; top: 2px; left: 2px; right: 2px;
   font-size: 30px; font-weight: 800; font-style: italic; color: #5c1f2e; }
-#${ROOT_ID} .lu-pvflavor { position: absolute; top: 46px; right: 6px; width: 44%;
+/* Sits just under the class name, nudged in from the left edge. */
+#${ROOT_ID} .lu-pvalso { position: absolute; top: 42px; left: 22px; width: 60%;
+  font-size: 11.5px; color: #5a4a30; }
+#${ROOT_ID} .lu-pvalso i { opacity: .7; }
+#${ROOT_ID} .lu-pvflavor { position: absolute; top: 74px; right: 6px; width: 44%;
   font-size: 13px; font-style: italic; color: #4a3a22; text-align: center; }
-#${ROOT_ID} .lu-pvalso { position: absolute; top: 132px; right: 6px; width: 44%;
-  font-size: 11.5px; font-style: italic; color: #5a4a30; text-align: center; }
+#${ROOT_ID} .lu-pvflavor.lu-rt p { margin: 0; }
 #${ROOT_ID} .lu-pvlore { position: absolute; right: 6px; bottom: 6px; width: 46%;
   max-height: 52%; overflow-y: auto; font-size: 11.5px; color: #3a2f1e; }
 #${ROOT_ID} .lu-pvmeta { position: absolute; left: 4px; bottom: 6px; display: flex;
@@ -655,15 +658,7 @@ const LevelUpApp = {
 
     // The new-class browser is its own window layered over this one, so the
     // rail stays a short list of what you actually play.
-    this._root.querySelector(`#${ROOT_ID}-picker`)?.remove();
-    if (this._pickerOpen) {
-      const p = document.createElement("div");
-      p.id = `${ROOT_ID}-picker`;
-      p.className = "lu-picker";
-      p.innerHTML = `<div class="lu-panel lu-pickpanel">${this._picker(s)}</div>`;
-      p.addEventListener("mousedown", (ev) => { if (ev.target === p) { this._pickerOpen = false; this.render(); } });
-      this._root.appendChild(p);
-    }
+    this._paintPicker(s);
 
     // Facet picker sits above everything, including the class browser — it is
     // a decision the player is mid-way through and must resolve or dismiss.
@@ -679,6 +674,35 @@ const LevelUpApp = {
         this._root.appendChild(el);
       }
     }
+  },
+
+  /**
+   * Rebuild ONLY the class-browser overlay.
+   *
+   * Picking a class or switching a preview tab changes nothing in the main
+   * window behind it, and rebuilding that whole window per click cost ~15ms —
+   * enough to blow the frame budget once real events (sound, transitions) piled
+   * on, which is the lag and the cursor desync. This touches just the overlay,
+   * so the browser stays responsive no matter how fast you scroll it.
+   */
+  _paintPicker(s = null) {
+    if (!this.isOpen) return;
+    this._root.querySelector(`#${ROOT_ID}-picker`)?.remove();
+    if (!this._pickerOpen) { this._updateCursor(); return; }
+
+    s = s ?? api()?.getState(this._actorUuid);
+    if (!s?.ok) return;
+
+    const p = document.createElement("div");
+    p.id = `${ROOT_ID}-picker`;
+    p.className = "lu-picker";
+    p.innerHTML = `<div class="lu-panel lu-pickpanel">${this._picker(s)}</div>`;
+    p.addEventListener("mousedown", (ev) => {
+      if (ev.target === p) { sfx("deselect"); this._pickerOpen = false; this._paintPicker(); }
+    });
+    this._root.appendChild(p);
+    this._updateCursor();
+    this._root.querySelector(".lu-pickrow.on")?.scrollIntoView({ block: "nearest" });
   },
 
   _head(s, proj) {
@@ -1117,8 +1141,8 @@ const LevelUpApp = {
 
     return `<div class="lu-pvart" style="background-image:url('${esc(c.img)}')">
         <div class="lu-pvname">${esc(c.name)}</div>
-        ${plain(c.flavor).length ? `<div class="lu-pvflavor">${esc(plain(c.flavor))}</div>` : ""}
-        ${c.also ? `<div class="lu-pvalso">Also known as ${esc(c.also)}</div>` : ""}
+        ${c.also ? `<div class="lu-pvalso"><i>Also known as</i> ${esc(c.also)}</div>` : ""}
+        ${plain(c.flavor).length ? `<div class="lu-pvflavor lu-rt">${renderDescription(c.flavor).bodyHtml}</div>` : ""}
         ${plain(c.lore).length ? `<div class="lu-pvlore">${describe(c.lore, { clamp: false })}</div>` : ""}
         <div class="lu-pvmeta">
           <div><span>Difficulty:</span> <span class="lu-stars">${stars}</span></div>
@@ -1168,15 +1192,18 @@ const LevelUpApp = {
       this._resetMode = !this._resetMode;
       return this.render();
     }
+    // Opening/closing the browser toggles what covers the main window, so those
+    // need a full render. Everything WITHIN the browser repaints only the
+    // overlay — cheap, and it keeps the window behind untouched.
     if (act === "openpicker") { sfx("open"); this._pickerOpen = true; return this.render(); }
     if (act === "closepicker") { sfx("deselect"); this._pickerOpen = false; return this.render(); }
-    if (act === "picktab") { sfx("tab"); this._pickTab = btn.dataset.tab; return this.render(); }
-    if (act === "picksub") { sfx("toggle"); this._pickSub = btn.dataset.sub; return this.render(); }
+    if (act === "picktab") { sfx("tab"); this._pickTab = btn.dataset.tab; return this._paintPicker(); }
+    if (act === "picksub") { sfx("toggle"); this._pickSub = btn.dataset.sub; return this._paintPicker(); }
     if (act === "pickselect") {
       if (this._pickSel === btn.dataset.key) return;
       sfx("cursor");
       this._pickSel = btn.dataset.key;
-      return this.render();
+      return this._paintPicker();
     }
     if (act === "pick") {
       const changed = this._selected !== btn.dataset.key;
@@ -1535,7 +1562,7 @@ const LevelUpApp = {
       const i = usable.indexOf(this._pickTab);
       const next = usable[(Math.max(0, i) + dir + usable.length) % usable.length];
       if (next === this._pickTab) return;
-      sfx("tab"); this._pickTab = next; this.render();
+      sfx("tab"); this._pickTab = next; this._paintPicker();
     };
     if (keyMatch(ev, KEYS.TAB_NEXT) || keyMatch(ev, KEYS.RIGHT)) return cycle(1);
     if (keyMatch(ev, KEYS.TAB_PREV) || keyMatch(ev, KEYS.LEFT)) return cycle(-1);
@@ -1548,8 +1575,7 @@ const LevelUpApp = {
     if (!next || next.dataset.key === this._pickSel) return;   // silent at the ends
     sfx("cursor");
     this._pickSel = next.dataset.key;
-    this.render();
-    this._root?.querySelector(".lu-pickrow.on")?.scrollIntoView({ block: "nearest" });
+    this._paintPicker();
   },
 
   _cycleTab(dir) {
