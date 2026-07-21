@@ -97,8 +97,12 @@ function injectStyles() {
   background: #2b2110; border: 1px solid #8a6c45; min-width: 96px; }
 #${ROOT_ID} .lu-sp b { display: block; font-size: 26px; line-height: 1; color: #ffd479; }
 #${ROOT_ID} .lu-sp span { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; opacity: .85; }
-#${ROOT_ID} .lu-x { background: none; border: 0; color: #f6ecd8; font-size: 24px; cursor: pointer;
-  padding: 0 4px; line-height: 1; }
+/* Square, top-right, the way a close button is expected to look. */
+#${ROOT_ID} .lu-x { flex: 0 0 auto; width: 28px; height: 28px; padding: 0; align-self: flex-start;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  font-size: 16px; line-height: 1; border-radius: 5px;
+  border: 1px solid #8a6c45; background: #3a2b18; color: #e8dcc4; }
+#${ROOT_ID} .lu-x:hover { background: #7a3226; border-color: #b0553f; color: #fff; }
 
 /* Skill / Facet tabs — file-tab shapes rising out of the header */
 #${ROOT_ID} .lu-tabs { display: flex; align-items: flex-end; gap: 3px; align-self: stretch;
@@ -109,11 +113,6 @@ function injectStyles() {
 #${ROOT_ID} .lu-tab:hover { background: #57422a; color: #f2e6cf; }
 #${ROOT_ID} .lu-tab.on { background: #efe4cd; color: #2f2618; border-color: #6b543a; }
 
-/* Facet list — same row as a skill; learned at full strength, rest dimmed */
-#${ROOT_ID} .lu-frow.have { border-color: #5f8b3c; background: #eef6e5;
-  box-shadow: 0 0 0 1px rgba(95,139,60,.3) inset; }
-#${ROOT_ID} .lu-frow.have .lu-pips { color: #3f6b23; font-weight: 700; }
-#${ROOT_ID} .lu-frow.away { border-color: #a3706f; background: #f6e9e9; }
 #${ROOT_ID} .lu-tabdot { display: inline-block; min-width: 16px; padding: 0 4px; margin-left: 4px;
   border-radius: 8px; background: #d9a326; color: #2b2110; font-size: 11px; font-weight: 800; }
 
@@ -139,7 +138,38 @@ function injectStyles() {
 #${ROOT_ID} .lu-railhead { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
   opacity: .65; margin: 8px 4px 4px; }
 
+#${ROOT_ID} .lu-mainwrap { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 #${ROOT_ID} .lu-main { flex: 1 1 auto; overflow-y: auto; padding: 12px 14px; }
+
+/* Detail panel — one description for the whole list, under it. */
+#${ROOT_ID} .lu-detail { flex: 0 0 auto; height: 150px; overflow-y: auto; padding: 9px 14px;
+  background: #e6dabd; border-top: 2px solid #b79c72; }
+#${ROOT_ID} .lu-dempty { font-size: 12px; opacity: .55; font-style: italic; padding: 6px 2px; }
+#${ROOT_ID} .lu-dhead { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+#${ROOT_ID} .lu-dhead > img { width: 30px; height: 30px; border-radius: 5px; object-fit: cover;
+  flex: 0 0 auto; border: 0 !important; outline: 0 !important; }
+#${ROOT_ID} .lu-dhead b { font-size: 14px; }
+#${ROOT_ID} .lu-dbody { font-size: 12px; }
+#${ROOT_ID} .lu-gap { flex: 1 1 auto; }
+
+/* Compact list row: icon, name, control. Description lives in the panel. */
+#${ROOT_ID} .lu-row { display: flex; align-items: center; gap: 9px; padding: 6px 10px;
+  border-radius: 8px; margin-bottom: 4px; cursor: pointer;
+  background: #f7f0df; border: 1px solid #c6ae87; }
+#${ROOT_ID} .lu-row:hover { background: #fffaec; border-color: #a98a4e; }
+#${ROOT_ID} .lu-row > img { width: 30px; height: 30px; border-radius: 5px; object-fit: cover;
+  flex: 0 0 auto; border: 0 !important; outline: 0 !important; }
+#${ROOT_ID} .lu-row > b { font-size: 13.5px; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; max-width: 46%; }
+#${ROOT_ID} .lu-row.pinned { border-color: #6b543a; box-shadow: 0 0 0 2px rgba(107,84,58,.4) inset; }
+#${ROOT_ID} .lu-row.max { background: #f1e6c6; border-color: #a98a4e; }
+#${ROOT_ID} .lu-row.have { border-color: #5f8b3c; background: #eef6e5; }
+#${ROOT_ID} .lu-row.away { border-color: #a3706f; background: #f6e9e9; }
+/* Only the identity dims — a live + or − must stay legible. */
+#${ROOT_ID} .lu-row.miss > img, #${ROOT_ID} .lu-row.miss > b,
+#${ROOT_ID} .lu-row.miss > .lu-tag { opacity: .45; filter: saturate(.3); }
+#${ROOT_ID} .lu-row.miss:hover > img, #${ROOT_ID} .lu-row.miss:hover > b,
+#${ROOT_ID} .lu-row.miss:hover > .lu-tag { opacity: .85; filter: saturate(.8); }
 #${ROOT_ID} .lu-h2 { display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px; }
 #${ROOT_ID} .lu-h2 b { font-size: 18px; }
 #${ROOT_ID} .lu-h2 span { font-size: 12px; opacity: .7; }
@@ -147,17 +177,6 @@ function injectStyles() {
 
 #${ROOT_ID} .lu-skill { display: flex; align-items: center; gap: 10px; padding: 8px 10px;
   border-radius: 8px; margin-bottom: 6px; background: #f7f0df; border: 1px solid #c6ae87; }
-#${ROOT_ID} .lu-skill.max { border-color: #a98a4e; background: #f1e6c6; }
-
-/* Not-yet-acquired rows read as locked — but ONLY the content dims. Dimming a
-   live + or − button makes an available action look unavailable, which is the
-   opposite of what the state is trying to say. */
-#${ROOT_ID} .lu-skill.miss > img,
-#${ROOT_ID} .lu-skill.miss > .t { opacity: .45; filter: saturate(.3); }
-#${ROOT_ID} .lu-skill.miss:hover > img,
-#${ROOT_ID} .lu-skill.miss:hover > .t { opacity: .78; filter: saturate(.7); }
-#${ROOT_ID} .lu-skill.miss { background: #f3ece0; }
-
 #${ROOT_ID} .lu-learned { font-size: 11.5px; font-weight: 700; font-style: italic;
   opacity: .5; white-space: nowrap; letter-spacing: .02em; }
 /* Direct child ONLY. As a descendant selector this also matched the inline
@@ -243,8 +262,16 @@ const LevelUpApp = {
   _selected: null,      // class key — may be a class not yet taken
   _pickerOpen: false,   // the new-class browser, layered over the main window
   _facet: null,         // the Facet picker, layered above everything
-  _tab: "skill",        // "skill" | "facet" — what the main pane shows
+  _tab: "skill",        // "skill" | "facet" | "heroic" — what the main pane shows
   _busy: false,
+
+  // Detail panel. Rows carry only icon, name and their control; the effect text
+  // lives in one panel below the list and follows the cursor. Clicking a row
+  // pins it, so the text stays put while the mouse travels to a button or off
+  // the list entirely.
+  _pinned: null,        // uuid of the pinned row, or null
+  _hover: null,         // uuid under the cursor
+  _details: new Map(),  // uuid → { name, img, cost, meta, description, note }
 
   // Staged, unwritten changes. Nothing touches the actor until Confirm.
   //
@@ -367,13 +394,32 @@ const LevelUpApp = {
       this._selected = taken[0]?.key ?? null;
     }
 
+    this._details = new Map();   // rebuilt by whichever tab renders below
+    const main = this._main(s, proj);
+    if (this._pinned && !this._details.has(this._pinned)) this._pinned = null;
+
     panel.innerHTML =
       this._head(s, proj) + this._notes(s) +
       `<div class="lu-body">
          <div class="lu-rail">${this._rail(s, taken, proj)}</div>
-         <div class="lu-main">${this._main(s, proj)}</div>
+         <div class="lu-mainwrap">
+           <div class="lu-main">${main}</div>
+           <div class="lu-detail">${this._detailHTML()}</div>
+         </div>
        </div>` +
       this._footer(s, proj);
+
+    // Hover updates only the detail panel — re-rendering the whole window on
+    // every mouseover would fight the scroll position and feel awful.
+    const list = panel.querySelector(".lu-main");
+    list?.addEventListener("mouseover", (ev) => {
+      const row = ev.target.closest?.("[data-detail]");
+      const uuid = row?.dataset.detail ?? null;
+      if (uuid === this._hover) return;
+      this._hover = uuid;
+      this._paintDetail();
+    });
+    list?.addEventListener("mouseleave", () => { this._hover = null; this._paintDetail(); });
 
     // The new-class browser is its own window layered over this one, so the
     // rail stays a short list of what you actually play.
@@ -489,19 +535,22 @@ const LevelUpApp = {
       const atMax = lvl >= sk.maxLevel;
       const canBuy = s.gate.open && proj.points > 0 && !atMax
         && clsLevel < s.rules.maxClassLevel && !wouldExceedLimit;
-      return `<div class="lu-skill ${atMax ? "max" : ""} ${lvl === 0 ? "miss" : ""}">
-        <img src="${esc(sk.img)}" alt="">
-        <div class="t">
-          <b>${esc(sk.name)}</b>${sk.cost ? ` <span class="lu-tag">${esc(sk.cost)}</span>` : ""}
-          ${describe(sk.description)}
-        </div>
-        <span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>
-        ${this._facetEditBtn(sk)}
-        <button class="lu-btn sell" data-act="refund" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
-          ${s.gate.open && lvl > 0 ? "" : "disabled"} title="Give back a level">−</button>
-        <button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
-          ${canBuy ? "" : "disabled"} title="Spend a Skill Point">+</button>
-      </div>`;
+      return this._row({
+        uuid: sk.uuid, img: sk.img, name: sk.name,
+        cls: `${atMax ? "max" : ""} ${lvl === 0 ? "miss" : ""}`,
+        detail: {
+          name: sk.name, img: sk.img, cost: sk.cost,
+          meta: `${lvl} / ${sk.maxLevel}${sk.facetGrant ? ` · grants ${sk.facetGrant} Facet${sk.facetGrant === 1 ? "" : "s"} per level` : ""}`,
+          description: sk.description,
+        },
+        right:
+          `<span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>` +
+          this._facetEditBtn(sk) +
+          `<button class="lu-btn sell" data-act="refund" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
+            ${s.gate.open && lvl > 0 ? "" : "disabled"} title="Give back a level">−</button>` +
+          `<button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
+            ${canBuy ? "" : "disabled"} title="Spend a Skill Point">+</button>`,
+      });
     }).join("");
 
     const mastered = clsLevel >= s.rules.maxClassLevel;
@@ -591,16 +640,14 @@ const LevelUpApp = {
     // being read, and two layouts for one class would just look like two pages.
     const row = (f) => {
       const r = rank(f);
-      const note = r === 0 ? `<span class="lu-tag moved">staged</span>`
-        : r === 2 ? `<span class="lu-tag">giving back</span>` : "";
-      return `<div class="lu-skill lu-frow ${r <= 1 ? "have" : r === 2 ? "away" : "miss"}">
-        <img src="${esc(f.img)}" alt="">
-        <div class="t">
-          <b>${esc(f.name)}</b>${f.cost ? ` <span class="lu-tag">${esc(f.cost)}</span>` : ""}${note}
-          ${describe(f.description)}
-        </div>
-        ${r <= 1 ? `<span class="lu-learned">Learned</span>` : ""}
-      </div>`;
+      const tag = r === 0 ? "staged" : r === 2 ? "giving back" : "";
+      return this._row({
+        uuid: f.uuid, img: f.img, name: f.name, tag,
+        cls: r <= 1 ? "have" : r === 2 ? "away" : "miss",
+        detail: { name: f.name, img: f.img, cost: f.cost, description: f.description,
+          meta: r <= 1 ? "Learned" : "Not learned" },
+        right: r <= 1 ? `<span class="lu-learned">Learned</span>` : "",
+      });
     };
 
     const learned = sorted.filter((f) => rank(f) <= 1);
@@ -633,14 +680,11 @@ const LevelUpApp = {
       <span>${earned ? `${open} of ${earned} slot${earned === 1 ? "" : "s"} open · ${used} taken`
                      : "master a class to earn one"}</span></div>`;
 
-    const learnedRows = (owned ?? []).map((h) => `<div class="lu-skill lu-frow have">
-      <img src="${esc(h.img)}" alt="">
-      <div class="t">
-        <b>${esc(h.name)}</b>${h.from ? ` <span class="lu-tag">${esc(h.from)}</span>` : ""}
-        ${describe(h.description)}
-      </div>
-      <span class="lu-learned">Learned</span>
-    </div>`).join("");
+    const learnedRows = (owned ?? []).map((h) => this._row({
+      uuid: h.uuid, img: h.img, name: h.name, tag: h.from, cls: "have",
+      detail: { name: h.name, img: h.img, cost: h.cost, meta: "Learned", description: h.description },
+      right: `<span class="lu-learned">Learned</span>`,
+    })).join("");
 
     const met = available.filter((h) => h.relevance === "met");
     const close = available.filter((h) => h.relevance === "close");
@@ -670,18 +714,21 @@ const LevelUpApp = {
       const from = h.from.map((f) => f.name).join(" / ");
       const req = !h.evaluable
         ? `<p class="lu-req">Requirement needs a GM: “${esc(h.prose)}”</p>`
-        : h.met ? "" : `<p class="lu-req">${h.clauses.filter((c) => !c.met).map((c) => esc(c.label)).join(" · ")}</p>`;
+        : h.met ? "" : `<p class="lu-req">Needs: ${h.clauses.filter((c) => !c.met).map((c) => esc(c.label)).join(" · ")}</p>`;
       const staged = this._pending.some((p) => p.op === "heroic" && p.skillUuid === h.skill.uuid);
       const canTake = s.gate.open && h.met && (s.heroic.open > 0 || staged);
-      return `<div class="lu-skill lu-frow ${staged ? "have" : h.met ? "" : "miss"}">
-        <img src="${esc(h.skill.img)}" alt="">
-        <div class="t">
-          <b>${esc(h.skill.name)}</b> <span class="lu-tag">${esc(from)}</span>${staged ? ` <span class="lu-tag moved">staged</span>` : ""}
-          ${describe(h.skill.description)}${req}
-        </div>
-        <button class="lu-btn buy" data-act="heroic" data-uuid="${esc(h.skill.uuid)}" data-name="${esc(h.skill.name)}"
-          ${canTake ? "" : "disabled"} title="${staged ? "Un-stage" : "Take this Heroic Skill (free)"}">${staged ? "✓" : "★"}</button>
-      </div>`;
+      return this._row({
+        uuid: h.skill.uuid, img: h.skill.img, name: h.skill.name, tag: from,
+        cls: staged ? "have" : h.met ? "" : "miss",
+        detail: {
+          name: h.skill.name, img: h.skill.img, cost: h.skill.cost,
+          meta: staged ? "staged" : h.met ? "Available" : "Not yet available",
+          description: h.skill.description,
+          note: req,   // the unmet-requirement lines belong with the full text
+        },
+        right: `<button class="lu-btn buy" data-act="heroic" data-uuid="${esc(h.skill.uuid)}" data-name="${esc(h.skill.name)}"
+          ${canTake ? "" : "disabled"} title="${staged ? "Un-stage" : "Take this Heroic Skill (free)"}">${staged ? "✓" : "★"}</button>`,
+      });
     }).join("");
   },
 
@@ -700,7 +747,7 @@ const LevelUpApp = {
       : "";
 
     const groups = ["Classic Classes", "Custom Classes"].map((folder) => {
-      const rows = untaken.filter((c) => c.folder === folder).map((c) => `<div class="lu-skill none">
+      const rows = untaken.filter((c) => c.folder === folder).map((c) => `<div class="lu-skill">
           <img src="${esc(c.img)}" alt="">
           <div class="t"><b>${esc(c.name)}</b>
             <p>${c.skills.length} skills · ${esc(c.benefit ? (LEVELUP.BENEFIT_LABEL[c.benefit] ?? c.benefit) : "you choose the bonus")}</p></div>
@@ -727,7 +774,17 @@ const LevelUpApp = {
     const act = btn.dataset.act;
 
     if (act === "close") return this.close();
-    if (act === "tab") { this._tab = btn.dataset.tab; return this.render(); }
+    if (act === "tab") {
+      this._tab = btn.dataset.tab;
+      this._pinned = null; this._hover = null;   // details belong to the old list
+      return this.render();
+    }
+    if (act === "pin") {
+      const u = btn.dataset.detail;
+      this._pinned = this._pinned === u ? null : u;   // click again to release
+      return this.render();
+    }
+    if (act === "unpin") { this._pinned = null; return this.render(); }
     if (act === "openpicker") { this._pickerOpen = true; return this.render(); }
     if (act === "closepicker") { this._pickerOpen = false; return this.render(); }
     if (act === "pick") {
@@ -933,6 +990,48 @@ const LevelUpApp = {
     };
     this.render();
     return true;
+  },
+
+  /**
+   * One list row: icon, name, and whatever control belongs on the right.
+   *
+   * Registers the row's detail so the panel below can show it, and marks the
+   * row as a pin target. Nested buttons carry their own `data-act`, and
+   * `closest()` finds the nearest one, so clicking + or − never pins by
+   * accident.
+   */
+  _row({ uuid, img, name, tag, right, cls = "", detail }) {
+    if (detail) this._details.set(uuid, detail);
+    const pinned = this._pinned === uuid;
+    return `<div class="lu-row ${cls} ${pinned ? "pinned" : ""}" data-act="pin" data-detail="${esc(uuid)}">
+      <img src="${esc(img)}" alt="">
+      <b>${esc(name)}</b>
+      ${tag ? `<span class="lu-tag">${esc(tag)}</span>` : ""}
+      <span class="lu-gap"></span>
+      ${right ?? ""}
+    </div>`;
+  },
+
+  _detailHTML() {
+    const d = this._details.get(this._pinned ?? this._hover);
+    if (!d) {
+      return `<div class="lu-dempty">Hover a row for its details — click to keep it here.</div>`;
+    }
+    const pinned = !!this._pinned;
+    return `<div class="lu-dhead">
+        <img src="${esc(d.img)}" alt="">
+        <b>${esc(d.name)}</b>
+        ${d.cost ? `<span class="lu-tag">${esc(d.cost)}</span>` : ""}
+        ${d.meta ? `<span class="lu-tag">${esc(d.meta)}</span>` : ""}
+        <span class="lu-gap"></span>
+        ${pinned ? `<button class="lu-btn" data-act="unpin" title="Unpin">📌</button>` : ""}
+      </div>
+      <div class="lu-dbody">${describe(d.description, { clamp: false })}${d.note ?? ""}</div>`;
+  },
+
+  _paintDetail() {
+    const el = this._root?.querySelector(".lu-detail");
+    if (el) el.innerHTML = this._detailHTML();
   },
 
   _facetNoun(className) {
