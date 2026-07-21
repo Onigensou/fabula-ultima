@@ -12,51 +12,58 @@
  *                          expected = level + skill_point_bonus − Σ class levels
  *                      Without it, any GM gift would read as corruption forever.
  *
- * WHY THE LAYOUT INSERT, AND WHY reloadTemplate
- * ---------------------------------------------
+ * WHY EVERY INSTANCE IS PATCHED, AND WHY NOT reloadTemplate
+ * ---------------------------------------------------------
  * Actor INSTANCES carry their own full copy of the template's header/body
  * (Hina's is 282kB, byte-for-byte the template's), and CSB renders an instance
  * against its OWN stamped copy — not against the live template. Patching the
- * template alone would add the field for future actors and leave every existing
- * sheet unchanged. So each instance must be resynced.
+ * template alone adds the field for future actors and leaves every existing
+ * sheet unchanged.
  *
- * `templateSystem.reloadTemplate()` is CSB's own sanctioned resync — the same
- * call behind the GM's right-click "Reload Template". It copies header/body/
- * version down, seeds newly-added props with their defaults, and PRUNES any
- * prop the template no longer defines (`props['-=' + key] = true`).
+ * The obvious tool is `templateSystem.reloadTemplate()` — CSB's own resync,
+ * the call behind the GM's right-click "Reload Template". It is the wrong tool
+ * here, for a reason that only shows up when measured:
  *
- * That prune is the hazard, so this migration refuses to guess: it asks CSB for
- * the real `getAllProperties()` key set, computes exactly what each actor would
- * lose, and only reloads actors whose loss is small (≤ PRUNE_LIMIT). Anything
- * heavier — stale test actors, backups — is reported and left alone for a human.
- * Measured on this world at authoring time: the four party actors prune 0, 0, 0
- * and 2 (Hina's `check_mod_dex` / `check_mod_ins`, both zero-valued orphans of
- * an older template revision); the heavy sets are all on test/backup actors.
+ *   reloadTemplate PRUNES every prop missing from `getAllProperties()`
+ *   (`props['-=' + key] = true`), and that prune IS persisted — the update at
+ *   templateSystem.js:699 sends `props` with the deletion markers in it.
+ *   But `getAllProperties()` returns only the 173 props that have declared
+ *   defaults, while a played-in PC carries ~360; the remainder are computed
+ *   labels CSB regenerates on render. So a reload marks ~200 props for
+ *   deletion on every actor and leans on re-render to rebuild them.
+ *
+ * That may well be survivable — it is what the right-click does — but it is a
+ * huge blast radius for what is, here, a two-node layout insert. So this
+ * migration splices the same two nodes into each instance's own header and
+ * touches `system.props` only for the back-fill. No prune, no version games,
+ * no dependency on render-time reconstruction.
  *
  * ORDERING
  * --------
- * The back-fill is computed BEFORE the reload. reloadTemplate seeds
- * `skill_point` with its defaultValue, so after a reload "does this actor
- * already have the prop" can no longer distinguish a fresh actor from a
- * migrated one. Snapshot first, write after.
+ * The back-fill is snapshotted BEFORE any layout write, so "does this actor
+ * already have a skill_point prop" always means "was it migrated already"
+ * rather than "did something seed a default underneath us".
  *
  * SCOPE: actor templates carrying BOTH a `level` and a `class_list` node —
  *        the PC-template signature. NPC and class templates have neither, and
  *        matching on shape rather than id keeps this correct on forked worlds.
+ *        Instances are matched by `system.template`.
  *
- * IDEMPOTENT — gated on observable state; an actor that already has a
- * `skill_point` prop is never re-back-filled, so a hand-corrected value
+ * IDEMPOTENT — every step is gated on observable state. The layout splice is
+ * skipped where a `skill_point` node already exists, and an actor that already
+ * has a `skill_point` prop is never re-back-filled, so a hand-corrected value
  * survives a re-run.
+ *
+ * v2 — v1 tried the reloadTemplate route and correctly refused to reload
+ * anything once it measured the prune (see above), which left the template
+ * patched and every sheet without the field. Re-keyed so it re-runs.
  */
 
-export const key = "2026-07-21-actor-template-skill-point";
+export const key = "2026-07-21-actor-template-skill-point-v2";
 export const description =
-  "Character template: add visible `skill_point` + GM-only `skill_point_bonus` " +
-  "beside LEVEL; resync instances via CSB reloadTemplate (prune-guarded) and " +
-  "back-fill skill_point from level − Σ class levels.";
-
-// An actor losing more props than this is left for a human to look at.
-const PRUNE_LIMIT = 10;
+  "Character template + every instance: add visible `skill_point` + GM-only " +
+  "`skill_point_bonus` beside LEVEL, and back-fill skill_point from " +
+  "level − Σ class levels.";
 
 const SKILL_POINT_NODE = {
   key: "skill_point",
@@ -167,15 +174,19 @@ function sumClassLevels(actor) {
 
 // ─── template surgery ──────────────────────────────────────────────────────
 
-function patchTemplate(template, log) {
-  const sysClone = foundry.utils.duplicate(template.system);
+// Splice the two nodes into a system clone, immediately after `level`.
+// `level` and `exp_meter` share a horizontal panel in the header; inserting
+// between them keeps the small numeric fields together and still lets the
+// full-size EXP meter take the remaining width.
+//
+// Returns the mutated clone, or null when there was nothing to do (no `level`
+// anchor, or both nodes already present) so the caller can skip the write.
+function spliceSkillPointNodes(system, label, log) {
+  const clone = foundry.utils.duplicate(system);
 
-  // `level` and `exp_meter` share a horizontal panel in the header. Insert
-  // directly after `level` so the two small numeric fields sit together and
-  // the full-size EXP meter still takes the remaining width.
-  const spot = findHolder(sysClone.header, "level") ?? findHolder(sysClone.body, "level");
+  const spot = findHolder(clone.header, "level") ?? findHolder(clone.body, "level");
   if (!spot) {
-    log(`  • no \`level\` node found in "${template.name}" — skipping insert`);
+    log(`  • ${label}: no \`level\` anchor — skipped`);
     return null;
   }
 
@@ -183,17 +194,13 @@ function patchTemplate(template, log) {
   let at = spot.index + 1;
 
   for (const node of [SKILL_POINT_NODE, SKILL_POINT_BONUS_NODE]) {
-    if (nodeExists(sysClone.header, node.key) || nodeExists(sysClone.body, node.key)) {
-      log(`  • \`${node.key}\` already present — leaving it alone`);
-      continue;
-    }
+    if (nodeExists(clone.header, node.key) || nodeExists(clone.body, node.key)) continue;
     spot.holder.contents.splice(at, 0, foundry.utils.duplicate(node));
-    log(`  • inserted \`${node.key}\` at contents[${at}]`);
     at += 1;
     changed = true;
   }
 
-  return changed ? sysClone : null;
+  return changed ? clone : null;
 }
 
 // ─── main ──────────────────────────────────────────────────────────────────
@@ -207,19 +214,18 @@ export async function migrate(game, log) {
   }
 
   let templatesPatched = 0;
-  let reloaded = 0;
+  let instancesPatched = 0;
   let backfilled = 0;
-  const skipped = [];
 
   for (const template of templates) {
     log(`template "${template.name}" [${template.id}]`);
 
-    // 1. Snapshot which instances still lack the prop, and what they should get.
-    //    Must happen BEFORE any reload — reloadTemplate seeds defaults and would
-    //    make every actor look like it already had one.
     const instances = (game.actors?.contents ?? []).filter(
       (a) => a.type !== "_template" && a.system?.template === template.id
     );
+
+    // 1. Snapshot the back-fill before any write, so "already has the prop"
+    //    unambiguously means "already migrated".
     const wanted = new Map();
     for (const actor of instances) {
       if (actor.system?.props?.skill_point !== undefined) continue;
@@ -229,43 +235,25 @@ export async function migrate(game, log) {
     }
     log(`  • ${instances.length} instance(s), ${wanted.size} awaiting back-fill`);
 
-    // 2. Patch the template layout.
-    const patched = patchTemplate(template, log);
-    if (patched) {
-      await template.update({ system: patched });
+    // 2. Template layout — governs actors created from here on.
+    const patchedTemplate = spliceSkillPointNodes(template.system, `template "${template.name}"`, log);
+    if (patchedTemplate) {
+      await template.update({ system: patchedTemplate });
       templatesPatched += 1;
+      log(`  • template layout patched`);
     }
 
-    // 3. Resync instances, refusing any actor that would lose real data.
-    let availableKeys;
-    try {
-      availableKeys = new Set(Object.keys(template.templateSystem.getAllProperties()));
-    } catch (e) {
-      log(`  • getAllProperties() threw (${e?.message ?? e}) — skipping all reloads`);
-      availableKeys = null;
-    }
-
-    if (availableKeys) {
-      for (const actor of instances) {
-        const orphans = Object.keys(actor.system?.props ?? {}).filter(
-          (p) => !availableKeys.has(p)
-        );
-        if (orphans.length > PRUNE_LIMIT) {
-          skipped.push(`${actor.name} (${orphans.length} props)`);
-          log(`  • SKIP reload "${actor.name}" — would prune ${orphans.length} props`);
-          continue;
-        }
-        try {
-          await actor.reloadTemplate();
-          reloaded += 1;
-          if (orphans.length) {
-            log(`  • reloaded "${actor.name}" (pruned: ${orphans.join(", ")})`);
-          } else {
-            log(`  • reloaded "${actor.name}"`);
-          }
-        } catch (e) {
-          log(`  • reload threw for "${actor.name}": ${e?.message ?? e}`);
-        }
+    // 3. Every existing instance's OWN header copy — this is what actually
+    //    renders on a sheet. Layout only; props are left untouched.
+    for (const actor of instances) {
+      const patched = spliceSkillPointNodes(actor.system, `"${actor.name}"`, log);
+      if (!patched) continue;
+      try {
+        await actor.update({ system: { header: patched.header } });
+        instancesPatched += 1;
+        log(`  • patched layout on "${actor.name}"`);
+      } catch (e) {
+        log(`  • layout patch threw for "${actor.name}": ${e?.message ?? e}`);
       }
     }
 
@@ -283,14 +271,10 @@ export async function migrate(game, log) {
     }
   }
 
-  const tail = skipped.length
-    ? `; ${skipped.length} actor(s) left for manual reload: ${skipped.join(", ")}`
-    : "";
-
   return {
     applied: true,
     summary:
-      `${templatesPatched} template(s) patched, ${reloaded} instance(s) resynced, ` +
-      `${backfilled} back-filled${tail}`,
+      `${templatesPatched} template(s) + ${instancesPatched} instance layout(s) patched, ` +
+      `${backfilled} back-filled`,
   };
 }
