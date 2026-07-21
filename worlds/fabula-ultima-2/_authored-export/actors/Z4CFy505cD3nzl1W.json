@@ -3323,7 +3323,7 @@
           "isOffensiveSpell": false,
           "isReaction": false,
           "isZeroPower": false,
-          "level": "7",
+          "level": 7,
           "max_level": "10",
           "name": "Dance",
           "on_activate_effect_ref": "",
@@ -7804,6 +7804,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -7811,6 +7812,7 @@
           "demon_ef": "100",
           "description": "<ul><li>Decrease IP usage by 1 when creating a <strong>Potion </strong>or <strong>Magisphere</strong> <em>(to a minimum of 1)</em></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -7821,9 +7823,14 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "QfaU0E6iq829nPxO",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Headgear/2215.gif",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -7835,7 +7842,7 @@
           "item_cost": "400",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": 1,
+          "item_quantity": "1",
           "item_rarity": "Rare",
           "item_type": "accessory",
           "mimic_ef": "100",
@@ -7843,6 +7850,11 @@
           "name": "Maid cap",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
           "related_item_list": {
             "gVovemTOophkXbck": {
               "id": "${item.id}",
@@ -7856,10 +7868,13 @@
           "rolled_atr2": "DEX",
           "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2 Piece</strong></p><ul><li><p>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Mind Points, it restores 5 extra Mind Points.</p><hr></li></ul><p><strong>3 Piece</strong></p><ul><li><p>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Mind Points, it restores 5 extra Mind Points.</p></li></ul></li></ul>",
           "set_name": "Lovely Retainer",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.QfaU0E6iq829nPxO",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -8103,71 +8118,115 @@
       "system": {
         "props": {
           "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
           "check_bonus": "0",
           "class": "Dancer",
           "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
+          "details_roller": "Show",
           "duration": "instantaneous",
           "effect_table": {
             "0": {
               "candidate_source": "self",
               "chain_steps": "lion_cleanse",
+              "consume_self": false,
               "effect_kind": "chain",
-              "effect_label": "d_root"
+              "effect_label": "d_root",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "1": {
               "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse",
+              "consume_self": false,
               "count": 1,
               "effect_kind": "remove_tagged_ae",
               "effect_label": "lion_cleanse",
               "filter_tag": "debuff",
+              "from_resource": "",
+              "menu_label": "",
               "menu_subtitle": "Recover from one status effect.",
               "menu_title": "Lion Dance",
-              "target_ref": "self"
+              "target_ref": "self",
+              "to_resource": ""
             },
             "2": {
               "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0)",
               "consume_resource": "mp",
+              "consume_self": false,
               "effect_kind": "consume_resource",
               "effect_label": "d_cost",
+              "from_resource": "",
+              "grant_amount": "",
+              "grant_resource": "",
+              "menu_label": "",
               "on_empty": "abort",
-              "target_ref": "self"
+              "target_ref": "self",
+              "to_resource": ""
             },
             "3": {
+              "consume_self": false,
               "count": "all",
               "effect_kind": "remove_tagged_ae",
               "effect_label": "d_untoken",
               "filter_tag": "dance-token",
-              "target_ref": "self"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "self",
+              "to_resource": ""
             },
             "4": {
               "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
               "ae_template_ref": "Dancing",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "d_mark_gen",
-              "target_ref": "d_self"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "d_self",
+              "to_resource": ""
             },
             "5": {
               "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
               "ae_template_ref": "Dancing Lion Dance",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "d_mark_self",
-              "target_ref": "d_self"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "d_self",
+              "to_resource": ""
             },
             "6": {
+              "consume_self": false,
               "count": 1,
               "effect_kind": "remove_tagged_ae",
               "effect_label": "lion_cleanse",
               "filter_tag": "debuff",
+              "from_resource": "",
+              "menu_label": "",
               "menu_subtitle": "Recover from one status effect.",
               "menu_title": "Lion Dance",
-              "target_ref": "self"
+              "target_ref": "self",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "RJUqK88OOv4WUmKH",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -8179,17 +8238,21 @@
           "name": "Lion Dance",
           "on_activate_effect_ref": "d_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
           "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.RJUqK88OOv4WUmKH"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -9586,6 +9649,7 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li></ul>",
+          "details_roller": "Show",
           "duration": "Until the start of your next turn",
           "effect_table": {
             "0": {
@@ -9646,7 +9710,9 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "w8lI13Gc2aisTVes",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -9671,7 +9737,8 @@
           "skill_type": "Active",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.w8lI13Gc2aisTVes"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -10555,7 +10622,7 @@
       "character_exp_multiplier": 1,
       "character_zenit_multiplier": 1,
       "charm_status": 0,
-      "check_mod_accuracy": 0,
+      "check_mod_accuracy": 3,
       "check_mod_all": 0,
       "check_mod_init": 0,
       "check_mod_magic": 0,
@@ -10586,7 +10653,13 @@
           "$deleted": false,
           "benefit": "hp",
           "class_name": "Dancer",
-          "level": "9"
+          "level": 9
+        },
+        "6": {
+          "$deleted": true,
+          "benefit": "mp",
+          "class_name": "Elementalist",
+          "level": 1
         }
       },
       "clock_adoration": "0",
@@ -11500,6 +11573,18 @@
       "shield_value": "0",
       "silence_status": 0,
       "skill_active_list": {
+        "0M92bLdMWvB7cS4Z": {
+          "active_class": "Dancer",
+          "active_cost": "",
+          "active_description": "<p>After you perform a <strong>dance</strong> with a duration of “Until the start of your next turn,” you gain a bonus equal to <strong>【SL × 2】</strong> to all Opposed Checks that rely on acrobatics, coordination or speed until the start of your next turn.</p>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Frenetic Footwork",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.0M92bLdMWvB7cS4Z"
+        },
         "2mUzQqk9EWEw45yl": {
           "active_class": "Dancer",
           "active_cost": "",
@@ -11668,6 +11753,18 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM"
         },
+        "IYCtzB8ExIbY2O3z": {
+          "active_class": "Elementalist",
+          "active_cost": "",
+          "active_description": "<p>Each time you acquire this Skill, learn one Elementalist spell <em>(see Facet)</em>. </p><p><strong>【⚡Offensive Elementalist spells】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Elemental Magic",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.IYCtzB8ExIbY2O3z"
+        },
         "KJ5Lgayv3TWSfyTh": {
           "active_class": "Rogue",
           "active_cost": "",
@@ -11799,6 +11896,18 @@
           "name": "Hawkeye",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.SP5BT5DfIbe2os5C"
+        },
+        "W21lXJzHNmvJy1AF": {
+          "active_class": "Dancer",
+          "active_cost": "",
+          "active_description": "<p>After you perform a <strong>dance</strong> with a duration of “Until the start of your next turn,” you gain a bonus equal to <strong>【SL × 2】</strong> to all Opposed Checks that rely on acrobatics, coordination or speed until the start of your next turn.</p>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Frenetic Footwork",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.W21lXJzHNmvJy1AF"
         },
         "Wu0v7HRS4pIHfuOL": {
           "active_class": "Sharpshooter",
@@ -12115,6 +12224,8 @@
       },
       "skill_class_filter": "Dancer",
       "skill_hideEffect": false,
+      "skill_point": 2,
+      "skill_point_bonus": "0",
       "skill_type_filter": "All",
       "slow_status": 0,
       "spear_ef": "100",

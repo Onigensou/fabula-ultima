@@ -794,6 +794,7 @@
               "target_ref": "self"
             }
           },
+          "isFacet": true,
           "level": "1",
           "max_level": "1",
           "name": "Lion Dance",
@@ -1509,6 +1510,7 @@
               "target_ref": "action_targets"
             }
           },
+          "isFacet": true,
           "level": "1",
           "max_level": "1",
           "name": "Ouroboros Dance",

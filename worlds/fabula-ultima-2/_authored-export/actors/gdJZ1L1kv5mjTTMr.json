@@ -10786,6 +10786,7 @@
       },
       "skill_class_filter": "",
       "skill_hideEffect": false,
+      "skill_point": 0,
       "skill_type_filter": "All",
       "slow_status": 0,
       "spear_ef": "100",
