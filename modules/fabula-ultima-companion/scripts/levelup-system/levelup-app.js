@@ -15,7 +15,7 @@
 // courtesy, not the enforcement.
 // ============================================================================
 
-import { LEVELUP } from "./levelup-const.js";
+import { LEVELUP, LEVELUP_KEYS as KEYS, LEVELUP_CURSOR_SRC, keyMatch } from "./levelup-const.js";
 import { renderDescription, keywordRowHTML, RICHTEXT_CSS } from "./levelup-richtext.js";
 import {
   sfx, hoverSfx, resetHover, preloadLevelUpSfx,
@@ -295,6 +295,29 @@ function injectStyles() {
 #${ROOT_ID} .lu-btn.edit { background: #e3dcf1; border-color: #7a6aa3; }
 ${RICHTEXT_CSS(`#${ROOT_ID}`)}
 ${FX_CSS}
+
+/* Feather cursor — same asset, placement and float as the Healing / Ritual
+   HUDs, so the three read as one interface. Lives on <body> because the window
+   clips its own overflow. */
+.lu-cursor {
+  position: fixed; z-index: 2147483647; width: 46px; height: 46px; pointer-events: none;
+  transform: translate(-38%, -92%) rotate(20deg) translateY(0px);
+  transition: left .18s cubic-bezier(0.22,1,0.36,1), top .18s cubic-bezier(0.22,1,0.36,1), opacity .12s ease;
+  opacity: 0;
+  border: none !important; outline: none !important; box-shadow: none !important;
+  background: transparent !important;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.5));
+}
+.lu-cursor.is-visible { opacity: 1; animation: oniLevelUpCursorFloat 2.2s ease-in-out infinite; }
+.lu-cursor.no-anim { transition: none !important; }
+@keyframes oniLevelUpCursorFloat {
+  0%, 100% { transform: translate(-38%, -92%) rotate(20deg) translateY(0px); }
+  50%      { transform: translate(-38%, -92%) rotate(20deg) translateY(-7px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lu-cursor { transition: none; }
+  .lu-cursor.is-visible { animation: none; }
+}
 `;
   document.head.appendChild(s);
 }
@@ -317,6 +340,15 @@ const LevelUpApp = {
   _pinned: null,        // uuid of the pinned row, or null
   _hover: null,         // uuid under the cursor
   _details: new Map(),  // uuid → { name, img, cost, meta, description, note }
+
+  // Keyboard focus. Zones mirror the layout: the class rail, the list, and the
+  // footer's Discard/Confirm pair when a batch is staged.
+  _zone: "list",        // "rail" | "list" | "foot"
+  _railIdx: 0,
+  _rowIdx: 0,
+  _footIdx: 1,          // default to Confirm, the likely intent
+  _cursorEl: null,
+  _cursorReady: false,
 
   _detailMode: false,   // false = compact rows + panel; true = descriptions inline
   // Spending and refunding are separate modes rather than adjacent buttons.
@@ -358,8 +390,14 @@ const LevelUpApp = {
       const el = ev.target?.closest?.("[data-act]");
       if (el && !el.disabled) hoverSfx(el);
     });
-    this._onKey = (ev) => { if (ev.key === "Escape") this.close(); };
-    document.addEventListener("keydown", this._onKey);
+    this._installKeyboard();
+
+    this._cursorEl = document.createElement("img");
+    this._cursorEl.className = "lu-cursor";
+    this._cursorEl.src = LEVELUP_CURSOR_SRC;
+    this._cursorEl.alt = "";
+    document.body.appendChild(this._cursorEl);
+    this._cursorReady = false;
 
     // Any change to the actor (a GM edit, another client's spend) re-renders.
     this._hook = Hooks.on("updateActor", (doc) => {
@@ -385,7 +423,10 @@ const LevelUpApp = {
     this._pending = [];
     this._facet = null;
     resetHover();
-    document.removeEventListener("keydown", this._onKey);
+    this._cursorEl?.remove();
+    this._cursorEl = null;
+    this._cursorReady = false;
+    if (this._onKey) { window.removeEventListener("keydown", this._onKey, true); this._onKey = null; }
     if (this._hook) Hooks.off("updateActor", this._hook);
     if (this._itemHook) Hooks.off("createItem", this._itemHook);
     if (this._itemHook2) Hooks.off("deleteItem", this._itemHook2);
@@ -497,6 +538,14 @@ const LevelUpApp = {
       this._listKey = listKey;
       staggerRows(list.querySelectorAll(".lu-row"), "in");
     }
+
+    // Keep keyboard focus inside the list that now exists — a Confirm can
+    // shorten it, and the footer disappears entirely once the batch is written.
+    const rowCount = this._rows().length;
+    if (this._rowIdx >= rowCount) this._rowIdx = Math.max(0, rowCount - 1);
+    if (this._zone === "foot" && !this._footBtns().length) this._zone = "list";
+    if (this._zone === "rail" && this._railIdx >= this._railBtns().length) this._railIdx = 0;
+    this._updateCursor();
 
     // Hover updates only the detail panel — re-rendering the whole window on
     // every mouseover would fight the scroll position and feel awful.
@@ -941,9 +990,9 @@ const LevelUpApp = {
     if (act === "closepicker") { this._pickerOpen = false; return this.render(); }
     if (act === "pick") {
       const changed = this._selected !== btn.dataset.key;
-      // Switching class swaps the list the same way a tab does, so it gets the
-      // same cue.
-      if (changed) sfx("tab");
+      // Changing class re-frames the whole window, so it gets the heavier
+      // window-open cue rather than the lighter tab blip.
+      if (changed) sfx("open");
       this._selected = btn.dataset.key;
       this._pickerOpen = false;   // choosing from the browser returns to the main pane
       return changed ? this._swapList() : this.render();
@@ -1228,6 +1277,138 @@ const LevelUpApp = {
         ${pinned ? `<button class="lu-btn" data-act="unpin" title="Unpin">📌</button>` : ""}
       </div>
       <div class="lu-dbody">${describe(d.description, { clamp: false })}${d.note ?? ""}</div>`;
+  },
+
+  // ── keyboard ────────────────────────────────────────────────────────────
+
+  _installKeyboard() {
+    this._onKey = (ev) => {
+      if (!this.isOpen || this._busy) return;
+
+      const all = [...KEYS.UP, ...KEYS.DOWN, ...KEYS.LEFT, ...KEYS.RIGHT,
+                   ...KEYS.CONFIRM, ...KEYS.CANCEL, ...KEYS.TAB_NEXT, ...KEYS.TAB_PREV];
+      if (!all.includes(ev.key)) return;
+      // Swallow while the window owns the screen, so arrows don't also pan the
+      // canvas and Tab doesn't walk Foundry's own focus ring.
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      // A layered picker gets the keys first — it is the question in front of
+      // the player, and the list behind it is not what they are answering.
+      if (this._facet || this._pickerOpen) {
+        if (keyMatch(ev, KEYS.CANCEL)) {
+          sfx("deselect");
+          if (this._facet) this._facet = null;   // same as its Cancel: stage nothing
+          else this._pickerOpen = false;
+          this.render();
+        }
+        return;
+      }
+
+      if (keyMatch(ev, KEYS.CANCEL)) return void this.close();
+      if (keyMatch(ev, KEYS.TAB_NEXT)) return void this._cycleTab(1);
+      if (keyMatch(ev, KEYS.TAB_PREV)) return void this._cycleTab(-1);
+      if (keyMatch(ev, KEYS.CONFIRM)) return void this._activate();
+
+      const dy = keyMatch(ev, KEYS.DOWN) ? 1 : keyMatch(ev, KEYS.UP) ? -1 : 0;
+      const dx = keyMatch(ev, KEYS.RIGHT) ? 1 : keyMatch(ev, KEYS.LEFT) ? -1 : 0;
+      this._move(dx, dy);
+    };
+    window.addEventListener("keydown", this._onKey, true);
+  },
+
+  _cycleTab(dir) {
+    const tabs = ["skill", "facet", "heroic"];
+    const i = (tabs.indexOf(this._tab) + dir + tabs.length) % tabs.length;
+    sfx("tab");
+    this._tab = tabs[i];
+    this._pinned = null; this._rowIdx = 0;
+    this._swapList();
+  },
+
+  _rows() { return Array.from(this._root?.querySelectorAll(".lu-main .lu-row") ?? []); },
+  _railBtns() { return Array.from(this._root?.querySelectorAll(".lu-rail [data-act]") ?? []); },
+  _footBtns() { return Array.from(this._root?.querySelectorAll(".lu-foot [data-act]") ?? []); },
+
+  _move(dx, dy) {
+    const clamp = (n, len) => (len ? Math.max(0, Math.min(len - 1, n)) : 0);
+
+    if (dx < 0 && this._zone === "list") { this._zone = "rail"; this._focusChanged(); return; }
+    if (dx > 0 && this._zone === "rail") { this._zone = "list"; this._focusChanged(); return; }
+
+    if (this._zone === "rail") {
+      this._railIdx = clamp(this._railIdx + dy, this._railBtns().length);
+    } else if (this._zone === "foot") {
+      if (dx) this._footIdx = clamp(this._footIdx + dx, this._footBtns().length);
+      if (dy < 0) this._zone = "list";
+    } else {
+      const rows = this._rows();
+      const next = this._rowIdx + dy;
+      // Falling off the bottom lands on Confirm when there is a batch waiting,
+      // which is where the player is heading anyway.
+      if (next >= rows.length && this._footBtns().length) { this._zone = "foot"; }
+      else this._rowIdx = clamp(next, rows.length);
+    }
+    this._focusChanged();
+  },
+
+  /** The element the cursor points at right now. */
+  _focusEl() {
+    if (this._zone === "rail") return this._railBtns()[this._railIdx] ?? null;
+    if (this._zone === "foot") return this._footBtns()[this._footIdx] ?? null;
+    return this._rows()[this._rowIdx] ?? null;
+  },
+
+  _focusChanged() {
+    sfx("cursor");
+    const el = this._focusEl();
+    // Keyboard focus drives the detail panel exactly as hover does, so both
+    // input methods show the same thing.
+    if (this._zone === "list") {
+      this._hover = el?.dataset.detail ?? null;
+      this._paintDetail();
+      el?.scrollIntoView({ block: "nearest" });
+    }
+    this._updateCursor();
+  },
+
+  /** Z / Enter — press whatever the cursor is on. */
+  _activate() {
+    const el = this._focusEl();
+    if (!el) return;
+
+    if (this._zone === "list") {
+      // The row's own action, not the row: + normally, − in Reset mode, ★ on a
+      // heroic. A disabled control means the rules say no, so stay quiet.
+      const btn = el.querySelector("button[data-act]:not([disabled])");
+      if (btn) return void btn.click();
+      return;
+    }
+    el.click();
+  },
+
+  _updateCursor() {
+    const el = this._cursorEl;
+    if (!el) return;
+    const target = this._focusEl();
+    if (!target) { el.classList.remove("is-visible"); return; }
+    const r = target.getBoundingClientRect();
+    if (!r.width) { el.classList.remove("is-visible"); return; }
+
+    // First placement jumps; later ones glide. Without this the feather flies
+    // in from the top-left corner the first time it appears.
+    if (!this._cursorReady) {
+      el.classList.add("no-anim");
+      el.style.left = `${r.right}px`;
+      el.style.top = `${r.bottom}px`;
+      el.classList.add("is-visible");
+      requestAnimationFrame(() => el?.classList.remove("no-anim"));
+      this._cursorReady = true;
+      return;
+    }
+    el.style.left = `${r.right}px`;
+    el.style.top = `${r.bottom}px`;
+    el.classList.add("is-visible");
   },
 
   /** Slide the current rows out, then render the new list in. */

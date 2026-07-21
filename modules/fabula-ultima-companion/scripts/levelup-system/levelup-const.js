@@ -74,6 +74,25 @@ export const LEVELUP = Object.freeze({
   REQUEST_TIMEOUT_MS: 15000,
 });
 
+// JRPG-style keyboard controls, identical to the Healing and Ritual HUDs so
+// the three windows never disagree about what Z does.
+export const LEVELUP_KEYS = Object.freeze({
+  UP: ["ArrowUp", "w", "W"],
+  DOWN: ["ArrowDown", "s", "S"],
+  LEFT: ["ArrowLeft", "a", "A"],
+  RIGHT: ["ArrowRight", "d", "D"],
+  CONFIRM: ["z", "Z", "Enter"],
+  CANCEL: ["x", "X", "Escape"],
+  TAB_NEXT: ["e", "E", "Tab"],
+  TAB_PREV: ["q", "Q"],
+});
+
+/** Feather cursor sprite — the same asset the Healing and Ritual HUDs use. */
+export const LEVELUP_CURSOR_SRC =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
+
+export const keyMatch = (ev, list) => list.includes(ev.key);
+
 export const log = (...a) => console.log(LEVELUP.TAG, ...a);
 export const warn = (...a) => console.warn(LEVELUP.TAG, ...a);
 export const err = (...a) => console.error(LEVELUP.TAG, ...a);
