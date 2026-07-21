@@ -1,0 +1,160 @@
+/**
+ * Rich description rendering for the level-up window.
+ *
+ * Skill and Facet descriptions are authored prose full of mechanical terms —
+ * 【Attack】, Slow, Bleed, Unleash — which the world already has a vocabulary
+ * for. The Battle Director's Action Card renders those as bold, underlined
+ * terms with a small icon prefix, and this reuses the same source of truth
+ * (`keyword-registry.js`, 70 terms) so a Dance reads the same in the level-up
+ * picker as it does mid-combat.
+ *
+ * What this deliberately does NOT do is import the Action Card itself. That
+ * module is ~7k lines of combat rendering and its parser is private; only the
+ * registry is shared, which is the part that actually matters for consistency.
+ *
+ * Unlike the card, terms here are NOT clickable — there is no tooltip layer in
+ * this window, and a chip that looks interactive but does nothing is worse than
+ * one that plainly reads as emphasis.
+ */
+
+import { lookupTerm } from "../battle-director/keyword-registry.js";
+
+// Structural tags worth keeping. Everything else is unwrapped to its text so
+// authored sheet markup (font tags, spans full of inline styles) cannot drag
+// its own typography into this window.
+//
+// SPAN and DIV are deliberately absent: authored descriptions wrap links in
+// layers of styling spans, and once their attributes are stripped those become
+// empty nesting around every term. They are unwrapped unless they are one of
+// the term elements this module built.
+const KEEP = new Set(["P", "BR", "UL", "OL", "LI", "STRONG", "B", "EM", "I", "U", "HR"]);
+const DROP = new Set(["SCRIPT", "IFRAME", "OBJECT", "EMBED", "STYLE", "LINK", "IMG"]);
+
+// Elements this module generated, which must survive the scrub that removes
+// authored images and unwraps authored spans.
+const isOurs = (el) =>
+  el.classList?.contains("lu-kw") ||
+  el.classList?.contains("lu-kw-label") ||
+  el.classList?.contains("lu-kw-icon");
+
+const esc = (s) => String(s ?? "")
+  .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+// Only allow image sources the sheet itself would serve.
+const safeImg = (url) => {
+  const s = String(url ?? "").trim();
+  return /^(https?:|data:image\/|icons\/|modules\/|systems\/|worlds\/|assets\/)/i.test(s) ? s : "";
+};
+
+const iconHTML = (icon, cls) => {
+  const safe = safeImg(icon);
+  return safe ? `<img class="${cls}" src="${esc(safe)}" alt="">` : "";
+};
+
+const termHTML = ({ label, icon, kind }) =>
+  `<span class="lu-kw is-${kind}">${iconHTML(icon, "lu-kw-icon")}<span class="lu-kw-label">${esc(label)}</span></span>`;
+
+/**
+ * Turn an authored description into safe display HTML plus the Action Keywords
+ * it declares.
+ *
+ * Keywords are lifted OUT of the prose into their own row — they are usually
+ * authored as a leading bullet list, which reads as noise inline. Statuses stay
+ * where they are, since they appear mid-sentence ("they immediately suffer
+ * Slow") and moving them would break the sentence.
+ *
+ * @returns {{ keywords: object[], bodyHtml: string, text: string }}
+ */
+export function renderDescription(html) {
+  const empty = { keywords: [], bodyHtml: "", text: "" };
+  if (!html) return empty;
+
+  try {
+    const root = document.createElement("div");
+    root.innerHTML = String(html);
+
+    const keywords = [];
+    const seen = new Set();
+
+    for (const a of Array.from(root.querySelectorAll("a[data-uuid], a.content-link"))) {
+      const uuid = a.getAttribute("data-uuid") || "";
+      const text = (a.textContent || "").trim();
+      const entry = lookupTerm(uuid) || lookupTerm(text);
+      // The link's own text wins — "Ice Shield" and "Fire Shield" share the
+      // base Shield journal uuid, and the registry label would flatten both.
+      const label = text || entry?.label || "";
+
+      if (entry?.kind === "keyword") {
+        if (!seen.has(label.toLowerCase())) {
+          seen.add(label.toLowerCase());
+          keywords.push({ label, icon: entry.icon ?? null, kind: "keyword" });
+        }
+        a.remove();
+        continue;
+      }
+      if (entry?.kind === "status") {
+        const holder = document.createElement("span");
+        holder.innerHTML = termHTML({ label, icon: entry.icon ?? null, kind: "status" });
+        a.replaceWith(holder.firstElementChild ?? document.createTextNode(text));
+        continue;
+      }
+      a.replaceWith(document.createTextNode(text));   // dead link → plain text
+    }
+
+    // Scrub: drop dangerous nodes, unwrap unknown ones, and strip authored
+    // styling so this window's CSS is the only thing deciding how it looks.
+    for (const el of Array.from(root.querySelectorAll("*"))) {
+      if (isOurs(el)) continue;                                   // built above, already clean
+      if (DROP.has(el.tagName)) { el.remove(); continue; }         // authored images and worse
+      if (!KEEP.has(el.tagName)) { el.replaceWith(...el.childNodes); continue; }
+      for (const attr of Array.from(el.attributes)) el.removeAttribute(attr.name);
+    }
+
+    // A keyword list emptied by the extraction above would otherwise leave a
+    // stray bullet at the top of the prose.
+    for (const li of Array.from(root.querySelectorAll("li"))) {
+      if (!li.textContent.trim() && !li.querySelector("img")) li.remove();
+    }
+    for (const list of Array.from(root.querySelectorAll("ul, ol"))) {
+      if (!list.querySelector("li")) list.remove();
+    }
+
+    return {
+      keywords,
+      bodyHtml: root.innerHTML.trim(),
+      text: (root.textContent || "").replace(/\s+/g, " ").trim(),
+    };
+  } catch (e) {
+    console.warn("[ONI][LevelUp] renderDescription failed — falling back to text", e);
+    const d = document.createElement("div");
+    d.innerHTML = String(html);
+    const text = (d.textContent || "").replace(/\s+/g, " ").trim();
+    return { keywords: [], bodyHtml: esc(text), text };
+  }
+}
+
+/** Keyword row markup, or "" when the description declares none. */
+export const keywordRowHTML = (keywords) =>
+  keywords?.length ? `<div class="lu-kwrow">${keywords.map(termHTML).join("")}</div>` : "";
+
+/** Shared stylesheet fragment, injected by the window alongside its own CSS. */
+export const RICHTEXT_CSS = (scope) => `
+${scope} .lu-kwrow { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 2px 0 4px; }
+${scope} .lu-kw { display: inline-flex; align-items: center; gap: 3px; vertical-align: baseline; }
+/* Scoped through .lu-kw so this outranks any row-level descendant img rule.
+   A selector like #id .row img scores (1,1,1) and would otherwise win over
+   (1,1,0) — exactly what blew these glyphs up to row-icon size once already. */
+${scope} .lu-kw > .lu-kw-icon { width: 1.05em; height: 1.05em; object-fit: contain;
+  border: 0 !important; outline: 0 !important; border-radius: 0; background: none;
+  flex: 0 0 auto; vertical-align: -0.15em; }
+${scope} .lu-kw-label { font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+${scope} .lu-kw.is-keyword { color: #8a5a12; }
+${scope} .lu-kw.is-keyword .lu-kw-label { text-transform: uppercase; letter-spacing: .03em; font-size: .92em; }
+${scope} .lu-kw.is-status { color: inherit; }
+${scope} .lu-rt p { margin: 0 0 4px; }
+${scope} .lu-rt p:last-child { margin-bottom: 0; }
+${scope} .lu-rt ul, ${scope} .lu-rt ol { margin: 2px 0 4px; padding-left: 16px; }
+${scope} .lu-rt li { margin: 1px 0; }
+${scope} .lu-rt hr { border: 0; border-top: 1px dashed rgba(90,70,40,.35); margin: 5px 0; }
+${scope} .lu-rt strong, ${scope} .lu-rt b { font-weight: 700; }
+`;
