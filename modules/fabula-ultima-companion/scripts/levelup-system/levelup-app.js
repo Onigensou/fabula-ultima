@@ -138,6 +138,24 @@ function injectStyles() {
 #${ROOT_ID} .lu-railhead { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
   opacity: .65; margin: 8px 4px 4px; }
 
+/* Mode switches */
+#${ROOT_ID} .lu-toolbar { flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
+  padding: 5px 12px; background: #e2d3b6; border-bottom: 1px solid #b79c72; }
+#${ROOT_ID} .lu-sw { display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  font: inherit; font-size: 11.5px; font-weight: 600; color: #4a3a22;
+  padding: 3px 9px 3px 4px; border-radius: 12px; border: 1px solid #b79c72; background: #f2e8d3; }
+#${ROOT_ID} .lu-sw:hover { background: #fbf4e4; }
+#${ROOT_ID} .lu-swtrack { width: 26px; height: 14px; border-radius: 8px; background: #c3ae8b;
+  border: 1px solid #9c845f; position: relative; transition: background 120ms; }
+#${ROOT_ID} .lu-swknob { position: absolute; top: 1px; left: 1px; width: 10px; height: 10px;
+  border-radius: 50%; background: #f7f0df; transition: left 120ms; }
+#${ROOT_ID} .lu-sw.on { background: #dceccb; border-color: #5f8b3c; color: #2c5216; }
+#${ROOT_ID} .lu-sw.on .lu-swtrack { background: #5f8b3c; border-color: #47692c; }
+#${ROOT_ID} .lu-sw.on .lu-swknob { left: 13px; }
+#${ROOT_ID} .lu-resetnote { font-size: 11.5px; font-weight: 700; color: #7a3226; margin-left: 2px; }
+/* Reset mode tints the working area, so it is never ambiguous which mode is on. */
+#${ROOT_ID} .lu-body.is-reset .lu-main { background: #f7ece9; }
+
 #${ROOT_ID} .lu-mainwrap { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 #${ROOT_ID} .lu-main { flex: 1 1 auto; overflow-y: auto; padding: 12px 14px; }
 
@@ -170,6 +188,18 @@ function injectStyles() {
 #${ROOT_ID} .lu-row.miss > .lu-tag { opacity: .45; filter: saturate(.3); }
 #${ROOT_ID} .lu-row.miss:hover > img, #${ROOT_ID} .lu-row.miss:hover > b,
 #${ROOT_ID} .lu-row.miss:hover > .lu-tag { opacity: .85; filter: saturate(.8); }
+
+/* Detail mode: the same row, grown to carry its description. */
+#${ROOT_ID} .lu-row.wide { align-items: flex-start; padding: 8px 10px; }
+#${ROOT_ID} .lu-row.wide > img { width: 34px; height: 34px; }
+#${ROOT_ID} .lu-rtext { flex: 1 1 auto; min-width: 0; }
+#${ROOT_ID} .lu-rtitle { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+#${ROOT_ID} .lu-rtitle b { font-size: 13.5px; }
+#${ROOT_ID} .lu-row.wide .lu-rt { margin-top: 3px; font-size: 11.5px; opacity: .78; }
+#${ROOT_ID} .lu-row.wide.miss > img, #${ROOT_ID} .lu-row.wide.miss > .lu-rtext { opacity: .45; filter: saturate(.3); }
+#${ROOT_ID} .lu-row.wide.miss:hover > img, #${ROOT_ID} .lu-row.wide.miss:hover > .lu-rtext { opacity: .85; filter: saturate(.8); }
+/* With text on every row the panel is redundant, so it collapses away. */
+#${ROOT_ID} .lu-body.is-detail .lu-detail { display: none; }
 #${ROOT_ID} .lu-h2 { display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px; }
 #${ROOT_ID} .lu-h2 b { font-size: 18px; }
 #${ROOT_ID} .lu-h2 span { font-size: 12px; opacity: .7; }
@@ -272,6 +302,12 @@ const LevelUpApp = {
   _pinned: null,        // uuid of the pinned row, or null
   _hover: null,         // uuid under the cursor
   _details: new Map(),  // uuid → { name, img, cost, meta, description, note }
+
+  _detailMode: false,   // false = compact rows + panel; true = descriptions inline
+  // Spending and refunding are separate modes rather than adjacent buttons.
+  // A misclick on − beside + costs a skill AND a point, and in a batch that
+  // reads as the window doing something the player never asked for.
+  _resetMode: false,
 
   // Staged, unwritten changes. Nothing touches the actor until Confirm.
   //
@@ -394,13 +430,18 @@ const LevelUpApp = {
       this._selected = taken[0]?.key ?? null;
     }
 
+    // Rebuilding innerHTML throws the list back to the top. Anything that
+    // re-renders — pinning a row, spending a point — would otherwise yank a
+    // player who was reading halfway down a 17-entry list.
+    const keepScroll = this._root.querySelector(".lu-main")?.scrollTop ?? 0;
+
     this._details = new Map();   // rebuilt by whichever tab renders below
     const main = this._main(s, proj);
     if (this._pinned && !this._details.has(this._pinned)) this._pinned = null;
 
     panel.innerHTML =
-      this._head(s, proj) + this._notes(s) +
-      `<div class="lu-body">
+      this._head(s, proj) + this._toolbar() + this._notes(s) +
+      `<div class="lu-body ${this._resetMode ? "is-reset" : ""} ${this._detailMode ? "is-detail" : ""}">
          <div class="lu-rail">${this._rail(s, taken, proj)}</div>
          <div class="lu-mainwrap">
            <div class="lu-main">${main}</div>
@@ -409,9 +450,11 @@ const LevelUpApp = {
        </div>` +
       this._footer(s, proj);
 
+    const list = panel.querySelector(".lu-main");
+    if (list) list.scrollTop = keepScroll;
+
     // Hover updates only the detail panel — re-rendering the whole window on
     // every mouseover would fight the scroll position and feel awful.
-    const list = panel.querySelector(".lu-main");
     list?.addEventListener("mouseover", (ev) => {
       const row = ev.target.closest?.("[data-detail]");
       const uuid = row?.dataset.detail ?? null;
@@ -469,6 +512,17 @@ const LevelUpApp = {
           s.heroic.open ? ` <span class="lu-tabdot">${s.heroic.open}</span>` : ""}</button>
       </div>
       <button class="lu-x" data-act="close" title="Close">×</button>
+    </div>`;
+  },
+
+  _toolbar() {
+    const sw = (act, on, label, title) =>
+      `<button class="lu-sw ${on ? "on" : ""}" data-act="${act}" title="${esc(title)}">
+        <span class="lu-swtrack"><span class="lu-swknob"></span></span>${esc(label)}</button>`;
+    return `<div class="lu-toolbar">
+      ${sw("toggledetail", this._detailMode, "Detail", "Show effect text on every row instead of in the panel below")}
+      ${sw("togglereset", this._resetMode, "Reset", "Give skill levels back — hides the spend controls")}
+      ${this._resetMode ? `<span class="lu-resetnote">Reset mode — giving levels back</span>` : ""}
     </div>`;
   },
 
@@ -543,13 +597,16 @@ const LevelUpApp = {
           meta: `${lvl} / ${sk.maxLevel}${sk.facetGrant ? ` · grants ${sk.facetGrant} Facet${sk.facetGrant === 1 ? "" : "s"} per level` : ""}`,
           description: sk.description,
         },
+        // One control, never both. In Reset mode only the giving-back button
+        // exists; normally only the spend button does.
         right:
           `<span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>` +
           this._facetEditBtn(sk) +
-          `<button class="lu-btn sell" data-act="refund" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
-            ${s.gate.open && lvl > 0 ? "" : "disabled"} title="Give back a level">−</button>` +
-          `<button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
-            ${canBuy ? "" : "disabled"} title="Spend a Skill Point">+</button>`,
+          (this._resetMode
+            ? `<button class="lu-btn sell" data-act="refund" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
+                ${s.gate.open && lvl > 0 ? "" : "disabled"} title="Give back a level">−</button>`
+            : `<button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
+                ${canBuy ? "" : "disabled"} title="Spend a Skill Point">+</button>`),
       });
     }).join("");
 
@@ -716,7 +773,8 @@ const LevelUpApp = {
         ? `<p class="lu-req">Requirement needs a GM: “${esc(h.prose)}”</p>`
         : h.met ? "" : `<p class="lu-req">Needs: ${h.clauses.filter((c) => !c.met).map((c) => esc(c.label)).join(" · ")}</p>`;
       const staged = this._pending.some((p) => p.op === "heroic" && p.skillUuid === h.skill.uuid);
-      const canTake = s.gate.open && h.met && (s.heroic.open > 0 || staged);
+      // Taking a Heroic is an increase, so Reset mode has nothing to offer here.
+      const canTake = s.gate.open && !this._resetMode && h.met && (s.heroic.open > 0 || staged);
       return this._row({
         uuid: h.skill.uuid, img: h.skill.img, name: h.skill.name, tag: from,
         cls: staged ? "have" : h.met ? "" : "miss",
@@ -779,12 +837,23 @@ const LevelUpApp = {
       this._pinned = null; this._hover = null;   // details belong to the old list
       return this.render();
     }
-    if (act === "pin") {
-      const u = btn.dataset.detail;
-      this._pinned = this._pinned === u ? null : u;   // click again to release
+    if (act === "pin" || act === "unpin") {
+      const u = act === "unpin" ? null : btn.dataset.detail;
+      this._pinned = (act === "pin" && this._pinned === u) ? null : u;  // click again to release
+      // Repaint in place rather than re-rendering: pinning changes one border
+      // and one panel, and a full rebuild would drop the reader back to the
+      // top of the list they were half-way down.
+      for (const row of this._root.querySelectorAll(".lu-row")) {
+        row.classList.toggle("pinned", row.dataset.detail === this._pinned);
+      }
+      this._paintDetail();
+      return;
+    }
+    if (act === "toggledetail") { this._detailMode = !this._detailMode; return this.render(); }
+    if (act === "togglereset") {
+      this._resetMode = !this._resetMode;
       return this.render();
     }
-    if (act === "unpin") { this._pinned = null; return this.render(); }
     if (act === "openpicker") { this._pickerOpen = true; return this.render(); }
     if (act === "closepicker") { this._pickerOpen = false; return this.render(); }
     if (act === "pick") {
@@ -1003,6 +1072,23 @@ const LevelUpApp = {
   _row({ uuid, img, name, tag, right, cls = "", detail }) {
     if (detail) this._details.set(uuid, detail);
     const pinned = this._pinned === uuid;
+
+    // Detail mode puts the effect text back on every row. Same row, same
+    // controls — the description simply moves from the panel into the row, so
+    // both layouts stay one code path rather than two that drift apart.
+    if (this._detailMode) {
+      return `<div class="lu-row wide ${cls} ${pinned ? "pinned" : ""}" data-act="pin" data-detail="${esc(uuid)}">
+        <img src="${esc(img)}" alt="">
+        <div class="lu-rtext">
+          <span class="lu-rtitle"><b>${esc(name)}</b>
+            ${tag ? `<span class="lu-tag">${esc(tag)}</span>` : ""}
+            ${detail?.cost ? `<span class="lu-tag">${esc(detail.cost)}</span>` : ""}</span>
+          ${describe(detail?.description)}${detail?.note ?? ""}
+        </div>
+        ${right ?? ""}
+      </div>`;
+    }
+
     return `<div class="lu-row ${cls} ${pinned ? "pinned" : ""}" data-act="pin" data-detail="${esc(uuid)}">
       <img src="${esc(img)}" alt="">
       <b>${esc(name)}</b>
