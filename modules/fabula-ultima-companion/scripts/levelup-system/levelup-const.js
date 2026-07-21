@@ -8,12 +8,14 @@ export const LEVELUP = Object.freeze({
   MODULE_ID: "fabula-ultima-companion",
   TAG: "[ONI][LevelUp]",
 
-  // Socket channels. Mirrors the shop system's multi-channel emit so a player
-  // request reaches the GM regardless of which channel the world is wired for.
-  CHANNELS: Object.freeze([
-    "module.fabula-ultima-companion",
-    "system.custom-system-builder",
-  ]),
+  // ONE socket channel, deliberately.
+  //
+  // Foundry's server relays only `module.<id>` and `system.<id>` events, so
+  // emitting the same payload on two VALID channels delivers it twice and a
+  // write handler applies it twice. The shop system emits on two names too, but
+  // its first ("fabula-ultima-companion", no prefix) is never relayed — it is
+  // single-delivery by accident, which is not a pattern to copy.
+  CHANNEL: "module.fabula-ultima-companion",
 
   MSG: Object.freeze({
     SPEND_REQ: "levelup.spend.req",
