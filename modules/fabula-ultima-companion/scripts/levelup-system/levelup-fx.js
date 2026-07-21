@@ -66,8 +66,11 @@ export function staggerRows(rows, dir = "in") {
   const list = Array.from(rows ?? []);
   if (!list.length || reduced()) return 0;
 
-  const step = Math.min(26, 200 / Math.max(1, list.length));
-  const dur = dir === "in" ? 210 : 150;
+  // Brisk. The stagger should read as the list arriving, not as a queue being
+  // dealt out — the whole sweep stays inside ~200ms even on a 17-row Facet
+  // list, which the cap enforces.
+  const step = Math.min(17, 130 / Math.max(1, list.length));
+  const dur = dir === "in" ? 150 : 105;
 
   list.forEach((el, i) => {
     const from = dir === "in"

@@ -912,6 +912,7 @@ const LevelUpApp = {
       return this._swapList();
     }
     if (act === "pin" || act === "unpin") {
+      sfx("toggle");   // pinning is a select, same family as the mode switches
       const u = act === "unpin" ? null : btn.dataset.detail;
       this._pinned = (act === "pin" && this._pinned === u) ? null : u;  // click again to release
       // Repaint in place rather than re-rendering: pinning changes one border
@@ -937,6 +938,9 @@ const LevelUpApp = {
     if (act === "closepicker") { this._pickerOpen = false; return this.render(); }
     if (act === "pick") {
       const changed = this._selected !== btn.dataset.key;
+      // Switching class swaps the list the same way a tab does, so it gets the
+      // same cue.
+      if (changed) sfx("tab");
       this._selected = btn.dataset.key;
       this._pickerOpen = false;   // choosing from the browser returns to the main pane
       return changed ? this._swapList() : this.render();
