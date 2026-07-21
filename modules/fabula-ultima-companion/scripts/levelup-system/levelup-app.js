@@ -100,6 +100,28 @@ function injectStyles() {
 #${ROOT_ID} .lu-x { background: none; border: 0; color: #f6ecd8; font-size: 24px; cursor: pointer;
   padding: 0 4px; line-height: 1; }
 
+/* Skill / Facet tabs — file-tab shapes rising out of the header */
+#${ROOT_ID} .lu-tabs { display: flex; align-items: flex-end; gap: 3px; align-self: stretch;
+  margin: 0 2px -10px; }
+#${ROOT_ID} .lu-tab { font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  padding: 7px 18px 9px; border: 1px solid #2f2313; border-bottom: 0;
+  border-radius: 9px 9px 0 0; background: #4a3722; color: #cbb894; }
+#${ROOT_ID} .lu-tab:hover { background: #57422a; color: #f2e6cf; }
+#${ROOT_ID} .lu-tab.on { background: #efe4cd; color: #2f2618; border-color: #6b543a; }
+
+/* Facet board — learned at full strength, the rest dimmed underneath */
+#${ROOT_ID} .lu-fgrid { display: grid; gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(228px, 1fr)); }
+#${ROOT_ID} .lu-fcell { padding: 9px 11px; border-radius: 8px; border: 1px solid #c6ae87;
+  background: #f7f0df; }
+#${ROOT_ID} .lu-fcell.have { border-color: #5f8b3c; background: #eef6e5;
+  box-shadow: 0 0 0 1px rgba(95,139,60,.35) inset; }
+#${ROOT_ID} .lu-fcell.away { border-color: #a3706f; background: #f6e9e9; opacity: .8; }
+#${ROOT_ID} .lu-fcell.miss { opacity: .42; filter: saturate(.35); }
+#${ROOT_ID} .lu-fcell.miss:hover { opacity: .72; filter: saturate(.7); }
+#${ROOT_ID} .lu-fcell .lu-fhead { flex-wrap: wrap; gap: 6px; }
+#${ROOT_ID} .lu-fcell .lu-rt { margin-top: 4px; font-size: 11px; opacity: .8; }
+
 #${ROOT_ID} .lu-note { padding: 7px 14px; font-size: 12.5px; flex: 0 0 auto; }
 #${ROOT_ID} .lu-note.warn { background: #f6e2b8; border-bottom: 1px solid #c9a768; color: #4a3306; }
 #${ROOT_ID} .lu-note.drift { background: #f3d3d3; border-bottom: 1px solid #c08585; color: #5c1f1f;
@@ -212,6 +234,7 @@ const LevelUpApp = {
   _selected: null,      // class key — may be a class not yet taken
   _pickerOpen: false,   // the new-class browser, layered over the main window
   _facet: null,         // the Facet picker, layered above everything
+  _tab: "skill",        // "skill" | "facet" — what the main pane shows
   _busy: false,
 
   // Staged, unwritten changes. Nothing touches the actor until Confirm.
@@ -384,6 +407,10 @@ const LevelUpApp = {
       </div>
       <div class="lu-sp ${staged ? "staged" : ""}"><b>${proj.points}</b>
         <span>${staged ? `Skill Points (was ${s.points.stored})` : "Skill Points"}</span></div>
+      <div class="lu-tabs">
+        <button class="lu-tab ${this._tab === "skill" ? "on" : ""}" data-act="tab" data-tab="skill">Skill</button>
+        <button class="lu-tab ${this._tab === "facet" ? "on" : ""}" data-act="tab" data-tab="facet">Facet</button>
+      </div>
       <button class="lu-x" data-act="close" title="Close">×</button>
     </div>`;
   },
@@ -433,6 +460,8 @@ const LevelUpApp = {
     if (!cls) {
       return `<div class="lu-empty">No classes yet — use <b>＋ New Class</b> to start one.</div>`;
     }
+
+    if (this._tab === "facet") return this._facetGrid(s, cls);
 
     const clsLevel = this._classLevel(s, cls, proj);
     const opening = clsLevel === 0;   // staging the first level would open it
@@ -513,6 +542,57 @@ const LevelUpApp = {
     const spent = s.points.stored - proj.points;
     const cost = spent > 0 ? `${spent} point${spent === 1 ? "" : "s"} spent` : `${-spent} point${spent === -1 ? "" : "s"} returned`;
     return `${bits.join(" · ")}  —  ${cost}`;
+  },
+
+  /**
+   * Every Facet the class offers, learned ones first and at full strength,
+   * the rest dimmed underneath — a collection board rather than a list, so a
+   * player can see at a glance how much of a class they have collected.
+   *
+   * Read-only. Facets are acquired by taking a level in the skill that grants
+   * them, never picked directly, so there is nothing to click here.
+   */
+  _facetGrid(s, cls) {
+    const staged = new Set(
+      this._pending.filter((p) => p.op === "spend").flatMap((p) => p.facetUuids ?? [])
+    );
+    const givingBack = new Set(
+      this._pending.filter((p) => p.op === "refund").flatMap((p) => p.facetUuids ?? [])
+    );
+
+    if (!cls.facets.length) {
+      return `<div class="lu-h2"><b>${esc(cls.name)}</b><span>Facets</span></div>
+        <div class="lu-empty">This class has no Facets.</div>`;
+    }
+
+    const rank = (f) => {
+      if (staged.has(f.uuid)) return 0;                      // about to be learned
+      if (f.held) return givingBack.has(f.uuid) ? 2 : 1;     // held, or handing back
+      return 3;                                              // not learned
+    };
+    const sorted = [...cls.facets].sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
+    const have = cls.facets.filter((f) => (f.held && !givingBack.has(f.uuid)) || staged.has(f.uuid)).length;
+
+    const cell = (f) => {
+      const r = rank(f);
+      const tag = r === 0 ? `<span class="lu-tag moved">staged</span>`
+        : r === 2 ? `<span class="lu-tag">giving back</span>` : "";
+      return `<div class="lu-fcell ${r <= 1 ? "have" : r === 2 ? "away" : "miss"}">
+        <span class="lu-fhead">${f.img ? `<img src="${esc(f.img)}" alt="">` : ""}
+          <b>${esc(f.name)}</b>${f.cost ? ` <span class="lu-tag">${esc(f.cost)}</span>` : ""}${tag}</span>
+        ${describe(f.description)}
+      </div>`;
+    };
+
+    // The grant is what a player needs to know to collect more of these.
+    const granter = cls.skills.find((k) => k.facetGrant > 0);
+    const hint = granter
+      ? `<div class="lu-lore">Learned by taking levels in <b>${esc(granter.name)}</b> — ${granter.facetGrant} per level.</div>`
+      : `<div class="lu-lore">This class has no skill that grants Facets; these are acquired elsewhere.</div>`;
+
+    return `<div class="lu-h2"><b>${esc(cls.name)}</b><span>${have} of ${cls.facets.length} learned</span></div>
+      ${hint}
+      <div class="lu-fgrid">${sorted.map(cell).join("")}</div>`;
   },
 
   _heroicPane(s) {
@@ -613,6 +693,7 @@ const LevelUpApp = {
     const act = btn.dataset.act;
 
     if (act === "close") return this.close();
+    if (act === "tab") { this._tab = btn.dataset.tab; return this.render(); }
     if (act === "openpicker") { this._pickerOpen = true; return this.render(); }
     if (act === "closepicker") { this._pickerOpen = false; return this.render(); }
     if (act === "pick") {
