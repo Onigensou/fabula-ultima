@@ -106,6 +106,9 @@ function readClass(actor, folderName) {
     folder: folderName,
     lore: p.class_lore ?? "",
     flavor: p.flavor_text ?? "",
+    also: p.also_text ?? "",
+    // Only 21 of 42 classes have one; the browser hides the tab when empty.
+    mechanic: p.classMechanic_text ?? "",
     // null = the player chooses at each level.
     benefit: LEVELUP.BENEFIT[String(p.benefit_dropdown ?? "")] ?? null,
     benefitRaw: p.benefit_dropdown ?? "",

@@ -15,7 +15,10 @@
 // courtesy, not the enforcement.
 // ============================================================================
 
-import { LEVELUP, LEVELUP_KEYS as KEYS, LEVELUP_CURSOR_SRC, keyMatch } from "./levelup-const.js";
+import {
+  LEVELUP, LEVELUP_KEYS as KEYS, LEVELUP_CURSOR_SRC, keyMatch,
+  classIcon, CLASS_META_DEFAULT,
+} from "./levelup-const.js";
 import { renderDescription, keywordRowHTML, RICHTEXT_CSS } from "./levelup-richtext.js";
 import {
   sfx, hoverSfx, resetHover, preloadLevelUpSfx,
@@ -269,9 +272,64 @@ function injectStyles() {
 
 #${ROOT_ID} .lu-picker { position: absolute; inset: 0; display: flex; align-items: center;
   justify-content: center; background: rgba(0,0,0,.45); }
-#${ROOT_ID} .lu-pickpanel { width: min(620px, 88vw); height: min(640px, 84vh); }
-#${ROOT_ID} .lu-pickpanel .lu-head { gap: 10px; }
-#${ROOT_ID} .lu-pickpanel .lu-main { flex: 1 1 auto; min-height: 0; }
+#${ROOT_ID} .lu-pickpanel { width: min(1000px, 94vw); height: min(700px, 90vh); }
+#${ROOT_ID} .lu-pickpanel .lu-head { gap: 10px; align-items: flex-start; }
+#${ROOT_ID} .lu-picktabs { margin-left: auto; }
+
+/* Two panes: preview left, class list right. */
+#${ROOT_ID} .lu-pickbody { flex: 1 1 auto; display: flex; min-height: 0; }
+#${ROOT_ID} .lu-preview { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;
+  padding: 12px 14px; gap: 8px; }
+#${ROOT_ID} .lu-picklist { width: 288px; flex: 0 0 auto; overflow-y: auto; padding: 8px;
+  background: #e2d3b6; border-left: 1px solid #b79c72; }
+
+#${ROOT_ID} .lu-pickrow { display: flex; align-items: center; gap: 10px; width: 100%;
+  text-align: left; font: inherit; font-size: 14px; font-weight: 600; color: #2f2618;
+  padding: 9px 12px; margin-bottom: 5px; border-radius: 8px; cursor: pointer;
+  background: #f7f0df; border: 1px solid #c6ae87; }
+#${ROOT_ID} .lu-pickrow:hover { background: #fffaec; border-color: #a98a4e; }
+#${ROOT_ID} .lu-pickrow.on { background: #5d4630; color: #f6ecd8; border-color: #3a2b17; }
+#${ROOT_ID} .lu-pickrow i { width: 22px; text-align: center; font-size: 16px; opacity: .85; flex: 0 0 auto; }
+
+/* Overview — portrait spread */
+#${ROOT_ID} .lu-pvart { position: relative; flex: 0 0 auto; display: flex; align-items: flex-end;
+  gap: 12px; min-height: 0; }
+#${ROOT_ID} .lu-pvart > img { height: 260px; width: auto; max-width: 55%; object-fit: contain;
+  border: 0 !important; outline: 0 !important; background: none;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+#${ROOT_ID} .lu-pvname { position: absolute; top: 4px; left: 4px; font-size: 26px; font-weight: 800;
+  font-style: italic; color: #5c1f2e; text-shadow: 0 2px 0 #f7f0df, 0 0 10px #f7f0df; }
+#${ROOT_ID} .lu-pvflavor { align-self: center; font-size: 13px; font-style: italic; opacity: .75;
+  text-align: center; max-width: 42%; }
+#${ROOT_ID} .lu-pvmeta { position: absolute; left: 0; bottom: 0; display: flex; flex-direction: column;
+  gap: 4px; font-size: 12px; font-weight: 700; }
+#${ROOT_ID} .lu-pvmeta > div { display: flex; align-items: center; gap: 6px; }
+#${ROOT_ID} .lu-stars i { color: #cbbb9c; font-size: 13px; }
+#${ROOT_ID} .lu-stars i.on { color: #3b2a17; }
+#${ROOT_ID} .lu-role { padding: 1px 9px; border-radius: 10px; font-size: 11px;
+  background: #f2e8d3; border: 1px solid #8a6c45; }
+#${ROOT_ID} .lu-pvalso { font-size: 11.5px; opacity: .65; font-style: italic; }
+
+#${ROOT_ID} .lu-pvhead { display: flex; align-items: baseline; gap: 10px; }
+#${ROOT_ID} .lu-pvhead b { font-size: 18px; }
+#${ROOT_ID} .lu-pvhead span { font-size: 12px; opacity: .7; }
+#${ROOT_ID} .lu-pvfree { font-size: 12px; padding: 6px 9px; border-radius: 7px;
+  background: #f1e6c6; border: 1px solid #c6ae87; }
+#${ROOT_ID} .lu-pvscroll { flex: 1 1 auto; overflow-y: auto; min-height: 0; font-size: 12px; }
+#${ROOT_ID} .lu-pvscroll.lore { opacity: .8; }
+#${ROOT_ID} .lu-pvrow { display: flex; gap: 9px; padding: 7px 8px; margin-bottom: 5px;
+  border-radius: 7px; background: #f7f0df; border: 1px solid #c6ae87; }
+#${ROOT_ID} .lu-pvrow > img { width: 28px; height: 28px; border-radius: 5px; object-fit: cover;
+  flex: 0 0 auto; border: 0 !important; outline: 0 !important; }
+#${ROOT_ID} .lu-pvrow .t { min-width: 0; }
+#${ROOT_ID} .lu-pvgo { flex: 0 0 auto; align-self: flex-start; }
+
+#${ROOT_ID} .lu-subtabs { display: flex; gap: 5px; }
+#${ROOT_ID} .lu-subtab { font: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer;
+  padding: 3px 12px; border-radius: 11px; border: 1px solid #b79c72;
+  background: #f2e8d3; color: #4a3a22; }
+#${ROOT_ID} .lu-subtab.on { background: #5d4630; color: #f6ecd8; border-color: #3a2b17; }
+#${ROOT_ID} .lu-tab:disabled { opacity: .35; cursor: not-allowed; }
 
 /* Facet picker — layered above the class browser */
 #${ROOT_ID} .lu-facet { position: absolute; inset: 0; display: flex; align-items: center;
@@ -329,6 +387,9 @@ const LevelUpApp = {
   _actorUuid: null,
   _selected: null,      // class key — may be a class not yet taken
   _pickerOpen: false,   // the new-class browser, layered over the main window
+  _pickSel: null,       // class being previewed in the browser (not yet chosen)
+  _pickTab: "overview", // "overview" | "skill" | "unique"
+  _pickSub: "skill",    // Facets are a sub-tab of Skill, not a peer
   _facet: null,         // the Facet picker, layered above everything
   _tab: "skill",        // "skill" | "facet" | "heroic" — what the main pane shows
   _busy: false,
@@ -920,36 +981,108 @@ const LevelUpApp = {
 
   // Secondary window. Kept out of the rail on purpose — 42 classes would bury
   // the four or five a character actually plays.
+  //
+  // Browse on the right, preview on the left, commit with the button. Picking a
+  // class is a real decision (it costs a point and counts against the
+  // three-unmastered limit), so it gets a look before it gets a click.
   _picker(s) {
     const untaken = s.classes.filter((c) => !c.taken).sort((a, b) => a.name.localeCompare(b.name));
     const atLimit = s.unmastered >= s.rules.maxUnmastered;
 
-    // Say WHY rather than silently greying every option out.
-    const gateNote = atLimit
-      ? `<div class="lu-note warn">
-           You have ${s.unmastered} unmastered classes and the limit is ${s.rules.maxUnmastered}.
-           Take one of them to level 10 before starting another.
-         </div>`
-      : "";
+    if (!this._pickSel || !untaken.some((c) => c.key === this._pickSel)) {
+      this._pickSel = untaken[0]?.key ?? null;
+    }
+    const sel = untaken.find((c) => c.key === this._pickSel) ?? null;
+    const hasUnique = !!plain(sel?.mechanic).length;
+    if (this._pickTab === "unique" && !hasUnique) this._pickTab = "overview";
 
-    const groups = ["Classic Classes", "Custom Classes"].map((folder) => {
-      const rows = untaken.filter((c) => c.folder === folder).map((c) => `<div class="lu-skill">
-          <img src="${esc(c.img)}" alt="">
-          <div class="t"><b>${esc(c.name)}</b>
-            <p>${c.skills.length} skills · ${esc(c.benefit ? (LEVELUP.BENEFIT_LABEL[c.benefit] ?? c.benefit) : "you choose the bonus")}</p></div>
-          <button class="lu-btn" style="width:auto;padding:2px 12px" data-act="pick" data-key="${esc(c.key)}"
-            ${atLimit ? "disabled" : ""}>Choose</button>
-        </div>`).join("");
+    const tab = (id, label, on = true) =>
+      `<button class="lu-tab ${this._pickTab === id ? "on" : ""}" data-act="picktab" data-tab="${id}"
+        ${on ? "" : "disabled"}>${esc(label)}</button>`;
+
+    const list = ["Classic Classes", "Custom Classes"].map((folder) => {
+      const rows = untaken.filter((c) => c.folder === folder).map((c) => `
+        <button class="lu-pickrow ${this._pickSel === c.key ? "on" : ""}" data-act="pickselect" data-key="${esc(c.key)}">
+          <i class="fa-solid ${esc(classIcon(c.key))}"></i><span>${esc(c.name)}</span>
+        </button>`).join("");
       return rows ? `<div class="lu-railhead">${esc(folder)}</div>${rows}` : "";
     }).join("");
 
     return `<div class="lu-head">
-        <div><div class="lu-name">Start a New Class</div>
-        <div class="lu-sub">${untaken.length} available · your first level in a class grants one of its skills</div></div>
+        <div class="lu-idblock">
+          <div class="lu-name">Start a New Class</div>
+          <div class="lu-sub">${untaken.length} available · your first level in a class grants one of its skills</div>
+        </div>
         <button class="lu-x" data-act="closepicker" title="Back">×</button>
+        <div class="lu-tabs lu-picktabs">
+          ${tab("overview", "Overview")}
+          ${tab("skill", "Skill")}
+          ${tab("unique", "Unique", hasUnique)}
+        </div>
       </div>
-      ${gateNote}
-      <div class="lu-main">${groups || `<div class="lu-empty">You already have every class.</div>`}</div>`;
+      ${atLimit ? `<div class="lu-note warn">You have ${s.unmastered} unmastered classes and the limit is
+         ${s.rules.maxUnmastered}. Take one of them to level 10 before starting another.</div>` : ""}
+      <div class="lu-pickbody">
+        <div class="lu-preview">${this._pickPreview(sel, atLimit)}</div>
+        <div class="lu-picklist">${list || `<div class="lu-empty">You already have every class.</div>`}</div>
+      </div>`;
+  },
+
+  _pickPreview(c, atLimit) {
+    if (!c) return `<div class="lu-empty">No classes left to start.</div>`;
+
+    if (this._pickTab === "unique") {
+      return `<div class="lu-pvhead"><b>${esc(c.name)}</b><span>Unique Mechanic</span></div>
+        <div class="lu-pvscroll">${describe(c.mechanic, { clamp: false })}</div>`;
+    }
+
+    if (this._pickTab === "skill") {
+      const sub = this._pickSub === "facet" ? "facet" : "skill";
+      const rows = (sub === "facet" ? c.facets : c.skills).map((k) => `
+        <div class="lu-pvrow">
+          <img src="${esc(k.img)}" alt="">
+          <div class="t"><b>${esc(k.name)}</b>${k.cost ? ` <span class="lu-tag">${esc(k.cost)}</span>` : ""}
+            ${sub === "skill" ? `<span class="lu-tag">max ${k.maxLevel}</span>` : ""}
+            ${describe(k.description)}</div>
+        </div>`).join("");
+
+      const free = [
+        c.free?.martialMelee && "martial melee", c.free?.martialRanged && "martial ranged",
+        c.free?.martialArmor && "martial armor", c.free?.martialShield && "martial shields",
+        c.free?.ritual && "rituals", c.free?.project && "projects",
+      ].filter(Boolean);
+
+      return `<div class="lu-pvhead"><b>${esc(c.name)}</b>
+          <span>${c.skills.length} skills${c.facets.length ? ` · ${c.facets.length} facets` : ""}</span></div>
+        <div class="lu-pvfree">
+          <b>Free benefit:</b> ${esc(c.benefit ? (LEVELUP.BENEFIT_LABEL[c.benefit] ?? c.benefit) : "you choose HP / MP / IP")}
+          ${free.length ? ` · equips ${esc(free.join(", "))}` : ""}
+        </div>
+        <div class="lu-subtabs">
+          <button class="lu-subtab ${sub === "skill" ? "on" : ""}" data-act="picksub" data-sub="skill">Skills</button>
+          ${c.facets.length ? `<button class="lu-subtab ${sub === "facet" ? "on" : ""}" data-act="picksub" data-sub="facet">Facets</button>` : ""}
+        </div>
+        <div class="lu-pvscroll">${rows || `<div class="lu-empty">Nothing authored for this class.</div>`}</div>`;
+    }
+
+    // Overview — the portrait spread from the mockup.
+    const meta = CLASS_META_DEFAULT;
+    const stars = Array.from({ length: meta.difficultyMax }, (_, i) =>
+      `<i class="fa-solid fa-star ${i < meta.difficulty ? "on" : ""}"></i>`).join("");
+
+    return `<div class="lu-pvart">
+        <img src="${esc(c.img)}" alt="">
+        <div class="lu-pvname">${esc(c.name)}</div>
+        ${plain(c.flavor).length ? `<div class="lu-pvflavor">${esc(plain(c.flavor))}</div>` : ""}
+        <div class="lu-pvmeta">
+          <div><span>Difficulty:</span> <span class="lu-stars">${stars}</span></div>
+          <div><span>Role:</span> ${meta.roles.map((r) => `<span class="lu-role">${esc(r)}</span>`).join("")}</div>
+        </div>
+      </div>
+      ${c.also ? `<div class="lu-pvalso">Also known as ${esc(c.also)}</div>` : ""}
+      ${plain(c.lore).length ? `<div class="lu-pvscroll lore">${describe(c.lore, { clamp: false })}</div>` : ""}
+      <button class="lu-cta go lu-pvgo" data-act="pick" data-key="${esc(c.key)}" ${atLimit ? "disabled" : ""}>
+        Start ${esc(c.name)}</button>`;
   },
 
   // ── interaction ─────────────────────────────────────────────────────────
@@ -993,8 +1126,16 @@ const LevelUpApp = {
       this._resetMode = !this._resetMode;
       return this.render();
     }
-    if (act === "openpicker") { this._pickerOpen = true; return this.render(); }
-    if (act === "closepicker") { this._pickerOpen = false; return this.render(); }
+    if (act === "openpicker") { sfx("open"); this._pickerOpen = true; return this.render(); }
+    if (act === "closepicker") { sfx("deselect"); this._pickerOpen = false; return this.render(); }
+    if (act === "picktab") { sfx("tab"); this._pickTab = btn.dataset.tab; return this.render(); }
+    if (act === "picksub") { sfx("toggle"); this._pickSub = btn.dataset.sub; return this.render(); }
+    if (act === "pickselect") {
+      if (this._pickSel === btn.dataset.key) return;
+      sfx("cursor");
+      this._pickSel = btn.dataset.key;
+      return this.render();
+    }
     if (act === "pick") {
       const changed = this._selected !== btn.dataset.key;
       // Changing class re-frames the whole window, so it gets the heavier

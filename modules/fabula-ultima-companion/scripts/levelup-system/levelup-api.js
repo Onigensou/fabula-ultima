@@ -164,6 +164,13 @@ export function getState(actorUuid) {
       img: cls.img,
       folder: cls.folder,
       benefit: cls.benefit,
+      free: cls.free,
+      // Authored prose for the class browser: the quote, the body, the alt
+      // names, and the Unique Mechanic (present on 21 of 42 classes).
+      flavor: cls.flavor,
+      lore: cls.lore,
+      also: cls.also,
+      mechanic: cls.mechanic,
       level: mine?.level ?? 0,
       mastered: !!mine?.mastered,
       taken: !!mine,

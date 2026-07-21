@@ -89,6 +89,66 @@ export const LEVELUP_KEYS = Object.freeze({
   TAB_PREV: ["q", "Q"],
 });
 
+/**
+ * One Font Awesome glyph per class, for the picker list.
+ *
+ * FA6 **free** only — Foundry ships the free set, and a Pro-only name (there is
+ * no free `fa-sword` or `fa-bow-arrow`) renders as an empty box rather than
+ * failing loudly. Keyed by idKey so "Dark Blade" and "Darkblade" both resolve.
+ */
+export const CLASS_ICONS = Object.freeze({
+  aceofcards: "fa-diamond",
+  arcanist: "fa-wand-magic-sparkles",
+  arcanistvariant: "fa-wand-magic-sparkles",
+  berserker: "fa-hand-fist",
+  chanter: "fa-music",
+  chimerist: "fa-dna",
+  commander: "fa-flag",
+  dancer: "fa-shoe-prints",
+  darkblade: "fa-moon",
+  elementalist: "fa-fire",
+  entropist: "fa-meteor",
+  esper: "fa-brain",
+  floralist: "fa-seedling",
+  fury: "fa-face-angry",
+  gourmet: "fa-utensils",
+  guardian: "fa-shield-halved",
+  hexer: "fa-spider",
+  hunter: "fa-crosshairs",
+  illusionist: "fa-ghost",
+  invoker: "fa-hand-sparkles",
+  loremaster: "fa-book",
+  matador: "fa-fan",
+  merchant: "fa-coins",
+  monk: "fa-hands-praying",
+  mutant: "fa-paw",
+  necromancer: "fa-skull",
+  orator: "fa-comments",
+  pilot: "fa-robot",
+  pirate: "fa-anchor",
+  reaper: "fa-skull-crossbones",
+  revolver: "fa-gun",
+  rogue: "fa-user-ninja",
+  sharpshooter: "fa-bullseye",
+  slayer: "fa-khanda",
+  spellfencer: "fa-bolt",
+  spiritist: "fa-hand-holding-heart",
+  symbolist: "fa-shapes",
+  tailor: "fa-scissors",
+  tamer: "fa-dog",
+  tinkerer: "fa-screwdriver-wrench",
+  wayfarer: "fa-compass",
+  weaponmaster: "fa-hammer",
+});
+
+/** Icon for a class, falling back so a newly authored class still renders. */
+export const classIcon = (key) => CLASS_ICONS[key] ?? "fa-circle-user";
+
+// Difficulty and Role are not authored on the class actor yet. Shown at these
+// defaults so the layout is real, and swapped for live data once the fields
+// exist — deferred deliberately rather than faked per class.
+export const CLASS_META_DEFAULT = Object.freeze({ difficulty: 1, difficultyMax: 3, roles: ["DPS"] });
+
 /** Feather cursor sprite — the same asset the Healing and Ritual HUDs use. */
 export const LEVELUP_CURSOR_SRC =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
