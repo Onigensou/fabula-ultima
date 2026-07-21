@@ -163,11 +163,17 @@ export function getState(actorUuid) {
     heroic: {
       ...heroicSlots(actor),
       available: availableHeroics(actor),
-      // Heroics already on the sheet, for the collection view. `granted` marks
-      // the equipment-granted ones so the display can explain why they don't
-      // count against a slot.
+      // Heroics already on the sheet, for the collection view.
+      //
+      // Equipment-granted ones are excluded outright, not merely flagged. A
+      // Heroic Skill in this system is something earned by mastering a class;
+      // a heroic-grade passive hanging off an accessory (Zarg's "Maid cap
+      // (Passive)") is a property of the item, arrives and leaves with it, and
+      // is neither a pick nor a thing this window can act on. It is already
+      // excluded from slot accounting — listing it anyway just invited the
+      // question of why four entries showed against three taken.
       owned: [...held.values()]
-        .filter((h) => h.isHeroic)
+        .filter((h) => h.isHeroic && !(h.item.system?.props?.container ?? h.item.system?.container ?? null))
         .map((h) => ({
           uuid: h.item.uuid,
           name: h.item.name,
@@ -175,7 +181,6 @@ export function getState(actorUuid) {
           description: h.item.system?.props?.description ?? "",
           cost: h.item.system?.props?.cost ?? "",
           from: h.item.system?.props?.class ?? "",
-          granted: !!(h.item.system?.props?.container ?? h.item.system?.container ?? null),
         }))
         .sort((a, b) => a.name.localeCompare(b.name)),
     },

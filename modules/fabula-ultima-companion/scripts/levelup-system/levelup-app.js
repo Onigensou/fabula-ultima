@@ -636,8 +636,7 @@ const LevelUpApp = {
     const learnedRows = (owned ?? []).map((h) => `<div class="lu-skill lu-frow have">
       <img src="${esc(h.img)}" alt="">
       <div class="t">
-        <b>${esc(h.name)}</b>${h.from ? ` <span class="lu-tag">${esc(h.from)}</span>` : ""}${
-          h.granted ? ` <span class="lu-tag">from equipment</span>` : ""}
+        <b>${esc(h.name)}</b>${h.from ? ` <span class="lu-tag">${esc(h.from)}</span>` : ""}
         ${describe(h.description)}
       </div>
       <span class="lu-learned">Learned</span>
