@@ -365,9 +365,19 @@
       const btnBottom = Number(btn?.BOTTOM ?? 80);
       const btnSize   = Number(btn?.SIZE   ?? 64);
       const gapAbove  = 10;
+
+      // The unspent Skill Point badge, when present, takes the slot directly
+      // above the button row and pushes this badge up by its height. It is
+      // absent whenever the character has nothing to spend, and this badge
+      // then falls back to its usual slot — hence measuring the live element
+      // rather than reserving space for it. The level-up badge calls
+      // reposition() on show/hide so the stack settles immediately.
+      const lu = document.getElementById("oni-levelup-badge");
+      const luOffset = lu ? Math.round(lu.getBoundingClientRect().height) + gapAbove : 0;
+
       root.style.left   = "20px";
       root.style.top    = "auto"; // override the stylesheet's top:0 so bottom anchors
-      root.style.bottom = `${btnBottom + btnSize + gapAbove}px`;
+      root.style.bottom = `${btnBottom + btnSize + gapAbove + luOffset}px`;
       state.docked = true;
       return;
     }

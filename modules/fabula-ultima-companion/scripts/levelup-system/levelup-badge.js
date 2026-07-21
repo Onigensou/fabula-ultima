@@ -20,17 +20,28 @@ import { gateState } from "./levelup-gate.js";
 const STYLE_ID = "oni-levelup-badge-style";
 const ROOT_ID = "oni-levelup-badge";
 
-const CAMP_BOTTOM = 80;
-const CAMP_SIZE = 64;
-const GAP = 12;
+// The bottom-left control stack, from the floor up:
+//
+//   camp / dungeon button row   bottom 80, 64 tall
+//   THIS badge                  bottom 154, only when points are unspent
+//   main controller badge       above whichever of the two is topmost
+//
+// The button row's geometry is read defensively from the Dungeon Pathing UI
+// constants, matching how movementControl-controllerBadge.js docks. That badge
+// measures this one and offsets itself, so when there is nothing to spend it
+// simply falls back to the 154 slot.
+const GAP = 10;
+const dockBottom = () => {
+  const btn = globalThis.DungeonPathing?.UI?.SCAN_BUTTON;
+  return Number(btn?.BOTTOM ?? 80) + Number(btn?.SIZE ?? 64) + GAP;
+};
 
 function injectStyles() {
   if (document.getElementById(STYLE_ID)) return;
   const s = document.createElement("style");
   s.id = STYLE_ID;
   s.textContent = `
-#${ROOT_ID} { position: fixed; z-index: 99997;
-  bottom: ${CAMP_BOTTOM + CAMP_SIZE + GAP}px; left: 20px;
+#${ROOT_ID} { position: fixed; z-index: 99997; left: 20px;
   display: flex; align-items: center; gap: 9px; padding: 8px 14px 8px 10px;
   border-radius: 10px; cursor: pointer; border: 1px solid #8a6c45;
   background: linear-gradient(180deg,#5d4630,#41301c); color: #f6ecd8;
@@ -74,7 +85,8 @@ const Badge = {
 
   show(points) {
     injectStyles();
-    if (!this._el) {
+    const fresh = !this._el;
+    if (fresh) {
       const el = document.createElement("div");
       el.id = ROOT_ID;
       el.title = "Open the level-up window";
@@ -85,15 +97,28 @@ const Badge = {
       document.body.appendChild(el);
       this._el = el;
     }
+    this._el.style.bottom = `${dockBottom()}px`;
     this._el.innerHTML =
       `<div class="lub-n">${points}</div>
        <div><div class="lub-t">Unspent Skill Point${points === 1 ? "" : "s"}</div>
        <div class="lub-s">Click to spend</div></div>`;
+    // Height can change with the label ("Point" vs "Points"), so re-settle the
+    // stack on every show, not only when the element is first created.
+    this._restack();
   },
 
   hide() {
-    this._el?.remove();
+    if (!this._el) return;
+    this._el.remove();
     this._el = null;
+    this._restack();
+  },
+
+  // Let the controller badge re-measure. It docks above this one when present
+  // and returns to its usual slot when not.
+  _restack() {
+    try { globalThis.FUCompanion?.api?.MovementControlControllerBadge?.reposition?.(); }
+    catch { /* badge not on this scene */ }
   },
 };
 
