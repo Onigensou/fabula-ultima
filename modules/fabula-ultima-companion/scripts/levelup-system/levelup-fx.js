@@ -134,23 +134,29 @@ export function previewIntro(art, text) {
   // threshold the page just swaps, and the entrance is saved for a selection
   // you actually stopped on.
   const now = performance.now();
-  const rapid = now - _lastIntro < 260;
+  const rapid = now - _lastIntro < 320;
   _lastIntro = now;
   if (rapid) return;
 
+  const ART_MS = 640;
   if (art) {
     art.animate(
       [{ opacity: 0, transform: "translateX(-46px)" }, { opacity: 1, transform: "none" }],
-      { duration: 420, easing: "cubic-bezier(.16,.84,.3,1)", fill: "both" }
+      { duration: ART_MS, easing: "cubic-bezier(.16,.84,.3,1)", fill: "both" }
     );
   }
-  if (text) {
-    text.animate(
-      [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }],
-      // Starts as the portrait settles, not before it.
-      { duration: 300, delay: art ? 360 : 0, easing: "cubic-bezier(.2,.8,.3,1)", fill: "both" }
+
+  // Each block arrives on its own beat, in reading order, so the page assembles
+  // itself rather than appearing all at once. DOM order already is reading
+  // order: name, also-known-as, flavour, lore, then the meta line.
+  const blocks = text ? Array.from(text.children) : [];
+  const start = art ? ART_MS - 90 : 0;   // overlaps the portrait's last moments
+  blocks.forEach((el, i) => {
+    el.animate(
+      [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }],
+      { duration: 280, delay: start + i * 75, easing: "cubic-bezier(.2,.8,.3,1)", fill: "both" }
     );
-  }
+  });
 }
 
 /**
