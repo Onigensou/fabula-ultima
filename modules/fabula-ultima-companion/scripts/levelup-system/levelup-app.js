@@ -390,6 +390,11 @@ const LevelUpApp = {
     root.addEventListener("pointerover", (ev) => {
       const el = ev.target?.closest?.("[data-act]");
       if (el && !el.disabled) hoverSfx(el);
+      // The feather is one cursor shared by both input methods: the mouse
+      // moves it, and the keyboard picks up from wherever the mouse left it.
+      // Without this they drift apart and arrowing after a click teleports the
+      // selection back to some stale index.
+      this._syncFocusToPointer(ev.target);
     });
     this._installKeyboard();
 
@@ -1372,6 +1377,42 @@ const LevelUpApp = {
     this._focusChanged(this._focusEl() !== before);
   },
 
+  /**
+   * Move keyboard focus to whatever the pointer is over, so the feather tracks
+   * the mouse and the two input methods never disagree about "here".
+   *
+   * A row wins over the buttons inside it: hovering its + still means the row
+   * is the thing selected, which is what Z would act on anyway.
+   */
+  _syncFocusToPointer(target) {
+    if (!target?.closest || this._facet || this._pickerOpen) return;
+
+    const row = target.closest(".lu-main .lu-row");
+    if (row) {
+      const i = this._rows().indexOf(row);
+      if (i < 0) return;
+      this._zone = "list"; this._rowIdx = i;
+      return this._focusChanged(false);   // hover already made its own sound
+    }
+
+    const zones = [
+      ["head", ".lu-switches [data-act], .lu-tabs [data-act]", this._headBtns()],
+      ["rail", ".lu-rail [data-act]", this._railBtns()],
+      ["foot", ".lu-foot [data-act]", this._footBtns()],
+    ];
+    for (const [zone, sel, list] of zones) {
+      const el = target.closest(sel);
+      if (!el) continue;
+      const i = list.indexOf(el);
+      if (i < 0) continue;
+      this._zone = zone;
+      if (zone === "head") this._headIdx = i;
+      else if (zone === "rail") this._railIdx = i;
+      else this._footIdx = i;
+      return this._focusChanged(false);
+    }
+  },
+
   /** The element the cursor points at right now. */
   _focusEl() {
     if (this._zone === "head") return this._headBtns()[this._headIdx] ?? null;
@@ -1388,7 +1429,10 @@ const LevelUpApp = {
     if (this._zone === "list") {
       this._hover = el?.dataset.detail ?? null;
       this._paintDetail();
-      el?.scrollIntoView({ block: "nearest" });
+      // Only chase the focused row when the KEYBOARD moved it. Scrolling on
+      // hover would slide the list out from under the pointer, which then
+      // hovers a different row, which scrolls again.
+      if (moved) el?.scrollIntoView({ block: "nearest" });
     }
     this._updateCursor();
   },
