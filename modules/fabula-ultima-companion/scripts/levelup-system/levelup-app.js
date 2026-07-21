@@ -343,7 +343,8 @@ const LevelUpApp = {
 
   // Keyboard focus. Zones mirror the layout: the class rail, the list, and the
   // footer's Discard/Confirm pair when a batch is staged.
-  _zone: "list",        // "rail" | "list" | "foot"
+  _zone: "list",        // "head" | "rail" | "list" | "foot"
+  _headIdx: 2,          // lands on the first tab, past the two mode switches
   _railIdx: 0,
   _rowIdx: 0,
   _footIdx: 1,          // default to Confirm, the likely intent
@@ -545,6 +546,7 @@ const LevelUpApp = {
     if (this._rowIdx >= rowCount) this._rowIdx = Math.max(0, rowCount - 1);
     if (this._zone === "foot" && !this._footBtns().length) this._zone = "list";
     if (this._zone === "rail" && this._railIdx >= this._railBtns().length) this._railIdx = 0;
+    if (this._zone === "head") this._headIdx = Math.min(this._headIdx, Math.max(0, this._headBtns().length - 1));
     this._updateCursor();
 
     // Hover updates only the detail panel — re-rendering the whole window on
@@ -1329,38 +1331,57 @@ const LevelUpApp = {
   _rows() { return Array.from(this._root?.querySelectorAll(".lu-main .lu-row") ?? []); },
   _railBtns() { return Array.from(this._root?.querySelectorAll(".lu-rail [data-act]") ?? []); },
   _footBtns() { return Array.from(this._root?.querySelectorAll(".lu-foot [data-act]") ?? []); },
+  // Header controls, in reading order: the two mode switches then the tabs.
+  // Close is deliberately excluded — X already closes, and putting it one
+  // arrow-press past the Heroic tab invites losing a staged batch by accident.
+  _headBtns() {
+    return Array.from(this._root?.querySelectorAll(".lu-switches [data-act], .lu-tabs [data-act]") ?? []);
+  },
 
   _move(dx, dy) {
     const clamp = (n, len) => (len ? Math.max(0, Math.min(len - 1, n)) : 0);
+    const before = this._focusEl();
 
-    if (dx < 0 && this._zone === "list") { this._zone = "rail"; this._focusChanged(); return; }
-    if (dx > 0 && this._zone === "rail") { this._zone = "list"; this._focusChanged(); return; }
-
-    if (this._zone === "rail") {
-      this._railIdx = clamp(this._railIdx + dy, this._railBtns().length);
+    if (this._zone === "head") {
+      if (dx) this._headIdx = clamp(this._headIdx + dx, this._headBtns().length);
+      // Down from the header goes to the list, or the rail if there is no list.
+      if (dy > 0) this._zone = this._rows().length ? "list" : "rail";
+    } else if (dx < 0 && this._zone === "list") {
+      this._zone = "rail";
+    } else if (dx > 0 && this._zone === "rail") {
+      this._zone = "list";
+    } else if (this._zone === "rail") {
+      // Up off the top of the rail reaches the switches and tabs.
+      if (dy < 0 && this._railIdx === 0) this._zone = "head";
+      else this._railIdx = clamp(this._railIdx + dy, this._railBtns().length);
     } else if (this._zone === "foot") {
       if (dx) this._footIdx = clamp(this._footIdx + dx, this._footBtns().length);
       if (dy < 0) this._zone = "list";
     } else {
       const rows = this._rows();
       const next = this._rowIdx + dy;
-      // Falling off the bottom lands on Confirm when there is a batch waiting,
-      // which is where the player is heading anyway.
-      if (next >= rows.length && this._footBtns().length) { this._zone = "foot"; }
+      // Up off the top reaches the header; down off the bottom lands on
+      // Confirm when a batch is waiting, which is where the player is heading.
+      if (next < 0) this._zone = "head";
+      else if (next >= rows.length && this._footBtns().length) this._zone = "foot";
       else this._rowIdx = clamp(next, rows.length);
     }
-    this._focusChanged();
+
+    // Silence at the edges. Holding an arrow against the end of a list used to
+    // fire the cursor cue on every repeat while nothing moved.
+    this._focusChanged(this._focusEl() !== before);
   },
 
   /** The element the cursor points at right now. */
   _focusEl() {
+    if (this._zone === "head") return this._headBtns()[this._headIdx] ?? null;
     if (this._zone === "rail") return this._railBtns()[this._railIdx] ?? null;
     if (this._zone === "foot") return this._footBtns()[this._footIdx] ?? null;
     return this._rows()[this._rowIdx] ?? null;
   },
 
-  _focusChanged() {
-    sfx("cursor");
+  _focusChanged(moved = true) {
+    if (moved) sfx("cursor");
     const el = this._focusEl();
     // Keyboard focus drives the detail panel exactly as hover does, so both
     // input methods show the same thing.
