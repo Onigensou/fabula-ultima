@@ -114,8 +114,8 @@ function injectStyles() {
   box-shadow: 0 0 0 1px rgba(95,139,60,.3) inset; }
 #${ROOT_ID} .lu-frow.have .lu-pips { color: #3f6b23; font-weight: 700; }
 #${ROOT_ID} .lu-frow.away { border-color: #a3706f; background: #f6e9e9; }
-#${ROOT_ID} .lu-frow.miss { opacity: .45; filter: saturate(.3); }
-#${ROOT_ID} .lu-frow.miss:hover { opacity: .78; filter: saturate(.7); }
+#${ROOT_ID} .lu-tabdot { display: inline-block; min-width: 16px; padding: 0 4px; margin-left: 4px;
+  border-radius: 8px; background: #d9a326; color: #2b2110; font-size: 11px; font-weight: 800; }
 
 #${ROOT_ID} .lu-note { padding: 7px 14px; font-size: 12.5px; flex: 0 0 auto; }
 #${ROOT_ID} .lu-note.warn { background: #f6e2b8; border-bottom: 1px solid #c9a768; color: #4a3306; }
@@ -148,7 +148,18 @@ function injectStyles() {
 #${ROOT_ID} .lu-skill { display: flex; align-items: center; gap: 10px; padding: 8px 10px;
   border-radius: 8px; margin-bottom: 6px; background: #f7f0df; border: 1px solid #c6ae87; }
 #${ROOT_ID} .lu-skill.max { border-color: #a98a4e; background: #f1e6c6; }
-#${ROOT_ID} .lu-skill.none { opacity: .78; }
+
+/* Not-yet-acquired rows read as locked — but ONLY the content dims. Dimming a
+   live + or − button makes an available action look unavailable, which is the
+   opposite of what the state is trying to say. */
+#${ROOT_ID} .lu-skill.miss > img,
+#${ROOT_ID} .lu-skill.miss > .t { opacity: .45; filter: saturate(.3); }
+#${ROOT_ID} .lu-skill.miss:hover > img,
+#${ROOT_ID} .lu-skill.miss:hover > .t { opacity: .78; filter: saturate(.7); }
+#${ROOT_ID} .lu-skill.miss { background: #f3ece0; }
+
+#${ROOT_ID} .lu-learned { font-size: 11.5px; font-weight: 700; font-style: italic;
+  opacity: .5; white-space: nowrap; letter-spacing: .02em; }
 #${ROOT_ID} .lu-skill img { width: 34px; height: 34px; border-radius: 5px; object-fit: cover; flex: 0 0 auto; }
 #${ROOT_ID} .lu-skill .t { flex: 1 1 auto; min-width: 0; }
 #${ROOT_ID} .lu-skill .t b { font-size: 13.5px; }
@@ -405,6 +416,8 @@ const LevelUpApp = {
       <div class="lu-tabs">
         <button class="lu-tab ${this._tab === "skill" ? "on" : ""}" data-act="tab" data-tab="skill">Skill</button>
         <button class="lu-tab ${this._tab === "facet" ? "on" : ""}" data-act="tab" data-tab="facet">Facet</button>
+        <button class="lu-tab ${this._tab === "heroic" ? "on" : ""}" data-act="tab" data-tab="heroic">Heroic${
+          s.heroic.open ? ` <span class="lu-tabdot">${s.heroic.open}</span>` : ""}</button>
       </div>
       <button class="lu-x" data-act="close" title="Close">×</button>
     </div>`;
@@ -451,6 +464,10 @@ const LevelUpApp = {
   },
 
   _main(s, proj) {
+    // Heroic Skills are not a property of the selected class — the pick is
+    // free across every class — so that tab renders without one.
+    if (this._tab === "heroic") return this._heroicTab(s);
+
     const cls = s.classes.find((c) => c.key === this._selected);
     if (!cls) {
       return `<div class="lu-empty">No classes yet — use <b>＋ New Class</b> to start one.</div>`;
@@ -469,7 +486,7 @@ const LevelUpApp = {
       const atMax = lvl >= sk.maxLevel;
       const canBuy = s.gate.open && proj.points > 0 && !atMax
         && clsLevel < s.rules.maxClassLevel && !wouldExceedLimit;
-      return `<div class="lu-skill ${atMax ? "max" : ""} ${lvl === 0 ? "none" : ""}">
+      return `<div class="lu-skill ${atMax ? "max" : ""} ${lvl === 0 ? "miss" : ""}">
         <img src="${esc(sk.img)}" alt="">
         <div class="t">
           <b>${esc(sk.name)}</b>${sk.cost ? ` <span class="lu-tag">${esc(sk.cost)}</span>` : ""}
@@ -494,8 +511,7 @@ const LevelUpApp = {
     return `<div class="lu-h2"><b>${mastered ? "⭐ " : ""}${esc(cls.name)}</b>
         <span>${clsLevel}/${s.rules.maxClassLevel}${mastered ? " · mastered" : ""}${cls.benefit ? ` · ${esc(LEVELUP.BENEFIT_LABEL[cls.benefit] ?? cls.benefit)}` : ""}</span></div>
       ${note}
-      ${skills || `<div class="lu-empty">This class has no skills authored.</div>`}
-      ${this._heroicPane(s)}`;
+      ${skills || `<div class="lu-empty">This class has no skills authored.</div>`}`;
   },
 
   // Revisit a Facet choice that is staged but not yet written. Only offered
@@ -580,7 +596,7 @@ const LevelUpApp = {
           <b>${esc(f.name)}</b>${f.cost ? ` <span class="lu-tag">${esc(f.cost)}</span>` : ""}${note}
           ${describe(f.description)}
         </div>
-        <span class="lu-pips">${r <= 1 ? "✓" : "—"}</span>
+        ${r <= 1 ? `<span class="lu-learned">Learned</span>` : ""}
       </div>`;
     };
 
@@ -600,41 +616,51 @@ const LevelUpApp = {
       ${rest.map(row).join("")}`;
   },
 
-  _heroicPane(s) {
-    const { open, earned, used, available } = s.heroic;
-    if (!earned) return "";
-    const head = `<h3>Heroic Skills — ${open} of ${earned} slot${earned === 1 ? "" : "s"} open <span class="lu-tag">${used} taken</span></h3>`;
+  /**
+   * The Heroic tab: what the character has, then what they could take, then
+   * what is out of reach — the same unlockable shape as the Facet board.
+   *
+   * Not scoped to the selected class. Mastering a class earns the pick but does
+   * not limit it (§4 of the design doc), so this is a character-wide view.
+   */
+  _heroicTab(s) {
+    const { open, earned, used, available, owned } = s.heroic;
 
-    if (!open) {
-      return `<div class="lu-heroic">${head}
-        <div class="lu-empty">Master another class to earn another Heroic Skill.</div></div>`;
-    }
-    if (!available.length) {
-      return `<div class="lu-heroic">${head}
-        <div class="lu-empty">No Heroic Skills are authored anywhere yet.</div></div>`;
-    }
+    const head = `<div class="lu-h2"><b>Heroic Skills</b>
+      <span>${earned ? `${open} of ${earned} slot${earned === 1 ? "" : "s"} open · ${used} taken`
+                     : "master a class to earn one"}</span></div>`;
 
-    // The pool is now every heroic in the game — mastering a class earns the
-    // pick but does not limit it — so it has to be ranked rather than dumped:
-    // takeable first, then ones from classes already being played, then a count
-    // for the rest.
+    const learnedRows = (owned ?? []).map((h) => `<div class="lu-skill lu-frow have">
+      <img src="${esc(h.img)}" alt="">
+      <div class="t">
+        <b>${esc(h.name)}</b>${h.from ? ` <span class="lu-tag">${esc(h.from)}</span>` : ""}${
+          h.granted ? ` <span class="lu-tag">from equipment</span>` : ""}
+        ${describe(h.description)}
+      </div>
+      <span class="lu-learned">Learned</span>
+    </div>`).join("");
+
     const met = available.filter((h) => h.relevance === "met");
     const close = available.filter((h) => h.relevance === "close");
     const distant = available.filter((h) => h.relevance === "distant");
 
-    const note = met.length
-      ? ""
-      : `<div class="lu-empty">A slot is open, but you don't yet meet the requirements for any Heroic Skill.</div>`;
-    const divider = met.length && close.length
-      ? `<div class="lu-railhead" style="margin:10px 2px 4px">Not yet available</div>`
-      : "";
-    const tail = distant.length
-      ? `<div class="lu-empty">${distant.length} more need classes you haven't taken.</div>`
+    const takeable = open
+      ? this._heroicRows(s, met)
+      : met.length
+        ? `<div class="lu-empty">${met.length} would be available — master another class to earn a slot.</div>`
+        : "";
+
+    const noneMet = open && !met.length
+      ? `<div class="lu-empty">A slot is open, but you don't yet meet the requirements for any Heroic Skill.</div>`
       : "";
 
-    return `<div class="lu-heroic">${head}${note}` +
-      this._heroicRows(s, met) + divider + this._heroicRows(s, close) + tail +
-      `</div>`;
+    return head +
+      (learnedRows || `<div class="lu-empty">No Heroic Skills yet.</div>`) +
+      (met.length && open ? `<div class="lu-railhead" style="margin:12px 2px 5px">Available now</div>` : "") +
+      noneMet + takeable +
+      (close.length ? `<div class="lu-railhead" style="margin:12px 2px 5px">Not yet available</div>` : "") +
+      this._heroicRows(s, close) +
+      (distant.length ? `<div class="lu-empty">${distant.length} more need classes you haven't taken.</div>` : "");
   },
 
   _heroicRows(s, list) {
@@ -644,14 +670,15 @@ const LevelUpApp = {
         ? `<p class="lu-req">Requirement needs a GM: “${esc(h.prose)}”</p>`
         : h.met ? "" : `<p class="lu-req">${h.clauses.filter((c) => !c.met).map((c) => esc(c.label)).join(" · ")}</p>`;
       const staged = this._pending.some((p) => p.op === "heroic" && p.skillUuid === h.skill.uuid);
-      return `<div class="lu-skill ${h.met ? "" : "none"} ${staged ? "max" : ""}">
+      const canTake = s.gate.open && h.met && (s.heroic.open > 0 || staged);
+      return `<div class="lu-skill lu-frow ${staged ? "have" : h.met ? "" : "miss"}">
         <img src="${esc(h.skill.img)}" alt="">
         <div class="t">
           <b>${esc(h.skill.name)}</b> <span class="lu-tag">${esc(from)}</span>${staged ? ` <span class="lu-tag moved">staged</span>` : ""}
           ${describe(h.skill.description)}${req}
         </div>
         <button class="lu-btn buy" data-act="heroic" data-uuid="${esc(h.skill.uuid)}" data-name="${esc(h.skill.name)}"
-          ${s.gate.open && h.met ? "" : "disabled"} title="${staged ? "Un-stage" : "Take this Heroic Skill (free)"}">${staged ? "✓" : "★"}</button>
+          ${canTake ? "" : "disabled"} title="${staged ? "Un-stage" : "Take this Heroic Skill (free)"}">${staged ? "✓" : "★"}</button>
       </div>`;
     }).join("");
   },

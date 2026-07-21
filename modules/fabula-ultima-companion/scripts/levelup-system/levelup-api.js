@@ -160,7 +160,25 @@ export function getState(actorUuid) {
     gate: gateState(),
     rules: { maxClassLevel: RULE.MAX_CLASS_LEVEL, maxCharLevel: RULE.MAX_CHAR_LEVEL, maxUnmastered: RULE.MAX_UNMASTERED_CLASSES },
     unmastered: unmasteredCount(actor),
-    heroic: { ...heroicSlots(actor), available: availableHeroics(actor) },
+    heroic: {
+      ...heroicSlots(actor),
+      available: availableHeroics(actor),
+      // Heroics already on the sheet, for the collection view. `granted` marks
+      // the equipment-granted ones so the display can explain why they don't
+      // count against a slot.
+      owned: [...held.values()]
+        .filter((h) => h.isHeroic)
+        .map((h) => ({
+          uuid: h.item.uuid,
+          name: h.item.name,
+          img: h.item.img,
+          description: h.item.system?.props?.description ?? "",
+          cost: h.item.system?.props?.cost ?? "",
+          from: h.item.system?.props?.class ?? "",
+          granted: !!(h.item.system?.props?.container ?? h.item.system?.container ?? null),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    },
     classes,
     duplicates: reg.duplicates,
   };
