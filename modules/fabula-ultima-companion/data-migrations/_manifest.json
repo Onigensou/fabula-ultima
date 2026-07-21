@@ -611,6 +611,10 @@
     {
       "key": "2026-07-14-arcanist-avatar-vengeance-author",
       "path": "data-migrations/2026-07-14-arcanist-avatar-vengeance-author.js"
+    },
+    {
+      "key": "2026-07-21-actor-template-skill-point",
+      "path": "data-migrations/2026-07-21-actor-template-skill-point.js"
     }
   ]
 }
