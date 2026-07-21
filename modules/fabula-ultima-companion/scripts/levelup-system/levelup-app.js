@@ -146,14 +146,14 @@ function injectStyles() {
   padding: 3px 10px 3px 4px; border-radius: 12px; border: 1px solid #b79c72; background: #f2e8d3; }
 #${ROOT_ID} .lu-sw:hover { background: #fbf4e4; }
 
-/* Forget me Nut purse — mirrors .lu-sp so both currencies read the same way */
-#${ROOT_ID} .lu-purse { text-align: center; padding: 3px 12px; border-radius: 8px;
-  background: #2b2110; border: 1px solid #8a6c45; min-width: 62px; flex: 0 0 auto; }
-#${ROOT_ID} .lu-purse b { display: block; font-size: 24px; line-height: 1.05; color: #ffd479; }
-#${ROOT_ID} .lu-purselabel { display: flex; align-items: center; justify-content: center; gap: 4px; }
-#${ROOT_ID} .lu-purselabel img { width: 17px; height: 17px; object-fit: contain;
+/* Forget me Nut purse — icon then count, on one line */
+#${ROOT_ID} .lu-purse { display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto;
+  padding: 3px 13px 3px 7px; border-radius: 7px;
+  background: #2b2110; border: 1px solid #8a6c45; }
+#${ROOT_ID} .lu-purse > img { width: 26px; height: 26px; object-fit: contain; flex: 0 0 auto;
   border: 0 !important; outline: 0 !important; background: none; }
-#${ROOT_ID} .lu-purselabel em { font-size: 10px; font-style: normal; opacity: .7; color: #e8dcc4; }
+#${ROOT_ID} .lu-purse b { font-size: 19px; line-height: 1; color: #f6ecd8; }
+#${ROOT_ID} .lu-purse em { font-size: 10px; font-style: normal; opacity: .65; color: #e8dcc4; }
 #${ROOT_ID} .lu-purse.empty { border-color: #b0553f; }
 #${ROOT_ID} .lu-purse.empty b { color: #ff9c85; }
 #${ROOT_ID} .lu-swtrack { width: 26px; height: 14px; border-radius: 8px; background: #c3ae8b;
@@ -541,13 +541,11 @@ const LevelUpApp = {
     // means nothing outside it. Counts down live as levels are staged back.
     const nuts = s.nuts ?? { count: 0 };
     const left = nuts.count - proj.refundCount;
-    // Shaped like the Skill Point panel — same read at a glance — but labelled
-    // with the item's own icon rather than its name.
+    // Icon then count, side by side — the item is the label, so it leads.
     const purse = this._resetMode
       ? `<div class="lu-purse ${left <= 0 ? "empty" : ""}" title="${esc(nuts.name ?? "Forget me Nut")} — one per level given back">
-          <b>${left}</b>
-          <span class="lu-purselabel"><img src="${esc(nuts.img ?? "")}" alt="${esc(nuts.name ?? "")}">${
-            proj.refundCount ? `<em>of ${nuts.count}</em>` : ""}</span>
+          <img src="${esc(nuts.img ?? "")}" alt="${esc(nuts.name ?? "")}">
+          <b>${left}</b>${proj.refundCount ? `<em>of ${nuts.count}</em>` : ""}
         </div>`
       : "";
 
