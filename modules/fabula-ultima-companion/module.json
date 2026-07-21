@@ -383,6 +383,7 @@
     "scripts/healing-system/healing-api.js",
     "scripts/ritual-system/ritual-api.js",
     "scripts/levelup-system/levelup-api.js",
+    "scripts/levelup-system/levelup-app.js",
     "scripts/clock-system/clock-api.js",
     "scripts/clock-system/clock-ui-bar.js",
     "scripts/clock-system/clock-manager-app.js",
