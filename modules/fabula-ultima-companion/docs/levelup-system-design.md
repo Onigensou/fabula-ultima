@@ -289,9 +289,17 @@ check that actually matters — every class name and every skill name the parser
 emits resolves to a real class actor or a real item.
 
 ```
-143 heroic skills · 15 with no requirement · 128 parsed · 0 unparsed
-masteredAny 127 · hasSkill 21 · skillLevel 4 · charLevel 3 · allSkillsOf 1
+141 heroic skills · 13 with no requirement · 128 parsed · 0 unparsed
+masteredAny 128 · hasSkill 21 · skillLevel 4 · charLevel 3
 ```
+
+The parser also handles an `allSkillsOf` clause ("learned all the Skills offered
+by the X Class"). No skill uses it any more — its single occurrence was a typo
+on Powerful Shot, whose printed requirement is just "mastered the Sharpshooter
+Class", corrected in world data. The rule is kept for future content.
+
+Because requirements are parsed live and never cached, correcting the prose on
+an item is the whole fix — nothing needs re-running or re-migrating.
 
 **This is not stored anywhere.** The original plan was to parse once in a
 migration and cache structured JSON onto each item. That would write to 149
