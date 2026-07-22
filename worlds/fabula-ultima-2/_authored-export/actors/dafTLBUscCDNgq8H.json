@@ -458,6 +458,13 @@
     },
     "fabula-ultima-companion": {
       "affinity_class_strike": "IM",
+      "attributeAdvance": {
+        "claimed": 2,
+        "legacy": true,
+        "log": [],
+        "seededAt": "2026-07-22T05:32:57.684Z",
+        "seededLevel": 41
+      },
       "damage_dealt_mult_all": 1,
       "damage_dealt_mult_attack": 1,
       "damage_dealt_mult_skill": 1,
