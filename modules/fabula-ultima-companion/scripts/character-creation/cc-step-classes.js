@@ -157,11 +157,6 @@ const CSS = `
   }
   .cc-pts-n { font-size: 21px; color: #3a1e06; }
   .cc-pts-k { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #8a6432; }
-  .cc-search {
-    font-family: inherit; font-size: 11px; color: #2e1c08; padding: 6px 9px;
-    background: rgba(255,252,240,0.72); border: 1px solid rgba(140,90,30,0.38); border-radius: 2px;
-  }
-  .cc-search:focus { outline: none; border-color: #c9a44a; }
   .cc-cls-list { overflow-y: auto; display: flex; flex-direction: column; gap: 3px; max-height: 380px; }
   .cc-cls-item {
     display: flex; align-items: center; gap: 8px; padding: 6px 9px; border-radius: 2px;
@@ -184,11 +179,6 @@ const CSS = `
   .cc-cls-title { font-size: 14px; letter-spacing: 3px; color: #3a1e06; }
   .cc-cls-meta { font-size: 9px; color: #8a6432; letter-spacing: 1px; }
   .cc-cls-free { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0 12px; }
-  .cc-tag {
-    font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
-    padding: 2px 7px; border-radius: 8px; color: #6b4a1c;
-    background: rgba(201,164,74,0.24); border: 1px solid rgba(140,90,30,0.3);
-  }
 
   .cc-skills { display: flex; flex-direction: column; gap: 5px; max-height: 330px; overflow-y: auto; }
   .cc-skill {

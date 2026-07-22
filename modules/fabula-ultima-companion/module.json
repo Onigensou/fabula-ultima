@@ -395,6 +395,7 @@
     "scripts/character-creation/cc-step-profile.js",
     "scripts/character-creation/cc-step-attributes.js",
     "scripts/character-creation/cc-step-classes.js",
+    "scripts/character-creation/cc-step-equipment.js",
     "scripts/character-creation/cc-bootstrap.js",
     "scripts/clock-system/clock-api.js",
     "scripts/clock-system/clock-ui-bar.js",

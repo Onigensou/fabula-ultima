@@ -21,6 +21,7 @@ import { installNet } from "../advancement/advancement-net.js";
 import "./cc-step-profile.js";
 import "./cc-step-attributes.js";
 import "./cc-step-classes.js";
+import "./cc-step-equipment.js";
 
 /** Is the world set up to create characters? */
 export function openable() {

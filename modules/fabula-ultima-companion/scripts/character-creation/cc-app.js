@@ -147,6 +147,20 @@ const CSS = `
   .cc-btn:disabled { opacity: 0.4; cursor: default; }
   .cc-btn.is-primary { background: linear-gradient(155deg, #d8b34a 0%, #b8912c 100%); color: #2a1500; }
   .cc-btn.is-ghost   { background: transparent; border-color: rgba(140,90,30,0.4); }
+
+  /* Shared atoms. These live in the app sheet rather than a step's inline
+     <style> because the step body is re-rendered wholesale on every nav, which
+     would take any step-local rules with it the moment another step used them. */
+  .cc-tag {
+    font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 8px; color: #6b4a1c;
+    background: rgba(201,164,74,0.24); border: 1px solid rgba(140,90,30,0.3);
+  }
+  .cc-search {
+    font-family: inherit; font-size: 11px; color: #2e1c08; padding: 6px 9px;
+    background: rgba(255,252,240,0.72); border: 1px solid rgba(140,90,30,0.38); border-radius: 2px;
+  }
+  .cc-search:focus { outline: none; border-color: #c9a44a; }
 `;
 
 class CharacterCreationApp {
