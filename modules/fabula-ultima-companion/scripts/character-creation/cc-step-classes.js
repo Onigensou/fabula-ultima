@@ -113,6 +113,11 @@ export function applySpend(d, cls, skill, { benefit = null, facetUuids = [] } = 
     classImg: cls.img ?? "",
     skillUuid: skill.uuid,
     skillName: skill.name,
+    // Carried so the step summary can draw the skill without a registry
+    // lookup. The DESCRIPTION deliberately is not: it is rich HTML, it would
+    // ride the socket at finalize for no reason, and the tooltip can fetch it
+    // live from the catalogue where it belongs.
+    skillImg: skill.img ?? "",
     // Carried on every row so finalize never has to re-derive it; the levelup
     // API ignores it on rows after the first in a class.
     benefit: benefit ?? cls.benefit ?? null,
@@ -382,11 +387,20 @@ const CSS = `
     background: #efe4cd; border: 1px solid #b79c72; border-radius: 9px; padding: 1px 8px; }
   .cc-cl-clvl.is-master { background: linear-gradient(180deg,#f0d99a,#e0c179); border-color: #8a6c45; }
   .cc-cl-cben { font-size: 11px; opacity: .6; }
-  .cc-cl-skills { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 5px; }
-  .cc-cl-skill { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #3b2a17;
-    background: #efe4cd; border: 1px solid #cbb890; border-radius: 7px; padding: 2px 8px; }
-  .cc-cl-skill b { font-variant-numeric: tabular-nums; opacity: .7; }
-  .cc-cl-facets { margin-top: 5px; font-size: 11px; opacity: .6; }
+  /* One skill per line — the page has the room, and a wrapped row of badges
+     was making it read as an afterthought. */
+  .cc-cl-skills { margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
+  .cc-cl-skill { display: grid; grid-template-columns: 26px 1fr auto; align-items: center;
+    gap: 9px; padding: 4px 8px; border-radius: 7px;
+    background: #efe4cd; border: 1px solid #cbb890; }
+  .cc-cl-skill:hover { background: #fdf6e4; border-color: #8a6c45; }
+  .cc-cl-skill img { width: 26px; height: 26px; border-radius: 5px; object-fit: contain;
+    border: 0 !important; outline: 0 !important; background: none; cursor: help; }
+  .cc-cl-skname { font-size: 12.5px; font-weight: 600; color: #3b2a17;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cc-cl-sklv { font-size: 11.5px; font-weight: 700; color: #6b4a1c;
+    font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cc-cl-facets { margin-top: 6px; font-size: 11px; opacity: .6; }
 
   .cc-cl-empty { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center;
     justify-content: center; gap: 12px; text-align: center; }
@@ -396,12 +410,34 @@ const CSS = `
 const BENEFIT_LABEL = { hp: "+5 Max HP", mp: "+5 Max MP", ip: "+2 Max IP" };
 
 /**
+ * Skill descriptions, for the summary's tooltips.
+ *
+ * Read live from the class catalogue rather than stored on the draft: they are
+ * rich HTML that would otherwise ride the socket at finalize for no reason.
+ * Missing catalogue simply means no tooltip, which is a fair trade for the
+ * summary never depending on it to draw.
+ */
+function skillBlurbs() {
+  const out = new Map();
+  try {
+    for (const cls of draftState(_draftRef ?? { classes: [] }).classes ?? []) {
+      for (const sk of cls.skills ?? []) {
+        const text = String(sk.description ?? "")
+          .replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+        if (text) out.set(sk.uuid, text.length > 260 ? `${text.slice(0, 259)}…` : text);
+      }
+    }
+  } catch { /* no catalogue, no tooltips */ }
+  return out;
+}
+
+/**
  * The standing summary, built from the DRAFT alone.
  *
- * Every pick already carries its class name and image, so this needs no
- * registry lookup — which means it still reads correctly if the class
- * catalogue is unavailable, and it does not go blank the moment something
- * upstream cannot resolve a class.
+ * Every pick carries its class and skill name and image, so the list draws
+ * without a registry lookup — it still reads correctly if the catalogue is
+ * unavailable, rather than going blank. Only the tooltip text is fetched, and
+ * its absence costs nothing.
  */
 function summaryHTML(d) {
   const keys = draftClassKeys(d);
@@ -411,6 +447,8 @@ function summaryHTML(d) {
       <button class="cc-cl-open" data-open>Choose a class</button>
     </div>`;
   }
+
+  const blurbs = skillBlurbs();
 
   return `<div class="cc-cl-list">${keys.map((key) => {
     const rows = d.classes.filter((x) => x.classKey === key);
@@ -423,7 +461,7 @@ function summaryHTML(d) {
     for (const r of rows) {
       const hit = skills.find((x) => x.uuid === r.skillUuid);
       if (hit) hit.n++;
-      else skills.push({ uuid: r.skillUuid, name: r.skillName, n: 1 });
+      else skills.push({ uuid: r.skillUuid, name: r.skillName, img: r.skillImg ?? "", n: 1 });
     }
     const facets = rows.flatMap((r) => r.facetUuids ?? []).length;
     const mastered = rows.length >= MAX_CLASS_LEVEL;
@@ -439,8 +477,15 @@ function summaryHTML(d) {
           <span class="cc-cl-clvl ${mastered ? "is-master" : ""}">level ${rows.length}</span>
         </div>
         <div class="cc-cl-skills">
-          ${skills.map((sk) =>
-            `<span class="cc-cl-skill">${esc(sk.name)} <b>${sk.n}</b></span>`).join("")}
+          ${skills.map((sk) => {
+            const blurb = blurbs.get(sk.uuid) ?? "";
+            return `<div class="cc-cl-skill">
+              <img src="${esc(sk.img || CC.DEFAULT_IMG)}" alt=""
+                   ${blurb ? `data-tooltip="${esc(blurb)}" data-tooltip-direction="RIGHT"` : ""}>
+              <span class="cc-cl-skname">${esc(sk.name)}</span>
+              <span class="cc-cl-sklv">Lv. ${sk.n}</span>
+            </div>`;
+          }).join("")}
         </div>
         ${facets ? `<div class="cc-cl-facets">${facets} learned from its list</div>` : ""}
       </div>`;
@@ -489,8 +534,11 @@ async function onPanelClick(ev, v, d, ctx) {
   const s = v._stateSource();
 
   // ── the sub-window itself ──
-  if (act === "close") {
-    sfx("close");
+  // Both routes out do the same thing, because there is nothing to discard —
+  // every choice is already on the draft. The footer button exists so that is
+  // obvious; the × is the escape hatch for anyone who reaches for it first.
+  if (act === "close" || act === "creationdone") {
+    sfx(act === "creationdone" ? "levelUp" : "close");
     closeWindow();
     ctx.refresh();
     return;

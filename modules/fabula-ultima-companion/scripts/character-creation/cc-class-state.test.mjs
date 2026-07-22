@@ -348,5 +348,39 @@ const spend = (d, s, key, name, opts) => C.applySpend(d, clsOf(s, key), sklOf(s,
   eq("no placeholder leaked", /undefined|\[object Object\]|NaN/.test(first + editing), false);
 }
 
+
+// ── the creation footer ────────────────────────────────────────────────────
+//
+// Creation stages nothing, so the Confirm/Discard pair never appears -- which
+// left the x as the only way out, and an x reads as "throw this away" exactly
+// when every choice has already been kept.
+{
+  const d = mk(20);
+  const v = Object.create(LevelUpApp);
+  Object.assign(v, { _creation: true, _pending: [], _stateSource: () => draftState(d),
+                     _root: null, _updateCursor: () => {} });
+  Object.defineProperty(v, "isOpen", { get: () => true, configurable: true });
+
+  const foot = v._footer(draftState(d), v._project(draftState(d)));
+  eq("creation gets a footer even with nothing staged", foot.length > 0, true);
+  eq("...offering a way to finish", foot.includes(`data-act="creationdone"`), true);
+  eq("...labelled Confirm", foot.includes(">Confirm<"), true);
+  eq("...with no Discard, since there is nothing to discard",
+    foot.includes(`data-act="cancel"`), false);
+  eq("...and it says what is left", foot.includes("20 Skill Points still to spend"), true);
+  eq("...and that nothing is written yet", foot.includes("nothing is written"), true);
+
+  const s0 = draftState(d);
+  for (let i = 0; i < 20; i++) spend(d, s0, "guardian", "Fortress");
+  const spent = v._footer(draftState(d), v._project(draftState(d)));
+  eq("a spent pool says so", spent.includes("Every Skill Point spent"), true);
+
+  // The normal path is untouched: no footer without a staged batch.
+  const plain = Object.create(LevelUpApp);
+  Object.assign(plain, { _pending: [], _root: null });
+  eq("the live window still shows no footer when nothing is staged",
+    plain._footer(draftState(d), { points: 0, refundCount: 0, classDelta: new Map(), skillDelta: new Map(), heroics: [] }), "");
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

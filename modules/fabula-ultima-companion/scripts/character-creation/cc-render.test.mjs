@@ -285,5 +285,20 @@ for (const step of CC.STEPS) {
   eq("no placeholder leaked", /undefined|\[object Object\]|NaN/.test(full), false);
 }
 
+
+// ── the skill list is one row per skill ────────────────────────────────────
+{
+  const full = STEP_RENDERERS.get("classes").render(fullDraft());
+  eq("skills are listed with their level", full.includes("Lv. 6"), true);
+  eq("each skill is its own row",
+    (full.match(/class="cc-cl-skill"/g) || []).length, 3);
+  eq("skill names are their own element", full.includes("cc-cl-skname"), true);
+  eq("levels are their own element", full.includes("cc-cl-sklv"), true);
+  // The old form was an inline badge; the new one is a row that can hold an
+  // icon and a level column.
+  eq("rows are blocks, not inline badges", full.includes(`<span class="cc-cl-skill"`), false);
+  eq("each row carries an icon", (full.match(/class="cc-cl-skill">\s*<img/g) || []).length, 3);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

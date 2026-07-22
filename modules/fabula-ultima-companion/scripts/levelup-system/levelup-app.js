@@ -1039,6 +1039,21 @@ const LevelUpApp = {
   },
 
   _footer(s, proj) {
+    // Character Creation stages nothing — the draft IS the record — so the
+    // Confirm/Discard pair below never appears there. It still needs a way OUT
+    // that reads like finishing: closing on the × is the same action, but a ×
+    // reads as "throw this away", which is exactly the wrong impression when
+    // every choice has already been kept.
+    if (this._creation) {
+      const left = s.points.stored;
+      return `<div class="lu-foot">
+        <span class="lu-foottext">${left
+          ? `${left} Skill Point${left === 1 ? "" : "s"} still to spend`
+          : "Every Skill Point spent"} — nothing is written until you create the character.</span>
+        <button class="lu-cta go" data-act="creationdone">Confirm</button>
+      </div>`;
+    }
+
     const n = this._pending.length;
     if (!n) return "";
     const summary = this._summarise(s, proj);
