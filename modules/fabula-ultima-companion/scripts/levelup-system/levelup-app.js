@@ -810,7 +810,7 @@ const LevelUpApp = {
         <button class="lu-tab ${this._tab === "heroic" ? "on" : ""}" data-act="tab" data-tab="heroic">Heroic${
           s.heroic.open ? ` <span class="lu-tabdot">${s.heroic.open}</span>` : ""}</button>`}
       </div>
-      ${this._creation ? "" : `<button class="lu-x" data-act="close" title="Close">×</button>`}
+      <button class="lu-x" data-act="close" title="Close">×</button>
     </div>`;
   },
 

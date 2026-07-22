@@ -260,5 +260,30 @@ for (const step of CC.STEPS) {
   eq("the table prints the final HP", html.includes(">" + fin.maxHp + "<"), true);
 }
 
+
+// ── the class step summarises without opening its window ───────────────────
+//
+// The level-up window is raised over the wizard, not drawn into it, so the
+// step body is a standing summary. It has to stand on its own: a player who
+// closed the window should still see what they chose.
+{
+  const r = STEP_RENDERERS.get("classes");
+
+  const empty = r.render(D.createDraft());
+  eq("an empty build invites a class", empty.includes("Choose a class"), true);
+  eq("...and shows the whole pool unspent", /5<\/span>\s*<span class="k">of 5 /.test(empty), true);
+
+  const full = r.render(fullDraft());
+  eq("both classes are listed", full.includes("Guardian") && full.includes("Elementalist"), true);
+  eq("skill names are listed", full.includes("Bodyguard") && full.includes("Fortress"), true);
+  eq("class levels are shown", full.includes("level 12"), true);
+  eq("a mastered class is starred", full.includes("⭐"), true);
+  eq("the benefit is named", full.includes("+5 Max HP"), true);
+  eq("facets learned are counted", /learned from its list/.test(full), true);
+  eq("a fully spent pool reads zero", /0<\/span>\s*<span class="k">of 20 /.test(full), true);
+  eq("the way back in is offered", full.includes("Class &amp; Skills"), true);
+  eq("no placeholder leaked", /undefined|\[object Object\]|NaN/.test(full), false);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
