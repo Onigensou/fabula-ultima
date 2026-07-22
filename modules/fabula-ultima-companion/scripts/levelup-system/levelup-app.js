@@ -904,12 +904,24 @@ const LevelUpApp = {
     if (!s.gate.open) {
       html += `<div class="lu-note warn">${esc(s.gate.reason)} You can still browse and plan.</div>`;
     }
-    // Drift is a GM concern — a player can neither cause nor fix one. Hidden
-    // while changes are staged: mid-edit the books legitimately don't balance,
-    // and flashing a corruption warning during normal use is just noise.
-    if (s.points.drift && game.user?.isGM && !this._pending.length) {
+    /*
+     * Drift is a GM concern — a player can neither cause nor fix one.
+     *
+     * This used to hide itself as soon as anything was staged, on the reasoning
+     * that the books legitimately don't balance mid-edit. That reasoning was
+     * wrong: BOTH sides of the comparison are read from the actor, and staging
+     * changes neither, so the drift is exactly as real mid-batch as before it.
+     *
+     * Worse, hiding it chose the one moment it matters. A character whose
+     * stored count is short by one can stage that one spend and then watch
+     * every + go dead — with the explanation having just vanished. That reads
+     * as "the window broke", and it is the exact report this came from.
+     */
+    if (s.points.drift && game.user?.isGM) {
+      const short = s.points.stored < s.points.expected;
       html += `<div class="lu-note drift">
-        <span>Skill Points read <b>${s.points.stored}</b> but level minus class levels gives <b>${s.points.expected}</b>.</span>
+        <span>Skill Points read <b>${s.points.stored}</b> but level minus class levels gives <b>${s.points.expected}</b>.${
+          short ? ` Only ${s.points.stored} can be spent until this is fixed.` : ""}</span>
         <button class="lu-btn" style="width:auto;padding:2px 10px" data-act="heal">Fix</button>
       </div>`;
     }
@@ -972,6 +984,27 @@ const LevelUpApp = {
       const canBuy = s.gate.open && proj.points > 0 && !atMax
         && clsLevel < s.rules.maxClassLevel && !wouldExceedLimit;
 
+      /*
+       * WHY the + is dead, when it is.
+       *
+       * A disabled button with a cheerful "Spend a Skill Point" tooltip is the
+       * worst of both worlds: it looks like the thing you want and refuses
+       * without a word. Every one of these conditions is invisible from the
+       * row itself — especially the point count, which is at the top of the
+       * window and can be exhausted by a batch that is still only staged.
+       */
+      const buyTitle =
+        !s.gate.open ? s.gate.reason
+        : atMax ? `${sk.name} is at its maximum (${sk.maxLevel})`
+        : clsLevel >= s.rules.maxClassLevel ? `${cls.name} is already mastered`
+        : wouldExceedLimit
+          ? `Already ${s.rules.maxUnmastered} unmastered classes — take one to ${s.rules.maxClassLevel} first`
+        : proj.points <= 0
+          ? (this._pending.length
+              ? "No Skill Points left — this batch has spent them all"
+              : "No Skill Points left")
+        : "Spend a Skill Point";
+
       // Each level given back costs one Forget me Nut, from this character's
       // own bag. Staged refunds already count against the purse, so the button
       // stops at the point the batch would outspend it rather than failing at
@@ -1007,7 +1040,8 @@ const LevelUpApp = {
           `<span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>` +
           this._facetEditBtn(sk) +
           `<button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
-            ${canBuy && (this._creation || !this._resetMode) ? "" : "disabled"} title="Spend a Skill Point">+</button>`,
+            ${canBuy && (this._creation || !this._resetMode) ? "" : "disabled"}
+            title="${esc(this._resetMode && !this._creation ? "Leave Reset mode to spend" : buyTitle)}">+</button>`,
       });
     }).join("");
 
