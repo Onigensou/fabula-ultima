@@ -27,6 +27,7 @@ import {
 } from "./class-registry.js";
 import { evaluate, availableHeroics, indexActorSkills, heroicsBrokenBy } from "./requirement-eval.js";
 import { gateState } from "./levelup-gate.js";
+import { isActingGM, registerHandler, request, installNet } from "../advancement/advancement-net.js";
 
 const PROP = LEVELUP.PROP;
 const RULE = LEVELUP.RULE;
@@ -41,29 +42,8 @@ const resolveActor = (uuid) => {
 
 const fail = (reason, extra = {}) => ({ ok: false, reason, ...extra });
 
-/**
- * Is this client the one GM allowed to write?
- *
- * Delegates to the shared helper at `FUCompanion.isPrimaryGM` — top level, NOT
- * under `.api`. An earlier version of this looked for it in the wrong place,
- * found undefined, and silently fell back to its own lowest-id-GM copy. That
- * copy ignored core's `game.users.activeGM`, so this system could disagree with
- * every other one about which GM is primary — the precise failure the shared
- * helper exists to prevent. Kept as a fallback only for load-order safety.
- */
-function isActingGM() {
-  if (!game.user?.isGM) return false;
-  try {
-    if (typeof globalThis.FUCompanion?.isPrimaryGM === "function") {
-      return globalThis.FUCompanion.isPrimaryGM();
-    }
-  } catch { /* fall through */ }
-  const active = game.users?.activeGM ?? null;
-  if (active) return active.id === game.user.id;
-  const gms = game.users.filter((u) => u.isGM && u.active)
-    .sort((a, b) => String(a.id).localeCompare(String(b.id)));
-  return gms[0] ? gms[0].id === game.user.id : true;
-}
+// `isActingGM` now lives in the shared transport — see the socket section below
+// for why this system must not keep its own copy.
 
 /** Next free numeric row key for a CSB dynamicTable. */
 function nextRowKey(table) {
@@ -499,86 +479,27 @@ async function applyHeroic({ actorUuid, skillUuid }) {
 }
 
 // ── socket plumbing ────────────────────────────────────────────────────────
+//
+// The transport is SHARED with the attribute system (advancement-net.js) and is
+// deliberately not duplicated here. This system once shipped with two live
+// channels and listeners on both, so every player request applied twice —
+// invisible from the GM seat, because the GM path short-circuits and never
+// touches the socket. A second system copy-pasting this would recreate it.
+//
+// Message types stay namespaced ("levelup.*") so domains cannot collide on the
+// single channel.
 
-const _pending = new Map();
+registerHandler(LEVELUP.MSG.SPEND_REQ,  LEVELUP.MSG.SPEND_RES,  applySpend);
+registerHandler(LEVELUP.MSG.REFUND_REQ, LEVELUP.MSG.REFUND_RES, applyRefund);
+registerHandler(LEVELUP.MSG.HEROIC_REQ, LEVELUP.MSG.HEROIC_RES, applyHeroic);
 
-// Requests this GM has already applied. Belt to the single-channel braces: a
-// duplicate delivery, a client retry, or a second GM coming online mid-flight
-// must never apply the same spend twice. Bounded so a long session cannot grow
-// it without limit.
-const _handled = new Set();
-function alreadyHandled(reqId) {
-  if (!reqId) return false;
-  if (_handled.has(reqId)) return true;
-  _handled.add(reqId);
-  if (_handled.size > 500) _handled.delete(_handled.values().next().value);
-  return false;
-}
-
-function emit(payload) {
-  try { game.socket.emit(LEVELUP.CHANNEL, payload); } catch (e) { warn("socket emit failed", e); }
-}
-
-function request(type, resType, payload) {
-  // Only the PRIMARY GM may write directly. A second GM operating the window
-  // goes over the socket like a player, so the primary stays the only writer
-  // and the two cannot interleave on the same actor.
-  if (isActingGM()) return route(type, payload);
-
-  const reqId = foundry.utils.randomID();
-  return new Promise((resolve) => {
-    _pending.set(reqId, resolve);
-    emit({ type, payload: { ...payload, reqId, requesterUserId: game.user.id } });
-    setTimeout(() => {
-      if (!_pending.has(reqId)) return;
-      _pending.delete(reqId);
-      resolve(fail("timeout"));
-    }, LEVELUP.REQUEST_TIMEOUT_MS);
-  });
-}
-
-function route(type, payload) {
-  switch (type) {
-    case LEVELUP.MSG.SPEND_REQ:  return applySpend(payload);
-    case LEVELUP.MSG.REFUND_REQ: return applyRefund(payload);
-    case LEVELUP.MSG.HEROIC_REQ: return applyHeroic(payload);
-    default: return Promise.resolve(fail("unknown_request"));
-  }
-}
-
-const RES_OF = {
-  [LEVELUP.MSG.SPEND_REQ]: LEVELUP.MSG.SPEND_RES,
-  [LEVELUP.MSG.REFUND_REQ]: LEVELUP.MSG.REFUND_RES,
-  [LEVELUP.MSG.HEROIC_REQ]: LEVELUP.MSG.HEROIC_RES,
-};
-
-async function onSocket(msg) {
-  if (!msg || typeof msg !== "object") return;
-  const { type, payload } = msg;
-
-  // Result coming back to the requesting client.
-  if (type === LEVELUP.MSG.SPEND_RES || type === LEVELUP.MSG.REFUND_RES || type === LEVELUP.MSG.HEROIC_RES) {
-    const resolve = _pending.get(payload?.reqId);
-    if (!resolve) return;
-    _pending.delete(payload.reqId);
-    resolve(payload.result);
-    return;
-  }
-
-  // Request arriving at the GM. Exactly one GM may act, or a spend applies twice.
-  if (!RES_OF[type]) return;
-  if (!isActingGM()) return;
-  if (alreadyHandled(payload?.reqId)) return;
-
-  const result = await route(type, payload);
-  emit({ type: RES_OF[type], payload: { reqId: payload?.reqId, result } });
-}
+const REQ_OPTS = { timeoutMs: LEVELUP.REQUEST_TIMEOUT_MS };
 
 // ── public API ─────────────────────────────────────────────────────────────
 
-export const spendPoint  = (p) => request(LEVELUP.MSG.SPEND_REQ,  LEVELUP.MSG.SPEND_RES,  p);
-export const refundPoint = (p) => request(LEVELUP.MSG.REFUND_REQ, LEVELUP.MSG.REFUND_RES, p);
-export const pickHeroic  = (p) => request(LEVELUP.MSG.HEROIC_REQ, LEVELUP.MSG.HEROIC_RES, p);
+export const spendPoint  = (p) => request(LEVELUP.MSG.SPEND_REQ,  p, REQ_OPTS);
+export const refundPoint = (p) => request(LEVELUP.MSG.REFUND_REQ, p, REQ_OPTS);
+export const pickHeroic  = (p) => request(LEVELUP.MSG.HEROIC_REQ, p, REQ_OPTS);
 
 /** GM-only: reconcile a drifted counter to the derived value. */
 export async function healPoints(actorUuid) {
@@ -601,8 +522,7 @@ function registerApi() {
 
 Hooks.once("init", registerApi);
 Hooks.once("ready", () => {
-  try { game.socket.on(LEVELUP.CHANNEL, onSocket); }
-  catch (e) { warn(`socket ${LEVELUP.CHANNEL} unavailable`, e); }
+  installNet();
   // Class actors are authored rarely, but when they are the cache must go.
   for (const hook of ["createItem", "updateItem", "deleteItem", "updateActor"]) {
     Hooks.on(hook, (doc) => {
