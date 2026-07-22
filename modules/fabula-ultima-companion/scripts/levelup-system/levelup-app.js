@@ -806,10 +806,11 @@ const LevelUpApp = {
       <div class="lu-tabs">
         <button class="lu-tab ${this._tab === "skill" ? "on" : ""}" data-act="tab" data-tab="skill">Skill</button>
         <button class="lu-tab ${this._tab === "facet" ? "on" : ""}" data-act="tab" data-tab="facet">Facet</button>
+        ${this._creation ? "" : `
         <button class="lu-tab ${this._tab === "heroic" ? "on" : ""}" data-act="tab" data-tab="heroic">Heroic${
-          s.heroic.open ? ` <span class="lu-tabdot">${s.heroic.open}</span>` : ""}</button>
+          s.heroic.open ? ` <span class="lu-tabdot">${s.heroic.open}</span>` : ""}</button>`}
       </div>
-      <button class="lu-x" data-act="close" title="Close">×</button>
+      ${this._creation ? "" : `<button class="lu-x" data-act="close" title="Close">×</button>`}
     </div>`;
   },
 
@@ -830,10 +831,13 @@ const LevelUpApp = {
         </div>`
       : "";
 
+    // Reset mode is the price of giving levels back mid-campaign. Nothing has
+    // been written during Character Creation, so − is always live there and a
+    // mode that unlocks it would be a switch with nothing on the other side.
     return `<div class="lu-switches">
       ${sw("toggledetail", this._detailMode, "Detail", "Show effect text on every row instead of in the panel below")}
-      ${sw("togglereset", this._resetMode, "Reset", "Give skill levels back, one Forget me Nut each")}
-      ${purse}
+      ${this._creation ? "" : sw("togglereset", this._resetMode, "Reset", "Give skill levels back, one Forget me Nut each")}
+      ${this._creation ? "" : purse}
     </div>`;
   },
 
@@ -858,10 +862,19 @@ const LevelUpApp = {
     const row = (c) => {
       const lvl = this._classLevel(s, c, proj);
       const moved = lvl !== c.level;
+      // Character Creation only: drop a class outright. Mid-campaign a class
+      // is given back a level at a time, at a Nut each, because it has been
+      // played; a class picked two minutes ago and not yet written is just a
+      // decision, and changing your mind should not be a chore.
+      const drop = this._creation && lvl > 0
+        ? `<span class="lu-clsdrop" data-act="dropclass" data-key="${esc(c.key)}"
+             title="Remove ${esc(c.name)} and give back its ${lvl} point${lvl === 1 ? "" : "s"}">×</span>`
+        : "";
       return `<button class="lu-cls ${this._selected === c.key ? "on" : ""}" data-act="pick" data-key="${esc(c.key)}">
         <img src="${esc(c.img)}" alt="">
         <span class="n">${lvl >= s.rules.maxClassLevel ? "⭐ " : ""}${esc(c.name)}</span>
         <span class="l ${moved ? "moved" : ""}">${lvl}/${s.rules.maxClassLevel}</span>
+        ${drop}
       </button>`;
     };
 

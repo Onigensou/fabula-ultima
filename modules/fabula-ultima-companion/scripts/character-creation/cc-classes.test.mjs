@@ -184,5 +184,47 @@ const sk = (cls, name) => cls.skills.find((x) => x.name === name);
   eq("the trim is reported", trimmed.length > 0, true);
 }
 
+
+// ── dropping a class outright ──────────────────────────────────────────────
+//
+// Mid-campaign a class is given back a level at a time at a Forget me Nut
+// each, because it has been played. A class picked two minutes ago and not yet
+// written is just a decision, so creation lets it go in one move.
+{
+  const d = mk(20);
+  for (let i = 0; i < 4; i++) spend(d, fixed, "Fortress");
+  spend(d, chooser, "Spellblade", { benefit: "mp" });
+  eq("five points spent", D.draftPointsSpent(d), 5);
+
+  eq("dropping returns true", C.dropClass(d, "guardian"), true);
+  eq("every level in it is gone", C.classLevelIn(d, "guardian"), 0);
+  eq("the other class is untouched", C.classLevelIn(d, "elementalist"), 1);
+  eq("the points come back", D.draftPointsLeft(d), 19);
+  eq("dropping something not held is a no-op", C.dropClass(d, "guardian"), false);
+
+  // Facets claimed through the dropped class go with it, or they would count
+  // as held with nothing granting them.
+  const f = mk(20);
+  spend(f, chooser, "Elemental Magic", { benefit: "mp", facetUuids: ["Item.f-Flare"] });
+  eq("the facet is claimed", C.facetNeed(f, chooser, sk(chooser, "Elemental Magic")).available.length, 3);
+  C.dropClass(f, "elementalist");
+  eq("dropping the class releases its facets",
+    C.facetNeed(f, chooser, sk(chooser, "Elemental Magic")).available.length, 4);
+}
+
+// ── dropping frees the class-count rules ───────────────────────────────────
+{
+  const three = [
+    { ...fixed, key: "a", name: "A" }, { ...fixed, key: "b", name: "B" }, { ...fixed, key: "c", name: "C" },
+  ];
+  const d = mk(5);
+  for (const c of three) spend(d, c, "Bodyguard");
+  eq("three classes at level 5 blocks a fourth",
+    C.canSpend(d, chooser, sk(chooser, "Spellblade")).ok, false);
+  C.dropClass(d, "c");
+  eq("dropping one makes room again",
+    C.canSpend(d, chooser, sk(chooser, "Spellblade")).ok, true);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

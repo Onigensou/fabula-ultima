@@ -221,13 +221,16 @@ const CSS = `
   .cc-at-socket.filled { border-style: solid; border-color: #8a6c45; background: transparent;
     cursor: pointer; }
   .cc-at-was { font-size: 11px; opacity: .5; flex: 1 1 auto; text-align: right; }
-  .cc-at-arrows { display: flex; align-items: center; gap: 3px; flex: 0 0 auto; }
   .cc-at-arrow { width: 26px; height: 24px; border-radius: 6px; cursor: pointer; padding: 0;
+    flex: 0 0 auto;
     border: 1px solid #8a6c45; background: linear-gradient(180deg,#f7edd5,#e6d6b0);
     font-family: inherit; font-size: 11px; line-height: 1; color: #4b3517; }
   .cc-at-arrow.up:hover:not(:disabled) { background: linear-gradient(180deg,#8fd07a,#5f9e4a); color: #fff; }
   .cc-at-arrow.down:hover:not(:disabled) { background: linear-gradient(180deg,#d99a92,#c9736a); color: #fff; }
-  .cc-at-arrow:disabled { opacity: .28; cursor: default; }
+  .cc-at-arrow:disabled { opacity: .26; cursor: default; }
+  /* Reserved space: invisible but still occupying its column, so a row never
+     jumps sideways when the level crosses 20 or a die lands in the socket. */
+  .cc-at-arrow.is-hidden { visibility: hidden; pointer-events: none; }
 
   /* ── milestones ── */
   .cc-at-h { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
@@ -241,7 +244,9 @@ const CSS = `
   .cc-at-stat .k i.is-hp { color: #a3453a; opacity: .85; }
   .cc-at-stat .k i.is-mp { color: #3a6ea3; opacity: .85; }
   .cc-at-stat .k i.is-ip { color: #3f7a30; opacity: .85; }
-  .cc-at-stat .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .cc-at-stat .v { font-weight: 700; font-variant-numeric: tabular-nums;
+    transition: color .25s; }
+  .cc-at-stat .v.rolling { color: #2f6b2f; }
   .cc-at-sep { height: 1px; background: #c0a67c; margin: 5px 0; }
   .cc-at-res { display: flex; align-items: center; justify-content: space-between;
     padding: 5px 8px; border-radius: 7px; background: #f7f0df; border: 1px solid #cbb890;
@@ -396,23 +401,30 @@ function rowsHTML(d) {
     const raised = placed > 0 && shown > placed;
     const meta = ATTR_META[k];
 
-    // Arrows only once a die is in the socket — there is nothing to raise
-    // otherwise — and only while the level has actually earned an advance.
+    // The arrows flank the socket: ▼ die ▲. Their space is RESERVED whether or
+    // not they are usable, so a row never shifts sideways the moment a level
+    // crosses 20 or a die lands in the socket.
     const capped = placed > 0 && nextDie(shown) == null;
-    const arrows = (draftMilestones(d) && placed) ? `
-      <span class="cc-at-arrows">
-        <button class="cc-at-arrow down" data-unspend="${k}" ${steps ? "" : "disabled"}
-                title="${steps ? "Take this advance back" : "Nothing to take back"}">▼</button>
-        <button class="cc-at-arrow up" data-spend="${k}" ${spare > 0 && !capped ? "" : "disabled"}
-                title="${capped ? `Already at d${DIE_STEPS.at(-1)}`
-                       : spare > 0 ? `Raise to d${nextDie(shown)}` : "No advances left"}">▲</button>
-      </span>` : "";
+    const live = draftMilestones(d) > 0 && placed > 0;
+
+    const arrow = (dir) => {
+      const isUp = dir === "up";
+      const usable = live && (isUp ? spare > 0 && !capped : steps > 0);
+      const title = !live ? ""
+        : isUp ? (capped ? `Already at d${DIE_STEPS.at(-1)}`
+                 : spare > 0 ? `Raise to d${nextDie(shown)}` : "No Attribute Points left")
+        : (steps > 0 ? "Take this advance back" : "Nothing to take back");
+      return `<button class="cc-at-arrow ${dir} ${live ? "" : "is-hidden"}"
+        data-${isUp ? "spend" : "unspend"}="${k}" ${usable ? "" : "disabled"}
+        title="${esc(title)}">${isUp ? "▲" : "▼"}</button>`;
+    };
 
     return `
       <div class="cc-at-row ${raised ? "is-raised" : ""}" data-slot="${k}">
         <img class="cc-at-icon" src="${esc(meta.icon)}" alt="">
         <span class="cc-at-label" title="${esc(meta.full)}">${esc(meta.label)}</span>
         <span class="cc-at-was">${raised ? `d${placed} →` : ""}</span>
+        ${arrow("down")}
         <div class="cc-at-socket ${placed ? "filled" : ""}" data-slot="${k}"
              title="${placed ? "Drag out, or click to return it to the tray" : "Drop a die here"}">
           ${placed
@@ -420,29 +432,49 @@ function rowsHTML(d) {
                     data-die="${placed}" data-from="${k}">d${shown}</div>`
             : ""}
         </div>
-        ${arrows}
+        ${arrow("up")}
       </div>`;
   }).join("");
 }
 
-function derivedHTML(d) {
+/**
+ * What the derived panel is currently DISPLAYING, which lags the draft while
+ * a roll runs.
+ *
+ * The step re-renders wholesale on every drop, so markup drawn straight from
+ * the draft would snap to the new figure with nothing left to animate. `render`
+ * emits these previous values and records the targets; `bind` counts between.
+ */
+let _shownStats = null;
+
+/** Every figure in the panel, keyed so the roller can match old against new. */
+function statValues(d) {
   const p = previewDerived(d);
-  const stat = (label, value, icon, cls = "") => `
+  return {
+    hp: p.maxHp, mp: p.maxMp, ip: p.maxIp,
+    def: p.def, mdef: p.mdef, init: p.init, crisis: p.crisis,
+  };
+}
+
+function derivedHTML(d) {
+  const now = statValues(d);
+  const from = _shownStats ?? now;
+  const stat = (key, label, icon, cls = "", fmt = (v) => v) => `
     <div class="cc-at-stat">
       <span class="k"><i class="fas ${icon} ${cls}"></i>${esc(label)}</span>
-      <span class="v">${value}</span>
+      <span class="v" data-stat="${key}" data-to="${now[key]}">${fmt(from[key])}</span>
     </div>`;
   return `
     <div class="cc-at-h">Starting values</div>
-    ${stat("HP", p.maxHp, STAT_ICON.hp, "is-hp")}
-    ${stat("MP", p.maxMp, STAT_ICON.mp, "is-mp")}
-    ${stat("IP", p.maxIp, STAT_ICON.ip, "is-ip")}
+    ${stat("hp", "HP", STAT_ICON.hp, "is-hp")}
+    ${stat("mp", "MP", STAT_ICON.mp, "is-mp")}
+    ${stat("ip", "IP", STAT_ICON.ip, "is-ip")}
     <div class="cc-at-sep"></div>
-    ${stat("DEF", p.def, STAT_ICON.def)}
-    ${stat("MDEF", p.mdef, STAT_ICON.mdef)}
-    ${stat("Initiative", fmtInit(p.init), STAT_ICON.init)}
+    ${stat("def", "DEF", STAT_ICON.def)}
+    ${stat("mdef", "MDEF", STAT_ICON.mdef)}
+    ${stat("init", "Initiative", STAT_ICON.init, "", fmtInit)}
     <div class="cc-at-sep"></div>
-    ${stat("Crisis", p.crisis, STAT_ICON.crisis, "is-hp")}
+    ${stat("crisis", "Crisis", STAT_ICON.crisis, "is-hp")}
 
     <div class="cc-at-res">
       <span><i class="fas ${STAT_ICON.sp}"></i> Skill Points</span>
@@ -493,7 +525,59 @@ function render(d) {
  */
 let _drag = null;   // { die: number, from: "tray" | attrKey }
 
+/** A die landing in a socket has its own cue, distinct from the ± arrows. */
+const DROP_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav";
+function dropSfx() {
+  try {
+    const helper = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
+    helper?.play?.({ src: DROP_SFX, volume: 0.5, autoplay: true, loop: false }, false);
+  } catch { /* a missing cue is not worth interrupting a drag over */ }
+}
+
+const ROLL_MS = 380;
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+/**
+ * Count one figure to another.
+ *
+ * requestAnimationFrame rather than a CSS transition, because there is no
+ * animatable property for "the number 55" — the text has to be rewritten each
+ * frame. Restarts cleanly if the player drops another die mid-roll.
+ */
+function rollTo(el, from, to, fmt) {
+  if (!el) return;
+  if (el._ccRoll) cancelAnimationFrame(el._ccRoll);
+  if (from === to) { el.textContent = fmt(to); return; }
+
+  el.classList.add("rolling");
+  const t0 = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - t0) / ROLL_MS);
+    const v = from + (to - from) * easeOut(t);
+    // Halves are meaningful for Initiative and nowhere else, so the formatter
+    // decides how the in-between frames read.
+    el.textContent = fmt(t < 1 ? Math.round(v * 2) / 2 : to);
+    if (t < 1) el._ccRoll = requestAnimationFrame(step);
+    else { el._ccRoll = null; el.classList.remove("rolling"); }
+  };
+  el._ccRoll = requestAnimationFrame(step);
+}
+
+/** Animate every derived figure to what the draft now says. */
+function animateStats(root, d) {
+  const to = statValues(d);
+  const from = _shownStats ?? to;
+  for (const [key, value] of Object.entries(to)) {
+    const el = root.querySelector(`[data-stat="${key}"]`);
+    const fmt = key === "init" ? fmtInit : (v) => String(Math.round(v));
+    rollTo(el, from[key], value, fmt);
+  }
+  _shownStats = to;
+}
+
 function bind(root, d, ctx) {
+  animateStats(root, d);
+
   // ── level ──
   const lvlInput = root.querySelector("[data-level]");
   const setLevel = (n) => {
@@ -540,6 +624,8 @@ function bind(root, d, ctx) {
     const drag = _drag;
     _drag = null;
     if (!drag) return;
+    // Cue the die landing, not merely the click that started the drag.
+    if (target !== "tray" && target !== drag.from) dropSfx();
     ctx.edit((dd) => placeDie(dd.attributes.assign, drag, target));
   };
 
@@ -588,4 +674,7 @@ function bind(root, d, ctx) {
   });
 }
 
-STEP_RENDERERS.set("attributes", { render, bind });
+/** The displayed figures are view state, not draft state — clear them too. */
+export const resetUiState = () => { _shownStats = null; _drag = null; };
+
+STEP_RENDERERS.set("attributes", { render, bind, reset: resetUiState });

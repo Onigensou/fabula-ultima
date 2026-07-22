@@ -83,20 +83,41 @@ const CSS = `
     border: 1px solid #cbb890; background: rgba(240,217,154,.35);
     font-size: 12px; color: #6b4a1c; line-height: 1.5; }
 
-  /* ── starting stats ── */
-  .cc-fin { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  .cc-fin th, .cc-fin td { padding: 3px 8px; text-align: left; }
+  /* ── starting stats ──
+     Foundry styles bare <table> globally — a dark header band and grey zebra
+     striping — which is what made this panel read as a different window. Every
+     one of those is overridden here so the table is parchment like the rest. */
+  .cc-fin { width: 100%; border-collapse: collapse; font-size: 12.5px;
+    background: transparent; color: #2f2618; margin: 0; }
+  .cc-fin th, .cc-fin td { padding: 4px 8px; text-align: left;
+    background: transparent; border: 0; color: inherit; }
+  .cc-fin tr, .cc-fin tbody, .cc-fin thead { background: transparent; border: 0; }
+  .cc-fin tbody tr:nth-child(even), .cc-fin tbody tr:nth-child(odd) { background: transparent; }
   .cc-fin thead th { font-size: 10px; font-weight: 700; letter-spacing: .04em;
     text-transform: uppercase; opacity: .5; border-bottom: 1px solid #cbb890; padding-bottom: 4px; }
   .cc-fin tbody th { font-weight: 700; opacity: .85; white-space: nowrap; }
-  .cc-fin tbody tr + tr td, .cc-fin tbody tr + tr th { border-top: 1px solid rgba(203,184,144,.5); }
+  .cc-fin tbody tr + tr td, .cc-fin tbody tr + tr th { border-top: 1px solid rgba(203,184,144,.45); }
+  .cc-fin tbody tr:hover td, .cc-fin tbody tr:hover th { background: rgba(240,217,154,.28); }
   .cc-fin .n { text-align: right; font-variant-numeric: tabular-nums; width: 58px; }
   .cc-fin .m { text-align: center; width: 92px; font-variant-numeric: tabular-nums; }
   .cc-fin .note { font-size: 11px; opacity: .55; text-align: left; }
-  /* The answer column, hard against the right edge. */
-  .cc-fin .t { font-weight: 800; font-size: 15px; width: 72px; padding-right: 2px; }
-  .cc-fin thead .t { font-size: 10px; }
   .cc-fin tbody th i { width: 15px; text-align: center; opacity: .55; margin-right: 7px; }
+
+  /* The answer column: hard against the right edge, and dressed to be the
+     thing you read first — larger, italic, warm, with a soft glow and a light
+     stroke so it lifts off the parchment. */
+  .cc-fin .t { width: 78px; padding-right: 4px; text-align: right;
+    font-size: 19px; font-weight: 800; font-style: italic; color: #4b3517;
+    letter-spacing: .01em;
+    text-shadow:
+      0 0 9px rgba(240,217,154,.95),
+      0 0 2px rgba(255,248,214,.9),
+      1px 0 0 rgba(255,252,235,.55), -1px 0 0 rgba(255,252,235,.55),
+      0 1px 0 rgba(255,252,235,.55), 0 -1px 0 rgba(255,252,235,.55);
+    -webkit-text-stroke: .35px rgba(107,84,58,.45); }
+  .cc-fin thead .t { font-size: 10px; font-style: normal; font-weight: 700;
+    color: inherit; text-shadow: none; -webkit-text-stroke: 0; letter-spacing: .04em; }
+
   .cc-fin-up { color: #2f6b2f; font-weight: 700; }
   .cc-fin-down { color: #a3453a; font-weight: 700; }
   .cc-fin-nil { opacity: .3; }
@@ -202,10 +223,10 @@ function finalCard(d) {
         </tr>
       </thead>
       <tbody>
-        ${row("Max HP", STAT_ICON.hp, base.maxHp, delta(f.bonus.hp), f.maxHp, f.bonus.hp ? classNote : "")}
-        ${row("Max MP", STAT_ICON.mp, base.maxMp, delta(f.bonus.mp), f.maxMp, f.bonus.mp ? classNote : "")}
-        ${row("Max IP", STAT_ICON.ip, base.maxIp, delta(f.bonus.ip), f.maxIp, f.bonus.ip ? classNote : "")}
-        ${row("Crisis", STAT_ICON.crisis, baseCrisis, delta(f.crisis - baseCrisis), f.crisis, "half of Max HP")}
+        ${row("HP", STAT_ICON.hp, base.maxHp, delta(f.bonus.hp), f.maxHp, f.bonus.hp ? classNote : "")}
+        ${row("MP", STAT_ICON.mp, base.maxMp, delta(f.bonus.mp), f.maxMp, f.bonus.mp ? classNote : "")}
+        ${row("IP", STAT_ICON.ip, base.maxIp, delta(f.bonus.ip), f.maxIp, f.bonus.ip ? classNote : "")}
+        ${row("Crisis", STAT_ICON.crisis, baseCrisis, delta(f.crisis - baseCrisis), f.crisis, "half of HP")}
         ${row("DEF", STAT_ICON.def, base.def, defMod, f.def, equip.defBase != null ? "martial armor" : "")}
         ${row("MDEF", STAT_ICON.mdef, base.mdef, mdefMod, f.mdef, "")}
         ${row("Initiative", STAT_ICON.init, fmtInit(base.init), delta(-num(equip.initPenalty, 0)),

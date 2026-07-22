@@ -16,6 +16,44 @@
 import { CC, esc } from "./cc-const.js";
 import { STEP_RENDERERS } from "./cc-app.js";
 
+/**
+ * Typewriter cues for the name box.
+ *
+ * Only the name — this is the JRPG naming screen, and the sound is what makes
+ * it one. Playing it on every field would turn a form into a rattle.
+ *
+ * Played direct through AudioHelper rather than the levelup-fx table because
+ * these two cues belong to this screen alone, and they must be able to
+ * overlap: typing fast should sound like typing fast, not like one clipped
+ * blip swallowing the next.
+ */
+const KEY_SFX = Object.freeze({
+  type: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/CursorMove.mp3",
+  erase: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Cursor_Cancel.mp3",
+});
+
+function keySfx(kind) {
+  try {
+    const src = KEY_SFX[kind];
+    if (!src) return;
+    const helper = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
+    // `false` keeps it local: a naming screen is one player's, and broadcasting
+    // a keystroke to the table would be absurd.
+    helper?.play?.({ src, volume: 0.45, autoplay: true, loop: false }, false);
+  } catch { /* a missing cue is not worth interrupting typing over */ }
+}
+
+/** Warm both cues so the first keystroke is not the slow one. */
+function preloadKeySfx() {
+  for (const src of Object.values(KEY_SFX)) {
+    try {
+      const helper = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
+      if (typeof helper?.preloadSound === "function") helper.preloadSound(src);
+      else fetch(src, { cache: "force-cache" }).catch(() => {});
+    } catch { /* ignore */ }
+  }
+}
+
 const CSS = `
   .cc-pf { display: flex; flex-direction: column; gap: 16px; }
 
@@ -152,16 +190,22 @@ function bind(root, d, ctx) {
     const field = el.dataset.f;
     el.addEventListener("input", () => {
       if (field === "name") {
-        const before = !!String(d.profile.name ?? "").trim();
+        const previous = String(d.profile.name ?? "");
+        const before = !!previous.trim();
         const after = !!el.value.trim();
+
+        // Longer means a letter arrived, shorter means one left. Comparing
+        // lengths rather than watching keys catches paste and delete-selection
+        // too, and says nothing at all when the text is unchanged.
+        if (el.value.length > previous.length) keySfx("type");
+        else if (el.value.length < previous.length) keySfx("erase");
+
         ctx.touch((dd) => { dd.profile.name = el.value; });
         ctx.syncFoot();
         // Only redraw when the gate actually flips, so a re-render does not
         // land on every keystroke and steal the caret.
         if (before !== after) {
-          ctx.refresh();
-          const box = root.querySelector("[data-f='name']");
-          if (box) { box.focus(); box.setSelectionRange(box.value.length, box.value.length); }
+          ctx.syncNav();
         }
         return;
       }
@@ -190,6 +234,7 @@ function bind(root, d, ctx) {
   // actually typing in and back up to the name box.
   if (_firstBind) {
     _firstBind = false;
+    preloadKeySfx();
     root.querySelector("[data-f='name']")?.focus();
   }
 }

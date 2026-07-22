@@ -228,10 +228,36 @@ class CharacterCreationApp {
       /** Mutate only — no reconcile, no re-render. For live typing. */
       touch: (fn) => { fn(this._draft); },
 
-      /** Refresh just the footer, so `touch` edits can still show up there. */
+      /** Refresh just the footer text, so `touch` edits can still show up there. */
       syncFoot: () => {
         const el = this._el?.querySelector(".cc-foot-info");
         if (el) el.textContent = this._footInfo();
+      },
+
+      /**
+       * Redraw the footer and rail WITHOUT touching the step body.
+       *
+       * A step that hosts something expensive — the class panel mounts the
+       * whole level-up window and owns its own scroll position — cannot afford
+       * a full re-render every time a point is spent. This updates the parts
+       * the shell owns (whether Next is live, what the rail shows) and leaves
+       * the body exactly where it is.
+       */
+      syncNav: () => {
+        if (!this._el) return;
+        const foot = this._el.querySelector(".cc-foot");
+        const rail = this._el.querySelector(".cc-rail");
+        const step = CC.STEPS.find((s) => s.id === this._draft.step) ?? CC.STEPS[0];
+        if (foot) {
+          foot.innerHTML = `
+            <div class="cc-foot-info">${esc(this._footInfo())}</div>
+            <div class="cc-spacer"></div>
+            <button class="cc-btn is-ghost" data-act="cancel">Cancel</button>
+            ${this._backBtnHTML()}
+            ${this._forwardBtnHTML(step)}`;
+        }
+        if (rail) rail.innerHTML = this._railHTML();
+        this._bindChrome();
       },
     };
   }
@@ -443,7 +469,13 @@ class CharacterCreationApp {
     try { r?.leave?.(); } catch (e) { warn("step leave failed:", e); }
   }
 
-  _bind(step) {
+  /**
+   * Wire the frame — rail and footer.
+   *
+   * Split out from `_bind` because `syncNav` redraws exactly these two and has
+   * to reattach their handlers without disturbing the step body.
+   */
+  _bindChrome() {
     const root = this._el;
     if (!root) return;
 
@@ -472,6 +504,13 @@ class CharacterCreationApp {
     root.querySelectorAll("[data-act='cancel']").forEach((el) =>
       el.addEventListener("click", () => this._confirmCancel()));
     root.querySelector("[data-act='finalize']")?.addEventListener("click", () => this._finalize());
+  }
+
+  _bind(step) {
+    const root = this._el;
+    if (!root) return;
+
+    this._bindChrome();
 
     const r = STEP_RENDERERS.get(step.id);
     try { r?.bind?.(root, this._draft, this._ctx()); }
