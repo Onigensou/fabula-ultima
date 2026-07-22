@@ -353,6 +353,22 @@ class CharacterCreationApp {
     return `${game.user?.name ?? "?"} → ${name}${exists ? "" : " (will be created)"}`;
   }
 
+  // ── navigation ───────────────────────────────────────────────────────────
+
+  /**
+   * Jump to a step by id. Exposed on the step context so a step can offer its
+   * own route back — the summary's per-panel "edit" links use this rather than
+   * making the player find the right stop on the rail.
+   */
+  goToStep(stepId) {
+    if (!this._draft) return false;
+    sfx("step");
+    this._notes = [];
+    const moved = goTo(this._draft, stepId);
+    this._render();
+    return moved;
+  }
+
   // ── events ───────────────────────────────────────────────────────────────
 
   _bind(step) {
@@ -362,10 +378,7 @@ class CharacterCreationApp {
     root.querySelectorAll("[data-act='goto']").forEach((el) => {
       el.addEventListener("click", () => {
         if (el.disabled) return;
-        sfx("step");
-        this._notes = [];
-        goTo(this._draft, el.dataset.step);
-        this._render();
+        this.goToStep(el.dataset.step);
       });
     });
 

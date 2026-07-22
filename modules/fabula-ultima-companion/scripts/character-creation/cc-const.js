@@ -127,6 +127,21 @@ export const CC_ATTR_LABEL = Object.freeze({
   mig: "Might", dex: "Dexterity", ins: "Insight", wlp: "Willpower",
 });
 
+/**
+ * The three emotion pairs, one per bond slot field.
+ *
+ * Mirrors `BondUpdater.PAIRS` in scripts/bond-system/bond-updater-core.js,
+ * which is the source of truth for the vocabulary and for the writes. That
+ * module is a globalThis IIFE rather than an ES module, so it cannot be
+ * imported here; the `slot` field records which `emotion_N_<slot>` prop each
+ * pair belongs to, and finalize hands these values straight to `writeSlot`.
+ */
+export const CC_EMOTION_PAIRS = Object.freeze([
+  Object.freeze({ slot: 1, key: "e1", pos: "admiration", neg: "inferiority" }),
+  Object.freeze({ slot: 2, key: "e2", pos: "loyalty",    neg: "mistrust"    }),
+  Object.freeze({ slot: 3, key: "e3", pos: "affection",  neg: "hatred"      }),
+]);
+
 /** Coerce anything CSB may have stored to a finite number. */
 export const num = (v, d = 0) => {
   const n = Number(v);
