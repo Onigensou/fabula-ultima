@@ -20,6 +20,7 @@ import { installNet } from "../advancement/advancement-net.js";
 // import the shell, never the reverse — and no import cycle exists.
 import "./cc-step-profile.js";
 import "./cc-step-attributes.js";
+import "./cc-step-classes.js";
 
 /** Is the world set up to create characters? */
 export function openable() {

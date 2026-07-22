@@ -15,7 +15,7 @@
  */
 
 import {
-  CC, esc, log,
+  CC, esc, log, warn,
 } from "./cc-const.js";
 import {
   createDraft, validateStep, validateAll, reconcile,
@@ -166,6 +166,11 @@ class CharacterCreationApp {
     this._injectCSS();
     this._draft = draft ?? createDraft();
     this._notes = [];
+
+    // Steps may keep transient view state outside the draft (which class pane
+    // is open, a search box, a half-answered prompt). None of it should survive
+    // into the next character, so every step gets a chance to clear it here.
+    for (const r of STEP_RENDERERS.values()) { try { r.reset?.(); } catch (e) { warn("step reset failed:", e); } }
 
     this._el = document.createElement("div");
     this._el.id = ROOT_ID;
