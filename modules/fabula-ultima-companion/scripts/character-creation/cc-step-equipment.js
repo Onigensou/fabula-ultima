@@ -34,6 +34,15 @@ import { CC, esc, num } from "./cc-const.js";
 import { STEP_RENDERERS } from "./cc-app.js";
 import { draftBudget, draftSpend, draftBudgetLeft, draftMartial } from "./cc-draft.js";
 import { resolveClass } from "../levelup-system/class-registry.js";
+import { ShopSoundManager } from "../shop-system/shopSound-manager.js";
+
+/**
+ * The shop system owns these cues. Buying starting gear IS shopping, and it
+ * should sound like it -- the same coin chime, the same tab blip, the same
+ * cancel. Instantiated lazily so importing this module costs nothing.
+ */
+let _sound = null;
+const shopSfx = () => (_sound ??= new ShopSoundManager());
 
 /** The shop's own zenit mark, so the two windows count money the same way. */
 const GP_ICON =
@@ -240,9 +249,14 @@ let _filter = "";
  */
 let _shown = null;   // { left, spent, pct } — null before the first paint
 
+let _greeted = false;   // the shop chime plays once per visit, not per render
+
 export const resetUiState = () => {
-  _tab = "weapon"; _filter = ""; _shown = null; resetCatalog();
+  _tab = "weapon"; _filter = ""; _shown = null; _greeted = false; resetCatalog();
 };
+
+/** Leaving the step re-arms the arrival chime for next time. */
+export const leaveStep = () => { _greeted = false; };
 
 const CSS = `
   .cc-eq { display: flex; flex-direction: column; min-height: 0; margin: 0 -16px -14px; }
@@ -531,8 +545,16 @@ function animatePurse(root, d) {
 function bind(root, d, ctx) {
   animatePurse(root, d);
 
+  // The shop chime on arrival, once -- not on every internal re-render.
+  if (!_greeted) { _greeted = true; try { shopSfx().playShopOpen(); } catch {} }
+
   root.querySelectorAll("[data-tab]").forEach((b) => {
-    b.addEventListener("click", () => { _tab = b.dataset.tab; ctx.refresh(); });
+    b.addEventListener("click", () => {
+      if (_tab === b.dataset.tab) return;
+      try { shopSfx().playTabSwitch(); } catch {}
+      _tab = b.dataset.tab;
+      ctx.refresh();
+    });
   });
 
   const search = root.querySelector("[data-search]");
@@ -556,12 +578,16 @@ function bindRows(root, d, ctx) {
       if (!rec) return;
       const gate = canAdd(d, rec);
       if (!gate.ok) { ui.notifications?.warn(gate.reason); return; }
+      try { shopSfx().playPurchase(); } catch {}
       ctx.edit((dd) => addPick(dd, rec));
     });
   });
   root.querySelectorAll("[data-drop]").forEach((b) => {
-    b.addEventListener("click", () => ctx.edit((dd) => removePick(dd, b.dataset.drop)));
+    b.addEventListener("click", () => {
+      try { shopSfx().playCancel(); } catch {}
+      ctx.edit((dd) => removePick(dd, b.dataset.drop));
+    });
   });
 }
 
-STEP_RENDERERS.set("equipment", { render, bind, reset: resetUiState });
+STEP_RENDERERS.set("equipment", { render, bind, reset: resetUiState, leave: leaveStep });

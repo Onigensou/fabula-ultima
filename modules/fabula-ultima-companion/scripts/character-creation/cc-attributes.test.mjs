@@ -258,5 +258,60 @@ eq("returning something not placed reports none",
   eq("...and the step now passes", D.validateStep(d, "attributes").ok, true);
 }
 
+
+// ── milestone advances, spent with arrows ──────────────────────────────────
+//
+// Modelled on the Status window: an up arrow raises a die, a down arrow gives
+// it back. milestonePicks stays a flat list of keys in spend order, so the
+// ledger written at finalize still records which milestone paid for which step.
+{
+  const at = (level, assign) => {
+    const d = D.createDraft();
+    d.attributes.level = level;
+    d.attributes.assign = { ...assign };
+    return d;
+  };
+
+  const low = at(19, AVG);
+  eq("below 20 there is nothing to spend", A.advancesLeft(low), 0);
+  eq("...so the arrow refuses", A.spendAdvance(low, "mig"), false);
+
+  const one = at(20, AVG);
+  eq("level 20 earns one", A.advancesLeft(one), 1);
+  eq("spending it works", A.spendAdvance(one, "wlp"), true);
+  eq("the die goes up a step", A.effectiveBases(one).wlp, 8);
+  eq("none left", A.advancesLeft(one), 0);
+  eq("a second is refused", A.spendAdvance(one, "mig"), false);
+  eq("the count is per attribute", [A.advancesOn(one, "wlp"), A.advancesOn(one, "mig")], [1, 0]);
+
+  eq("giving it back works", A.unspendAdvance(one, "wlp"), true);
+  eq("the die returns", A.effectiveBases(one).wlp, 6);
+  eq("...and the advance is available again", A.advancesLeft(one), 1);
+  eq("giving back what was never spent is a no-op", A.unspendAdvance(one, "ins"), false);
+
+  // Two advances can stack on one attribute, or split.
+  const two = at(41, AVG);
+  eq("level 41 earns two", A.advancesLeft(two), 2);
+  A.spendAdvance(two, "wlp"); A.spendAdvance(two, "wlp");
+  eq("both on one attribute stack", A.effectiveBases(two).wlp, 10);
+  eq("the ledger records both steps", A.applyMilestones(two).entries.length, 2);
+  eq("...against the right milestones",
+    A.applyMilestones(two).entries.map((e) => e.milestone), [20, 40]);
+  eq("...and the right dice", A.applyMilestones(two).entries.map((e) => [e.from, e.to]), [[6, 8], [8, 10]]);
+
+  // A die already at d12 cannot take another step, so the arrow must refuse
+  // rather than record a pick applyMilestones would silently drop.
+  const capped = at(41, { mig: 12, dex: 8, ins: 8, wlp: 6 });
+  eq("a d12 refuses an advance", A.spendAdvance(capped, "mig"), false);
+  eq("...leaving the advance unspent", A.advancesLeft(capped), 2);
+  eq("another attribute still takes it", A.spendAdvance(capped, "dex"), true);
+
+  // An unspent advance keeps the step from passing.
+  const owed = at(20, AVG);
+  eq("an unspent advance blocks the step", D.validateStep(owed, "attributes").ok, false);
+  A.spendAdvance(owed, "mig");
+  eq("spending it unblocks", D.validateStep(owed, "attributes").ok, true);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

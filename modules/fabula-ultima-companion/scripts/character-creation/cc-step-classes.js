@@ -1,16 +1,22 @@
 /**
  * Character Creation — step 3: Class & Skills.
  *
- * This step does NOT draw its own class rail, skill rows or facet grid. It
- * borrows the level-up window's, by making a derived object off `LevelUpApp`
- * whose state comes from the draft (`cc-class-state.js`) instead of an actor.
- * Those renderers are already tuned and already know the rules; a second
- * implementation would only be a second thing to keep in step with CSB.
+ * Nothing here is drawn by this module. The class browser, the class rail, the
+ * skill rows and the facet grid are all levelup-app's, rendered from a
+ * draft-backed state (`cc-class-state.js`) instead of an actor. They are
+ * already tuned and already know the rules; a second implementation would only
+ * be a second thing to keep in step with CSB.
  *
  * The seam is one method. `LevelUpApp._readState()` returns either
  * `getState(actorUuid)` or, when `_stateSource` is set, whatever that returns.
- * Everything below it — `_rail`, `_main`, `_facetGrid`, `_row` — is untouched
- * and cannot tell the difference.
+ * Everything below it is untouched and cannot tell the difference.
+ *
+ * ARRIVING OPENS THE BROWSER
+ * --------------------------
+ * A character has no classes yet, and the first thing to decide is which one —
+ * so the browser raises itself on first arrival rather than making the player
+ * find "＋ New Class" on an otherwise empty rail. After that the step behaves
+ * exactly like the level-up window: rail on the left, skills on the right.
  *
  * STAGING COLLAPSES INTO THE DRAFT
  * --------------------------------
@@ -30,7 +36,8 @@ import { CC, esc, num } from "./cc-const.js";
 import { STEP_RENDERERS } from "./cc-app.js";
 import { draftLevel, draftPointPool, draftPointsLeft, draftClassKeys } from "./cc-draft.js";
 import { draftState, takenClasses } from "./cc-class-state.js";
-import { LevelUpApp } from "../levelup-system/levelup-app.js";
+import { LevelUpApp, injectLevelUpStyles, LEVELUP_ROOT_ID } from "../levelup-system/levelup-app.js";
+import { sfx } from "../levelup-system/levelup-fx.js";
 
 const MAX_CLASS_LEVEL = 10;
 const MAX_UNMASTERED = 3;
@@ -128,11 +135,14 @@ export function removeLast(d, skillUuid) {
  * A LevelUpApp that reads the draft.
  *
  * Object.create rather than a copy, so it stays in step with the real thing:
- * anything added to LevelUpApp's prototype chain is inherited here, and the
- * only overrides are the state source and the flags that describe creation.
+ * anything added to LevelUpApp inherits here, and the only overrides are the
+ * state source and the flags that describe creation.
  */
 let _view = null;
 let _draftRef = null;
+let _pickerHost = null;   // the #oni-levelup element, while the browser is up
+let _pending = null;      // { clsKey, skillUuid, benefit, facets[] } awaiting answers
+let _autoOpened = false;  // the browser raises itself once, on first arrival
 
 function view() {
   if (_view) return _view;
@@ -145,9 +155,10 @@ function view() {
     _tab: "skill",
     _resetMode: false,
     _actorUuid: null,
-    _root: null,
-    // The real window animates the cursor against its own root. Creation has
-    // no such root, and the cursor is decoration, so it is a no-op here.
+    _root: null,           // points at the host while the browser is open
+    _pickerOpen: false,
+    _pickSel: null,
+    _pickTab: "overview",
     _updateCursor: () => {},
   });
   // `isOpen` is an accessor on LevelUpApp, so Object.assign would try to write
@@ -160,15 +171,110 @@ function view() {
 
 /** Transient view state, cleared between characters. */
 export const resetUiState = () => {
+  closePicker();
   _view = null;
-  _browsing = false;
-  _filter = "";
   _pending = null;
+  _autoOpened = false;
 };
 
-let _browsing = false;   // the "add a class" list is showing
-let _filter = "";
-let _pending = null;     // { clsKey, skillUuid, benefit, facets[] } awaiting answers
+// ── hosting the real class browser ─────────────────────────────────────────
+//
+// levelup-app draws the browser into an element with id `oni-levelup`, and
+// every one of its CSS rules is scoped under that id. To get the browser
+// EXACTLY — its tabs, its class list, its preview pane and its intro
+// animation — the wizard mounts a container carrying that id and lets
+// `_paintPicker` do the rest. None of the browser is reimplemented here; this
+// module owns only when it appears and what choosing a class means.
+
+/** Take the browser down, if it is up. */
+export function closePicker() {
+  if (_view) { _view._pickerOpen = false; _view._root = null; }
+  _pickerHost?.remove();
+  _pickerHost = null;
+}
+
+export const pickerIsOpen = () => !!_pickerHost;
+
+/**
+ * Raise the class browser over the wizard.
+ *
+ * Full-screen, because `#oni-levelup` is `position:fixed; inset:0` — which is
+ * right: choosing a class is a whole-attention decision, and this is the same
+ * overlay the level-up window raises for the same choice.
+ */
+function openPicker(ctx) {
+  if (_pickerHost) return;
+  // If the real level-up window is open it owns that id and those styles;
+  // refuse rather than mount a second element with the same id.
+  if (LevelUpApp.isOpen) {
+    ui.notifications?.warn("Close the Level Up window first.");
+    return;
+  }
+  injectLevelUpStyles();
+
+  _pickerHost = document.createElement("div");
+  _pickerHost.id = LEVELUP_ROOT_ID;
+  _pickerHost.style.zIndex = "71";        // above the wizard, which shares the layer
+  document.body.appendChild(_pickerHost);
+
+  const v = view();
+  v._root = _pickerHost;
+  v._pickerOpen = true;
+  v._paintPicker();
+  bindPicker(ctx);
+}
+
+/**
+ * Wire the browser's own markup to the draft.
+ *
+ * The actions are levelup-app's and the repaints are its methods, so selection
+ * and the preview animation behave identically. Only `pick` differs: there is
+ * no actor to spend against, so choosing a class selects it and closes.
+ */
+function bindPicker(ctx) {
+  const host = _pickerHost;
+  if (!host) return;
+  const v = view();
+
+  host.addEventListener("click", (ev) => {
+    const btn = ev.target?.closest?.("[data-act]");
+    if (!btn || btn.disabled) return;
+
+    switch (btn.dataset.act) {
+      case "closepicker":
+        sfx("deselect");
+        closePicker();
+        ctx.refresh();
+        break;
+      case "picktab":
+        sfx("tab");
+        v._pickTab = btn.dataset.tab;
+        v._paintPreview();
+        break;
+      case "pickselect":
+        if (v._pickSel === btn.dataset.key) return;
+        sfx("classPage");
+        v._pickSel = btn.dataset.key;
+        v._paintPreview({ intro: true });
+        break;
+      case "pick":
+        sfx("open");
+        v._selected = btn.dataset.key;
+        closePicker();
+        ctx.refresh();
+        break;
+    }
+  });
+
+  // The dimmed backdrop closes, as it does in the level-up window.
+  host.addEventListener("mousedown", (ev) => {
+    if (ev.target === host) { sfx("deselect"); closePicker(); ctx.refresh(); }
+  });
+}
+
+// ── the step body ──────────────────────────────────────────────────────────
+
+const BENEFIT_LABEL = { hp: "+5 Max HP", mp: "+5 Max MP", ip: "+2 Max IP" };
 
 const CSS = `
   .cc-cl { display: flex; gap: 0; min-height: 0; margin: 0 -16px -14px; }
@@ -181,9 +287,11 @@ const CSS = `
   .cc-cl-pts .n { font-size: 17px; font-weight: 800; color: #4b3517; }
   .cc-cl-pts .k { font-size: 11px; font-weight: 700; color: #4b3517; opacity: .8; }
 
-  /* The rail and skill rows come from levelup-app's own markup, so they carry
-     lu-* classes. Those styles live under #oni-levelup, which does not wrap us,
-     so the handful actually used are restated here in the wizard's palette. */
+  /* The rail and skill rows are levelup-app's markup, so they carry lu-*
+     classes. Those styles live under #oni-levelup, which does not wrap the
+     step body, so the handful actually used are restated here in the wizard's
+     palette. The BROWSER needs no such treatment: it mounts inside a real
+     #oni-levelup host and gets the original stylesheet verbatim. */
   .cc-cl .lu-cls { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
     padding: 6px 8px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 12.5px;
     color: #3b2a17; background: #f7f0df; border: 1px solid #cbb890; }
@@ -234,15 +342,8 @@ const CSS = `
   .cc-cl .lu-tag { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 9px;
     color: #6b4a1c; background: rgba(240,217,154,.55); border: 1px solid #cbb890; }
 
-  /* class browser */
-  .cc-cl-browse { display: flex; flex-direction: column; gap: 4px; }
-  .cc-cl-brow { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 9px;
-    padding: 6px 9px; border-radius: 8px; cursor: pointer; text-align: left; width: 100%;
-    font-family: inherit; background: #f7f0df; border: 1px solid #cbb890; color: #3b2a17; }
-  .cc-cl-brow:hover { background: #fdf6e4; border-color: #8a6c45; }
-  .cc-cl-brow img { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; border: 0 !important; }
-  .cc-cl-brow .nm { font-size: 13px; font-weight: 700; }
-  .cc-cl-brow .fl { font-size: 11px; opacity: .65; }
+  .cc-cl-blank { padding: 34px 20px; text-align: center; }
+  .cc-cl-blank p { font-size: 13px; opacity: .7; margin: 0 0 12px; }
 
   /* benefit / facet prompt */
   .cc-cl-ask { margin-top: 10px; padding: 11px 13px; border-radius: 8px;
@@ -257,32 +358,6 @@ const CSS = `
   .cc-cl-chip.on { background: linear-gradient(180deg,#5f9e4a,#3f7a30); border-color: #2f6b2f; color: #fff; }
   .cc-cl-askbtns { display: flex; gap: 7px; margin-top: 11px; }
 `;
-
-const BENEFIT_LABEL = { hp: "+5 Max HP", mp: "+5 Max MP", ip: "+2 Max IP" };
-
-function browseHTML(s, d) {
-  const list = s.classes
-    .filter((c) => !c.taken)
-    .filter((c) => !_filter || c.name.toLowerCase().includes(_filter.toLowerCase()))
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  return `
-    <div class="lu-h2"><b>Choose a class</b><span>${list.length} available</span></div>
-    <input class="cc-search" data-browse-search placeholder="Search classes…"
-           value="${esc(_filter)}" style="width:100%;margin-bottom:8px">
-    <div class="cc-cl-browse">
-      ${list.length ? list.map((c) => `
-        <button class="cc-cl-brow" data-open="${esc(c.key)}">
-          <img src="${esc(c.img || CC.DEFAULT_IMG)}" alt="">
-          <span>
-            <span class="nm">${esc(c.name)}</span><br>
-            <span class="fl">${esc(String(c.flavor ?? c.folder ?? "").replace(/<[^>]*>/g, " ").slice(0, 90))}</span>
-          </span>
-          <span class="lu-tag">${esc(c.benefit ? BENEFIT_LABEL[c.benefit] ?? c.benefit : "choose benefit")}</span>
-        </button>`).join("")
-      : `<div class="lu-empty">No class matches.</div>`}
-    </div>`;
-}
 
 function askHTML(s, d) {
   if (!_pending) return "";
@@ -328,16 +403,21 @@ function render(d) {
   _draftRef = d;
   const v = view();
   const s = v._stateSource();
-
-  // A class the player has taken stays selected; otherwise fall back to the
-  // first one they have, so the main pane is never blank when it need not be.
   const taken = takenClasses(s, d);
-  if (_selectedMissing(s, taken)) v._selected = taken[0]?.key ?? null;
+
+  // Keep a selection that still exists; otherwise fall back to the first class
+  // held, so the main pane is never blank when it need not be.
+  if (!v._selected || !s.classes.some((c) => c.key === v._selected)) {
+    v._selected = taken[0]?.key ?? null;
+  }
 
   const proj = v._project(s);
-  const main = _browsing || !v._selected
-    ? browseHTML(s, d)
-    : v._main(s, proj) + askHTML(s, d);
+  const main = v._selected
+    ? v._main(s, proj) + askHTML(s, d)
+    : `<div class="cc-cl-blank">
+         <p>Every character begins with a class.</p>
+         <button class="cc-btn is-primary" data-act="openpicker">Choose a class</button>
+       </div>`;
 
   return `
     <style>${CSS}</style>
@@ -353,47 +433,28 @@ function render(d) {
     </div>`;
 }
 
-function _selectedMissing(s, taken) {
-  const v = view();
-  if (!v._selected) return true;
-  return !s.classes.some((c) => c.key === v._selected);
-}
-
 function bind(root, d, ctx) {
   _draftRef = d;
   const v = view();
   const s = v._stateSource();
 
+  // Arriving with no class at all raises the browser, because choosing one is
+  // the first decision and an empty rail is a poor place to discover that.
+  if (!_autoOpened && !d.classes.length && !_pickerHost) {
+    _autoOpened = true;
+    openPicker(ctx);
+  }
+
   // ── rail ──
   root.querySelectorAll("[data-act='pick']").forEach((b) => {
     b.addEventListener("click", () => {
       v._selected = b.dataset.key;
-      _browsing = false;
       _pending = null;
       ctx.refresh();
     });
   });
-  root.querySelector("[data-act='openpicker']")?.addEventListener("click", () => {
-    _browsing = true; _pending = null; _filter = ""; ctx.refresh();
-  });
-
-  // ── class browser ──
-  const search = root.querySelector("[data-browse-search]");
-  search?.addEventListener("input", () => {
-    _filter = search.value;
-    const main = root.querySelector(".cc-cl-main");
-    if (!main) return;
-    main.innerHTML = browseHTML(s, d);
-    bind(root, d, ctx);                 // re-wire the redrawn list
-    main.querySelector("[data-browse-search]")?.focus();
-  });
-  root.querySelectorAll("[data-open]").forEach((b) => {
-    b.addEventListener("click", () => {
-      v._selected = b.dataset.open;
-      _browsing = false;
-      ctx.refresh();
-    });
-  });
+  root.querySelectorAll("[data-act='openpicker']").forEach((b) =>
+    b.addEventListener("click", () => openPicker(ctx)));
 
   // ── spend / refund, emitted by levelup-app's own row markup ──
   root.querySelectorAll("[data-act='spend']").forEach((b) => {
@@ -410,6 +471,7 @@ function bind(root, d, ctx) {
       // worth telling the player the grant went nowhere.
       const { need } = facetNeed(d, cls, skill);
       if (!needsBenefit(d, cls) && !need) {
+        sfx("stageUp");
         ctx.edit((dd) => applySpend(dd, cls, skill));
         return;
       }
@@ -419,7 +481,10 @@ function bind(root, d, ctx) {
   });
 
   root.querySelectorAll("[data-act='refund']").forEach((b) => {
-    b.addEventListener("click", () => ctx.edit((dd) => removeLast(dd, b.dataset.uuid)));
+    b.addEventListener("click", () => {
+      sfx("stageDown");
+      ctx.edit((dd) => removeLast(dd, b.dataset.uuid));
+    });
   });
 
   // ── the benefit / facet prompt ──
@@ -445,12 +510,28 @@ function bind(root, d, ctx) {
     const skill = cls?.skills.find((x) => x.uuid === _pending.skillUuid);
     const { benefit, facets } = _pending;
     _pending = null;
-    if (cls && skill) ctx.edit((dd) => applySpend(dd, cls, skill, { benefit, facetUuids: facets }));
-    else ctx.refresh();
+    if (cls && skill) {
+      sfx("stageUp");
+      ctx.edit((dd) => applySpend(dd, cls, skill, { benefit, facetUuids: facets }));
+    } else ctx.refresh();
   });
   root.querySelector("[data-ask-cancel]")?.addEventListener("click", () => {
     _pending = null; ctx.refresh();
   });
 }
 
-STEP_RENDERERS.set("classes", { render, bind, reset: resetUiState });
+STEP_RENDERERS.set("classes", {
+  render, bind,
+  reset: resetUiState,
+  // The browser lives outside the wizard's DOM, so leaving the step has to
+  // take it down explicitly.
+  leave: closePicker,
+  // Escape closes the browser rather than the whole wizard. Returns whether it
+  // handled the key.
+  escape: () => {
+    if (!_pickerHost) return false;
+    sfx("deselect");
+    closePicker();
+    return true;
+  },
+});

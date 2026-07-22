@@ -23,6 +23,14 @@ import { picks as equipPicks, martialNeed, advisories, equipBonuses } from "./cc
 import { chosenEmotion, bondIsEmpty } from "./cc-step-bond.js";
 import { previewFolder } from "./cc-folder.js";
 import { resolveClass } from "../levelup-system/class-registry.js";
+import { ATTR_META } from "../attribute-system/attribute-const.js";
+
+/** Same glyphs as the attribute step, so a stat reads the same on both pages. */
+const STAT_ICON = Object.freeze({
+  hp: "fa-heart", mp: "fa-droplet", ip: "fa-flask",
+  def: "fa-shield-halved", mdef: "fa-hat-wizard", init: "fa-bolt",
+  crisis: "fa-heart-crack", zenit: "fa-coins",
+});
 
 /**
  * The layout here is unchanged and still wants a proper pass; only the palette
@@ -49,6 +57,8 @@ const CSS = `
 
   .cc-attr { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; }
   .cc-attr div span { display: block; }
+  .cc-attr img { width: 22px; height: 22px; object-fit: contain; margin: 0 auto 2px;
+    display: block; border: 0 !important; outline: 0 !important; background: none; }
   .cc-attr .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
   .cc-attr .k { font-size: 10px; opacity: .65; }
   .cc-der { display: flex; flex-wrap: wrap; gap: 3px 12px; margin-top: 8px;
@@ -81,9 +91,12 @@ const CSS = `
   .cc-fin tbody th { font-weight: 700; opacity: .85; white-space: nowrap; }
   .cc-fin tbody tr + tr td, .cc-fin tbody tr + tr th { border-top: 1px solid rgba(203,184,144,.5); }
   .cc-fin .n { text-align: right; font-variant-numeric: tabular-nums; width: 58px; }
-  .cc-fin .m { text-align: center; width: 84px; font-variant-numeric: tabular-nums; }
-  .cc-fin .t { font-weight: 800; font-size: 14px; }
-  .cc-fin .note { font-size: 11px; opacity: .55; }
+  .cc-fin .m { text-align: center; width: 92px; font-variant-numeric: tabular-nums; }
+  .cc-fin .note { font-size: 11px; opacity: .55; text-align: left; }
+  /* The answer column, hard against the right edge. */
+  .cc-fin .t { font-weight: 800; font-size: 15px; width: 72px; padding-right: 2px; }
+  .cc-fin thead .t { font-size: 10px; }
+  .cc-fin tbody th i { width: 15px; text-align: center; opacity: .55; margin-right: 7px; }
   .cc-fin-up { color: #2f6b2f; font-weight: 700; }
   .cc-fin-down { color: #a3453a; font-weight: 700; }
   .cc-fin-nil { opacity: .3; }
@@ -123,7 +136,11 @@ function attributeCard(d) {
   const body = `
     <div class="cc-attr">
       ${CC_ATTR_KEYS.map((k) => `
-        <div><span class="v">d${num(b[k], 0)}</span><span class="k">${esc(CC_ATTR_LABEL[k])}</span></div>`).join("")}
+        <div>
+          <img src="${esc(ATTR_META[k].icon)}" alt="">
+          <span class="v">d${num(b[k], 0)}</span>
+          <span class="k">${esc(ATTR_META[k].label)}</span>
+        </div>`).join("")}
     </div>`;
   return card(`Attributes — level ${draftLevel(d)}`, "attributes", body);
 }
@@ -149,13 +166,15 @@ function finalCard(d) {
   const delta = (n) => (n > 0 ? `<span class="cc-fin-up">+${n}</span>`
                       : n < 0 ? `<span class="cc-fin-down">${n}</span>` : `<span class="cc-fin-nil">—</span>`);
 
-  const row = (label, from, mod, to, note = "") => `
+  // The Final column sits at the FAR RIGHT edge, so the eye can run straight
+  // down the one column that is the answer. The note column moves left of it.
+  const row = (label, icon, from, mod, to, note = "") => `
     <tr>
-      <th>${esc(label)}</th>
+      <th><i class="fas ${icon}"></i>${esc(label)}</th>
       <td class="n">${from}</td>
       <td class="m">${mod}</td>
-      <td class="n t">${to}</td>
       <td class="note">${esc(note)}</td>
+      <td class="n t">${to}</td>
     </tr>`;
 
   // DEF is not a sum when martial armour is worn: it replaces the DEX die.
@@ -170,20 +189,29 @@ function finalCard(d) {
     ? `${f.bonus.classes} class${f.bonus.classes === 1 ? "" : "es"}`
     : "no classes yet";
 
+  const baseCrisis = Math.floor(base.maxHp / 2);
+  const budget = draftBudget(d);
+  const spent = draftSpend(d);
+
   const body = `
     <table class="cc-fin">
       <thead>
-        <tr><th></th><th class="n">Base</th><th class="m">Change</th><th class="n t">Start</th><th></th></tr>
+        <tr>
+          <th></th><th class="n">Base</th><th class="m">Change</th>
+          <th class="note"></th><th class="n t">Final</th>
+        </tr>
       </thead>
       <tbody>
-        ${row("Max HP", base.maxHp, delta(f.bonus.hp), f.maxHp, f.bonus.hp ? classNote : "")}
-        ${row("Max MP", base.maxMp, delta(f.bonus.mp), f.maxMp, f.bonus.mp ? classNote : "")}
-        ${row("Max IP", base.maxIp, delta(f.bonus.ip), f.maxIp, f.bonus.ip ? classNote : "")}
-        ${row("Crisis", Math.floor(base.maxHp / 2), delta(f.crisis - Math.floor(base.maxHp / 2)), f.crisis, "half of Max HP")}
-        ${row("DEF", base.def, defMod, f.def, equip.defBase != null ? "martial armor" : "")}
-        ${row("MDEF", base.mdef, mdefMod, f.mdef, "")}
-        ${row("Initiative", fmtInit(base.init), delta(-num(equip.initPenalty, 0)), fmtInit(f.init),
-              equip.initPenalty ? "armor penalty" : "")}
+        ${row("Max HP", STAT_ICON.hp, base.maxHp, delta(f.bonus.hp), f.maxHp, f.bonus.hp ? classNote : "")}
+        ${row("Max MP", STAT_ICON.mp, base.maxMp, delta(f.bonus.mp), f.maxMp, f.bonus.mp ? classNote : "")}
+        ${row("Max IP", STAT_ICON.ip, base.maxIp, delta(f.bonus.ip), f.maxIp, f.bonus.ip ? classNote : "")}
+        ${row("Crisis", STAT_ICON.crisis, baseCrisis, delta(f.crisis - baseCrisis), f.crisis, "half of Max HP")}
+        ${row("DEF", STAT_ICON.def, base.def, defMod, f.def, equip.defBase != null ? "martial armor" : "")}
+        ${row("MDEF", STAT_ICON.mdef, base.mdef, mdefMod, f.mdef, "")}
+        ${row("Initiative", STAT_ICON.init, fmtInit(base.init), delta(-num(equip.initPenalty, 0)),
+              fmtInit(f.init), equip.initPenalty ? "armor penalty" : "")}
+        ${row("Zenit", STAT_ICON.zenit, budget, delta(-spent), Math.max(0, budget - spent),
+              spent ? "spent on gear" : "nothing bought")}
       </tbody>
     </table>
     <div class="cc-fin-foot">

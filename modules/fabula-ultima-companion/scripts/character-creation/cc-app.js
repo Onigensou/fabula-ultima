@@ -23,7 +23,7 @@
 import { CC, esc, log, warn } from "./cc-const.js";
 import {
   createDraft, validateStep, validateAll, reconcile,
-  nextStep, prevStep, stepIndex,
+  nextStep, prevStep, stepIndex, goTo,
 } from "./cc-draft.js";
 import { previewFolder } from "./cc-folder.js";
 import { sfx, windowAnim, staggerRows } from "../levelup-system/levelup-fx.js";
@@ -73,11 +73,14 @@ const CSS = `
 #${ROOT_ID} .cc-content { flex: 1 1 auto; min-width: 0; padding: 14px 16px;
   overflow-y: auto; display: flex; flex-direction: column; }
 
-/* The rail is a read-only indicator: no button, no pointer, no hover. Its job
-   is to say where you are and what is left, not to offer a shortcut. */
+/* The rail goes BACKWARDS only. A passed step is a link; anything ahead is
+   dimmed and inert, because a later step is built on answers the earlier ones
+   have not given yet. */
 #${ROOT_ID} .cc-rail-item { display: flex; align-items: center; gap: 9px; padding: 7px 9px;
   border-radius: 8px; background: #f7f0df; border: 1px solid #cbb890;
   font-size: 12.5px; color: #6b5a3e; cursor: default; }
+#${ROOT_ID} .cc-rail-item.is-link { cursor: pointer; }
+#${ROOT_ID} .cc-rail-item.is-link:hover { background: #fdf6e4; border-color: #8a6c45; color: #2f2618; }
 #${ROOT_ID} .cc-rail-item.is-active { border-color: #8a6c45; background: #fdf6e4;
   color: #2f2618; font-weight: 700; box-shadow: inset 0 0 0 1px rgba(240,217,154,.7); }
 #${ROOT_ID} .cc-rail-item.is-ahead { opacity: .45; }
@@ -263,7 +266,7 @@ class CharacterCreationApp {
           <div class="cc-foot-info">${esc(this._footInfo())}</div>
           <div class="cc-spacer"></div>
           <button class="cc-btn is-ghost" data-act="cancel">Cancel</button>
-          <button class="cc-btn" data-act="back" ${stepIndex(d.step) === 0 ? "disabled" : ""}>Back</button>
+          ${this._backBtnHTML()}
           ${this._forwardBtnHTML(step)}
         </div>
       </div>`;
@@ -272,28 +275,69 @@ class CharacterCreationApp {
     this._bind(step);
   }
 
+  /** How far along the player has been. Steps up to here have all been passed. */
+  _furthest() {
+    return Math.max(...this._draft.seen.map(stepIndex), 0);
+  }
+
   /**
-   * The rail. Plain divs — see the class comment. Steps ahead of the current
-   * one are dimmed rather than hidden, so the length of the road is visible.
+   * May the player leave the step they are on?
+   *
+   * Only a step they have ALREADY PASSED can trap them, and only by being
+   * broken now: going back to fix your level and deleting the name on the way
+   * would otherwise let you wander off leaving the character unnamed and the
+   * problem five pages behind you. A step never yet passed is simply
+   * unfinished, and Back stays free so an early mistake is still escapable.
+   */
+  _exitBlock() {
+    const d = this._draft;
+    const step = d.step;
+    if (step === "summary") return null;
+    if (stepIndex(step) >= this._furthest()) return null;   // never passed it
+    const { ok, issues } = validateStep(d, step);
+    return ok ? null : (issues[0]?.message ?? "Finish this step before leaving it.");
+  }
+
+  /**
+   * The rail.
+   *
+   * Clickable for steps already passed, so a player can jump back to fix
+   * something rather than walking the whole road. It is NOT a way forward —
+   * anything ahead stays dimmed and inert, because a later step is built on
+   * answers the earlier ones have not given yet.
    */
   _railHTML() {
     const d = this._draft;
     const here = stepIndex(d.step);
+    const furthest = this._furthest();
+    const stuck = this._exitBlock();
+
     return CC.STEPS.map((s, i) => {
       const active = i === here;
-      const behind = i < here;
+      const passed = i <= furthest;
       // Only judge a step the player has actually left — flagging step 5 red
       // while they are still on step 1 is noise, not information.
-      const invalid = behind && s.id !== "summary" && !validateStep(d, s.id).ok;
+      const invalid = i < here && s.id !== "summary" && !validateStep(d, s.id).ok;
+      // While the current step is broken, every other stop is out of reach.
+      const reachable = passed && !active && !stuck;
+
       const cls = [
         "cc-rail-item",
         active ? "is-active" : "",
-        i > here ? "is-ahead" : "",
-        behind && !invalid ? "is-done" : "",
+        i > furthest ? "is-ahead" : "",
+        i < here && !invalid ? "is-done" : "",
         invalid ? "is-invalid" : "",
+        reachable ? "is-link" : "",
       ].filter(Boolean).join(" ");
-      return `<div class="${cls}">
-        <span class="cc-rail-n">${behind && !invalid ? "✓" : invalid ? "!" : s.n}</span>
+
+      const title = reachable ? `Back to ${s.label}`
+        : active ? (stuck ?? "")
+        : i > furthest ? "Not reached yet"
+        : stuck ?? "";
+
+      return `<div class="${cls}" ${reachable ? `data-act="rail" data-step="${s.id}"` : ""}
+                   title="${esc(title)}">
+        <span class="cc-rail-n">${i < here && !invalid ? "✓" : invalid ? "!" : s.n}</span>
         <span>${esc(s.label)}</span>
       </div>`;
     }).join("");
@@ -350,6 +394,19 @@ class CharacterCreationApp {
    * and an error message with no obvious cause. The button carries the reason
    * as its tooltip, and the issue itself is already listed under the step.
    */
+  /**
+   * Back is free EXCEPT out of a step the player has already passed and has
+   * since broken — see `_exitBlock`. On a step never yet passed it always
+   * works, so an early mistake is still escapable.
+   */
+  _backBtnHTML() {
+    const first = stepIndex(this._draft.step) === 0;
+    const stuck = this._exitBlock();
+    const off = first || !!stuck;
+    return `<button class="cc-btn" data-act="back" ${off ? "disabled" : ""}
+      title="${esc(first ? "This is the first step" : stuck ?? "Back")}">Back</button>`;
+  }
+
   _forwardBtnHTML(step) {
     if (step.id === "summary") {
       if (this._creating) return `<button class="cc-btn is-primary" disabled>Creating…</button>`;
@@ -374,17 +431,44 @@ class CharacterCreationApp {
 
   // ── events ───────────────────────────────────────────────────────────────
 
+  /**
+   * Leave the current step.
+   *
+   * A step may have raised something outside the wizard's own DOM — the class
+   * browser mounts its own full-screen host — and that must come down before
+   * the player is somewhere else looking at it.
+   */
+  _leaveCurrent() {
+    const r = STEP_RENDERERS.get(this._draft?.step);
+    try { r?.leave?.(); } catch (e) { warn("step leave failed:", e); }
+  }
+
   _bind(step) {
     const root = this._el;
     if (!root) return;
 
     root.querySelector("[data-act='back']")?.addEventListener("click", (ev) => {
       if (ev.currentTarget.disabled) return;
-      sfx("stageDown"); this._notes = []; prevStep(this._draft); this._render();
+      sfx("stageDown");
+      this._leaveCurrent();
+      this._notes = []; prevStep(this._draft); this._render();
     });
-    root.querySelector("[data-act='next']")?.addEventListener("click", () => {
-      sfx("tab"); this._notes = []; nextStep(this._draft); this._render();
+    root.querySelector("[data-act='next']")?.addEventListener("click", (ev) => {
+      if (ev.currentTarget.disabled) return;
+      sfx("tab");
+      this._leaveCurrent();
+      this._notes = []; nextStep(this._draft); this._render();
     });
+    root.querySelectorAll("[data-act='rail']").forEach((el) => {
+      el.addEventListener("click", () => {
+        sfx("cursor");
+        this._leaveCurrent();
+        this._notes = [];
+        goTo(this._draft, el.dataset.step);
+        this._render();
+      });
+    });
+
     root.querySelectorAll("[data-act='cancel']").forEach((el) =>
       el.addEventListener("click", () => this._confirmCancel()));
     root.querySelector("[data-act='finalize']")?.addEventListener("click", () => this._finalize());
@@ -396,11 +480,20 @@ class CharacterCreationApp {
 
   _onKey(e) {
     if (!this._el) return;
-    if (e.key === "Escape") {
+    if (e.key !== "Escape") return;
+    // A step may have raised something over the wizard (the class browser).
+    // Escape closes that first — cancelling the whole character because a
+    // sub-window was open would be a nasty surprise.
+    const r = STEP_RENDERERS.get(this._draft?.step);
+    if (r?.escape?.()) {
       e.stopImmediatePropagation();
       e.preventDefault();
-      this._confirmCancel();
+      this._render();
+      return;
     }
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    this._confirmCancel();
   }
 
   async _confirmCancel() {

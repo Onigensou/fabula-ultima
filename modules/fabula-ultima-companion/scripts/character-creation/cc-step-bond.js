@@ -80,8 +80,9 @@ const CSS = `
   .cc-bd-tag { font-size: 12px; font-weight: 800; letter-spacing: .06em;
     text-transform: uppercase; opacity: .55; }
   .cc-bd-hearts { display: flex; gap: 5px; font-size: 16px; }
-  .cc-bd-heart.positive { color: #c98b2a; }
-  .cc-bd-heart.negative { color: #a3453a; }
+  /* Red is warmth, purple is the darker feeling -- the table’s own coding. */
+  .cc-bd-heart.positive { color: #c9403a; }
+  .cc-bd-heart.negative { color: #7a4b9d; }
   .cc-bd-heart.empty { color: #c0a67c; opacity: .5; }
   .cc-bd-clear { margin-left: auto; font-family: inherit; font-size: 11.5px; cursor: pointer;
     padding: 4px 12px; border-radius: 7px; color: #8c3a24;
@@ -112,8 +113,8 @@ const CSS = `
     text-transform: uppercase; opacity: .5; }
   .cc-bd-em.on { background: linear-gradient(180deg,#f0d99a,#e0c179); }
   .cc-bd-em.on i { opacity: 1; }
-  .cc-bd-em.on.pos i { color: #c98b2a; }
-  .cc-bd-em.on.neg i { color: #a3453a; }
+  .cc-bd-em.on.pos i { color: #c9403a; }
+  .cc-bd-em.on.neg i { color: #7a4b9d; }
   .cc-bd-em.on .pol { opacity: .75; }
 
   .cc-bd-foot { flex: 0 0 auto; font-size: 12.5px; opacity: .7; text-align: center; }

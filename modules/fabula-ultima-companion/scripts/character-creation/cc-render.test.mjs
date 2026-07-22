@@ -150,7 +150,11 @@ for (const step of CC.STEPS) {
   shows("that the folder will be created", "does not exist yet");
 
   // The milestone advance must reach the summary, not just the attribute step.
-  eq("summary shows the milestone-raised die", /d10<\/span><span class="k">Dexterity/.test(html), true);
+  // DEX is dealt d8 in this draft and the milestone pick raises it to d10, so
+  // finding d10 against the DEX cell proves the advance reached the summary.
+  eq("summary shows the milestone-raised die",
+    /d10<\/span>\s*<span class="k">DEX</.test(html), true);
+  eq("attribute cells carry the Status window icon", html.includes("boot.png"), true);
 
   // A complete draft offers creation rather than a list of problems.
   eq("a complete draft reports ready", html.includes("Ready."), true);

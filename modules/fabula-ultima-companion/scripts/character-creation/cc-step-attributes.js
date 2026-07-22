@@ -35,10 +35,11 @@
  * added in later steps and are totalled on the summary.
  */
 
-import { CC, CC_ATTR_KEYS, CC_ATTR_LABEL, esc, num } from "./cc-const.js";
+import { CC, CC_ATTR_KEYS, esc, num } from "./cc-const.js";
 import { STEP_RENDERERS } from "./cc-app.js";
 import { draftLevel, draftMilestones, draftPointPool, draftBudget } from "./cc-draft.js";
 import { ATTR_META } from "../attribute-system/attribute-const.js";
+import { sfx } from "../levelup-system/levelup-fx.js";
 
 const DIE_STEPS = [6, 8, 10, 12];
 const nextDie = (die) => {
@@ -213,26 +214,22 @@ const CSS = `
   .cc-at-icon { width: 28px; height: 28px; object-fit: contain; flex: 0 0 auto;
     border: 0 !important; outline: 0 !important; background: none; }
   .cc-at-label { font-weight: 800; letter-spacing: .04em; width: 44px; flex: 0 0 auto; }
-  .cc-at-full { flex: 1 1 auto; font-size: 11.5px; opacity: .55; }
+  .cc-at-spacer { flex: 1 1 auto; }
   .cc-at-socket { width: 48px; height: 44px; border-radius: 9px; flex: 0 0 auto;
     display: grid; place-items: center; background: #efe4cd;
     border: 2px dashed #c0a67c; }
   .cc-at-socket.filled { border-style: solid; border-color: #8a6c45; background: transparent;
     cursor: pointer; }
-  .cc-at-was { font-size: 11px; opacity: .5; flex: 0 0 auto; width: 34px; text-align: right; }
+  .cc-at-was { font-size: 11px; opacity: .5; flex: 1 1 auto; text-align: right; }
+  .cc-at-arrows { display: flex; align-items: center; gap: 3px; flex: 0 0 auto; }
+  .cc-at-arrow { width: 26px; height: 24px; border-radius: 6px; cursor: pointer; padding: 0;
+    border: 1px solid #8a6c45; background: linear-gradient(180deg,#f7edd5,#e6d6b0);
+    font-family: inherit; font-size: 11px; line-height: 1; color: #4b3517; }
+  .cc-at-arrow.up:hover:not(:disabled) { background: linear-gradient(180deg,#8fd07a,#5f9e4a); color: #fff; }
+  .cc-at-arrow.down:hover:not(:disabled) { background: linear-gradient(180deg,#d99a92,#c9736a); color: #fff; }
+  .cc-at-arrow:disabled { opacity: .28; cursor: default; }
 
   /* ── milestones ── */
-  .cc-at-ms { border-radius: 8px; background: #f7f0df; border: 1px solid #cbb890; padding: 8px 10px; }
-  .cc-at-mshead { font-size: 11px; font-weight: 700; letter-spacing: .04em;
-    text-transform: uppercase; opacity: .65; margin-bottom: 6px; }
-  .cc-at-msrow { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 12px; }
-  .cc-at-msrow:last-child { margin-bottom: 0; }
-  .cc-at-msrow .k { opacity: .7; flex: 0 0 auto; }
-  .cc-at-mssel { flex: 1 1 auto; font-family: inherit; font-size: 12px; padding: 4px 6px;
-    border-radius: 6px; background: #fdf6e4; border: 1px solid #cbb890; color: #2f2618; }
-  .cc-at-mssel:focus { outline: none; border-color: #8a6c45; }
-
-  /* ── derived ── */
   .cc-at-h { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
     opacity: .65; margin-bottom: 4px; }
   .cc-at-stat { display: flex; align-items: center; justify-content: space-between;
@@ -251,6 +248,9 @@ const CSS = `
     font-size: 12.5px; margin-top: 4px; }
   .cc-at-res span:first-child { display: flex; align-items: center; gap: 7px; }
   .cc-at-res .v { font-weight: 800; font-variant-numeric: tabular-nums; }
+  /* An unspent advance is a job left undone, and the step will not pass with
+     one outstanding -- so it is worth pointing at. */
+  .cc-at-res.is-owed { border-color: #8a6c45; background: linear-gradient(180deg,#f0d99a,#e0c179); }
   .cc-at-pending { margin-top: auto; padding-top: 10px; font-size: 11px; opacity: .65; line-height: 1.45; }
 `;
 
@@ -267,6 +267,7 @@ const STAT_ICON = Object.freeze({
   init: "fa-bolt",
   crisis: "fa-heart-crack",
   sp: "fa-star",
+  ap: "fa-arrow-up-right-dots",
   zenit: "fa-coins",
 });
 
@@ -346,20 +347,71 @@ function trayHTML(d) {
     </div>`;
 }
 
+/** Milestone advances spent on each attribute. */
+export function advancesOn(d, key) {
+  return (d.attributes.milestonePicks ?? []).filter((p) => p === key).length;
+}
+
+/** Milestone advances the level has earned but nothing has claimed yet. */
+export const advancesLeft = (d) =>
+  Math.max(0, draftMilestones(d) - (d.attributes.milestonePicks ?? []).filter(Boolean).length);
+
+/**
+ * Spend one advance on an attribute, or take the last one back.
+ *
+ * Modelled on the Status window: an up arrow beside the die raises it, a down
+ * arrow gives it back. `milestonePicks` is a flat list of attribute keys in
+ * spend order, so the ledger written at finalize records which milestone paid
+ * for which step.
+ *
+ * @returns {boolean} whether anything changed
+ */
+export function spendAdvance(d, key) {
+  if (!CC_ATTR_KEYS.includes(key)) return false;
+  if (advancesLeft(d) <= 0) return false;
+  // A die already at the ceiling cannot take another step, so refuse rather
+  // than record a pick that `applyMilestones` would silently drop.
+  if (nextDie(num(effectiveBases(d)[key], 0)) == null) return false;
+  (d.attributes.milestonePicks ??= []).push(key);
+  return true;
+}
+
+export function unspendAdvance(d, key) {
+  const picks = d.attributes.milestonePicks ?? [];
+  for (let i = picks.length - 1; i >= 0; i--) {
+    if (picks[i] === key) { picks.splice(i, 1); return true; }
+  }
+  return false;
+}
+
 function rowsHTML(d) {
   const assign = d.attributes.assign ?? {};
   const final = effectiveBases(d);
+  const spare = advancesLeft(d);
 
   return CC_ATTR_KEYS.map((k) => {
     const placed = num(assign[k], 0);
-    const raised = placed > 0 && num(final[k], 0) > placed;
-    const shown = raised ? num(final[k], 0) : placed;
+    const shown = num(final[k], 0);
+    const steps = advancesOn(d, k);
+    const raised = placed > 0 && shown > placed;
     const meta = ATTR_META[k];
+
+    // Arrows only once a die is in the socket — there is nothing to raise
+    // otherwise — and only while the level has actually earned an advance.
+    const capped = placed > 0 && nextDie(shown) == null;
+    const arrows = (draftMilestones(d) && placed) ? `
+      <span class="cc-at-arrows">
+        <button class="cc-at-arrow down" data-unspend="${k}" ${steps ? "" : "disabled"}
+                title="${steps ? "Take this advance back" : "Nothing to take back"}">▼</button>
+        <button class="cc-at-arrow up" data-spend="${k}" ${spare > 0 && !capped ? "" : "disabled"}
+                title="${capped ? `Already at d${DIE_STEPS.at(-1)}`
+                       : spare > 0 ? `Raise to d${nextDie(shown)}` : "No advances left"}">▲</button>
+      </span>` : "";
+
     return `
-      <div class="cc-at-row" data-slot="${k}">
+      <div class="cc-at-row ${raised ? "is-raised" : ""}" data-slot="${k}">
         <img class="cc-at-icon" src="${esc(meta.icon)}" alt="">
-        <span class="cc-at-label">${esc(meta.label)}</span>
-        <span class="cc-at-full">${esc(meta.full)}</span>
+        <span class="cc-at-label" title="${esc(meta.full)}">${esc(meta.label)}</span>
         <span class="cc-at-was">${raised ? `d${placed} →` : ""}</span>
         <div class="cc-at-socket ${placed ? "filled" : ""}" data-slot="${k}"
              title="${placed ? "Drag out, or click to return it to the tray" : "Drop a die here"}">
@@ -368,27 +420,9 @@ function rowsHTML(d) {
                     data-die="${placed}" data-from="${k}">d${shown}</div>`
             : ""}
         </div>
+        ${arrows}
       </div>`;
   }).join("");
-}
-
-function milestoneHTML(d) {
-  const need = draftMilestones(d);
-  if (!need) return "";
-  const picks = d.attributes.milestonePicks ?? [];
-  return `
-    <div class="cc-at-ms">
-      <div class="cc-at-mshead">Milestone advances — ${need} earned</div>
-      ${Array.from({ length: need }, (_, i) => `
-        <div class="cc-at-msrow">
-          <span class="k">Level ${CC.MILESTONES[i] ?? "?"}</span>
-          <select class="cc-at-mssel" data-ms="${i}">
-            <option value="">— choose an attribute —</option>
-            ${CC_ATTR_KEYS.map((k) =>
-              `<option value="${k}" ${picks[i] === k ? "selected" : ""}>${esc(CC_ATTR_LABEL[k])}</option>`).join("")}
-          </select>
-        </div>`).join("")}
-    </div>`;
 }
 
 function derivedHTML(d) {
@@ -413,6 +447,10 @@ function derivedHTML(d) {
     <div class="cc-at-res">
       <span><i class="fas ${STAT_ICON.sp}"></i> Skill Points</span>
       <span class="v">${draftPointPool(d)}</span>
+    </div>
+    <div class="cc-at-res ${advancesLeft(d) ? "is-owed" : ""}">
+      <span><i class="fas ${STAT_ICON.ap}"></i> Attribute Points</span>
+      <span class="v">${advancesLeft(d)} / ${draftMilestones(d)}</span>
     </div>
     <div class="cc-at-res">
       <span><i class="fas ${STAT_ICON.zenit}" style="color:#b8862a"></i> Zenit</span>
@@ -439,7 +477,6 @@ function render(d) {
         </div>
         ${trayHTML(d)}
         <div class="cc-at-rows">${rowsHTML(d)}</div>
-        ${milestoneHTML(d)}
       </div>
       <div class="cc-at-right">${derivedHTML(d)}</div>
     </div>`;
@@ -534,13 +571,19 @@ function bind(root, d, ctx) {
   });
 
   // ── milestones ──
-  root.querySelectorAll("[data-ms]").forEach((sel) => {
-    sel.addEventListener("change", () => {
-      const i = num(sel.dataset.ms, 0);
-      ctx.edit((dd) => {
-        const picks = dd.attributes.milestonePicks ?? (dd.attributes.milestonePicks = []);
-        picks[i] = sel.value;
-      });
+  // ── milestone advances ──
+  root.querySelectorAll("[data-spend]").forEach((b) => {
+    b.addEventListener("click", () => {
+      if (b.disabled) return;
+      sfx("stageUp");
+      ctx.edit((dd) => spendAdvance(dd, b.dataset.spend));
+    });
+  });
+  root.querySelectorAll("[data-unspend]").forEach((b) => {
+    b.addEventListener("click", () => {
+      if (b.disabled) return;
+      sfx("stageDown");
+      ctx.edit((dd) => unspendAdvance(dd, b.dataset.unspend));
     });
   });
 }

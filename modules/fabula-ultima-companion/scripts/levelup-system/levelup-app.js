@@ -2035,3 +2035,13 @@ Hooks.once("ready", () => {
 });
 
 export { LevelUpApp };
+
+/**
+ * Install this window's stylesheet without opening the window.
+ *
+ * Every rule is scoped under `#oni-levelup`, so anything that wants the class
+ * browser's exact look has to both inject this and mount inside an element
+ * carrying that id. Character Creation does precisely that to host the real
+ * picker rather than imitating it.
+ */
+export { injectStyles as injectLevelUpStyles, ROOT_ID as LEVELUP_ROOT_ID };
