@@ -46,6 +46,7 @@
     { "path": "macros/Battle Init/[Macro] BattleInit — Battle Initiator.js",   "name": "BattleInit — Battle Initiator" },
     { "path": "macros/Battle Init/[Macro] BattleInit — Director Manager.js",   "name": "BattleInit — Director Manager" },
     { "path": "macros/Battle End/[Macro] [BattleEnd_ Manager].js",             "name": "[BattleEnd: Manager]" },
-    { "path": "macros/Battle End/[Macro] [BattleEnd_ Director Manager].js",    "name": "BattleEnd: Director Manager" }
+    { "path": "macros/Battle End/[Macro] [BattleEnd_ Director Manager].js",    "name": "BattleEnd: Director Manager" },
+    { "path": "macros/Status.js",                                              "name": "Status" }
   ]
 }

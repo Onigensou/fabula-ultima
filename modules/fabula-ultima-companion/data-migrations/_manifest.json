@@ -615,6 +615,10 @@
     {
       "key": "2026-07-21-actor-template-skill-point-v2",
       "path": "data-migrations/2026-07-21-actor-template-skill-point.js"
+    },
+    {
+      "key": "2026-07-22-attribute-advance-seed",
+      "path": "data-migrations/2026-07-22-attribute-advance-seed.js"
     }
   ]
 }
