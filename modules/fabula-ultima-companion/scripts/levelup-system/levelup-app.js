@@ -497,9 +497,17 @@ const LevelUpApp = {
       // Glued to the row while the gesture runs — the glide that looks right
       // when focus jumps between rows reads as lag when the row itself is
       // moving. Restored shortly after scrolling stops.
+      this._scrolling = true;
       this._cursorEl?.classList.add("no-anim");
       clearTimeout(this._scrollIdle);
-      this._scrollIdle = setTimeout(() => this._cursorEl?.classList.remove("no-anim"), 140);
+      this._scrollIdle = setTimeout(() => {
+        this._scrolling = false;
+        this._cursorEl?.classList.remove("no-anim");
+        // The rows that slid past were never really hovered, so clear the
+        // one-blip-per-element memory: the next genuine hover should sound,
+        // even if it lands on a row that happened to drift under the pointer.
+        resetHover();
+      }, 140);
 
       if (this._scrollRaf) return;
       this._scrollRaf = requestAnimationFrame(() => {
@@ -510,6 +518,12 @@ const LevelUpApp = {
 
     // One cursor blip per interactive element entered, not per mousemove.
     root.addEventListener("pointerover", (ev) => {
+      // A scrolling list drags rows underneath a stationary pointer, and each
+      // arrival is a new element, so the per-element blip fires dozens of times
+      // in a second — measured at one cue per row. That is the list moving, not
+      // the player pointing at anything, so the gesture owns the cursor and the
+      // pointer stays quiet until it settles.
+      if (this._scrolling) return;
       const el = ev.target?.closest?.("[data-act]");
       if (el && !el.disabled) hoverSfx(el);
       // The feather is one cursor shared by both input methods: the mouse
