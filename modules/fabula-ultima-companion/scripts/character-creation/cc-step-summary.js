@@ -24,64 +24,54 @@ import { chosenEmotion, bondIsEmpty } from "./cc-step-bond.js";
 import { previewFolder } from "./cc-folder.js";
 import { resolveClass } from "../levelup-system/class-registry.js";
 
+/**
+ * The layout here is unchanged and still wants a proper pass; only the palette
+ * has been brought into line with the rest of the window. Class names starting
+ * `cc-sm-`/`cc-card`/`cc-attr` are local to this step.
+ */
 const CSS = `
-  .cc-sm { display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
-  .cc-sm-id { display: flex; flex-direction: column; gap: 10px; }
-  .cc-sm-port {
-    width: 100%; aspect-ratio: 1; border-radius: 3px; object-fit: cover;
-    border: 1px solid rgba(140,90,30,0.4); background: rgba(255,252,240,0.5);
-  }
-  .cc-sm-name { font-size: 17px; letter-spacing: 2px; color: #3a1e06; line-height: 1.25; }
-  .cc-sm-sub { font-size: 10px; color: #8a6432; line-height: 1.5; }
-  .cc-sm-dest {
-    font-size: 9px; color: #9b7040; line-height: 1.5; padding: 7px 9px; border-radius: 2px;
-    background: rgba(201,164,74,0.14); border: 1px solid rgba(140,90,30,0.25);
-  }
+  .cc-sm { display: grid; grid-template-columns: 240px 1fr; gap: 16px; }
+  .cc-sm-id { display: flex; flex-direction: column; gap: 9px; }
+  .cc-sm-port { width: 100%; aspect-ratio: 1; border-radius: 8px; object-fit: cover;
+    border: 1px solid #b79c72; background: #f7f0df; }
+  .cc-sm-name { font-size: 17px; font-weight: 800; line-height: 1.25; }
+  .cc-sm-sub { font-size: 12px; opacity: .7; line-height: 1.5; }
+  .cc-sm-dest { font-size: 11px; opacity: .75; line-height: 1.5; padding: 7px 9px;
+    border-radius: 8px; background: #e6dabd; border: 1px solid #cbb890; }
 
-  .cc-sm-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-content: start; }
-  .cc-card {
-    padding: 11px 13px; border-radius: 3px;
-    border: 1px solid rgba(140,90,30,0.28); background: rgba(255,252,240,0.5);
-  }
+  .cc-sm-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
+  .cc-card { padding: 10px 12px; border-radius: 8px;
+    border: 1px solid #cbb890; background: #f7f0df; }
   .cc-card.is-wide { grid-column: 1 / -1; }
-  .cc-card-h {
-    display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;
-    font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #8a6432;
-  }
-  .cc-card-h button {
-    margin-left: auto; font-family: inherit; font-size: 8px; letter-spacing: 1px;
-    text-transform: uppercase; cursor: pointer; color: #a07818;
-    background: none; border: none; padding: 0; text-decoration: underline;
-  }
-  .cc-card-h button:hover { color: #6b4a1c; }
+  .cc-card-h { display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px;
+    font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; opacity: .65; }
+  .cc-card-step { margin-left: auto; font-size: 10px; font-weight: 400; opacity: .7; }
 
   .cc-attr { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; }
   .cc-attr div span { display: block; }
-  .cc-attr .v { font-size: 16px; color: #3a1e06; }
-  .cc-attr .k { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: #8a6432; }
-  .cc-der { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 9px;
-    font-size: 10px; color: #7a5428; }
+  .cc-attr .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .cc-attr .k { font-size: 10px; opacity: .65; }
+  .cc-der { display: flex; flex-wrap: wrap; gap: 3px 12px; margin-top: 8px;
+    font-size: 12px; opacity: .8; font-variant-numeric: tabular-nums; }
 
   .cc-rows { display: flex; flex-direction: column; gap: 4px; }
-  .cc-row { display: flex; align-items: center; gap: 7px; font-size: 10px; color: #5c3a12; }
-  .cc-row img { width: 18px; height: 18px; border-radius: 2px; object-fit: cover; flex: 0 0 18px; }
-  .cc-row .r { margin-left: auto; color: #8a6432; white-space: nowrap; }
-  .cc-sub { font-size: 9px; color: #9b7040; padding-left: 25px; line-height: 1.45; }
-  .cc-none { font-size: 10px; color: #9b7040; font-style: italic; }
-  .cc-prose { font-size: 10px; line-height: 1.55; color: #5c3a12; white-space: pre-wrap; }
+  .cc-row { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+  .cc-row img { width: 20px; height: 20px; border-radius: 4px; object-fit: contain;
+    flex: 0 0 20px; border: 0 !important; }
+  .cc-row .r { margin-left: auto; opacity: .7; white-space: nowrap; }
+  .cc-sub { font-size: 11px; opacity: .65; padding-left: 4px; line-height: 1.45; }
+  .cc-none { font-size: 12px; opacity: .6; font-style: italic; }
+  .cc-prose { font-size: 12px; line-height: 1.5; white-space: pre-wrap; opacity: .85; }
 
-  .cc-issues { margin-top: 16px; padding: 11px 14px; border-radius: 3px;
-    border: 1px solid rgba(165,42,26,0.4); background: rgba(165,42,26,0.09); }
-  .cc-issues-h { font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-    color: #a52a1a; margin-bottom: 6px; }
-  .cc-issue { font-size: 10px; color: #8c3a24; line-height: 1.5; display: flex; gap: 7px; }
-  .cc-issue button {
-    font-family: inherit; font-size: 9px; cursor: pointer; color: #a52a1a;
-    background: none; border: none; padding: 0; text-decoration: underline; white-space: nowrap;
-  }
-  .cc-ready { margin-top: 16px; padding: 11px 14px; border-radius: 3px;
-    border: 1px solid rgba(140,90,30,0.35); background: rgba(201,164,74,0.16);
-    font-size: 10px; color: #6b4a1c; line-height: 1.5; }
+  .cc-issues { margin-top: 14px; padding: 10px 13px; border-radius: 8px;
+    border: 1px solid rgba(165,42,26,.35); background: rgba(165,42,26,.09); }
+  .cc-issues-h { font-size: 11px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; color: #a3453a; margin-bottom: 5px; }
+  .cc-issue { font-size: 12px; color: #8c3a24; line-height: 1.5; display: flex; gap: 7px; }
+  .cc-issue-step { margin-left: auto; opacity: .7; font-size: 11px; white-space: nowrap; }
+  .cc-ready { margin-top: 14px; padding: 10px 13px; border-radius: 8px;
+    border: 1px solid #cbb890; background: rgba(240,217,154,.35);
+    font-size: 12px; color: #6b4a1c; line-height: 1.5; }
 `;
 
 // Panels are read-only. Backtracking is Back, all the way down -- the rail and

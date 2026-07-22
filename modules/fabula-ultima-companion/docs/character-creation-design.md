@@ -25,10 +25,20 @@ Title screen ▸ Create Character
   acting GM ▸ applyCreate ▸ Actor
 ```
 
-Every step is backtrackable — the golden rule. The rail jumps to any step
-already visited plus the next one, and the summary carries a per-panel `edit`
-link straight back to the step that owns it. Going forward is never blocked;
-only **Create** enforces completeness.
+**Navigation is one way.** The rail is a progress indicator — plain divs, no
+pointer, no jumps — and Back/Next are the only movement. Every step is still
+backtrackable, which is the golden rule; you just walk back through them.
+
+That is also the fix for a reported bug where re-entering a step left Back
+inert. `goTo` used to gate on a `seen`-derived reachability set, and Back
+consulted the same set, so a jump could reach a state where stepping backwards
+was refused with no visible reason. Movement is now positional and
+unconditional between real steps, bounded by `stepAt`'s clamp, and the
+reachability concept is gone — there is no set left to fall out of sync.
+`seen` survives only to mark progress on the rail and to avoid criticising a
+step nobody has opened.
+
+Going forward is never blocked; only **Create** enforces completeness.
 
 ---
 
@@ -39,10 +49,11 @@ only **Create** enforces completeness.
 | `cc-const.js` | Rulebook constants, budget/points/milestone formulas, emotion pairs, message types |
 | `cc-folder.js` | Resolves `Actors ▸ Player Character ▸ <Username>'s PC` |
 | `cc-draft.js` | The draft model, validation, reconciliation, step machine |
+| `cc-class-state.js` | `draftState(draft)` — a `getState`-shaped view of the draft |
 | `cc-app.js` | Overlay shell, step rail, nav, finalize dispatch |
 | `cc-step-profile.js` | Step 1 |
 | `cc-step-attributes.js` | Step 2 — also owns `applyMilestones` / `effectiveBases` / `previewDerived` |
-| `cc-step-classes.js` | Step 3 |
+| `cc-step-classes.js` | Step 3 — spend rules; the markup is borrowed from `levelup-app` |
 | `cc-step-equipment.js` | Step 4 — also owns the equipment catalogue reader |
 | `cc-step-bond.js` | Step 5 |
 | `cc-step-summary.js` | Step 6 |
@@ -75,7 +86,85 @@ STEP_RENDERERS.set("<id>", {
 | `ctx.touch(fn)` | mutate only — **for typing**, see below |
 | `ctx.refresh()` | re-render without reconciling |
 | `ctx.syncFoot()` | update the footer figure in place |
-| `ctx.app` | the shell, for `goToStep` |
+| `ctx.app` | the shell |
+
+An optional `reset()` clears transient view state (open class pane, search box,
+half-answered prompt) between characters. It is called on every registered step
+when the window opens, so nothing leaks from one character into the next.
+
+---
+
+## Reusing the existing systems
+
+The steps do not invent a look. Each one is built on the window that already
+does that job, because those are tuned and a second copy would only be a second
+thing to maintain.
+
+| Step | Borrowed from | How |
+|---|---|---|
+| Shell | `attribute-app` / `levelup-app` | Palette, `levelup-fx` sounds and animations |
+| Attributes | `attribute-app` | Row shape, `ATTR_META` icons, derived panel |
+| Classes | `levelup-app` | **The actual renderers** — see below |
+| Equipment | `shopWindow-app` | Vertical emoji tabs, item rows, zenit mark, buy pill |
+| Bond | `camp-ui-bond` | Slot with hearts, `name → relationship`, per-pair dropdowns |
+
+### The class step's seam
+
+`LevelUpApp`'s `_rail`, `_main`, `_facetGrid` and `_row` render entirely from
+the object `getState(actorUuid)` returns. None of them reaches for an Actor. So
+the class step makes a derived object off `LevelUpApp` and points it at the
+draft instead:
+
+```js
+const v = Object.create(LevelUpApp);
+v._creation = true;
+v._stateSource = () => draftState(draft);
+v._pending = [];              // the draft IS the staging area
+```
+
+The whole seam is one method in `levelup-app.js`:
+
+```js
+_readState() {
+  if (typeof this._stateSource === "function") return this._stateSource();
+  return api()?.getState(this._actorUuid);
+}
+```
+
+Five call sites route through it. Nothing below that line knows which it got,
+so the live level-up window is unchanged.
+
+`draftState` counts every actor-derived number out of the draft:
+
+| `getState` | `draftState` |
+|---|---|
+| class row level from `class_list` | count of `draft.classes` with that key |
+| skill level from actor items | count of `draft.classes` with that uuid |
+| facet held from actor items | uuid present in any pick's `facetUuids` |
+| `skill_point` prop | pool minus picks |
+
+Everything else — names, images, descriptions, `maxLevel`, `facetGrant`, free
+benefits — comes from the same `getRegistry()` the real window reads, so the two
+cannot describe a class differently.
+
+Because `_pending` stays empty, `_project` returns zero deltas and the levels
+shown come straight from `draftState`. There is nothing to Confirm because
+nothing has been written. That is also why creation reports an unbounded Forget
+me Nut supply (giving a level back is free) and shows both `+` and `−` at once
+— the only creation-specific branch inside `_main`.
+
+**Why not create the Actor up front and use the real windows directly?** It
+would have made all of this unnecessary, at the cost of a half-finished
+character existing in the world from the moment the wizard opens, and surviving
+a crash or a closed tab. Keeping the draft as the only state is what makes
+rollback a matter of deleting one document nobody has touched.
+
+> **Not yet borrowed:** the level-up window's full-screen class *browser*
+> (`_paintPicker`) and facet-picker overlays. Both append to `LevelUpApp._root`
+> and are styled under `#oni-levelup`, which is `position:fixed; inset:0` — they
+> would fight the wizard frame. Step 3 uses a simple class list and an inline
+> benefit/facet prompt instead. Making those overlays host-agnostic is the
+> follow-up if the browser's class pages are wanted here.
 
 **Why `touch` exists.** The shell rebuilds `innerHTML` on render. Committing on
 every keystroke would destroy the focused node and drop the caret after one
@@ -119,7 +208,7 @@ These were settled with the table owner and are load-bearing.
 ```js
 {
   step: "profile", seen: ["profile"],
-  profile:    { name, pronouns, identity, theme, origin, backstory, img, tokenImg },
+  profile:    { name, identity, theme, origin, backstory, img, tokenImg },
   attributes: { level, arrayKey, assign: {mig,dex,ins,wlp}, milestonePicks: [] },
   classes:    [ { classKey, className, skillUuid, skillName, benefit, facetUuids[] } ],
   equipment:  { picks: [ { uuid, name, cost, slot, isMartial, handSlots, range, category } ] },
@@ -259,14 +348,22 @@ would hide the problem.
 
 ## Testing
 
-Eight plain-node suites, 272 assertions, run directly:
+Eight plain-node suites, 331 assertions, run directly:
 
 ```
 cd modules/fabula-ultima-companion/scripts/character-creation
-for t in cc-draft cc-attributes cc-classes cc-equipment cc-bond cc-render cc-api; do
+for t in cc-draft cc-attributes cc-classes cc-class-state cc-equipment cc-bond cc-render cc-api; do
   node $t.test.mjs
 done
 ```
+
+`cc-class-state.test.mjs` is the important one. It stubs a world holding two
+real-shaped class actors, then runs `LevelUpApp`'s own `_rail` / `_main` /
+`_facetGrid` / `_project` over draft state and asserts on the markup that comes
+out — the only way to find out those renderers accept it. Its fixtures use the
+formats the world really uses (`hp_benefit`, and a facet grant spelled out in
+prose containing "see Facet") because a made-up shape would test nothing. Both
+were wrong on the first attempt and the suite said so.
 
 They are **not** registered in `module.json` — they are developer tools.
 
@@ -287,6 +384,12 @@ Nothing in this system has been exercised in a running Foundry instance. In
 particular:
 
 - [ ] The window opens from the title menu and every step renders.
+- [ ] Back and Next walk the whole road in both directions, and the rail is
+      inert. (The reported "re-enter a step and Back dies" bug should be gone.)
+- [ ] The class step draws the real level-up rail and skill rows, and `+` / `−`
+      move the draft.
+- [ ] The normal level-up window still works — same actor, same spends,
+      unchanged. This is the one existing system the rework touched.
 - [ ] Class registry populates (needs real Classes folders).
 - [ ] A full level-5 build creates an actor in the right folder with the right
       owner.
