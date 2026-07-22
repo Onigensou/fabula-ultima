@@ -10653,7 +10653,7 @@
           "$deleted": false,
           "benefit": "hp",
           "class_name": "Dancer",
-          "level": 9
+          "level": "9"
         },
         "6": {
           "$deleted": true,
@@ -10768,6 +10768,14 @@
           "quantity": 3,
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.ATFNeAeezWIhpwOA"
+        },
+        "DgpWd9kQOPfDdzeJ": {
+          "consume_description": "<ul><li><p>Reduce a Skill level by one and <strong>Recovers 1 Skill Point </strong><em>(You may still only have 3 unmastered class at a time)</em></p></li></ul>",
+          "id": "${item.id}",
+          "name": "Forget me Nut",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.DgpWd9kQOPfDdzeJ"
         },
         "HaTq6zeSG3MFInuD": {
           "consume_description": "<ul><li><p>Revive one <strong>KO </strong>allies and restore their HP to their <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>score.</p></li></ul>",
@@ -12065,6 +12073,18 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.kTZD5WHGBnT9JJi1"
         },
+        "lSenTb1CNH1bI8vI": {
+          "active_class": "Dancer",
+          "active_cost": "",
+          "active_description": "<p>After you perform a <strong>dance</strong> with a duration of “Until the start of your next turn,” you gain a bonus equal to <strong>【SL × 2】</strong> to all Opposed Checks that rely on acrobatics, coordination or speed until the start of your next turn.</p>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Frenetic Footwork",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.lSenTb1CNH1bI8vI"
+        },
         "lTj2VUrRmgp1KoDg": {
           "active_class": "Rogue",
           "active_cost": "",
@@ -12224,7 +12244,7 @@
       },
       "skill_class_filter": "Dancer",
       "skill_hideEffect": false,
-      "skill_point": 2,
+      "skill_point": "2",
       "skill_point_bonus": "0",
       "skill_type_filter": "All",
       "slow_status": 0,

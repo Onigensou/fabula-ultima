@@ -96,6 +96,7 @@
               "skip_when_passive": true
             }
           },
+          "isFacet": false,
           "isReaction": true,
           "level": "1",
           "name": "Illusory Shield",
@@ -241,6 +242,7 @@
             }
           },
           "isCheck": false,
+          "isFacet": false,
           "level": "1",
           "name": "Create Phantasm: Numen",
           "on_activate_effect_ref": "numen_do",
@@ -610,6 +612,7 @@
             }
           },
           "isCheck": true,
+          "isFacet": false,
           "level": "1",
           "name": "Create Phantasm: Strike",
           "on_activate_effect_ref": "cps_menu",
@@ -1036,6 +1039,7 @@
             }
           },
           "isCheck": true,
+          "isFacet": false,
           "level": "1",
           "name": "Detonate Phantasm",
           "on_activate_effect_ref": "dp_destroy",
@@ -1467,6 +1471,7 @@
             }
           },
           "isCheck": true,
+          "isFacet": false,
           "level": "1",
           "name": "Create Phantasm: Dread",
           "on_activate_effect_ref": "dread_on",
