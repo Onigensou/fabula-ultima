@@ -237,19 +237,38 @@ const CSS = `
     opacity: .65; margin-bottom: 4px; }
   .cc-at-stat { display: flex; align-items: center; justify-content: space-between;
     gap: 10px; font-size: 13px; padding: 2px 0; }
-  .cc-at-stat .k { display: flex; align-items: center; gap: 6px; opacity: .8; }
-  .cc-at-stat .k img { width: 17px; height: 17px; object-fit: contain; border: 0 !important; }
+  .cc-at-stat .k { display: flex; align-items: center; gap: 7px; opacity: .85; }
+  /* A fixed icon column keeps the labels on one left edge regardless of how
+     wide each glyph happens to be. */
+  .cc-at-stat .k i, .cc-at-res i { width: 15px; text-align: center; opacity: .65; }
+  .cc-at-stat .k i.is-hp { color: #a3453a; opacity: .85; }
+  .cc-at-stat .k i.is-mp { color: #3a6ea3; opacity: .85; }
+  .cc-at-stat .k i.is-ip { color: #3f7a30; opacity: .85; }
   .cc-at-stat .v { font-weight: 700; font-variant-numeric: tabular-nums; }
   .cc-at-sep { height: 1px; background: #c0a67c; margin: 5px 0; }
   .cc-at-res { display: flex; align-items: center; justify-content: space-between;
     padding: 5px 8px; border-radius: 7px; background: #f7f0df; border: 1px solid #cbb890;
     font-size: 12.5px; margin-top: 4px; }
+  .cc-at-res span:first-child { display: flex; align-items: center; gap: 7px; }
   .cc-at-res .v { font-weight: 800; font-variant-numeric: tabular-nums; }
   .cc-at-pending { margin-top: auto; padding-top: 10px; font-size: 11px; opacity: .65; line-height: 1.45; }
 `;
 
-const ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/";
-const STAT_ICON = { hp: ICON + "HP.png", mp: ICON + "MP.png", ip: ICON + "IP.png", zenit: ICON + "GP.png" };
+/**
+ * Font Awesome ships with Foundry, so these need no asset fetch and inherit the
+ * text colour — which the PNG stat icons could not.
+ */
+const STAT_ICON = Object.freeze({
+  hp: "fa-heart",
+  mp: "fa-droplet",
+  ip: "fa-flask",
+  def: "fa-shield-halved",
+  mdef: "fa-hat-wizard",
+  init: "fa-bolt",
+  crisis: "fa-heart-crack",
+  sp: "fa-star",
+  zenit: "fa-coins",
+});
 
 const fmtInit = (v) => (Number.isInteger(v) ? String(v) : Number(v).toFixed(1));
 const arrayKeyOf = (d) =>
@@ -374,28 +393,29 @@ function milestoneHTML(d) {
 
 function derivedHTML(d) {
   const p = previewDerived(d);
-  const stat = (k, v, icon) => `
+  const stat = (label, value, icon, cls = "") => `
     <div class="cc-at-stat">
-      <span class="k">${icon ? `<img src="${esc(icon)}" alt="">` : ""}${esc(k)}</span>
-      <span class="v">${v}</span>
+      <span class="k"><i class="fas ${icon} ${cls}"></i>${esc(label)}</span>
+      <span class="v">${value}</span>
     </div>`;
   return `
     <div class="cc-at-h">Starting values</div>
-    ${stat("HP", p.maxHp, STAT_ICON.hp)}
-    ${stat("MP", p.maxMp, STAT_ICON.mp)}
-    ${stat("IP", p.maxIp, STAT_ICON.ip)}
+    ${stat("HP", p.maxHp, STAT_ICON.hp, "is-hp")}
+    ${stat("MP", p.maxMp, STAT_ICON.mp, "is-mp")}
+    ${stat("IP", p.maxIp, STAT_ICON.ip, "is-ip")}
     <div class="cc-at-sep"></div>
-    ${stat("DEF", p.def)}
-    ${stat("MDEF", p.mdef)}
-    ${stat("Initiative", fmtInit(p.init))}
+    ${stat("DEF", p.def, STAT_ICON.def)}
+    ${stat("MDEF", p.mdef, STAT_ICON.mdef)}
+    ${stat("Initiative", fmtInit(p.init), STAT_ICON.init)}
     <div class="cc-at-sep"></div>
-    ${stat("Crisis", p.crisis)}
+    ${stat("Crisis", p.crisis, STAT_ICON.crisis, "is-hp")}
 
     <div class="cc-at-res">
-      <span>Skill Points</span><span class="v">${draftPointPool(d)}</span>
+      <span><i class="fas ${STAT_ICON.sp}"></i> Skill Points</span>
+      <span class="v">${draftPointPool(d)}</span>
     </div>
     <div class="cc-at-res">
-      <span><img src="${esc(STAT_ICON.zenit)}" alt="" style="width:16px;height:16px;vertical-align:-3px;border:0"> Zenit</span>
+      <span><i class="fas ${STAT_ICON.zenit}" style="color:#b8862a"></i> Zenit</span>
       <span class="v">${draftBudget(d)}</span>
     </div>
 

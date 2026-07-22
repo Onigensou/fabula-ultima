@@ -220,15 +220,36 @@ export function reconcile(d) {
   const trimmed = [];
   const warnings = [];
 
-  // Attribute pool must match the chosen array. Changing array invalidates the
-  // assignment outright — the dice on offer are different.
+  /*
+   * Every placed die must still be one the current array offers.
+   *
+   * A PARTIAL assignment is normal — the player places dice one at a time, and
+   * for three of those four drops the assignment is legitimately incomplete.
+   * This used to compare the placed dice against the WHOLE pool, so the first
+   * drop never matched and was wiped by the very next reconcile. That is what
+   * made assignment look like it did nothing, and why the step then insisted no
+   * die had been chosen.
+   *
+   * Matching is by INSTANCE against a copy of the pool: "Average" is
+   * d10 d8 d8 d6, so two d8s are legal but three are not.
+   *
+   * Switching array is handled where it happens, by clearing the sockets
+   * outright — this is only the safety net for a draft that arrives incoherent.
+   */
   const arr = CC.ARRAYS[d.attributes.arrayKey];
   if (arr) {
-    const assigned = CC_ATTR_KEYS.map((k) => num(d.attributes.assign[k], 0)).filter(Boolean).sort();
-    const pool = [...arr.dice].sort();
-    if (assigned.length && JSON.stringify(assigned) !== JSON.stringify(pool)) {
+    const pool = [...arr.dice];
+    let offered = true;
+    for (const k of CC_ATTR_KEYS) {
+      const die = num(d.attributes.assign[k], 0);
+      if (!die) continue;
+      const i = pool.indexOf(die);
+      if (i < 0) { offered = false; break; }
+      pool.splice(i, 1);
+    }
+    if (!offered) {
       d.attributes.assign = {};
-      trimmed.push("attribute assignment (array changed)");
+      trimmed.push("attribute assignment (dice no longer on offer)");
     }
   }
 

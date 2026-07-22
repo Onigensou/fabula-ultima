@@ -57,6 +57,15 @@ const CSS = `
   .cc-pf-traits { font-size: 11px; opacity: .55; margin-top: -4px; }
 `;
 
+/**
+ * Whether this is the first paint since the wizard opened.
+ *
+ * Only then is it right to grab focus for the name box; on every later render
+ * the player is already somewhere and moving them is an interruption.
+ */
+let _firstBind = true;
+export const resetUiState = () => { _firstBind = true; };
+
 /** Origins already in use in this world, so players can match an existing place. */
 function knownOrigins() {
   const out = new Set();
@@ -164,16 +173,7 @@ function bind(root, d, ctx) {
   root.querySelectorAll("[data-pick]").forEach((btn) => {
     btn.addEventListener("click", (ev) => {
       ev.preventDefault();
-      const field = btn.dataset.pick;
-      // FilePicker is Foundry's own browser, so players get the same asset tree
-      // they see everywhere else, including S3 and Forge buckets.
-      const FP = foundry.applications?.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
-      if (!FP) { ui.notifications?.warn("File browser unavailable."); return; }
-      new FP({
-        type: "image",
-        current: d.profile[field] || "",
-        callback: (path) => ctx.edit((dd) => { dd.profile[field] = path; }),
-      }).render(true);
+      pickImage(d, btn.dataset.pick, ctx);
     });
   });
 
@@ -184,8 +184,62 @@ function bind(root, d, ctx) {
     });
   });
 
-  // The name is what this page is for.
-  root.querySelector("[data-f='name']")?.focus();
+  // The name is what this page is for — but only put the caret there on
+  // ARRIVAL. Focusing on every bind meant any re-render (committing another
+  // field, clearing an image) yanked the caret out of whatever the player was
+  // actually typing in and back up to the name box.
+  if (_firstBind) {
+    _firstBind = false;
+    root.querySelector("[data-f='name']")?.focus();
+  }
 }
 
-STEP_RENDERERS.set("profile", { render, bind });
+/**
+ * Choose a portrait or token image.
+ *
+ * FilePicker has moved around between Foundry versions and is namespaced
+ * differently in v13, so it is looked up in several places rather than assumed.
+ * If none of them answers, the player still gets a box to paste a path or URL
+ * into — refusing outright left "input an image link" with no route at all.
+ */
+function pickImage(d, field, ctx) {
+  const commit = (path) => ctx.edit((dd) => { dd.profile[field] = String(path ?? "").trim(); });
+  const current = d.profile[field] || "";
+
+  const FP = foundry?.applications?.apps?.FilePicker?.implementation
+    ?? globalThis.FilePicker
+    ?? foundry?.applications?.apps?.FilePicker;
+
+  if (typeof FP === "function") {
+    try {
+      new FP({ type: "image", current, callback: commit }).render(true);
+      return;
+    } catch (e) {
+      console.warn("[ONI][CharCreate] FilePicker failed, falling back to a path box:", e);
+    }
+  }
+  promptForPath(current, commit);
+}
+
+/** Last resort: type or paste a path. Always available. */
+function promptForPath(current, commit) {
+  const content = `
+    <p style="margin:0 0 6px">Paste an image path or URL.</p>
+    <input type="text" name="path" value="${esc(current)}"
+           placeholder="worlds/my-world/art/hero.webp"
+           style="width:100%;padding:6px 8px">`;
+  new Dialog({
+    title: "Image",
+    content,
+    buttons: {
+      ok: {
+        label: "Use",
+        callback: (html) => commit(html[0]?.querySelector?.("[name=path]")?.value ?? ""),
+      },
+      cancel: { label: "Cancel" },
+    },
+    default: "ok",
+  }).render(true);
+}
+
+STEP_RENDERERS.set("profile", { render, bind, reset: resetUiState });

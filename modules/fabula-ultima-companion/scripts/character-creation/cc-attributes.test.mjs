@@ -196,5 +196,67 @@ eq("returning something not placed reports none",
   eq("a shield adds on top of the replacement", both.def, 13);
 }
 
+
+// ── a PARTIAL assignment must survive reconcile ────────────────────────────
+//
+// The player places dice one at a time, so for three of the four drops the
+// assignment is legitimately incomplete. reconcile used to compare the placed
+// dice against the WHOLE pool, so the first drop never matched and was wiped
+// immediately -- which is what made assignment look like it did nothing and
+// then complain that no die had been chosen.
+{
+  const step = (assign) => {
+    const d = D.createDraft();
+    d.attributes.arrayKey = "average";        // d10 d8 d8 d6
+    d.attributes.assign = { ...assign };
+    const r = D.reconcile(d);
+    return { assign: d.attributes.assign, trimmed: r.trimmed };
+  };
+
+  eq("one die placed survives", step({ mig: 10 }).assign, { mig: 10 });
+  eq("...silently", step({ mig: 10 }).trimmed, []);
+  eq("two survive", step({ mig: 10, dex: 8 }).assign, { mig: 10, dex: 8 });
+  eq("three survive", step({ mig: 10, dex: 8, ins: 8 }).assign, { mig: 10, dex: 8, ins: 8 });
+  eq("a full assignment survives",
+    step({ mig: 10, dex: 8, ins: 8, wlp: 6 }).assign, { mig: 10, dex: 8, ins: 8, wlp: 6 });
+  eq("an empty assignment survives", step({}).assign, {});
+
+  // Both d8s are legal; a third is not, because the array only holds two.
+  eq("both d8s are allowed", step({ mig: 8, dex: 8 }).assign, { mig: 8, dex: 8 });
+  eq("a third d8 is not on offer", step({ mig: 8, dex: 8, ins: 8 }).assign, {});
+  eq("...and says so", step({ mig: 8, dex: 8, ins: 8 }).trimmed.length, 1);
+
+  // A die from a different array is cleared -- this is the safety net for a
+  // draft that arrives incoherent, not the normal array-switch path.
+  eq("a d12 is not in Average", step({ mig: 12 }).assign, {});
+
+  // Specialized is d10 d10 d6 d6, so two d10s are fine there.
+  const spec = D.createDraft();
+  spec.attributes.arrayKey = "specialized";
+  spec.attributes.assign = { mig: 10, dex: 10 };
+  D.reconcile(spec);
+  eq("two d10s are legal in Specialized", spec.attributes.assign, { mig: 10, dex: 10 });
+
+  const jack = D.createDraft();
+  jack.attributes.arrayKey = "jack";          // d8 d8 d8 d8
+  jack.attributes.assign = { mig: 10 };
+  D.reconcile(jack);
+  eq("a d10 is not on offer in Jack of All Trades", jack.attributes.assign, {});
+}
+
+// Placing all four one at a time, reconciling between each, must end complete.
+// This is the exact sequence a player performs.
+{
+  const d = D.createDraft();
+  d.attributes.arrayKey = "average";
+  for (const [slot, die] of [["mig", 10], ["dex", 8], ["ins", 8], ["wlp", 6]]) {
+    A.placeDie(d.attributes.assign, { die, from: "tray" }, slot);
+    D.reconcile(d);
+  }
+  eq("four drops with a reconcile after each end assigned",
+    d.attributes.assign, { mig: 10, dex: 8, ins: 8, wlp: 6 });
+  eq("...and the step now passes", D.validateStep(d, "attributes").ok, true);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
