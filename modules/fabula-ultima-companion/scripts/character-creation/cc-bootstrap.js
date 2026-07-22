@@ -15,6 +15,12 @@ import { app } from "./cc-app.js";
 import { previewFolder, folderNameFor } from "./cc-folder.js";
 import { installNet } from "../advancement/advancement-net.js";
 
+// Step modules self-register into STEP_RENDERERS on import. They are pulled in
+// HERE rather than from cc-app so the dependency runs one way only — steps
+// import the shell, never the reverse — and no import cycle exists.
+import "./cc-step-profile.js";
+import "./cc-step-attributes.js";
+
 /** Is the world set up to create characters? */
 export function openable() {
   const seed = game.actors?.get(CC.BLANK_PC_ID) ?? null;

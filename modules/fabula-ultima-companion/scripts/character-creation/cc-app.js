@@ -191,12 +191,21 @@ class CharacterCreationApp {
     document.head.appendChild(s);
   }
 
-  /** Context handed to every step renderer. */
+  /**
+   * Context handed to every step renderer.
+   *
+   * `edit` vs `touch` matters. The shell re-renders by replacing innerHTML, so
+   * calling `edit` from an input's `input` event destroys the node the player is
+   * typing into and drops the caret after one character. Text fields therefore
+   * use `touch` (mutate, no render) while typing and `edit` on `change`/blur,
+   * where a re-render is both safe and needed to re-run reconciliation.
+   */
   _ctx() {
     return {
       app: this,
       refresh: () => this._render(),
-      /** Mutate the draft then re-render, running reconciliation. */
+
+      /** Mutate + reconcile + re-render. For structural changes. */
       edit: (fn) => {
         fn(this._draft);
         const { trimmed, warnings } = reconcile(this._draft);
@@ -205,6 +214,15 @@ class CharacterCreationApp {
           ...warnings,
         ];
         this._render();
+      },
+
+      /** Mutate only — no reconcile, no re-render. For live typing. */
+      touch: (fn) => { fn(this._draft); },
+
+      /** Refresh just the footer, so `touch` edits can still show up there. */
+      syncFoot: () => {
+        const el = this._el?.querySelector(".cc-foot-info");
+        if (el) el.textContent = this._footInfo();
       },
     };
   }
