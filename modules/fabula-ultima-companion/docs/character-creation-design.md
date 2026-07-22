@@ -38,7 +38,14 @@ reachability concept is gone — there is no set left to fall out of sync.
 `seen` survives only to mark progress on the rail and to avoid criticising a
 step nobody has opened.
 
-Going forward is never blocked; only **Create** enforces completeness.
+**Forward is blocked until the current step validates.** Next carries the
+reason as its tooltip. A later step is built on an earlier one’s answers — the
+point pool comes from the level, the martial rules come from the classes — so
+walking past an unfinished step produced a page that could not be filled in
+correctly and an error with no obvious cause.
+
+A step is only *criticised* once the player has been past it. On a first visit
+an empty form is not a mistake, it is a form.
 
 ---
 
@@ -52,7 +59,7 @@ Going forward is never blocked; only **Create** enforces completeness.
 | `cc-class-state.js` | `draftState(draft)` — a `getState`-shaped view of the draft |
 | `cc-app.js` | Overlay shell, step rail, nav, finalize dispatch |
 | `cc-step-profile.js` | Step 1 |
-| `cc-step-attributes.js` | Step 2 — also owns `applyMilestones` / `effectiveBases` / `previewDerived` |
+| `cc-step-attributes.js` | Step 2 — owns ALL derived maths: `applyMilestones`, `previewDerived`, `benefitTally`, `finalDerived`, `placeDie` |
 | `cc-step-classes.js` | Step 3 — spend rules; the markup is borrowed from `levelup-app` |
 | `cc-step-equipment.js` | Step 4 — also owns the equipment catalogue reader |
 | `cc-step-bond.js` | Step 5 |
@@ -106,7 +113,7 @@ thing to maintain.
 | Attributes | `attribute-app` | Row shape, `ATTR_META` icons, derived panel |
 | Classes | `levelup-app` | **The actual renderers** — see below |
 | Equipment | `shopWindow-app` | Vertical emoji tabs, item rows, zenit mark, buy pill |
-| Bond | `camp-ui-bond` | Slot with hearts, `name → relationship`, per-pair dropdowns |
+| Bond | `camp-ui-bond` | Slot with hearts, `name → relationship`, one control per pair |
 
 ### The class step's seam
 
@@ -232,6 +239,62 @@ one. Over-budget equipment is **reported, never trimmed**.
 
 ---
 
+## Derived stats
+
+Three layers, added in this order. `cc-step-attributes.js` owns all of it, so
+the numbers a player sees on step 2 and the numbers on the summary come from one
+place.
+
+| Layer | Where it appears | Function |
+|---|---|---|
+| Base — level and the attribute dice | Attribute step, right panel | `previewDerived` |
+| Class free benefits | Summary only | `benefitTally` |
+| Equipment | Summary only | `equipBonuses` (equipment step) |
+| The three combined | Summary "Starting Stats" | `finalDerived` |
+
+The attribute step deliberately shows base only: classes are picked a step
+later and gear a step after that, so anything more would be a guess. The
+summary's table prints base → change → total for each stat, because a bare
+total is a number to take on faith.
+
+Two rules that are easy to get backwards, and are both pinned by tests:
+
+- **A class free benefit applies ONCE, when the class is opened** — not per
+  level in it. That is why `class_list` carries one benefit column per class
+  row. Counting per level would inflate a level-10 mono-class build by 45 HP.
+- **Martial armour REPLACES the DEX die** with `item_baseDef`; ordinary armour
+  ADDS `item_def_bonus` to it. Shields always add, martial or not. This mirrors
+  the equipment macro, which is what actually writes these onto a sheet.
+  Treating them the same way would overstate a plate-wearer by their whole DEX
+  die.
+
+Untrained gear contributes nothing — it is carried, not worn, so it must not
+appear in the projection any more than it does on the sheet.
+
+---
+
+## Assignment is drag and drop
+
+The array is a tray of four dice; each attribute is a socket. A die *moves* when
+placed, so the pool cannot inflate — the invalid spread is unreachable rather
+than merely rejected.
+
+This replaced a set of dropdowns whose selection did not survive the shell's
+re-render, so choosing a die appeared to do nothing and the step then complained
+that no die had been chosen. Nothing here holds widget state that can disagree
+with the draft.
+
+- socket → socket **swaps**
+- tray → occupied socket displaces the old die back to the tray
+- socket → tray, or a click on a filled socket, returns it
+- switching array **resets every socket**, since the dice on offer changed
+
+`trayDice` removes placed dice by **instance, not by value**: "Average" is
+d10 d8 d8 d6, a multiset, and filtering by value would empty both d8 slots the
+moment either was placed.
+
+---
+
 ## Rules and where they live
 
 | Rule | Client (courtesy) | GM (authoritative) |
@@ -242,7 +305,12 @@ one. Over-budget equipment is **reported, never trimmed**.
 | ≤ 3 unmastered classes | `canSpend` | `validateSpend` |
 | 2–3 classes below level 10 | `canSpend` + `validateStep` | `validateAll` in `applyCreate` |
 | Budget not exceeded | `validateStep` | `validateAll` in `applyCreate` |
+| A name was entered | `validateStep` | `validateAll` in `applyCreate` |
+| Every attribute die placed | `validateStep` | (baked into the bases at creation) |
 | Spend gate (title/camp) | window greys out | `gateState` in `applyCreate` **and** each spend |
+
+Every one of these also DISABLES Next on its own step, so the client checks are
+not merely advice -- they are the gate. The GM re-checks everything regardless.
 
 The client checks exist so a player is never told "no" only at the very end.
 The GM re-checks everything regardless.
@@ -348,7 +416,7 @@ would hide the problem.
 
 ## Testing
 
-Eight plain-node suites, 331 assertions, run directly:
+Eight plain-node suites, 405 assertions, run directly:
 
 ```
 cd modules/fabula-ultima-companion/scripts/character-creation
@@ -384,6 +452,14 @@ Nothing in this system has been exercised in a running Foundry instance. In
 particular:
 
 - [ ] The window opens from the title menu and every step renders.
+- [ ] Next stays GREY until each step is complete, and its tooltip says why.
+- [ ] Dragging a die from the tray into a socket works, socket-to-socket swaps,
+      and clicking a filled socket returns its die.
+- [ ] Switching array clears every socket.
+- [ ] The equipment purse and bar count/slide rather than snapping, and the
+      chosen list shows full item names.
+- [ ] The summary Starting Stats table matches the sheet after creation --
+      especially Max HP against the class benefits actually granted.
 - [ ] Back and Next walk the whole road in both directions, and the rail is
       inert. (The reported "re-enter a step and Back dies" bug should be gone.)
 - [ ] The class step draws the real level-up rail and skill rows, and `+` / `−`
