@@ -84,6 +84,12 @@ export function playSfx(url, vol = 0.6) {
       gain.gain.value = vol;
       src.buffer = buf;
       src.connect(gain).connect(c.destination);
+      // Release the graph edge once the cue finishes. Without this every play
+      // leaves a GainNode wired to destination until GC, and a rapid-fire UI
+      // (the level-up window's cursor cue on every hover) piles up enough of
+      // them to trigger GC pauses mid-interaction. Purely a cleanup — it runs
+      // after playback ends and changes nothing audible.
+      src.onended = () => { try { src.disconnect(); gain.disconnect(); } catch { /* already gone */ } };
       src.start(0);
     };
     const cached = _audio.buffers.get(url);

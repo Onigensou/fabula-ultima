@@ -18,9 +18,12 @@ import { playSfx, preloadSfx } from "../battle-director/director-sfx.js";
 const BASE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 
 export const SFX = Object.freeze({
-  tab:        BASE + "BattleCursor_1.wav",
+  tab:        BASE + "BattleCursor_3.wav",
   toggle:     BASE + "BattleCursor_2.wav",
   cursor:     BASE + "BattleCursor_4.wav",
+  // Turning to a different class in the browser — a heavier cue than the plain
+  // cursor blip, because a class page is a destination rather than a row.
+  classPage:  BASE + "bond_start.wav",
   open:       BASE + "bond_start.wav",
   close:      BASE + "bond_cleared.wav",
   // Staging cues — the click that queues a change, not the write.
@@ -36,7 +39,7 @@ export const SFX = Object.freeze({
 });
 
 const VOL = Object.freeze({
-  tab: 0.5, toggle: 0.5, cursor: 0.35, open: 0.6, close: 0.55,
+  tab: 0.5, toggle: 0.5, cursor: 0.35, classPage: 0.5, open: 0.6, close: 0.55,
   stageUp: 0.55, stageDown: 0.5, deselect: 0.45,
   levelUp: 0.75, levelDown: 0.55,
 });
@@ -108,6 +111,52 @@ export function windowAnim(panel, dir = "in") {
     fill: "both",
   });
   return a.finished.catch(() => {});
+}
+
+/**
+ * The class page arriving: portrait first, then everything written about it.
+ *
+ * Two beats, deliberately sequential rather than overlapping — the portrait is
+ * the subject of the page, so it lands before the text starts competing for the
+ * eye. The page begins blank instead of showing the old class's text under the
+ * new art, which would read as a glitch.
+ *
+ * The art and the text are separate layers for exactly this reason: they cannot
+ * be animated apart while the text lives inside the element carrying the image.
+ */
+let _lastIntro = 0;
+export function previewIntro(art, text) {
+  if (reduced()) return;
+
+  // Scrolling the list quickly would otherwise restart the sequence on every
+  // keypress, and since the text waits for the portrait it would never get to
+  // appear at all — you would scroll past a column of blank pages. Below the
+  // threshold the page just swaps, and the entrance is saved for a selection
+  // you actually stopped on.
+  const now = performance.now();
+  const rapid = now - _lastIntro < 320;
+  _lastIntro = now;
+  if (rapid) return;
+
+  const ART_MS = 640;
+  if (art) {
+    art.animate(
+      [{ opacity: 0, transform: "translateX(-46px)" }, { opacity: 1, transform: "none" }],
+      { duration: ART_MS, easing: "cubic-bezier(.16,.84,.3,1)", fill: "both" }
+    );
+  }
+
+  // Each block arrives on its own beat, in reading order, so the page assembles
+  // itself rather than appearing all at once. DOM order already is reading
+  // order: name, also-known-as, flavour, lore, then the meta line.
+  const blocks = text ? Array.from(text.children) : [];
+  const start = art ? ART_MS - 90 : 0;   // overlaps the portrait's last moments
+  blocks.forEach((el, i) => {
+    el.animate(
+      [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }],
+      { duration: 280, delay: start + i * 75, easing: "cubic-bezier(.2,.8,.3,1)", fill: "both" }
+    );
+  });
 }
 
 /**

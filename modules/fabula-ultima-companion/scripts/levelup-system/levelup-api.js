@@ -41,16 +41,28 @@ const resolveActor = (uuid) => {
 
 const fail = (reason, extra = {}) => ({ ok: false, reason, ...extra });
 
-/** Is this client the one GM allowed to act? */
+/**
+ * Is this client the one GM allowed to write?
+ *
+ * Delegates to the shared helper at `FUCompanion.isPrimaryGM` — top level, NOT
+ * under `.api`. An earlier version of this looked for it in the wrong place,
+ * found undefined, and silently fell back to its own lowest-id-GM copy. That
+ * copy ignored core's `game.users.activeGM`, so this system could disagree with
+ * every other one about which GM is primary — the precise failure the shared
+ * helper exists to prevent. Kept as a fallback only for load-order safety.
+ */
 function isActingGM() {
   if (!game.user?.isGM) return false;
   try {
-    const primary = globalThis.FUCompanion?.api?.primaryGM;
-    if (primary?.isPrimaryGM) return primary.isPrimaryGM();
+    if (typeof globalThis.FUCompanion?.isPrimaryGM === "function") {
+      return globalThis.FUCompanion.isPrimaryGM();
+    }
   } catch { /* fall through */ }
-  // Fallback: lowest-id active GM acts.
-  const gms = game.users.filter((u) => u.isGM && u.active).sort((a, b) => a.id.localeCompare(b.id));
-  return gms[0]?.id === game.user.id;
+  const active = game.users?.activeGM ?? null;
+  if (active) return active.id === game.user.id;
+  const gms = game.users.filter((u) => u.isGM && u.active)
+    .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+  return gms[0] ? gms[0].id === game.user.id : true;
 }
 
 /** Next free numeric row key for a CSB dynamicTable. */
@@ -152,6 +164,13 @@ export function getState(actorUuid) {
       img: cls.img,
       folder: cls.folder,
       benefit: cls.benefit,
+      free: cls.free,
+      // Authored prose for the class browser: the quote, the body, the alt
+      // names, and the Unique Mechanic (present on 21 of 42 classes).
+      flavor: cls.flavor,
+      lore: cls.lore,
+      also: cls.also,
+      mechanic: cls.mechanic,
       level: mine?.level ?? 0,
       mastered: !!mine?.mastered,
       taken: !!mine,
@@ -483,19 +502,33 @@ async function applyHeroic({ actorUuid, skillUuid }) {
 
 const _pending = new Map();
 
-function emitAll(payload) {
-  for (const ch of LEVELUP.CHANNELS) {
-    try { game.socket.emit(ch, payload); } catch { /* channel not wired */ }
-  }
+// Requests this GM has already applied. Belt to the single-channel braces: a
+// duplicate delivery, a client retry, or a second GM coming online mid-flight
+// must never apply the same spend twice. Bounded so a long session cannot grow
+// it without limit.
+const _handled = new Set();
+function alreadyHandled(reqId) {
+  if (!reqId) return false;
+  if (_handled.has(reqId)) return true;
+  _handled.add(reqId);
+  if (_handled.size > 500) _handled.delete(_handled.values().next().value);
+  return false;
+}
+
+function emit(payload) {
+  try { game.socket.emit(LEVELUP.CHANNEL, payload); } catch (e) { warn("socket emit failed", e); }
 }
 
 function request(type, resType, payload) {
-  if (game.user.isGM) return route(type, payload);
+  // Only the PRIMARY GM may write directly. A second GM operating the window
+  // goes over the socket like a player, so the primary stays the only writer
+  // and the two cannot interleave on the same actor.
+  if (isActingGM()) return route(type, payload);
 
   const reqId = foundry.utils.randomID();
   return new Promise((resolve) => {
     _pending.set(reqId, resolve);
-    emitAll({ type, payload: { ...payload, reqId, requesterUserId: game.user.id } });
+    emit({ type, payload: { ...payload, reqId, requesterUserId: game.user.id } });
     setTimeout(() => {
       if (!_pending.has(reqId)) return;
       _pending.delete(reqId);
@@ -535,9 +568,10 @@ async function onSocket(msg) {
   // Request arriving at the GM. Exactly one GM may act, or a spend applies twice.
   if (!RES_OF[type]) return;
   if (!isActingGM()) return;
+  if (alreadyHandled(payload?.reqId)) return;
 
   const result = await route(type, payload);
-  emitAll({ type: RES_OF[type], payload: { reqId: payload?.reqId, result } });
+  emit({ type: RES_OF[type], payload: { reqId: payload?.reqId, result } });
 }
 
 // ── public API ─────────────────────────────────────────────────────────────
@@ -567,9 +601,8 @@ function registerApi() {
 
 Hooks.once("init", registerApi);
 Hooks.once("ready", () => {
-  for (const ch of LEVELUP.CHANNELS) {
-    try { game.socket.on(ch, onSocket); } catch (e) { warn(`socket ${ch} unavailable`, e); }
-  }
+  try { game.socket.on(LEVELUP.CHANNEL, onSocket); }
+  catch (e) { warn(`socket ${LEVELUP.CHANNEL} unavailable`, e); }
   // Class actors are authored rarely, but when they are the cache must go.
   for (const hook of ["createItem", "updateItem", "deleteItem", "updateActor"]) {
     Hooks.on(hook, (doc) => {

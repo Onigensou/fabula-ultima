@@ -27,7 +27,15 @@ import { lookupTerm } from "../battle-director/keyword-registry.js";
 // layers of styling spans, and once their attributes are stripped those become
 // empty nesting around every term. They are unwrapped unless they are one of
 // the term elements this module built.
-const KEEP = new Set(["P", "BR", "UL", "OL", "LI", "STRONG", "B", "EM", "I", "U", "HR"]);
+// Headings and tables matter for the long-form Unique Mechanic text, which is
+// authored as a document ("<h1>THE ARCANA</h1><h2>MERGING…"). Dropping them
+// unwrapped every heading into a bare run of text butted against the next
+// paragraph, which is what made that tab look like flattened HTML.
+const KEEP = new Set([
+  "P", "BR", "UL", "OL", "LI", "STRONG", "B", "EM", "I", "U", "HR",
+  "H1", "H2", "H3", "H4", "H5", "H6",
+  "TABLE", "THEAD", "TBODY", "TR", "TD", "TH",
+]);
 const DROP = new Set(["SCRIPT", "IFRAME", "OBJECT", "EMBED", "STYLE", "LINK", "IMG"]);
 
 // Elements this module generated, which must survive the scrub that removes
@@ -76,18 +84,67 @@ export function renderDescription(html) {
     const keywords = [];
     const seen = new Set();
 
-    for (const a of Array.from(root.querySelectorAll("a[data-uuid], a.content-link"))) {
+    const resolved = Array.from(root.querySelectorAll("a[data-uuid], a.content-link")).map((a) => {
       const uuid = a.getAttribute("data-uuid") || "";
       const text = (a.textContent || "").trim();
       const entry = lookupTerm(uuid) || lookupTerm(text);
       // The link's own text wins — "Ice Shield" and "Fire Shield" share the
       // base Shield journal uuid, and the registry label would flatten both.
-      const label = text || entry?.label || "";
+      return { a, text, entry, label: text || entry?.label || "" };
+    });
 
+    /*
+     * Only a keyword that IS the line gets lifted to the row at the top.
+     *
+     * "Chain 3" on its own bullet is a tag for the whole skill and belongs up
+     * there. "…with a Melee Weapon you have equipped" is a word in a sentence,
+     * and lifting it left the reader with "with a Weapon" — a real rules
+     * change, not just a cosmetic one.
+     *
+     * The test is per block: strip every keyword's own text and see whether any
+     * actual words are left. "Chain 3" leaves "3"; a sentence leaves prose.
+     */
+    const BLOCKS = "li, p, h1, h2, h3, h4, h5, h6, td, th";
+    const byBlock = new Map();
+    for (const r of resolved) {
+      if (r.entry?.kind !== "keyword") continue;
+      const block = r.a.closest(BLOCKS) ?? root;
+      if (!byBlock.has(block)) byBlock.set(block, []);
+      byBlock.get(block).push(r);
+    }
+    const tagLines = new Set();
+    const leftover = new Map();
+    for (const [block, list] of byBlock) {
+      let rest = block.textContent || "";
+      for (const r of list) rest = rest.replace(r.text, " ");
+      if (!/[A-Za-z]{2,}/.test(rest)) {
+        tagLines.add(block);
+        leftover.set(block, rest.replace(/ /g, " ").trim());
+      }
+    }
+
+    for (const { a, text, entry, label } of resolved) {
       if (entry?.kind === "keyword") {
-        if (!seen.has(label.toLowerCase())) {
-          seen.add(label.toLowerCase());
-          keywords.push({ label, icon: entry.icon ?? null, kind: "keyword" });
+        const standalone = tagLines.has(a.closest(BLOCKS) ?? root);
+        if (!standalone) {
+          // Keep it where the sentence needs it, still badged.
+          const holder = document.createElement("span");
+          holder.innerHTML = termHTML({ label, icon: entry.icon ?? null, kind: "keyword" });
+          a.replaceWith(holder.firstElementChild ?? document.createTextNode(text));
+          continue;
+        }
+        // "Chain 3" is one keyword with a count, not a keyword and a stray 3.
+        // Lifting only the word stranded the number as its own bullet. The
+        // qualifier is kept verbatim so "Backstab (10)" keeps its value and its
+        // brackets rather than being flattened to "Backstab".
+        const block = a.closest(BLOCKS) ?? root;
+        const rest = leftover.get(block) ?? "";
+        const full = (byBlock.get(block)?.length === 1 && /^[([]?[+-]?\d+[)\]]?$/.test(rest))
+          ? `${label} ${rest}` : label;
+
+        if (!seen.has(full.toLowerCase())) {
+          seen.add(full.toLowerCase());
+          keywords.push({ label: full, icon: entry.icon ?? null, kind: "keyword" });
         }
         a.remove();
         continue;
@@ -100,6 +157,12 @@ export function renderDescription(html) {
       }
       a.replaceWith(document.createTextNode(text));   // dead link → plain text
     }
+
+    // A tag line's whole point was the keywords now shown above, so drop what
+    // is left of it — otherwise the counts and separators linger as a bullet.
+    // Test parentNode, NOT isConnected: this tree is a detached div, so
+    // isConnected is false for every node in it and the cleanup never ran.
+    for (const block of tagLines) if (block !== root && block.parentNode) block.remove();
 
     // Scrub: drop dangerous nodes, unwrap unknown ones, and strip authored
     // styling so this window's CSS is the only thing deciding how it looks.
@@ -117,6 +180,11 @@ export function renderDescription(html) {
     }
     for (const list of Array.from(root.querySelectorAll("ul, ol"))) {
       if (!list.querySelector("li")) list.remove();
+    }
+    // Authored documents are full of empty spacer paragraphs between headings;
+    // with real heading margins they become double gaps.
+    for (const p of Array.from(root.querySelectorAll("p"))) {
+      if (!p.textContent.trim() && !p.querySelector("img, br")) p.remove();
     }
 
     return {
@@ -157,4 +225,17 @@ ${scope} .lu-rt ul, ${scope} .lu-rt ol { margin: 2px 0 4px; padding-left: 16px; 
 ${scope} .lu-rt li { margin: 1px 0; }
 ${scope} .lu-rt hr { border: 0; border-top: 1px dashed rgba(90,70,40,.35); margin: 5px 0; }
 ${scope} .lu-rt strong, ${scope} .lu-rt b { font-weight: 700; }
+/* Long-form authored documents (the Unique Mechanic) — headings and tables. */
+${scope} .lu-rt h1, ${scope} .lu-rt h2, ${scope} .lu-rt h3,
+${scope} .lu-rt h4, ${scope} .lu-rt h5, ${scope} .lu-rt h6 {
+  margin: 10px 0 4px; line-height: 1.2; font-weight: 800; color: #5c1f2e;
+  border: 0; letter-spacing: .02em; }
+${scope} .lu-rt h1 { font-size: 1.35em; border-bottom: 2px solid #c0a67c; padding-bottom: 2px; }
+${scope} .lu-rt h2 { font-size: 1.18em; }
+${scope} .lu-rt h3, ${scope} .lu-rt h4 { font-size: 1.05em; color: #7a4a1e; }
+${scope} .lu-rt h5, ${scope} .lu-rt h6 { font-size: 1em; color: #7a4a1e; }
+${scope} .lu-rt > :first-child { margin-top: 0; }
+${scope} .lu-rt table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: .95em; }
+${scope} .lu-rt th, ${scope} .lu-rt td { border: 1px solid #c0a67c; padding: 3px 6px; text-align: left; }
+${scope} .lu-rt th { background: #e6dabd; font-weight: 700; }
 `;

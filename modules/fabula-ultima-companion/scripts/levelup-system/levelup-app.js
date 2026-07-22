@@ -15,11 +15,14 @@
 // courtesy, not the enforcement.
 // ============================================================================
 
-import { LEVELUP, LEVELUP_KEYS as KEYS, LEVELUP_CURSOR_SRC, keyMatch } from "./levelup-const.js";
+import {
+  LEVELUP, LEVELUP_KEYS as KEYS, LEVELUP_CURSOR_SRC, keyMatch,
+  classIcon, CLASS_META_DEFAULT,
+} from "./levelup-const.js";
 import { renderDescription, keywordRowHTML, RICHTEXT_CSS } from "./levelup-richtext.js";
 import {
   sfx, hoverSfx, resetHover, preloadLevelUpSfx,
-  staggerRows, windowAnim, burst, FX_CSS,
+  staggerRows, windowAnim, previewIntro, burst, FX_CSS,
 } from "./levelup-fx.js";
 
 const STYLE_ID = "oni-levelup-styles";
@@ -269,9 +272,105 @@ function injectStyles() {
 
 #${ROOT_ID} .lu-picker { position: absolute; inset: 0; display: flex; align-items: center;
   justify-content: center; background: rgba(0,0,0,.45); }
-#${ROOT_ID} .lu-pickpanel { width: min(620px, 88vw); height: min(640px, 84vh); }
-#${ROOT_ID} .lu-pickpanel .lu-head { gap: 10px; }
-#${ROOT_ID} .lu-pickpanel .lu-main { flex: 1 1 auto; min-height: 0; }
+#${ROOT_ID} .lu-pickpanel { width: min(1000px, 94vw); height: min(700px, 90vh); }
+#${ROOT_ID} .lu-pickpanel .lu-head { gap: 10px; align-items: flex-start; }
+#${ROOT_ID} .lu-picktabs { margin-left: auto; }
+
+/* Two panes: preview left, class list right. */
+#${ROOT_ID} .lu-pickbody { flex: 1 1 auto; display: flex; min-height: 0; }
+/* min-height:0 is load-bearing: without it this flex column refuses to shrink
+   below its content, so .lu-pvscroll never gets a bounded height and a long
+   Unique Mechanic overflows instead of scrolling. */
+#${ROOT_ID} .lu-preview { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: hidden;
+  display: flex; flex-direction: column; padding: 12px 14px; gap: 8px; }
+/* Give the long-form tabs a visible, in-theme scrollbar. */
+#${ROOT_ID} .lu-pvscroll { scrollbar-width: thin; scrollbar-color: #a9855a #e6dabd; }
+#${ROOT_ID} .lu-pvscroll::-webkit-scrollbar { width: 10px; }
+#${ROOT_ID} .lu-pvscroll::-webkit-scrollbar-track { background: #e6dabd; border-radius: 6px; }
+#${ROOT_ID} .lu-pvscroll::-webkit-scrollbar-thumb { background: #a9855a; border-radius: 6px;
+  border: 2px solid #e6dabd; }
+#${ROOT_ID} .lu-pvscroll::-webkit-scrollbar-thumb:hover { background: #8a6c45; }
+#${ROOT_ID} .lu-picklist { width: 288px; flex: 0 0 auto; overflow-y: auto; padding: 8px;
+  background: #e2d3b6; border-left: 1px solid #b79c72; }
+
+#${ROOT_ID} .lu-pickrow { display: flex; align-items: center; gap: 10px; width: 100%;
+  text-align: left; font: inherit; font-size: 14px; font-weight: 600; color: #2f2618;
+  padding: 9px 12px; margin-bottom: 5px; border-radius: 8px; cursor: pointer;
+  background: #f7f0df; border: 1px solid #c6ae87; }
+#${ROOT_ID} .lu-pickrow:hover { background: #fffaec; border-color: #a98a4e; }
+#${ROOT_ID} .lu-pickrow.on { background: #5d4630; color: #f6ecd8; border-color: #3a2b17; }
+#${ROOT_ID} .lu-pickrow i { width: 22px; text-align: center; font-size: 16px; opacity: .85; flex: 0 0 auto; }
+
+/* Overview — the art fills the pane; text floats over it.
+   Every overlay carries a glow + stroke so it survives whatever is behind it:
+   the art is different per class and cannot be designed around. */
+#${ROOT_ID} .lu-previewwrap { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+#${ROOT_ID} .lu-pvart { position: relative; flex: 1 1 auto; min-height: 0; }
+#${ROOT_ID} .lu-pvartimg { position: absolute; inset: 0; z-index: 0;
+  background-size: contain; background-position: center top; background-repeat: no-repeat; }
+/* Scrim between art and text, so the overlays read over busy artwork. */
+#${ROOT_ID} .lu-pvart::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(ellipse at 30% 40%, rgba(247,240,223,0) 40%, rgba(247,240,223,.55) 100%); }
+#${ROOT_ID} .lu-pvtext { position: absolute; inset: 0; z-index: 2; }
+
+#${ROOT_ID} .lu-glow, #${ROOT_ID} .lu-pvname, #${ROOT_ID} .lu-pvflavor,
+#${ROOT_ID} .lu-pvalso, #${ROOT_ID} .lu-pvlore, #${ROOT_ID} .lu-pvmeta {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3px rgba(247,240,223,.92);
+  text-shadow: 0 0 8px #f7f0df, 0 0 16px #f7f0df, 0 1px 0 rgba(247,240,223,.9); }
+
+#${ROOT_ID} .lu-pvname { position: absolute; top: 2px; left: 2px; right: 2px;
+  font-size: 30px; font-weight: 800; font-style: italic; color: #5c1f2e; }
+/* Sits just under the class name, nudged in from the left edge. */
+#${ROOT_ID} .lu-pvalso { position: absolute; top: 42px; left: 22px; width: 60%;
+  font-size: 11.5px; color: #5a4a30; }
+#${ROOT_ID} .lu-pvalso i { opacity: .7; }
+#${ROOT_ID} .lu-pvflavor { position: absolute; top: 74px; right: 6px; width: 44%;
+  font-size: 13px; font-style: italic; color: #4a3a22; text-align: center; }
+#${ROOT_ID} .lu-pvflavor.lu-rt p { margin: 0; }
+#${ROOT_ID} .lu-pvlore { position: absolute; right: 6px; bottom: 6px; width: 46%;
+  max-height: 52%; overflow-y: auto; font-size: 11.5px; color: #3a2f1e; }
+#${ROOT_ID} .lu-pvmeta { position: absolute; left: 4px; bottom: 6px; display: flex;
+  flex-direction: column; gap: 5px; font-size: 12.5px; font-weight: 800; color: #3b2a17; }
+#${ROOT_ID} .lu-pvmeta > div { display: flex; align-items: center; gap: 7px; }
+#${ROOT_ID} .lu-stars i { color: #a99a7c; font-size: 14px; -webkit-text-stroke: 0; }
+#${ROOT_ID} .lu-stars i.on { color: #3b2a17; }
+#${ROOT_ID} .lu-role { padding: 1px 10px; border-radius: 10px; font-size: 11px;
+  background: #f2e8d3; border: 1px solid #8a6c45; -webkit-text-stroke: 0; text-shadow: none; }
+
+/* The commit button is docked, not flowed — it must not wander with the text. */
+#${ROOT_ID} .lu-pickfoot { flex: 0 0 auto; padding: 9px 14px;
+  background: #e6dabd; border-top: 2px solid #b79c72; }
+#${ROOT_ID} .lu-pvgo { width: 100%; }
+
+#${ROOT_ID} .lu-pvhead { display: flex; align-items: baseline; gap: 10px; }
+#${ROOT_ID} .lu-pvhead b { font-size: 18px; }
+#${ROOT_ID} .lu-pvhead span { font-size: 12px; opacity: .7; }
+#${ROOT_ID} .lu-pvfree { font-size: 12px; padding: 6px 9px; border-radius: 7px;
+  background: #f1e6c6; border: 1px solid #c6ae87; }
+#${ROOT_ID} .lu-pvscroll { flex: 1 1 auto; overflow-y: auto; min-height: 0; font-size: 12px; }
+#${ROOT_ID} .lu-pvscroll.lore { opacity: .8; }
+#${ROOT_ID} .lu-pvrow { display: flex; gap: 9px; padding: 7px 8px; margin-bottom: 5px;
+  border-radius: 7px; background: #f7f0df; border: 1px solid #c6ae87; }
+#${ROOT_ID} .lu-pvrow > img { width: 28px; height: 28px; border-radius: 5px; object-fit: cover;
+  flex: 0 0 auto; border: 0 !important; outline: 0 !important; }
+#${ROOT_ID} .lu-pvrow .t { min-width: 0; flex: 1 1 auto; }
+/* Name outranks its description — same-size text gives the eye nowhere to land. */
+#${ROOT_ID} .lu-pvtitle { display: flex; align-items: center; gap: 7px; }
+#${ROOT_ID} .lu-pvtitle b { font-size: 14px; }
+#${ROOT_ID} .lu-pvrow .lu-rt { font-size: 11px; opacity: .8; margin-top: 2px; }
+/* Max Skill Level, in the rulebook's own shorthand. */
+#${ROOT_ID} .lu-maxlv { flex: 0 0 auto; font-size: 11.5px; font-weight: 800; color: #4b3517;
+  padding: 1px 8px; border-radius: 10px;
+  background: linear-gradient(180deg,#f0d99a,#e0c179); border: 1px solid #8a6c45; }
+#${ROOT_ID} .lu-pvgo { flex: 0 0 auto; align-self: flex-start; }
+
+#${ROOT_ID} .lu-subtabs { display: flex; gap: 5px; }
+#${ROOT_ID} .lu-subtab { font: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer;
+  padding: 3px 12px; border-radius: 11px; border: 1px solid #b79c72;
+  background: #f2e8d3; color: #4a3a22; }
+#${ROOT_ID} .lu-subtab.on { background: #5d4630; color: #f6ecd8; border-color: #3a2b17; }
+#${ROOT_ID} .lu-tab:disabled { opacity: .35; cursor: not-allowed; }
 
 /* Facet picker — layered above the class browser */
 #${ROOT_ID} .lu-facet { position: absolute; inset: 0; display: flex; align-items: center;
@@ -329,6 +428,10 @@ const LevelUpApp = {
   _actorUuid: null,
   _selected: null,      // class key — may be a class not yet taken
   _pickerOpen: false,   // the new-class browser, layered over the main window
+  _pickSel: null,       // class being previewed in the browser (not yet chosen)
+  _pickTab: "overview", // "overview" | "skill" | "unique"
+  _pickSub: "skill",    // Facets are a sub-tab of Skill, not a peer
+  _pickFocusEl: null,   // last browser control the pointer touched, for the feather
   _facet: null,         // the Facet picker, layered above everything
   _tab: "skill",        // "skill" | "facet" | "heroic" — what the main pane shows
   _busy: false,
@@ -386,8 +489,41 @@ const LevelUpApp = {
     root.addEventListener("mousedown", (ev) => { if (ev.target === root) this.close(); });
     root.addEventListener("click", (ev) => this._onClick(ev));
 
+    // The cursor is placed from the focused element's screen rect, so a wheel
+    // scroll slides that element out from under it and strands the feather.
+    // Capture phase, because scroll does not bubble. rAF-coalesced: a wheel
+    // gesture fires far more scroll events than there are frames to draw.
+    root.addEventListener("scroll", () => {
+      // Glued to the row while the gesture runs — the glide that looks right
+      // when focus jumps between rows reads as lag when the row itself is
+      // moving. Restored shortly after scrolling stops.
+      this._scrolling = true;
+      this._cursorEl?.classList.add("no-anim");
+      clearTimeout(this._scrollIdle);
+      this._scrollIdle = setTimeout(() => {
+        this._scrolling = false;
+        this._cursorEl?.classList.remove("no-anim");
+        // The rows that slid past were never really hovered, so clear the
+        // one-blip-per-element memory: the next genuine hover should sound,
+        // even if it lands on a row that happened to drift under the pointer.
+        resetHover();
+      }, 140);
+
+      if (this._scrollRaf) return;
+      this._scrollRaf = requestAnimationFrame(() => {
+        this._scrollRaf = 0;
+        this._updateCursor();
+      });
+    }, { capture: true, passive: true });
+
     // One cursor blip per interactive element entered, not per mousemove.
     root.addEventListener("pointerover", (ev) => {
+      // A scrolling list drags rows underneath a stationary pointer, and each
+      // arrival is a new element, so the per-element blip fires dozens of times
+      // in a second — measured at one cue per row. That is the list moving, not
+      // the player pointing at anything, so the gesture owns the cursor and the
+      // pointer stays quiet until it settles.
+      if (this._scrolling) return;
       const el = ev.target?.closest?.("[data-act]");
       if (el && !el.disabled) hoverSfx(el);
       // The feather is one cursor shared by both input methods: the mouse
@@ -429,6 +565,8 @@ const LevelUpApp = {
     this._pending = [];
     this._facet = null;
     resetHover();
+    if (this._scrollRaf) { cancelAnimationFrame(this._scrollRaf); this._scrollRaf = 0; }
+    clearTimeout(this._scrollIdle);
     this._cursorEl?.remove();
     this._cursorEl = null;
     this._cursorReady = false;
@@ -567,15 +705,7 @@ const LevelUpApp = {
 
     // The new-class browser is its own window layered over this one, so the
     // rail stays a short list of what you actually play.
-    this._root.querySelector(`#${ROOT_ID}-picker`)?.remove();
-    if (this._pickerOpen) {
-      const p = document.createElement("div");
-      p.id = `${ROOT_ID}-picker`;
-      p.className = "lu-picker";
-      p.innerHTML = `<div class="lu-panel lu-pickpanel">${this._picker(s)}</div>`;
-      p.addEventListener("mousedown", (ev) => { if (ev.target === p) { this._pickerOpen = false; this.render(); } });
-      this._root.appendChild(p);
-    }
+    this._paintPicker(s);
 
     // Facet picker sits above everything, including the class browser — it is
     // a decision the player is mid-way through and must resolve or dismiss.
@@ -591,6 +721,57 @@ const LevelUpApp = {
         this._root.appendChild(el);
       }
     }
+  },
+
+  /**
+   * Rebuild ONLY the class-browser overlay.
+   *
+   * Picking a class or switching a preview tab changes nothing in the main
+   * window behind it, and rebuilding that whole window per click cost ~15ms —
+   * enough to blow the frame budget once real events (sound, transitions) piled
+   * on, which is the lag and the cursor desync. This touches just the overlay,
+   * so the browser stays responsive no matter how fast you scroll it.
+   */
+  _paintPicker(s = null, { chase = false } = {}) {
+    if (!this.isOpen) return;
+
+    // Rebuilding the overlay resets the list's scroll to the top, which threw
+    // you back to the top of the alphabet every time you picked a class further
+    // down. Carry the position across the repaint.
+    const keepScroll = this._root.querySelector(".lu-picklist")?.scrollTop ?? 0;
+
+    // Animate only when the browser is genuinely arriving, not when an
+    // unrelated full render happens to repaint it while it is already up.
+    const wasUp = !!this._root.querySelector(`#${ROOT_ID}-picker`);
+    this._root.querySelector(`#${ROOT_ID}-picker`)?.remove();
+    if (!this._pickerOpen) { this._updateCursor(); return; }
+
+    s = s ?? api()?.getState(this._actorUuid);
+    if (!s?.ok) return;
+
+    const p = document.createElement("div");
+    p.id = `${ROOT_ID}-picker`;
+    p.className = "lu-picker";
+    p.innerHTML = `<div class="lu-panel lu-pickpanel">${this._picker(s)}</div>`;
+    p.addEventListener("mousedown", (ev) => {
+      if (ev.target === p) { sfx("deselect"); this._pickerOpen = false; this._paintPicker(); }
+    });
+    this._root.appendChild(p);
+
+    const list = p.querySelector(".lu-picklist");
+    if (list) list.scrollTop = keepScroll;
+    if (!wasUp) {
+      windowAnim(p.querySelector(".lu-pickpanel"), "in");
+      // Opening the browser is itself a class page arriving.
+      if (this._pickTab === "overview") {
+        previewIntro(p.querySelector(".lu-pvartimg"), p.querySelector(".lu-pvtext"));
+      }
+    }
+    // Only chase the selection when the KEYBOARD moved it. On a click the row
+    // is already under the pointer, and scrolling it would slide the list out
+    // from under you.
+    if (chase) p.querySelector(".lu-pickrow.on")?.scrollIntoView({ block: "nearest" });
+    this._updateCursor();
   },
 
   _head(s, proj) {
@@ -920,36 +1101,175 @@ const LevelUpApp = {
 
   // Secondary window. Kept out of the rail on purpose — 42 classes would bury
   // the four or five a character actually plays.
+  //
+  // Browse on the right, preview on the left, commit with the button. Picking a
+  // class is a real decision (it costs a point and counts against the
+  // three-unmastered limit), so it gets a look before it gets a click.
   _picker(s) {
     const untaken = s.classes.filter((c) => !c.taken).sort((a, b) => a.name.localeCompare(b.name));
     const atLimit = s.unmastered >= s.rules.maxUnmastered;
 
-    // Say WHY rather than silently greying every option out.
-    const gateNote = atLimit
-      ? `<div class="lu-note warn">
-           You have ${s.unmastered} unmastered classes and the limit is ${s.rules.maxUnmastered}.
-           Take one of them to level 10 before starting another.
-         </div>`
-      : "";
+    if (!this._pickSel || !untaken.some((c) => c.key === this._pickSel)) {
+      this._pickSel = untaken[0]?.key ?? null;
+    }
+    const sel = untaken.find((c) => c.key === this._pickSel) ?? null;
+    const hasUnique = !!plain(sel?.mechanic).length;
+    if (this._pickTab === "unique" && !hasUnique) this._pickTab = "overview";
 
-    const groups = ["Classic Classes", "Custom Classes"].map((folder) => {
-      const rows = untaken.filter((c) => c.folder === folder).map((c) => `<div class="lu-skill">
-          <img src="${esc(c.img)}" alt="">
-          <div class="t"><b>${esc(c.name)}</b>
-            <p>${c.skills.length} skills · ${esc(c.benefit ? (LEVELUP.BENEFIT_LABEL[c.benefit] ?? c.benefit) : "you choose the bonus")}</p></div>
-          <button class="lu-btn" style="width:auto;padding:2px 12px" data-act="pick" data-key="${esc(c.key)}"
-            ${atLimit ? "disabled" : ""}>Choose</button>
-        </div>`).join("");
+    const tab = (id, label, on = true) =>
+      `<button class="lu-tab ${this._pickTab === id ? "on" : ""}" data-act="picktab" data-tab="${id}"
+        ${on ? "" : "disabled"}>${esc(label)}</button>`;
+
+    const list = ["Classic Classes", "Custom Classes"].map((folder) => {
+      const rows = untaken.filter((c) => c.folder === folder).map((c) => `
+        <button class="lu-pickrow ${this._pickSel === c.key ? "on" : ""}" data-act="pickselect" data-key="${esc(c.key)}">
+          <i class="fa-solid ${esc(classIcon(c.key))}"></i><span>${esc(c.name)}</span>
+        </button>`).join("");
       return rows ? `<div class="lu-railhead">${esc(folder)}</div>${rows}` : "";
     }).join("");
 
     return `<div class="lu-head">
-        <div><div class="lu-name">Start a New Class</div>
-        <div class="lu-sub">${untaken.length} available · your first level in a class grants one of its skills</div></div>
+        <div class="lu-idblock">
+          <div class="lu-name">Start a New Class</div>
+          <div class="lu-sub">${untaken.length} available · your first level in a class grants one of its skills</div>
+        </div>
         <button class="lu-x" data-act="closepicker" title="Back">×</button>
+        <div class="lu-tabs lu-picktabs">
+          ${tab("overview", "Overview")}
+          ${tab("skill", "Skill")}
+          ${tab("unique", "Unique", hasUnique)}
+        </div>
       </div>
-      ${gateNote}
-      <div class="lu-main">${groups || `<div class="lu-empty">You already have every class.</div>`}</div>`;
+      ${atLimit ? `<div class="lu-note warn">You have ${s.unmastered} unmastered classes and the limit is
+         ${s.rules.maxUnmastered}. Take one of them to level 10 before starting another.</div>` : ""}
+      <div class="lu-pickbody">
+        <div class="lu-previewwrap">${this._previewWrap(sel, atLimit)}</div>
+        <div class="lu-picklist">${list || `<div class="lu-empty">You already have every class.</div>`}</div>
+      </div>`;
+  },
+
+  /** Preview pane + its docked button — the only part that changes on select. */
+  _previewWrap(sel, atLimit) {
+    return `<div class="lu-preview">${this._pickPreview(sel, atLimit)}</div>
+      ${sel ? `<div class="lu-pickfoot">
+        <button class="lu-cta go lu-pvgo" data-act="pick" data-key="${esc(sel.key)}" ${atLimit ? "disabled" : ""}>
+          Start ${esc(sel.name)}</button>
+      </div>` : ""}`;
+  },
+
+  /**
+   * Repaint ONLY the preview pane, leaving the 42-row class list in place.
+   *
+   * Selecting a class changes which row is highlighted and what the preview
+   * shows — the list itself is identical. Rebuilding it was both the bulk of
+   * the remaining ~13ms per click AND the reason the list snapped back to the
+   * top: a fresh list starts at scrollTop 0. Not touching it fixes both.
+   */
+  _paintPreview({ chase = false, intro = false } = {}) {
+    const p = this._root?.querySelector(`#${ROOT_ID}-picker`);
+    if (!p) return;
+    const s = api()?.getState(this._actorUuid);
+    if (!s?.ok) return;
+
+    const untaken = s.classes.filter((c) => !c.taken).sort((a, b) => a.name.localeCompare(b.name));
+    const sel = untaken.find((c) => c.key === this._pickSel) ?? null;
+    const atLimit = s.unmastered >= s.rules.maxUnmastered;
+
+    // A class with no Unique Mechanic must not leave that tab selected.
+    if (this._pickTab === "unique" && !plain(sel?.mechanic).length) this._pickTab = "overview";
+
+    for (const row of p.querySelectorAll(".lu-pickrow")) {
+      row.classList.toggle("on", row.dataset.key === this._pickSel);
+    }
+    for (const t of p.querySelectorAll(".lu-picktabs [data-act='picktab']")) {
+      t.classList.toggle("on", t.dataset.tab === this._pickTab);
+      if (t.dataset.tab === "unique") t.disabled = !plain(sel?.mechanic).length;
+    }
+    const wrap = p.querySelector(".lu-previewwrap");
+    if (wrap) {
+      wrap.innerHTML = this._previewWrap(sel, atLimit);
+      // Only the Overview is a "class page" — the Skill and Unique tabs are
+      // reference material you flip to, and re-animating them would put a
+      // 700ms wait in front of text you are trying to read.
+      if (intro && this._pickTab === "overview") {
+        previewIntro(wrap.querySelector(".lu-pvartimg"), wrap.querySelector(".lu-pvtext"));
+      }
+    }
+
+    if (chase) p.querySelector(".lu-pickrow.on")?.scrollIntoView({ block: "nearest" });
+    this._updateCursor();
+  },
+
+  _pickPreview(c, atLimit) {
+    if (!c) return `<div class="lu-empty">No classes left to start.</div>`;
+
+    if (this._pickTab === "unique") {
+      return `<div class="lu-pvhead"><b>${esc(c.name)}</b><span>Unique Mechanic</span></div>
+        <div class="lu-pvscroll">${describe(c.mechanic, { clamp: false })}</div>`;
+    }
+
+    if (this._pickTab === "skill") {
+      // Facets stay a visible sub-tab even with none authored — disabled says
+      // "this class has none", a missing tab says nothing at all.
+      const hasFacets = c.facets.length > 0;
+      const sub = (this._pickSub === "facet" && hasFacets) ? "facet" : "skill";
+
+      const rows = (sub === "facet" ? c.facets : c.skills).map((k) => `
+        <div class="lu-pvrow">
+          <img src="${esc(k.img)}" alt="">
+          <div class="t">
+            <span class="lu-pvtitle">
+              <b>${esc(k.name)}</b>
+              <span class="lu-gap"></span>
+              ${k.cost ? `<span class="lu-tag">${esc(k.cost)}</span>` : ""}
+              ${sub === "skill" ? `<span class="lu-maxlv" title="Maximum Skill Level">◆${k.maxLevel}</span>` : ""}
+            </span>
+            ${describe(k.description)}
+          </div>
+        </div>`).join("");
+
+      const free = [
+        c.free?.martialMelee && "martial melee", c.free?.martialRanged && "martial ranged",
+        c.free?.martialArmor && "martial armor", c.free?.martialShield && "martial shields",
+        c.free?.ritual && "rituals", c.free?.project && "projects",
+      ].filter(Boolean);
+
+      return `<div class="lu-pvhead"><b>${esc(c.name)}</b>
+          <span>${c.skills.length} skills · ${c.facets.length} facets</span></div>
+        <div class="lu-pvfree">
+          <b>Free benefit:</b> ${esc(c.benefit ? (LEVELUP.BENEFIT_LABEL[c.benefit] ?? c.benefit) : "you choose HP / MP / IP")}
+          ${free.length ? ` · equips ${esc(free.join(", "))}` : ""}
+        </div>
+        <div class="lu-subtabs">
+          <button class="lu-subtab ${sub === "skill" ? "on" : ""}" data-act="picksub" data-sub="skill">Skills</button>
+          <button class="lu-subtab ${sub === "facet" ? "on" : ""}" data-act="picksub" data-sub="facet"
+            ${hasFacets ? "" : "disabled"} title="${hasFacets ? "" : "This class has no Facets"}">Facets</button>
+        </div>
+        <div class="lu-pvscroll">${rows || `<div class="lu-empty">Nothing authored for this class.</div>`}</div>`;
+    }
+
+    // Overview — the art IS the page. Everything else floats over it, which is
+    // why each overlay carries its own glow/stroke rather than a flat colour.
+    const meta = CLASS_META_DEFAULT;
+    const stars = Array.from({ length: meta.difficultyMax }, (_, i) =>
+      `<i class="fa-solid fa-star ${i < meta.difficulty ? "on" : ""}"></i>`).join("");
+
+    // Art and text are separate layers so the entrance can bring the portrait
+    // in first and the prose in after it — they cannot animate apart while the
+    // text sits inside the element carrying the image.
+    return `<div class="lu-pvart">
+        <div class="lu-pvartimg" style="background-image:url('${esc(c.img)}')"></div>
+        <div class="lu-pvtext">
+          <div class="lu-pvname">${esc(c.name)}</div>
+          ${c.also ? `<div class="lu-pvalso"><i>Also known as</i> ${esc(c.also)}</div>` : ""}
+          ${plain(c.flavor).length ? `<div class="lu-pvflavor lu-rt">${renderDescription(c.flavor).bodyHtml}</div>` : ""}
+          ${plain(c.lore).length ? `<div class="lu-pvlore">${describe(c.lore, { clamp: false })}</div>` : ""}
+          <div class="lu-pvmeta">
+            <div><span>Difficulty:</span> <span class="lu-stars">${stars}</span></div>
+            <div><span>Role:</span> ${meta.roles.map((r) => `<span class="lu-role">${esc(r)}</span>`).join("")}</div>
+          </div>
+        </div>
+      </div>`;
   },
 
   // ── interaction ─────────────────────────────────────────────────────────
@@ -993,8 +1313,19 @@ const LevelUpApp = {
       this._resetMode = !this._resetMode;
       return this.render();
     }
-    if (act === "openpicker") { this._pickerOpen = true; return this.render(); }
-    if (act === "closepicker") { this._pickerOpen = false; return this.render(); }
+    // Opening/closing the browser toggles what covers the main window, so those
+    // need a full render. Everything WITHIN the browser repaints only the
+    // overlay — cheap, and it keeps the window behind untouched.
+    if (act === "openpicker") { sfx("open"); this._pickerOpen = true; return this.render(); }
+    if (act === "closepicker") { sfx("deselect"); this._pickerOpen = false; return this.render(); }
+    if (act === "picktab") { sfx("tab"); this._pickTab = btn.dataset.tab; return this._paintPreview(); }
+    if (act === "picksub") { sfx("toggle"); this._pickSub = btn.dataset.sub; return this._paintPreview(); }
+    if (act === "pickselect") {
+      if (this._pickSel === btn.dataset.key) return;
+      sfx("classPage");
+      this._pickSel = btn.dataset.key;
+      return this._paintPreview({ intro: true });
+    }
     if (act === "pick") {
       const changed = this._selected !== btn.dataset.key;
       // Changing class re-frames the whole window, so it gets the heavier
@@ -1302,15 +1633,15 @@ const LevelUpApp = {
 
       // A layered picker gets the keys first — it is the question in front of
       // the player, and the list behind it is not what they are answering.
-      if (this._facet || this._pickerOpen) {
+      if (this._facet) {
         if (keyMatch(ev, KEYS.CANCEL)) {
           sfx("deselect");
-          if (this._facet) this._facet = null;   // same as its Cancel: stage nothing
-          else this._pickerOpen = false;
+          this._facet = null;   // same as its Cancel: stage nothing
           this.render();
         }
         return;
       }
+      if (this._pickerOpen) return void this._pickerKey(ev);
 
       if (keyMatch(ev, KEYS.CANCEL)) return void this.close();
       if (keyMatch(ev, KEYS.TAB_NEXT)) return void this._cycleTab(1);
@@ -1322,6 +1653,50 @@ const LevelUpApp = {
       this._move(dx, dy);
     };
     window.addEventListener("keydown", this._onKey, true);
+  },
+
+  /**
+   * Keyboard inside the class browser. Same vocabulary as the main window:
+   * arrows move, Z commits, X backs out, Q/E cycle the preview tabs.
+   *
+   * The class list is the only navigable column, so up/down walk it and the
+   * preview follows — the preview is a consequence of the selection, never a
+   * separate place to be.
+   */
+  _pickerKey(ev) {
+    if (keyMatch(ev, KEYS.CANCEL)) {
+      sfx("deselect");
+      this._pickerOpen = false;
+      return this.render();
+    }
+    if (keyMatch(ev, KEYS.CONFIRM)) {
+      const go = this._root?.querySelector(".lu-pvgo:not([disabled])");
+      if (go) go.click();
+      return;
+    }
+
+    // Q/E and left/right both cycle the preview tabs; a disabled Unique tab is
+    // skipped rather than landed on.
+    const tabs = ["overview", "skill", "unique"];
+    const usable = tabs.filter((t) => !this._root?.querySelector(`[data-act="picktab"][data-tab="${t}"][disabled]`));
+    const cycle = (dir) => {
+      const i = usable.indexOf(this._pickTab);
+      const next = usable[(Math.max(0, i) + dir + usable.length) % usable.length];
+      if (next === this._pickTab) return;
+      sfx("tab"); this._pickTab = next; this._paintPreview();
+    };
+    if (keyMatch(ev, KEYS.TAB_NEXT) || keyMatch(ev, KEYS.RIGHT)) return cycle(1);
+    if (keyMatch(ev, KEYS.TAB_PREV) || keyMatch(ev, KEYS.LEFT)) return cycle(-1);
+
+    const dy = keyMatch(ev, KEYS.DOWN) ? 1 : keyMatch(ev, KEYS.UP) ? -1 : 0;
+    if (!dy) return;
+    const rows = Array.from(this._root?.querySelectorAll(".lu-pickrow") ?? []);
+    const at = rows.findIndex((r) => r.dataset.key === this._pickSel);
+    const next = rows[Math.max(0, Math.min(rows.length - 1, (at < 0 ? 0 : at) + dy))];
+    if (!next || next.dataset.key === this._pickSel) return;   // silent at the ends
+    sfx("classPage");
+    this._pickSel = next.dataset.key;
+    this._paintPreview({ chase: true, intro: true });
   },
 
   _cycleTab(dir) {
@@ -1385,7 +1760,16 @@ const LevelUpApp = {
    * is the thing selected, which is what Z would act on anyway.
    */
   _syncFocusToPointer(target) {
-    if (!target?.closest || this._facet || this._pickerOpen) return;
+    if (!target?.closest || this._facet) return;
+
+    // Inside the class browser the feather tracks its own controls, so it
+    // never sits over the main window the browser is covering.
+    if (this._pickerOpen) {
+      const el = target.closest(".lu-pickrow, .lu-picktabs [data-act], .lu-subtab, .lu-pvgo, [data-act='closepicker']");
+      if (el) { this._pickFocusEl = el; this._updateCursor(); }
+      return;
+    }
+    this._pickFocusEl = null;
 
     const row = target.closest(".lu-main .lu-row");
     if (row) {
@@ -1415,6 +1799,13 @@ const LevelUpApp = {
 
   /** The element the cursor points at right now. */
   _focusEl() {
+    // While the browser is open it owns the cursor: the selected class row,
+    // or whatever the pointer last touched inside it.
+    if (this._pickerOpen) {
+      return this._root?.querySelector(".lu-pickrow.on")
+        ?? this._pickFocusEl
+        ?? this._root?.querySelector(".lu-pvgo") ?? null;
+    }
     if (this._zone === "head") return this._headBtns()[this._headIdx] ?? null;
     if (this._zone === "rail") return this._railBtns()[this._railIdx] ?? null;
     if (this._zone === "foot") return this._footBtns()[this._footIdx] ?? null;
@@ -1452,6 +1843,27 @@ const LevelUpApp = {
     el.click();
   },
 
+  /**
+   * The vertical band in which `el` is actually visible, from its scrolling
+   * ancestors. Only the vertical axis is considered: the feather deliberately
+   * overhangs the right edge of a list, so a horizontal test would hide it
+   * while its row is in plain sight.
+   */
+  _clipBand(el) {
+    let node = el?.parentElement ?? null;
+    let top = -Infinity, bottom = Infinity;
+    while (node && node !== document.body) {
+      const oy = getComputedStyle(node).overflowY;
+      if (oy === "auto" || oy === "scroll" || oy === "hidden") {
+        const r = node.getBoundingClientRect();
+        top = Math.max(top, r.top);
+        bottom = Math.min(bottom, r.bottom);
+      }
+      node = node.parentElement;
+    }
+    return { top, bottom };
+  },
+
   _updateCursor() {
     const el = this._cursorEl;
     if (!el) return;
@@ -1459,6 +1871,15 @@ const LevelUpApp = {
     if (!target) { el.classList.remove("is-visible"); return; }
     const r = target.getBoundingClientRect();
     if (!r.width) { el.classList.remove("is-visible"); return; }
+
+    // Scrolled out of its list: the feather goes with the row rather than
+    // hovering over whatever now occupies that spot. It comes back on its own
+    // as soon as the row scrolls into view, or when hover/keyboard move focus.
+    const band = this._clipBand(target);
+    if (r.bottom < band.top + 2 || r.top > band.bottom - 2) {
+      el.classList.remove("is-visible");
+      return;
+    }
 
     // First placement jumps; later ones glide. Without this the feather flies
     // in from the top-left corner the first time it appears.
