@@ -268,19 +268,23 @@ export const stepIndex = (id) => CC.STEPS.findIndex((s) => s.id === id);
 export const stepAt = (i) => CC.STEPS[Math.max(0, Math.min(CC.STEPS.length - 1, i))];
 
 /**
- * Which steps may be jumped to directly?
+ * Move to a step by id.
  *
- * Everything already visited, plus the next one along. Free backward movement
- * is the whole point; forward jumps past unseen steps are not, since a later
- * step usually needs the earlier one's answers to render at all.
+ * Movement is POSITIONAL and unconditional between real steps — the only
+ * callers are Back and Next, which are already bounded by `stepAt`'s clamp.
+ *
+ * An earlier version gated this on a `seen`-derived reachability set so the
+ * rail could offer jumps. That set was also what Back consulted, so a jump
+ * could leave the draft in a state where stepping backwards was refused with
+ * no visible reason. The rail is now a read-only indicator and the reachability
+ * concept is gone with it: one way in, one way out, no set to fall out of sync.
+ *
+ * `seen` survives because the rail still uses it to mark progress and
+ * `_issuesHTML` uses it to avoid criticising a step nobody has opened.
  */
-export function reachableSteps(d) {
-  const furthest = Math.max(...d.seen.map(stepIndex), 0);
-  return CC.STEPS.filter((s, i) => i <= furthest + 1).map((s) => s.id);
-}
-
 export function goTo(d, stepId) {
-  if (!reachableSteps(d).includes(stepId)) return false;
+  const i = stepIndex(stepId);
+  if (i < 0) return false;
   d.step = stepId;
   if (!d.seen.includes(stepId)) d.seen.push(stepId);
   return true;

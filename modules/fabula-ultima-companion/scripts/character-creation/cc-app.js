@@ -3,164 +3,137 @@
  *
  *     FUCompanion.api.characterCreation.open()
  *
- * A full-screen parchment panel over the title scene, matching the save/load
- * UI's visual language. Six steps down a rail on the left, the active step's
- * body on the right, navigation along the bottom.
+ * Six steps, walked in order. The rail on the left is a PROGRESS INDICATOR and
+ * nothing else — the only way through is Back and Next. Letting the rail jump
+ * meant a player could land on a step whose inputs depended on answers they had
+ * not given yet, and it was the source of a navigation bug where returning from
+ * a jump left Back inert.
  *
- * Step modules register themselves into STEP_RENDERERS. Each one exports
+ * Styling follows the Status and Level-Up windows rather than inventing a third
+ * look: light parchment body, dark brown header bar, the shared `levelup-fx`
+ * sounds and animations. Anything a player sees here should feel like the rest
+ * of the game, because it is the rest of the game.
+ *
+ * Step modules register themselves into STEP_RENDERERS. Each exports
  * `render(draft, ctx)` returning HTML and `bind(root, draft, ctx)` wiring its
  * own controls; the shell owns the frame, the rail, validation display and
- * navigation, and knows nothing about any individual step's content. Phase 1
- * ships the shell with placeholder bodies.
+ * navigation, and knows nothing about any individual step's content.
  */
 
-import {
-  CC, esc, log, warn,
-} from "./cc-const.js";
+import { CC, esc, log, warn } from "./cc-const.js";
 import {
   createDraft, validateStep, validateAll, reconcile,
-  goTo, nextStep, prevStep, stepIndex, reachableSteps,
+  nextStep, prevStep, stepIndex,
 } from "./cc-draft.js";
 import { previewFolder } from "./cc-folder.js";
+import { sfx, windowAnim, staggerRows } from "../levelup-system/levelup-fx.js";
 
 const ROOT_ID = "oni-cc";
 const STYLE_ID = "oni-cc-styles";
 
-/** Step id -> { render(draft, ctx) => html, bind(root, draft, ctx) } */
+/** Step id -> { render(draft, ctx) => html, bind(root, draft, ctx), reset?() } */
 export const STEP_RENDERERS = new Map();
 
-const BASE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound";
-const SFX = {
-  step: `${BASE}/BattleCursor_4.wav`,
-  forward: `${BASE}/file_selector_screen.wav`,
-  back: `${BASE}/bond_cleared.wav`,
-  done: `${BASE}/emotion_up.wav`,
-  fail: `${BASE}/Soundboard/Buzzer2.ogg`,
-};
-const sfx = (k) => { try { AudioHelper?.play({ src: SFX[k], volume: 0.4, loop: false }); } catch {} };
-
+/**
+ * Palette lifted from attribute-app / levelup-app so the three windows read as
+ * one family. Kept as a comment rather than variables because the other two
+ * spell the values out too, and a shared token file that only three files use
+ * is indirection without a payoff:
+ *
+ *   panel #efe4cd   header #5d4630→#4a371f   rows #f7f0df on #cbb890
+ *   side/foot #e6dabd   rule #b79c72   ink #2f2618   accent #8a6c45
+ */
 const CSS = `
-  #${ROOT_ID} {
-    position: fixed; inset: 0; z-index: 1010;
-    background: rgba(18, 8, 1, 0.78);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Lucida Console', 'Courier New', monospace;
-    user-select: none;
-  }
-  .cc-panel {
-    position: relative;
-    width: min(1180px, 94vw); height: min(780px, 92vh);
-    background: linear-gradient(168deg, #f8f0d4 0%, #f0e3b8 45%, #e8d8a4 100%);
-    border: 2px solid #c9a44a;
-    box-shadow:
-      0 0 0 3px #7a4e20, 0 0 0 6px #b8865a, 0 0 0 8px #5c3210,
-      0 0 80px rgba(0,0,0,0.70), inset 0 1px 0 rgba(255,245,200,0.70);
-    border-radius: 4px;
-    display: grid; grid-template-rows: auto 1fr auto;
-    animation: cc-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
-    overflow: hidden;
-  }
-  .cc-panel::before {
-    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 23px,
-      rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px);
-  }
-  .cc-panel > * { position: relative; z-index: 1; }
-  @keyframes cc-in { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: none; } }
+#${ROOT_ID} { position: fixed; inset: 0; z-index: 70; display: flex;
+  align-items: center; justify-content: center; background: rgba(0,0,0,.55); }
+#${ROOT_ID} * { box-sizing: border-box; }
+#${ROOT_ID} .cc-panel { width: min(1080px, 95vw); height: min(760px, 92vh);
+  display: flex; flex-direction: column; border-radius: 10px; overflow: hidden;
+  background: #efe4cd; border: 2px solid #6b543a;
+  box-shadow: 0 18px 60px rgba(0,0,0,.55);
+  font-family: Signika, sans-serif; color: #2f2618; }
 
-  /* header */
-  .cc-head {
-    padding: 18px 28px 14px; border-bottom: 1px solid rgba(140,90,30,0.28);
-    display: flex; align-items: baseline; justify-content: space-between;
-  }
-  .cc-title { font-size: 19px; letter-spacing: 7px; color: #3a1e06; text-transform: uppercase; }
-  .cc-sub   { font-size: 10px; letter-spacing: 2px; color: #8a6432; }
+/* ── header ── */
+#${ROOT_ID} .cc-head { display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+  background: linear-gradient(180deg,#5d4630,#4a371f); color: #f6ecd8; flex: 0 0 auto; }
+#${ROOT_ID} .cc-idblock { flex: 1 1 auto; min-width: 0; }
+#${ROOT_ID} .cc-title { font-size: 17px; font-weight: 800; }
+#${ROOT_ID} .cc-sub { font-size: 11.5px; opacity: .8; }
+#${ROOT_ID} .cc-stepchip { padding: 3px 11px; border-radius: 12px; font-size: 12px; font-weight: 700;
+  background: linear-gradient(180deg,#f0d99a,#e0c179); color: #4b3517; border: 1px solid #8a6c45;
+  white-space: nowrap; }
+#${ROOT_ID} .cc-x { background: none; border: 0; color: #f6ecd8; font-size: 20px; line-height: 1;
+  cursor: pointer; padding: 0 4px; width: auto; }
 
-  /* body: rail + content */
-  .cc-body { display: grid; grid-template-columns: 232px 1fr; min-height: 0; }
-  .cc-rail {
-    border-right: 1px solid rgba(140,90,30,0.28);
-    padding: 16px 12px; display: flex; flex-direction: column; gap: 4px;
-    overflow-y: auto;
-  }
-  .cc-rail-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 12px; border-radius: 3px; cursor: pointer;
-    font-size: 11px; letter-spacing: 2px; color: #7a5428;
-    border: 1px solid transparent; background: transparent;
-    text-align: left; width: 100%;
-    transition: background .12s, color .12s, border-color .12s;
-  }
-  .cc-rail-item:hover:not(.is-locked) { background: rgba(201,164,74,0.16); color: #3a1e06; }
-  .cc-rail-item.is-active {
-    background: rgba(201,164,74,0.30); color: #3a1e06;
-    border-color: rgba(140,90,30,0.45);
-  }
-  .cc-rail-item.is-locked { opacity: 0.35; cursor: default; }
-  .cc-rail-n {
-    flex: 0 0 22px; height: 22px; border-radius: 50%;
-    border: 1px solid #c4a260; display: grid; place-items: center;
-    font-size: 10px; background: rgba(255,250,230,0.55);
-  }
-  .cc-rail-item.is-done .cc-rail-n { background: #c9a22a; border-color: #a07818; color: #fff; }
-  .cc-rail-item.is-invalid .cc-rail-n { border-color: #a33; color: #a33; }
+/* ── body ── */
+#${ROOT_ID} .cc-body { display: flex; flex: 1 1 auto; min-height: 0; }
+#${ROOT_ID} .cc-rail { flex: 0 0 auto; width: 208px; padding: 12px; display: flex;
+  flex-direction: column; gap: 6px; background: #e6dabd; border-right: 1px solid #b79c72;
+  overflow-y: auto; }
+#${ROOT_ID} .cc-content { flex: 1 1 auto; min-width: 0; padding: 14px 16px;
+  overflow-y: auto; display: flex; flex-direction: column; }
 
-  .cc-content { padding: 20px 26px; overflow-y: auto; min-height: 0; }
-  .cc-step-title { font-size: 15px; letter-spacing: 4px; color: #3a1e06; margin-bottom: 4px; }
-  .cc-step-hint  { font-size: 10px; letter-spacing: 1px; color: #8a6432; margin-bottom: 18px; }
-  .cc-placeholder {
-    border: 1px dashed rgba(140,90,30,0.45); border-radius: 3px;
-    padding: 40px; text-align: center; color: #9b7040;
-    font-size: 11px; letter-spacing: 2px;
-  }
+/* The rail is a read-only indicator: no button, no pointer, no hover. Its job
+   is to say where you are and what is left, not to offer a shortcut. */
+#${ROOT_ID} .cc-rail-item { display: flex; align-items: center; gap: 9px; padding: 7px 9px;
+  border-radius: 8px; background: #f7f0df; border: 1px solid #cbb890;
+  font-size: 12.5px; color: #6b5a3e; cursor: default; }
+#${ROOT_ID} .cc-rail-item.is-active { border-color: #8a6c45; background: #fdf6e4;
+  color: #2f2618; font-weight: 700; box-shadow: inset 0 0 0 1px rgba(240,217,154,.7); }
+#${ROOT_ID} .cc-rail-item.is-ahead { opacity: .45; }
+#${ROOT_ID} .cc-rail-n { flex: 0 0 22px; height: 22px; border-radius: 50%;
+  border: 1px solid #b79c72; display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; background: #efe4cd; }
+#${ROOT_ID} .cc-rail-item.is-done .cc-rail-n { background: linear-gradient(180deg,#5f9e4a,#3f7a30);
+  border-color: #2f6b2f; color: #fff; }
+#${ROOT_ID} .cc-rail-item.is-active .cc-rail-n { background: linear-gradient(180deg,#f0d99a,#e0c179);
+  border-color: #8a6c45; color: #4b3517; }
+#${ROOT_ID} .cc-rail-item.is-invalid .cc-rail-n { background: #c9736a; border-color: #a3453a; color: #fff; }
 
-  /* issues */
-  .cc-issues { margin-top: 16px; display: flex; flex-direction: column; gap: 5px; }
-  .cc-issue {
-    font-size: 10px; letter-spacing: 1px; color: #8c2f2f;
-    background: rgba(160,50,50,0.09); border-left: 2px solid #a33;
-    padding: 6px 10px; border-radius: 2px;
-  }
-  .cc-note {
-    font-size: 10px; letter-spacing: 1px; color: #7a5428;
-    background: rgba(201,164,74,0.16); border-left: 2px solid #c9a44a;
-    padding: 6px 10px; border-radius: 2px;
-  }
+#${ROOT_ID} .cc-step-title { font-size: 15px; font-weight: 800; margin-bottom: 2px; }
+#${ROOT_ID} .cc-step-hint { font-size: 12px; opacity: .7; margin-bottom: 12px; }
+#${ROOT_ID} .cc-stepbody { flex: 1 1 auto; min-height: 0; }
+#${ROOT_ID} .cc-placeholder { padding: 40px; text-align: center; opacity: .6; font-size: 13px; }
 
-  /* footer */
-  .cc-foot {
-    padding: 14px 28px; border-top: 1px solid rgba(140,90,30,0.28);
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  }
-  .cc-foot-info { font-size: 10px; letter-spacing: 1px; color: #8a6432; }
-  .cc-btns { display: flex; gap: 10px; }
-  .cc-btn {
-    font-family: inherit; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-    padding: 9px 22px; border-radius: 2px; cursor: pointer;
-    color: #3a1e06; background: linear-gradient(155deg, #fdf6e0 0%, #e8d8a4 100%);
-    border: 1px solid #c4a260;
-    transition: background .12s, box-shadow .12s, opacity .12s;
-  }
-  .cc-btn:hover:not(:disabled) { background: linear-gradient(155deg, #fffbe8 0%, #f0e3b8 100%);
-    box-shadow: 0 0 12px rgba(201,164,74,0.45); }
-  .cc-btn:disabled { opacity: 0.4; cursor: default; }
-  .cc-btn.is-primary { background: linear-gradient(155deg, #d8b34a 0%, #b8912c 100%); color: #2a1500; }
-  .cc-btn.is-ghost   { background: transparent; border-color: rgba(140,90,30,0.4); }
+/* ── notes and issues ── */
+#${ROOT_ID} .cc-issues { margin-top: 12px; display: flex; flex-direction: column; gap: 5px;
+  flex: 0 0 auto; }
+#${ROOT_ID} .cc-issue { font-size: 12px; color: #8c3a24; padding: 6px 10px; border-radius: 7px;
+  background: rgba(165,42,26,.09); border: 1px solid rgba(165,42,26,.35); }
+#${ROOT_ID} .cc-note { font-size: 12px; color: #6b4a1c; padding: 6px 10px; border-radius: 7px;
+  background: rgba(240,217,154,.35); border: 1px solid #cbb890; }
 
-  /* Shared atoms. These live in the app sheet rather than a step's inline
-     <style> because the step body is re-rendered wholesale on every nav, which
-     would take any step-local rules with it the moment another step used them. */
-  .cc-tag {
-    font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
-    padding: 2px 7px; border-radius: 8px; color: #6b4a1c;
-    background: rgba(201,164,74,0.24); border: 1px solid rgba(140,90,30,0.3);
-  }
-  .cc-search {
-    font-family: inherit; font-size: 11px; color: #2e1c08; padding: 6px 9px;
-    background: rgba(255,252,240,0.72); border: 1px solid rgba(140,90,30,0.38); border-radius: 2px;
-  }
-  .cc-search:focus { outline: none; border-color: #c9a44a; }
+/* ── footer ── */
+#${ROOT_ID} .cc-foot { display: flex; align-items: center; gap: 9px; padding: 9px 14px;
+  background: #e6dabd; border-top: 2px solid #b79c72; flex: 0 0 auto; min-height: 46px; }
+#${ROOT_ID} .cc-foot-info { font-size: 12px; opacity: .8; }
+#${ROOT_ID} .cc-spacer { flex: 1 1 auto; }
+#${ROOT_ID} .cc-btn { padding: 6px 16px; border-radius: 7px; cursor: pointer; font-weight: 700;
+  font-family: inherit; font-size: 13px;
+  border: 1px solid #8a6c45; background: linear-gradient(180deg,#f7edd5,#e6d6b0); color: #3b2a17; }
+#${ROOT_ID} .cc-btn:hover:not(:disabled) { background: linear-gradient(180deg,#f0d99a,#e0c179); }
+#${ROOT_ID} .cc-btn:disabled { opacity: .35; cursor: default; }
+#${ROOT_ID} .cc-btn.is-primary { background: linear-gradient(180deg,#5f9e4a,#3f7a30); color: #fff;
+  border-color: #2f6b2f; }
+#${ROOT_ID} .cc-btn.is-primary:hover:not(:disabled) { background: linear-gradient(180deg,#6cb154,#478a37); }
+#${ROOT_ID} .cc-btn.is-ghost { background: none; border-color: #b79c72; }
+
+/* ── shared atoms ──
+   These live in the app sheet rather than a step's inline <style> because the
+   step body is re-rendered wholesale on every nav, which would take any
+   step-local rules with it the moment another step used them. */
+#${ROOT_ID} .cc-tag { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 9px;
+  color: #6b4a1c; background: rgba(240,217,154,.55); border: 1px solid #cbb890; }
+#${ROOT_ID} .cc-input, #${ROOT_ID} .cc-search { font-family: inherit; font-size: 13px;
+  color: #2f2618; padding: 6px 9px; border-radius: 7px;
+  background: #f7f0df; border: 1px solid #cbb890; }
+#${ROOT_ID} .cc-input:focus, #${ROOT_ID} .cc-search:focus { outline: none; border-color: #8a6c45;
+  background: #fdf6e4; }
+/* Placeholders must read as EXAMPLES, not as answers already given. */
+#${ROOT_ID} .cc-input::placeholder, #${ROOT_ID} .cc-search::placeholder { color: #2f2618; opacity: .32; }
+#${ROOT_ID} .cc-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; opacity: .65; margin-bottom: 4px; }
+#${ROOT_ID} .cc-empty { padding: 24px; text-align: center; opacity: .7; font-size: 13px; }
 `;
 
 class CharacterCreationApp {
@@ -169,14 +142,17 @@ class CharacterCreationApp {
     this._draft = null;
     this._notes = [];       // transient reconcile output, cleared on next nav
     this._creating = false; // finalize in flight — survives re-render, unlike `disabled`
+    this._closing = false;
     this._keyFn = this._onKey.bind(this);
   }
 
   get draft() { return this._draft; }
+  get isOpen() { return !!this._el; }
 
   // ── lifecycle ────────────────────────────────────────────────────────────
 
   open({ draft = null } = {}) {
+    // Re-opening while already open is a no-op rather than a second window.
     if (this._el) return;
     this._injectCSS();
     this._draft = draft ?? createDraft();
@@ -186,19 +162,31 @@ class CharacterCreationApp {
     // Steps may keep transient view state outside the draft (which class pane
     // is open, a search box, a half-answered prompt). None of it should survive
     // into the next character, so every step gets a chance to clear it here.
-    for (const r of STEP_RENDERERS.values()) { try { r.reset?.(); } catch (e) { warn("step reset failed:", e); } }
+    for (const r of STEP_RENDERERS.values()) {
+      try { r.reset?.(); } catch (e) { warn("step reset failed:", e); }
+    }
 
     this._el = document.createElement("div");
     this._el.id = ROOT_ID;
     document.body.appendChild(this._el);
+    this._el.addEventListener("mousedown", (ev) => {
+      // Clicking the backdrop is a cancel, and cancel always confirms.
+      if (ev.target === this._el) this._confirmCancel();
+    });
     document.addEventListener("keydown", this._keyFn, { capture: true });
     this._render();
+    windowAnim(this._el.querySelector(".cc-panel"), "in");
+    sfx("open");
     log("opened");
   }
 
-  close() {
-    if (!this._el) return;
-    this._el.remove();
+  async close() {
+    if (!this._el || this._closing) return;
+    this._closing = true;
+    sfx("close");
+    await windowAnim(this._el?.querySelector(".cc-panel"), "out");
+    this._closing = false;
+    this._el?.remove();
     this._el = null;
     document.removeEventListener("keydown", this._keyFn, { capture: true });
     log("closed");
@@ -230,10 +218,7 @@ class CharacterCreationApp {
       edit: (fn) => {
         fn(this._draft);
         const { trimmed, warnings } = reconcile(this._draft);
-        this._notes = [
-          ...trimmed.map((t) => `Cleared: ${t}.`),
-          ...warnings,
-        ];
+        this._notes = [...trimmed.map((t) => `Cleared: ${t}.`), ...warnings];
         this._render();
       },
 
@@ -258,52 +243,59 @@ class CharacterCreationApp {
     this._el.innerHTML = `
       <div class="cc-panel">
         <div class="cc-head">
-          <div class="cc-title">Create Character</div>
-          <div class="cc-sub">${esc(this._destinationLabel())}</div>
+          <div class="cc-idblock">
+            <div class="cc-title">Create Character</div>
+            <div class="cc-sub">${esc(this._destinationLabel())}</div>
+          </div>
+          <div class="cc-stepchip">Step ${step.n} of ${CC.STEPS.length}</div>
+          <button class="cc-x" data-act="cancel" title="Close">×</button>
         </div>
         <div class="cc-body">
           <div class="cc-rail">${this._railHTML()}</div>
           <div class="cc-content">
             <div class="cc-step-title">${esc(step.label)}</div>
-            <div class="cc-step-hint">Step ${step.n} of ${CC.STEPS.length}</div>
-            ${this._stepBodyHTML(step)}
+            <div class="cc-step-hint">${esc(STEP_HINT[step.id] ?? "")}</div>
+            <div class="cc-stepbody">${this._stepBodyHTML(step)}</div>
             ${this._issuesHTML(step)}
           </div>
         </div>
         <div class="cc-foot">
           <div class="cc-foot-info">${esc(this._footInfo())}</div>
-          <div class="cc-btns">
-            <button class="cc-btn is-ghost" data-act="cancel">Cancel</button>
-            <button class="cc-btn" data-act="back" ${stepIndex(d.step) === 0 ? "disabled" : ""}>Back</button>
-            ${this._forwardBtnHTML(step)}
-          </div>
+          <div class="cc-spacer"></div>
+          <button class="cc-btn is-ghost" data-act="cancel">Cancel</button>
+          <button class="cc-btn" data-act="back" ${stepIndex(d.step) === 0 ? "disabled" : ""}>Back</button>
+          ${this._forwardBtnHTML(step)}
         </div>
       </div>`;
 
+    staggerRows(this._el.querySelectorAll(".cc-rail-item"), "in");
     this._bind(step);
   }
 
+  /**
+   * The rail. Plain divs — see the class comment. Steps ahead of the current
+   * one are dimmed rather than hidden, so the length of the road is visible.
+   */
   _railHTML() {
     const d = this._draft;
-    const reachable = reachableSteps(d);
-    return CC.STEPS.map((s) => {
-      const active = s.id === d.step;
-      const locked = !reachable.includes(s.id);
-      const seen = d.seen.includes(s.id);
-      // Only judge a step the player has actually visited — flagging step 5 red
+    const here = stepIndex(d.step);
+    return CC.STEPS.map((s, i) => {
+      const active = i === here;
+      const behind = i < here;
+      // Only judge a step the player has actually left — flagging step 5 red
       // while they are still on step 1 is noise, not information.
-      const invalid = seen && !active && s.id !== "summary" && !validateStep(d, s.id).ok;
+      const invalid = behind && s.id !== "summary" && !validateStep(d, s.id).ok;
       const cls = [
         "cc-rail-item",
         active ? "is-active" : "",
-        locked ? "is-locked" : "",
-        seen && !invalid && !active ? "is-done" : "",
+        i > here ? "is-ahead" : "",
+        behind && !invalid ? "is-done" : "",
         invalid ? "is-invalid" : "",
       ].filter(Boolean).join(" ");
-      return `<button class="${cls}" data-act="goto" data-step="${s.id}" ${locked ? "disabled" : ""}>
-        <span class="cc-rail-n">${invalid ? "!" : s.n}</span>
+      return `<div class="${cls}">
+        <span class="cc-rail-n">${behind && !invalid ? "✓" : invalid ? "!" : s.n}</span>
         <span>${esc(s.label)}</span>
-      </button>`;
+      </div>`;
     }).join("");
   }
 
@@ -337,14 +329,12 @@ class CharacterCreationApp {
 
   _forwardBtnHTML(step) {
     if (step.id === "summary") {
-      if (this._creating) {
-        return `<button class="cc-btn is-primary" disabled>Creating…</button>`;
-      }
+      if (this._creating) return `<button class="cc-btn is-primary" disabled>Creating…</button>`;
       const ok = validateAll(this._draft).ok;
       return `<button class="cc-btn is-primary" data-act="finalize" ${ok ? "" : "disabled"}>Create</button>`;
     }
     // Forward is never blocked. A player is allowed to walk the whole wizard
-    // and come back; only Finalize enforces completeness.
+    // and come back; only Create enforces completeness.
     return `<button class="cc-btn is-primary" data-act="next">Next</button>`;
   }
 
@@ -358,42 +348,21 @@ class CharacterCreationApp {
     return `${game.user?.name ?? "?"} → ${name}${exists ? "" : " (will be created)"}`;
   }
 
-  // ── navigation ───────────────────────────────────────────────────────────
-
-  /**
-   * Jump to a step by id. Exposed on the step context so a step can offer its
-   * own route back — the summary's per-panel "edit" links use this rather than
-   * making the player find the right stop on the rail.
-   */
-  goToStep(stepId) {
-    if (!this._draft) return false;
-    sfx("step");
-    this._notes = [];
-    const moved = goTo(this._draft, stepId);
-    this._render();
-    return moved;
-  }
-
   // ── events ───────────────────────────────────────────────────────────────
 
   _bind(step) {
     const root = this._el;
     if (!root) return;
 
-    root.querySelectorAll("[data-act='goto']").forEach((el) => {
-      el.addEventListener("click", () => {
-        if (el.disabled) return;
-        this.goToStep(el.dataset.step);
-      });
-    });
-
-    root.querySelector("[data-act='back']")?.addEventListener("click", () => {
-      sfx("back"); this._notes = []; prevStep(this._draft); this._render();
+    root.querySelector("[data-act='back']")?.addEventListener("click", (ev) => {
+      if (ev.currentTarget.disabled) return;
+      sfx("stageDown"); this._notes = []; prevStep(this._draft); this._render();
     });
     root.querySelector("[data-act='next']")?.addEventListener("click", () => {
-      sfx("forward"); this._notes = []; nextStep(this._draft); this._render();
+      sfx("tab"); this._notes = []; nextStep(this._draft); this._render();
     });
-    root.querySelector("[data-act='cancel']")?.addEventListener("click", () => this._confirmCancel());
+    root.querySelectorAll("[data-act='cancel']").forEach((el) =>
+      el.addEventListener("click", () => this._confirmCancel()));
     root.querySelector("[data-act='finalize']")?.addEventListener("click", () => this._finalize());
 
     const r = STEP_RENDERERS.get(step.id);
@@ -411,6 +380,7 @@ class CharacterCreationApp {
   }
 
   async _confirmCancel() {
+    if (this._creating) return;   // a write is in flight; closing now proves nothing
     // Anything typed is worth one confirmation; a pristine draft is not.
     const touched = this._draft.seen.length > 1 || !!this._draft.profile.name;
     if (touched) {
@@ -421,7 +391,6 @@ class CharacterCreationApp {
       });
       if (!ok) return;
     }
-    sfx("back");
     this.close();
   }
 
@@ -438,7 +407,6 @@ class CharacterCreationApp {
 
     const check = validateAll(this._draft);
     if (!check.ok) {
-      sfx("fail");
       ui.notifications?.warn(check.issues[0]?.message ?? "This character is not finished yet.");
       return;
     }
@@ -461,21 +429,31 @@ class CharacterCreationApp {
     }
 
     if (res?.ok) {
-      sfx("confirm");
+      sfx("levelUp");
       ui.notifications?.info(`${res.name} created in ${res.folder ?? "your folder"}.`);
-      this.close();
+      await this.close();
       // Open the new sheet so the player lands on the character they just made.
       try { (await fromUuid(res.actorUuid))?.sheet?.render(true); }
       catch (e) { console.warn("[ONI][CharCreate] could not open the new sheet:", e); }
       return;
     }
 
-    sfx("fail");
+    sfx("levelDown");
     this._notes = [describeFailure(res)];
     this._render();
     ui.notifications?.error(this._notes[0]);
   }
 }
+
+/** One line under each step title, so the step explains itself. */
+const STEP_HINT = Object.freeze({
+  profile: "Who is this character?",
+  attributes: "Pick a starting spread, then set the level.",
+  classes: "Spend your Skill Points on classes and their skills.",
+  equipment: "Buy starting gear against your zenit.",
+  bond: "Optional — one Bond your character already carries.",
+  summary: "Check everything, then create.",
+});
 
 /** Turn a finalize failure into something a player can act on. */
 export function describeFailure(res) {

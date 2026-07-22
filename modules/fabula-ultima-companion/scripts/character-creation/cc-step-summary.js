@@ -84,10 +84,12 @@ const CSS = `
     font-size: 10px; color: #6b4a1c; line-height: 1.5; }
 `;
 
+// Panels are read-only. Backtracking is Back, all the way down -- the rail and
+// the per-panel shortcuts are gone, so there is exactly one way to move.
 const card = (title, stepId, body, wide = false) => `
   <div class="cc-card ${wide ? "is-wide" : ""}">
     <div class="cc-card-h"><span>${esc(title)}</span>
-      ${stepId ? `<button data-goto="${esc(stepId)}">edit</button>` : ""}</div>
+      ${stepId ? `<span class="cc-card-step">step ${esc(stepId)}</span>` : ""}</div>
     ${body}
   </div>`;
 
@@ -227,7 +229,7 @@ function render(d) {
         <div class="cc-issues-h">${issues.length} thing${issues.length === 1 ? "" : "s"} left to settle</div>
         ${issues.map((i) => `<div class="cc-issue">
           <span>${esc(i.message)}</span>
-          <button data-goto="${esc(i.step)}">go to ${esc(i.step)}</button>
+          <span class="cc-issue-step">${esc(i.step)}</span>
         </div>`).join("")}
       </div>` : `
       <div class="cc-ready">
@@ -237,10 +239,7 @@ function render(d) {
       </div>`}`;
 }
 
-function bind(root, d, ctx) {
-  root.querySelectorAll("[data-goto]").forEach((b) => {
-    b.addEventListener("click", () => ctx.app.goToStep(b.dataset.goto));
-  });
-}
+// Nothing on this page is interactive; Create lives in the shell footer.
+function bind() {}
 
 STEP_RENDERERS.set("summary", { render, bind });

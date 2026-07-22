@@ -31,13 +31,22 @@ eq("starts on profile", d.step, "profile");
 eq("fresh pool", D.draftPointPool(d), 5);
 eq("fresh budget", D.draftBudget(d), 500);
 
-// ── step machine: forward only one beyond furthest seen ────────────────────
-eq("reachable from fresh", D.reachableSteps(d), ["profile", "attributes"]);
-eq("cannot jump to bond", D.goTo(d, "bond"), false);
-eq("can step to attributes", D.goTo(d, "attributes"), true);
-eq("reachable now", D.reachableSteps(d), ["profile", "attributes", "classes"]);
-eq("can go back", D.goTo(d, "profile"), true);
-eq("back does not shrink reach", D.reachableSteps(d).length, 3);
+// ── step machine: one way in, one way out ──────────────────────────────────
+// Movement is positional. There is no reachability set to fall out of sync,
+// which is what previously let a rail jump leave Back inert.
+eq("next walks forward one", (D.nextStep(d), d.step), "attributes");
+eq("prev walks back one", (D.prevStep(d), d.step), "profile");
+eq("back stops at the first step", (D.prevStep(d), d.step), "profile");
+eq("visits are remembered", d.seen, ["profile", "attributes"]);
+
+// Walk the whole road and back, which is the only route a player has.
+for (let i = 0; i < 10; i++) D.nextStep(d);
+eq("next stops at the last step", d.step, "summary");
+eq("every step was seen", d.seen.length, 6);
+for (let i = 0; i < 10; i++) D.prevStep(d);
+eq("back returns all the way", d.step, "profile");
+eq("back still works after reaching the end", (D.nextStep(d), d.step), "attributes");
+D.goTo(d, "profile");
 
 // ── validation ─────────────────────────────────────────────────────────────
 eq("unnamed profile invalid", D.validateStep(d, "profile").ok, false);
