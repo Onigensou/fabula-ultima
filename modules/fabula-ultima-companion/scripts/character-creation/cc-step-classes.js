@@ -40,7 +40,7 @@
 import { CC, esc, num } from "./cc-const.js";
 import { STEP_RENDERERS } from "./cc-app.js";
 import { draftLevel, draftPointsLeft, draftPointPool, draftClassKeys } from "./cc-draft.js";
-import { draftState } from "./cc-class-state.js";
+import { draftState, benefitFor } from "./cc-class-state.js";
 import { LevelUpApp, injectLevelUpStyles, LEVELUP_ROOT_ID } from "../levelup-system/levelup-app.js";
 import { sfx, windowAnim } from "../levelup-system/levelup-fx.js";
 
@@ -168,6 +168,8 @@ function viewFor(d) {
     _pickSel: null,
     _pickTab: "overview",
     _facet: null,
+    _benefit: null,
+    _benefitChoice: new Map(),
     _details: new Map(),
     _pinned: null,
     _hover: null,
@@ -204,6 +206,9 @@ export const windowIsOpen = () => !!_host;
 export function escapeStep() {
   const v = _view;
   if (!v || !_host) return false;
+  // Outermost first: the benefit window gates starting a class, so backing out
+  // of it leaves the class unstarted rather than closing anything behind it.
+  if (v._benefit) { sfx("deselect"); v._benefit = null; v.render(); return true; }
   if (v._facet) { sfx("deselect"); v._facet = null; v.render(); return true; }
   if (v._pickerOpen) { sfx("deselect"); v._pickerOpen = false; v.render(); return true; }
   sfx("close");
@@ -212,7 +217,17 @@ export function escapeStep() {
 }
 
 export function closeWindow() {
-  if (_view) { _view._root = null; _view._facet = null; _view._pickerOpen = false; }
+  if (_view) {
+    _view._root = null;
+    _view._facet = null;
+    _view._benefit = null;
+    _view._pickerOpen = false;
+    // Closing ends the session that owned the benefit choices. They are already
+    // recorded on every pick, so nothing is lost — what goes is the ability to
+    // change them, which is the agreed rule: editable only while still in the
+    // instance that made them.
+    _view._benefitChoice.clear();
+  }
   _host?.remove();
   _host = null;
 }
@@ -326,23 +341,15 @@ function openFacetPicker(v, d, cls, skill, benefit) {
 }
 
 /**
- * Ask which free benefit a newly opened class grants, when it does not fix one.
+ * Which benefit a spend on this class should be written with.
  *
- * `class_list` stores one benefit per class row, so the question is asked once,
- * as the class opens — the same moment the level-up window asks it.
+ * In order: what the class fixes, then what the draft already recorded for it
+ * (later levels inherit the first level's answer), then this session's choice
+ * from the benefit window. The window asks when the class is STARTED, so by
+ * the time a skill is bought the answer already exists.
  */
-async function askBenefit(cls) {
-  return await Dialog.wait({
-    title: `${cls.name} — free benefit`,
-    content: `<p style="margin:0 0 8px">Choose what taking <b>${esc(cls.name)}</b> permanently grants.</p>`,
-    buttons: {
-      hp: { label: "+5 Max HP", callback: () => "hp" },
-      mp: { label: "+5 Max MP", callback: () => "mp" },
-      ip: { label: "+2 Max IP", callback: () => "ip" },
-    },
-    default: "hp",
-    close: () => null,
-  }).catch(() => null);
+function benefitToUse(v, d, cls) {
+  return cls.benefit ?? benefitFor(d, cls.key) ?? v._benefitChoice.get(cls.key) ?? null;
 }
 
 // ── the step body ──────────────────────────────────────────────────────────
@@ -489,6 +496,50 @@ async function onPanelClick(ev, v, d, ctx) {
     return;
   }
 
+  // ── benefit window ──
+  // Reuses levelup-app's own overlay and its own state fields, so the flow is
+  // identical: starting a class that lets you choose asks before the class is
+  // anywhere near the rail, and Back leaves it unstarted.
+  if (act === "benefitedit") {
+    const cls = s.classes.find((c) => c.key === btn.dataset.key);
+    if (!v._benefitEditable(cls)) return;
+    sfx("open");
+    v._benefit = {
+      classKey: cls.key, className: cls.name,
+      current: v._benefitChoice.get(cls.key) ?? null,
+      then: "stay",
+    };
+    v.render();
+    return;
+  }
+  if (act === "benefitpick") {
+    const b = v._benefit;
+    if (!b) return;
+    v._benefit = null;
+    v._benefitChoice.set(b.classKey, btn.dataset.benefit);
+    sfx("stageUp");
+    if (b.then === "start") {
+      v._selected = b.classKey;
+      v._pickerOpen = false;
+      v.render();
+      return;
+    }
+    // Editing after levels are taken has to rewrite them: the benefit lives on
+    // every pick so finalize never has to re-derive it.
+    commit((dd) => {
+      for (const row of dd.classes) {
+        if (row.classKey === b.classKey) row.benefit = btn.dataset.benefit;
+      }
+    });
+    return;
+  }
+  if (act === "benefitback") {
+    sfx("deselect");
+    v._benefit = null;
+    v.render();
+    return;
+  }
+
   // ── class browser ──
   if (act === "openpicker") { sfx("open"); v._pickerOpen = true; v.render(); return; }
   if (act === "closepicker") { sfx("deselect"); v._pickerOpen = false; v.render(); return; }
@@ -521,8 +572,19 @@ async function onPanelClick(ev, v, d, ctx) {
     return;
   }
   if (act === "pick") {
-    if (v._selected !== btn.dataset.key) sfx("open");
-    v._selected = btn.dataset.key;
+    const key = btn.dataset.key;
+    const cls = s.classes.find((c) => c.key === key);
+    // Starting a class that lets you choose its bonus asks NOW, as part of
+    // starting it — not later, during the first skill purchase, where it read
+    // as an unrelated interruption.
+    if (cls && !classLevelIn(d, key) && !cls.benefit && !v._benefitChoice.has(key)) {
+      sfx("open");
+      v._benefit = { classKey: key, className: cls.name, current: null, then: "start" };
+      v.render();
+      return;
+    }
+    if (v._selected !== key) sfx("open");
+    v._selected = key;
     v._pickerOpen = false;
     v.render();
     return;
@@ -545,11 +607,14 @@ async function onPanelClick(ev, v, d, ctx) {
     const gate = canSpend(d, cls, skill);
     if (!gate.ok) { ui.notifications?.warn(gate.reason); return; }
 
-    // A class opening for the first time may owe a benefit choice.
-    let benefit = cls.benefit ?? null;
-    if (needsBenefit(d, cls)) {
-      benefit = await askBenefit(cls);
-      if (!benefit) return;                       // dismissed: take nothing
+    // The benefit was settled when the class was started. If it somehow was
+    // not — a class reached without going through the browser — ask now rather
+    // than write a class row with no bonus on it.
+    const benefit = benefitToUse(v, d, cls);
+    if (!benefit && needsBenefit(d, cls)) {
+      v._benefit = { classKey: cls.key, className: cls.name, current: null, then: "stay" };
+      v.render();
+      return;
     }
 
     // A grant with nothing left to learn still takes the level — the skill is

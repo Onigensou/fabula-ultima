@@ -77,7 +77,7 @@ globalThis.ui = { notifications: { warn() {}, error() {}, info() {} } };
 globalThis.Hooks = { once() {}, on() {}, off() {}, callAll() {} };
 globalThis.CONFIG = { sounds: {} };
 
-const { draftState, takenClasses } = await import("./cc-class-state.js");
+const { draftState, takenClasses, benefitFor } = await import("./cc-class-state.js");
 const D = await import("./cc-draft.js");
 const C = await import("./cc-step-classes.js");
 const { LevelUpApp } = await import("../levelup-system/levelup-app.js");
@@ -166,13 +166,28 @@ const spend = (d, s, key, name, opts) => C.applySpend(d, clsOf(s, key), sklOf(s,
              return sklOf(draftState(dd), "guardian", "Dual Shieldbearer").atMax; })(), true);
 }
 
-// ── the chosen benefit sticks to the class ─────────────────────────────────
+// ── `benefit` reports what the CLASS fixes, never what was chosen ──────────
+//
+// The window treats "no fixed benefit" as "this answer is still mine to
+// change", so reporting the choice here would lock it the instant it was made
+// and the pencil would never appear. The chosen value lives on the picks —
+// which is what `benefitFor` reads, and what finalize writes.
 {
   const d = mk(10);
   const s0 = draftState(d);
   spend(d, s0, "elementalist", "Spellblade", { benefit: "mp" });
-  eq("the class now reports the chosen benefit", clsOf(draftState(d), "elementalist").benefit, "mp");
-  eq("a fixed-benefit class is unaffected", clsOf(draftState(d), "guardian").benefit, "hp");
+
+  eq("a chooser still reports no fixed benefit",
+    clsOf(draftState(d), "elementalist").benefit, null);
+  eq("the choice lives on the pick", d.classes[0].benefit, "mp");
+  eq("...and benefitFor finds it", benefitFor(d, "elementalist"), "mp");
+  eq("a class never taken has no choice recorded", benefitFor(d, "guardian"), null);
+
+  eq("a fixed-benefit class reports its own", clsOf(draftState(d), "guardian").benefit, "hp");
+
+  // Later levels inherit the first level's answer rather than asking again.
+  spend(d, s0, "elementalist", "Spellblade");
+  eq("the second level inherits it", benefitFor(d, "elementalist"), "mp");
 }
 
 // ── facets are held once claimed ───────────────────────────────────────────
@@ -271,6 +286,66 @@ const spend = (d, s, key, name, opts) => C.applySpend(d, clsOf(s, key), sklOf(s,
     }
   });
   eq("a plain app is not in creation mode", plain._creation, undefined);
+}
+
+
+// ── the benefit window ─────────────────────────────────────────────────────
+//
+// A class grants its bonus once, on entering it, so the question belongs to
+// the moment of entering — not to the first skill bought afterwards, and
+// certainly not to Confirm, where it used to surface as a dialog mid-write.
+{
+  const v = Object.create(LevelUpApp);
+  Object.assign(v, {
+    _creation: true, _pending: [], _benefit: null, _benefitChoice: new Map(),
+    _root: null, _updateCursor: () => {},
+  });
+  const d = mk(20);
+  v._stateSource = () => draftState(d);
+  Object.defineProperty(v, "isOpen", { get: () => true, configurable: true });
+
+  const s = draftState(d);
+  const fixedCls = clsOf(s, "guardian");        // hp_benefit
+  const chooser = clsOf(s, "elementalist");     // choice_benefit
+
+  // A class that fixes its own bonus never asks, and never offers a pencil.
+  eq("a fixed benefit resolves without asking", v._benefitFor("guardian"), "hp");
+  eq("...and is not editable", v._benefitEditable(fixedCls), false);
+
+  // A chooser has no answer until one is given.
+  eq("a chooser has no benefit yet", v._benefitFor("elementalist"), undefined);
+  eq("...and nothing to edit", v._benefitEditable(chooser), false);
+
+  v._benefitChoice.set("elementalist", "mp");
+  eq("the choice resolves", v._benefitFor("elementalist"), "mp");
+  eq("...and is editable while this session holds it", v._benefitEditable(chooser), true);
+
+  // The header states it, with a pencil only while it is still a decision.
+  const tag = v._benefitTag(chooser);
+  eq("the header names the chosen bonus", tag.includes("Max MP +5"), true);
+  eq("...and offers to change it", /data-act="benefitedit"/.test(tag), true);
+  const fixedTag = v._benefitTag(fixedCls);
+  eq("a fixed bonus is stated plainly", fixedTag.includes("Max HP +5"), true);
+  eq("...with no pencil", /benefitedit/.test(fixedTag), false);
+
+  // Ending the session locks it: the answer is now part of the character.
+  v._benefitChoice.clear();
+  eq("after the session the choice is gone", v._benefitFor("elementalist"), undefined);
+  eq("...and can no longer be edited", v._benefitEditable(chooser), false);
+
+  // The window itself renders both ways.
+  v._benefit = { classKey: "elementalist", className: "Elementalist", current: null, then: "start" };
+  const first = v._benefitOverlay();
+  eq("the window offers all three", ["hp", "mp", "ip"].every((k) => first.includes(`data-benefit="${k}"`)), true);
+  eq("...with no way to dismiss it", /benefitcancel|data-act="close"/.test(first), false);
+  eq("...only a way back", /data-act="benefitback"/.test(first), true);
+  eq("a first choice says the class is not started yet", /not started until you choose/.test(first), true);
+
+  v._benefit = { classKey: "elementalist", className: "Elementalist", current: "mp", then: "stay" };
+  const editing = v._benefitOverlay();
+  eq("editing marks the current choice", /class="lu-benfit is-on" data-act="benefitpick" data-benefit="mp"/.test(editing), true);
+  eq("...and says when it locks", /Locked in once the batch is written/.test(editing), true);
+  eq("no placeholder leaked", /undefined|\[object Object\]|NaN/.test(first + editing), false);
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

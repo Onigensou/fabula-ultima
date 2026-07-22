@@ -80,10 +80,13 @@ export function draftState(draft) {
       name: cls.name,
       img: cls.img,
       folder: cls.folder,
-      // A class whose benefit is fixed reports it from the registry; one the
-      // player chose reports their choice, so the header reads the same either
-      // way and the choice survives a re-render.
-      benefit: cls.benefit ?? benefitFor(draft, cls.key),
+      // ONLY what the class itself fixes. A class that lets the player choose
+      // reports null here even after they have chosen, because the window
+      // treats "no fixed benefit" as "this answer is still mine to change" —
+      // reporting the choice here would lock it the moment it was made.
+      // The chosen value lives on the draft's picks, and on the window's
+      // own session map until then.
+      benefit: cls.benefit,
       free: cls.free,
       flavor: cls.flavor,
       lore: cls.lore,

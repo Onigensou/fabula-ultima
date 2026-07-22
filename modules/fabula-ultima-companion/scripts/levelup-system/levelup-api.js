@@ -143,7 +143,11 @@ export function getState(actorUuid) {
       name: cls.name,
       img: cls.img,
       folder: cls.folder,
-      benefit: cls.benefit,
+      // The registry benefit is what the CLASS fixes; a class that lets the
+      // player choose reports null there, and the answer lives on the actor
+      // row instead. Falling through to it means a written choice is visible
+      // rather than silently absent.
+      benefit: cls.benefit ?? (mine?.benefit || null),
       free: cls.free,
       // Authored prose for the class browser: the quote, the body, the alt
       // names, and the Unique Mechanic (present on 21 of 42 classes).
