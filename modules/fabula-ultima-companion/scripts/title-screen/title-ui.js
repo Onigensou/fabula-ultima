@@ -97,11 +97,15 @@
   `;
 
   // ── Menu items ───────────────────────────────────────────────────────────────
+  //
+  // "New Game" stays a stub — it is reserved for a separate future feature and
+  // is NOT the character creator. Character creation is its own entry.
   const MENU_ITEMS = [
-    { id: "new-game",  label: "New Game",  stub: true  },
-    { id: "load-game", label: "Load Game", stub: false },
-    { id: "options",   label: "Options",   stub: true  },
-    { id: "quit",      label: "Quit",      stub: false },
+    { id: "new-game",         label: "New Game",         stub: true  },
+    { id: "load-game",        label: "Load Game",        stub: false },
+    { id: "create-character", label: "Create Character", stub: false },
+    { id: "options",          label: "Options",          stub: true  },
+    { id: "quit",             label: "Quit",             stub: false },
   ];
 
   // ── UI class ─────────────────────────────────────────────────────────────────
@@ -258,6 +262,20 @@
         case "new-game":  console.log(TAG, "New Game — placeholder.");   break;
         case "options":   console.log(TAG, "Options — placeholder.");    break;
         case "quit":      TS.QuitUI.open();                                break;
+        // Reached through the global API rather than an import: this file is a
+        // plain script and loads before the module's esmodules. By click time
+        // the API is registered; if it somehow is not, say so instead of
+        // throwing into the console.
+        case "create-character": {
+          const cc = globalThis.FUCompanion?.api?.characterCreation ?? null;
+          if (!cc) {
+            console.warn(TAG, "Character Creation API unavailable.");
+            ui.notifications?.error("Character creation is unavailable — the module did not finish loading.");
+            break;
+          }
+          cc.open();
+          break;
+        }
       }
     }
   }
