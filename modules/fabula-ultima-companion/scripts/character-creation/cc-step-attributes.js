@@ -5,6 +5,17 @@
  * dice to MIG/DEX/INS/WLP, and — for characters created at level 20 or 40 — the
  * permanent die steps those milestones grant (p.227).
  *
+ * Laid out like the Status window, with the same attribute icons and the same
+ * row shape, because it is the same information: a player who has seen one
+ * should recognise the other instantly.
+ *
+ * ONE ARRAY AT A TIME
+ * -------------------
+ * The three spreads are fixed by the rulebook, so they are a carousel rather
+ * than three cards competing for space — arrows or the mouse wheel step
+ * between them. Switching clears the assignment, since the dice on offer have
+ * changed and any previous pick refers to a pool that no longer exists.
+ *
  * ASSIGNMENT IS A PERMUTATION, NOT FOUR FREE CHOICES
  * --------------------------------------------------
  * The array is a fixed pool. Picking d10 for MIG when DEX holds it must MOVE
@@ -26,7 +37,8 @@
 
 import { CC, CC_ATTR_KEYS, CC_ATTR_LABEL, esc, num } from "./cc-const.js";
 import { STEP_RENDERERS } from "./cc-app.js";
-import { draftLevel, draftMilestones } from "./cc-draft.js";
+import { draftLevel, draftMilestones, draftPointPool, draftBudget } from "./cc-draft.js";
+import { ATTR_META } from "../attribute-system/attribute-const.js";
 
 const DIE_STEPS = [6, 8, 10, 12];
 const nextDie = (die) => {
@@ -87,227 +99,242 @@ export function previewDerived(d) {
   };
 }
 
+// ── view ───────────────────────────────────────────────────────────────────
+
+/** The three arrays in a fixed order, so the arrows and the wheel agree. */
+const ARRAY_ORDER = Object.freeze(["jack", "average", "specialized"]);
+
 const CSS = `
-  .cc-attr-wrap { display: grid; grid-template-columns: 1fr 300px; gap: 22px; align-items: start; }
+  .cc-at { display: flex; gap: 0; min-height: 0; margin: 0 -16px -14px; }
+  .cc-at-left { flex: 0 0 auto; width: 350px; padding: 0 12px 12px; display: flex;
+    flex-direction: column; gap: 9px; }
+  .cc-at-right { flex: 1 1 auto; min-width: 0; padding: 12px 14px;
+    background: #e6dabd; border-left: 1px solid #b79c72;
+    display: flex; flex-direction: column; gap: 3px; }
 
-  .cc-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .cc-row label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #8a6432; }
-  .cc-lvl {
-    font-family: inherit; font-size: 13px; color: #2e1c08; width: 78px;
-    background: rgba(255,252,240,0.72); border: 1px solid rgba(140,90,30,0.38);
-    border-radius: 2px; padding: 6px 8px; text-align: center;
-  }
-  .cc-lvl:focus { outline: none; border-color: #c9a44a; background: #fffdf4; }
+  .cc-at-lvl { display: flex; align-items: center; gap: 9px; padding: 7px 9px;
+    border-radius: 8px; background: #f7f0df; border: 1px solid #cbb890; }
+  .cc-at-lvl label { font-weight: 800; letter-spacing: .04em; font-size: 13px; }
+  .cc-at-lvl input { width: 64px; text-align: center; font-family: inherit; font-size: 14px;
+    font-weight: 700; color: #2f2618; padding: 4px 6px; border-radius: 6px;
+    background: #fdf6e4; border: 1px solid #cbb890; }
+  .cc-at-lvl input:focus { outline: none; border-color: #8a6c45; }
+  .cc-at-lvlnote { margin-left: auto; font-size: 11px; opacity: .7; text-align: right; line-height: 1.35; }
 
-  .cc-arrays { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
-  .cc-array {
-    cursor: pointer; border-radius: 3px; padding: 10px 11px; text-align: left;
-    border: 1px solid rgba(140,90,30,0.35); background: rgba(255,252,240,0.55);
-    font-family: inherit; color: #5c3a12; transition: background .12s, border-color .12s;
-  }
-  .cc-array:hover { background: rgba(255,252,240,0.9); }
-  .cc-array.is-on { border-color: #c9a44a; background: rgba(201,164,74,0.26); }
-  .cc-array-name { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #3a1e06; }
-  .cc-array-dice { font-size: 13px; letter-spacing: 1px; color: #7a5428; margin: 5px 0 4px; }
-  .cc-array-blurb { font-size: 9px; line-height: 1.4; color: #9b7040; }
+  /* The array carousel: one spread at a time, arrows or wheel to change. */
+  .cc-at-arr { border-radius: 8px; background: #f7f0df; border: 1px solid #cbb890; padding: 8px 9px; }
+  .cc-at-arrhead { display: flex; align-items: center; gap: 8px; }
+  .cc-at-nav { width: 26px; height: 24px; border-radius: 6px; cursor: pointer; padding: 0;
+    border: 1px solid #8a6c45; background: linear-gradient(180deg,#f7edd5,#e6d6b0);
+    font-size: 12px; line-height: 1; color: #4b3517; font-family: inherit; }
+  .cc-at-nav:hover { background: linear-gradient(180deg,#f0d99a,#e0c179); }
+  .cc-at-arrname { flex: 1 1 auto; text-align: center; font-weight: 800; font-size: 13.5px; }
+  .cc-at-arrdice { text-align: center; font-size: 15px; font-weight: 700; color: #4b3517;
+    font-variant-numeric: tabular-nums; margin: 5px 0 3px; letter-spacing: .08em; }
+  .cc-at-arrblurb { font-size: 11px; opacity: .7; line-height: 1.4; text-align: center; min-height: 31px; }
+  .cc-at-dots { display: flex; justify-content: center; gap: 5px; margin-top: 4px; }
+  .cc-at-dot { width: 6px; height: 6px; border-radius: 50%; background: #e6dabd; border: 1px solid #b79c72; }
+  .cc-at-dot.on { background: #8a6c45; border-color: #6b543a; }
 
-  .cc-attr-list { display: flex; flex-direction: column; gap: 7px; }
-  .cc-attr {
-    display: grid; grid-template-columns: 108px 1fr auto; gap: 10px; align-items: center;
-    padding: 8px 11px; border-radius: 3px;
-    border: 1px solid rgba(140,90,30,0.28); background: rgba(255,252,240,0.5);
-  }
-  .cc-attr-name { font-size: 11px; letter-spacing: 2px; color: #3a1e06; text-transform: uppercase; }
-  .cc-attr-sel {
-    font-family: inherit; font-size: 12px; color: #2e1c08; padding: 5px 8px;
-    background: rgba(255,255,250,0.9); border: 1px solid rgba(140,90,30,0.38); border-radius: 2px;
-  }
-  .cc-attr-sel:focus { outline: none; border-color: #c9a44a; }
-  .cc-attr-eff { font-size: 11px; color: #7a5428; letter-spacing: 1px; min-width: 74px; text-align: right; }
-  .cc-attr-eff .cc-up { color: #1f7a3d; }
+  /* Rows mirror the Status window: icon, label, die at the right edge. */
+  .cc-at-rows { display: flex; flex-direction: column; gap: 7px; }
+  .cc-at-row { display: flex; align-items: center; gap: 9px; padding: 7px 9px;
+    border-radius: 8px; background: #f7f0df; border: 1px solid #cbb890; }
+  .cc-at-row.is-raised { border-color: #8a6c45; background: #fdf6e4;
+    box-shadow: inset 0 0 0 1px rgba(240,217,154,.7); }
+  .cc-at-icon { width: 26px; height: 26px; object-fit: contain; flex: 0 0 auto;
+    border: 0 !important; outline: 0 !important; background: none; }
+  .cc-at-label { font-weight: 800; letter-spacing: .04em; width: 42px; flex: 0 0 auto; }
+  .cc-at-die { font-size: 15px; flex: 1 1 auto; text-align: right; font-variant-numeric: tabular-nums; }
+  .cc-at-die .was { opacity: .45; font-size: 13px; }
+  .cc-at-die .now { color: #2f6b2f; }
+  .cc-at-sel { font-family: inherit; font-size: 12px; padding: 3px 5px; border-radius: 6px;
+    background: #fdf6e4; border: 1px solid #cbb890; color: #2f2618; flex: 0 0 auto; }
+  .cc-at-sel:focus { outline: none; border-color: #8a6c45; }
 
-  .cc-ms { margin-top: 18px; padding: 12px 14px; border-radius: 3px;
-    border: 1px solid rgba(140,90,30,0.35); background: rgba(201,164,74,0.13); }
-  .cc-ms-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #3a1e06; margin-bottom: 4px; }
-  .cc-ms-hint { font-size: 9px; color: #8a6432; margin-bottom: 9px; line-height: 1.45; }
-  .cc-ms-pick { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
-  .cc-ms-lbl { font-size: 10px; color: #7a5428; letter-spacing: 1px; min-width: 74px; }
+  .cc-at-ms { border-radius: 8px; background: #f7f0df; border: 1px solid #cbb890; padding: 8px 9px; }
+  .cc-at-mshead { font-size: 11px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; opacity: .65; margin-bottom: 6px; }
+  .cc-at-msrow { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 12px; }
+  .cc-at-msrow:last-child { margin-bottom: 0; }
+  .cc-at-msrow .k { opacity: .7; flex: 0 0 auto; }
 
-  .cc-prev { border: 1px solid rgba(140,90,30,0.35); border-radius: 3px;
-    background: rgba(255,252,240,0.6); padding: 14px 16px; }
-  .cc-prev-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-    color: #3a1e06; margin-bottom: 11px; }
-  .cc-prev-row { display: flex; justify-content: space-between; align-items: baseline;
-    font-size: 11px; color: #5c3a12; padding: 4px 0; border-bottom: 1px dotted rgba(140,90,30,0.22); }
-  .cc-prev-row:last-of-type { border-bottom: 0; }
-  .cc-prev-k { letter-spacing: 1px; color: #8a6432; font-size: 10px; }
-  .cc-prev-v { font-size: 13px; color: #2e1c08; }
-  .cc-prev-note { margin-top: 11px; font-size: 9px; line-height: 1.45; color: #9b7040; }
+  .cc-at-h { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    opacity: .65; margin-bottom: 4px; }
+  .cc-at-stat { display: flex; align-items: baseline; justify-content: space-between;
+    gap: 10px; font-size: 13px; padding: 2px 0; }
+  .cc-at-stat .k { opacity: .75; }
+  .cc-at-stat .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .cc-at-sep { height: 1px; background: #c0a67c; margin: 5px 0; }
+  .cc-at-pending { margin-top: auto; padding-top: 10px; font-size: 11px; opacity: .7; line-height: 1.45; }
 `;
 
-function arraysHTML(d) {
-  return Object.values(CC.ARRAYS).map((a) => `
-    <button class="cc-array ${d.attributes.arrayKey === a.key ? "is-on" : ""}"
-            data-array="${esc(a.key)}">
-      <div class="cc-array-name">${esc(a.label)}</div>
-      <div class="cc-array-dice">${a.dice.map((x) => "d" + x).join(" · ")}</div>
-      <div class="cc-array-blurb">${esc(a.blurb)}</div>
-    </button>`).join("");
+/** Initiative is an average, so it can land on a half. */
+const fmtInit = (v) => (Number.isInteger(v) ? String(v) : Number(v).toFixed(1));
+
+/** The array's dice, high to low, so the dropdowns always read the same way. */
+const diceOf = (key) => [...(CC.ARRAYS[key]?.dice ?? [])].sort((a, b) => b - a);
+
+const arrayKeyOf = (d) =>
+  ARRAY_ORDER.includes(d.attributes.arrayKey) ? d.attributes.arrayKey : "average";
+
+function arrayCard(d) {
+  const key = arrayKeyOf(d);
+  const arr = CC.ARRAYS[key];
+  return `
+    <div class="cc-at-arr" data-wheel title="Scroll to change spread">
+      <div class="cc-at-arrhead">
+        <button class="cc-at-nav" data-cycle="-1" title="Previous spread">◀</button>
+        <span class="cc-at-arrname">${esc(arr.label)}</span>
+        <button class="cc-at-nav" data-cycle="1" title="Next spread">▶</button>
+      </div>
+      <div class="cc-at-arrdice">${diceOf(key).map((n) => `d${n}`).join("  ")}</div>
+      <div class="cc-at-arrblurb">${esc(arr.blurb ?? "")}</div>
+      <div class="cc-at-dots">
+        ${ARRAY_ORDER.map((k) => `<span class="cc-at-dot ${k === key ? "on" : ""}"></span>`).join("")}
+      </div>
+    </div>`;
 }
 
-function attrListHTML(d) {
-  const arr = CC.ARRAYS[d.attributes.arrayKey] ?? CC.ARRAYS.average;
-  const eff = effectiveBases(d);
-  // Distinct die values, so the select shows each size once; duplicates in the
-  // pool are handled by the swap, not by listing d8 twice.
-  const options = [...new Set(arr.dice)].sort((a, b) => b - a);
+function attrRows(d) {
+  const assign = d.attributes.assign ?? {};
+  const dice = diceOf(arrayKeyOf(d));
+  const final = effectiveBases(d);
 
   return CC_ATTR_KEYS.map((k) => {
-    const cur = num(d.attributes.assign[k], 0);
-    const bumped = eff[k] > cur && cur > 0;
+    const chosen = num(assign[k], 0);
+    const raised = chosen > 0 && num(final[k], 0) > chosen;
+    const meta = ATTR_META[k];
     return `
-      <div class="cc-attr">
-        <div class="cc-attr-name">${esc(CC_ATTR_LABEL[k])}</div>
-        <select class="cc-attr-sel" data-attr="${k}">
-          <option value="">— assign —</option>
-          ${options.map((o) => `<option value="${o}" ${cur === o ? "selected" : ""}>d${o}</option>`).join("")}
+      <div class="cc-at-row ${raised ? "is-raised" : ""}">
+        <img class="cc-at-icon" src="${esc(meta.icon)}" alt="">
+        <span class="cc-at-label" title="${esc(meta.full)}">${esc(meta.label)}</span>
+        <span class="cc-at-die">${
+          !chosen ? `<b style="opacity:.35">—</b>`
+          : raised ? `<s class="was">d${chosen}</s> <b class="now">d${num(final[k], 0)}</b>`
+          : `<b>d${chosen}</b>`
+        }</span>
+        <select class="cc-at-sel" data-assign="${k}" title="Assign a die from the spread">
+          <option value="">—</option>
+          ${dice.map((n) => `<option value="${n}" ${chosen === n ? "selected" : ""}>d${n}</option>`).join("")}
         </select>
-        <div class="cc-attr-eff">${
-          cur ? (bumped ? `d${cur} → <span class="cc-up">d${eff[k]}</span>` : `d${cur}`) : "—"
-        }</div>
       </div>`;
   }).join("");
 }
 
-function milestoneHTML(d) {
-  const n = draftMilestones(d);
-  if (!n) return "";
-  const eff = effectiveBases(d);
+function milestoneCard(d) {
+  const need = draftMilestones(d);
+  if (!need) return "";
   const picks = d.attributes.milestonePicks ?? [];
-  const rows = [];
-  for (let i = 0; i < n; i++) {
-    const at = CC.MILESTONES[i];
-    const sel = picks[i] ?? "";
-    rows.push(`
-      <div class="cc-ms-pick">
-        <span class="cc-ms-lbl">Level ${at}</span>
-        <select class="cc-attr-sel" data-ms="${i}">
-          <option value="">— choose —</option>
-          ${CC_ATTR_KEYS.map((k) => {
-            // A d12 cannot go higher, so offering it would promise nothing.
-            const capped = num(eff[k], 0) >= 12 && sel !== k;
-            return `<option value="${k}" ${sel === k ? "selected" : ""} ${capped ? "disabled" : ""}>
-              ${esc(CC_ATTR_LABEL[k])}${capped ? " (at d12)" : ""}
-            </option>`;
-          }).join("")}
-        </select>
-      </div>`);
-  }
   return `
-    <div class="cc-ms">
-      <div class="cc-ms-title">Milestone Advances</div>
-      <div class="cc-ms-hint">
-        Starting at level ${CC.MILESTONES[0]} or above means these advances are already earned.
-        Each raises one attribute's base die by one step, to a maximum of d12.
-      </div>
-      ${rows.join("")}
+    <div class="cc-at-ms">
+      <div class="cc-at-mshead">Milestone advances — ${need} earned</div>
+      ${Array.from({ length: need }, (_, i) => `
+        <div class="cc-at-msrow">
+          <span class="k">Level ${CC.MILESTONES[i] ?? "?"}</span>
+          <select class="cc-at-sel" data-ms="${i}" style="flex:1 1 auto">
+            <option value="">— choose an attribute —</option>
+            ${CC_ATTR_KEYS.map((k) =>
+              `<option value="${k}" ${picks[i] === k ? "selected" : ""}>${esc(CC_ATTR_LABEL[k])}</option>`).join("")}
+          </select>
+        </div>`).join("")}
     </div>`;
 }
 
-function previewHTML(d) {
+function derivedPanel(d) {
   const p = previewDerived(d);
-  const row = (k, v) => `<div class="cc-prev-row"><span class="cc-prev-k">${k}</span><span class="cc-prev-v">${v}</span></div>`;
+  const cell = (k, v) =>
+    `<div class="cc-at-stat"><span class="k">${esc(k)}</span><span class="v">${v}</span></div>`;
   return `
-    <div class="cc-prev">
-      <div class="cc-prev-title">Derived</div>
-      ${row("Max HP", p.maxHp)}
-      ${row("Crisis", p.crisis)}
-      ${row("Max MP", p.maxMp)}
-      ${row("Max IP", p.maxIp)}
-      ${row("Defense", p.def)}
-      ${row("M. Defense", p.mdef)}
-      ${row("Initiative", p.init.toFixed(1))}
-      <div class="cc-prev-note">
-        Base values only. Class benefits (+5 HP / +5 MP / +2 IP each) and equipment
-        are applied after the next steps.
-      </div>
+    <div class="cc-at-h">Starting values</div>
+    ${cell("HP", p.maxHp)}
+    ${cell("MP", p.maxMp)}
+    ${cell("IP", p.maxIp)}
+    <div class="cc-at-sep"></div>
+    ${cell("DEF", p.def)}
+    ${cell("MDEF", p.mdef)}
+    ${cell("Initiative", fmtInit(p.init))}
+    <div class="cc-at-sep"></div>
+    ${cell("Crisis", p.crisis)}
+    <div class="cc-at-pending">
+      Base values only. Class benefits (+5 HP, +5 MP or +2 IP each) and equipment
+      are added in the steps after this one.
     </div>`;
 }
 
 function render(d) {
   return `
     <style>${CSS}</style>
-    <div class="cc-attr-wrap">
-      <div>
-        <div class="cc-row">
-          <label for="cc-level">Starting Level</label>
-          <input class="cc-lvl" id="cc-level" type="number"
-                 min="${CC.RULE.MIN_LEVEL}" max="${CC.RULE.MAX_LEVEL}"
-                 value="${esc(draftLevel(d))}">
-          <span class="cc-hint" style="font-size:9px;color:#9b7040;">
-            Sets the Skill Point pool and the equipment budget.
-          </span>
+    <div class="cc-at">
+      <div class="cc-at-left">
+        <div class="cc-at-lvl">
+          <label for="cc-level">Level</label>
+          <input id="cc-level" type="number" data-level
+                 min="${CC.RULE.MIN_LEVEL}" max="${CC.RULE.MAX_LEVEL}" value="${num(d.attributes.level, 5)}">
+          <span class="cc-at-lvlnote">${draftPointPool(d)} Skill Points<br>${draftBudget(d)} zenit to spend</span>
         </div>
-        <div class="cc-arrays">${arraysHTML(d)}</div>
-        <div class="cc-attr-list">${attrListHTML(d)}</div>
-        ${milestoneHTML(d)}
+        ${arrayCard(d)}
+        <div class="cc-at-rows">${attrRows(d)}</div>
+        ${milestoneCard(d)}
       </div>
-      <div data-prev-panel>${previewHTML(d)}</div>
+      <div class="cc-at-right">${derivedPanel(d)}</div>
     </div>`;
 }
 
 function bind(root, d, ctx) {
-  // Level: live preview while typing (no re-render, so the caret survives),
-  // full commit on change so reconcile can trim downstream picks.
-  const lvl = root.querySelector("#cc-level");
-  lvl?.addEventListener("input", () => {
-    const v = Number(lvl.value);
-    if (!Number.isFinite(v)) return;
-    ctx.touch((dd) => { dd.attributes.level = v; });
-    const panel = root.querySelector("[data-prev-panel]");
-    if (panel) panel.innerHTML = previewHTML(d);
-    ctx.syncFoot();
-  });
-  lvl?.addEventListener("change", () => {
-    const v = Math.max(CC.RULE.MIN_LEVEL, Math.min(CC.RULE.MAX_LEVEL, Number(lvl.value) || CC.RULE.START_LEVEL));
-    ctx.edit((dd) => { dd.attributes.level = v; });
+  root.querySelector("[data-level]")?.addEventListener("change", (ev) => {
+    const raw = Math.round(Number(ev.target.value));
+    const lvl = Math.max(CC.RULE.MIN_LEVEL,
+      Math.min(CC.RULE.MAX_LEVEL, Number.isFinite(raw) ? raw : CC.RULE.START_LEVEL));
+    ctx.edit((dd) => { dd.attributes.level = lvl; });
   });
 
-  root.querySelectorAll("[data-array]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const key = btn.dataset.array;
-      if (d.attributes.arrayKey === key) return;
-      // reconcile() clears an assignment whose pool no longer matches.
-      ctx.edit((dd) => { dd.attributes.arrayKey = key; });
-    });
+  // Arrows and the wheel do the same thing, so they share one path.
+  const cycle = (dir) => ctx.edit((dd) => {
+    const at = ARRAY_ORDER.indexOf(dd.attributes.arrayKey);
+    const from = at < 0 ? ARRAY_ORDER.indexOf("average") : at;
+    dd.attributes.arrayKey = ARRAY_ORDER[(from + dir + ARRAY_ORDER.length) % ARRAY_ORDER.length];
+    // The previous spread's dice are gone, so an assignment made from it now
+    // refers to a pool that does not exist. Reconcile would clear it anyway;
+    // doing it here stops a row flashing a die that is no longer on offer.
+    dd.attributes.assign = {};
   });
 
-  // Assignment: always a swap, so the pool is conserved by construction.
-  root.querySelectorAll("[data-attr]").forEach((sel) => {
+  root.querySelectorAll("[data-cycle]").forEach((b) =>
+    b.addEventListener("click", () => cycle(Number(b.dataset.cycle))));
+
+  root.querySelector("[data-wheel]")?.addEventListener("wheel", (ev) => {
+    ev.preventDefault();
+    cycle(ev.deltaY > 0 ? 1 : -1);
+  }, { passive: false });
+
+  /**
+   * Assignment is a SWAP, so the array stays a permutation of itself.
+   *
+   * Giving MIG the d10 that DEX holds must move it rather than copy it — the
+   * alternative is a player quietly handing themselves four d10s. Doing it as a
+   * swap makes the invalid spread unreachable instead of merely rejected.
+   */
+  root.querySelectorAll("[data-assign]").forEach((sel) => {
     sel.addEventListener("change", () => {
-      const key = sel.dataset.attr;
-      const want = sel.value === "" ? 0 : Number(sel.value);
+      const key = sel.dataset.assign;
+      const want = num(sel.value, 0);
       ctx.edit((dd) => {
         const a = dd.attributes.assign;
         if (!want) { delete a[key]; return; }
         const holder = CC_ATTR_KEYS.find((k) => k !== key && num(a[k], 0) === want);
         const had = num(a[key], 0);
         a[key] = want;
-        if (holder) {
-          // Give the other attribute what this one was holding. If this one held
-          // nothing, it loses its die rather than gaining a phantom duplicate.
-          if (had) a[holder] = had; else delete a[holder];
-        }
+        if (holder) { if (had) a[holder] = had; else delete a[holder]; }
       });
     });
   });
 
   root.querySelectorAll("[data-ms]").forEach((sel) => {
     sel.addEventListener("change", () => {
-      const i = Number(sel.dataset.ms);
+      const i = num(sel.dataset.ms, 0);
       ctx.edit((dd) => {
         const picks = dd.attributes.milestonePicks ?? (dd.attributes.milestonePicks = []);
-        while (picks.length <= i) picks.push("");
         picks[i] = sel.value;
       });
     });

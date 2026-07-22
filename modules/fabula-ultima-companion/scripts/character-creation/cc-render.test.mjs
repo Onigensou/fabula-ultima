@@ -78,7 +78,6 @@ eq("registration order is the step order",
 function fullDraft() {
   const d = D.createDraft();
   d.profile.name = "Ashe";
-  d.profile.pronouns = "they/them";
   d.profile.identity = "Wandering duellist";
   d.profile.theme = "Justice";
   d.profile.origin = "Vaskell";
@@ -136,7 +135,6 @@ for (const step of CC.STEPS) {
   const html = STEP_RENDERERS.get("summary").render(fullDraft());
   const shows = (label, needle) => eq(`summary shows ${label}`, html.includes(needle), true);
   shows("the name", "Ashe");
-  shows("the pronouns", "they/them");
   shows("the identity", "Wandering duellist");
   shows("the origin", "Vaskell");
   shows("the level", "Level 20");

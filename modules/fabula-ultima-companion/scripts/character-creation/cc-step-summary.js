@@ -206,8 +206,7 @@ function render(d) {
         <img class="cc-sm-port" src="${esc(p.img || CC.DEFAULT_IMG)}" alt="">
         <div>
           <div class="cc-sm-name">${esc(p.name || "Unnamed")}</div>
-          <div class="cc-sm-sub">Level ${draftLevel(d)}${
-            p.pronouns ? ` · ${esc(p.pronouns)}` : ""}</div>
+          <div class="cc-sm-sub">Level ${draftLevel(d)}</div>
         </div>
         <div class="cc-sm-dest">
           Will be created in <strong>Actors ▸ ${esc(CC.PC_ROOT_FOLDER)} ▸ ${esc(folder.name)}</strong>,

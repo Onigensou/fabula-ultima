@@ -34,7 +34,6 @@ export function createDraft() {
 
     profile: {
       name: "",
-      pronouns: "",
       identity: "",
       theme: "",
       origin: "",
