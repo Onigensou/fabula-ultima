@@ -39,14 +39,35 @@ const nextDie = (die) => {
  * Steps that would push past d12 are dropped — the cap is real (p.227).
  */
 export function effectiveBases(d) {
-  const out = {};
-  for (const k of CC_ATTR_KEYS) out[k] = num(d.attributes.assign[k], 0);
+  return applyMilestones(d).bases;
+}
+
+/**
+ * Apply the milestone advances to the assigned array, recording each step.
+ *
+ * The entries are shaped like the attribute system's own ledger rows
+ * ({ milestone, attr, from, to }) because finalize has to WRITE that ledger: a
+ * character created at level 20 or 40 already has its advances baked into the
+ * bases, and without a matching ledger the attribute window would cheerfully
+ * offer them a second time.
+ *
+ * Kept in one place, and `effectiveBases` delegates to it, so the dice the
+ * player is shown and the ledger that justifies them cannot drift apart.
+ */
+export function applyMilestones(d) {
+  const bases = {};
+  for (const k of CC_ATTR_KEYS) bases[k] = num(d.attributes.assign[k], 0);
+
+  const entries = [];
   for (const pick of d.attributes.milestonePicks ?? []) {
     if (!CC_ATTR_KEYS.includes(pick)) continue;
-    const up = nextDie(out[pick]);
-    if (up != null) out[pick] = up;
+    const from = bases[pick];
+    const to = nextDie(from);
+    if (to == null) continue;                 // already at d12; the pick is void
+    bases[pick] = to;
+    entries.push({ milestone: CC.MILESTONES[entries.length] ?? 0, attr: pick, from, to });
   }
-  return out;
+  return { bases, entries };
 }
 
 /** Base derived stats. Excludes class benefits and equipment, deliberately. */

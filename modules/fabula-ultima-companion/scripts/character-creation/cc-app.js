@@ -168,6 +168,7 @@ class CharacterCreationApp {
     this._el = null;
     this._draft = null;
     this._notes = [];       // transient reconcile output, cleared on next nav
+    this._creating = false; // finalize in flight — survives re-render, unlike `disabled`
     this._keyFn = this._onKey.bind(this);
   }
 
@@ -180,6 +181,7 @@ class CharacterCreationApp {
     this._injectCSS();
     this._draft = draft ?? createDraft();
     this._notes = [];
+    this._creating = false;
 
     // Steps may keep transient view state outside the draft (which class pane
     // is open, a search box, a half-answered prompt). None of it should survive
@@ -335,6 +337,9 @@ class CharacterCreationApp {
 
   _forwardBtnHTML(step) {
     if (step.id === "summary") {
+      if (this._creating) {
+        return `<button class="cc-btn is-primary" disabled>Creating…</button>`;
+      }
       const ok = validateAll(this._draft).ok;
       return `<button class="cc-btn is-primary" data-act="finalize" ${ok ? "" : "disabled"}>Create</button>`;
     }
@@ -420,10 +425,79 @@ class CharacterCreationApp {
     this.close();
   }
 
+  /**
+   * Create the character.
+   *
+   * Guarded against a double submit: the request goes to the GM and takes as
+   * long as the spends take, and a second click would build a second character
+   * from the same draft. The button is disabled for the duration and the
+   * in-flight flag survives a re-render, which the disabled attribute would not.
+   */
   async _finalize() {
-    // Wired in phase 6.
+    if (this._creating) return;
+
+    const check = validateAll(this._draft);
+    if (!check.ok) {
+      sfx("fail");
+      ui.notifications?.warn(check.issues[0]?.message ?? "This character is not finished yet.");
+      return;
+    }
+
+    this._creating = true;
+    this._render();
+
+    let res;
+    try {
+      // Imported here rather than at the top so the shell does not depend on
+      // the write path: cc-api pulls in the level-up system, and a step module
+      // importing the shell must not drag all of that in with it.
+      const { createCharacter } = await import("./cc-api.js");
+      res = await createCharacter(this._draft);
+    } catch (e) {
+      console.error("[ONI][CharCreate] finalize threw:", e);
+      res = { ok: false, reason: "error", message: String(e?.message ?? e) };
+    } finally {
+      this._creating = false;
+    }
+
+    if (res?.ok) {
+      sfx("confirm");
+      ui.notifications?.info(`${res.name} created in ${res.folder ?? "your folder"}.`);
+      this.close();
+      // Open the new sheet so the player lands on the character they just made.
+      try { (await fromUuid(res.actorUuid))?.sheet?.render(true); }
+      catch (e) { console.warn("[ONI][CharCreate] could not open the new sheet:", e); }
+      return;
+    }
+
     sfx("fail");
-    ui.notifications?.warn("Character creation is not finished yet — finalize lands in a later phase.");
+    this._notes = [describeFailure(res)];
+    this._render();
+    ui.notifications?.error(this._notes[0]);
+  }
+}
+
+/** Turn a finalize failure into something a player can act on. */
+export function describeFailure(res) {
+  const reason = res?.reason ?? "unknown";
+  switch (reason) {
+    case "gate_closed":
+      return "Characters can only be created from the title screen or at camp.";
+    case "missing_seed":
+      return `This world is missing the blank character template ("${CC.BLANK_PC_NAME}"). Ask your GM.`;
+    case "timeout":
+      return "The GM did not answer in time. Nothing was created — try again.";
+    case "invalid_draft":
+      return res.issues?.[0]?.message ?? "Something about this character is not valid.";
+    case "finalize_failed":
+      // The half-built actor is normally deleted; say so, because "it failed"
+      // and "it failed and left a broken character behind" need different
+      // responses from the player.
+      return res.rolledBack === false
+        ? `Creation failed and the partial character (${res.orphanId}) could not be removed — tell your GM. (${res.message})`
+        : `Creation failed and was rolled back — nothing was kept. (${res.message})`;
+    default:
+      return `Creation failed: ${reason}${res?.message ? ` — ${res.message}` : ""}`;
   }
 }
 

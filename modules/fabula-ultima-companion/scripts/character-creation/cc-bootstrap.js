@@ -25,6 +25,11 @@ import "./cc-step-equipment.js";
 import "./cc-step-bond.js";
 import "./cc-step-summary.js";
 
+// The write path. Imported for its side effect: it registers the create
+// handler on the shared advancement transport, which every client must do —
+// the GM to serve requests, the player to recognise the reply.
+import { createCharacter } from "./cc-api.js";
+
 /** Is the world set up to create characters? */
 export function openable() {
   const seed = game.actors?.get(CC.BLANK_PC_ID) ?? null;
@@ -54,6 +59,9 @@ function registerApi() {
     get draft() { return app.draft; },
     previewFolder,
     folderNameFor,
+    // Exposed for scripted creation and for testing the write path from the
+    // console without driving the window.
+    createCharacter,
   };
 }
 
