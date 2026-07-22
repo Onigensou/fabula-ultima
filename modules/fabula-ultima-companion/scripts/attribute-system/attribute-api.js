@@ -32,19 +32,14 @@ const fail = (reason, extra = {}) => ({ ok: false, reason, ...extra });
 
 // ── ledger ─────────────────────────────────────────────────────────────────
 
-/** Parse "20:mig:8>10,40:dex:10>12" into entries. Tolerates junk. */
-export function readLog(actor) {
-  const raw = String(actor?.system?.props?.[PROP.LOG] ?? "").trim();
-  if (!raw) return [];
-  return raw.split(",").map((part) => {
-    const m = String(part).trim().match(/^(\d+):([a-z]+):(\d+)>(\d+)$/i);
-    if (!m) return null;
-    return { milestone: num(m[1]), attr: m[2].toLowerCase(), from: num(m[3]), to: num(m[4]) };
-  }).filter(Boolean);
+/** The whole ledger flag, normalised. */
+export function readLedger(actor) {
+  const f = actor?.getFlag?.(ATTR.FLAG_SCOPE, ATTR.FLAG_KEY) ?? null;
+  const log = Array.isArray(f?.log) ? f.log.filter((e) => e && ATTR_KEYS.includes(e.attr)) : [];
+  return { claimed: Math.max(0, num(f?.claimed, 0)), log };
 }
 
-const writeLog = (entries) =>
-  entries.map((e) => `${e.milestone}:${e.attr}:${e.from}>${e.to}`).join(",");
+export const readLog = (actor) => readLedger(actor).log;
 
 /** Milestones the actor's LEVEL has reached — not their class-level total. */
 export const milestonesReached = (actor) => {
@@ -52,7 +47,7 @@ export const milestonesReached = (actor) => {
   return ATTR.MILESTONES.filter((m) => lvl >= m).length;
 };
 
-export const claimedCount = (actor) => num(actor?.system?.props?.[PROP.CLAIMED], 0);
+export const claimedCount = (actor) => readLedger(actor).claimed;
 
 /** Advances the actor may still spend. */
 export const availableAdvances = (actor) =>
@@ -206,13 +201,9 @@ async function applyAdvance(payload) {
     // attribute cap correctly instead of each reading the stored value.
     const p = actor.system?.props ?? {};
     const working = Object.fromEntries(ATTR_KEYS.map((k) => [k, num(p[`${k}_base`], 0)]));
-    const entries = readLog(actor);
+    const { claimed: already, log: entries } = readLedger(actor);
     const update = {};
     const applied = [];
-
-    // Which milestone each new advance corresponds to, so the log stays
-    // meaningful even when both are claimed at once.
-    const already = claimedCount(actor);
 
     for (let i = 0; i < picks.length; i++) {
       const key = String(picks[i] ?? "").toLowerCase();
@@ -229,8 +220,10 @@ async function applyAdvance(payload) {
       applied.push({ key, from, to });
     }
 
-    update[`system.props.${PROP.CLAIMED}`] = String(already + picks.length);
-    update[`system.props.${PROP.LOG}`] = writeLog(entries);
+    update[`flags.${ATTR.FLAG_SCOPE}.${ATTR.FLAG_KEY}`] = {
+      claimed: already + picks.length,
+      log: entries,
+    };
 
     await actor.update(update);
     log(`advance: ${actor.name} — ${applied.map((a) => `${a.key} d${a.from}→d${a.to}`).join(", ")}`);
@@ -254,7 +247,7 @@ async function applyRefund(payload) {
     const actor = resolveActor(payload?.actorUuid);
     if (!actor) return fail("actor_not_found");
 
-    const entries = readLog(actor);
+    const { claimed, log: entries } = readLedger(actor);
     const last = entries.pop();
     if (!last) return fail("nothing_to_refund");
 
@@ -272,8 +265,10 @@ async function applyRefund(payload) {
 
     await actor.update({
       [`system.props.${key}_base`]: String(back),
-      [`system.props.${PROP.CLAIMED}`]: String(Math.max(0, claimedCount(actor) - 1)),
-      [`system.props.${PROP.LOG}`]: writeLog(entries),
+      [`flags.${ATTR.FLAG_SCOPE}.${ATTR.FLAG_KEY}`]: {
+        claimed: Math.max(0, claimed - 1),
+        log: entries,
+      },
     });
     log(`refund: ${actor.name} — ${key} d${cur}→d${back}`);
     return { ok: true, key, from: cur, to: back };

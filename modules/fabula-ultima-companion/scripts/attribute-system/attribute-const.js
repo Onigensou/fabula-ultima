@@ -25,19 +25,25 @@ export const ATTR = Object.freeze({
 
   PROP: Object.freeze({
     LEVEL: "level",
-    // Count consumed. A string, matching how CSB stores every other numeric
-    // prop — the skill-point migration wrote raw numbers offline and left the
-    // only number-typed props in the world until an in-game write normalised
-    // them back.
-    CLAIMED: "attribute_advance_claimed",
-    // Audit trail: "20:mig:8>10,40:dex:10>12".
-    //
-    // A bare count cannot support reversion — a refund has to know WHICH
-    // attribute to step back down, and it cannot infer that from the values
-    // (a buff, a debuff or a hand-edit all move them). No in-game refund is
-    // exposed yet; the log is what makes adding one later possible at all.
-    LOG: "attribute_advance_log",
   }),
+
+  /*
+   * The ledger lives in a FLAG, not a CSB prop.
+   *
+   * `reloadTemplate` prunes every prop missing from `getAllProperties()` and
+   * persists the deletion, so a prop with no template node is not safe to rely
+   * on: a re-stamp would silently reset `claimed` to 0 and re-offer the whole
+   * party two advances they had already taken. Adding template nodes would fix
+   * that, but it means splicing a 282kB header onto every actor for two numbers
+   * nobody is ever meant to look at.
+   *
+   * Flags are outside CSB's property system entirely — nothing prunes them,
+   * they need no template change, and they do not appear on the sheet, which
+   * matches attributes being system-owned. `skill_point` is a prop precisely
+   * because the opposite was wanted there: players must see it.
+   */
+  FLAG_SCOPE: "fabula-ultima-companion",
+  FLAG_KEY: "attributeAdvance",   // { claimed: number, log: entry[] }
 
   // Milestones are on ACTOR level (the authored `level` field, max 50), not on
   // skill levels. Zarg reads level 41 against 39 class levels — the gap of 2 is
