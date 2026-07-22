@@ -186,5 +186,86 @@ eq("martial shields need the shield right", E.martialNeed(runicShield), "shield"
   eq("a missing martial flag is false", E.readEquip({ system: { props: {} } }, "armor").isMartial, false);
 }
 
+
+// ── defence contribution ───────────────────────────────────────────────────
+//
+// Follows the equipment macro: MARTIAL armor REPLACES the DEX die with
+// item_baseDef; ordinary armor ADDS item_def_bonus to it. Shields always add.
+// Reading those two the same way would overstate a plate-wearer by their whole
+// DEX die.
+{
+  const mkItem = (name, slot, props) => ({
+    uuid: "Item." + name, id: name, name, img: "", system: { props },
+  });
+
+  const plate = E.readEquip(mkItem("Steel Plate", "armor", {
+    item_cost: "300", isMartial: true, item_type: "armor",
+    item_baseDef: 11, item_baseMdef: 9, init_penalty: 3,
+  }), "armor");
+  eq("martial armor reports a replacement base", plate.defBase, 11);
+  eq("...and contributes no bonus", plate.defBonus, 0);
+  eq("...and its MDEF base", plate.mdefBase, 9);
+  eq("...and its initiative penalty", plate.initPenalty, 3);
+
+  const garb = E.readEquip(mkItem("Travel Garb", "armor", {
+    item_cost: "100", isMartial: false, item_type: "armor",
+    item_def_bonus: 1, item_mdef_bonus: 1,
+  }), "armor");
+  eq("ordinary armor has no replacement base", garb.defBase, null);
+  eq("...it adds instead", garb.defBonus, 1);
+
+  const shield = E.readEquip(mkItem("Bronze Shield", "shield", {
+    item_cost: "100", isMartial: false, item_type: "shield", item_def_bonus: 2, item_mdef_bonus: 2,
+  }), "shield");
+  eq("a shield always adds", [shield.defBase, shield.defBonus], [null, 2]);
+
+  // A MARTIAL shield still adds -- only armor can replace the die.
+  const runicShield = E.readEquip(mkItem("Runic Shield", "shield", {
+    item_cost: "150", isMartial: true, item_type: "shield", item_def_bonus: 2, item_mdef_bonus: 4,
+  }), "shield");
+  eq("a martial shield does not replace the die", runicShield.defBase, null);
+  eq("...it adds like any other shield", runicShield.defBonus, 2);
+
+  // ── totals ──
+  const ALL = { melee: true, ranged: true, armor: true, shield: true };
+  const NONE = { melee: false, ranged: false, armor: false, shield: false };
+
+  const d = D.createDraft();
+  eq("nothing worn contributes nothing",
+    E.equipBonuses(d, ALL), { defBase: null, defBonus: 0, mdefBase: null, mdefBonus: 0, initPenalty: 0 });
+
+  E.addPick(d, garb); E.addPick(d, shield);
+  eq("soft armor and a shield stack as bonuses",
+    [E.equipBonuses(d, ALL).defBase, E.equipBonuses(d, ALL).defBonus], [null, 3]);
+
+  const p = D.createDraft();
+  E.addPick(p, plate); E.addPick(p, shield);
+  const worn = E.equipBonuses(p, ALL);
+  eq("plate sets the base and the shield adds on top", [worn.defBase, worn.defBonus], [11, 2]);
+  eq("the penalty carries", worn.initPenalty, 3);
+
+  // Untrained gear is carried, not worn -- it must not reach the projection.
+  const untrained = E.equipBonuses(p, NONE);
+  eq("untrained plate contributes no base", untrained.defBase, null);
+  eq("...and no penalty either", untrained.initPenalty, 0);
+  eq("but the trained shield still counts", untrained.defBonus, 2);
+}
+
+// ── picks carry the defence fields, so the draft survives on its own ───────
+{
+  const d = D.createDraft();
+  E.addPick(d, E.readEquip({
+    uuid: "Item.x", id: "x", name: "Runic Plate", img: "",
+    system: { props: { item_cost: "250", isMartial: true, item_type: "armor",
+                       item_baseDef: 11, item_baseMdef: 9, init_penalty: 2 } },
+  }, "armor"));
+  const pick = E.picks(d)[0];
+  eq("defBase is copied onto the pick", pick.defBase, 11);
+  eq("mdefBase too", pick.mdefBase, 9);
+  eq("and the penalty", pick.initPenalty, 2);
+  eq("a pick is plain data, safe to serialise",
+    JSON.parse(JSON.stringify(pick)).defBase, 11);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

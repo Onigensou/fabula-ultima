@@ -59,9 +59,18 @@ function slotOf(folder) {
   return null;
 }
 
-/** Normalise a CSB equipment item into what the picker needs. */
+/**
+ * Normalise a CSB equipment item into what the picker needs.
+ *
+ * The defence numbers follow the equipment macro exactly, because that is what
+ * actually writes them onto a sheet. MARTIAL armour REPLACES the DEX die with a
+ * flat `item_baseDef`; ordinary armour ADDS `item_def_bonus` to it. Shields
+ * always add. Getting that backwards would overstate a plate-wearer's defence
+ * by their whole DEX die.
+ */
 export function readEquip(item, slot) {
   const p = item.system?.props ?? {};
+  const martial = p.isMartial === true;
   return {
     uuid: item.uuid,
     id: item.id,
@@ -69,7 +78,7 @@ export function readEquip(item, slot) {
     img: item.img,
     slot,                                              // weapon | armor | shield
     cost: num(p.item_cost, 0),                         // stored as a STRING in CSB
-    isMartial: p.isMartial === true,
+    isMartial: martial,
     itemType: p.item_type ?? slot,
     handSlots: p.hand_slots ?? "",
     range: p.weapon_range ?? "",                       // Melee | Ranged — weapons only
@@ -77,7 +86,39 @@ export function readEquip(item, slot) {
     // default rather than a fact. Only weapons are grouped by it.
     category: slot === "weapon" ? (p.category ?? "Uncategorised") : "",
     description: p.description ?? "",
+    // Defence contribution. `base` REPLACES, `bonus` ADDS; only one of each
+    // pair is ever meaningful for a given item.
+    defBase: martial && slot === "armor" ? num(p.item_baseDef, 0) : null,
+    defBonus: martial && slot === "armor" ? 0 : num(p.item_def_bonus, 0),
+    mdefBase: martial && slot === "armor" ? num(p.item_baseMdef, 0) : null,
+    mdefBonus: martial && slot === "armor" ? 0 : num(p.item_mdef_bonus, 0),
+    initPenalty: num(p.init_penalty ?? p.item_init_penalty ?? p.initiative_penalty, 0),
   };
+}
+
+/**
+ * What the chosen gear does to DEF, MDEF and Initiative.
+ *
+ * Untrained gear contributes nothing: it is carried, not worn, so it must not
+ * appear in the projection any more than it does on the sheet.
+ *
+ * @param martial  the build's martial rights, from `draftMartial`
+ */
+export function equipBonuses(d, martial) {
+  const out = { defBase: null, defBonus: 0, mdefBase: null, mdefBonus: 0, initPenalty: 0 };
+  for (const p of picks(d)) {
+    const need = martialNeed(p);
+    if (need && !martial?.[need]) continue;            // owned, not equipped
+    if (p.defBase != null) {
+      out.defBase = num(p.defBase, 0);
+      out.mdefBase = num(p.mdefBase, 0);
+    } else {
+      out.defBonus += num(p.defBonus, 0);
+      out.mdefBonus += num(p.mdefBonus, 0);
+    }
+    out.initPenalty += num(p.initPenalty, 0);
+  }
+  return out;
 }
 
 let _catalog = null;
@@ -131,6 +172,11 @@ export function addPick(d, rec) {
     slot: rec.slot, cost: rec.cost, isMartial: rec.isMartial,
     itemType: rec.itemType, handSlots: rec.handSlots,
     range: rec.range, category: rec.category,
+    // Copied onto the pick so the summary can project defence without going
+    // back to the world item — the draft has to survive on its own.
+    defBase: rec.defBase ?? null, defBonus: num(rec.defBonus, 0),
+    mdefBase: rec.mdefBase ?? null, mdefBonus: num(rec.mdefBonus, 0),
+    initPenalty: num(rec.initPenalty, 0),
   });
 }
 
@@ -182,7 +228,21 @@ export function advisories(d, martial) {
 
 let _tab = "weapon";
 let _filter = "";
-export const resetUiState = () => { _tab = "weapon"; _filter = ""; resetCatalog(); };
+
+/**
+ * What the purse and bar are currently DISPLAYING, which lags the draft while
+ * an animation runs.
+ *
+ * The step re-renders wholesale on every buy, so markup drawn straight from the
+ * draft would snap to the new figure and leave nothing to animate. `render`
+ * therefore emits these previous values and records the targets; `bind` counts
+ * from one to the other.
+ */
+let _shown = null;   // { left, spent, pct } — null before the first paint
+
+export const resetUiState = () => {
+  _tab = "weapon"; _filter = ""; _shown = null; resetCatalog();
+};
 
 const CSS = `
   .cc-eq { display: flex; flex-direction: column; min-height: 0; margin: 0 -16px -14px; }
@@ -199,9 +259,15 @@ const CSS = `
   .cc-eq-purse .k { font-size: 11px; font-weight: 700; opacity: .75; }
   .cc-eq-track { flex: 1 1 auto; height: 8px; border-radius: 5px; overflow: hidden;
     background: rgba(90,56,0,.15); border: 1px solid #b89940; }
-  .cc-eq-fill { height: 100%; background: linear-gradient(90deg,#c8a84b,#8b6914); }
+  /* The bar eases to its new width; the numbers count there. Both are driven
+     from the same duration so they land together. */
+  .cc-eq-fill { height: 100%; background: linear-gradient(90deg,#c8a84b,#8b6914);
+    transition: width .42s cubic-bezier(.22,1,.36,1), background .2s; }
   .cc-eq-fill.is-over { background: linear-gradient(90deg,#c9736a,#a3453a); }
   .cc-eq-spent { font-size: 11.5px; font-weight: 700; color: #5a3800; white-space: nowrap; }
+  /* A tick each time the purse settles on a new figure. */
+  @keyframes cc-eq-bump { 0% { transform: none; } 35% { transform: scale(1.13); } 100% { transform: none; } }
+  .cc-eq-purse.bump { animation: cc-eq-bump .3s ease-out; }
 
   /* ── body: vertical tabs + list + cart ── */
   .cc-eq-body { display: flex; flex: 1 1 auto; min-height: 0; }
@@ -265,19 +331,24 @@ const CSS = `
     background: rgba(165,42,26,.12); border: 1px solid rgba(165,42,26,.3);
     border-radius: 9px; padding: 0 6px; }
 
-  /* ── cart ── */
-  .cc-eq-cart { flex: 0 0 auto; width: 216px; padding: 8px 10px; background: #e6dabd;
+  /* ── cart ──
+     The name column must be allowed to WRAP. Fixed-width nowrap cropped
+     "Crossbow" to "Cro…", which is the one thing this list exists to show. */
+  .cc-eq-cart { flex: 0 0 auto; width: 232px; padding: 8px 10px; background: #e6dabd;
     border-left: 1px solid #b79c72; display: flex; flex-direction: column; gap: 6px;
     overflow-y: auto; }
   .cc-eq-h { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
     opacity: .65; }
-  .cc-eq-cartrow { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #3b2a17;
-    padding: 4px 7px; border-radius: 7px; background: #f7f0df; border: 1px solid #cbb890; }
-  .cc-eq-cartrow img { width: 18px; height: 18px; border-radius: 4px; object-fit: contain;
+  .cc-eq-cartrow { display: grid; grid-template-columns: 20px 1fr auto; align-items: center;
+    gap: 7px; font-size: 12px; color: #3b2a17;
+    padding: 5px 7px; border-radius: 7px; background: #f7f0df; border: 1px solid #cbb890; }
+  .cc-eq-cartrow img { width: 20px; height: 20px; border-radius: 4px; object-fit: contain;
     border: 0 !important; }
-  .cc-eq-cartrow span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .cc-eq-x { margin-left: auto; font-family: inherit; cursor: pointer; font-size: 13px;
-    line-height: 1; color: #8a6c45; background: none; border: none; padding: 0 2px; }
+  .cc-eq-cartname { min-width: 0; overflow-wrap: anywhere; line-height: 1.3; }
+  .cc-eq-cartcost { font-size: 11px; opacity: .6; }
+  .cc-eq-x { font-family: inherit; cursor: pointer; font-size: 14px;
+    line-height: 1; color: #8a6c45; background: none; border: none; padding: 0 2px;
+    align-self: start; }
   .cc-eq-x:hover { color: #a3453a; }
   .cc-eq-note { font-size: 11px; line-height: 1.4; color: #6b4a1c; padding-left: 12px;
     position: relative; }
@@ -347,7 +418,8 @@ function cartHTML(d, martial) {
       ? list.map((p) => `
           <div class="cc-eq-cartrow">
             <img src="${esc(p.img || CC.DEFAULT_IMG)}" alt="">
-            <span>${esc(p.name)}</span>
+            <span class="cc-eq-cartname">${esc(p.name)}
+              <span class="cc-eq-cartcost">${p.cost ? `${p.cost}z` : "free"}</span></span>
             <button class="cc-eq-x" data-drop="${esc(p.uuid)}" title="Return">×</button>
           </div>`).join("")
       : `<div class="cc-eq-none">Nothing bought yet.</div>`}
@@ -362,16 +434,24 @@ function render(d) {
   const budget = draftBudget(d);
   const spent = draftSpend(d);
   const left = draftBudgetLeft(d);
-  const pct = budget > 0 ? Math.min(100, (spent / budget) * 100) : 0;
+  const pct = budget > 0 ? Math.max(0, Math.min(100, (spent / budget) * 100)) : 0;
   const over = left < 0;
+
+  // First paint has nothing to travel from, so it starts where it ends.
+  const from = _shown ?? { left, spent, pct };
 
   return `
     <style>${CSS}</style>
     <div class="cc-eq">
       <div class="cc-eq-bar">
-        <span class="cc-eq-purse ${over ? "is-over" : ""}">${GP_ICON}${left}<span class="k">left</span></span>
-        <div class="cc-eq-track"><div class="cc-eq-fill ${over ? "is-over" : ""}" style="width:${pct}%"></div></div>
-        <span class="cc-eq-spent">${spent} of ${budget} spent</span>
+        <span class="cc-eq-purse ${over ? "is-over" : ""}" data-purse data-to="${left}">${GP_ICON}<span
+          data-roll>${from.left}</span><span class="k">left</span></span>
+        <div class="cc-eq-track">
+          <div class="cc-eq-fill ${over ? "is-over" : ""}" data-fill data-to="${pct}"
+               style="width:${from.pct}%"></div>
+        </div>
+        <span class="cc-eq-spent" data-spent data-to="${spent}"><span
+          data-roll>${from.spent}</span> of ${budget} spent</span>
       </div>
 
       <div class="cc-eq-body">
@@ -394,7 +474,63 @@ function render(d) {
     </div>`;
 }
 
+const ROLL_MS = 420;
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+/**
+ * Count an element's text from one integer to another.
+ *
+ * requestAnimationFrame rather than a CSS transition because there is no
+ * animatable property for "the number 450" — the text has to be rewritten each
+ * frame. Cancelled and restarted cleanly if the player buys again mid-roll.
+ */
+function rollTo(el, from, to, done) {
+  if (!el) return;
+  if (el._ccRoll) cancelAnimationFrame(el._ccRoll);
+  if (from === to) { el.textContent = String(to); done?.(); return; }
+
+  const t0 = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - t0) / ROLL_MS);
+    el.textContent = String(Math.round(from + (to - from) * easeOut(t)));
+    if (t < 1) el._ccRoll = requestAnimationFrame(step);
+    else { el._ccRoll = null; el.textContent = String(to); done?.(); }
+  };
+  el._ccRoll = requestAnimationFrame(step);
+}
+
+/** Animate the purse, the spent figure and the bar to the draft's real values. */
+function animatePurse(root, d) {
+  const budget = draftBudget(d);
+  const to = {
+    left: draftBudgetLeft(d),
+    spent: draftSpend(d),
+    pct: budget > 0 ? Math.max(0, Math.min(100, (draftSpend(d) / budget) * 100)) : 0,
+  };
+  const from = _shown ?? to;
+
+  const purse = root.querySelector("[data-purse]");
+  const spentEl = root.querySelector("[data-spent]");
+  const fill = root.querySelector("[data-fill]");
+
+  // The bar is a width transition, so setting the target is the whole job.
+  if (fill) requestAnimationFrame(() => { fill.style.width = `${to.pct}%`; });
+
+  if (from.left !== to.left && purse) {
+    purse.classList.remove("bump");
+    // Reflow, or re-adding the class in the same frame does not restart it.
+    void purse.offsetWidth;
+    purse.classList.add("bump");
+  }
+  rollTo(purse?.querySelector("[data-roll]"), from.left, to.left);
+  rollTo(spentEl?.querySelector("[data-roll]"), from.spent, to.spent);
+
+  _shown = to;
+}
+
 function bind(root, d, ctx) {
+  animatePurse(root, d);
+
   root.querySelectorAll("[data-tab]").forEach((b) => {
     b.addEventListener("click", () => { _tab = b.dataset.tab; ctx.refresh(); });
   });

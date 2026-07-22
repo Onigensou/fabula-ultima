@@ -4,10 +4,10 @@
  * A house rule: by the book a character starts with no Bonds at all, but at
  * this table a new PC may begin with one Bond carrying one emotion.
  *
- * The slot is shaped like the camp Bond editor — header with hearts, a
- * `name → relationship` row, and one dropdown per emotion pair — because it is
- * the same record, and a player who has used the camp editor should not have
- * to learn a second way to say the same thing. What differs is the allowance:
+ * The slot is shaped like the camp Bond editor — hearts, a
+ * `name → relationship` row, one control per emotion pair — because it is the
+ * same record, and a player who has used the camp editor should not have to
+ * learn a second way to say the same thing. What differs is the allowance:
  * camp permits one emotion per pair, creation permits one in total.
  *
  * The whole step is optional. Leaving it untouched is a valid character; what
@@ -69,46 +69,59 @@ export function clearBond(d) {
 // ── view ───────────────────────────────────────────────────────────────────
 
 const CSS = `
-  .cc-bd { max-width: 660px; }
-  .cc-bd-intro { font-size: 12px; line-height: 1.55; opacity: .75; margin-bottom: 12px; }
-  .cc-bd-intro b { opacity: 1; }
+  .cc-bd { display: flex; flex-direction: column; gap: 12px; height: 100%; min-height: 0; }
 
-  .cc-bd-slot { border-radius: 8px; background: #f7f0df; border: 1px solid #cbb890;
-    padding: 10px 12px; }
-  .cc-bd-slot.is-set { border-color: #8a6c45; background: #fdf6e4;
-    box-shadow: inset 0 0 0 1px rgba(240,217,154,.7); }
+  .cc-bd-slot { flex: 0 0 auto; border-radius: 10px; padding: 14px 16px;
+    background: linear-gradient(180deg,#f7f0df,#efe4cd); border: 1px solid #cbb890; }
+  .cc-bd-slot.is-set { border-color: #8a6c45;
+    box-shadow: inset 0 0 0 1px rgba(240,217,154,.8); }
 
-  .cc-bd-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .cc-bd-tag { font-size: 11px; font-weight: 800; letter-spacing: .04em;
-    text-transform: uppercase; opacity: .65; }
-  .cc-bd-hearts { display: flex; gap: 4px; font-size: 13px; }
+  .cc-bd-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .cc-bd-tag { font-size: 12px; font-weight: 800; letter-spacing: .06em;
+    text-transform: uppercase; opacity: .55; }
+  .cc-bd-hearts { display: flex; gap: 5px; font-size: 16px; }
   .cc-bd-heart.positive { color: #c98b2a; }
   .cc-bd-heart.negative { color: #a3453a; }
-  .cc-bd-heart.empty { color: #c0a67c; opacity: .55; }
-  .cc-bd-clear { margin-left: auto; font-family: inherit; font-size: 11px; cursor: pointer;
-    padding: 3px 10px; border-radius: 6px; color: #8c3a24;
+  .cc-bd-heart.empty { color: #c0a67c; opacity: .5; }
+  .cc-bd-clear { margin-left: auto; font-family: inherit; font-size: 11.5px; cursor: pointer;
+    padding: 4px 12px; border-radius: 7px; color: #8c3a24;
     border: 1px solid #cbb890; background: linear-gradient(180deg,#f7edd5,#e6d6b0); }
   .cc-bd-clear:hover:not(:disabled) { background: linear-gradient(180deg,#f0d99a,#e0c179); }
   .cc-bd-clear:disabled { opacity: .3; cursor: default; }
 
-  .cc-bd-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
-  .cc-bd-row input { flex: 1; }
-  .cc-bd-row input.cc-bd-rel { flex: 1.6; }
-  .cc-bd-arrow { font-size: 15px; opacity: .5; flex: 0 0 auto; }
+  .cc-bd-row { display: flex; align-items: center; gap: 10px; }
+  .cc-bd-row input { flex: 1; font-size: 15px; padding: 9px 12px; }
+  .cc-bd-row input.cc-bd-rel { flex: 1.5; font-size: 13px; }
+  .cc-bd-arrow { font-size: 17px; opacity: .45; flex: 0 0 auto; }
 
-  .cc-bd-ems { display: flex; gap: 8px; }
-  .cc-bd-ems select { flex: 1; font-family: inherit; font-size: 12.5px; padding: 6px 8px;
-    border-radius: 7px; background: #fdf6e4; border: 1px solid #cbb890; color: #2f2618; }
-  .cc-bd-ems select:focus { outline: none; border-color: #8a6c45; }
-  .cc-bd-ems select.is-on { border-color: #8a6c45; font-weight: 700;
-    background: linear-gradient(180deg,#f0d99a,#e0c179); }
+  /* The three pairs, side by side, filling the width. Each is a pair of
+     buttons rather than a dropdown so both poles are readable at a glance —
+     the pairing is the meaning, and a collapsed <select> hides it. */
+  .cc-bd-pairs { flex: 1 1 auto; display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; min-height: 0; }
+  .cc-bd-pair { display: flex; flex-direction: column; border-radius: 10px; overflow: hidden;
+    border: 1px solid #cbb890; background: #f7f0df; }
+  .cc-bd-em { flex: 1 1 0; font-family: inherit; cursor: pointer; border: 0;
+    background: none; color: #3b2a17; padding: 14px 10px; text-align: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+  .cc-bd-em + .cc-bd-em { border-top: 1px solid #cbb890; }
+  .cc-bd-em:hover { background: rgba(240,217,154,.45); }
+  .cc-bd-em i { font-size: 20px; opacity: .35; }
+  .cc-bd-em .nm { font-size: 14px; font-weight: 700; }
+  .cc-bd-em .pol { font-size: 10px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; opacity: .5; }
+  .cc-bd-em.on { background: linear-gradient(180deg,#f0d99a,#e0c179); }
+  .cc-bd-em.on i { opacity: 1; }
+  .cc-bd-em.on.pos i { color: #c98b2a; }
+  .cc-bd-em.on.neg i { color: #a3453a; }
+  .cc-bd-em.on .pol { opacity: .75; }
 
-  .cc-bd-foot { margin-top: 10px; font-size: 12px; opacity: .75; line-height: 1.45; }
+  .cc-bd-foot { flex: 0 0 auto; font-size: 12.5px; opacity: .7; text-align: center; }
 `;
 
 const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
-/** Three hearts, filled by polarity — the camp editor's own at-a-glance read. */
+/** Three hearts, filled by polarity — the camp editor's at-a-glance read. */
 function heartsHTML(d) {
   return CC_EMOTION_PAIRS.map((p) => {
     const v = String(d.bond[p.key] ?? "");
@@ -121,53 +134,49 @@ function heartsHTML(d) {
 function stateLine(d) {
   const chosen = chosenEmotion(d);
   const named = String(d.bond.name ?? "").trim();
-  if (bondIsEmpty(d)) return "No starting bond — that is perfectly fine.";
-  if (named && chosen) return `${named} — ${cap(chosen.value)}.`;
+  if (bondIsEmpty(d)) return "No starting bond — that is fine. Continue when ready.";
+  if (named && chosen) return `${named} — ${cap(chosen.value)}`;
   if (!named && chosen) return "Name who or what this bond is toward.";
-  if (named && !chosen) return "Choose one emotion for this bond.";
-  return "A bond needs both a target and an emotion.";
+  return "Choose one emotion.";
 }
 
 function render(d) {
   const b = d.bond;
 
-  const selects = CC_EMOTION_PAIRS.map((p) => {
+  const pairs = CC_EMOTION_PAIRS.map((p) => {
     const v = String(b[p.key] ?? "");
-    return `
-      <select data-em="${esc(p.key)}" class="${v ? "is-on" : ""}"
-              title="${esc(p.pos)} / ${esc(p.neg)}">
-        <option value="">—</option>
-        <option value="${esc(p.pos)}" ${v === p.pos ? "selected" : ""}>${esc(cap(p.pos))}</option>
-        <option value="${esc(p.neg)}" ${v === p.neg ? "selected" : ""}>${esc(cap(p.neg))}</option>
-      </select>`;
+    const btn = (value, polarity, label) => `
+      <button class="cc-bd-em ${polarity} ${v === value ? "on" : ""}"
+              data-em="${esc(p.key)}" data-val="${esc(value)}">
+        <i class="${v === value ? "fas" : "far"} fa-heart"></i>
+        <span class="nm">${esc(cap(value))}</span>
+        <span class="pol">${label}</span>
+      </button>`;
+    return `<div class="cc-bd-pair">
+      ${btn(p.pos, "pos", "positive")}
+      ${btn(p.neg, "neg", "negative")}
+    </div>`;
   }).join("");
 
   return `
     <style>${CSS}</style>
     <div class="cc-bd">
-      <div class="cc-bd-intro">
-        By the book a character begins with no Bonds. <b>At this table you may start with one</b>,
-        carrying a single emotion. Leave this blank if you would rather your character's
-        first Bond form in play.
-      </div>
-
       <div class="cc-bd-slot ${bondIsEmpty(d) ? "" : "is-set"}">
         <div class="cc-bd-head">
           <span class="cc-bd-tag">Bond 1</span>
           <span class="cc-bd-hearts">${heartsHTML(d)}</span>
           <button class="cc-bd-clear" data-clear ${bondIsEmpty(d) ? "disabled" : ""}>Clear</button>
         </div>
-
         <div class="cc-bd-row">
           <input class="cc-input" data-f="name" value="${esc(b.name ?? "")}"
                  placeholder="A person, a place, an ideal…" autocomplete="off">
           <span class="cc-bd-arrow">→</span>
           <input class="cc-input cc-bd-rel" data-f="rel" value="${esc(b.rel ?? "")}"
-                 placeholder="How do you know them? (optional)" autocomplete="off">
+                 placeholder="How do you know them?" autocomplete="off">
         </div>
-
-        <div class="cc-bd-ems">${selects}</div>
       </div>
+
+      <div class="cc-bd-pairs">${pairs}</div>
 
       <div class="cc-bd-foot">${esc(stateLine(d))}</div>
     </div>`;
@@ -175,7 +184,7 @@ function render(d) {
 
 function bind(root, d, ctx) {
   // Typing uses `touch` so the shell does not re-render mid-word and drop the
-  // caret; the state line and hearts are refreshed by hand instead.
+  // caret; the state line is refreshed by hand instead.
   root.querySelectorAll("[data-f]").forEach((el) => {
     const field = el.dataset.f;
     el.addEventListener("input", () => {
@@ -187,16 +196,10 @@ function bind(root, d, ctx) {
   });
 
   // A starting bond carries ONE emotion, so choosing in any pair clears the
-  // others. The dropdowns still show all three pairs because the pairs are what
-  // give each emotion its meaning.
-  root.querySelectorAll("[data-em]").forEach((sel) => {
-    sel.addEventListener("change", () => {
-      const key = sel.dataset.em;
-      const value = sel.value;
-      ctx.edit((dd) => {
-        for (const p of CC_EMOTION_PAIRS) dd.bond[p.key] = "";
-        if (value) dd.bond[key] = value;
-      });
+  // others; clicking the chosen one again unsets it.
+  root.querySelectorAll("[data-em]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      ctx.edit((dd) => setEmotion(dd, btn.dataset.em, btn.dataset.val));
     });
   });
 

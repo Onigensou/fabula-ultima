@@ -1,51 +1,60 @@
 /**
  * Character Creation — step 1: Profile.
  *
- * The two images come first, because a face is the thing a player most wants
- * to settle before writing prose about it. Both are optional; Foundry's stock
- * mystery-man stands in, exactly as a hand-made actor would get.
+ * Built like a JRPG name-entry screen: the portrait and the name are the page,
+ * everything else sits underneath as supporting detail. A player arriving here
+ * should know immediately that the one thing being asked of them is a name.
  *
  * The image squares ARE the picker — clicking one opens Foundry's FilePicker.
  * A separate Browse button next to a path field made the square look like
  * decoration, when it is the most obvious thing on the page to click.
  *
- * Origin keeps its datalist: it is a place in the group's own world and cannot
- * be enumerated by us, so the suggestions come from the world's existing PCs
- * and a player can match an established homeland without retyping it. Theme is
- * a plain text field — the rulebook's ten are suggestions, not a closed set,
- * and offering them as a list implied otherwise.
+ * Field hints are deliberately short. The rulebook explains what a Trait is;
+ * this window only has to say which box to type in.
  */
 
 import { CC, esc } from "./cc-const.js";
 import { STEP_RENDERERS } from "./cc-app.js";
 
 const CSS = `
-  .cc-pf { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; align-content: start; }
-  .cc-pf-field { display: flex; flex-direction: column; gap: 4px; }
-  .cc-pf-field.is-wide { grid-column: 1 / -1; }
-  .cc-pf-opt { font-weight: 400; text-transform: none; letter-spacing: 0; opacity: .8; }
-  .cc-pf-req { color: #a3453a; }
-  .cc-pf-hint { font-size: 11px; opacity: .6; line-height: 1.35; }
-  .cc-pf textarea.cc-input { resize: vertical; min-height: 72px; line-height: 1.5; }
+  .cc-pf { display: flex; flex-direction: column; gap: 16px; }
 
-  /* ── images, first thing on the page ── */
-  .cc-pf-art { grid-column: 1 / -1; display: flex; gap: 14px; align-items: flex-start;
-    padding: 10px 12px; border-radius: 8px; background: #e6dabd; border: 1px solid #cbb890; }
-  .cc-pf-slot { display: flex; flex-direction: column; gap: 5px; align-items: center; width: 96px; }
-  .cc-pf-pick { width: 96px; height: 96px; padding: 0; border-radius: 8px; cursor: pointer;
-    border: 1px solid #b79c72; background: #f7f0df; overflow: hidden; position: relative;
-    display: block; }
-  .cc-pf-pick:hover { border-color: #8a6c45; box-shadow: 0 0 0 2px rgba(240,217,154,.6); }
+  /* ── the name-entry hero ── */
+  .cc-pf-hero { display: flex; gap: 16px; align-items: center;
+    padding: 16px 18px; border-radius: 10px;
+    background: linear-gradient(180deg,#f7f0df,#efe4cd); border: 1px solid #cbb890; }
+  .cc-pf-art { display: flex; gap: 8px; flex: 0 0 auto; align-items: flex-end; }
+  .cc-pf-slot { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+  .cc-pf-pick { padding: 0; border-radius: 9px; cursor: pointer; display: block;
+    border: 1px solid #b79c72; background: #efe4cd; overflow: hidden; position: relative; }
+  .cc-pf-pick.big { width: 104px; height: 104px; }
+  .cc-pf-pick.small { width: 68px; height: 68px; }
+  .cc-pf-pick:hover { border-color: #8a6c45; box-shadow: 0 0 0 2px rgba(240,217,154,.7); }
   .cc-pf-pick img { width: 100%; height: 100%; object-fit: cover; display: block;
     border: 0 !important; outline: 0 !important; }
-  .cc-pf-pick .cc-pf-over { position: absolute; inset: auto 0 0 0; padding: 3px 0;
-    font-size: 10px; font-weight: 700; text-align: center;
-    background: rgba(45,35,20,.72); color: #f6ecd8; opacity: 0; transition: opacity .12s; }
+  .cc-pf-over { position: absolute; inset: auto 0 0 0; padding: 2px 0; font-size: 10px;
+    font-weight: 700; text-align: center; background: rgba(45,35,20,.72); color: #f6ecd8;
+    opacity: 0; transition: opacity .12s; }
   .cc-pf-pick:hover .cc-pf-over { opacity: 1; }
-  .cc-pf-cap { font-size: 11px; font-weight: 700; opacity: .7; }
+  .cc-pf-cap { font-size: 10.5px; font-weight: 700; opacity: .6; }
   .cc-pf-clear { font-family: inherit; font-size: 10px; cursor: pointer; padding: 0;
     background: none; border: 0; color: #8a6c45; text-decoration: underline; }
-  .cc-pf-artnote { flex: 1 1 auto; font-size: 12px; opacity: .65; line-height: 1.5; padding-top: 4px; }
+
+  .cc-pf-ask { flex: 1 1 auto; min-width: 0; }
+  .cc-pf-prompt { font-size: 15px; font-weight: 800; margin-bottom: 9px; }
+  .cc-pf-name { width: 100%; font-family: inherit; font-size: 22px; font-weight: 700;
+    color: #2f2618; padding: 10px 14px; border-radius: 9px;
+    background: #fdf6e4; border: 2px solid #cbb890; letter-spacing: .01em; }
+  .cc-pf-name:focus { outline: none; border-color: #8a6c45; box-shadow: 0 0 0 3px rgba(240,217,154,.55); }
+  .cc-pf-name::placeholder { color: #2f2618; opacity: .22; font-weight: 400; }
+
+  /* ── traits ── */
+  .cc-pf-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px 14px; }
+  .cc-pf-field { display: flex; flex-direction: column; gap: 4px; }
+  .cc-pf-field.is-wide { grid-column: 1 / -1; }
+  .cc-pf-field textarea.cc-input { resize: vertical; min-height: 76px; line-height: 1.5; }
+  .cc-pf-opt { font-weight: 400; text-transform: none; letter-spacing: 0; opacity: .7; }
+  .cc-pf-traits { font-size: 11px; opacity: .55; margin-top: -4px; }
 `;
 
 /** Origins already in use in this world, so players can match an existing place. */
@@ -59,9 +68,9 @@ function knownOrigins() {
   return [...out].sort();
 }
 
-const slot = (field, label, src, note) => `
+const slot = (field, label, src, size) => `
   <div class="cc-pf-slot">
-    <button class="cc-pf-pick" data-pick="${field}" title="${esc(note)}">
+    <button class="cc-pf-pick ${size}" data-pick="${field}" title="Click to choose an image">
       <img data-prev="${field}" src="${esc(src || CC.DEFAULT_IMG)}" alt="">
       <span class="cc-pf-over">Change</span>
     </button>
@@ -71,75 +80,83 @@ const slot = (field, label, src, note) => `
 
 function render(d) {
   const p = d.profile;
-  const originList = knownOrigins();
+  const origins = knownOrigins();
 
   return `
     <style>${CSS}</style>
     <div class="cc-pf">
 
-      <div class="cc-pf-art">
-        ${slot("img", "Portrait", p.img, "Click to choose a portrait")}
-        ${slot("tokenImg", "Token", p.tokenImg, "Click to choose a token image")}
-        <div class="cc-pf-artnote">
-          Both are optional. Leave them and your character gets Foundry's default silhouette;
-          set only a portrait and the token borrows it.
+      <div class="cc-pf-hero">
+        <div class="cc-pf-art">
+          ${slot("img", "Portrait", p.img, "big")}
+          ${slot("tokenImg", "Token", p.tokenImg, "small")}
+        </div>
+        <div class="cc-pf-ask">
+          <div class="cc-pf-prompt">Please enter your name.</div>
+          <input class="cc-pf-name" data-f="name" value="${esc(p.name)}"
+                 maxlength="40" autocomplete="off" spellcheck="false">
         </div>
       </div>
 
-      <div class="cc-pf-field">
-        <label class="cc-label" for="cc-name">Name <span class="cc-pf-req">*</span></label>
-        <input class="cc-input" id="cc-name" data-f="name" value="${esc(p.name)}" autocomplete="off">
-      </div>
+      <div class="cc-pf-grid">
+        <div class="cc-pf-field is-wide">
+          <label class="cc-label" for="cc-identity">Identity</label>
+          <input class="cc-input" id="cc-identity" data-f="identity" value="${esc(p.identity)}"
+                 placeholder="The Last Princess of Platea" autocomplete="off">
+        </div>
 
-      <div class="cc-pf-field">
-        <label class="cc-label" for="cc-theme">Theme</label>
-        <input class="cc-input" id="cc-theme" data-f="theme" value="${esc(p.theme)}"
-               placeholder="Hope, Vengeance, Duty…" autocomplete="off">
-        <div class="cc-pf-hint">The ideal driving them. Anything you like.</div>
-      </div>
+        <div class="cc-pf-field">
+          <label class="cc-label" for="cc-theme">Theme</label>
+          <input class="cc-input" id="cc-theme" data-f="theme" value="${esc(p.theme)}"
+                 placeholder="Hope" autocomplete="off">
+        </div>
 
-      <div class="cc-pf-field is-wide">
-        <label class="cc-label" for="cc-identity">Identity</label>
-        <input class="cc-input" id="cc-identity" data-f="identity" value="${esc(p.identity)}"
-               placeholder="The Last Princess of Platea" autocomplete="off">
-        <div class="cc-pf-hint">How they see themselves right now. Can be invoked to reroll, and may change as they grow.</div>
-      </div>
+        <div class="cc-pf-field">
+          <label class="cc-label" for="cc-origin">Origin</label>
+          <input class="cc-input" id="cc-origin" data-f="origin" value="${esc(p.origin)}"
+                 list="cc-origin-list" placeholder="Vaskell" autocomplete="off">
+          <datalist id="cc-origin-list">
+            ${origins.map((o) => `<option value="${esc(o)}">`).join("")}
+          </datalist>
+        </div>
 
-      <div class="cc-pf-field">
-        <label class="cc-label" for="cc-origin">Origin</label>
-        <input class="cc-input" id="cc-origin" data-f="origin" value="${esc(p.origin)}"
-               list="cc-origin-list" placeholder="Where are they from?" autocomplete="off">
-        <datalist id="cc-origin-list">
-          ${originList.map((o) => `<option value="${esc(o)}">`).join("")}
-        </datalist>
-        <div class="cc-pf-hint">${originList.length
-          ? `${originList.length} place${originList.length === 1 ? "" : "s"} already known in this world.`
-          : "No origins recorded yet — name a new one."}</div>
-      </div>
+        <div class="cc-pf-field">
+          <label class="cc-label">&nbsp;</label>
+          <div class="cc-pf-traits">Your three Traits. Any can be invoked to reroll.</div>
+        </div>
 
-      <div class="cc-pf-field">
-        <label class="cc-label">&nbsp;</label>
-        <div class="cc-pf-hint">Identity, Theme and Origin are your character's three Traits (pp. 155–159).
-          Any of them can be invoked to reroll a check.</div>
-      </div>
-
-      <div class="cc-pf-field is-wide">
-        <label class="cc-label" for="cc-backstory">Backstory <span class="cc-pf-opt">optional</span></label>
-        <textarea class="cc-input" id="cc-backstory" data-f="backstory"
-                  placeholder="Where they came from, and what it cost.">${esc(p.backstory)}</textarea>
+        <div class="cc-pf-field is-wide">
+          <label class="cc-label" for="cc-backstory">Backstory <span class="cc-pf-opt">optional</span></label>
+          <textarea class="cc-input" id="cc-backstory" data-f="backstory"
+                    placeholder="Where they came from, and what it cost.">${esc(p.backstory)}</textarea>
+        </div>
       </div>
 
     </div>`;
 }
 
 function bind(root, d, ctx) {
-  // Typing uses `touch` so the caret survives; `change` (blur / enter) commits
-  // with a full re-render so validation and the rail catch up.
+  // Typing uses `touch` so the caret survives. The name is the one field that
+  // gates the step, so it re-renders on `input` too — otherwise Next would stay
+  // greyed out until the box lost focus, which reads as the button being broken.
   root.querySelectorAll("[data-f]").forEach((el) => {
     const field = el.dataset.f;
     el.addEventListener("input", () => {
+      if (field === "name") {
+        const before = !!String(d.profile.name ?? "").trim();
+        const after = !!el.value.trim();
+        ctx.touch((dd) => { dd.profile.name = el.value; });
+        ctx.syncFoot();
+        // Only redraw when the gate actually flips, so a re-render does not
+        // land on every keystroke and steal the caret.
+        if (before !== after) {
+          ctx.refresh();
+          const box = root.querySelector("[data-f='name']");
+          if (box) { box.focus(); box.setSelectionRange(box.value.length, box.value.length); }
+        }
+        return;
+      }
       ctx.touch((dd) => { dd.profile[field] = el.value; });
-      if (field === "name") ctx.syncFoot();
     });
     el.addEventListener("change", () => ctx.edit((dd) => { dd.profile[field] = el.value; }));
   });
@@ -166,6 +183,9 @@ function bind(root, d, ctx) {
       ctx.edit((dd) => { dd.profile[btn.dataset.clear] = ""; });
     });
   });
+
+  // The name is what this page is for.
+  root.querySelector("[data-f='name']")?.focus();
 }
 
 STEP_RENDERERS.set("profile", { render, bind });

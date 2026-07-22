@@ -18,8 +18,8 @@ import {
   draftLevel, draftBudget, draftSpend, draftBudgetLeft,
   draftPointPool, draftClassLevels, draftMartial, validateAll,
 } from "./cc-draft.js";
-import { effectiveBases, previewDerived } from "./cc-step-attributes.js";
-import { picks as equipPicks, martialNeed, advisories } from "./cc-step-equipment.js";
+import { effectiveBases, finalDerived } from "./cc-step-attributes.js";
+import { picks as equipPicks, martialNeed, advisories, equipBonuses } from "./cc-step-equipment.js";
 import { chosenEmotion, bondIsEmpty } from "./cc-step-bond.js";
 import { previewFolder } from "./cc-folder.js";
 import { resolveClass } from "../levelup-system/class-registry.js";
@@ -72,7 +72,26 @@ const CSS = `
   .cc-ready { margin-top: 14px; padding: 10px 13px; border-radius: 8px;
     border: 1px solid #cbb890; background: rgba(240,217,154,.35);
     font-size: 12px; color: #6b4a1c; line-height: 1.5; }
+
+  /* ── starting stats ── */
+  .cc-fin { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .cc-fin th, .cc-fin td { padding: 3px 8px; text-align: left; }
+  .cc-fin thead th { font-size: 10px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; opacity: .5; border-bottom: 1px solid #cbb890; padding-bottom: 4px; }
+  .cc-fin tbody th { font-weight: 700; opacity: .85; white-space: nowrap; }
+  .cc-fin tbody tr + tr td, .cc-fin tbody tr + tr th { border-top: 1px solid rgba(203,184,144,.5); }
+  .cc-fin .n { text-align: right; font-variant-numeric: tabular-nums; width: 58px; }
+  .cc-fin .m { text-align: center; width: 84px; font-variant-numeric: tabular-nums; }
+  .cc-fin .t { font-weight: 800; font-size: 14px; }
+  .cc-fin .note { font-size: 11px; opacity: .55; }
+  .cc-fin-up { color: #2f6b2f; font-weight: 700; }
+  .cc-fin-down { color: #a3453a; font-weight: 700; }
+  .cc-fin-nil { opacity: .3; }
+  .cc-fin-foot { margin-top: 7px; font-size: 11px; opacity: .55; line-height: 1.45; }
 `;
+
+/** Initiative is an average, so it can land on a half. */
+const fmtInit = (v) => (Number.isInteger(v) ? String(v) : Number(v).toFixed(1));
 
 // Panels are read-only. Backtracking is Back, all the way down -- the rail and
 // the per-panel shortcuts are gone, so there is exactly one way to move.
@@ -101,17 +120,78 @@ function profileCard(d) {
 
 function attributeCard(d) {
   const b = effectiveBases(d);
-  const der = previewDerived(d);
   const body = `
     <div class="cc-attr">
       ${CC_ATTR_KEYS.map((k) => `
         <div><span class="v">d${num(b[k], 0)}</span><span class="k">${esc(CC_ATTR_LABEL[k])}</span></div>`).join("")}
-    </div>
-    <div class="cc-der">
-      <span>HP ${der.maxHp}</span><span>MP ${der.maxMp}</span><span>IP ${der.maxIp}</span>
-      <span>DEF ${der.def}</span><span>M.DEF ${der.mdef}</span><span>Init ${der.init}</span>
     </div>`;
   return card(`Attributes — level ${draftLevel(d)}`, "attributes", body);
+}
+
+/**
+ * What the character actually starts play with.
+ *
+ * The attribute step can only show base values — class benefits are chosen a
+ * step later and equipment a step after that, so the numbers a player saw there
+ * are not the numbers they will have. This table is the first place the three
+ * are added up, which is exactly why it belongs on the last page.
+ *
+ * Each row shows base, then what moved it, then the total. Seeing "45 +5 = 50"
+ * is what makes the total trustworthy; a bare 50 is just a number to take on
+ * faith.
+ */
+function finalCard(d) {
+  const martial = draftMartial(d, resolveClass);
+  const equip = equipBonuses(d, martial);
+  const f = finalDerived(d, equip);
+  const base = f.base;
+
+  const delta = (n) => (n > 0 ? `<span class="cc-fin-up">+${n}</span>`
+                      : n < 0 ? `<span class="cc-fin-down">${n}</span>` : `<span class="cc-fin-nil">—</span>`);
+
+  const row = (label, from, mod, to, note = "") => `
+    <tr>
+      <th>${esc(label)}</th>
+      <td class="n">${from}</td>
+      <td class="m">${mod}</td>
+      <td class="n t">${to}</td>
+      <td class="note">${esc(note)}</td>
+    </tr>`;
+
+  // DEF is not a sum when martial armour is worn: it replaces the DEX die.
+  const defMod = equip.defBase != null
+    ? `<span class="cc-fin-up">set ${equip.defBase}</span>${equip.defBonus ? ` ${delta(equip.defBonus)}` : ""}`
+    : delta(equip.defBonus);
+  const mdefMod = equip.mdefBase != null
+    ? `<span class="cc-fin-up">set ${equip.mdefBase}</span>${equip.mdefBonus ? ` ${delta(equip.mdefBonus)}` : ""}`
+    : delta(equip.mdefBonus);
+
+  const classNote = f.bonus.classes
+    ? `${f.bonus.classes} class${f.bonus.classes === 1 ? "" : "es"}`
+    : "no classes yet";
+
+  const body = `
+    <table class="cc-fin">
+      <thead>
+        <tr><th></th><th class="n">Base</th><th class="m">Change</th><th class="n t">Start</th><th></th></tr>
+      </thead>
+      <tbody>
+        ${row("Max HP", base.maxHp, delta(f.bonus.hp), f.maxHp, f.bonus.hp ? classNote : "")}
+        ${row("Max MP", base.maxMp, delta(f.bonus.mp), f.maxMp, f.bonus.mp ? classNote : "")}
+        ${row("Max IP", base.maxIp, delta(f.bonus.ip), f.maxIp, f.bonus.ip ? classNote : "")}
+        ${row("Crisis", Math.floor(base.maxHp / 2), delta(f.crisis - Math.floor(base.maxHp / 2)), f.crisis, "half of Max HP")}
+        ${row("DEF", base.def, defMod, f.def, equip.defBase != null ? "martial armor" : "")}
+        ${row("MDEF", base.mdef, mdefMod, f.mdef, "")}
+        ${row("Initiative", fmtInit(base.init), delta(-num(equip.initPenalty, 0)), fmtInit(f.init),
+              equip.initPenalty ? "armor penalty" : "")}
+      </tbody>
+    </table>
+    <div class="cc-fin-foot">
+      Free benefits count once per class, when it is opened — not per level.
+      Untrained gear is carried, not worn, so it adds nothing here.
+    </div>`;
+
+  return card("Starting Stats", null, body, true);
 }
 
 function classCard(d) {
@@ -205,6 +285,7 @@ function render(d) {
       </div>
 
       <div class="cc-sm-cols">
+        ${finalCard(d)}
         ${profileCard(d)}
         ${attributeCard(d)}
         ${classCard(d)}

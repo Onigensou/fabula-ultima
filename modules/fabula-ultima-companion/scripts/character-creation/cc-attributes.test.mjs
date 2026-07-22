@@ -77,5 +77,124 @@ let acc = {};
 for (const [k, v] of [["wlp", 10], ["mig", 10], ["dex", 8], ["ins", 6], ["mig", 8]]) acc = swap(acc, k, v);
 eq("no duplicate inflation across a sequence", sorted(acc).length <= 4, true);
 
+
+// ── drag and drop placement ────────────────────────────────────────────────
+//
+// The pool must stay a permutation of the array no matter what is dragged
+// where. That is the property the old dropdown version could not hold, and the
+// reason assignment appeared to do nothing: the select and the draft disagreed.
+
+const place = (assign, die, from, target) => {
+  const a = { ...assign };
+  A.placeDie(a, { die, from }, target);
+  return a;
+};
+
+eq("tray -> empty socket places the die", place({}, 10, "tray", "mig"), { mig: 10 });
+eq("tray -> occupied socket displaces the old die back to the tray",
+  place({ mig: 8 }, 10, "tray", "mig"), { mig: 10 });
+eq("socket -> empty socket moves it",
+  place({ mig: 10 }, 10, "mig", "dex"), { dex: 10 });
+eq("socket -> occupied socket SWAPS",
+  place({ mig: 10, dex: 6 }, 10, "mig", "dex"), { mig: 6, dex: 10 });
+eq("socket -> tray returns it", place({ mig: 10 }, 10, "mig", "tray"), {});
+eq("dropping on its own socket does nothing",
+  place({ mig: 10 }, 10, "mig", "mig"), { mig: 10 });
+eq("a tray drop reports a change", A.placeDie({}, { die: 8, from: "tray" }, "wlp"), true);
+eq("a no-op reports none", A.placeDie({ mig: 8 }, { die: 8, from: "mig" }, "mig"), false);
+eq("returning something not placed reports none",
+  A.placeDie({}, { die: 8, from: "mig" }, "tray"), false);
+
+// Four placements from the tray must leave exactly the array, in some order.
+{
+  let a = {};
+  for (const [die, slot] of [[10, "wlp"], [8, "mig"], [8, "dex"], [6, "ins"]]) {
+    A.placeDie(a, { die, from: "tray" }, slot);
+  }
+  eq("a full assignment is the array itself",
+    Object.values(a).sort((x, y) => x - y), [6, 8, 8, 10]);
+}
+
+// Swapping around can never mint a die.
+{
+  const a = { mig: 10, dex: 8, ins: 8, wlp: 6 };
+  A.placeDie(a, { die: 10, from: "mig" }, "wlp");
+  A.placeDie(a, { die: 8, from: "dex" }, "ins");
+  A.placeDie(a, { die: 6, from: "mig" }, "dex");
+  eq("swapping conserves the pool",
+    Object.values(a).sort((x, y) => x - y), [6, 8, 8, 10]);
+  eq("...and keeps all four attributes filled", Object.keys(a).length, 4);
+}
+
+// ── what is left in the tray ───────────────────────────────────────────────
+//
+// "Average" is d10 d8 d8 d6 — a MULTISET. Removing by value rather than by
+// instance would empty both d8 slots the moment either was placed.
+{
+  const d = mk(5, {});
+  d.attributes.arrayKey = "average";
+  eq("a fresh tray holds the whole array", A.trayDice(d), [10, 8, 8, 6]);
+
+  d.attributes.assign = { mig: 8 };
+  eq("placing one d8 leaves the other", A.trayDice(d), [10, 8, 6]);
+
+  d.attributes.assign = { mig: 8, dex: 8 };
+  eq("placing both empties them", A.trayDice(d), [10, 6]);
+
+  d.attributes.assign = { mig: 10, dex: 8, ins: 8, wlp: 6 };
+  eq("a full assignment empties the tray", A.trayDice(d), []);
+}
+
+// ── class free benefits count once per CLASS, not per level ────────────────
+{
+  const d = D.createDraft();
+  eq("no classes, no benefit", A.benefitTally(d), { hp: 0, mp: 0, ip: 0, classes: 0 });
+
+  // Ten levels in one class is still one benefit.
+  for (let i = 0; i < 10; i++) {
+    d.classes.push({ classKey: "guardian", benefit: "hp", skillUuid: "s", facetUuids: [] });
+  }
+  eq("ten levels in one class grant it once",
+    A.benefitTally(d), { hp: 5, mp: 0, ip: 0, classes: 1 });
+
+  d.classes.push({ classKey: "elementalist", benefit: "mp", skillUuid: "s2", facetUuids: [] });
+  d.classes.push({ classKey: "rogue", benefit: "ip", skillUuid: "s3", facetUuids: [] });
+  eq("each further class adds its own",
+    A.benefitTally(d), { hp: 5, mp: 5, ip: 2, classes: 3 });
+}
+
+// ── final stats ────────────────────────────────────────────────────────────
+{
+  const d = mk(5, AVG);                       // mig d10 -> base HP 5 + 50 = 55
+  const bare = A.finalDerived(d);
+  eq("with nothing chosen the final equals the base", [bare.maxHp, bare.maxMp, bare.maxIp],
+    [55, 35, 6]);
+  eq("DEF falls back to the DEX die", bare.def, 8);
+  eq("MDEF falls back to the INS die", bare.mdef, 8);
+
+  d.classes.push({ classKey: "guardian", benefit: "hp", skillUuid: "s", facetUuids: [] });
+  d.classes.push({ classKey: "rogue", benefit: "ip", skillUuid: "s2", facetUuids: [] });
+  const withClasses = A.finalDerived(d);
+  eq("class benefits raise the maxima", [withClasses.maxHp, withClasses.maxIp], [60, 8]);
+  eq("crisis follows the RAISED HP, not the base", withClasses.crisis, 30);
+  eq("the base is still reported for comparison", withClasses.base.maxHp, 55);
+
+  // Ordinary armour ADDS to the DEX die; martial armour REPLACES it. Getting
+  // that backwards overstates a plate-wearer by their whole DEX die.
+  const soft = A.finalDerived(d, { defBase: null, defBonus: 2, mdefBase: null, mdefBonus: 1, initPenalty: 0 });
+  eq("ordinary armor adds to the die", soft.def, 10);
+  eq("...and to MDEF", soft.mdef, 9);
+
+  const plate = A.finalDerived(d, { defBase: 11, defBonus: 0, mdefBase: 9, mdefBonus: 0, initPenalty: 3 });
+  eq("martial armor replaces the die", plate.def, 11);
+  eq("...rather than adding to it", plate.def === 8 + 11, false);
+  eq("MDEF is replaced too", plate.mdef, 9);
+  eq("an initiative penalty subtracts", plate.init, bare.init - 3);
+
+  // A shield on top of martial armour still adds.
+  const both = A.finalDerived(d, { defBase: 11, defBonus: 2, mdefBase: 9, mdefBonus: 0, initPenalty: 0 });
+  eq("a shield adds on top of the replacement", both.def, 13);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

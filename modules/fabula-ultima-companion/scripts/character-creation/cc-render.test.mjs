@@ -181,5 +181,80 @@ for (const step of CC.STEPS) {
   eq("ampersands and quotes survive escaped", html.includes("Mira &amp; &quot;friends&quot;"), true);
 }
 
+
+// ── the hard block: which steps refuse to let you past ─────────────────────
+//
+// A later step is built on an earlier one's answers, so walking past an
+// unfinished one produces a page that cannot be filled in correctly. The shell
+// disables Next on exactly validateStep(step).ok, so these are the gates.
+{
+  const gate = (d, step) => D.validateStep(d, step).ok;
+
+  const fresh = D.createDraft();
+  eq("an unnamed profile is blocked", gate(fresh, "profile"), false);
+  fresh.profile.name = "Ashe";
+  eq("a named profile passes", gate(fresh, "profile"), true);
+  eq("whitespace is not a name",
+    gate(Object.assign(D.createDraft(), { profile: { ...fresh.profile, name: "   " } }), "profile"), false);
+
+  // Attributes: every die must be placed.
+  const attrs = D.createDraft();
+  attrs.profile.name = "Ashe";
+  eq("no dice placed is blocked", gate(attrs, "attributes"), false);
+  attrs.attributes.assign = { mig: 10, dex: 8, ins: 8 };
+  eq("three of four is still blocked", gate(attrs, "attributes"), false);
+  attrs.attributes.assign.wlp = 6;
+  eq("all four passes", gate(attrs, "attributes"), true);
+
+  // A level-20 character owes a milestone pick.
+  attrs.attributes.level = 20;
+  eq("an unassigned milestone blocks", gate(attrs, "attributes"), false);
+  attrs.attributes.milestonePicks = ["mig"];
+  eq("assigning it unblocks", gate(attrs, "attributes"), true);
+
+  // Classes: the pool must be spent.
+  const cls = D.createDraft();
+  cls.attributes.level = 5;
+  eq("unspent points block", gate(cls, "classes"), false);
+  for (let i = 0; i < 5; i++) {
+    cls.classes.push({ classKey: i < 3 ? "a" : "b", className: "X", skillUuid: "s" + i,
+                       skillName: "S", benefit: "hp", facetUuids: [] });
+  }
+  eq("a fully spent, two-class level 5 build passes", gate(cls, "classes"), true);
+
+  // Equipment blocks only when over budget; buying nothing is fine.
+  const eq5 = D.createDraft();
+  eq("an empty cart passes", gate(eq5, "equipment"), true);
+  eq5.equipment.picks.push({ uuid: "i", name: "Absurd", cost: 9999, slot: "weapon" });
+  eq("over budget blocks", gate(eq5, "equipment"), false);
+
+  // Bond is optional, but half a bond is not.
+  const bond = D.createDraft();
+  eq("no bond passes", gate(bond, "bond"), true);
+  bond.bond.name = "Mira";
+  eq("a target with no emotion blocks", gate(bond, "bond"), false);
+  B.setEmotion(bond, "e1", "admiration");
+  eq("completing it passes", gate(bond, "bond"), true);
+}
+
+// ── the summary shows what the character actually starts with ──────────────
+{
+  const d = fullDraft();
+  const html = STEP_RENDERERS.get("summary").render(d);
+  eq("there is a starting-stats table", html.includes("Starting Stats"), true);
+  eq("it shows the base column", html.includes("Base"), true);
+  eq("it shows the final column", html.includes("Start"), true);
+
+  // fullDraft takes Guardian (hp) and Elementalist (mp): +5 HP and +5 MP over
+  // base, counted once per class rather than once per level.
+  const A2 = await import("./cc-step-attributes.js");
+  const tally = A2.benefitTally(d);
+  eq("two classes, two benefits", [tally.hp, tally.mp, tally.classes], [5, 5, 2]);
+  const fin = A2.finalDerived(d);
+  eq("the final HP is the base plus the class benefit", fin.maxHp, fin.base.maxHp + 5);
+  eq("twenty levels did not multiply the benefit", fin.maxHp - fin.base.maxHp, 5);
+  eq("the table prints the final HP", html.includes(">" + fin.maxHp + "<"), true);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

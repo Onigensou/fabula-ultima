@@ -312,14 +312,28 @@ class CharacterCreationApp {
     }
   }
 
+  /**
+   * Notes and outstanding problems.
+   *
+   * A step is only criticised once the player has been PAST it. On a first
+   * visit an empty form is not a mistake, it is a form — telling someone their
+   * unnamed character needs a name before they have had a chance to type is
+   * noise, and the disabled Next already says so on hover. Coming back to a
+   * step means something needs fixing, and then the reason is worth spelling
+   * out.
+   */
   _issuesHTML(step) {
     const parts = [];
     for (const n of this._notes) parts.push(`<div class="cc-note">${esc(n)}</div>`);
+
+    const furthest = Math.max(...this._draft.seen.map(stepIndex), 0);
+    const beenPast = stepIndex(step.id) < furthest;
+
     if (step.id === "summary") {
       for (const i of validateAll(this._draft).issues) {
         parts.push(`<div class="cc-issue">${esc(i.message)}</div>`);
       }
-    } else if (this._draft.seen.includes(step.id)) {
+    } else if (beenPast) {
       for (const i of validateStep(this._draft, step.id).issues) {
         parts.push(`<div class="cc-issue">${esc(i.message)}</div>`);
       }
@@ -327,15 +341,25 @@ class CharacterCreationApp {
     return parts.length ? `<div class="cc-issues">${parts.join("")}</div>` : "";
   }
 
+  /**
+   * Forward is BLOCKED until the current step is complete.
+   *
+   * A later step is usually built on an earlier one's answers — the point pool
+   * comes from the level, the martial rules come from the classes — so walking
+   * past an unfinished step produces a page that cannot be filled in correctly
+   * and an error message with no obvious cause. The button carries the reason
+   * as its tooltip, and the issue itself is already listed under the step.
+   */
   _forwardBtnHTML(step) {
     if (step.id === "summary") {
       if (this._creating) return `<button class="cc-btn is-primary" disabled>Creating…</button>`;
-      const ok = validateAll(this._draft).ok;
-      return `<button class="cc-btn is-primary" data-act="finalize" ${ok ? "" : "disabled"}>Create</button>`;
+      const { ok, issues } = validateAll(this._draft);
+      return `<button class="cc-btn is-primary" data-act="finalize" ${ok ? "" : "disabled"}
+        title="${esc(ok ? "Create this character" : issues[0]?.message ?? "Not finished yet")}">Create</button>`;
     }
-    // Forward is never blocked. A player is allowed to walk the whole wizard
-    // and come back; only Create enforces completeness.
-    return `<button class="cc-btn is-primary" data-act="next">Next</button>`;
+    const { ok, issues } = validateStep(this._draft, step.id);
+    return `<button class="cc-btn is-primary" data-act="next" ${ok ? "" : "disabled"}
+      title="${esc(ok ? "Continue" : issues[0]?.message ?? "Finish this step first")}">Next</button>`;
   }
 
   _footInfo() {
