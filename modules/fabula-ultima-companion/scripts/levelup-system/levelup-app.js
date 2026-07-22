@@ -596,6 +596,20 @@ const LevelUpApp = {
    * the character WOULD look like. Returns deltas keyed by class and skill,
    * plus the resulting Skill Point balance.
    */
+  /**
+   * Where state comes from.
+   *
+   * Normally the live actor. Character Creation renders these same views for a
+   * character that does not exist yet, and supplies a getState-shaped object
+   * built from its draft instead -- see cc-class-state.js. Routing every read
+   * through here is the whole of that seam: no renderer below knows or cares
+   * which it got.
+   */
+  _readState() {
+    if (typeof this._stateSource === "function") return this._stateSource();
+    return api()?.getState(this._actorUuid);
+  },
+
   _project(s) {
     const classDelta = new Map();
     const skillDelta = new Map();
@@ -634,7 +648,7 @@ const LevelUpApp = {
 
   render() {
     if (!this.isOpen || this._applying) return;
-    const s = api()?.getState(this._actorUuid);
+    const s = this._readState();
     const panel = this._root.querySelector(".lu-panel");
     if (!s?.ok) {
       panel.innerHTML = `<div class="lu-empty" style="padding:24px">Could not read that character.</div>`;
@@ -746,7 +760,7 @@ const LevelUpApp = {
     this._root.querySelector(`#${ROOT_ID}-picker`)?.remove();
     if (!this._pickerOpen) { this._updateCursor(); return; }
 
-    s = s ?? api()?.getState(this._actorUuid);
+    s = s ?? this._readState();
     if (!s?.ok) return;
 
     const p = document.createElement("div");
@@ -894,7 +908,12 @@ const LevelUpApp = {
       const nutsLeft = (s.nuts?.count ?? 0) - proj.refundCount;
       const outOfNuts = nutsLeft <= 0;
       const canRefund = s.gate.open && lvl > 0 && !outOfNuts;
+      // Character Creation is the exception to that purse: nothing has been
+      // written yet, so there is nothing to buy back. Its state reports an
+      // unbounded supply, which turns the arithmetic above into a no-op rather
+      // than a special case, and the wording below simply drops the price.
       const refundTitle = lvl <= 0 ? "Nothing to give back"
+        : this._creation ? "Give back this level"
         : outOfNuts ? `No ${s.nuts?.name ?? "Forget me Nut"} left — one is needed per level`
         : `Give back a level — costs 1 ${s.nuts?.name ?? "Forget me Nut"}`;
       return this._row({
@@ -907,15 +926,17 @@ const LevelUpApp = {
         },
         // The − only exists in Reset mode; the + stays put but goes inert, so
         // the row keeps its shape instead of reflowing when the mode flips.
+        // Creation shows both at once — there, taking a level back is just
+        // undoing a decision, not a transaction needing its own mode.
         right:
-          (this._resetMode
+          (this._resetMode || this._creation
             ? `<button class="lu-btn sell" data-act="refund" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
                 ${canRefund ? "" : "disabled"} title="${esc(refundTitle)}">−</button>`
             : "") +
           `<span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>` +
           this._facetEditBtn(sk) +
           `<button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
-            ${canBuy && !this._resetMode ? "" : "disabled"} title="Spend a Skill Point">+</button>`,
+            ${canBuy && (this._creation || !this._resetMode) ? "" : "disabled"} title="Spend a Skill Point">+</button>`,
       });
     }).join("");
 
@@ -1168,7 +1189,7 @@ const LevelUpApp = {
   _paintPreview({ chase = false, intro = false } = {}) {
     const p = this._root?.querySelector(`#${ROOT_ID}-picker`);
     if (!p) return;
-    const s = api()?.getState(this._actorUuid);
+    const s = this._readState();
     if (!s?.ok) return;
 
     const untaken = s.classes.filter((c) => !c.taken).sort((a, b) => a.name.localeCompare(b.name));
@@ -1527,7 +1548,7 @@ const LevelUpApp = {
    * otherwise the picker stages a NEW operation on confirm.
    */
   _openFacetPicker(act, classKey, skillUuid, editIndex = -1) {
-    const s = api()?.getState(this._actorUuid);
+    const s = this._readState();
     const cls = s?.classes?.find((c) => c.key === classKey);
     const skill = cls?.skills?.find((k) => k.uuid === skillUuid);
     if (!cls || !skill || !skill.facetGrant) return false;
@@ -1982,7 +2003,7 @@ const LevelUpApp = {
   // class doesn't fix its own benefit — class_list stores one benefit per
   // class row, so there is nowhere to record a per-level answer.
   async _benefitFor(classKey) {
-    const s = api()?.getState(this._actorUuid);
+    const s = this._readState();
     const cls = s?.classes?.find((c) => c.key === classKey);
     if (!cls || cls.taken || cls.benefit) return cls?.benefit ?? undefined;
 

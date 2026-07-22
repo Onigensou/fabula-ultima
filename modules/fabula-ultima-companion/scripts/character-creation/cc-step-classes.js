@@ -1,34 +1,36 @@
 /**
  * Character Creation — step 3: Class & Skills.
  *
- * One Skill Point buys ONE class level and ONE skill level in that class — the
- * same bargain the level-up system makes, because at finalize these picks are
- * replayed through its `spendPoint` rather than written directly. Everything
- * that follows from a spend (the class row, the benefit column, facet grants,
- * the martial-armor flag, heroic slots) therefore happens exactly as it does
- * mid-campaign, and there is no second implementation to drift.
+ * This step does NOT draw its own class rail, skill rows or facet grid. It
+ * borrows the level-up window's, by making a derived object off `LevelUpApp`
+ * whose state comes from the draft (`cc-class-state.js`) instead of an actor.
+ * Those renderers are already tuned and already know the rules; a second
+ * implementation would only be a second thing to keep in step with CSB.
  *
- * The rules checked here are a courtesy so the player is not told "no" only at
- * the very end. The GM re-validates all of them on arrival — `validateSpend`
- * enforces the class cap, the skill cap and the three-unmastered-classes limit
- * regardless of what this window believes.
+ * The seam is one method. `LevelUpApp._readState()` returns either
+ * `getState(actorUuid)` or, when `_stateSource` is set, whatever that returns.
+ * Everything below it — `_rail`, `_main`, `_facetGrid`, `_row` — is untouched
+ * and cannot tell the difference.
  *
- * FACETS AND BENEFITS
- * -------------------
- * Some skills award a spell/dance/symbol per level ("learn one Elementalist
- * spell"); the class's `facetGrant` says how many. Some classes let the player
- * choose whether the class's free benefit is +5 HP, +5 MP or +2 IP, and that
- * choice is made ONCE, when the class is first opened — CSB stores one benefit
- * column per class row, not one per level. Both are collected in a single
- * confirmation panel rather than a chain of dialogs.
+ * STAGING COLLAPSES INTO THE DRAFT
+ * --------------------------------
+ * The real window stages changes in `_pending` and writes them on Confirm.
+ * Here the draft IS the staging area: `_pending` stays empty, so `_project`
+ * returns zero deltas and every level the renderers show comes straight out of
+ * `draftState`. A click mutates the draft and re-renders. There is nothing to
+ * confirm because nothing has been written.
+ *
+ * One point buys one class level and one skill level, the same bargain the
+ * level-up system makes — at finalize these picks replay through its
+ * `spendPoint`, so class rows, benefit columns, facet grants and the martial
+ * flags all land exactly as they do mid-campaign.
  */
 
 import { CC, esc, num } from "./cc-const.js";
 import { STEP_RENDERERS } from "./cc-app.js";
-import {
-  draftLevel, draftPointPool, draftPointsLeft,
-  draftClassKeys, draftClassLevels,
-} from "./cc-draft.js";
+import { draftLevel, draftPointPool, draftPointsLeft, draftClassKeys } from "./cc-draft.js";
+import { draftState, takenClasses } from "./cc-class-state.js";
+import { LevelUpApp } from "../levelup-system/levelup-app.js";
 
 const MAX_CLASS_LEVEL = 10;
 const MAX_UNMASTERED = 3;
@@ -120,303 +122,334 @@ export function removeLast(d, skillUuid) {
   return false;
 }
 
-// ── registry access ────────────────────────────────────────────────────────
-//
-// The playable-class catalogue is the level-up system's, imported directly
-// rather than reimplemented: it already resolves the Classes/ folders, splits
-// skills from heroics from facets, and handles this world's duplicate class
-// actors. `getRegistry` caches internally and touches no Foundry global until
-// it is called, so importing it here is safe outside a live game.
+// ── the borrowed renderer ──────────────────────────────────────────────────
 
-import { getRegistry } from "../levelup-system/class-registry.js";
+/**
+ * A LevelUpApp that reads the draft.
+ *
+ * Object.create rather than a copy, so it stays in step with the real thing:
+ * anything added to LevelUpApp's prototype chain is inherited here, and the
+ * only overrides are the state source and the flags that describe creation.
+ */
+let _view = null;
+let _draftRef = null;
 
-function allClasses() {
-  try {
-    return getRegistry().list ?? [];
-  } catch (e) {
-    console.error("[ONI][CharCreate] class registry unavailable:", e);
-    return [];
-  }
+function view() {
+  if (_view) return _view;
+  _view = Object.create(LevelUpApp);
+  Object.assign(_view, {
+    _creation: true,
+    _stateSource: () => draftState(_draftRef),
+    _pending: [],          // the draft is the staging area; nothing queues here
+    _selected: null,
+    _tab: "skill",
+    _resetMode: false,
+    _actorUuid: null,
+    _root: null,
+    // The real window animates the cursor against its own root. Creation has
+    // no such root, and the cursor is decoration, so it is a no-op here.
+    _updateCursor: () => {},
+  });
+  // `isOpen` is an accessor on LevelUpApp, so Object.assign would try to write
+  // through a getter with no setter and throw. It has to be redefined on the
+  // derived object instead. It reports true because the guards that consult it
+  // are asking "is there something to draw into", and here there always is.
+  Object.defineProperty(_view, "isOpen", { get: () => true, configurable: true });
+  return _view;
 }
 
-// ── transient UI state ─────────────────────────────────────────────────────
+/** Transient view state, cleared between characters. */
+export const resetUiState = () => {
+  _view = null;
+  _browsing = false;
+  _filter = "";
+  _pending = null;
+};
 
-let _selected = null;   // class key currently open in the right pane
+let _browsing = false;   // the "add a class" list is showing
 let _filter = "";
-let _pending = null;    // { cls, skill, benefit, facets:[] } awaiting confirmation
-
-export const resetUiState = () => { _selected = null; _filter = ""; _pending = null; };
+let _pending = null;     // { clsKey, skillUuid, benefit, facets[] } awaiting answers
 
 const CSS = `
-  .cc-cls-wrap { display: grid; grid-template-columns: 260px 1fr; gap: 18px; min-height: 0; }
-  .cc-cls-left { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
-  .cc-pts {
-    display: flex; align-items: baseline; justify-content: space-between;
-    padding: 9px 12px; border-radius: 3px;
-    border: 1px solid rgba(140,90,30,0.35); background: rgba(201,164,74,0.16);
-  }
-  .cc-pts-n { font-size: 21px; color: #3a1e06; }
-  .cc-pts-k { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #8a6432; }
-  .cc-cls-list { overflow-y: auto; display: flex; flex-direction: column; gap: 3px; max-height: 380px; }
-  .cc-cls-item {
-    display: flex; align-items: center; gap: 8px; padding: 6px 9px; border-radius: 2px;
-    cursor: pointer; font-family: inherit; text-align: left; width: 100%;
-    border: 1px solid transparent; background: transparent; color: #5c3a12; font-size: 11px;
-  }
-  .cc-cls-item:hover { background: rgba(201,164,74,0.16); }
-  .cc-cls-item.is-on { background: rgba(201,164,74,0.30); border-color: rgba(140,90,30,0.45); color: #3a1e06; }
-  .cc-cls-item img { width: 22px; height: 22px; border-radius: 2px; object-fit: cover; flex: 0 0 22px; }
-  .cc-cls-lv {
-    margin-left: auto; font-size: 10px; color: #7a5428;
-    background: rgba(255,250,230,0.8); border: 1px solid #c4a260;
-    border-radius: 9px; padding: 1px 7px;
-  }
-  .cc-cls-lv.is-master { background: #c9a22a; border-color: #a07818; color: #fff; }
+  .cc-cl { display: flex; gap: 0; min-height: 0; margin: 0 -16px -14px; }
+  .cc-cl-rail { flex: 0 0 auto; width: 210px; padding: 10px; background: #e6dabd;
+    border-right: 1px solid #b79c72; overflow-y: auto; display: flex;
+    flex-direction: column; gap: 4px; }
+  .cc-cl-main { flex: 1 1 auto; min-width: 0; padding: 10px 12px; overflow-y: auto; }
+  .cc-cl-pts { display: flex; align-items: baseline; gap: 6px; padding: 6px 9px; margin-bottom: 4px;
+    border-radius: 8px; background: linear-gradient(180deg,#f0d99a,#e0c179); border: 1px solid #8a6c45; }
+  .cc-cl-pts .n { font-size: 17px; font-weight: 800; color: #4b3517; }
+  .cc-cl-pts .k { font-size: 11px; font-weight: 700; color: #4b3517; opacity: .8; }
 
-  .cc-cls-right { min-width: 0; }
-  .cc-cls-head { display: flex; align-items: center; gap: 11px; margin-bottom: 4px; }
-  .cc-cls-head img { width: 36px; height: 36px; border-radius: 3px; object-fit: cover; }
-  .cc-cls-title { font-size: 14px; letter-spacing: 3px; color: #3a1e06; }
-  .cc-cls-meta { font-size: 9px; color: #8a6432; letter-spacing: 1px; }
-  .cc-cls-free { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0 12px; }
+  /* The rail and skill rows come from levelup-app's own markup, so they carry
+     lu-* classes. Those styles live under #oni-levelup, which does not wrap us,
+     so the handful actually used are restated here in the wizard's palette. */
+  .cc-cl .lu-cls { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+    padding: 6px 8px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 12.5px;
+    color: #3b2a17; background: #f7f0df; border: 1px solid #cbb890; }
+  .cc-cl .lu-cls:hover { background: #fdf6e4; border-color: #8a6c45; }
+  .cc-cl .lu-cls.on { background: linear-gradient(180deg,#f0d99a,#e0c179); border-color: #8a6c45;
+    font-weight: 700; }
+  .cc-cl .lu-cls img { width: 24px; height: 24px; border-radius: 5px; object-fit: cover;
+    flex: 0 0 auto; border: 0 !important; }
+  .cc-cl .lu-cls .n { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cc-cl .lu-cls .l { flex: 0 0 auto; font-size: 11px; font-weight: 700; color: #6b4a1c;
+    background: #efe4cd; border: 1px solid #b79c72; border-radius: 9px; padding: 0 6px; }
+  .cc-cl .lu-cls .l.moved { background: #5f9e4a; border-color: #2f6b2f; color: #fff; }
+  .cc-cl .lu-cls.new { justify-content: center; font-weight: 700; color: #4b3517;
+    background: linear-gradient(180deg,#f7edd5,#e6d6b0); }
+  .cc-cl .lu-railhead { font-size: 10.5px; font-weight: 800; letter-spacing: .05em;
+    text-transform: uppercase; opacity: .6; padding: 6px 2px 2px; }
 
-  .cc-skills { display: flex; flex-direction: column; gap: 5px; max-height: 330px; overflow-y: auto; }
-  .cc-skill {
-    display: grid; grid-template-columns: 26px 1fr auto auto; gap: 9px; align-items: center;
-    padding: 7px 10px; border-radius: 3px;
-    border: 1px solid rgba(140,90,30,0.24); background: rgba(255,252,240,0.5);
-  }
-  .cc-skill img { width: 26px; height: 26px; border-radius: 2px; object-fit: cover; }
-  .cc-skill-n { font-size: 11px; color: #3a1e06; }
-  .cc-skill-d { font-size: 9px; color: #9b7040; line-height: 1.35;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .cc-skill-lv { font-size: 10px; color: #7a5428; letter-spacing: 1px; white-space: nowrap; }
-  .cc-pm { display: flex; gap: 3px; }
-  .cc-pm button {
-    font-family: inherit; width: 22px; height: 22px; line-height: 1; font-size: 13px;
-    border-radius: 2px; cursor: pointer; color: #3a1e06;
-    background: linear-gradient(155deg, #fdf6e0 0%, #e8d8a4 100%); border: 1px solid #c4a260;
-  }
-  .cc-pm button:disabled { opacity: 0.3; cursor: default; }
-  .cc-pm button:hover:not(:disabled) { background: linear-gradient(155deg, #fffbe8 0%, #f0e3b8 100%); }
+  .cc-cl .lu-h2 { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;
+    font-size: 15px; font-weight: 800; }
+  .cc-cl .lu-h2 span { font-size: 11.5px; font-weight: 400; opacity: .7; }
+  .cc-cl .lu-row { display: grid; grid-template-columns: 32px 1fr auto; align-items: center;
+    gap: 9px; padding: 6px 9px; border-radius: 8px; margin-bottom: 4px;
+    background: #f7f0df; border: 1px solid #cbb890; }
+  .cc-cl .lu-row.miss { opacity: .78; }
+  .cc-cl .lu-row.max { border-color: #8a6c45; background: #fdf6e4; }
+  .cc-cl .lu-row img { width: 30px; height: 30px; border-radius: 6px; object-fit: contain;
+    border: 0 !important; }
+  .cc-cl .lu-rowname { font-size: 13px; font-weight: 700; }
+  .cc-cl .lu-rowmeta { font-size: 11px; opacity: .7; line-height: 1.35; }
+  .cc-cl .lu-rowright { display: flex; align-items: center; gap: 5px; }
+  .cc-cl .lu-pips { font-size: 11.5px; font-weight: 700; color: #6b4a1c; white-space: nowrap; }
+  .cc-cl .lu-pips.moved { color: #2f6b2f; }
+  .cc-cl .lu-btn { width: 25px; height: 24px; border-radius: 6px; cursor: pointer; padding: 0;
+    font-family: inherit; font-size: 13px; line-height: 1; border: 1px solid #8a6c45;
+    background: linear-gradient(180deg,#f7edd5,#e6d6b0); color: #4b3517; }
+  .cc-cl .lu-btn:hover:not(:disabled) { background: linear-gradient(180deg,#f0d99a,#e0c179); }
+  .cc-cl .lu-btn:disabled { opacity: .3; cursor: default; }
+  .cc-cl .lu-btn.buy { border-color: #2f6b2f; background: linear-gradient(180deg,#7ab87a,#5a9a5a);
+    color: #fff; }
+  .cc-cl .lu-btn.buy:disabled { background: #c8b89a; border-color: #a89870; color: #6b4c2a; }
+  .cc-cl .lu-btn.sell { border-color: #a3453a; background: linear-gradient(180deg,#d99a92,#c9736a);
+    color: #fff; }
+  .cc-cl .lu-btn.edit { width: auto; padding: 0 8px; font-size: 11px; }
+  .cc-cl .lu-empty { padding: 20px; text-align: center; opacity: .6; font-size: 12.5px; }
+  .cc-cl .lu-lore { font-size: 12px; opacity: .7; line-height: 1.45; margin-bottom: 9px; }
+  .cc-cl .lu-note.warn { font-size: 12px; color: #8c3a24; padding: 7px 10px; border-radius: 8px;
+    background: rgba(165,42,26,.09); border: 1px solid rgba(165,42,26,.35); }
+  .cc-cl .lu-tag { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 9px;
+    color: #6b4a1c; background: rgba(240,217,154,.55); border: 1px solid #cbb890; }
 
-  .cc-pend {
-    margin-top: 12px; padding: 13px 15px; border-radius: 3px;
-    border: 1px solid #c9a44a; background: rgba(201,164,74,0.2);
-  }
-  .cc-pend-t { font-size: 11px; letter-spacing: 2px; color: #3a1e06; margin-bottom: 8px; }
-  .cc-pend-q { font-size: 9px; letter-spacing: 1px; color: #8a6432; margin: 8px 0 5px; text-transform: uppercase; }
-  .cc-chips { display: flex; flex-wrap: wrap; gap: 5px; }
-  .cc-chip {
-    font-family: inherit; font-size: 10px; padding: 4px 11px; border-radius: 2px; cursor: pointer;
-    color: #5c3a12; background: rgba(255,252,240,0.8); border: 1px solid rgba(140,90,30,0.35);
-  }
-  .cc-chip.is-on { background: #c9a22a; border-color: #a07818; color: #fff; }
-  .cc-pend-btns { display: flex; gap: 7px; margin-top: 11px; }
-  .cc-empty { padding: 34px; text-align: center; color: #9b7040; font-size: 11px; letter-spacing: 1px; }
+  /* class browser */
+  .cc-cl-browse { display: flex; flex-direction: column; gap: 4px; }
+  .cc-cl-brow { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 9px;
+    padding: 6px 9px; border-radius: 8px; cursor: pointer; text-align: left; width: 100%;
+    font-family: inherit; background: #f7f0df; border: 1px solid #cbb890; color: #3b2a17; }
+  .cc-cl-brow:hover { background: #fdf6e4; border-color: #8a6c45; }
+  .cc-cl-brow img { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; border: 0 !important; }
+  .cc-cl-brow .nm { font-size: 13px; font-weight: 700; }
+  .cc-cl-brow .fl { font-size: 11px; opacity: .65; }
+
+  /* benefit / facet prompt */
+  .cc-cl-ask { margin-top: 10px; padding: 11px 13px; border-radius: 8px;
+    border: 1px solid #8a6c45; background: #fdf6e4; }
+  .cc-cl-ask h4 { margin: 0 0 8px; font-size: 13px; font-weight: 800; }
+  .cc-cl-askq { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    opacity: .65; margin: 8px 0 5px; }
+  .cc-cl-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .cc-cl-chip { font-family: inherit; font-size: 12px; padding: 4px 11px; border-radius: 7px;
+    cursor: pointer; color: #3b2a17; background: #f7f0df; border: 1px solid #cbb890; }
+  .cc-cl-chip:hover { background: #f0d99a; }
+  .cc-cl-chip.on { background: linear-gradient(180deg,#5f9e4a,#3f7a30); border-color: #2f6b2f; color: #fff; }
+  .cc-cl-askbtns { display: flex; gap: 7px; margin-top: 11px; }
 `;
 
-function freeTags(cls) {
-  const t = [];
-  if (cls.benefit) t.push(`benefit: +${cls.benefit === "ip" ? "2 IP" : "5 " + cls.benefit.toUpperCase()}`);
-  else t.push("benefit: your choice");
-  if (cls.free.martialMelee) t.push("martial melee");
-  if (cls.free.martialRanged) t.push("martial ranged");
-  if (cls.free.martialArmor) t.push("martial armor");
-  if (cls.free.martialShield) t.push("martial shields");
-  if (cls.free.ritual) t.push("rituals");
-  if (cls.free.project) t.push("projects");
-  return t.map((x) => `<span class="cc-tag">${esc(x)}</span>`).join("");
-}
+const BENEFIT_LABEL = { hp: "+5 Max HP", mp: "+5 Max MP", ip: "+2 Max IP" };
 
-function classListHTML(d) {
-  const levels = draftClassLevels(d);
-  const list = allClasses()
+function browseHTML(s, d) {
+  const list = s.classes
+    .filter((c) => !c.taken)
     .filter((c) => !_filter || c.name.toLowerCase().includes(_filter.toLowerCase()))
-    .slice()
-    .sort((a, b) => (num(levels[b.key], 0) - num(levels[a.key], 0)) || a.name.localeCompare(b.name));
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-  if (!list.length) {
-    return `<div class="cc-empty">${_filter ? "No class matches." : "No playable classes found."}</div>`;
-  }
-  return list.map((c) => {
-    const lv = num(levels[c.key], 0);
-    return `<button class="cc-cls-item ${_selected === c.key ? "is-on" : ""}" data-cls="${esc(c.key)}">
-      <img src="${esc(c.img || CC.DEFAULT_IMG)}" alt="">
-      <span>${esc(c.name)}</span>
-      ${lv ? `<span class="cc-cls-lv ${lv >= MAX_CLASS_LEVEL ? "is-master" : ""}">${lv}</span>` : ""}
-    </button>`;
-  }).join("");
+  return `
+    <div class="lu-h2"><b>Choose a class</b><span>${list.length} available</span></div>
+    <input class="cc-search" data-browse-search placeholder="Search classes…"
+           value="${esc(_filter)}" style="width:100%;margin-bottom:8px">
+    <div class="cc-cl-browse">
+      ${list.length ? list.map((c) => `
+        <button class="cc-cl-brow" data-open="${esc(c.key)}">
+          <img src="${esc(c.img || CC.DEFAULT_IMG)}" alt="">
+          <span>
+            <span class="nm">${esc(c.name)}</span><br>
+            <span class="fl">${esc(String(c.flavor ?? c.folder ?? "").replace(/<[^>]*>/g, " ").slice(0, 90))}</span>
+          </span>
+          <span class="lu-tag">${esc(c.benefit ? BENEFIT_LABEL[c.benefit] ?? c.benefit : "choose benefit")}</span>
+        </button>`).join("")
+      : `<div class="lu-empty">No class matches.</div>`}
+    </div>`;
 }
 
-function skillsHTML(d, cls) {
-  return (cls.skills ?? []).map((s) => {
-    const lv = skillLevelIn(d, s.uuid);
-    const gate = canSpend(d, cls, s);
-    const plain = String(s.description ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-    return `
-      <div class="cc-skill">
-        <img src="${esc(s.img || CC.DEFAULT_IMG)}" alt="">
-        <div>
-          <div class="cc-skill-n">${esc(s.name)}${num(s.facetGrant, 0) ? ` <span class="cc-tag">+${s.facetGrant} facet</span>` : ""}</div>
-          <div class="cc-skill-d">${esc(plain)}</div>
-        </div>
-        <div class="cc-skill-lv">SL ${lv} / ${s.maxLevel}</div>
-        <div class="cc-pm">
-          <button data-minus="${esc(s.uuid)}" ${lv ? "" : "disabled"} title="Give back a level">−</button>
-          <button data-plus="${esc(s.uuid)}" ${gate.ok ? "" : "disabled"}
-                  title="${esc(gate.ok ? "Spend a Skill Point" : gate.reason)}">+</button>
-        </div>
-      </div>`;
-  }).join("");
-}
-
-function pendingHTML(d) {
+function askHTML(s, d) {
   if (!_pending) return "";
-  const { cls, skill, benefit, facets } = _pending;
-  const { need, available } = facetNeed(d, cls, skill);
+  const cls = s.classes.find((c) => c.key === _pending.clsKey);
+  const skill = cls?.skills.find((x) => x.uuid === _pending.skillUuid);
+  if (!cls || !skill) return "";
+
   const wantBenefit = needsBenefit(d, cls);
+  const { need, available } = facetNeed(d, cls, skill);
 
   const benefitBlock = wantBenefit ? `
-    <div class="cc-pend-q">Free benefit for ${esc(cls.name)} — chosen once, when the class is opened</div>
-    <div class="cc-chips">
-      ${[["hp", "+5 Max HP"], ["mp", "+5 Max MP"], ["ip", "+2 Max IP"]].map(([k, label]) =>
-        `<button class="cc-chip ${benefit === k ? "is-on" : ""}" data-benefit="${k}">${esc(label)}</button>`).join("")}
+    <div class="cc-cl-askq">Free benefit for ${esc(cls.name)} — chosen once, when the class opens</div>
+    <div class="cc-cl-chips">
+      ${Object.entries(BENEFIT_LABEL).map(([k, label]) =>
+        `<button class="cc-cl-chip ${_pending.benefit === k ? "on" : ""}" data-benefit="${k}">${esc(label)}</button>`).join("")}
     </div>` : "";
 
   const facetBlock = need ? `
-    <div class="cc-pend-q">Choose ${need} — ${esc(skill.name)} grants ${need === 1 ? "one" : need}</div>
-    <div class="cc-chips">
+    <div class="cc-cl-askq">Choose ${need} — ${esc(skill.name)} grants ${need === 1 ? "one" : need}</div>
+    <div class="cc-cl-chips">
       ${available.length
         ? available.map((f) =>
-            `<button class="cc-chip ${facets.includes(f.uuid) ? "is-on" : ""}" data-facet="${esc(f.uuid)}">${esc(f.name)}</button>`).join("")
-        : `<span class="cc-tag">nothing left to learn</span>`}
+            `<button class="cc-cl-chip ${_pending.facets.includes(f.uuid) ? "on" : ""}"
+                     data-facet="${esc(f.uuid)}">${esc(f.name)}</button>`).join("")
+        : `<span class="lu-tag">nothing left to learn</span>`}
     </div>` : "";
 
-  const ready = (!wantBenefit || !!benefit) &&
-                (!need || facets.length === Math.min(need, available.length));
+  const ready = (!wantBenefit || !!_pending.benefit) &&
+                (!need || _pending.facets.length === Math.min(need, available.length));
 
   return `
-    <div class="cc-pend">
-      <div class="cc-pend-t">${esc(cls.name)} — ${esc(skill.name)}</div>
-      ${benefitBlock}
-      ${facetBlock}
-      <div class="cc-pend-btns">
-        <button class="cc-btn is-primary" data-confirm ${ready ? "" : "disabled"}>Confirm</button>
-        <button class="cc-btn is-ghost" data-cancel-pend>Cancel</button>
+    <div class="cc-cl-ask">
+      <h4>${esc(cls.name)} — ${esc(skill.name)}</h4>
+      ${benefitBlock}${facetBlock}
+      <div class="cc-cl-askbtns">
+        <button class="cc-btn is-primary" data-ask-ok ${ready ? "" : "disabled"}>Confirm</button>
+        <button class="cc-btn is-ghost" data-ask-cancel>Cancel</button>
       </div>
     </div>`;
-}
-
-function rightHTML(d) {
-  const cls = allClasses().find((c) => c.key === _selected) ?? null;
-  if (!cls) return `<div class="cc-empty">Pick a class to see its skills.</div>`;
-  const lv = classLevelIn(d, cls.key);
-  return `
-    <div class="cc-cls-head">
-      <img src="${esc(cls.img || CC.DEFAULT_IMG)}" alt="">
-      <div>
-        <div class="cc-cls-title">${esc(cls.name)}</div>
-        <div class="cc-cls-meta">${esc(cls.folder)} · level ${lv} / ${MAX_CLASS_LEVEL}</div>
-      </div>
-    </div>
-    <div class="cc-cls-free">${freeTags(cls)}</div>
-    <div class="cc-skills">${skillsHTML(d, cls)}</div>
-    ${pendingHTML(d)}`;
 }
 
 function render(d) {
-  const left = draftPointsLeft(d);
+  _draftRef = d;
+  const v = view();
+  const s = v._stateSource();
+
+  // A class the player has taken stays selected; otherwise fall back to the
+  // first one they have, so the main pane is never blank when it need not be.
+  const taken = takenClasses(s, d);
+  if (_selectedMissing(s, taken)) v._selected = taken[0]?.key ?? null;
+
+  const proj = v._project(s);
+  const main = _browsing || !v._selected
+    ? browseHTML(s, d)
+    : v._main(s, proj) + askHTML(s, d);
+
   return `
     <style>${CSS}</style>
-    <div class="cc-cls-wrap">
-      <div class="cc-cls-left">
-        <div class="cc-pts">
-          <span class="cc-pts-n">${left}</span>
-          <span class="cc-pts-k">of ${draftPointPool(d)} points left</span>
+    <div class="cc-cl">
+      <div class="cc-cl-rail">
+        <div class="cc-cl-pts">
+          <span class="n">${draftPointsLeft(d)}</span>
+          <span class="k">of ${draftPointPool(d)} points left</span>
         </div>
-        <input class="cc-search" data-search placeholder="Search classes…" value="${esc(_filter)}">
-        <div class="cc-cls-list">${classListHTML(d)}</div>
+        ${v._rail(s, taken, proj)}
       </div>
-      <div class="cc-cls-right">${rightHTML(d)}</div>
+      <div class="cc-cl-main">${main}</div>
     </div>`;
 }
 
+function _selectedMissing(s, taken) {
+  const v = view();
+  if (!v._selected) return true;
+  return !s.classes.some((c) => c.key === v._selected);
+}
+
 function bind(root, d, ctx) {
-  const search = root.querySelector("[data-search]");
-  search?.addEventListener("input", () => {
-    _filter = search.value;
-    // Redraw only the list, so the search box keeps focus and the caret.
-    const list = root.querySelector(".cc-cls-list");
-    if (list) list.innerHTML = classListHTML(d);
-    bindClassItems(root, d, ctx);
+  _draftRef = d;
+  const v = view();
+  const s = v._stateSource();
+
+  // ── rail ──
+  root.querySelectorAll("[data-act='pick']").forEach((b) => {
+    b.addEventListener("click", () => {
+      v._selected = b.dataset.key;
+      _browsing = false;
+      _pending = null;
+      ctx.refresh();
+    });
+  });
+  root.querySelector("[data-act='openpicker']")?.addEventListener("click", () => {
+    _browsing = true; _pending = null; _filter = ""; ctx.refresh();
   });
 
-  bindClassItems(root, d, ctx);
+  // ── class browser ──
+  const search = root.querySelector("[data-browse-search]");
+  search?.addEventListener("input", () => {
+    _filter = search.value;
+    const main = root.querySelector(".cc-cl-main");
+    if (!main) return;
+    main.innerHTML = browseHTML(s, d);
+    bind(root, d, ctx);                 // re-wire the redrawn list
+    main.querySelector("[data-browse-search]")?.focus();
+  });
+  root.querySelectorAll("[data-open]").forEach((b) => {
+    b.addEventListener("click", () => {
+      v._selected = b.dataset.open;
+      _browsing = false;
+      ctx.refresh();
+    });
+  });
 
-  root.querySelectorAll("[data-plus]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const cls = allClasses().find((c) => c.key === _selected);
-      const skill = cls?.skills.find((s) => s.uuid === btn.dataset.plus);
+  // ── spend / refund, emitted by levelup-app's own row markup ──
+  root.querySelectorAll("[data-act='spend']").forEach((b) => {
+    b.addEventListener("click", () => {
+      const cls = s.classes.find((c) => c.key === b.dataset.key);
+      const skill = cls?.skills.find((x) => x.uuid === b.dataset.uuid);
       if (!cls || !skill) return;
+
       const gate = canSpend(d, cls, skill);
       if (!gate.ok) { ui.notifications?.warn(gate.reason); return; }
 
-      // Straight through when there is nothing to ask about. When the skill
-      // grants facets but none are left unlearned, the panel still appears —
-      // it is worth telling the player the grant went nowhere.
+      // Straight through when there is nothing to ask. When the skill grants
+      // facets but none are left unlearned the prompt still appears — it is
+      // worth telling the player the grant went nowhere.
       const { need } = facetNeed(d, cls, skill);
       if (!needsBenefit(d, cls) && !need) {
         ctx.edit((dd) => applySpend(dd, cls, skill));
         return;
       }
-      _pending = { cls, skill, benefit: cls.benefit ?? "", facets: [] };
+      _pending = { clsKey: cls.key, skillUuid: skill.uuid, benefit: cls.benefit ?? "", facets: [] };
       ctx.refresh();
     });
   });
 
-  root.querySelectorAll("[data-minus]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      ctx.edit((dd) => removeLast(dd, btn.dataset.minus));
-    });
+  root.querySelectorAll("[data-act='refund']").forEach((b) => {
+    b.addEventListener("click", () => ctx.edit((dd) => removeLast(dd, b.dataset.uuid)));
   });
 
+  // ── the benefit / facet prompt ──
   root.querySelectorAll("[data-benefit]").forEach((b) => {
     b.addEventListener("click", () => { if (_pending) { _pending.benefit = b.dataset.benefit; ctx.refresh(); } });
   });
-
   root.querySelectorAll("[data-facet]").forEach((b) => {
     b.addEventListener("click", () => {
       if (!_pending) return;
+      const cls = s.classes.find((c) => c.key === _pending.clsKey);
+      const skill = cls?.skills.find((x) => x.uuid === _pending.skillUuid);
+      const { need, available } = facetNeed(d, cls, skill);
       const uuid = b.dataset.facet;
-      const { need, available } = facetNeed(d, _pending.cls, _pending.skill);
       const i = _pending.facets.indexOf(uuid);
       if (i >= 0) _pending.facets.splice(i, 1);
       else if (_pending.facets.length < Math.min(need, available.length)) _pending.facets.push(uuid);
       ctx.refresh();
     });
   });
-
-  root.querySelector("[data-confirm]")?.addEventListener("click", () => {
+  root.querySelector("[data-ask-ok]")?.addEventListener("click", () => {
     if (!_pending) return;
-    const { cls, skill, benefit, facets } = _pending;
+    const cls = s.classes.find((c) => c.key === _pending.clsKey);
+    const skill = cls?.skills.find((x) => x.uuid === _pending.skillUuid);
+    const { benefit, facets } = _pending;
     _pending = null;
-    ctx.edit((dd) => applySpend(dd, cls, skill, { benefit, facetUuids: facets }));
+    if (cls && skill) ctx.edit((dd) => applySpend(dd, cls, skill, { benefit, facetUuids: facets }));
+    else ctx.refresh();
   });
-
-  root.querySelector("[data-cancel-pend]")?.addEventListener("click", () => {
-    _pending = null;
-    ctx.refresh();
-  });
-}
-
-function bindClassItems(root, d, ctx) {
-  root.querySelectorAll("[data-cls]").forEach((el) => {
-    el.addEventListener("click", () => {
-      _selected = el.dataset.cls;
-      _pending = null;
-      ctx.refresh();
-    });
+  root.querySelector("[data-ask-cancel]")?.addEventListener("click", () => {
+    _pending = null; ctx.refresh();
   });
 }
 

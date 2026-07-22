@@ -391,6 +391,7 @@
     "scripts/character-creation/cc-const.js",
     "scripts/character-creation/cc-folder.js",
     "scripts/character-creation/cc-draft.js",
+    "scripts/character-creation/cc-class-state.js",
     "scripts/character-creation/cc-app.js",
     "scripts/character-creation/cc-step-profile.js",
     "scripts/character-creation/cc-step-attributes.js",

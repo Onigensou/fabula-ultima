@@ -6,9 +6,15 @@
  * experience rather than a corrupt actor — but the whole point of the step is
  * that the player is never told "no" only at the very end.
  *
- * cc-step-classes imports class-registry, which touches no Foundry global until
- * a function is called, so this runs in plain node.
+ * cc-step-classes now borrows levelup-app's renderers, and that module
+ * registers hooks at load, so the stub has to be in place before the import.
+ * Nothing below calls into the renderers — these are the step's own rule
+ * functions, which take a draft and a class record and touch no globals.
  */
+globalThis.Hooks = { once() {}, on() {}, off() {}, callAll() {} };
+globalThis.game = { actors: [], items: [], folders: [], users: [], user: { id: "u1", name: "Oni" } };
+globalThis.ui = { notifications: { warn() {}, error() {}, info() {} } };
+
 const C = await import("./cc-step-classes.js");
 const D = await import("./cc-draft.js");
 
