@@ -2,50 +2,189 @@
   "_comment": "Maintained list of Foundry world macros to sync from this repo. Each entry maps a file path (relative to module root) to the macro name as it exists in the Foundry world. Add new entries when introducing new macros that need source-controlled syncing.",
   "moduleId": "fabula-ultima-companion",
   "macros": [
-    { "path": "macros/Reload All Clients.js",                     "name": "Reload All Clients" },
-    { "path": "macros/Action Pipeline/ActionAnimationHandler.js",  "name": "ActionAnimationHandler" },
-    { "path": "macros/Action Pipeline/ActionDataComputation.js",   "name": "ActionDataComputation" },
-    { "path": "macros/Action Pipeline/ActionDataFetch.js",         "name": "ActionDataFetch" },
-    { "path": "macros/Action Pipeline/AdvanceDamage.js",           "name": "AdvanceDamage" },
-    { "path": "macros/Action Pipeline/ApplyActiveEffect.js",       "name": "ApplyActiveEffect" },
-    { "path": "macros/Action Pipeline/BattleLog_ Append.js",       "name": "BattleLog: Append" },
-    { "path": "macros/Action Pipeline/BattleLog_ Clear.js",        "name": "BattleLog: Clear" },
-    { "path": "macros/Action Pipeline/Create Damage Card.js",      "name": "Create Damage Card" },
-    { "path": "macros/Action Pipeline/CreateActionCard.js",        "name": "CreateActionCard" },
-    { "path": "macros/Action Pipeline/CustomLogic-Action.js",      "name": "CustomLogic-Action" },
-    { "path": "macros/Action Pipeline/CustomLogic-Resolution.js",  "name": "CustomLogic-Resolution" },
-    { "path": "macros/Action Pipeline/Miss.js",                    "name": "Miss" },
-    { "path": "macros/Action Pipeline/PassiveLogic-Action.js",     "name": "PassiveLogic-Action" },
-    { "path": "macros/Action Pipeline/PassiveLogic-Resolution.js", "name": "PassiveLogic-Resolution" },
-    { "path": "macros/Action Pipeline/ResourceGate.js",            "name": "ResourceGate" },
-    { "path": "macros/Action Pipeline/Targeting.js",               "name": "Targeting" },
-    { "path": "macros/Authoring/CreateSkillFromSpec.js",           "name": "CreateSkillFromSpec" },
-    { "path": "macros/Diagnostics/InspectPhantasmContext.js",      "name": "InspectPhantasmContext" },
-    { "path": "macros/Diagnostics/TestMarkSummon.js",              "name": "TestMarkSummon" },
-    { "path": "macros/Diagnostics/TestPhantasmEchoFlow.js",        "name": "TestPhantasmEchoFlow" },
-    { "path": "macros/Diagnostics/TraceReactionMatch.js",          "name": "TraceReactionMatch" },
-    { "path": "macros/Diagnostics/[Macro] WF Ambush — Test Panel.js", "name": "⭐ WF Ambush — Test Panel" },
-    { "path": "macros/Diagnostics/[Macro] Blackest Night — Test Panel.js", "name": "🌑 Blackest Night — Test Panel" },
-    { "path": "macros/Command Buttons/[Macro] Attack.js",          "name": "Attack" },
-    { "path": "macros/Command Buttons/[Macro] Attack - NPC.js",    "name": "Attack - NPC" },
-    { "path": "macros/Command Buttons/[Macro] Attack - Player.js", "name": "Attack - Player" },
-    { "path": "macros/Command Buttons/[Macro] Equipment.js",       "name": "Equipment" },
-    { "path": "macros/Command Buttons/[Macro] Guard.js",           "name": "Guard" },
-    { "path": "macros/Command Buttons/[Macro] Hinder.js",          "name": "Hinder" },
-    { "path": "macros/Command Buttons/[Macro] Item.js",            "name": "Item" },
-    { "path": "macros/Command Buttons/[Macro] Objective.js",       "name": "Objective" },
-    { "path": "macros/Command Buttons/[Macro] Party Swap.js",      "name": "Party Swap" },
-    { "path": "macros/Command Buttons/[Macro] Skill.js",           "name": "Skill" },
-    { "path": "macros/Command Buttons/[Macro] Spell.js",           "name": "Spell" },
-    { "path": "macros/Command Buttons/[Macro] Study.js",           "name": "Study" },
-    { "path": "macros/Battle Init/[Macro] BattleInit — BattleInit Manager.js", "name": "BattleInit — BattleInit Manager" },
-    { "path": "macros/Battle Init/[Macro] BattleInit — Battle Prompt.js",      "name": "BattleInit — Battle Prompt" },
-    { "path": "macros/Battle Init/[Macro] BattleInit — Battle Transition.js",  "name": "BattleInit — Battle Transition" },
-    { "path": "macros/Battle Init/[Macro] BattleInit — Preload Assets.js",     "name": "BattleInit — Preload Assets" },
-    { "path": "macros/Battle Init/[Macro] BattleInit — Encounter Spawner.js",  "name": "BattleInit — Encounter Spawner" },
-    { "path": "macros/Battle Init/[Macro] BattleInit — Battle Initiator.js",   "name": "BattleInit — Battle Initiator" },
-    { "path": "macros/Battle Init/[Macro] BattleInit — Director Manager.js",   "name": "BattleInit — Director Manager" },
-    { "path": "macros/Battle End/[Macro] [BattleEnd_ Manager].js",             "name": "[BattleEnd: Manager]" },
-    { "path": "macros/Battle End/[Macro] [BattleEnd_ Director Manager].js",    "name": "BattleEnd: Director Manager" }
+    {
+      "path": "macros/Reload All Clients.js",
+      "name": "Reload All Clients"
+    },
+    {
+      "path": "macros/Action Pipeline/ActionAnimationHandler.js",
+      "name": "ActionAnimationHandler"
+    },
+    {
+      "path": "macros/Action Pipeline/ActionDataComputation.js",
+      "name": "ActionDataComputation"
+    },
+    {
+      "path": "macros/Action Pipeline/ActionDataFetch.js",
+      "name": "ActionDataFetch"
+    },
+    {
+      "path": "macros/Action Pipeline/AdvanceDamage.js",
+      "name": "AdvanceDamage"
+    },
+    {
+      "path": "macros/Action Pipeline/ApplyActiveEffect.js",
+      "name": "ApplyActiveEffect"
+    },
+    {
+      "path": "macros/Action Pipeline/BattleLog_ Append.js",
+      "name": "BattleLog: Append"
+    },
+    {
+      "path": "macros/Action Pipeline/BattleLog_ Clear.js",
+      "name": "BattleLog: Clear"
+    },
+    {
+      "path": "macros/Action Pipeline/Create Damage Card.js",
+      "name": "Create Damage Card"
+    },
+    {
+      "path": "macros/Action Pipeline/CreateActionCard.js",
+      "name": "CreateActionCard"
+    },
+    {
+      "path": "macros/Action Pipeline/CustomLogic-Action.js",
+      "name": "CustomLogic-Action"
+    },
+    {
+      "path": "macros/Action Pipeline/CustomLogic-Resolution.js",
+      "name": "CustomLogic-Resolution"
+    },
+    {
+      "path": "macros/Action Pipeline/Miss.js",
+      "name": "Miss"
+    },
+    {
+      "path": "macros/Action Pipeline/PassiveLogic-Action.js",
+      "name": "PassiveLogic-Action"
+    },
+    {
+      "path": "macros/Action Pipeline/PassiveLogic-Resolution.js",
+      "name": "PassiveLogic-Resolution"
+    },
+    {
+      "path": "macros/Action Pipeline/ResourceGate.js",
+      "name": "ResourceGate"
+    },
+    {
+      "path": "macros/Action Pipeline/Targeting.js",
+      "name": "Targeting"
+    },
+    {
+      "path": "macros/Authoring/CreateSkillFromSpec.js",
+      "name": "CreateSkillFromSpec"
+    },
+    {
+      "path": "macros/Diagnostics/InspectPhantasmContext.js",
+      "name": "InspectPhantasmContext"
+    },
+    {
+      "path": "macros/Diagnostics/TestMarkSummon.js",
+      "name": "TestMarkSummon"
+    },
+    {
+      "path": "macros/Diagnostics/TestPhantasmEchoFlow.js",
+      "name": "TestPhantasmEchoFlow"
+    },
+    {
+      "path": "macros/Diagnostics/TraceReactionMatch.js",
+      "name": "TraceReactionMatch"
+    },
+    {
+      "path": "macros/Diagnostics/[Macro] WF Ambush — Test Panel.js",
+      "name": "⭐ WF Ambush — Test Panel"
+    },
+    {
+      "path": "macros/Diagnostics/[Macro] Blackest Night — Test Panel.js",
+      "name": "🌑 Blackest Night — Test Panel"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Attack.js",
+      "name": "Attack"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Attack - NPC.js",
+      "name": "Attack - NPC"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Attack - Player.js",
+      "name": "Attack - Player"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Equipment.js",
+      "name": "Equipment"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Guard.js",
+      "name": "Guard"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Hinder.js",
+      "name": "Hinder"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Item.js",
+      "name": "Item"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Objective.js",
+      "name": "Objective"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Party Swap.js",
+      "name": "Party Swap"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Skill.js",
+      "name": "Skill"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Spell.js",
+      "name": "Spell"
+    },
+    {
+      "path": "macros/Command Buttons/[Macro] Study.js",
+      "name": "Study"
+    },
+    {
+      "path": "macros/Battle Init/[Macro] BattleInit — BattleInit Manager.js",
+      "name": "BattleInit — BattleInit Manager"
+    },
+    {
+      "path": "macros/Battle Init/[Macro] BattleInit — Battle Prompt.js",
+      "name": "BattleInit — Battle Prompt"
+    },
+    {
+      "path": "macros/Battle Init/[Macro] BattleInit — Battle Transition.js",
+      "name": "BattleInit — Battle Transition"
+    },
+    {
+      "path": "macros/Battle Init/[Macro] BattleInit — Preload Assets.js",
+      "name": "BattleInit — Preload Assets"
+    },
+    {
+      "path": "macros/Battle Init/[Macro] BattleInit — Encounter Spawner.js",
+      "name": "BattleInit — Encounter Spawner"
+    },
+    {
+      "path": "macros/Battle Init/[Macro] BattleInit — Battle Initiator.js",
+      "name": "BattleInit — Battle Initiator"
+    },
+    {
+      "path": "macros/Battle Init/[Macro] BattleInit — Director Manager.js",
+      "name": "BattleInit — Director Manager"
+    },
+    {
+      "path": "macros/Battle End/[Macro] [BattleEnd_ Manager].js",
+      "name": "[BattleEnd: Manager]"
+    },
+    {
+      "path": "macros/Battle End/[Macro] [BattleEnd_ Director Manager].js",
+      "name": "BattleEnd: Director Manager"
+    },
+    {
+      "path": "macros/Status.js",
+      "name": "Status"
+    }
   ]
 }

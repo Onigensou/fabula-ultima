@@ -372,12 +372,18 @@
       // then falls back to its usual slot — hence measuring the live element
       // rather than reserving space for it. The level-up badge calls
       // reposition() on show/hide so the stack settles immediately.
-      const lu = document.getElementById("oni-levelup-badge");
-      const luOffset = lu ? Math.round(lu.getBoundingClientRect().height) + gapAbove : 0;
+      // Two advancement badges can sit between the button row and this one:
+      // unspent Skill Points and unspent Attribute Points. Either, both or
+      // neither may be present, so each is MEASURED rather than reserved for.
+      // Both call reposition() on show/hide so the stack settles immediately.
+      const stacked = ["oni-levelup-badge", "oni-attribute-badge"]
+        .map((id) => document.getElementById(id))
+        .filter(Boolean)
+        .reduce((h, el) => h + Math.round(el.getBoundingClientRect().height) + gapAbove, 0);
 
       root.style.left   = "20px";
       root.style.top    = "auto"; // override the stylesheet's top:0 so bottom anchors
-      root.style.bottom = `${btnBottom + btnSize + gapAbove + luOffset}px`;
+      root.style.bottom = `${btnBottom + btnSize + gapAbove + stacked}px`;
       state.docked = true;
       return;
     }
