@@ -192,20 +192,19 @@ export const AttributeApp = {
             ? ` <i class="arrow">→</i> <b>${fmt(then)}</b>` : ""}</span>
        </div>`;
 
-    const pair = (cur, max) => `${cur} / ${max}`;
-
+    // Maximums only. This window is about what the character IS, not how
+    // battered they are right now — current HP belongs on the sheet and the
+    // token bar, and repeating it here just made every row read "98 / 98".
     return `
-      ${cell("HP", pair(d.hp.cur, d.hp.max), preview ? pair(d.hp.cur, p.hp.max) : undefined)}
-      ${cell("MP", pair(d.mp.cur, d.mp.max), preview ? pair(d.mp.cur, p.mp.max) : undefined)}
-      ${cell("IP", pair(d.ip.cur, d.ip.max))}
+      ${cell("HP", d.hp.max, preview ? p.hp.max : undefined)}
+      ${cell("MP", d.mp.max, preview ? p.mp.max : undefined)}
+      ${cell("IP", d.ip.max)}
       <div class="at-sep"></div>
       ${cell("DEF", d.def, preview ? p.def : undefined)}
       ${cell("MDEF", d.mdef, preview ? p.mdef : undefined)}
       ${cell("Initiative", fmtInit(d.init.value), preview ? fmtInit(p.init.value) : undefined)}
       <div class="at-sep"></div>
       ${cell("Crisis", d.crisis, preview ? p.crisis : undefined)}
-      ${cell("Fabula", d.fabula)}
-      ${cell("Zenit", d.zenit.toLocaleString())}
     `;
   },
 
@@ -316,7 +315,10 @@ function injectStyles() {
 #${ROOT_ID} .at-icon { width: 26px; height: 26px; object-fit: contain; flex: 0 0 auto;
   border: 0 !important; outline: 0 !important; background: none; }
 #${ROOT_ID} .at-label { font-weight: 800; letter-spacing: .04em; width: 42px; flex: 0 0 auto; }
-#${ROOT_ID} .at-die { font-size: 15px; flex: 1 1 auto; }
+/* The die is the value of the row, so it sits at the right edge and the labels
+   stay left — the eye scans one column of names and one column of numbers. */
+#${ROOT_ID} .at-die { font-size: 15px; flex: 1 1 auto; text-align: right;
+  font-variant-numeric: tabular-nums; }
 #${ROOT_ID} .at-die .was { opacity: .45; font-size: 13px; }
 #${ROOT_ID} .at-die .now { color: #2f6b2f; }
 
