@@ -45,15 +45,18 @@ function injectStyles() {
   border-radius: 10px; cursor: pointer; user-select: none;
   background: linear-gradient(180deg,#5d4630,#4a371f); color: #f6ecd8;
   border: 2px solid #8a6c45; box-shadow: 0 6px 18px rgba(0,0,0,.45);
-  font-family: Signika, sans-serif; transition: transform .12s ease, box-shadow .12s ease; }
+  font-family: Signika, sans-serif; transition: transform .12s ease, box-shadow .12s ease;
+  animation: oni-ab-in .3s ease-out; }
 #${ROOT_ID}:hover { transform: translateY(-2px); box-shadow: 0 9px 22px rgba(0,0,0,.5); }
+/* Slides in from the left edge it is docked against, matching the SP badge. */
+@keyframes oni-ab-in { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
 #${ROOT_ID} .ab-n { display: flex; align-items: center; justify-content: center;
   min-width: 26px; height: 26px; padding: 0 6px; border-radius: 13px; flex: 0 0 auto;
   background: linear-gradient(180deg,#f0d99a,#e0c179); color: #4b3517;
   font-weight: 800; font-size: 15px; border: 1px solid #8a6c45; }
 #${ROOT_ID} .ab-t { font-size: 13px; font-weight: 700; line-height: 1.15; }
 #${ROOT_ID} .ab-s { font-size: 11px; opacity: .8; }
-@media (prefers-reduced-motion: reduce) { #${ROOT_ID} { transition: none; } }
+@media (prefers-reduced-motion: reduce) { #${ROOT_ID} { transition: none; animation: none; } }
 `;
   document.head.appendChild(s);
 }

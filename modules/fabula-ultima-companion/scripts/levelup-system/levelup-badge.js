@@ -54,7 +54,8 @@ function injectStyles() {
   animation: oni-lu-pulse 2.4s ease-in-out infinite; }
 #${ROOT_ID} .lub-t { font-size: 13px; font-weight: 600; line-height: 1.15; }
 #${ROOT_ID} .lub-s { font-size: 10.5px; opacity: .75; }
-@keyframes oni-lu-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* Slides in from the left edge it is docked against, rather than rising. */
+@keyframes oni-lu-in { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
 @keyframes oni-lu-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,212,121,.0); }
   50% { box-shadow: 0 0 0 5px rgba(255,212,121,.16); } }
 @media (prefers-reduced-motion: reduce) {
