@@ -46,7 +46,7 @@ function injectStyles() {
   border-radius: 10px; cursor: pointer; border: 1px solid #8a6c45;
   background: linear-gradient(180deg,#5d4630,#41301c); color: #f6ecd8;
   font-family: Signika, sans-serif; box-shadow: 0 6px 20px rgba(0,0,0,.45);
-  animation: oni-lu-in .28s ease-out; }
+  animation: oni-lu-in .55s cubic-bezier(.16,1,.3,1); }
 #${ROOT_ID}:hover { background: linear-gradient(180deg,#6d543a,#4d3a22); }
 #${ROOT_ID} .lub-n { min-width: 30px; height: 30px; padding: 0 6px; border-radius: 7px;
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px;
@@ -54,8 +54,12 @@ function injectStyles() {
   animation: oni-lu-pulse 2.4s ease-in-out infinite; }
 #${ROOT_ID} .lub-t { font-size: 13px; font-weight: 600; line-height: 1.15; }
 #${ROOT_ID} .lub-s { font-size: 10.5px; opacity: .75; }
-/* Slides in from the left edge it is docked against, rather than rising. */
-@keyframes oni-lu-in { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
+/* Starts fully off the left edge of the screen and glides to its dock. The
+   calc clears its own width plus the 20px gap, so it begins out of sight. */
+@keyframes oni-lu-in {
+  from { opacity: 0; transform: translateX(calc(-100% - 40px)); }
+  60%  { opacity: 1; }
+  to   { opacity: 1; transform: translateX(0); } }
 @keyframes oni-lu-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,212,121,.0); }
   50% { box-shadow: 0 0 0 5px rgba(255,212,121,.16); } }
 @media (prefers-reduced-motion: reduce) {
