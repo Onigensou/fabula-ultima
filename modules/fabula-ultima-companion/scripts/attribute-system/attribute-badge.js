@@ -46,10 +46,14 @@ function injectStyles() {
   background: linear-gradient(180deg,#5d4630,#4a371f); color: #f6ecd8;
   border: 2px solid #8a6c45; box-shadow: 0 6px 18px rgba(0,0,0,.45);
   font-family: Signika, sans-serif; transition: transform .12s ease, box-shadow .12s ease;
-  animation: oni-ab-in .3s ease-out; }
+  animation: oni-ab-in .55s cubic-bezier(.16,1,.3,1); }
 #${ROOT_ID}:hover { transform: translateY(-2px); box-shadow: 0 9px 22px rgba(0,0,0,.5); }
-/* Slides in from the left edge it is docked against, matching the SP badge. */
-@keyframes oni-ab-in { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
+/* Starts fully off the left edge of the screen and glides to its dock, matching
+   the SP badge. The calc clears its own width plus the 20px gap. */
+@keyframes oni-ab-in {
+  from { opacity: 0; transform: translateX(calc(-100% - 40px)); }
+  60%  { opacity: 1; }
+  to   { opacity: 1; transform: translateX(0); } }
 #${ROOT_ID} .ab-n { display: flex; align-items: center; justify-content: center;
   min-width: 26px; height: 26px; padding: 0 6px; border-radius: 13px; flex: 0 0 auto;
   background: linear-gradient(180deg,#f0d99a,#e0c179); color: #4b3517;
