@@ -554,9 +554,12 @@ function rollTo(el, from, to, fmt) {
   const step = (now) => {
     const t = Math.min(1, (now - t0) / ROLL_MS);
     const v = from + (to - from) * easeOut(t);
-    // Halves are meaningful for Initiative and nowhere else, so the formatter
-    // decides how the in-between frames read.
-    el.textContent = fmt(t < 1 ? Math.round(v * 2) / 2 : to);
+    // Intermediate frames are always WHOLE numbers, even for Initiative, whose
+    // true value can be a half. A rolling half-step makes a single digit flick
+    // to a decimal and back many times a second, and the changing width reads
+    // as a hard flicker. The real value — half and all — lands on the last
+    // frame, where it is still.
+    el.textContent = t < 1 ? fmt(Math.round(v)) : fmt(to);
     if (t < 1) el._ccRoll = requestAnimationFrame(step);
     else { el._ccRoll = null; el.classList.remove("rolling"); }
   };
