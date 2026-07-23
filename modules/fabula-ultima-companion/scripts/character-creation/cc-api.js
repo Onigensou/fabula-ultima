@@ -261,32 +261,54 @@ async function grantEquipment(actor, draft) {
 }
 
 /**
- * Write the starting bond into slot 1 via the bond system's own writer.
+ * Set the character's bonds to EXACTLY what the wizard collected.
+ *
+ * Creation offers one starting bond, in slot 1; every other slot must be empty.
+ * So all six slots are written unconditionally — the draft's bond into slot 1,
+ * blanks into the rest — rather than only touching slot 1 when a bond exists.
+ *
+ * That "unconditionally" is the fix for a real bug: the blank seed the actor is
+ * cloned from carried stray emotions in slots 2–4, and a writer that only ever
+ * touched slot 1 left them in place, so every created character inherited
+ * feelings toward nobody. The created character's bonds now depend on the
+ * draft alone, whatever the seed happens to hold.
  *
  * `BondUpdater` is a globalThis IIFE rather than a module, so it is reached
- * through the global. If it is somehow absent the bond is skipped with a
- * warning rather than failing the whole creation — a character without their
- * optional starting bond is still a usable character.
+ * through the global. If it is absent the bonds are skipped with a warning
+ * rather than failing the whole creation.
+ *
+ * @returns {number} how many slots were given a bond (0 or 1)
  */
-async function writeBond(actor, draft) {
-  if (bondIsEmpty(draft)) return false;
-  const b = draft.bond;
+/**
+ * The full six-slot bond payload for a draft.
+ *
+ * Exported and pure so the "every slot is named" guarantee — the thing that
+ * stops the seed leaking stale bonds — is testable without a live actor. Only
+ * slot 1 may carry a bond; the rest are explicit blanks.
+ */
+export function bondSlots(draft, max = 6) {
+  const b = draft?.bond ?? {};
   const chosen = chosenEmotion(draft);
-  if (!String(b.name ?? "").trim() || !chosen) return false;
+  const hasBond = !bondIsEmpty(draft) && !!String(b.name ?? "").trim() && !!chosen;
 
-  const writeSlot = globalThis.BondUpdater?.writeSlot;
-  if (typeof writeSlot !== "function") {
-    warn("BondUpdater.writeSlot unavailable — starting bond not written");
-    return false;
+  const slots = [];
+  for (let i = 1; i <= max; i++) {
+    slots.push(i === 1 && hasBond
+      ? { idx: 1, name: b.name, rel: b.rel ?? "", e1: b.e1 ?? "", e2: b.e2 ?? "", e3: b.e3 ?? "" }
+      : { idx: i, name: "", rel: "", e1: "", e2: "", e3: "" });
   }
-  await writeSlot(actor, 1, {
-    name: b.name,
-    rel: b.rel ?? "",
-    e1: b.e1 ?? "",
-    e2: b.e2 ?? "",
-    e3: b.e3 ?? "",
-  });
-  return true;
+  return slots;
+}
+
+async function writeBond(actor, draft) {
+  const BU = globalThis.BondUpdater;
+  if (typeof BU?.writeBonds !== "function") {
+    warn("BondUpdater.writeBonds unavailable — bonds not normalised");
+    return 0;
+  }
+  const slots = bondSlots(draft, BU.MAX_BONDS ?? 6);
+  await BU.writeBonds(actor, slots);
+  return slots[0].name ? 1 : 0;
 }
 
 /**

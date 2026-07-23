@@ -222,14 +222,42 @@ function CC_TYPES(p, keys) { return keys.map((k) => typeof p[k]); }
   eq("an unknown reason still says something", say({ reason: "weird_thing" }), "Creation failed: weird_thing");
 }
 
-// ── the bond survives the round trip into writeSlot's shape ────────────────
+// ── the bond payload names EVERY slot ──────────────────────────────────────
+//
+// A created character has at most one bond, in slot 1. Every other slot must
+// be written blank, not merely left alone -- the blank seed the actor clones
+// from once carried stray emotions in slots 2-4, and a writer that only touched
+// slot 1 left them, so every character started with feelings toward nobody.
 {
   const d = draft((x) => { x.bond.name = "Mira"; x.bond.rel = "sister"; });
   B.setEmotion(d, "e3", "affection");
   eq("the emotion sits in its own field", [d.bond.e1, d.bond.e2, d.bond.e3], ["", "", "affection"]);
-  eq("writeSlot receives every field it expects",
-    Object.keys({ name: d.bond.name, rel: d.bond.rel, e1: d.bond.e1, e2: d.bond.e2, e3: d.bond.e3 }),
-    ["name", "rel", "e1", "e2", "e3"]);
+
+  const slots = API.bondSlots(d);
+  eq("all six slots are written", slots.map((s) => s.idx), [1, 2, 3, 4, 5, 6]);
+  eq("slot 1 carries the chosen bond",
+    [slots[0].name, slots[0].rel, slots[0].e1, slots[0].e2, slots[0].e3],
+    ["Mira", "sister", "", "", "affection"]);
+  eq("every other slot is an explicit blank",
+    slots.slice(1).every((s) => !s.name && !s.rel && !s.e1 && !s.e2 && !s.e3), true);
+  eq("each slot names every field writeBonds expects",
+    Object.keys(slots[0]).sort(), ["e1", "e2", "e3", "idx", "name", "rel"]);
+}
+
+// A character with no starting bond still blanks all six, so nothing leaks in.
+{
+  const d = draft();                          // no bond touched
+  const slots = API.bondSlots(d);
+  eq("an empty bond still writes six slots", slots.length, 6);
+  eq("...all blank", slots.every((s) => !s.name && !s.e1 && !s.e2 && !s.e3), true);
+
+  // Half a bond is not written to slot 1 either — a name with no emotion, or
+  // an emotion with no name, is treated as no bond.
+  const named = draft((x) => { x.bond.name = "Someone"; });   // no emotion
+  eq("a nameless-emotion bond does not fill slot 1", API.bondSlots(named)[0].name, "");
+  const feeling = draft();
+  B.setEmotion(feeling, "e1", "admiration");                  // no name
+  eq("a targetless emotion does not fill slot 1", API.bondSlots(feeling)[0].e1, "");
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);
