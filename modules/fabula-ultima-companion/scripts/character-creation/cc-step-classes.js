@@ -390,6 +390,7 @@ const CSS = `
   /* One skill per line — the page has the room, and a wrapped row of badges
      was making it read as an afterthought. */
   .cc-cl-skills { margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
+  .cc-cl-skillrow { display: flex; flex-direction: column; gap: 2px; }
   .cc-cl-skill { display: grid; grid-template-columns: 26px 1fr auto; align-items: center;
     gap: 9px; padding: 4px 8px; border-radius: 7px;
     background: #efe4cd; border: 1px solid #cbb890; }
@@ -400,7 +401,21 @@ const CSS = `
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cc-cl-sklv { font-size: 11.5px; font-weight: 700; color: #6b4a1c;
     font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .cc-cl-facets { margin-top: 6px; font-size: 11px; opacity: .6; }
+
+  /* A facet learned through the skill above, drawn hanging off it with an
+     elbow — it belongs TO that skill, so it reads as a branch of it. */
+  .cc-cl-facet { display: flex; align-items: center; gap: 7px; padding: 1px 8px 1px 14px; }
+  .cc-cl-elbow { flex: 0 0 18px; align-self: stretch; position: relative; }
+  .cc-cl-elbow::before { content: ""; position: absolute; left: 8px; top: 0; bottom: 50%;
+    border-left: 2px solid #cbb890; }
+  .cc-cl-elbow::after { content: ""; position: absolute; left: 8px; top: 50%; width: 8px;
+    border-top: 2px solid #cbb890; }
+  /* The last facet's vertical rule stops at the elbow, so the line does not
+     dangle past the branch it draws. */
+  .cc-cl-facet.is-last .cc-cl-elbow::before { bottom: 50%; }
+  .cc-cl-facet img { width: 20px; height: 20px; border-radius: 4px; object-fit: contain;
+    border: 0 !important; outline: 0 !important; background: none; flex: 0 0 20px; }
+  .cc-cl-fname { font-size: 12px; color: #5c4a30; }
 
   .cc-cl-empty { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center;
     justify-content: center; gap: 12px; text-align: center; }
@@ -432,6 +447,24 @@ function skillBlurbs() {
 }
 
 /**
+ * Facet name and icon by uuid, for the summary's nested list.
+ *
+ * The picks store only the chosen uuids — the display data lives in the
+ * catalogue, read live like the skill tooltips. A missing catalogue simply
+ * means a facet shows as its uuid rather than nothing, which is a fair
+ * fallback for a list that must still draw without one.
+ */
+function facetInfo() {
+  const out = new Map();
+  try {
+    for (const cls of draftState(_draftRef ?? { classes: [] }).classes ?? []) {
+      for (const f of cls.facets ?? []) out.set(f.uuid, { name: f.name, img: f.img });
+    }
+  } catch { /* no catalogue, uuids stand in */ }
+  return out;
+}
+
+/**
  * The standing summary, built from the DRAFT alone.
  *
  * Every pick carries its class and skill name and image, so the list draws
@@ -449,6 +482,7 @@ function summaryHTML(d) {
   }
 
   const blurbs = skillBlurbs();
+  const facets = facetInfo();
 
   return `<div class="cc-cl-list">${keys.map((key) => {
     const rows = d.classes.filter((x) => x.classKey === key);
@@ -456,14 +490,19 @@ function summaryHTML(d) {
     const img = rows[0]?.classImg ?? "";
     const benefit = rows[0]?.benefit;
 
-    // Skill levels within the class, in the order they were first taken.
+    // Skills in the order first taken, each gathering the facets its own picks
+    // granted — so a facet is listed under the skill that awarded it, not in a
+    // single count at the bottom of the class.
     const skills = [];
     for (const r of rows) {
-      const hit = skills.find((x) => x.uuid === r.skillUuid);
-      if (hit) hit.n++;
-      else skills.push({ uuid: r.skillUuid, name: r.skillName, img: r.skillImg ?? "", n: 1 });
+      let hit = skills.find((x) => x.uuid === r.skillUuid);
+      if (!hit) {
+        hit = { uuid: r.skillUuid, name: r.skillName, img: r.skillImg ?? "", n: 0, facets: [] };
+        skills.push(hit);
+      }
+      hit.n++;
+      for (const fu of r.facetUuids ?? []) if (!hit.facets.includes(fu)) hit.facets.push(fu);
     }
-    const facets = rows.flatMap((r) => r.facetUuids ?? []).length;
     const mastered = rows.length >= MAX_CLASS_LEVEL;
 
     return `
@@ -479,15 +518,26 @@ function summaryHTML(d) {
         <div class="cc-cl-skills">
           ${skills.map((sk) => {
             const blurb = blurbs.get(sk.uuid) ?? "";
-            return `<div class="cc-cl-skill">
-              <img src="${esc(sk.img || CC.DEFAULT_IMG)}" alt=""
-                   ${blurb ? `data-tooltip="${esc(blurb)}" data-tooltip-direction="RIGHT"` : ""}>
-              <span class="cc-cl-skname">${esc(sk.name)}</span>
-              <span class="cc-cl-sklv">Lv. ${sk.n}</span>
+            const facetRows = sk.facets.map((fu, i) => {
+              const info = facets.get(fu) ?? { name: fu, img: "" };
+              const last = i === sk.facets.length - 1;
+              return `<div class="cc-cl-facet ${last ? "is-last" : ""}">
+                <span class="cc-cl-elbow"></span>
+                <img src="${esc(info.img || CC.DEFAULT_IMG)}" alt="">
+                <span class="cc-cl-fname">${esc(info.name)}</span>
+              </div>`;
+            }).join("");
+            return `<div class="cc-cl-skillrow">
+              <div class="cc-cl-skill">
+                <img src="${esc(sk.img || CC.DEFAULT_IMG)}" alt=""
+                     ${blurb ? `data-tooltip="${esc(blurb)}" data-tooltip-direction="RIGHT"` : ""}>
+                <span class="cc-cl-skname">${esc(sk.name)}</span>
+                <span class="cc-cl-sklv">Lv. ${sk.n}</span>
+              </div>
+              ${facetRows}
             </div>`;
           }).join("")}
         </div>
-        ${facets ? `<div class="cc-cl-facets">${facets} learned from its list</div>` : ""}
       </div>`;
   }).join("")}</div>`;
 }

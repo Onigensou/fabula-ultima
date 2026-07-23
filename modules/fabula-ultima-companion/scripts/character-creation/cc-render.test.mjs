@@ -279,7 +279,6 @@ for (const step of CC.STEPS) {
   eq("class levels are shown", full.includes("level 12"), true);
   eq("a mastered class is starred", full.includes("⭐"), true);
   eq("the benefit is named", full.includes("+5 Max HP"), true);
-  eq("facets learned are counted", /learned from its list/.test(full), true);
   eq("a fully spent pool reads zero", /0<\/span>\s*<span class="k">of 20 /.test(full), true);
   eq("the way back in is offered", full.includes("Class &amp; Skills"), true);
   eq("no placeholder leaked", /undefined|\[object Object\]|NaN/.test(full), false);
@@ -298,6 +297,38 @@ for (const step of CC.STEPS) {
   // icon and a level column.
   eq("rows are blocks, not inline badges", full.includes(`<span class="cc-cl-skill"`), false);
   eq("each row carries an icon", (full.match(/class="cc-cl-skill">\s*<img/g) || []).length, 3);
+}
+
+// ── chosen facets nest under the skill that granted them ───────────────────
+{
+  const full = STEP_RENDERERS.get("classes").render(fullDraft());
+  // fullDraft grants one facet through Fortress and eight through Elemental
+  // Magic — nine rows in total, each hanging off its skill with an elbow.
+  eq("every chosen facet is its own row",
+    (full.match(/class="cc-cl-facet /g) || []).length, 9);
+  eq("each facet row draws a connector",
+    (full.match(/class="cc-cl-elbow"/g) || []).length, 9);
+  eq("the last facet of a run is marked", full.includes("cc-cl-facet is-last"), true);
+  // No catalogue in the stub, so the uuid stands in for the name — the point
+  // is that the pick's facet reaches the list at all.
+  eq("a facet's identity is shown", full.includes("Item.f1"), true);
+  eq("no placeholder leaked from the facet rows",
+    /undefined|\[object Object\]|NaN/.test(full), false);
+
+  // A build with no facets shows no facet rows and no dangling connectors.
+  const noFacets = D.createDraft();
+  for (let i = 0; i < 5; i++) {
+    noFacets.classes.push({
+      classKey: "rogue", className: "Rogue", classImg: "",
+      skillUuid: "Item.dodge", skillName: "Dodge", skillImg: "",
+      benefit: "ip", facetUuids: [],
+    });
+  }
+  const plain = STEP_RENDERERS.get("classes").render(noFacets);
+  eq("a facetless class has the skill", plain.includes("Dodge"), true);
+  // `class="cc-cl-facet` is markup; the bare `.cc-cl-facet` in the stylesheet
+  // is always present, so match the attribute form to test the rows alone.
+  eq("...and no facet rows", plain.includes(`class="cc-cl-facet`), false);
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);
