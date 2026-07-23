@@ -372,6 +372,29 @@ function injectStyles() {
 #${ROOT_ID} .lu-subtab.on { background: #5d4630; color: #f6ecd8; border-color: #3a2b17; }
 #${ROOT_ID} .lu-tab:disabled { opacity: .35; cursor: not-allowed; }
 
+/* Benefit window — above even the facet picker, because it gates starting a
+   class and the browser behind it must not be reachable while it is open. */
+#${ROOT_ID} .lu-benefit { position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; background: rgba(0,0,0,.62); z-index: 3; }
+#${ROOT_ID} .lu-benefitpanel { width: min(520px, 92vw); height: auto; max-height: min(560px, 84vh); }
+#${ROOT_ID} .lu-benfits { display: flex; flex-direction: column; gap: 9px; }
+#${ROOT_ID} .lu-benfit { display: flex; flex-direction: column; gap: 3px; width: 100%;
+  text-align: left; font: inherit; color: inherit; cursor: pointer;
+  padding: 12px 15px; border-radius: 9px;
+  background: #f7f0df; border: 1px solid #c6ae87;
+  transition: background .12s, border-color .12s, transform .08s; }
+#${ROOT_ID} .lu-benfit:hover { background: #fdf6e4; border-color: #8a6c45; transform: translateY(-1px); }
+#${ROOT_ID} .lu-benfit.is-on { background: linear-gradient(180deg,#f0d99a,#e0c179);
+  border-color: #8a6c45; box-shadow: inset 0 0 0 1px rgba(255,248,214,.8); }
+#${ROOT_ID} .lu-benfit-v { font-size: 16px; font-weight: 800; }
+#${ROOT_ID} .lu-benfit-b { font-size: 12px; opacity: .65; }
+/* The pencil beside a chosen benefit, while it is still only a decision. */
+#${ROOT_ID} .lu-benedit { font: inherit; font-size: 11px; line-height: 1; cursor: pointer;
+  padding: 1px 6px; margin-left: 2px; border-radius: 6px; vertical-align: baseline;
+  color: #4b3517; border: 1px solid #8a6c45;
+  background: linear-gradient(180deg,#f7edd5,#e6d6b0); width: auto; }
+#${ROOT_ID} .lu-benedit:hover { background: linear-gradient(180deg,#f0d99a,#e0c179); }
+
 /* Facet picker — layered above the class browser */
 #${ROOT_ID} .lu-facet { position: absolute; inset: 0; display: flex; align-items: center;
   justify-content: center; background: rgba(0,0,0,.55); }
@@ -435,6 +458,23 @@ const LevelUpApp = {
   _facet: null,         // the Facet picker, layered above everything
   _tab: "skill",        // "skill" | "facet" | "heroic" — what the main pane shows
   _busy: false,
+
+  /**
+   * The free-benefit choice, asked when a class is STARTED.
+   *
+   * A class grants its bonus once, the first time it is entered — so the
+   * question belongs to the moment of entering it, not to the first skill
+   * bought afterwards and certainly not to Confirm, where it used to surface as
+   * a dialog in the middle of writing.
+   *
+   * `_benefit` is the open window; `_benefitChoice` remembers what was decided,
+   * keyed by class. That map is the ONLY record until the batch is written,
+   * which is what makes the answer editable: it belongs to this session, and it
+   * is cleared when the window closes or the batch is confirmed. After that the
+   * benefit lives on the actor's class row and is fixed, as the rules intend.
+   */
+  _benefit: null,               // { classKey, className, current, then } while open
+  _benefitChoice: new Map(),    // classKey → "hp" | "mp" | "ip", this session only
 
   // Detail panel. Rows carry only icon, name and their control; the effect text
   // lives in one panel below the list and follows the cursor. Clicking a row
@@ -562,8 +602,12 @@ const LevelUpApp = {
     this._closing = false;
 
     // Staged changes were never written; dropping them is the same as Discard.
+    // The benefit choices go with them: they were only ever decisions made in
+    // this session, and reopening the window starts a fresh one.
     this._pending = [];
     this._facet = null;
+    this._benefit = null;
+    this._benefitChoice.clear();
     resetHover();
     if (this._scrollRaf) { cancelAnimationFrame(this._scrollRaf); this._scrollRaf = 0; }
     clearTimeout(this._scrollIdle);
@@ -596,6 +640,20 @@ const LevelUpApp = {
    * the character WOULD look like. Returns deltas keyed by class and skill,
    * plus the resulting Skill Point balance.
    */
+  /**
+   * Where state comes from.
+   *
+   * Normally the live actor. Character Creation renders these same views for a
+   * character that does not exist yet, and supplies a getState-shaped object
+   * built from its draft instead -- see cc-class-state.js. Routing every read
+   * through here is the whole of that seam: no renderer below knows or cares
+   * which it got.
+   */
+  _readState() {
+    if (typeof this._stateSource === "function") return this._stateSource();
+    return api()?.getState(this._actorUuid);
+  },
+
   _project(s) {
     const classDelta = new Map();
     const skillDelta = new Map();
@@ -634,7 +692,7 @@ const LevelUpApp = {
 
   render() {
     if (!this.isOpen || this._applying) return;
-    const s = api()?.getState(this._actorUuid);
+    const s = this._readState();
     const panel = this._root.querySelector(".lu-panel");
     if (!s?.ok) {
       panel.innerHTML = `<div class="lu-empty" style="padding:24px">Could not read that character.</div>`;
@@ -721,6 +779,20 @@ const LevelUpApp = {
         this._root.appendChild(el);
       }
     }
+
+    // Benefit window, above even that: it is the gate on starting a class, and
+    // the browser behind it must not be reachable while it is open.
+    this._root.querySelector(`#${ROOT_ID}-benefit`)?.remove();
+    if (this._benefit) {
+      const wrap = document.createElement("div");
+      wrap.innerHTML = this._benefitOverlay();
+      const el = wrap.firstElementChild;
+      if (el) {
+        el.id = `${ROOT_ID}-benefit`;
+        this._root.appendChild(el);
+        windowAnim(el.querySelector(".lu-benefitpanel"), "in");
+      }
+    }
   },
 
   /**
@@ -746,7 +818,7 @@ const LevelUpApp = {
     this._root.querySelector(`#${ROOT_ID}-picker`)?.remove();
     if (!this._pickerOpen) { this._updateCursor(); return; }
 
-    s = s ?? api()?.getState(this._actorUuid);
+    s = s ?? this._readState();
     if (!s?.ok) return;
 
     const p = document.createElement("div");
@@ -792,8 +864,9 @@ const LevelUpApp = {
       <div class="lu-tabs">
         <button class="lu-tab ${this._tab === "skill" ? "on" : ""}" data-act="tab" data-tab="skill">Skill</button>
         <button class="lu-tab ${this._tab === "facet" ? "on" : ""}" data-act="tab" data-tab="facet">Facet</button>
+        ${this._creation ? "" : `
         <button class="lu-tab ${this._tab === "heroic" ? "on" : ""}" data-act="tab" data-tab="heroic">Heroic${
-          s.heroic.open ? ` <span class="lu-tabdot">${s.heroic.open}</span>` : ""}</button>
+          s.heroic.open ? ` <span class="lu-tabdot">${s.heroic.open}</span>` : ""}</button>`}
       </div>
       <button class="lu-x" data-act="close" title="Close">×</button>
     </div>`;
@@ -816,10 +889,13 @@ const LevelUpApp = {
         </div>`
       : "";
 
+    // Reset mode is the price of giving levels back mid-campaign. Nothing has
+    // been written during Character Creation, so − is always live there and a
+    // mode that unlocks it would be a switch with nothing on the other side.
     return `<div class="lu-switches">
       ${sw("toggledetail", this._detailMode, "Detail", "Show effect text on every row instead of in the panel below")}
-      ${sw("togglereset", this._resetMode, "Reset", "Give skill levels back, one Forget me Nut each")}
-      ${purse}
+      ${this._creation ? "" : sw("togglereset", this._resetMode, "Reset", "Give skill levels back, one Forget me Nut each")}
+      ${this._creation ? "" : purse}
     </div>`;
   },
 
@@ -828,12 +904,24 @@ const LevelUpApp = {
     if (!s.gate.open) {
       html += `<div class="lu-note warn">${esc(s.gate.reason)} You can still browse and plan.</div>`;
     }
-    // Drift is a GM concern — a player can neither cause nor fix one. Hidden
-    // while changes are staged: mid-edit the books legitimately don't balance,
-    // and flashing a corruption warning during normal use is just noise.
-    if (s.points.drift && game.user?.isGM && !this._pending.length) {
+    /*
+     * Drift is a GM concern — a player can neither cause nor fix one.
+     *
+     * This used to hide itself as soon as anything was staged, on the reasoning
+     * that the books legitimately don't balance mid-edit. That reasoning was
+     * wrong: BOTH sides of the comparison are read from the actor, and staging
+     * changes neither, so the drift is exactly as real mid-batch as before it.
+     *
+     * Worse, hiding it chose the one moment it matters. A character whose
+     * stored count is short by one can stage that one spend and then watch
+     * every + go dead — with the explanation having just vanished. That reads
+     * as "the window broke", and it is the exact report this came from.
+     */
+    if (s.points.drift && game.user?.isGM) {
+      const short = s.points.stored < s.points.expected;
       html += `<div class="lu-note drift">
-        <span>Skill Points read <b>${s.points.stored}</b> but level minus class levels gives <b>${s.points.expected}</b>.</span>
+        <span>Skill Points read <b>${s.points.stored}</b> but level minus class levels gives <b>${s.points.expected}</b>.${
+          short ? ` Only ${s.points.stored} can be spent until this is fixed.` : ""}</span>
         <button class="lu-btn" style="width:auto;padding:2px 10px" data-act="heal">Fix</button>
       </div>`;
     }
@@ -844,10 +932,19 @@ const LevelUpApp = {
     const row = (c) => {
       const lvl = this._classLevel(s, c, proj);
       const moved = lvl !== c.level;
+      // Character Creation only: drop a class outright. Mid-campaign a class
+      // is given back a level at a time, at a Nut each, because it has been
+      // played; a class picked two minutes ago and not yet written is just a
+      // decision, and changing your mind should not be a chore.
+      const drop = this._creation && lvl > 0
+        ? `<span class="lu-clsdrop" data-act="dropclass" data-key="${esc(c.key)}"
+             title="Remove ${esc(c.name)} and give back its ${lvl} point${lvl === 1 ? "" : "s"}">×</span>`
+        : "";
       return `<button class="lu-cls ${this._selected === c.key ? "on" : ""}" data-act="pick" data-key="${esc(c.key)}">
         <img src="${esc(c.img)}" alt="">
         <span class="n">${lvl >= s.rules.maxClassLevel ? "⭐ " : ""}${esc(c.name)}</span>
         <span class="l ${moved ? "moved" : ""}">${lvl}/${s.rules.maxClassLevel}</span>
+        ${drop}
       </button>`;
     };
 
@@ -887,6 +984,27 @@ const LevelUpApp = {
       const canBuy = s.gate.open && proj.points > 0 && !atMax
         && clsLevel < s.rules.maxClassLevel && !wouldExceedLimit;
 
+      /*
+       * WHY the + is dead, when it is.
+       *
+       * A disabled button with a cheerful "Spend a Skill Point" tooltip is the
+       * worst of both worlds: it looks like the thing you want and refuses
+       * without a word. Every one of these conditions is invisible from the
+       * row itself — especially the point count, which is at the top of the
+       * window and can be exhausted by a batch that is still only staged.
+       */
+      const buyTitle =
+        !s.gate.open ? s.gate.reason
+        : atMax ? `${sk.name} is at its maximum (${sk.maxLevel})`
+        : clsLevel >= s.rules.maxClassLevel ? `${cls.name} is already mastered`
+        : wouldExceedLimit
+          ? `Already ${s.rules.maxUnmastered} unmastered classes — take one to ${s.rules.maxClassLevel} first`
+        : proj.points <= 0
+          ? (this._pending.length
+              ? "No Skill Points left — this batch has spent them all"
+              : "No Skill Points left")
+        : "Spend a Skill Point";
+
       // Each level given back costs one Forget me Nut, from this character's
       // own bag. Staged refunds already count against the purse, so the button
       // stops at the point the batch would outspend it rather than failing at
@@ -894,7 +1012,12 @@ const LevelUpApp = {
       const nutsLeft = (s.nuts?.count ?? 0) - proj.refundCount;
       const outOfNuts = nutsLeft <= 0;
       const canRefund = s.gate.open && lvl > 0 && !outOfNuts;
+      // Character Creation is the exception to that purse: nothing has been
+      // written yet, so there is nothing to buy back. Its state reports an
+      // unbounded supply, which turns the arithmetic above into a no-op rather
+      // than a special case, and the wording below simply drops the price.
       const refundTitle = lvl <= 0 ? "Nothing to give back"
+        : this._creation ? "Give back this level"
         : outOfNuts ? `No ${s.nuts?.name ?? "Forget me Nut"} left — one is needed per level`
         : `Give back a level — costs 1 ${s.nuts?.name ?? "Forget me Nut"}`;
       return this._row({
@@ -907,15 +1030,18 @@ const LevelUpApp = {
         },
         // The − only exists in Reset mode; the + stays put but goes inert, so
         // the row keeps its shape instead of reflowing when the mode flips.
+        // Creation shows both at once — there, taking a level back is just
+        // undoing a decision, not a transaction needing its own mode.
         right:
-          (this._resetMode
+          (this._resetMode || this._creation
             ? `<button class="lu-btn sell" data-act="refund" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
                 ${canRefund ? "" : "disabled"} title="${esc(refundTitle)}">−</button>`
             : "") +
           `<span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>` +
           this._facetEditBtn(sk) +
           `<button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
-            ${canBuy && !this._resetMode ? "" : "disabled"} title="Spend a Skill Point">+</button>`,
+            ${canBuy && (this._creation || !this._resetMode) ? "" : "disabled"}
+            title="${esc(this._resetMode && !this._creation ? "Leave Reset mode to spend" : buyTitle)}">+</button>`,
       });
     }).join("");
 
@@ -927,7 +1053,8 @@ const LevelUpApp = {
         : "";
 
     return `<div class="lu-h2"><b>${mastered ? "⭐ " : ""}${esc(cls.name)}</b>
-        <span>${clsLevel}/${s.rules.maxClassLevel}${mastered ? " · mastered" : ""}${cls.benefit ? ` · ${esc(LEVELUP.BENEFIT_LABEL[cls.benefit] ?? cls.benefit)}` : ""}</span></div>
+        <span>${clsLevel}/${s.rules.maxClassLevel}${mastered ? " · mastered" : ""}${
+          this._benefitTag(cls)}</span></div>
       ${note}
       ${skills || `<div class="lu-empty">This class has no skills authored.</div>`}`;
   },
@@ -946,6 +1073,21 @@ const LevelUpApp = {
   },
 
   _footer(s, proj) {
+    // Character Creation stages nothing — the draft IS the record — so the
+    // Confirm/Discard pair below never appears there. It still needs a way OUT
+    // that reads like finishing: closing on the × is the same action, but a ×
+    // reads as "throw this away", which is exactly the wrong impression when
+    // every choice has already been kept.
+    if (this._creation) {
+      const left = s.points.stored;
+      return `<div class="lu-foot">
+        <span class="lu-foottext">${left
+          ? `${left} Skill Point${left === 1 ? "" : "s"} still to spend`
+          : "Every Skill Point spent"} — nothing is written until you create the character.</span>
+        <button class="lu-cta go" data-act="creationdone">Confirm</button>
+      </div>`;
+    }
+
     const n = this._pending.length;
     if (!n) return "";
     const summary = this._summarise(s, proj);
@@ -1168,7 +1310,7 @@ const LevelUpApp = {
   _paintPreview({ chase = false, intro = false } = {}) {
     const p = this._root?.querySelector(`#${ROOT_ID}-picker`);
     if (!p) return;
-    const s = api()?.getState(this._actorUuid);
+    const s = this._readState();
     if (!s?.ok) return;
 
     const untaken = s.classes.filter((c) => !c.taken).sort((a, b) => a.name.localeCompare(b.name));
@@ -1327,13 +1469,62 @@ const LevelUpApp = {
       return this._paintPreview({ intro: true });
     }
     if (act === "pick") {
-      const changed = this._selected !== btn.dataset.key;
+      const key = btn.dataset.key;
+      // Starting a class that lets you choose its bonus asks NOW, before the
+      // class is anywhere near the rail. The old flow added the class first and
+      // then ambushed you during the first skill purchase, which read as an
+      // unrelated interruption rather than part of starting the class.
+      const s0 = this._readState();
+      const cls0 = s0?.classes?.find((c) => c.key === key);
+      if (cls0 && !cls0.taken && !cls0.benefit && !this._benefitChoice.has(key)) {
+        sfx("open");
+        this._benefit = { classKey: key, className: cls0.name, current: null, then: "start" };
+        return this.render();
+      }
+
+      const changed = this._selected !== key;
       // Changing class re-frames the whole window, so it gets the heavier
       // window-open cue rather than the lighter tab blip.
       if (changed) sfx("open");
-      this._selected = btn.dataset.key;
+      this._selected = key;
       this._pickerOpen = false;   // choosing from the browser returns to the main pane
       return changed ? this._swapList() : this.render();
+    }
+
+    // ── benefit window ────────────────────────────────────────────────────
+    if (act === "benefitedit") {
+      const s0 = this._readState();
+      const cls0 = s0?.classes?.find((c) => c.key === btn.dataset.key);
+      if (!this._benefitEditable(cls0)) return;
+      sfx("open");
+      this._benefit = {
+        classKey: cls0.key, className: cls0.name,
+        current: this._benefitChoice.get(cls0.key) ?? null,
+        then: "stay",
+      };
+      return this.render();
+    }
+    if (act === "benefitpick") {
+      const b = this._benefit;
+      if (!b) return;
+      this._benefit = null;
+      this._benefitChoice.set(b.classKey, btn.dataset.benefit);
+      sfx("stageUp");
+      // Starting the class continues into the browser's own selection; editing
+      // an existing choice simply returns to where it was opened from.
+      if (b.then === "start") {
+        this._selected = b.classKey;
+        this._pickerOpen = false;
+        return this._swapList();
+      }
+      return this.render();
+    }
+    if (act === "benefitback") {
+      // No dismissal: backing out of a first choice leaves the class unstarted,
+      // which is the only coherent alternative to answering.
+      sfx("deselect");
+      this._benefit = null;
+      return this.render();
     }
 
     // Staging — no writes. A spend and a refund of the same skill annihilate,
@@ -1412,7 +1603,14 @@ const LevelUpApp = {
       return this.render();
     }
 
-    if (act === "cancel") { this._pending = []; return this.render(); }
+    if (act === "cancel") {
+      // Discard throws away the batch, and with it the benefit choices that
+      // only existed to serve it.
+      this._pending = [];
+      this._benefit = null;
+      this._benefitChoice.clear();
+      return this.render();
+    }
     if (act === "confirm") return this._commit();
 
     const A = api();
@@ -1469,7 +1667,7 @@ const LevelUpApp = {
         } else if (p.op === "spend") {
           res = await A.spendPoint({
             actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid,
-            benefit: p.benefit ?? await this._benefitFor(p.classKey),
+            benefit: p.benefit ?? this._benefitFor(p.classKey),
             facetUuids: p.facetUuids,
           });
           if (res?.ok && res.mastered) mastered = true;
@@ -1485,6 +1683,8 @@ const LevelUpApp = {
         }
       }
       this._pending = [];
+      // Written: each benefit now lives on its class row, where it is fixed.
+      this._benefitChoice.clear();
       if (mastered) ui.notifications?.info?.("Class mastered — a Heroic Skill slot is open.");
     } catch (e) {
       console.error(LEVELUP.TAG, e);
@@ -1527,7 +1727,7 @@ const LevelUpApp = {
    * otherwise the picker stages a NEW operation on confirm.
    */
   _openFacetPicker(act, classKey, skillUuid, editIndex = -1) {
-    const s = api()?.getState(this._actorUuid);
+    const s = this._readState();
     const cls = s?.classes?.find((c) => c.key === classKey);
     const skill = cls?.skills?.find((k) => k.uuid === skillUuid);
     if (!cls || !skill || !skill.facetGrant) return false;
@@ -1633,6 +1833,15 @@ const LevelUpApp = {
 
       // A layered picker gets the keys first — it is the question in front of
       // the player, and the list behind it is not what they are answering.
+      // The benefit window is the outermost of those, so it is asked first.
+      if (this._benefit) {
+        if (keyMatch(ev, KEYS.CANCEL)) {
+          sfx("deselect");
+          this._benefit = null;   // same as its Back: the class stays unstarted
+          this.render();
+        }
+        return;
+      }
       if (this._facet) {
         if (keyMatch(ev, KEYS.CANCEL)) {
           sfx("deselect");
@@ -1981,24 +2190,95 @@ const LevelUpApp = {
   // Only asked when a class is opened for the first time, and only when the
   // class doesn't fix its own benefit — class_list stores one benefit per
   // class row, so there is nowhere to record a per-level answer.
-  async _benefitFor(classKey) {
-    const s = api()?.getState(this._actorUuid);
+  /**
+   * The benefit this class will be written with.
+   *
+   * No prompt any more — the answer was given when the class was started, and
+   * this is only the lookup. A class that fixes its own benefit reports that; a
+   * class already on the actor reports what it was written with.
+   */
+  _benefitFor(classKey) {
+    const s = this._readState();
     const cls = s?.classes?.find((c) => c.key === classKey);
-    if (!cls || cls.taken || cls.benefit) return cls?.benefit ?? undefined;
+    if (!cls) return undefined;
+    if (cls.benefit) return cls.benefit;          // fixed by the class itself
+    return this._benefitChoice.get(classKey);
+  },
 
-    return await new Promise((resolve) => {
-      new Dialog({
-        title: `${cls.name} — permanent bonus`,
-        content: `<p style="margin:6px 0 10px">Every level in <b>${esc(cls.name)}</b> grants this bonus. It cannot be changed later.</p>`,
-        buttons: {
-          hp: { label: "Max HP +5", callback: () => resolve("hp") },
-          mp: { label: "Max MP +5", callback: () => resolve("mp") },
-          ip: { label: "Max IP +2", callback: () => resolve("ip") },
-        },
-        default: "hp",
-        close: () => resolve(undefined),
-      }).render(true);
-    });
+  /**
+   * May this class's benefit still be changed?
+   *
+   * Exactly while this session still holds the answer. `_benefitChoice` is
+   * cleared when the batch is written and when the window closes, so its
+   * membership IS the "same instance" rule — no separate test needed, and none
+   * that could disagree with it.
+   */
+  _benefitEditable(cls) {
+    return !!cls && !cls.benefit && this._benefitChoice.has(cls.key);
+  },
+
+  /**
+   * The benefit, shown in the class header — with a way to change it while it
+   * is still only a decision.
+   *
+   * A fixed benefit is stated plainly. A chosen one is stated with a pencil,
+   * which disappears the moment the class is written and the answer becomes
+   * part of the character rather than part of this session.
+   */
+  _benefitTag(cls) {
+    const chosen = cls.benefit ?? this._benefitChoice.get(cls.key);
+    if (!chosen) return "";
+    const label = esc(LEVELUP.BENEFIT_LABEL[chosen] ?? chosen);
+    if (!this._benefitEditable(cls)) return ` · ${label}`;
+    return ` · ${label} <button class="lu-benedit" data-act="benefitedit" data-key="${esc(cls.key)}"
+      title="Change the bonus — allowed until this batch is confirmed">✎</button>`;
+  },
+
+  /**
+   * The benefit window.
+   *
+   * Its own DOM panel rather than a Foundry dialog, so it carries the same
+   * parchment and the same weight as everything else here — a permanent choice
+   * should not arrive looking like a system prompt.
+   *
+   * There is no dismiss. Backing out returns to the class browser WITHOUT
+   * starting the class, because a class with no benefit chosen is not a legal
+   * thing to leave lying around; the only two exits are a choice or a retreat.
+   */
+  _benefitOverlay() {
+    const b = this._benefit;
+    if (!b) return "";
+    const editing = !!b.current;
+
+    const option = (key, label, blurb) => `
+      <button class="lu-benfit ${b.current === key ? "is-on" : ""}" data-act="benefitpick" data-benefit="${key}">
+        <span class="lu-benfit-v">${esc(label)}</span>
+        <span class="lu-benfit-b">${esc(blurb)}</span>
+      </button>`;
+
+    return `<div class="lu-benefit"><div class="lu-panel lu-benefitpanel">
+      <div class="lu-head"><div class="lu-idblock">
+        <div class="lu-name">${esc(b.className)}</div>
+        <div class="lu-sub">${editing
+          ? "Change the permanent bonus — allowed until this batch is confirmed"
+          : "Choose the permanent bonus this class grants"}</div>
+      </div></div>
+      <div class="lu-main">
+        <p class="lu-lore">Entering a class grants its bonus once, and once only.
+          It is not repeated at every level.</p>
+        <div class="lu-benfits">
+          ${option("hp", "Max HP +5", "More to lose before Crisis.")}
+          ${option("mp", "Max MP +5", "More spells before the well runs dry.")}
+          ${option("ip", "Max IP +2", "More to spend on potions and projects.")}
+        </div>
+      </div>
+      <div class="lu-foot">
+        <span class="lu-foottext">${editing
+          ? "Locked in once the batch is written."
+          : "The class is not started until you choose."}</span>
+        <button class="lu-cta ghost" data-act="benefitback">Back</button>
+      </div>
+    </div></div>`;
   },
 };
 
@@ -2014,3 +2294,13 @@ Hooks.once("ready", () => {
 });
 
 export { LevelUpApp };
+
+/**
+ * Install this window's stylesheet without opening the window.
+ *
+ * Every rule is scoped under `#oni-levelup`, so anything that wants the class
+ * browser's exact look has to both inject this and mount inside an element
+ * carrying that id. Character Creation does precisely that to host the real
+ * picker rather than imitating it.
+ */
+export { injectStyles as injectLevelUpStyles, ROOT_ID as LEVELUP_ROOT_ID };
