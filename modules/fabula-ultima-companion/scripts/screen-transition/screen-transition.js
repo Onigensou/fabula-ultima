@@ -45,6 +45,9 @@
     overlay.style.pointerEvents = "all";
     forceReflow();   // commit to the GPU before this task continues
     state = "COVERED";
+    // Anything that should not animate behind the black — badge entrances, etc.
+    // — listens for this and waits for the matching reveal.
+    Hooks.callAll("oni:screenCovered");
   }
 
   // ── Flag check — read the destination scene's disableTransition flag ─────────
@@ -71,6 +74,7 @@
       overlay.style.pointerEvents = "none";
       forceReflow();
       state = "IDLE";
+      Hooks.callAll("oni:screenRevealed");   // snapped, but still "now visible"
       return;
     }
 
@@ -88,6 +92,8 @@
           const cleanup = () => {
             overlay.style.pointerEvents = "none";
             state = "IDLE";
+            // The scene image is now fully visible — safe to play entrances.
+            Hooks.callAll("oni:screenRevealed");
           };
 
           const fallback = setTimeout(cleanup, FADE_OUT_MS + 100);

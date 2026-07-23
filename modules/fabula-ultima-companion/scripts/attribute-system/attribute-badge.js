@@ -46,7 +46,7 @@ function injectStyles() {
   background: linear-gradient(180deg,#5d4630,#4a371f); color: #f6ecd8;
   border: 2px solid #8a6c45; box-shadow: 0 6px 18px rgba(0,0,0,.45);
   font-family: Signika, sans-serif; transition: transform .12s ease, box-shadow .12s ease;
-  animation: oni-ab-in .55s cubic-bezier(.16,1,.3,1); }
+  animation: oni-ab-in .9s cubic-bezier(.22,.68,.32,1); }
 #${ROOT_ID}:hover { transform: translateY(-2px); box-shadow: 0 9px 22px rgba(0,0,0,.5); }
 /* Starts fully off the left edge of the screen and glides to its dock, matching
    the SP badge. The calc clears its own width plus the 20px gap. */
@@ -117,6 +117,11 @@ export const AttributeBadge = {
   },
 };
 
+// See the SP badge: the entrance must not play behind the transition overlay's
+// black. covered holds it back until the scene is revealed. Without the
+// transition module the hooks never fire and this stays false.
+let covered = false;
+
 function schedule() {
   // One frame late: the Skill Point badge may be showing or hiding in the same
   // tick, and this badge's position depends on its measured height.
@@ -126,7 +131,11 @@ function schedule() {
 Hooks.once("ready", () => {
   schedule();
   // The gate is scene + camp-phase driven, and the point total changes on write.
-  for (const h of ["canvasReady", "updateScene", "updateActor", "controlToken"]) Hooks.on(h, schedule);
+  for (const h of ["canvasReady", "updateScene", "updateActor", "controlToken"])
+    Hooks.on(h, () => { if (!covered) schedule(); });
+
+  Hooks.on("oni:screenCovered", () => { covered = true; AttributeBadge.hide(); });
+  Hooks.on("oni:screenRevealed", () => { covered = false; schedule(); });
   globalThis.FUCompanion = globalThis.FUCompanion ?? {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api ?? {};
   globalThis.FUCompanion.api.attributes = globalThis.FUCompanion.api.attributes ?? {};

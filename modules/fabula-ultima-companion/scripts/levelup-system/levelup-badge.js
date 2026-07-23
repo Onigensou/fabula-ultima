@@ -46,7 +46,7 @@ function injectStyles() {
   border-radius: 10px; cursor: pointer; border: 1px solid #8a6c45;
   background: linear-gradient(180deg,#5d4630,#41301c); color: #f6ecd8;
   font-family: Signika, sans-serif; box-shadow: 0 6px 20px rgba(0,0,0,.45);
-  animation: oni-lu-in .55s cubic-bezier(.16,1,.3,1); }
+  animation: oni-lu-in .9s cubic-bezier(.22,.68,.32,1); }
 #${ROOT_ID}:hover { background: linear-gradient(180deg,#6d543a,#4d3a22); }
 #${ROOT_ID} .lub-n { min-width: 30px; height: 30px; padding: 0 6px; border-radius: 7px;
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px;
@@ -127,6 +127,13 @@ const Badge = {
   },
 };
 
+// While the screen-transition overlay is black, the badge must not slide in
+// behind it — its entrance would be spent unseen. covered tracks that window;
+// the badge waits, then animates the moment the scene is revealed. Absent the
+// transition module the hooks never fire, covered stays false, and canvasReady
+// drives it exactly as before.
+let covered = false;
+
 Hooks.once("ready", () => {
   Badge.refresh();
 
@@ -138,8 +145,12 @@ Hooks.once("ready", () => {
   Hooks.on("updateSetting", (setting) => {
     if (String(setting?.key ?? "").includes("campPhase")) Badge.refresh();
   });
-  Hooks.on("updateScene", () => Badge.refresh());
-  Hooks.on("canvasReady", () => Badge.refresh());
+  Hooks.on("updateScene", () => { if (!covered) Badge.refresh(); });
+  Hooks.on("canvasReady", () => { if (!covered) Badge.refresh(); });
+
+  // Hide behind the black, reveal-and-animate once the image is up.
+  Hooks.on("oni:screenCovered", () => { covered = true; Badge.hide(); });
+  Hooks.on("oni:screenRevealed", () => { covered = false; Badge.refresh(); });
   // A level awarded mid-session mints a point; the badge should be waiting the
   // moment the party reaches camp rather than only after some other event.
   Hooks.on("oni:expAwarded", () => Badge.refresh());
