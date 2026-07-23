@@ -12115,6 +12115,13 @@
     ],
     "actors": [
       {
+        "id": "CCBlankPC000Seed",
+        "name": "_CC Blank PC",
+        "type": "character",
+        "items": [],
+        "effects": 0
+      },
+      {
         "id": "OmwL5UqoVwjshkJo",
         "name": "_FabU Char Template v3.fire",
         "type": "_template",
