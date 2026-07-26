@@ -166,10 +166,7 @@
         "4": {
           "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_FLAG('Dancing', 'rememberedAction') != PERFORMED_SKILL)",
           "consume_resource": "mp",
-          "cost_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_FLAG('Dancing', 'rememberedAction') != PERFORMED_SKILL)",
-          "cost_operation": "add",
-          "cost_resource": "mp",
-          "effect_kind": "adjust_cost",
+          "effect_kind": "consume_resource",
           "effect_label": "bd_cost",
           "target_ref": "self"
         },

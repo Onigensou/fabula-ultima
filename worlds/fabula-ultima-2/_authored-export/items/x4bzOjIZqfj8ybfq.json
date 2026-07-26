@@ -25,6 +25,8 @@
     "container": null,
     "props": {
       "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
       "check_bonus": "0",
       "class": "Weaponmaster",
       "cost": "",
@@ -52,6 +54,7 @@
       "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
+      "skill_animation_default": "",
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "",

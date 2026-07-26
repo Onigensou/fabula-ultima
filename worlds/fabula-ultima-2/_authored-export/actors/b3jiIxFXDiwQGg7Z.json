@@ -941,17 +941,23 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You can produce <strong>infusions</strong> and other gadgets on the fly.</p><p><strong>Infusions.</strong> When you successfully <strong>hit one or more targets with an attack</strong>, you may spend <strong>2 Inventory Points</strong> to produce a special infusion and apply its effect to that attack. If the attack had the <em>multi</em> property, the effect applies to <strong>each</strong> target. You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the attack.</p><ul><li><strong>Cryo / Pyro / Volt:</strong> deal 5 extra damage; the attack's damage becomes <strong>ice / fire / bolt</strong>.</li><li><strong>Cyclone / Exorcism / Seismic / Shadow:</strong> deal 5 extra damage; the attack's damage becomes <strong>air / light / earth / dark</strong>.</li><li><strong>Venom:</strong> deal 5 extra damage; the attack's damage becomes <strong>poison</strong>; each creature hit suffers <strong>poisoned</strong>.</li><li><strong>Vampire:</strong> heal HP equal to <strong>half the damage dealt</strong>. <em>Single-target attacks only.</em></li></ul>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "allowed_types": "",
               "check_bonus_formula": "",
+              "consume_self": false,
               "damage_bonus_formula": "",
               "effect_kind": "open_action_menu",
               "effect_label": "inf_offer",
               "free_hr_as_zero": false,
               "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
               "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
               "menu_option_colors": "",
               "menu_option_descriptions": "+5; becomes Ice|+5; becomes Fire|+5; becomes Bolt|+5; becomes Air|+5; becomes Light|+5; becomes Earth|+5; becomes Dark|+5; becomes Poison + Poisoned|Single-target: heal 50% of damage dealt",
               "menu_option_icons": "",
@@ -960,139 +966,214 @@
               "menu_pick_count": "1",
               "menu_subtitle": "Spend 2 IP — the attack's damage changes",
               "menu_title": "Produce an Infusion",
-              "target_ref": ""
+              "target_ref": "",
+              "to_resource": ""
             },
             "1": {
               "chain_steps": "inf_pay,inf_el_ice,inf_plus5",
               "condition_formula": "GADGET_INFUSION_TIER >= 1",
+              "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "inf_cryo",
-              "menu_label": "Cryo"
+              "from_resource": "",
+              "menu_label": "Cryo",
+              "to_resource": ""
             },
             "2": {
               "chain_steps": "inf_pay,inf_el_fire,inf_plus5",
               "condition_formula": "GADGET_INFUSION_TIER >= 1",
+              "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "inf_pyro",
-              "menu_label": "Pyro"
+              "from_resource": "",
+              "menu_label": "Pyro",
+              "to_resource": ""
             },
             "3": {
               "chain_steps": "inf_pay,inf_el_bolt,inf_plus5",
               "condition_formula": "GADGET_INFUSION_TIER >= 1",
+              "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "inf_volt",
-              "menu_label": "Volt"
+              "from_resource": "",
+              "menu_label": "Volt",
+              "to_resource": ""
             },
             "4": {
               "chain_steps": "inf_pay,inf_el_air,inf_plus5",
               "condition_formula": "GADGET_INFUSION_TIER >= 2",
+              "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "inf_cyclone",
-              "menu_label": "Cyclone"
+              "from_resource": "",
+              "menu_label": "Cyclone",
+              "to_resource": ""
             },
             "5": {
               "chain_steps": "inf_pay,inf_el_light,inf_plus5",
               "condition_formula": "GADGET_INFUSION_TIER >= 2",
+              "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "inf_exorcism",
-              "menu_label": "Exorcism"
+              "from_resource": "",
+              "menu_label": "Exorcism",
+              "to_resource": ""
             },
             "6": {
               "chain_steps": "inf_pay,inf_el_earth,inf_plus5",
               "condition_formula": "GADGET_INFUSION_TIER >= 2",
+              "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "inf_seismic",
-              "menu_label": "Seismic"
+              "from_resource": "",
+              "menu_label": "Seismic",
+              "to_resource": ""
             },
             "7": {
               "chain_steps": "inf_pay,inf_el_dark,inf_plus5",
               "condition_formula": "GADGET_INFUSION_TIER >= 2",
+              "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "inf_shadow",
-              "menu_label": "Shadow"
+              "from_resource": "",
+              "menu_label": "Shadow",
+              "to_resource": ""
             },
             "8": {
               "chain_steps": "inf_pay,inf_el_poison,inf_plus5,inf_poison",
               "condition_formula": "GADGET_INFUSION_TIER >= 3",
+              "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "inf_venom",
-              "menu_label": "Venom"
+              "from_resource": "",
+              "menu_label": "Venom",
+              "to_resource": ""
             },
             "9": {
               "consume_amount": "2",
               "consume_resource": "ip",
+              "consume_self": false,
               "effect_kind": "consume_resource",
               "effect_label": "inf_pay",
+              "from_resource": "",
               "grant_amount": "",
               "grant_resource": "",
+              "menu_label": "",
               "on_empty": "abort",
-              "target_ref": "self"
+              "target_ref": "self",
+              "to_resource": ""
             },
             "10": {
+              "consume_self": false,
               "damage_amount": "5",
               "damage_operation": "add",
               "damage_stage": "outgoing",
               "effect_kind": "adjust_damage",
-              "effect_label": "inf_plus5"
+              "effect_label": "inf_plus5",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "11": {
               "change_element": "ice",
+              "consume_self": false,
               "effect_kind": "change_damage_element",
-              "effect_label": "inf_el_ice"
+              "effect_label": "inf_el_ice",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "12": {
               "change_element": "fire",
+              "consume_self": false,
               "effect_kind": "change_damage_element",
-              "effect_label": "inf_el_fire"
+              "effect_label": "inf_el_fire",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "13": {
               "change_element": "bolt",
+              "consume_self": false,
               "effect_kind": "change_damage_element",
-              "effect_label": "inf_el_bolt"
+              "effect_label": "inf_el_bolt",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "14": {
               "change_element": "air",
+              "consume_self": false,
               "effect_kind": "change_damage_element",
-              "effect_label": "inf_el_air"
+              "effect_label": "inf_el_air",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "15": {
               "change_element": "light",
+              "consume_self": false,
               "effect_kind": "change_damage_element",
-              "effect_label": "inf_el_light"
+              "effect_label": "inf_el_light",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "16": {
               "change_element": "earth",
+              "consume_self": false,
               "effect_kind": "change_damage_element",
-              "effect_label": "inf_el_earth"
+              "effect_label": "inf_el_earth",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "17": {
               "change_element": "dark",
+              "consume_self": false,
               "effect_kind": "change_damage_element",
-              "effect_label": "inf_el_dark"
+              "effect_label": "inf_el_dark",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "18": {
               "change_element": "poison",
+              "consume_self": false,
               "effect_kind": "change_damage_element",
-              "effect_label": "inf_el_poison"
+              "effect_label": "inf_el_poison",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "19": {
               "ae_duplicate_mode": "replace",
+              "ae_family": "",
               "ae_initial_charges": "",
               "ae_initial_charges_max": "",
               "ae_template_ref": "Poisoned",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "inf_poison",
-              "target_ref": "hit_action_targets"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
             },
             "20": {
               "allowed_types": "",
               "check_bonus_formula": "",
+              "consume_self": false,
               "damage_bonus_formula": "",
               "effect_kind": "open_action_menu",
               "effect_label": "gadget_active_root",
               "free_hr_as_zero": false,
               "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
               "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
               "menu_option_colors": "",
               "menu_option_descriptions": "Mix a potion|Build a magitech device",
               "menu_option_icons": "",
@@ -1101,45 +1182,61 @@
               "menu_pick_count": "1",
               "menu_subtitle": "Choose a gadget branch",
               "menu_title": "Use a Gadget",
-              "target_ref": ""
+              "target_ref": "",
+              "to_resource": ""
             },
             "21": {
               "condition_formula": "GADGET_ALCHEMY_TIER >= 1",
+              "consume_self": false,
               "effect_kind": "notify",
               "effect_label": "stub_alchemy",
+              "from_resource": "",
               "menu_label": "Alchemy",
               "notify_abort": true,
               "notify_message": "Alchemy gadgets (potion-mixing) are not yet implemented.",
-              "notify_type": "info"
+              "notify_type": "info",
+              "to_resource": ""
             },
             "22": {
               "condition_formula": "GADGET_MAGITECH_TIER >= 1",
+              "consume_self": false,
               "effect_kind": "notify",
               "effect_label": "stub_magitech",
+              "from_resource": "",
               "menu_label": "Magitech",
               "notify_abort": true,
               "notify_message": "Magitech gadgets are not yet implemented.",
-              "notify_type": "info"
+              "notify_type": "info",
+              "to_resource": ""
             },
             "23": {
               "chain_steps": "inf_pay,inf_drain",
               "condition_formula": "GADGET_INFUSION_TIER >= 3 && HIT_COUNT == 1",
+              "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "inf_vampire",
-              "menu_label": "Vampire"
+              "from_resource": "",
+              "menu_label": "Vampire",
+              "to_resource": ""
             },
             "24": {
               "action_keyword": "pierce",
               "condition_formula": "",
+              "consume_self": false,
               "effect_kind": "apply_action_keyword",
-              "effect_label": "inf_drain"
+              "effect_label": "inf_drain",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             }
           },
           "gadget_alchemy_tier": "",
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "s4Lb3ckdWW4Sx572",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -1158,8 +1255,12 @@
               "reaction_action_kind": "Attack",
               "reaction_cause_filter": "",
               "reaction_effect_ref": "inf_offer",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": false,
               "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "self",
               "reaction_source_skill": "",
               "reaction_status_filter": "",
@@ -1173,10 +1274,13 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "-",
+          "skill_tags": "",
           "skill_target": "Special",
           "skill_type": "Active",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.s4Lb3ckdWW4Sx572"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1387,26 +1491,48 @@
       "sort": 0,
       "system": {
         "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
           "class": "Tinkerer",
           "cost": "",
-          "damage_bonus": "0",
+          "damage_bonus": "",
+          "defense_target_type": "def",
           "description": "<p>When you spend Inventory Points, you spend <strong>1 less Inventory Point</strong> (to a minimum of 1).</p>",
+          "details_roller": "Show",
+          "duration": "-",
           "effect_table": {},
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
+          "heroic_requirement": "",
+          "id": "XR4RD3tvYfLr6dkN",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderPassive1.png",
           "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
           "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
-          "max_level": 1,
+          "max_level": "1",
           "name": "Deep Pockets",
           "on_activate_effect_ref": "",
+          "optional_params": {},
           "passive_logic_action": "",
           "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_information": "",
           "skill_range": "-",
+          "skill_tags": "",
           "skill_target": "-",
           "skill_type": "Passive",
-          "type_damage": ""
+          "target_eligibility": "",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.XR4RD3tvYfLr6dkN"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,

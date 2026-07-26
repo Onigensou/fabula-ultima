@@ -247,6 +247,13 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
+      "attributeAdvance": {
+        "claimed": 2,
+        "legacy": true,
+        "log": [],
+        "seededAt": "2026-07-22T05:32:59.183Z",
+        "seededLevel": 41
+      },
       "damage_dealt_mult_all": 1,
       "damage_dealt_mult_attack": 1,
       "damage_dealt_mult_skill": 1,
@@ -10786,6 +10793,7 @@
       },
       "skill_class_filter": "",
       "skill_hideEffect": false,
+      "skill_point": 0,
       "skill_type_filter": "All",
       "slow_status": 0,
       "spear_ef": "100",

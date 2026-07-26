@@ -184,6 +184,7 @@
           "target_ref": "action_targets"
         }
       },
+      "isFacet": true,
       "level": "1",
       "max_level": "1",
       "name": "Ouroboros Dance",
