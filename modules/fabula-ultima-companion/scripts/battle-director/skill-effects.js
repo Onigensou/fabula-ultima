@@ -1010,11 +1010,13 @@ function ipReducedAmount(amount, actor) {
 // Estimate the resource cost a `creature_performs_action` SELF-reaction will
 // charge when `skill` is performed — so a card can DISPLAY that cost even when
 // the skill's own native `cost` is blank because the charge lives on a reaction.
-// (The base Dance skill bills its "managed" dances via a `bd_cost`
-// consume_resource, so each dance is itself cost-less.) DISPLAY-ONLY: the
-// reaction performs the real debit at its own fire, so callers must NOT fold this
-// into the action's costSerialized (that path is debited again at RESOLVE →
-// double-charge). Returns a resource→amount map (e.g. { mp: 10 }). Each reaction's
+// (The base Dance skill bills its "managed" dances via a `bd_cost` adjust_cost,
+// so each dance carries no printed cost of its own.) DISPLAY-ONLY: the reaction's
+// `adjust_cost` composes into ar.costOverride and RESOLVE debits it from there, so
+// callers must NOT fold this estimate into the action's costSerialized — that would
+// be counted twice. Its job is purely to give the card a cost bullet to render
+// (and later repaint) at spawn, before any reaction has been composed.
+// Returns a resource→amount map (e.g. { mp: 10 }). Each reaction's
 // condition_formula + cost formulas evaluate against a payload describing THIS
 // skill, so dynamic costs (the dance repeat-discount reading PERFORMED_SKILL /
 // AE_FLAG) resolve to the real 10 vs 5.
@@ -1079,6 +1081,11 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
       const tref = String(r.target_ref ?? "self").trim() || "self";
       return tref === "self" && !!RESOURCE_PROPS[String(r.consume_resource ?? "").trim().toLowerCase()];
     }
+    // A surcharge folded into the ACTION's cost is still the reactor's own spend.
+    if (k === "adjust_cost") {
+      return String(r.cost_operation ?? "add").trim().toLowerCase() !== "subtract"
+        && !!RESOURCE_PROPS[String(r.cost_resource ?? "mp").trim().toLowerCase()];
+    }
     if (k === "consume_charge") return String(r.on_empty ?? "abort").toLowerCase() === "abort" && !!String(r.charge_key ?? "").trim();
     if (k === "chain") return parseEffectRefList(r.chain_steps).some((s) => hasCostUnder(s, seenC));
     if (k === "open_action_menu") return parseEffectRefList(r.menu_option_refs).some((s) => hasCostUnder(s, seenC));
@@ -1105,6 +1112,23 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
       // IP spends honor the actor's ip_reduction_value (Deep Pockets) so the
       // "Low IP" gate matches the actually-debited cost.
       if (resource === "ip") amount = ipReducedAmount(amount, actor);
+      if (amount > 0) debit[resource] = (debit[resource] ?? 0) + amount;
+      return;
+    }
+    if (kind === "adjust_cost") {
+      // A SURCHARGE the reaction adds to the host action's cost (Barrage's extra
+      // target, the Dance engine's per-dance MP). It leaves the reactor's pool at
+      // RESOLVE instead of mid-chain, but it's still their own spend — so it gates
+      // availability exactly like consume_resource. Without this an auto-fire
+      // (force/on) pill would light up for an actor who can't pay, which is the
+      // very state `available:false` exists to prevent. A DISCOUNT never gates: it
+      // lowers the bill.
+      const resource = String(row.cost_resource ?? "mp").trim().toLowerCase();
+      const def = RESOURCE_PROPS[resource];
+      if (!def) return;
+      let amount = Number(evaluateFormula(row.cost_amount, resolver, 0)) || 0;
+      if (String(row.cost_operation ?? "add").trim().toLowerCase() === "subtract") amount = -Math.abs(amount);
+      if (resource === "ip" && amount > 0) amount = ipReducedAmount(amount, actor);
       if (amount > 0) debit[resource] = (debit[resource] ?? 0) + amount;
       return;
     }

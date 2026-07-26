@@ -46,6 +46,19 @@ Each rule names a real, verified example so it stays grounded.
   action-card debit phase; the real debit is `consume_resource` in the chain.
   *(High Speed: `cost:"10 MP"` for the tooltip, `consume_resource` does the work.)*
 
+- **B3 — A rider that BUYS something on someone else's action bills with
+  `adjust_cost`, not `consume_resource`.** "Spend 10 MP to target one additional
+  creature" is part of what THAT action costs: an `adjust_cost` row
+  (`cost_resource`/`cost_operation: add`/`cost_amount`) folds into the action's
+  cost, shows on the card's cost bullet, and is debited once at RESOLVE. A
+  `consume_resource` row debits immediately when the reaction fires, so the player
+  pays before the action commits and the card never shows the real total. A
+  POSITIVE delta may seed a resource the action doesn't natively charge (a
+  surcharge on a free Attack); a discount / waive still can't conjure one.
+  *(Barrage; Cataclysm's overcharge; Hypercognition's discount is the same row
+  with a negative amount.)* Affordability for such a purchase is gated where the
+  player commits to it, since no in-chain debit remains to abort on an empty pool.
+
 ## C. Reactions & UI phase
 
 - **C1 — The trigger's phase picks the UI, not the author.** Pre-resolve

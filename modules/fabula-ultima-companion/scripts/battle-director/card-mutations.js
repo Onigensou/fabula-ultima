@@ -1268,6 +1268,27 @@ async function applyAdjustCostMutation(ctx, cand, row) {
   return "applied";
 }
 
+// Compose ONLY the `adjust_cost` rows of the given candidates into an override map,
+// touching nothing else. The Apply-click gate for an extra-target purchase (Barrage)
+// needs the surcharge BEFORE it fires the chain: the purchase is now billed with the
+// action at RESOLVE, so no `consume_resource` remains in the chain to abort on an
+// empty pool — the affordability check has to be made explicitly, against
+// base + surcharge. Same rows, same evaluator as the Phase 2c commit, so the gate
+// can't disagree with what gets debited.
+export async function composeCostOverride(arSnapshot, cands) {
+  const ctx = { ar: arSnapshot, targets: [], perTargets: [] };
+  for (const cand of cands ?? []) {
+    const effectTable = await readEffectTableForCandidate(cand);
+    if (!effectTable) continue;
+    for (const row of expandEffectChain(effectTable, cand.ref)) {
+      if (String(row.effect_kind ?? "").trim().toLowerCase() !== "adjust_cost") continue;
+      try { await applyAdjustCostMutation(ctx, cand, row); }
+      catch (e) { warn("composeCostOverride: adjust_cost row threw", e); }
+    }
+  }
+  return ctx.costOverride ?? null;
+}
+
 // ── Grant adjustment (effect_kind: "adjust_grant", card-mutation path) ───
 // The heal/restore counterpart of adjust_accuracy: a performer/self reaction
 // (Cognitive Focus "+SL×2 healing to my focus") adjusts the in-flight action's
@@ -1505,9 +1526,9 @@ export async function applyAddTargetSplices(arSnapshot, cands) {
 // keeps the mutated rows (which still carry the redirect markers).
 // `_cb` is a TEST-ONLY cache-bust token for the dynamic imports (headless
 // harness iteration). Production callers omit it → plain boot-cached imports.
-export async function applyTargetSetMutation({ ar, accepted, attackerActor = null, round = 0, _cb = null, remotePrompt = null } = {}) {
+export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = null, attackerActor = null, round = 0, _cb = null, remotePrompt = null } = {}) {
   const sfx = _cb ? `?cb=${_cb}` : "";
-  const mut = await applyAcceptedCardMutations(ar, accepted, remotePrompt);
+  const mut = await applyAcceptedCardMutations(ar, accepted, remotePrompt, costOnlyAccepted);
   if (mut.cancelled) return { cancelled: true };
   const mutatedTargets = mut.targets;
   let perTargetResults = mut.perTargetResults;
@@ -1634,7 +1655,15 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
   };
 }
 
-export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives, remotePrompt = null) {
+// `costOnlyAccepted` — candidates whose chain already ran at Apply-click (Barrage's
+// `_addTarget` splice) and must NOT re-run here, but whose `adjust_cost` surcharge
+// still belongs to this action's cost. Phase 2 folds their cost rows into
+// ctx.costOverride and touches nothing else. The card-preview path passes none: its
+// `accepted` list already carries every applied candidate, and Phases 1/3 skip a
+// performer-side candidate anyway (they gate on `reactorActorUuid`, which a
+// self-reaction doesn't have) — so the preview and the commit compose the SAME
+// surcharge from the same rows.
+export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives, remotePrompt = null, costOnlyAccepted = null) {
   const targets = Array.isArray(arSnapshot.targets) ? [...arSnapshot.targets] : [];
   const perTargets = Array.isArray(arSnapshot.perTargetResults) ? [...arSnapshot.perTargetResults] : [];
   // `remotePrompt` rides on the mutation ctx so the redirect/add_target chain
@@ -1822,6 +1851,20 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
         const result = await applySetCheckDieMutation(ctx, cand, row);
         if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "set_check_die"); }
       }
+    }
+  }
+
+  // Phase 2c: cost-only candidates (Barrage). Their chain ran at Apply-click, so
+  // re-firing it would re-prompt the picker / re-splice the target — but the
+  // extra-target purchase is part of what THIS action costs, so its adjust_cost
+  // still has to compose. Take the cost rows and nothing else.
+  for (const cand of costOnlyAccepted ?? []) {
+    const effectTable = await readEffectTableForCandidate(cand);
+    if (!effectTable) continue;
+    for (const row of expandEffectChain(effectTable, cand.ref)) {
+      if (String(row.effect_kind ?? "").trim().toLowerCase() !== "adjust_cost") continue;
+      const result = await applyAdjustCostMutation(ctx, cand, row);
+      if (result === "applied") mutationsApplied += 1;
     }
   }
 

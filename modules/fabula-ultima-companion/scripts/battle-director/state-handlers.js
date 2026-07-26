@@ -36,7 +36,7 @@ import { ListPicker } from "./list-picker.js";
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { getInvokeCapability } from "./invoke/invoke-core.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
-import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTargetCount, mpCapTargetCount } from "./skill-cost.js";
+import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTargetCount, mpCapTargetCount, computeEffectiveCost } from "./skill-cost.js";
 // COMPUTE-side damage/accuracy helpers (resolveAccuracyParts, resolveOutgoingDamageParts,
 // isCriticalHit, applyCritDamage, resolveIncomingReduction, buildDamageBonusParts,
 // resolveDamageElementOverride) moved to action-profile.js (single-source COMPUTE).
@@ -264,43 +264,9 @@ function serializeCostMap(costMap) {
   return out;
 }
 
-// ── Effective action cost — the SINGLE calc point ─────────────────────────
-// The one place a printed/base cost (`costSerialized`) combines with `adjust_cost`
-// overrides (`costOverride`) into the amount actually paid. The RESOLVE debit AND
-// every ACTION_EFFECTIVE_COST_* reader route through this, so they can never drift.
-//
-// FU's fixed operation order — and the reason the result is INDEPENDENT of the
-// order reactions were applied / clicked: accumulate every override raw, then
-// evaluate in canonical order — base + ALL additive deltas FIRST, then × ALL
-// multiplicative factors — then clamp ONCE at the end.
-//   ⚠ NEVER clamp per-application. A per-step clamp reintroduces order-dependence:
-//     base 10, overcharge +30, waive −MAX →
-//       waive-then-overcharge: max(0,10−MAX)=0 → +30 → 30   (overcharge survives!)
-//       accumulate-then-clamp: max(0, 10+30−MAX) = 0        (order-free, correct)
-//   ⚠ `waive` (Fugitive) is expressed as an additive delta ≥ the pool max, so the
-//     single 0-clamp zeroes the final cost regardless of any composed overcharge.
-//
-// Only resources present in `base` are adjusted — a reaction can raise/lower an
-// EXISTING cost, not conjure a cost on a resource the action doesn't charge (so a
-// waive's inert −MAX on an uncharged resource is a no-op). `override` shape:
-//   { <res>: <additiveSum>, _mult?: { <res>: <productFactor> }, _parts?: [...] }
-// `_mult` is reserved for future multiplicative cost ops; today cost is additive
-// only, so the multiplicative branch is a no-op and this is behaviour-identical to
-// the previous inline debit math.
-function computeEffectiveCost(base, override) {
-  const out = {};
-  const b = base || {};
-  const mult = override?._mult || null;
-  for (const [res, v0] of Object.entries(b)) {
-    let v = Number(v0) || 0;
-    if (override) v += Number(override[res]) || 0;         // additive FIRST (raw sum)
-    if (mult && Number.isFinite(Number(mult[res]))) {
-      v = Math.floor(v * Number(mult[res]));               // multiplicative SECOND (FU rounds down)
-    }
-    out[res] = Math.max(0, v);                             // clamp ONCE
-  }
-  return out;
-}
+// Effective action cost (base folded with adjust_cost overrides) now lives in
+// skill-cost.js — the leaf module both this file and action-card.js can import,
+// so the RESOLVE debit and the card's cost bullet share ONE calc point.
 
 // Resolve a Skill action. Pulled out as a top-level helper so the
 // Item action can fire a linked skill via the same path (D.5 closure).
@@ -3434,9 +3400,10 @@ const Target = {
       // If the skill's own cost is blank because a `creature_performs_action`
       // self-reaction bills it (base Dance charges its "managed" dances via
       // bd_cost), estimate that reaction's cost from config so the card shows a
-      // real number (10 / 5) instead of "Free". DISPLAY-ONLY — the reaction does
-      // the real debit at its own fire, so this must NOT touch costMap / the
-      // costSerialized that RESOLVE re-debits (else double-charge).
+      // real number (10 / 5) instead of "Free", and so there IS a cost bullet for
+      // the mutation pass to repaint. DISPLAY-ONLY — the reaction's adjust_cost
+      // composes into costOverride and RESOLVE debits it there, so this must NOT
+      // touch costMap / costSerialized (else the surcharge is counted twice).
       if (!displayCost) {
         try {
           const est = SE().estimatePerformReactionCost(attackerActor, skill);
@@ -5200,9 +5167,32 @@ const Confirm = {
         // into the live actionResult (RESOLVE applies damage from
         // perTargetResults) and returns them so the card appends rows.
         // Cancel / empty pick / unaffordable → { ok:false } leaves the pill
-        // actionable (cost-last-in-chain means nothing was spent).
+        // actionable (nothing is spent at Apply — the purchase is billed with
+        // the action's own cost at RESOLVE).
         onAddTargetApply: async (cand, remotePrompt = null) => {
           try {
+            // Affordability gate for the extra-target purchase. The surcharge is an
+            // `adjust_cost` row folded into THIS action's cost (debited once at
+            // RESOLVE), so there's no in-chain consume_resource left to abort on an
+            // empty pool — check base + surcharge against the caster's pools here,
+            // before the picker opens. Same composer the commit uses.
+            {
+              const arNow = director.ctx.actionResult ?? ar;
+              const { composeCostOverride } = await import("./card-mutations.js?cb=" + Date.now());
+              const surcharge = await composeCostOverride(arNow, [cand]).catch((e) => {
+                warn("CONFIRM onAddTargetApply: surcharge compose threw", e); return null;
+              });
+              if (surcharge) {
+                const effective = computeEffectiveCost(arNow.costSerialized, surcharge);
+                const gate = checkAffordable(attackerActor, new Map(Object.entries(effective)));
+                if (!gate.ok) {
+                  const missing = gate.missing.map((m) => `${m.need} ${m.label} (have ${m.has})`).join(", ");
+                  ui.notifications?.warn(`${cand?.carrierName ?? "Reaction"}: not enough ${missing}.`);
+                  log(`CONFIRM onAddTargetApply: unaffordable (${missing}) — pill stays pending`);
+                  return { ok: false };
+                }
+              }
+            }
             // ── Heal-spread variant (Potion Rain) ───────────────────────────
             // Item-use restore: fire the reaction chain (add_target picks ≤SL
             // allies; adjust_grant declares the ×0.5 round-up), then REBUILD the
@@ -5501,16 +5491,21 @@ const Confirm = {
       // earlier this window may have already spliced extra targets into it.
       // Basing the recompute on the stale captured `ar` would drop them.
       const liveAr = director.ctx.actionResult ?? ar;
-      const applied = result.reactionDecisions
-        .filter((d) => d?.decision === "apply")
-        // Barrage (_addTarget) commits its MP cost + spliced targets at
-        // Apply-click, not at RESOLVE. Exclude it so RESOLVE's re-fire
-        // (firePreAcceptedCandidate) doesn't re-prompt the picker or
-        // double-charge MP — its damage is already in perTargetResults.
-        .filter((d) => {
-          const c = (prePassives ?? []).find((p) => p.rowKey === d.rowKey && p.carrierUuid === d.carrierUuid);
-          return !c?._addTarget;
-        });
+      const acceptedDecisions = result.reactionDecisions.filter((d) => d?.decision === "apply");
+      const candFor = (d) => (prePassives ?? []).find(
+        (p) => p.rowKey === d.rowKey && p.carrierUuid === d.carrierUuid);
+      // Barrage (_addTarget) splices its extra target at Apply-click, not at
+      // RESOLVE. Exclude it from the full mutation pass so RESOLVE's re-fire
+      // (firePreAcceptedCandidate) doesn't re-prompt the picker or re-splice —
+      // its damage is already in perTargetResults.
+      const applied = acceptedDecisions.filter((d) => !candFor(d)?._addTarget);
+      // …but its extra-target SURCHARGE still has to compose into this action's
+      // cost. The purchase is part of what the action costs (an `adjust_cost` row
+      // in the reaction's chain), debited once with everything else at RESOLVE —
+      // not a side debit at Apply-click. Pass those candidates through a cost-only
+      // channel: their adjust_cost rows fold into costOverride, nothing else in
+      // their chain runs again.
+      const costOnly = acceptedDecisions.filter((d) => candFor(d)?._addTarget);
       const evaluated = result.reactionDecisions.map((d) => ({
         carrierUuid: d.carrierUuid,
         rowKey: d.rowKey,
@@ -5542,7 +5537,8 @@ const Confirm = {
       try {
         const { applyTargetSetMutation, buildCheckAdjustedEvents } = await import("./card-mutations.js?cb=" + Date.now());
         const r = await applyTargetSetMutation({
-          ar: liveAr, accepted: applied, attackerActor, round: director.dCombat?.round ?? 0,
+          ar: liveAr, accepted: applied, costOnlyAccepted: costOnly,
+          attackerActor, round: director.dCombat?.round ?? 0,
         });
         negated = !!r.negated;
         if (!r.cancelled) {
