@@ -1,0 +1,17 @@
+{
+  "_comment": "Interactive open_action_menu skills that PROMPT at COMPUTE with no auto-pick, so they only ever record reason:'timeout' (a 12s guard each). Skipping them keeps capture + check fast (~1 min vs ~5.5 min) and consistent; their fingerprint becomes reason:'skipped' instead. This loses no real compute signal — they can't be meaningfully compute-fingerprinted without per-skill menu picks. Auto-loaded by both capture and check. To exercise one for real, pass its menu choices via the collector's picks option, or remove it here. Regenerate the list from the golden: names where reason=='timeout'. Disable entirely with --no-skip.",
+  "skip": [
+    "Angel Dance",
+    "Bat Dance",
+    "Create Phantasm: Dread",
+    "Create Phantasm: Strike",
+    "Elemental Shroud",
+    "Elemental Weapon",
+    "Golem Dance",
+    "Griffin Dance",
+    "Invocation",
+    "Nocebo Weapon",
+    "Symptom Shift",
+    "Zero Power: Meteor Shower"
+  ]
+}

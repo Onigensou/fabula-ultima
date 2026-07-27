@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Heal is flagged as healing and resolves (Hina → ally)",
+    "caster": "Hina",
+    "skill": "Heal",
+    "target": "ally",
+    "mode": "simulate",
+    "acceptPassives": false,
+    "assert": [
+      { "desc": "resolves without error", "signal": "ok", "op": "eq", "value": true },
+      { "desc": "reports as a heal", "signal": "hasHealing", "op": "truthy" }
+    ]
+  },
+  {
+    "name": "Iceberg connects and deals damage on a forced hit (Hina → enemy)",
+    "caster": "Hina",
+    "skill": "Iceberg",
+    "target": "enemy",
+    "mode": "compute",
+    "force": { "hit": true },
+    "assert": [
+      { "desc": "resolves without error", "signal": "ok", "op": "eq", "value": true },
+      { "desc": "connects", "signal": "hit0", "op": "eq", "value": true },
+      { "desc": "is a damaging action", "signal": "hasDamage", "op": "truthy" }
+    ]
+  },
+  {
+    "name": "Iceberg forced crit sets the crit flag and connects (Hina → enemy)",
+    "caster": "Hina",
+    "skill": "Iceberg",
+    "target": "enemy",
+    "mode": "compute",
+    "force": { "crit": true },
+    "assert": [
+      { "desc": "crit flagged", "signal": "crit", "op": "eq", "value": true },
+      { "desc": "connects on crit", "signal": "hit0", "op": "eq", "value": true }
+    ]
+  },
+  {
+    "name": "Iceberg forced fumble misses and flags the fumble (Hina → enemy)",
+    "caster": "Hina",
+    "skill": "Iceberg",
+    "target": "enemy",
+    "mode": "compute",
+    "force": { "fumble": true },
+    "assert": [
+      { "desc": "resolves without error", "signal": "ok", "op": "eq", "value": true },
+      { "desc": "fumble flagged", "signal": "fumble", "op": "eq", "value": true },
+      { "desc": "does not connect", "signal": "hit0", "op": "eq", "value": false }
+    ]
+  }
+]

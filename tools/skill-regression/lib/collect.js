@@ -32,6 +32,7 @@ const includeTypes = Array.isArray(opts.includeTypes) && opts.includeTypes.lengt
 const onlyCaster = opts.onlyCaster || null;
 const offset = Number(opts.offset) || 0;
 const pageSize = Number(opts.pageSize) || 0;          // 0 = no paging (all in one call)
+const limit = Number(opts.limit) || 0;                // 0 = no cap; else cap total tasks (smoke test)
 const perSkillMs = Number(opts.perSkillMs) || 12000;  // guard per harness call
 const skipNames = Array.isArray(opts.skip) ? opts.skip : [];
 const force = opts.force || { rA: 5, rB: 6 };
@@ -48,15 +49,40 @@ const scene = (sceneName && game.scenes.find((s) => s.name === sceneName))
 if (!scene) return { ok: false, error: "no roster scene (pass sceneName, or activate one)" };
 
 const toks = Array.from(scene.tokens).filter((t) => t.actor);
-const enemyTokens = toks.filter((t) => (t.disposition ?? 0) < 0);
-const allyTokens = toks.filter((t) => (t.disposition ?? 0) >= 0);
-const enemyTarget = enemyTokens[0] || allyTokens[0] || toks[0] || null;
+
+// Two roster modes:
+//  • BENCH mode (opts.dummy set) — a single designated target dummy (matched by
+//    actor id OR name) is the offensive target, and EVERY other token is a caster
+//    regardless of disposition. This is how the whole-catalog "Regression Bench"
+//    fingerprints ClassTemplate / boss / guest actors (they are enemy-disposition
+//    but we still want their skills baselined). Support skills target self.
+//  • CLASSIC mode (no dummy) — ally-disposition tokens are casters, the first
+//    enemy-disposition token is the target (original Training-Ground behaviour).
+const dummyRef = opts.dummy || null;
+const dummyTok = dummyRef
+  ? toks.find((t) => t.actor.id === dummyRef || t.actor.name === dummyRef)
+  : null;
+let enemyTarget, casterPool, casterPoolLabel;
+if (dummyRef && !dummyTok) {
+  return { ok: false, error: `bench dummy "${dummyRef}" not found on scene "${scene.name}" (pass a token's actor id or name)` };
+}
+if (dummyTok) {
+  enemyTarget = dummyTok;
+  casterPool = toks.filter((t) => t.id !== dummyTok.id);
+  casterPoolLabel = "every non-dummy token";
+} else {
+  const enemyTokens = toks.filter((t) => (t.disposition ?? 0) < 0);
+  const allyTokens = toks.filter((t) => (t.disposition ?? 0) >= 0);
+  enemyTarget = enemyTokens[0] || allyTokens[0] || toks[0] || null;
+  casterPool = allyTokens;
+  casterPoolLabel = "ally-disposition tokens";
+}
 if (!enemyTarget) return { ok: false, error: `roster scene "${scene.name}" has no usable tokens` };
 
-let casters = allyTokens.slice().sort((a, b) =>
+let casters = casterPool.slice().sort((a, b) =>
   (a.actor.name || "").localeCompare(b.actor.name || "") || a.id.localeCompare(b.id));
 if (onlyCaster) casters = casters.filter((t) => t.actor.name === onlyCaster);
-if (!casters.length) return { ok: false, error: onlyCaster ? `no caster token named "${onlyCaster}"` : "no ally-disposition caster tokens" };
+if (!casters.length) return { ok: false, error: onlyCaster ? `no caster token named "${onlyCaster}"` : `no caster tokens (${casterPoolLabel})` };
 
 if (mode === "simulate") {
   const st = globalThis.FUCompanion?.api?.experimental?.battleDirector?.status?.();
@@ -80,6 +106,9 @@ for (const cTok of casters) {
     .sort((a, b) => (a.name || "").localeCompare(b.name || "") || a.id.localeCompare(b.id));
   for (const skill of items) tasks.push({ cTok, skill });
 }
+// --limit caps the deterministic task list to the first N (smoke test). Applied
+// to the FLAT list before paging so `total`/`hasMore` stay consistent per page.
+if (limit > 0 && tasks.length > limit) tasks.length = limit;
 const total = tasks.length;
 // Pre-compute which (caster, skillName) pairs are non-unique across the WHOLE
 // task list so duplicates get a stable id-suffixed key regardless of which page

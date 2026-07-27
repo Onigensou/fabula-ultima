@@ -23,10 +23,81 @@ a field-level diff.
 ```bash
 cd tools/skill-regression
 
+node bin/skill-regression.js bench            # build/refresh the local Regression Bench scene (whole catalog)
 node bin/skill-regression.js capture          # baseline: write goldens from current behavior
 node bin/skill-regression.js check            # diff current vs goldens; exit 1 on any change
 node bin/skill-regression.js check --update   # accept current behavior as the new goldens
+node bin/skill-regression.js verify           # assert expected-value invariants; exit 1 on mismatch
 ```
+
+## Coverage: the Regression Bench (whole catalog)
+
+The classic roster is the 4 PCs on Training Ground (~52 skills). That misses the
+biggest reservoir of authored skills — the 37 **ClassTemplate** actors (the
+canonical ~290-skill library), plus bosses and guests — which is exactly where a
+shared-engine change silently regresses skills nobody re-tested.
+
+`bench` builds a **local** "Regression Bench" scene holding one token per
+*backbone* actor (ClassTemplates + heroes/PCs + bosses + a guest allow-list ≈ 67
+actors / ~450 skills) plus a single target dummy (the `Test Target Enemy`
+fixture). It is **not shipped as world data** — a fresh clone regenerates it by
+re-running `bench`; only the goldens + tooling are committed. The backbone is
+computed live from actor props (`class_facet` / `char_identity` / `isBoss` /
+guest names), so new class templates and bosses are picked up automatically.
+
+```bash
+node bin/skill-regression.js bench --json     # build + print the selected roster
+# → capture the whole-catalog golden against it:
+node bin/skill-regression.js capture --scene "Regression Bench" --dummy "Test Target Enemy"
+node bin/skill-regression.js capture --scene "Regression Bench" --dummy "Test Target Enemy" \
+     --mode simulate --goldens goldens/skills-simulate.json
+```
+
+In **bench mode** (`--dummy` set) the dummy is the single offensive target and
+**every other token is a caster regardless of disposition** (ClassTemplates are
+enemy-disposition but still get fingerprinted); support skills target self. A
+skill that errors on a bare template actor fingerprints as a stable `ok:false` —
+still a valid diffable baseline. Without `--dummy` the classic
+ally=caster / first-enemy=target behaviour is unchanged.
+
+Runtime: **~1 min** for the full 482-skill compute pass (simulate slower). The
+speed comes from `skip.json` — a committed list of interactive `open_action_menu`
+skills that only ever record `reason:"timeout"` at COMPUTE (a 12s guard each);
+they're recorded as `reason:"skipped"` instead, which drops the run from ~5.5 min
+to ~1 min with no loss of real compute signal. `capture` and `check` both
+auto-load it (so they stay consistent); `--no-skip` disables it (e.g. to
+re-measure which skills still time out — add any new ones to `skip.json`). Paging
+handles the bridge's 5-min cap; use `--caster` / `--limit` for fast subsets.
+
+## Correctness invariants: `verify`
+
+The golden answers "did behaviour **change**"; `verify` answers "is it
+**correct**". It runs the hand-authored scenarios in `expectations/*.json` and
+checks **invariants** — facts that hold regardless of balance tuning (no resolve
+error, affinity routing, a heal raises HP, a crit sets the crit flag) — so they
+don't churn on every rebalance the way exact numbers do. See the header of
+`lib/verify.js` for the spec schema + the derived signal list. Seed suite:
+`expectations/core-invariants.json` (re-confirm/expand on first game-open run).
+
+## Enforcement: auto-run after skill edits
+
+Two hooks (wired in `.claude/settings.json`) make the check unavoidable when
+skill-engine code or world actor data changes — the world-export pre-commit hook
+can't cover this because it runs game-*closed* and this check needs the game
+*open*.
+
+- **PostToolUse** (`hooks/on-skill-edit.js`) — on an Edit/Write to a Battle-
+  Director skill-engine file (`skill-*.js`, `*reaction*`/`*reactor*`,
+  `state-handlers.js`, `states.js`, `damage-ruleset.js`, `card-mutations.js`,
+  `template-field-registry.js`) or `worlds/fabula-ultima-2/data/actors/**`,
+  writes a session marker (`.state/pending.json`, gitignored). Cheap; never blocks.
+- **Stop** (`hooks/regression-gate.js`) — at end of a turn that set the marker:
+  game **closed** → keep the marker + print a one-line "deferred" reminder;
+  game **open**, drift → clear marker, surface a concise NEW/CHANGED/REMOVED
+  summary once (advisory — review; re-baseline with `check --update` if
+  intended); game open, clean → clear marker. A kill-timer caps the run so a
+  wedged bridge can't freeze turn-end. Override scene/mode via
+  `SKILL_REGRESSION_CHECK_ARGS` (e.g. `--scene "Regression Bench" --dummy "Test Target Enemy"`).
 
 Typical loop: `capture` once on a known-good engine → refactor → `check`. A clean
 run prints `✓ no behavioral changes`; a dirty run lists NEW / REMOVED / CHANGED
@@ -111,8 +182,16 @@ skills with the exact fields that moved, e.g.
 ## Files
 
 ```
-bin/skill-regression.js   CLI: capture | check
+bin/skill-regression.js   CLI: bench | capture | check | verify
 lib/collect.js            in-world collector body (sent as evalGM code)
+lib/build-bench.js        in-world Regression Bench builder (evalGM code)
+lib/verify.js             in-world invariant runner (evalGM code)
 lib/bridge.js             test-bridge round-trip client
-goldens/skills.json       committed golden (behavioral baseline)
+goldens/skills.json       committed golden (behavioral baseline; bench, 482 skills)
+goldens/skills-simulate.json  simulate-mode golden (writes + AE + card)
+skip.json                 interactive skills recorded as 'skipped' (keeps runs ~1 min)
+expectations/*.json       hand-authored correctness invariants for `verify`
+hooks/on-skill-edit.js    PostToolUse marker writer (enforcement)
+hooks/regression-gate.js  Stop-hook gate that runs `check` (enforcement)
+.state/                   local session marker (gitignored)
 ```
