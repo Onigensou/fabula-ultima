@@ -2008,29 +2008,25 @@ const TurnStart = {
             if (result.source === "local") {
               try { remoteAwait?.abort?.("local-won"); } catch {}
               // Close player mirrors.
-              for (const uid of broadcastedUserIds) {
-                try {
-                  channel?.broadcastMenuClose({
-                    targetUserId: uid,
-                    kind: "turn-picker",
-                    reason: "local-won",
-                  });
-                } catch {}
-              }
+              try {
+                channel?.broadcastMenuClose({
+                  targetUserIds: broadcastedUserIds,
+                  kind: "turn-picker",
+                  reason: "local-won",
+                });
+              } catch {}
             } else {
               // Remote won — close GM's local picker.
               try { TurnPicker.despawn({ director }); } catch {}
               // Also close any OTHER player's mirror (only one combatant
               // is picked; everyone else's picker should go).
-              for (const uid of broadcastedUserIds) {
-                try {
-                  channel?.broadcastMenuClose({
-                    targetUserId: uid,
-                    kind: "turn-picker",
-                    reason: "remote-won",
-                  });
-                } catch {}
-              }
+              try {
+                channel?.broadcastMenuClose({
+                  targetUserIds: broadcastedUserIds,
+                  kind: "turn-picker",
+                  reason: "remote-won",
+                });
+              } catch {}
             }
           } catch (e) {
             warn("TURN_START: turn-picker race threw", e);
@@ -2448,61 +2444,51 @@ const Declare = {
     // remoteParticipants: [{ userId, awaitP }]
     const remoteParticipants = [];
 
-    if (ownerUserId) {
-      log(`DECLARE: broadcasting compose-action to player ${ownerUserId} (${snap.name})`);
-      // Free-action grant — the registry is GM-side memory. Plumb the
-      // grant fields into the menuSpec so the player's composeAction
-      // applies the Octopath filter + budget label without needing the
-      // local freeActions singleton populated.
+    // The owner and every secondary GM receive the IDENTICAL spec (secondary
+    // GMs are meant to see the full eligible list, same as the local GM), so
+    // the compose payload — a combatant snapshot plus one target snapshot per
+    // eligible token — ships ONCE for all of them instead of once per user.
+    // Free-action grant — the registry is GM-side memory. Plumb the grant
+    // fields into the menuSpec so the player's composeAction applies the
+    // Octopath filter + budget label without needing the local freeActions
+    // singleton populated.
+    const composeMenuSpec = {
+      kind: "compose-action",
+      combatId: director.combatId,
+      tokenUuid: token.document.uuid,
+      actorUuid: snap.actorUuid,
+      snap,
+      eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
+      freeActionGrant,
+    };
+    const composeRecipients = [...(ownerUserId ? [ownerUserId] : []), ...secondaryGmIds];
+
+    if (composeRecipients.length) {
+      log(`DECLARE: broadcasting compose-action to ${composeRecipients.join(", ")} (${snap.name})`);
       try {
         director.intentChannel?.broadcastMenuOpen({
-          targetUserId: ownerUserId,
-          menuSpec: {
-            kind: "compose-action",
-            combatId: director.combatId,
-            tokenUuid: token.document.uuid,
-            actorUuid: snap.actorUuid,
-            snap,
-            eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
-            freeActionGrant,
-          },
+          targetUserIds: composeRecipients,
+          menuSpec: composeMenuSpec,
         });
-        const awaitP = director.intentChannel.awaitIntent(INTENTS.ACTION_COMPOSED, {
-          fromUserId: ownerUserId,
-          timeoutMs: 30 * 60 * 1000,
-        });
-        remoteParticipants.push({ userId: ownerUserId, awaitP });
-        director.ctx._activeRemoteMenu = { kind: "compose-action", targetUserId: ownerUserId };
       } catch (e) {
-        warn("DECLARE: player broadcast/await setup threw, GM-local only", e);
+        warn("DECLARE: compose-action broadcast threw, GM-local only", e);
       }
     }
 
-    // Secondary GMs: broadcast the same compose-action MENU_OPEN so they
-    // see and can interact with the Octopath. They receive ALL eligibles —
-    // same as the local GM — since they can act on behalf of any combatant.
-    for (const gmId of secondaryGmIds) {
-      log(`DECLARE: broadcasting compose-action to secondary GM ${gmId} (${snap.name})`);
+    // Each participant still needs its OWN awaitIntent entry in the race pool —
+    // whoever completes their compose chain first wins.
+    for (const uid of composeRecipients) {
       try {
-        director.intentChannel?.broadcastMenuOpen({
-          targetUserId: gmId,
-          menuSpec: {
-            kind: "compose-action",
-            combatId: director.combatId,
-            tokenUuid: token.document.uuid,
-            actorUuid: snap.actorUuid,
-            snap,
-            eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
-            freeActionGrant,
-          },
-        });
         const awaitP = director.intentChannel.awaitIntent(INTENTS.ACTION_COMPOSED, {
-          fromUserId: gmId,
+          fromUserId: uid,
           timeoutMs: 30 * 60 * 1000,
         });
-        remoteParticipants.push({ userId: gmId, awaitP });
+        remoteParticipants.push({ userId: uid, awaitP });
+        if (uid === ownerUserId) {
+          director.ctx._activeRemoteMenu = { kind: "compose-action", targetUserId: ownerUserId };
+        }
       } catch (e) {
-        warn(`DECLARE: secondary GM ${gmId} broadcast/await setup threw`, e);
+        warn(`DECLARE: compose-action await setup threw for ${uid}`, e);
       }
     }
 
@@ -2527,27 +2513,23 @@ const Declare = {
     };
     function broadcastTurnActionIndicatorOpen() {
       if (!director.intentChannel) return;
-      for (const uid of turnActionIndicatorRecipients) {
-        try {
-          director.intentChannel.broadcastMenuOpen({
-            targetUserId: uid,
-            menuSpec: turnActionIndicatorSpec,
-          });
-        } catch (e) { warn("DECLARE: broadcastMenuOpen(turn-action-indicator) threw", e); }
-      }
+      try {
+        director.intentChannel.broadcastMenuOpen({
+          targetUserIds: turnActionIndicatorRecipients,
+          menuSpec: turnActionIndicatorSpec,
+        });
+      } catch (e) { warn("DECLARE: broadcastMenuOpen(turn-action-indicator) threw", e); }
     }
     function broadcastTurnActionIndicatorClose() {
       if (!director.intentChannel) return;
-      for (const uid of turnActionIndicatorRecipients) {
-        try {
-          director.intentChannel.broadcastMenuClose({
-            targetUserId: uid,
-            kind: "turn-action-indicator",
-            reason: "compose-resolved",
-            data: { tokenUuid: token.document.uuid, combatId: director.combatId },
-          });
-        } catch (e) { warn("DECLARE: broadcastMenuClose(turn-action-indicator) threw", e); }
-      }
+      try {
+        director.intentChannel.broadcastMenuClose({
+          targetUserIds: turnActionIndicatorRecipients,
+          kind: "turn-action-indicator",
+          reason: "compose-resolved",
+          data: { tokenUuid: token.document.uuid, combatId: director.combatId },
+        });
+      } catch (e) { warn("DECLARE: broadcastMenuClose(turn-action-indicator) threw", e); }
     }
     broadcastTurnActionIndicatorOpen();
     director.ctx._closeTurnActionIndicator = broadcastTurnActionIndicatorClose;

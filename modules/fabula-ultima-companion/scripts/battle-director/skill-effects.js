@@ -9632,15 +9632,21 @@ async function showLootTableDialog({ caster, results, ctx }) {
   const ownerUserId = game.user?.isGM ? ownerUserIdForActor(caster) : null;
   const broadcastedIds = [];
   if (game.user?.isGM && channel) {
-    for (const u of (game.users?.contents ?? [])) {
-      if (u.isGM || !u.active) continue;
+    broadcastedIds.push(...(game.users?.contents ?? [])
+      .filter((u) => !u.isGM && u.active)
+      .map((u) => u.id));
+    if (broadcastedIds.length) {
       try {
+        // One emit for the table — viewResults carries pre-rendered per-item
+        // statsHtml, so a per-user loop shipped it once per recipient.
         channel.broadcastMenuOpen({
-          targetUserId: u.id,
+          targetUserIds: broadcastedIds,
           menuSpec: { kind: "soul-steal-result", combatId, casterName, viewResults, ownerUserId },
         });
-        broadcastedIds.push(u.id);
-      } catch (e) { warn(`soul-steal: broadcast to ${u.name} threw`, e); }
+      } catch (e) {
+        warn("soul-steal: broadcast threw", e);
+        broadcastedIds.length = 0;
+      }
     }
   }
 
@@ -9659,8 +9665,8 @@ async function showLootTableDialog({ caster, results, ctx }) {
   } finally {
     try { ownerAwait?.abort?.("closed"); } catch {}
     try { SoulStealResult.despawn({ combatId }); } catch {}
-    for (const uid of broadcastedIds) {
-      try { channel?.broadcastMenuClose({ targetUserId: uid, kind: "soul-steal-result", reason: "closed" }); } catch {}
+    if (broadcastedIds.length) {
+      try { channel?.broadcastMenuClose({ targetUserIds: broadcastedIds, kind: "soul-steal-result", reason: "closed" }); } catch {}
     }
   }
 }

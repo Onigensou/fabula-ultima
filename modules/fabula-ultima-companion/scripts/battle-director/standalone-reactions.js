@@ -615,29 +615,21 @@ export async function dispatchReactionMenu({
   function closeMenusEverywhere() {
     ReactionMenu.despawn({ combatId, tokenId: token.id });
     if (channel) {
-      if (ownerUserId) {
+      const closeRecipients = [...(ownerUserId ? [ownerUserId] : []), ...secondaryGmIds];
+      if (closeRecipients.length) {
         try {
           channel.broadcastMenuClose({
-            targetUserId: ownerUserId,
+            targetUserIds: closeRecipients,
             kind: "reaction-menu",
             reason: "fired-or-passed",
           });
         } catch (e) { warn(`reaction[${trigger}]: broadcastMenuClose(menu) threw`, e); }
       }
-      for (const gmId of secondaryGmIds) {
-        try {
-          channel.broadcastMenuClose({
-            targetUserId: gmId,
-            kind: "reaction-menu",
-            reason: "fired-or-passed",
-          });
-        } catch (e) { warn(`reaction[${trigger}]: broadcastMenuClose(menu,secondary GM) threw`, e); }
-      }
       const indicatorTokenUuid = token.document?.uuid ?? token.uuid ?? null;
-      for (const uid of indicatorRecipients) {
+      if (indicatorRecipients.length) {
         try {
           channel.broadcastMenuClose({
-            targetUserId: uid,
+            targetUserIds: indicatorRecipients,
             kind: "reaction-indicator",
             reason: "fired-or-passed",
             data: { tokenUuid: indicatorTokenUuid, combatId },
@@ -851,26 +843,23 @@ export async function dispatchReactionMenu({
       resolveClose();
       return;
     }
-    if (ownerUserId && channel) {
+    // renderMenu re-runs after EVERY blade decision, so this is the hottest
+    // broadcast in the director. Build the spec once (it was being rebuilt per
+    // recipient) and ship it in a single emit addressed to the owner + every
+    // secondary GM.
+    const menuRecipients = [...(ownerUserId ? [ownerUserId] : []), ...secondaryGmIds];
+    if (channel && menuRecipients.length) {
       try {
         channel.broadcastMenuOpen({
-          targetUserId: ownerUserId,
+          targetUserIds: menuRecipients,
           menuSpec: buildPlayerMenuSpec(),
         });
       } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen threw`, e); }
     }
-    for (const gmId of secondaryGmIds) {
-      try {
-        channel?.broadcastMenuOpen({ targetUserId: gmId, menuSpec: buildPlayerMenuSpec() });
-      } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen(secondary GM) threw`, e); }
-    }
     if (channel && indicatorRecipients.length) {
-      const spec = buildIndicatorSpec();
-      for (const uid of indicatorRecipients) {
-        try {
-          channel.broadcastMenuOpen({ targetUserId: uid, menuSpec: spec });
-        } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen(indicator) threw`, e); }
-      }
+      try {
+        channel.broadcastMenuOpen({ targetUserIds: indicatorRecipients, menuSpec: buildIndicatorSpec() });
+      } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen(indicator) threw`, e); }
     }
     const remoteAwait = armRemoteAwaits();
     let localPickFired = false;
@@ -1017,10 +1006,11 @@ export async function dispatchReactionMenu({
     // in-place mutation. Best-effort — lag-resilient. The GM is
     // authoritative; the stale-click safeguard in processDecision
     // handles late clicks against now-stamped blades.
-    if (channel && ownerUserId) {
+    const patchRecipients = [...(ownerUserId ? [ownerUserId] : []), ...secondaryGmIds];
+    if (channel && patchRecipients.length) {
       try {
         channel.broadcastMenuPatch({
-          targetUserId: ownerUserId,
+          targetUserIds: patchRecipients,
           patch: {
             kind: "reaction-menu-disabled",
             combatId,
@@ -1029,19 +1019,6 @@ export async function dispatchReactionMenu({
           },
         });
       } catch (e) { warn(`reaction[${trigger}]: broadcastMenuPatch threw`, e); }
-    }
-    for (const gmId of secondaryGmIds) {
-      try {
-        channel?.broadcastMenuPatch({
-          targetUserId: gmId,
-          patch: {
-            kind: "reaction-menu-disabled",
-            combatId,
-            tokenId: token.id,
-            disabledLabels: mergedDisabledLabels(),
-          },
-        });
-      } catch (e) { warn(`reaction[${trigger}]: broadcastMenuPatch(secondary GM) threw`, e); }
     }
   };
   _dispatchCoordinator.addEventListener("stop-others", stopHandler);

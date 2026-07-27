@@ -418,13 +418,13 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   try {
     const channel = getIntentChannel();
     const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
-    for (const u of onlineNonPrimary) {
+    if (onlineNonPrimary.length) {
       try {
         channel.broadcastMenuClose({
-          targetUserId: u.id,
+          targetUserIds: onlineNonPrimary.map((u) => u.id),
           reason: `director-stop:${reason}`,
         });
-      } catch (e) { warn(`stop: broadcastMenuClose to ${u.name} threw`, e); }
+      } catch (e) { warn("stop: broadcastMenuClose sweep threw", e); }
     }
   } catch (e) { warn("stop: mirror MENU_CLOSE sweep threw", e); }
 

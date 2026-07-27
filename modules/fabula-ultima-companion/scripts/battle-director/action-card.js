@@ -4290,6 +4290,69 @@ function projectActionCardRenderPayload(payload) {
   return out;
 }
 
+// Display-only projection of the actionResult that rides along with a mirror
+// card. The player path uses it ONLY to repaint the card after an invoke
+// (invoke-worker.patchCardDom + invoke-hud's restore/preview), so it needs the
+// roll, the per-target rows and a few attacker/Study scalars — not the GM's
+// full resolution state (targets, hitTokenUuids, payloadAtFire, _instanceId,
+// callbacks). The raw object was being shipped whole alongside the already-
+// compacted renderPayload, and again on every invoke-update and trait-reroll:
+// three full copies per invoke, which is exactly what a thin connection cannot
+// absorb.
+//
+// Player code never mutates or returns this — the GM re-derives from its own
+// cardAr — so a lossy projection cannot corrupt GM state.
+function projectActionResultForRender(ar) {
+  if (!ar) return null;
+  const roll = ar.roll ?? null;
+  const tier = ar.tier ?? null;
+  return {
+    // Study branch of patchCardDom.
+    kind: ar.kind ?? null,
+    tier: tier ? { name: tier.name ?? null, threshold: tier.threshold ?? null } : null,
+    previousBest: ar.previousBest ?? null,
+    improved: ar.improved ?? null,
+    attacker: {
+      tokenUuid: ar.attacker?.tokenUuid ?? null,
+      invokePointCount: ar.attacker?.invokePointCount ?? null,
+    },
+    roll: roll ? {
+      rA: roll.rA, rB: roll.rB, dA: roll.dA, dB: roll.dB, A1: roll.A1, A2: roll.A2,
+      total: roll.total, checkBonus: roll.checkBonus,
+      isCrit: roll.isCrit, isFumble: roll.isFumble,
+      opportunities: roll.opportunities ?? null,
+    } : null,
+    // Presence of the damage object (not just its values) switches the row
+    // labels between HIT/MISS and SUCCESS/FAILED — keep null vs object exact.
+    damage: ar.damage ? {
+      finalIfHit: ar.damage.finalIfHit ?? null,
+      ignoreHR: ar.damage.ignoreHR ?? null,
+    } : null,
+    // MAP, never filter: rows are matched to .fud-bf-target-row by index, so
+    // dropping one would repaint the wrong target.
+    perTargetResults: (Array.isArray(ar.perTargetResults) ? ar.perTargetResults : []).map((r) => {
+      if (!r) return r ?? null;
+      return {
+        hit: r.hit, crit: r.crit, isCrit: r.isCrit,
+        damage: r.damage, affinity: r.affinity ?? null,
+        resource: r.resource ?? null,
+        // Read by the bond preview to recompute hit/miss; dropping it would
+        // make every studied row preview as a Hit.
+        defense: r.defense ?? null,
+        studied: r.studied,
+        grantAmount: r.grantAmount ?? null,
+        grantResource: r.grantResource ?? null,
+        resourceCur: r.resourceCur ?? null,
+        resourceMax: r.resourceMax ?? null,
+        vismagusSuppressed: r.vismagusSuppressed ?? null,
+        damageOverride: r.damageOverride
+          ? { from: r.damageOverride.from ?? null, to: r.damageOverride.to ?? null }
+          : null,
+      };
+    }),
+  };
+}
+
 // Assemble the action-card root <div> from a composed card object + reaction
 // candidates — the SINGLE source of the card's outer DOM template, shared by the
 // GM spawn (postActionCard) and the player-side local mirror render so the two are
@@ -4582,25 +4645,25 @@ export async function postActionCard({ director, kind, payload }) {
     const useLocalRender = ACTION_CARD_LOCAL_RENDER_KINDS.has(kind);
     const renderPayload = useLocalRender ? projectActionCardRenderPayload(effectivePayload) : null;
     const cardHTML = useLocalRender ? null : root.outerHTML;
-    // Broadcast to ALL non-primary clients: players + secondary GMs.
+    // Broadcast to ALL non-primary clients: players + secondary GMs. Every
+    // recipient gets the identical spec, so this is ONE emit addressed to all
+    // of them rather than one per user — see IntentChannel.normalizeTargets.
     const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
-    for (const u of onlineNonPrimary) {
-      try {
-        director.intentChannel?.broadcastMenuOpen({
-          targetUserId: u.id,
-          menuSpec: {
-            kind: "action-card",
-            combatId: director.combatId,
-            cardKind: kind,
-            ownerUserId,
-            attackerActorUuid,
-            html: cardHTML,
-            renderPayload,
-            actionResult: director.ctx.actionResult ?? null,
-          },
-        });
-      } catch (e) { warn(`postActionCard: broadcast to ${u.name} threw`, e); }
-    }
+    try {
+      director.intentChannel?.broadcastMenuOpen({
+        targetUserIds: onlineNonPrimary.map((u) => u.id),
+        menuSpec: {
+          kind: "action-card",
+          combatId: director.combatId,
+          cardKind: kind,
+          ownerUserId,
+          attackerActorUuid,
+          html: cardHTML,
+          renderPayload,
+          actionResult: projectActionResultForRender(director.ctx.actionResult),
+        },
+      });
+    } catch (e) { warn("postActionCard: broadcast threw", e); }
   } catch (e) { warn("postActionCard: broadcast setup threw", e); }
 
   // Tracks which invoke types have been used for this action card instance.
@@ -4644,15 +4707,13 @@ export async function postActionCard({ director, kind, payload }) {
         // their mirror cards. GM-side DOM despawns via the timeout below.
         try {
           const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
-          for (const u of onlineNonPrimary) {
-            try {
-              director.intentChannel?.broadcastMenuClose({
-                targetUserId: u.id,
-                kind: "action-card",
-                reason: `card-${outcome}`,
-              });
-            } catch {}
-          }
+          try {
+            director.intentChannel?.broadcastMenuClose({
+              targetUserIds: onlineNonPrimary.map((u) => u.id),
+              kind: "action-card",
+              reason: `card-${outcome}`,
+            });
+          } catch {}
         } catch {}
 
         for (const b of root.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
@@ -4805,19 +4866,17 @@ export async function postActionCard({ director, kind, payload }) {
       // so all observers see the decision flip in real time.
       try {
         const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
-        for (const u of onlineNonPrimary) {
-          director?.intentChannel?.broadcastMenuOpen({
-            targetUserId: u.id,
-            menuSpec: {
-              kind: "action-card-pill-update",
-              combatId: director.combatId,
-              rowKey,
-              carrierUuid,
-              decision,
-              pendingCount: next,
-            },
-          });
-        }
+        director?.intentChannel?.broadcastMenuOpen({
+          targetUserIds: onlineNonPrimary.map((u) => u.id),
+          menuSpec: {
+            kind: "action-card-pill-update",
+            combatId: director.combatId,
+            rowKey,
+            carrierUuid,
+            decision,
+            pendingCount: next,
+          },
+        });
       } catch (e) { warn("commitPillDecisionDom: pill-update broadcast threw", e); }
     }
 
@@ -5112,16 +5171,14 @@ export async function postActionCard({ director, kind, payload }) {
               const finalBody = bodyEl ? bodyEl.innerHTML : newBody;
               try {
                 const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
-                for (const u of onlineNonPrimary) {
-                  director?.intentChannel?.broadcastMenuOpen({
-                    targetUserId: u.id,
-                    menuSpec: {
-                      kind: "action-card-body-update",
-                      combatId: director.combatId,
-                      bodyHtml: finalBody,
-                    },
-                  });
-                }
+                director?.intentChannel?.broadcastMenuOpen({
+                  targetUserIds: onlineNonPrimary.map((u) => u.id),
+                  menuSpec: {
+                    kind: "action-card-body-update",
+                    combatId: director.combatId,
+                    bodyHtml: finalBody,
+                  },
+                });
               } catch (e) { warn("recordPillDecision: body-update broadcast threw", e); }
             }
           } else {
@@ -5629,25 +5686,19 @@ export async function postActionCard({ director, kind, payload }) {
             }
           }
 
-          // Broadcast the delta to every connected player so their
-          // mirror reflects the same redirect visuals. Pass-through
-          // structured-clone-safe — no closures or DOM refs in the
-          // delta. Players apply it via the registered handler
-          // (registerPlayerActionCardHandler → action-card-target-mutation).
-          try {
-            const channel = director?.intentChannel ?? null;
-            const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
-            for (const u of onlineNonPrimary) {
-              channel?.broadcastMenuOpen({
-                targetUserId: u.id,
-                menuSpec: {
-                  kind: "action-card-target-mutation",
-                  combatId: director.combatId,
-                  delta,
-                },
-              });
-            }
-          } catch (e) { warn("recomputeTargetPreviews: mutation broadcast threw", e); }
+          // NOTE: an `action-card-target-mutation` delta used to be broadcast here
+          // for the redirect visuals. It is deliberately NOT sent any more: the
+          // full-body swap at the end of this same synchronous pass (see the
+          // `action-card-body-update` broadcast below) is authoritative and
+          // carries a strict superset of this delta, so the mirror ended up
+          // applying the delta and then immediately overwriting it — a wasted
+          // payload per damage-touching reaction on every client.
+          //
+          // The player-side `action-card-target-mutation` handler is KEPT: the
+          // intended follow-up is to widen the delta vocabulary to cover the
+          // per-target damage spans + headline `.fud-bf-dmg` fieldset (the two
+          // things it lacks today) and retire the innerHTML swap entirely, at
+          // which point this emit comes back instead of the body dump.
 
           // Non-redirect result-span refresh — for the add_damage path
           // (Cheap Shot bonus toggles). Walks the recomputed list and
@@ -5819,16 +5870,14 @@ export async function postActionCard({ director, kind, payload }) {
             const finalBody = bodyEl ? bodyEl.innerHTML : null;
             if (finalBody) {
               const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
-              for (const u of onlineNonPrimary) {
-                director?.intentChannel?.broadcastMenuOpen({
-                  targetUserId: u.id,
-                  menuSpec: {
-                    kind: "action-card-body-update",
-                    combatId: director.combatId,
-                    bodyHtml: finalBody,
-                  },
-                });
-              }
+              director?.intentChannel?.broadcastMenuOpen({
+                targetUserIds: onlineNonPrimary.map((u) => u.id),
+                menuSpec: {
+                  kind: "action-card-body-update",
+                  combatId: director.combatId,
+                  bodyHtml: finalBody,
+                },
+              });
             }
           } catch (e) { warn("recomputeTargetPreviews: body-update broadcast threw", e); }
 
@@ -5917,12 +5966,13 @@ export async function postActionCard({ director, kind, payload }) {
     const broadcastInvokeUpdate = () => {
       const menuSpec = {
         kind: "action-card-invoke-update",
-        actionResult: cardAr,
+        actionResult: projectActionResultForRender(cardAr),
         invokeState: { ...invokeState },
       };
-      for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id)) {
-        try { director.intentChannel?.broadcastMenuOpen({ targetUserId: u.id, menuSpec }); } catch {}
-      }
+      const targetUserIds = (game.users?.contents ?? [])
+        .filter((u) => u.active && u.id !== game.user?.id)
+        .map((u) => u.id);
+      try { director.intentChannel?.broadcastMenuOpen({ targetUserIds, menuSpec }); } catch {}
     };
 
     // ── Spectator invoke HUD (read-only mirror of the theatrical panel) ───────
@@ -5967,9 +6017,10 @@ export async function postActionCard({ director, kind, payload }) {
         const spec = await buildSpectatorPayload(type);
         if (!spec) return;
         const menuSpec = { kind: "invoke-hud-spectator", combatId: director.combatId, spec };
-        for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id && u.id !== excludeUserId)) {
-          try { director.intentChannel?.broadcastMenuOpen({ targetUserId: u.id, menuSpec }); } catch {}
-        }
+        const spectatorIds = (game.users?.contents ?? [])
+          .filter((u) => u.active && u.id !== game.user?.id && u.id !== excludeUserId)
+          .map((u) => u.id);
+        try { director.intentChannel?.broadcastMenuOpen({ targetUserIds: spectatorIds, menuSpec }); } catch {}
         // GM is a spectator whenever someone else is the actor → render locally
         // (socket never echoes our own broadcast back to us). Dock it beside
         // the GM's own card root.
@@ -5987,14 +6038,15 @@ export async function postActionCard({ director, kind, payload }) {
     // `type` ("trait"|"bond") gates the dismiss so a stale close can't tear
     // down a freshly-opened HUD of the other type (rapid type-switch).
     const closeSpectatorHud = ({ excludeUserId = null, traitOutcome = null, cancelled = false, type = null } = {}) => {
-      for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id && u.id !== excludeUserId)) {
-        try {
-          director.intentChannel?.broadcastMenuClose({
-            targetUserId: u.id, kind: "invoke-hud-spectator",
-            data: { traitOutcome, cancelled, expectKind: type },
-          });
-        } catch {}
-      }
+      const spectatorIds = (game.users?.contents ?? [])
+        .filter((u) => u.active && u.id !== game.user?.id && u.id !== excludeUserId)
+        .map((u) => u.id);
+      try {
+        director.intentChannel?.broadcastMenuClose({
+          targetUserIds: spectatorIds, kind: "invoke-hud-spectator",
+          data: { traitOutcome, cancelled, expectKind: type },
+        });
+      } catch {}
       if (_specHudShownLocally) {
         _specHudShownLocally = false;
         import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ traitOutcome, cancelled, expectKind: type })).catch(() => {});
@@ -6007,9 +6059,10 @@ export async function postActionCard({ director, kind, payload }) {
     // also applies the selection to its own local panel.
     const broadcastSpectatorSelect = (type, sel, excludeUserId) => {
       const patch = { kind: "invoke-hud-spectator-select", type, sel };
-      for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id && u.id !== excludeUserId)) {
-        try { director.intentChannel?.broadcastMenuPatch({ targetUserId: u.id, patch }); } catch {}
-      }
+      const spectatorIds = (game.users?.contents ?? [])
+        .filter((u) => u.active && u.id !== game.user?.id && u.id !== excludeUserId)
+        .map((u) => u.id);
+      try { director.intentChannel?.broadcastMenuPatch({ targetUserIds: spectatorIds, patch }); } catch {}
       if (_specHudShownLocally && excludeUserId && excludeUserId !== game.user?.id) {
         import("./invoke/invoke-hud.js").then((hud) => {
           if (type === "trait") hud.applyTraitSpectatorSelection(sel ?? {});
@@ -6034,13 +6087,14 @@ export async function postActionCard({ director, kind, payload }) {
         kind: "invoke-trait-reroll",
         combatId: director.combatId,
         choice, oldTotal, intense, roll: rollLite,
-        actionResult: newAr,
+        actionResult: projectActionResultForRender(newAr),
         invokeState: { ...invokeState },
       };
       // 1) Broadcast to every other active client (their handler animates → patches).
-      for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id)) {
-        try { director.intentChannel?.broadcastMenuOpen({ targetUserId: u.id, menuSpec }); } catch {}
-      }
+      const rerollUserIds = (game.users?.contents ?? [])
+        .filter((u) => u.active && u.id !== game.user?.id)
+        .map((u) => u.id);
+      try { director.intentChannel?.broadcastMenuOpen({ targetUserIds: rerollUserIds, menuSpec }); } catch {}
       // 2) Present locally — animate the GM's open HUD (real if GM-acts, spectator
       //    if a player acted), then patch the card + chime.
       try {

@@ -210,10 +210,8 @@ export async function remotePickAny({
       return { uid, p: null, tagged: Promise.reject(e) };
     }
   });
-  for (const uid of uids) {
-    try { channel.broadcastMenuOpen({ targetUserId: uid, menuSpec: { kind, requestId, combatId, ...spec } }); }
-    catch (e) { warn(`remotePickAny: broadcastMenuOpen threw for ${uid}`, e); }
-  }
+  try { channel.broadcastMenuOpen({ targetUserIds: uids, menuSpec: { kind, requestId, combatId, ...spec } }); }
+  catch (e) { warn("remotePickAny: broadcastMenuOpen threw", e); }
   let cancelHooked = null;
   if (externalCancel && typeof externalCancel.then === "function") {
     cancelHooked = externalCancel.then(() => {
@@ -221,9 +219,7 @@ export async function remotePickAny({
     }).catch(() => {});
   }
   const closeAll = () => {
-    for (const uid of uids) {
-      try { channel.broadcastMenuClose({ targetUserId: uid, kind, data: { requestId } }); } catch {}
-    }
+    try { channel.broadcastMenuClose({ targetUserIds: uids, kind, data: { requestId } }); } catch {}
   };
   let winnerUid = null, intent = null;
   try {

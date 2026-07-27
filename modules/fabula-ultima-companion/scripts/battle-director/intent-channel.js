@@ -25,6 +25,27 @@ const CHANNEL = "module.fabula-ultima-companion";
 
 let _instance = null;
 
+// Normalize the two addressing forms into a deduped id array.
+//
+// Foundry relays a module socket to EVERY connected client — there is no
+// server-side recipient routing — so addressing is done client-side by the
+// `_isForMe` filter below. Emitting once per recipient therefore made a table
+// of N clients pay N x N payload deliveries for N useful ones. Passing
+// `targetUserIds` lets one emit serve every recipient that shares a payload,
+// which collapses that back to N. The slowest connection at the table is the
+// one that felt the multiplier, so this is the main lever for it.
+//
+// Returns [] when neither form is given — callers treat that as "no addressed
+// recipient" (broadcastMenuClose keeps its own null == all-users semantics).
+function normalizeTargets(targetUserId, targetUserIds) {
+  const out = [];
+  const push = (v) => { if (v && !out.includes(v)) out.push(v); };
+  if (Array.isArray(targetUserIds)) targetUserIds.forEach(push);
+  else push(targetUserIds);
+  push(targetUserId);
+  return out;
+}
+
 export class IntentChannel {
   constructor() {
     this.director = null; // set on GM via attachDirector(); stays null on players
@@ -161,9 +182,21 @@ export class IntentChannel {
     warn(`intent had no awaiter and no director match (${payload.type} from ${user.name})`);
   }
 
+  // Is this payload addressed to this client? Accepts the legacy single
+  // `targetUserId` and the multi-recipient `targetUserIds` array. A null/absent
+  // address matches nobody, which preserves the previous behavior for
+  // MENU_CLOSE's `targetUserId: null` (GM-side uncache-all; never delivered).
+  _isForMe(payload) {
+    const me = game.user?.id ?? null;
+    if (!me) return false;
+    const many = payload?.targetUserIds;
+    if (Array.isArray(many)) return many.includes(me);
+    return payload?.targetUserId === me;
+  }
+
   _onMenuOpen(data) {
     const payload = data.payload ?? {};
-    if (payload.targetUserId !== game.user?.id) return;
+    if (!this._isForMe(payload)) return;
     log(`menu_open received: kind=${payload.menuSpec?.kind ?? "?"}`);
     for (const h of this._menuOpenHandlers) {
       try { h(payload.menuSpec, payload); } catch (e) { warn("onMenuOpen handler threw", e); }
@@ -176,7 +209,7 @@ export class IntentChannel {
   // multi-reactor flow).
   _onMenuPatch(data) {
     const payload = data.payload ?? {};
-    if (payload.targetUserId !== game.user?.id) return;
+    if (!this._isForMe(payload)) return;
     log(`menu_patch received: kind=${payload.patch?.kind ?? "?"}`);
     for (const h of this._menuPatchHandlers) {
       try { h(payload.patch, payload); } catch (e) { warn("onMenuPatch handler threw", e); }
@@ -185,7 +218,7 @@ export class IntentChannel {
 
   _onMenuClose(data) {
     const payload = data.payload ?? {};
-    if (payload.targetUserId !== game.user?.id) return;
+    if (!this._isForMe(payload)) return;
     log(`menu_close received: kind=${payload.kind ?? "?"}`);
     for (const h of this._menuCloseHandlers) {
       try { h(payload); } catch (e) { warn("onMenuClose handler threw", e); }
@@ -327,41 +360,63 @@ export class IntentChannel {
   // picker, skill picker, etc.). The payload is also cached against
   // `targetUserId` so a player re-joining (or finishing a slow `ready`
   // boot) can request replay via PLAYER_HELLO.
-  broadcastMenuOpen({ targetUserId, menuSpec }) {
+  // Accepts a single `targetUserId` or a `targetUserIds` array. When the same
+  // menuSpec goes to several recipients, pass the array — that ships ONE
+  // envelope instead of one per user (see normalizeTargets).
+  broadcastMenuOpen({ targetUserId = null, targetUserIds = null, menuSpec }) {
     if (!game.user?.isGM) return;
-    const payload = {
-      requestId: foundry.utils?.randomID?.() ?? `bd-${Date.now()}`,
-      targetUserId,
+    const targets = normalizeTargets(targetUserId, targetUserIds);
+    if (!targets.length) return;
+    const requestId = foundry.utils?.randomID?.() ?? `bd-${Date.now()}`;
+
+    this._emitRaw("MENU_OPEN", {
+      requestId,
+      // Keep the scalar populated for the single-recipient case so anything
+      // reading it off the envelope still works.
+      targetUserId: targets.length === 1 ? targets[0] : null,
+      targetUserIds: targets,
       menuSpec,
-    };
-    this._emitRaw("MENU_OPEN", payload);
-    // Cache for resync.
-    let arr = this._recentBroadcasts.get(targetUserId);
-    if (!arr) { arr = []; this._recentBroadcasts.set(targetUserId, arr); }
-    // De-dup by menuSpec.kind — only the latest broadcast of each kind
-    // per user stays in cache. Prevents stale entries piling up.
+    });
+
+    // Cache for resync — one SINGLE-target entry per recipient. Replaying a
+    // multi-target payload to one reconnecting user would re-open the menu on
+    // every other recipient too, so the cache never stores the array form.
     const kind = menuSpec?.kind ?? null;
-    const filtered = arr.filter((p) => (p.menuSpec?.kind ?? null) !== kind);
-    filtered.push(payload);
-    this._recentBroadcasts.set(targetUserId, filtered);
+    for (const uid of targets) {
+      const arr = this._recentBroadcasts.get(uid) ?? [];
+      // De-dup by menuSpec.kind — only the latest broadcast of each kind
+      // per user stays in cache. Prevents stale entries piling up.
+      const filtered = arr.filter((p) => (p.menuSpec?.kind ?? null) !== kind);
+      filtered.push({ requestId, targetUserId: uid, menuSpec });
+      this._recentBroadcasts.set(uid, filtered);
+    }
   }
 
   // GM-side: force-close a menu on a player's client (e.g. timeout,
   // GM-side cancel, director stopped mid-prompt). Also uncaches any
   // recent MENU_OPEN broadcast of the same kind so PLAYER_HELLO doesn't
   // replay it.
-  broadcastMenuClose({ targetUserId, kind = null, reason = null, data = null } = {}) {
+  broadcastMenuClose({ targetUserId = null, targetUserIds = null, kind = null, reason = null, data = null } = {}) {
     if (!game.user?.isGM) return;
+    const targets = normalizeTargets(targetUserId, targetUserIds);
+    // An explicitly-passed EMPTY recipient list means "nobody is listening"
+    // (e.g. no active players), NOT the sweep-everyone form. Callers that used
+    // to loop over an empty array did nothing; preserve that exactly, or a
+    // solo-GM session would uncache every pending menu.
+    if (!targets.length && Array.isArray(targetUserIds)) return;
     this._emitRaw("MENU_CLOSE", {
-      targetUserId,
+      // No addressed recipient keeps the historical `null` form: nothing is
+      // delivered, and the uncache below sweeps every user.
+      targetUserId: targets.length === 1 ? targets[0] : null,
+      targetUserIds: targets.length ? targets : null,
       kind,
       reason,
       data,
     });
-    // Uncache: targetUserId === null means broadcast to ALL active
-    // players (used by director-boot.js stop() sweep). In that case
-    // clear the matching kind for every user.
-    if (targetUserId == null) {
+    // Uncache: no target means ALL active players (used by
+    // director-boot.js stop() sweep). In that case clear the matching kind
+    // for every user; otherwise clear it for each addressed user.
+    if (!targets.length) {
       if (kind == null) this._recentBroadcasts.clear();
       else {
         for (const [uid, arr] of this._recentBroadcasts) {
@@ -371,13 +426,14 @@ export class IntentChannel {
         }
       }
     } else {
-      const arr = this._recentBroadcasts.get(targetUserId);
-      if (arr) {
+      for (const uid of targets) {
+        const arr = this._recentBroadcasts.get(uid);
+        if (!arr) continue;
         const filtered = kind == null
           ? []
           : arr.filter((p) => (p.menuSpec?.kind ?? null) !== kind);
-        if (filtered.length) this._recentBroadcasts.set(targetUserId, filtered);
-        else this._recentBroadcasts.delete(targetUserId);
+        if (filtered.length) this._recentBroadcasts.set(uid, filtered);
+        else this._recentBroadcasts.delete(uid);
       }
     }
   }
@@ -408,11 +464,14 @@ export class IntentChannel {
   //
   // NOT cached for PLAYER_HELLO replay — only the latest MENU_OPEN
   // spec is replayed on resume. Patches are session-only.
-  broadcastMenuPatch({ targetUserId, patch } = {}) {
+  broadcastMenuPatch({ targetUserId = null, targetUserIds = null, patch } = {}) {
     if (!game.user?.isGM) return;
+    const targets = normalizeTargets(targetUserId, targetUserIds);
+    if (!targets.length) return;
     this._emitRaw("MENU_PATCH", {
       requestId: foundry.utils?.randomID?.() ?? `bd-${Date.now()}`,
-      targetUserId,
+      targetUserId: targets.length === 1 ? targets[0] : null,
+      targetUserIds: targets,
       patch,
     });
   }
