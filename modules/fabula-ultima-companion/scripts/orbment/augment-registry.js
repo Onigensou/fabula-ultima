@@ -34,7 +34,22 @@
 const ADD = 2;       // CONST.ACTIVE_EFFECT_MODES.ADD
 const OVERRIDE = 5;  // CONST.ACTIVE_EFFECT_MODES.OVERRIDE
 
+// Equip-gated value for PROPS-BACKED keys — keys that ARE CSB template columns
+// (check_mod_*, affinity_*, condition_*, extra_damage_mod_*). CSB evaluates the
+// `${…}$` phrase when it aggregates the change into system.props, so the gate
+// works and the reader just sees a number.
 const equipGated = (n) => `\${isEquipped ? ${n} : 0}$`;
+
+// Value for AE-SCANNED keys — keys with NO template column, which the engine
+// reads straight off the AE change (heal_receiving_flat_all, spell_restore_mod;
+// see skill-formulas sumAeChangeKey). Those readers do `Number(change.value)`
+// on the RAW string, and Number("${isEquipped ? 5 : 0}$") is NaN → silently 0.
+// So AE-scanned keys MUST carry a plain number.
+//
+// They are still equip-gated, just by a different mechanism: the compiler creates
+// the AE `disabled: !isEquipped` and equipment-swap's AE sync maintains that on
+// swaps, while every AE scan skips disabled effects.
+const aeScanned = (n) => n;
 
 // Status immunity change: force condition_<status> to "IM". Equip-gated by the
 // compiler disabling the AE off-body (matches the world "Status Immunity" item).
@@ -254,13 +269,18 @@ export const AUGMENTS = [
     appliesTo: ["armor", "shield"],
     summary: "When you recover HP, you recover 5 extra HP.",
     ruleText: "When you recover HP, you recover 5 extra HP.",
-    ae: { name: "Vitality Up (Orbment)", changes: [{ key: "heal_receiving_flat_all", mode: ADD, value: equipGated(5) }] },
+    ae: { name: "Vitality Up (Orbment)", changes: [{ key: "heal_receiving_flat_all", mode: ADD, value: aeScanned(5) }] },
   },
   {
+    // CASTER-side, spells only — the exact analogue of Secret Formula's
+    // item_restore_mod, added as a new family in skill-formulas
+    // resolveRestoreParts. AE-scanned (no template column), so it uses a plain
+    // value; see aeScanned above.
     id: "healing_up", label: "Healing Up", icon: "✚", cost: 1500, category: "enhancement",
-    appliesTo: ["armor", "shield"], pending: true,
+    appliesTo: ["armor", "shield"],
     summary: "Your HP-restoring spells restore 5 extra HP.",
     ruleText: "Spells you cast that restore Hit Points will restore 5 extra Hit Points.",
+    ae: { name: "Healing Up (Orbment)", changes: [{ key: "spell_restore_mod", mode: ADD, value: aeScanned(5) }] },
   },
   {
     id: "spell_up", label: "Spell Up", icon: "🔮", cost: 2000, category: "enhancement",

@@ -4637,7 +4637,15 @@ export function describeGrant(row, ctx = {}) {
   // heal headline's tooltip and the applied heal read ONE list. Positive HP/MP only.
   let restoreParts = [];
   if (typeof amount === "number" && amount > 0 && (resource === "hp" || resource === "mp") && casterActor) {
-    restoreParts = resolveRestoreParts({ actor: casterActor, kind: ctx.actionResult?.kind ?? ctx.actionKind });
+    // skillType = the CASTING ITEM's skill_type. Required because BD stamps both
+    // Skill and Spell as ar.kind "Skill", so `kind` alone can't identify a spell
+    // (this is what ACTION_IS_SPELL keys off too). Powers Healing Up.
+    restoreParts = resolveRestoreParts({
+      actor: casterActor,
+      kind: ctx.actionResult?.kind ?? ctx.actionKind,
+      skillType: ctx.skill?.system?.props?.skill_type ?? ctx.actionResult?.skillType ?? null,
+      resource,
+    });
     const restoreBonus = sumRestoreParts(restoreParts);
     if (restoreBonus > 0) amount += restoreBonus;
     // Potion Rain spread (adjust_grant): apply the action's restore op to the
