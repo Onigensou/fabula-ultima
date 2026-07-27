@@ -520,6 +520,14 @@ async function resolveAction(director, ar, opts = {}) {
     // MUTABLE copy — in-chain consume_resource rows subtract + decrement it so a
     // spell's total cost drops once regardless of how many consume rows it has.
     costOverride: ar?.costOverride ? { ...ar.costOverride } : null,
+    // Route any interactive prompt this chain still opens (open_action_menu /
+    // prompt_element / prompt_number / remove_tagged_ae / transfer_ae / targeting)
+    // to the CASTING actor's owner, with the GM racing a local copy. COMPUTE
+    // already did this for the pre_activate capture window (preRemotePrompt);
+    // without the same wiring here, any row that prompts at RESOLVE instead —
+    // one outside the pre_activate chain, or a re-prompt after a replay miss —
+    // rendered GM-local only and the player never saw their own choice.
+    remotePrompt: buildActingRemotePrompt(director, casterActor),
   });
   // Thread the live action result + view onto ctx so action-level effect_kinds
   // (equip_swap, encyclopedia_record, cover-ally targeting) can read the
@@ -2210,6 +2218,19 @@ function resolveActingOwnerForActor(actor, { requireActive = true } = {}) {
   if (!candidates.length) return null;
   candidates.sort((a, b) => a.id.localeCompare(b.id));
   return candidates[0].id;
+}
+
+// The `remotePrompt` handed to a chain ctx so its interactive rows open on the
+// acting player's client (GM races a local copy — see remote-pick.js). Null
+// when the actor has no online non-GM owner, or when WE are that owner, which
+// is the "render locally" signal every routed picker falls back to.
+function buildActingRemotePrompt(director, actor) {
+  const ownerUserId = resolveActingOwnerForActor(actor);
+  if (!ownerUserId) return null;
+  if (ownerUserId === game.user?.id) return null;
+  if (game.users?.get(ownerUserId)?.isGM) return null;
+  if (!director?.intentChannel) return null;
+  return { channel: director.intentChannel, targetUserId: ownerUserId, combatId: director.combatId };
 }
 
 // ─── DECLARE ───────────────────────────────────────────────────────────
@@ -4090,12 +4111,7 @@ const Compute = {
           // capture menus render GM-local only (the player never sees them). When
           // the GM owns/casts the actor (no active non-GM owner) → null = local.
           // Mirrors the reaction/action-card remote-pick pattern (see remote-pick.js).
-          const preOwnerUserId = resolveActingOwnerForActor(casterActor);
-          const preRemotePrompt = (preOwnerUserId
-            && preOwnerUserId !== game.user?.id
-            && !game.users?.get(preOwnerUserId)?.isGM)
-            ? { channel: director.intentChannel, targetUserId: preOwnerUserId, combatId: director.combatId }
-            : null;
+          const preRemotePrompt = buildActingRemotePrompt(director, casterActor);
           const capCtx = makeChainContext({
             reactorActor: casterActor, reactorToken: capToken, skill, dCombat: director.dCombat,
             payload: { targets: allUuids, hitTargets: allUuids, actionIntent: ar.actionIntent },

@@ -21,7 +21,12 @@ import { log, warn } from "./logger.js";
 export const REMOTE_PICK_KINDS = Object.freeze({
   LIST:   "reaction-pick-list",    // list-picker.pickFromList
   TARGET: "reaction-pick-target",  // target-picker.requestTargeting
+  NUMBER: "reaction-pick-number",  // number-picker.promptNumberDialog
 });
+
+// Every kind renderLocalPick knows how to draw. The player-side responder
+// gates on this set, so adding a kind above wires both ends at once.
+const RENDERABLE_KINDS = new Set(Object.values(REMOTE_PICK_KINDS));
 
 // A `remotePrompt` object is { channel, targetUserId, combatId }. It rides
 // through the effect ctx (ctx.remotePrompt) and the target picker's `remote`
@@ -52,6 +57,18 @@ async function renderLocalPick({ kind, spec = {}, externalCancel = null }) {
       preselectAll: spec.preselectAll ?? false,
       preselect: spec.preselect ?? null,
       confirmLabel: spec.confirmLabel ?? "Confirm",
+      externalCancel,
+    });
+  }
+  if (kind === REMOTE_PICK_KINDS.NUMBER) {
+    const { promptNumberDialog } = await import("./number-picker.js");
+    return await promptNumberDialog({
+      label: spec.label,
+      min: spec.min,
+      max: spec.max,
+      step: spec.step ?? 1,
+      def: spec.def,
+      title: spec.title,
       externalCancel,
     });
   }
@@ -258,7 +275,7 @@ export function registerRemotePickResponder(channel) {
   return channel.onMenuOpen(async (menuSpec) => {
     if (game.user?.isGM) return;
     const kind = menuSpec?.kind;
-    if (kind !== REMOTE_PICK_KINDS.LIST && kind !== REMOTE_PICK_KINDS.TARGET) return;
+    if (!RENDERABLE_KINDS.has(kind)) return;
     const requestId = menuSpec?.requestId ?? null;
     if (requestId && activeRequestIds.has(requestId)) {
       log(`registerRemotePickResponder(${kind}): duplicate MENU_OPEN for requestId ${requestId} — picker already open, ignoring`);
