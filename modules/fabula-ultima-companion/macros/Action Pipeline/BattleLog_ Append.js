@@ -178,7 +178,11 @@ return (async () => {
         existingJson = existingJson.slice(-MAX);
       }
 
-      updateData["system.props.battle_log"] = JSON.stringify(existingJson, null, 2);
+      // Compact — matches director-battle-log.js (the BD-native writer feeding the
+      // SAME prop). The blob is machine-read only; the indent cost 33% of the
+      // payload on every full rewrite. Keep both writers in the same format so a
+      // log doesn't flip style depending on which path appended last.
+      updateData["system.props.battle_log"] = JSON.stringify(existingJson);
       finalJsonLength = existingJson.length;
     }
 
