@@ -100,6 +100,40 @@ export function validateParam(augment, param) {
 // The Basic Status Effects (Perfect Health covers exactly these).
 const BASIC_STATUSES = ["slow", "weak", "dazed", "shaken", "enraged", "poisoned"];
 
+// The 8 canonical FU species, matching the values authored into NPC
+// `system.props.species` (see director-init ROAR_BY_SPECIES).
+const SPECIES = [
+  { id: "beast",     label: "Beast",     icon: "🐺" },
+  { id: "construct", label: "Construct", icon: "⚙️" },
+  { id: "demon",     label: "Demon",     icon: "👿" },
+  { id: "elemental", label: "Elemental", icon: "🌀" },
+  { id: "humanoid",  label: "Humanoid",  icon: "🧍" },
+  { id: "monster",   label: "Monster",   icon: "👹" },
+  { id: "plant",     label: "Plant",     icon: "🌿" },
+  { id: "undead",    label: "Undead",    icon: "💀" },
+];
+const speciesOf = (v) => SPECIES.find((s) => s.id === v) ?? null;
+
+// Hunter damage formula. TARGET_SPECIES_IS_<X> (skill-formulas) returns 1/0 for
+// the trigger SUBJECT, and computeSenderDamageBonuses evaluates damage_amount
+// ONCE PER VICTIM, so the formula self-gates: +5 against a matching species, +0
+// otherwise — no condition_formula needed, and a Multi attack scores each target
+// independently. `min(..., 1)` keeps Dual Hunter at +5 (not +10) if a creature
+// ever matched both.
+const hunterFormula = (ids) => {
+  const terms = ids.map((id) => `TARGET_SPECIES_IS_${id.toUpperCase()}`);
+  return terms.length > 1 ? `min(${terms.join(" + ")}, 1) * 5` : `${terms[0]} * 5`;
+};
+const hunterRider = (ids) => ({
+  trigger: "creature_will_deal_damage",
+  effects: [{
+    effect_kind: "adjust_damage",
+    damage_operation: "add",
+    damage_stage: "outgoing",
+    damage_amount: hunterFormula(ids),
+  }],
+});
+
 // Shared on-hit status rider builder (Status / Status Plus).
 const onHitStatusRider = (status) => ({
   trigger: "creature_deals_damage",
@@ -117,9 +151,20 @@ export const AUGMENTS = [
   },
   {
     id: "hunter", label: "Hunter", icon: "🏹", cost: 300, category: "offensive",
-    appliesTo: ["weapon"], pending: true,
+    appliesTo: ["weapon"],
     summary: "Deals 5 extra damage to creatures of a particular Species.",
     ruleText: "The weapon deals 5 extra damage to creatures of a particular Species.",
+    param: { prompt: "Choose a Species", options: SPECIES.map((s) => ({ value: s.id, label: s.label, icon: s.icon })) },
+    build: (v) => {
+      const s = speciesOf(v);
+      if (!s) return {};
+      return {
+        label: `Hunter: ${s.label}`,
+        summary: `Deals 5 extra damage to ${s.label} creatures.`,
+        icon: s.icon,
+        rider: hunterRider([s.id]),
+      };
+    },
   },
   {
     id: "piercing", label: "Piercing", icon: "🩸", cost: 400, category: "offensive",
@@ -133,9 +178,21 @@ export const AUGMENTS = [
   },
   {
     id: "dual_hunter", label: "Dual Hunter", icon: "🏹", cost: 500, category: "offensive",
-    appliesTo: ["weapon"], pending: true,
+    appliesTo: ["weapon"],
     summary: "Deals 5 extra damage to creatures of one of two Species.",
     ruleText: "The weapon deals 5 extra damage to creatures belonging to one of two particular Species.",
+    param: { prompt: "Choose two Species", pick: 2, options: SPECIES.map((s) => ({ value: s.id, label: s.label, icon: s.icon })) },
+    build: (v) => {
+      const sp = splitParam(v).map(speciesOf).filter(Boolean);
+      if (sp.length !== 2) return {};
+      const [a, b] = sp;
+      return {
+        label: `Dual Hunter: ${a.label} + ${b.label}`,
+        summary: `Deals 5 extra damage to ${a.label} and ${b.label} creatures.`,
+        icon: a.icon,
+        rider: hunterRider([a.id, b.id]),
+      };
+    },
   },
   {
     id: "multi", label: "Multi (2)", icon: "🎯", cost: 1000, category: "offensive",
