@@ -18,7 +18,7 @@ import { log, warn } from "./logger.js";
 import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
-  applyCritDamage, resolveIncomingReduction, healReceivingMultiplier, normalizeDamageType, applyAdjustOp,
+  applyCritDamage, resolveIncomingReduction, applyHealReceiving, normalizeDamageType, applyAdjustOp,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense } from "./snapshot.js";
 import { applyClassAffinityAndMult } from "./damage-ruleset.js";
@@ -722,10 +722,11 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
     const max = resDef.max ? (Number(tActor?.system?.props?.[resDef.max] ?? 0) || 0) : null;
     const isCasterSelf = e.actorUuid === ar?.attackerActorRef;
     const vismagusSuppress = !!ar?.vismagusHpPaid && isCasterSelf && canonRes === "hp";
-    // Incoming-heal modifier (recipient side, e.g. Bleed -50%): mirror
-    // applyGrantEffect so the previewed heal matches the applied heal. HP only.
-    const recipMult = canonRes === "hp" ? healReceivingMultiplier(tActor) : 1;
-    const recipBase = vismagusSuppress ? 0 : (recipMult !== 1 ? Math.floor(grantAmount * recipMult) : grantAmount);
+    // Incoming-heal adjustment (recipient side: Bleed -50%, Vitality Up +5):
+    // mirror applyGrantEffect so the previewed heal matches the applied heal.
+    // HP only. applyHealReceiving does fractional-then-flat, clamped at 0.
+    const recipBase = vismagusSuppress ? 0
+      : (canonRes === "hp" ? applyHealReceiving(tActor, grantAmount) : grantAmount);
     // Performer-side per-target heal boosts (Cognitive Focus "+SL×2 to my focus")
     // are NO LONGER a standing prop read here — they ride the adjust_grant
     // card-mutation (a reaction), folded into this amount post-recompute via

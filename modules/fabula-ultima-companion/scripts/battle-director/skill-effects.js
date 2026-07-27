@@ -18,7 +18,7 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, healReceivingMultiplier } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
@@ -4716,14 +4716,12 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
       // Single source: the precomputed per-target amount (already fully scaled).
       recipAmount = fromProfile.get(token.uuid);
     } else {
-      // Re-exec path (secondary / chain grants). Incoming-heal modifier (RECIPIENT
-      // side, e.g. Bleed's -50%): scale HP recovery by the healed actor's
-      // heal_receiving_mod_all. Per-target; HP "healing" only — MP restore untouched.
+      // Re-exec path (secondary / chain grants). Incoming-heal adjustment
+      // (RECIPIENT side): scale HP recovery by the healed actor's
+      // heal_receiving_mod_all (Bleed -50%), then add heal_receiving_flat_all
+      // (Vitality Up +5). Per-target; HP "healing" only — MP restore untouched.
       recipAmount = amount;
-      if (resource === "hp" && amount > 0) {
-        const mult = healReceivingMultiplier(actor);
-        if (mult !== 1) recipAmount = Math.floor(amount * mult);
-      }
+      if (resource === "hp" && amount > 0) recipAmount = applyHealReceiving(actor, amount);
       // Performer-side per-target heal boosts (Cognitive Focus "+SL×2 to my focus")
       // are NOT re-derived here — they ride the adjust_grant card-mutation and are
       // already baked into the PRIMARY grant's perTargetResults (the fromProfile

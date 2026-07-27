@@ -245,10 +245,16 @@ export const AUGMENTS = [
     ae: { name: "Magic Up (Orbment)", changes: [{ key: "check_mod_magic", mode: ADD, value: equipGated(1) }] },
   },
   {
+    // RECIPIENT-side: read off the HEALED actor, so it boosts any HP recovery
+    // the wearer receives regardless of who healed them. `heal_receiving_flat_all`
+    // is NOT a CSB template column — skill-formulas reads it straight off the AE
+    // changes (same as its fractional sibling heal_receiving_mod_all), so no
+    // template re-stamp is needed. Applied AFTER the fractional modifier.
     id: "vitality_up", label: "Vitality Up", icon: "💚", cost: 1000, category: "enhancement",
-    appliesTo: ["armor", "shield"], pending: true,
+    appliesTo: ["armor", "shield"],
     summary: "When you recover HP, you recover 5 extra HP.",
     ruleText: "When you recover HP, you recover 5 extra HP.",
+    ae: { name: "Vitality Up (Orbment)", changes: [{ key: "heal_receiving_flat_all", mode: ADD, value: equipGated(5) }] },
   },
   {
     id: "healing_up", label: "Healing Up", icon: "✚", cost: 1500, category: "enhancement",

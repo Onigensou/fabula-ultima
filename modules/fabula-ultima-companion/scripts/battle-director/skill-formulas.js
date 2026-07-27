@@ -2674,22 +2674,51 @@ export function sumRestoreParts(parts) {
 // never become damage). Read by BOTH applyGrantEffect (apply) and
 // buildHealPerTarget (preview) so they can't drift. Resource-scoped by the
 // caller (HP recovery only — "healing"; MP restore is untouched).
+// The FRACTIONAL part alone. Prefer applyHealReceiving() below, which also
+// applies the flat part — this is kept for callers that need the raw multiplier.
 export function healReceivingMultiplier(targetActor) {
   if (!targetActor) return 1;
-  // Sum the modifier straight off the bearer's active-effect changes rather than
-  // system.props: unlike the damage_receiving_* family, `heal_receiving_mod_all`
-  // is NOT a CSB template column, so it never surfaces to system.props (verified).
-  // Reading the AE changes is column-independent and self-contained.
+  return Math.max(0, 1 + sumHealReceivingKey(targetActor, "heal_receiving_mod_all"));
+}
+
+// Sum one recipient-side heal key off the bearer's active-effect changes rather
+// than system.props: unlike the damage_receiving_* family, neither
+// `heal_receiving_mod_all` nor `heal_receiving_flat_all` is a CSB template
+// column, so they never surface to system.props (verified 2026-07-27 — absent on
+// Hina/Blanche/Zarg). Reading the AE changes is column-independent, self-contained,
+// and needs no template re-stamp to introduce a new key.
+function sumHealReceivingKey(targetActor, key) {
+  if (!targetActor) return 0;
   let mod = 0;
   const effects = targetActor.appliedEffects ?? targetActor.effects?.contents ?? targetActor.effects ?? [];
   for (const e of effects) {
     if (e?.disabled) continue;
     for (const c of (e.changes ?? [])) {
-      if (c?.key === "heal_receiving_mod_all") mod += Number(c.value) || 0;
+      if (c?.key === key) mod += Number(c.value) || 0;
     }
   }
-  if (!mod) return 1;
-  return Math.max(0, 1 + mod);
+  return mod;
+}
+
+// Apply the FULL recipient-side heal adjustment to a positive HP recovery:
+//
+//   final = max(0, floor(amount × (1 + heal_receiving_mod_all)) + heal_receiving_flat_all)
+//
+// Fractional FIRST, flat AFTER — so Vitality Up's "+5 extra HP" is a true final
+// addition and isn't itself halved by Bleed. (Bleed -50% + Vitality Up +5 on a
+// 20 heal = 15, not 12.) Clamped at 0: a heal can never become damage.
+//
+// This is the ONE entry point for recipient-side heal adjustment. Call it from
+// both the preview (buildHealPerTarget) and the apply path (applyGrantEffect) so
+// they can never disagree — that is the whole reason this helper exists.
+// HP recovery only; MP restore is untouched (resource-scoped by the caller).
+export function applyHealReceiving(targetActor, amount) {
+  const base = Number(amount) || 0;
+  if (!targetActor || base <= 0) return base;
+  const mult = Math.max(0, 1 + sumHealReceivingKey(targetActor, "heal_receiving_mod_all"));
+  const flat = sumHealReceivingKey(targetActor, "heal_receiving_flat_all");
+  const scaled = mult === 1 ? base : Math.floor(base * mult);
+  return Math.max(0, scaled + flat);
 }
 
 // Apply an `adjust_grant` op to an already-final restore amount — the heal
