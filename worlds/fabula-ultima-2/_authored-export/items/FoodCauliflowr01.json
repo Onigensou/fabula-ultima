@@ -24,8 +24,11 @@
   "system": {
     "props": {
       "active_effect_config_table": {},
+      "check": "Check",
       "description": "<p><em>A pale, tight-curded head with a faintly bitter bite. Charred over embers, that bitterness becomes the best thing on the plate.</em></p>",
       "effect_table": {},
+      "id": "FoodCauliflowr01",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Ingredient/cauliflower_gph.webp",
       "ingredient_taste": "bitter",
       "ingredient_taste2": "",
       "ip_cost": "0",
@@ -43,8 +46,10 @@
       "item_type": "material",
       "name": "Cauliflower",
       "optional_params": {},
+      "reaction_config_table": {},
       "recipe_dish_uuid": "",
-      "recipe_kind": ""
+      "recipe_kind": "",
+      "uuid": "Item.FoodCauliflowr01"
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

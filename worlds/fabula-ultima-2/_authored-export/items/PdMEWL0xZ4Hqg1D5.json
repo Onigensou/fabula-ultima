@@ -23,39 +23,56 @@
   "sort": 0,
   "system": {
     "props": {
+      "active_effect_config_table": {},
       "cost": "",
       "defense_target_type": "mdef",
+      "details_roller": "Show",
       "effect_table": {
         "0": {
           "$deleted": false,
           "chain_steps": "dread_cx, dread_status",
+          "consume_self": false,
           "effect_kind": "chain",
           "effect_label": "dread_pre"
         },
         "1": {
           "$deleted": false,
           "chain_steps": "dread_cx, dread_status",
+          "consume_self": false,
           "effect_kind": "chain",
           "effect_label": "dread_on"
         },
         "2": {
           "$deleted": false,
+          "consume_self": false,
           "effect_kind": "open_action_menu",
           "effect_label": "dread_cx",
+          "free_hr_as_zero": false,
+          "free_mode": false,
+          "free_of_cost": false,
+          "menu_hide_disabled": false,
           "menu_option_labels": "Create a new Phantasm|Command an existing Phantasm",
           "menu_option_refs": "dread_create, dread_existing",
           "menu_title": "Create Phantasm: Dread"
         },
         "3": {
           "$deleted": false,
+          "allow_empty": false,
+          "auto_confirm_when_obvious": true,
+          "auto_target": true,
           "candidate_source": "self",
+          "consume_self": false,
           "effect_kind": "targeting",
-          "effect_label": "dread_self"
+          "effect_label": "dread_self",
+          "exclude_action_targets": false,
+          "exclude_self": false,
+          "skip_when_passive": true
         },
         "4": {
           "$deleted": false,
           "chain_steps": "dread_cost, dread_summon",
           "condition_formula": "CUR_MP >= 10 && OWN_PHANTASM_COUNT < 3",
+          "consume_self": false,
           "disable_ui_type": "dim",
           "disabled_reason": "Need 10 MP & under 3 Phantasms",
           "effect_kind": "chain",
@@ -65,6 +82,7 @@
           "$deleted": false,
           "consume_amount": "10",
           "consume_resource": "mp",
+          "consume_self": false,
           "effect_kind": "consume_resource",
           "effect_label": "dread_cost",
           "on_empty": "abort",
@@ -72,6 +90,7 @@
         },
         "6": {
           "$deleted": false,
+          "consume_self": false,
           "effect_kind": "summon",
           "effect_label": "dread_summon",
           "summon_actor": "Fox fire",
@@ -81,19 +100,31 @@
         },
         "7": {
           "$deleted": false,
+          "allow_empty": false,
+          "auto_confirm_when_obvious": true,
+          "auto_target": true,
           "candidate_source": "own_summons",
           "condition_formula": "OWN_SUMMON_COUNT >= 1",
+          "consume_self": false,
           "count": 1,
           "disable_ui_type": "dim",
           "disabled_reason": "No Phantasm on the field",
           "effect_kind": "targeting",
           "effect_label": "dread_existing",
-          "mode": "exact"
+          "exclude_action_targets": false,
+          "exclude_self": false,
+          "mode": "exact",
+          "skip_when_passive": true
         },
         "8": {
           "$deleted": false,
+          "consume_self": false,
           "effect_kind": "open_action_menu",
           "effect_label": "dread_status",
+          "free_hr_as_zero": false,
+          "free_mode": false,
+          "free_of_cost": false,
+          "menu_hide_disabled": false,
           "menu_option_labels": "Weak|Shaken",
           "menu_option_refs": "dread_weak, dread_shaken",
           "menu_title": "Dread — choose a status"
@@ -101,6 +132,7 @@
         "9": {
           "$deleted": false,
           "ae_template_ref": "Weak",
+          "consume_self": false,
           "effect_kind": "apply_ae",
           "effect_label": "dread_weak",
           "target_ref": "hit_action_targets"
@@ -108,20 +140,29 @@
         "10": {
           "$deleted": false,
           "ae_template_ref": "Shaken",
+          "consume_self": false,
           "effect_kind": "apply_ae",
           "effect_label": "dread_shaken",
           "target_ref": "hit_action_targets"
         }
       },
+      "id": "PdMEWL0xZ4Hqg1D5",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/DaydreamerSkill3.png",
       "isCheck": true,
+      "isOffensiveSpell": false,
+      "name": "Create Phantasm: Dread",
       "on_activate_effect_ref": "dread_on",
+      "optional_params": {},
       "pre_activate_effect_ref": "dread_pre",
       "reaction_config_table": {},
       "rolled_atr1": "INS",
       "rolled_atr2": "WLP",
       "skill_target": "One Enemy",
       "skill_type": "Spell",
-      "type_damage": ""
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.PdMEWL0xZ4Hqg1D5"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

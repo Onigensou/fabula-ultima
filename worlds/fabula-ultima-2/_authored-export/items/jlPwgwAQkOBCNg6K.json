@@ -122,19 +122,23 @@
       "damage_bonus": "",
       "defense_target_type": "def",
       "description": "<div class=\"oni-tooltip\"><p>At the end of each of their turns, the target may <strong>choose one option:</strong></p><ul><li><p>Perform a <strong>free attack</strong> with a weapon they have equipped</p></li><li><p>Perform the【📕Spell】 action for free, casting a spell with a total MP cost equal to or lower than 10 <em>(paying its MP cost).</em></p></li></ul><p>After the same creature benefits from this effect a second time, this spell ends.</p></div>",
+      "details_roller": "Show",
       "duration": "Scene",
       "effect_table": {
         "0": {
           "$deleted": false,
           "ae_duplicate_mode": "replace_per_caster",
           "ae_template_ref": "Acceleration",
+          "consume_self": false,
           "effect_kind": "apply_ae",
           "effect_label": "accel_apply",
           "target_ref": "action_targets"
         }
       },
       "heroic_requirement": "",
+      "id": "jlPwgwAQkOBCNg6K",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/astrodyne.png",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
@@ -147,6 +151,7 @@
       "on_activate_effect_ref": "accel_apply",
       "optional_params": {},
       "reaction_config_table": {},
+      "reaction_effect_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
@@ -156,7 +161,8 @@
       "skill_target": "One creature",
       "skill_type": "Spell",
       "type_damage": "",
-      "use_optional_params": false
+      "use_optional_params": false,
+      "uuid": "Item.jlPwgwAQkOBCNg6K"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

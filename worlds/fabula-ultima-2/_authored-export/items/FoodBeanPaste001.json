@@ -24,8 +24,11 @@
   "system": {
     "props": {
       "active_effect_config_table": {},
+      "check": "Check",
       "description": "<p><em>A dark, salt-fermented bean paste aged in cedar casks. A single spoonful turns plain broth into something that tastes like it simmered all day.</em></p>",
       "effect_table": {},
+      "id": "FoodBeanPaste001",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Ingredient/bean-paste_gph.webp",
       "ingredient_taste": "umami",
       "ingredient_taste2": "",
       "ip_cost": "0",
@@ -43,8 +46,10 @@
       "item_type": "material",
       "name": "Bean Paste",
       "optional_params": {},
+      "reaction_config_table": {},
       "recipe_dish_uuid": "",
-      "recipe_kind": ""
+      "recipe_kind": "",
+      "uuid": "Item.FoodBeanPaste001"
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

@@ -3828,9 +3828,13 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Each time you acquire this Skill, learn one Illusionist spell. </p><p>【⚡️ Offensive Spell】 Illusionist spells and Phantasm use <strong>[INS + WLP]</strong> for their Checks.</p>",
+          "details_roller": "Show",
           "duration": "-",
+          "effect_table": {},
           "heroic_requirement": "",
+          "id": "ErNLCWN1cDHhrIIj",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/DaydreamerPassive2.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -3851,7 +3855,8 @@
           "skill_target": "-",
           "skill_type": "Other",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.ErNLCWN1cDHhrIIj"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,

@@ -133,9 +133,13 @@
       "damage_bonus": "15",
       "defense_target_type": "def",
       "description": "<ul><li><p>Deal 15 base<strong> </strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(46, 139, 87) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span>&nbsp;damage to the target, with bonus damage base on the user <strong>DEX </strong>die</p></li></ul>",
+      "details_roller": "Show",
       "duration": "-",
+      "effect_table": {},
       "heroic_requirement": "",
+      "id": "BWSd1ceXuWI6ZdQz",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Common_Potion_4_from_Final_Fantasy_XIV_icon.webp",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -156,7 +160,8 @@
       "skill_target": "-",
       "skill_type": "Item",
       "type_damage": "Poison",
-      "use_optional_params": false
+      "use_optional_params": false,
+      "uuid": "Item.BWSd1ceXuWI6ZdQz"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

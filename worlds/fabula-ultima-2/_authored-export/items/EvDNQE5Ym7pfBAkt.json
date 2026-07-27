@@ -94,17 +94,20 @@
         "0": {
           "ae_duplicate_mode": "replace",
           "ae_template_ref": "Counter Pass",
+          "consume_self": false,
           "effect_kind": "apply_ae",
           "effect_label": "cp_refresh",
           "target_ref": "self"
         },
         "1": {
           "chain_steps": "cp_spend,cp_free",
+          "consume_self": false,
           "effect_kind": "chain",
           "effect_label": "cp_do"
         },
         "2": {
           "charge_key": "counterpass",
+          "consume_self": false,
           "count": "1",
           "effect_kind": "consume_charge",
           "effect_label": "cp_spend",
@@ -114,13 +117,17 @@
         "3": {
           "action_ref": "skill",
           "allowed_skill_refs": "Muleta,Descabello,Verónica,Tafallera,Castigo,Capote",
+          "chain": false,
+          "consume_self": false,
           "effect_kind": "free_action",
           "effect_label": "cp_free",
+          "free_of_cost": false,
           "target_ref": "trigger_subject"
         }
       },
       "heroic_requirement": "You must have mastered the Matador Class",
-      "id": "r4G9YFC4MXYL8lC3",
+      "id": "EvDNQE5Ym7pfBAkt",
+      "ignore_hr": false,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/icon_warri_esquivetoucher.png",
       "isCheck": false,
       "isFacet": false,
@@ -176,7 +183,7 @@
       "skill_type": "Passive",
       "type_damage": "",
       "use_optional_params": false,
-      "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.r4G9YFC4MXYL8lC3"
+      "uuid": "Item.EvDNQE5Ym7pfBAkt"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

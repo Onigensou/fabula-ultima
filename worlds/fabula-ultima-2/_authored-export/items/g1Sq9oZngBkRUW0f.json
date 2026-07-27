@@ -30,19 +30,24 @@
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>After you negate a <strong>ranged attack</strong> with the <strong>Crossfire</strong> Skill, if the Result of the Accuracy Check was an <strong>even number</strong>, you may perform a <strong>free attack</strong> against the attacker with a <strong>ranged firearm</strong> weapon you have equipped.</p><p>This attack must have that enemy as its <strong>only target</strong>; treat your <strong>High Roll (HR) as 0</strong> when calculating damage dealt by it.</p>",
+      "details_roller": "Show",
       "duration": "-",
       "effect_table": {
         "0": {
           "action_ref": "Attack",
+          "chain": false,
+          "consume_self": false,
           "effect_kind": "free_action",
           "effect_label": "bullet_break_do",
           "free_hr_as_zero": "true",
+          "free_of_cost": false,
           "menu_description": "Free firearm attack against the attacker (treat HR as 0 for damage).",
           "menu_label": "Bullet Break",
           "target_ref": "trigger_attacker"
         }
       },
       "heroic_requirement": "You must have learned the Crossfire Skill, and have mastered one or more Classes among Commander and Sharpshooter.",
+      "id": "g1Sq9oZngBkRUW0f",
       "ignore_hr": false,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/quick_reload.png",
       "isCheck": false,
@@ -55,6 +60,7 @@
       "max_level": "1",
       "name": "Bullet Break",
       "on_activate_effect_ref": "",
+      "optional_params": {},
       "post_damage_effect_ref": "",
       "reaction_config_table": {
         "0": {
@@ -71,7 +77,9 @@
       "skill_range": "",
       "skill_target": "-",
       "skill_type": "Passive",
-      "type_damage": ""
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.g1Sq9oZngBkRUW0f"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

@@ -35,10 +35,12 @@
       "damage_bonus": "2",
       "defense_target_type": "def",
       "description": "<p>After you suffer damage, you may immediately recover <strong>【SL × 2】</strong> Mind Points.</p>",
+      "details_roller": "Show",
       "duration": "Instantaneous",
       "effect_table": {
         "0": {
           "$deleted": false,
+          "consume_self": false,
           "effect_kind": "grant",
           "effect_label": "absorb_mp_recover",
           "grant_amount": "SL * 2",
@@ -47,12 +49,16 @@
         },
         "1": {
           "$deleted": false,
+          "allow_empty": false,
           "auto_confirm_when_obvious": true,
+          "auto_target": true,
           "candidate_source": "self",
           "category": "",
+          "consume_self": false,
           "count": 1,
           "effect_kind": "targeting",
           "effect_label": "amp_self",
+          "exclude_action_targets": false,
           "exclude_self": false,
           "iteration_mode": "together",
           "mode": "exact",
@@ -60,7 +66,9 @@
         }
       },
       "heroic_requirement": "",
+      "id": "kOZ5DZYLKd3FxaAz",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/ElPass8.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -80,6 +88,7 @@
           "reaction_debuff_count_min": "",
           "reaction_debuff_count_target": "",
           "reaction_effect_ref": "absorb_mp_recover",
+          "reaction_isPassive": false,
           "reaction_passive_mode": "ask",
           "reaction_passive_target": "self",
           "reaction_resource_filter": "hp",
@@ -87,6 +96,7 @@
           "reaction_trigger": "creature_lose_resource"
         }
       },
+      "reaction_effect_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
@@ -96,7 +106,8 @@
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "MP",
-      "use_optional_params": false
+      "use_optional_params": false,
+      "uuid": "Item.kOZ5DZYLKd3FxaAz"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

@@ -125,6 +125,7 @@
           "reaction_origin_filter": "",
           "reaction_ownership": "",
           "reaction_passive_mode": "ask",
+          "reaction_requires_weapon_used": false,
           "reaction_resource_filter": "",
           "reaction_responder": "",
           "reaction_source": "self",
