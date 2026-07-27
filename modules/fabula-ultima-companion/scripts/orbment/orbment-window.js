@@ -9,6 +9,7 @@
 // the picker to install into the selected slot. Installed slots show a ✕ remove.
 
 import * as OrbmentApi from "./orbment-api.js";
+import { MULTI_SEP } from "./augment-registry.js";
 
 const WIN_ID   = "fu-orbment-window";
 const STYLE_ID = "fu-orbment-style";
@@ -361,12 +362,20 @@ export class OrbmentWindow {
     let rightHtml;
     if (this._picking) {
       const p = this._picking;
-      const opts = p.options.map((o) => `<div class="fu-orb-aug" data-opt="${esc(o.value)}">
+      const chosen = p.chosen ?? [];
+      // Multi-pick: chosen options stay highlighted until the quota is met (the
+      // click handler stages automatically on the last pick). Single-pick stages
+      // on the first click, so nothing is ever rendered as chosen there.
+      const opts = p.options.map((o) => {
+        const isOn = chosen.includes(o.value);
+        return `<div class="fu-orb-aug ${isOn ? "is-staged" : ""}" data-opt="${esc(o.value)}">
           <div class="ic">${esc(o.icon || p.icon)}</div>
-          <div class="meta"><div class="nm">${esc(o.label)}</div></div>
-        </div>`).join("");
+          <div class="meta"><div class="nm">${esc(o.label)}${isOn ? ` <span class="fu-orb-choose">picked</span>` : ""}</div></div>
+        </div>`;
+      }).join("");
+      const progress = p.pick > 1 ? ` <span style="opacity:.7">(${chosen.length}/${p.pick} chosen)</span>` : "";
       rightHtml = `
-        <div class="fu-orb-sectionhdr"><a class="fu-orb-back">← Back</a>&nbsp;&nbsp;${esc(p.icon)} ${esc(p.label)} — ${esc(p.prompt)}</div>
+        <div class="fu-orb-sectionhdr"><a class="fu-orb-back">← Back</a>&nbsp;&nbsp;${esc(p.icon)} ${esc(p.label)} — ${esc(p.prompt)}${progress}</div>
         <div class="fu-orb-list">${opts}</div>`;
     } else {
       const tabs = present.map((c) => `<button class="fu-orb-tab ${c === this._activeTab ? "is-active" : ""}" data-tab="${c}">${CAT_LABEL[c] || c}</button>`).join("");
@@ -457,14 +466,28 @@ export class OrbmentWindow {
     if (back) back.addEventListener("click", () => { this._picking = null; this._render(this._data); });
 
     // Picker MODE: choosing an option STAGES the augment (with its param).
+    // Single-pick stages on the first click. Multi-pick TOGGLES each option and
+    // stages once `pick` distinct values are chosen — so a misclick can be undone
+    // by clicking the same option again, and the flow still ends in staging.
     if (this._picking) {
       this._root.querySelectorAll("[data-opt]").forEach((el) => {
         el.addEventListener("click", () => {
-          const pick = this._picking;
-          const opt = pick.options.find((o) => o.value === el.dataset.opt);
-          this._staged = { id: pick.id, param: el.dataset.opt, label: `${pick.label}: ${opt?.label ?? el.dataset.opt}`, icon: opt?.icon || pick.icon, cost: pick.cost };
-          this._picking = null;
-          this._render(this._data);
+          const p = this._picking;
+          const val = el.dataset.opt;
+          const need = Math.max(1, Number(p.pick ?? 1) || 1);
+          const labelFor = (v) => p.options.find((o) => o.value === v)?.label ?? v;
+
+          if (need === 1) {
+            this._stagePick(p, [val], labelFor);
+            return;
+          }
+          const chosen = (p.chosen ?? []).slice();
+          const at = chosen.indexOf(val);
+          if (at !== -1) chosen.splice(at, 1);
+          else chosen.push(val);
+
+          if (chosen.length >= need) this._stagePick(p, chosen.slice(0, need), labelFor);
+          else { this._picking = { ...p, chosen }; this._render(this._data); }
         });
       });
       return;
@@ -482,7 +505,12 @@ export class OrbmentWindow {
       if (el.dataset.param === "1") {
         el.addEventListener("click", () => {
           if (!entry.param) return;
-          this._picking = { id: entry.id, label: entry.label, icon: entry.icon, cost: entry.cost, prompt: entry.param.prompt, options: entry.param.options };
+          this._picking = {
+            id: entry.id, label: entry.label, icon: entry.icon, cost: entry.cost,
+            prompt: entry.param.prompt, options: entry.param.options,
+            pick: Math.max(1, Number(entry.param.pick ?? 1) || 1),
+            chosen: [],
+          };
           this._render(this._data);
         });
         return;
@@ -492,6 +520,23 @@ export class OrbmentWindow {
         this._render(this._data);
       });
     });
+  }
+
+  // Commit a picker selection to the staging slot. `values` is the chosen option
+  // value(s); the stored param is them joined by MULTI_SEP (the API canonicalizes
+  // the order on install, so display order here is just what the GM clicked).
+  _stagePick(p, values, labelFor) {
+    const param = values.join(MULTI_SEP);
+    const icon = p.options.find((o) => o.value === values[0])?.icon || p.icon;
+    this._staged = {
+      id: p.id,
+      param,
+      label: `${p.label}: ${values.map(labelFor).join(" + ")}`,
+      icon,
+      cost: p.cost,
+    };
+    this._picking = null;
+    this._render(this._data);
   }
 
   _makeDraggable(handle) {

@@ -8,7 +8,7 @@
 // heavy lifting; this layer is validation + a thin ergonomic surface for the UI.
 
 import { FLAG_NS, ORBMENT_FLAG, readOrbment, slotCountOf, itemKindOf } from "./orbment-const.js";
-import { getAugment, augmentsForItemType, resolveAugment } from "./augment-registry.js";
+import { getAugment, augmentsForItemType, resolveAugment, canonicalizeParam, validateParam } from "./augment-registry.js";
 import { recompileOrbment } from "./orbment-compiler.js";
 
 const TAG = "[Orbment]";
@@ -64,11 +64,14 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
   if (augment.pending)
     throw new Error(`Orbment: "${augment.label}" is in the catalog but its automation isn't wired yet.`);
 
-  // Parameterized augments ("choose one") require a valid param value.
+  // Parameterized augments ("choose one" / "choose two") require valid param
+  // value(s). Canonicalize FIRST so "ice+fire" and "fire+ice" store identically
+  // and therefore collide on the dupe check below.
   let param = options.param ?? null;
   if (augment.param) {
-    const valid = augment.param.options.some((o) => o.value === param);
-    if (!valid) throw new Error(`Orbment: "${augment.label}" needs a choice — pick one of its options.`);
+    param = canonicalizeParam(augment, param);
+    const err = validateParam(augment, param);
+    if (err) throw new Error(`Orbment: ${err}`);
   } else {
     param = null; // ignore any stray param on a non-parameterized augment
   }
@@ -163,8 +166,8 @@ export async function list(itemOrUuid) {
     available: augmentsForItemType(kind).map((a) => ({
       id: a.id, label: a.label, icon: a.icon, summary: a.summary, cost: a.cost,
       category: a.category ?? "", pending: !!a.pending,
-      // Parameterized augments expose their picker options ("choose one").
-      param: a.param ? { prompt: a.param.prompt, options: a.param.options } : null,
+      // Parameterized augments expose their picker options ("choose one"/"two").
+      param: a.param ? { prompt: a.param.prompt, pick: a.param.pick ?? 1, options: a.param.options } : null,
     })),
   };
 }

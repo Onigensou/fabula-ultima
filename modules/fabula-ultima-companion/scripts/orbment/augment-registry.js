@@ -58,6 +58,45 @@ const ELEMENTS = [
 ];
 const elementOf = (val) => ELEMENTS.find((e) => e.el === val) ?? null;
 
+// ── Multi-pick params ("choose TWO") ──────────────────────────────────────────
+// A param augment declares `pick: N` (default 1). For N > 1 the slot's `param`
+// stays a STRING — the chosen values joined by MULTI_SEP — so storage, the flag
+// record, normalizeSlot and the dedupe key all keep the single-value shape and
+// nothing downstream needs to learn about arrays.
+export const MULTI_SEP = "+";
+export const paramPickCount = (a) => Math.max(1, Number(a?.param?.pick ?? 1) || 1);
+export const splitParam = (v) =>
+  String(v ?? "").split(MULTI_SEP).map((s) => s.trim()).filter(Boolean);
+
+// Canonical param string: values ordered by their position in the option list, so
+// "ice+fire" and "fire+ice" resolve to the SAME stored param (and therefore the
+// same dedupe key). Single-pick params pass through unchanged.
+export function canonicalizeParam(augment, param) {
+  if (!augment?.param) return null;
+  if (paramPickCount(augment) === 1) return param ?? null;
+  const order = augment.param.options.map((o) => o.value);
+  const seen = new Set();
+  return splitParam(param)
+    .filter((v) => order.includes(v) && !seen.has(v) && seen.add(v))
+    .sort((a, b) => order.indexOf(a) - order.indexOf(b))
+    .join(MULTI_SEP);
+}
+
+// Validate a param against its augment. Returns null when OK, else an error
+// message. Enforces: known option values, exactly `pick` of them, no repeats.
+export function validateParam(augment, param) {
+  if (!augment?.param) return null;
+  const need = paramPickCount(augment);
+  const order = augment.param.options.map((o) => o.value);
+  const vals = need === 1 ? [param].filter((v) => v != null) : splitParam(param);
+  if (vals.length !== need)
+    return `"${augment.label}" needs ${need === 1 ? "a choice" : `${need} choices`} — pick ${need === 1 ? "one" : need} of its options.`;
+  if (new Set(vals).size !== vals.length)
+    return `"${augment.label}" needs ${need} DIFFERENT choices.`;
+  for (const v of vals) if (!order.includes(v)) return `"${augment.label}": unknown choice "${v}".`;
+  return null;
+}
+
 // The Basic Status Effects (Perfect Health covers exactly these).
 const BASIC_STATUSES = ["slow", "weak", "dazed", "shaken", "enraged", "poisoned"];
 
@@ -210,9 +249,24 @@ export const AUGMENTS = [
   },
   {
     id: "dual_resistance", label: "Dual Resistance", icon: "🛡️", cost: 1000, category: "defensive",
-    appliesTo: ["weapon", "armor", "shield"], pending: true,
+    appliesTo: ["weapon", "armor", "shield"],
     summary: "Resistance to two damage types (not physical).",
     ruleText: "You have Resistance to two damage types (not physical damage).",
+    param: { prompt: "Choose two damage types", pick: 2, options: ELEMENTS.map((e) => ({ value: e.el, label: e.label, icon: e.icon })) },
+    build: (v) => {
+      const els = splitParam(v).map(elementOf).filter(Boolean);
+      if (els.length !== 2) return {};
+      const [a, b] = els;
+      return {
+        label: `Dual Resistance: ${a.label} + ${b.label}`,
+        summary: `Resistance to ${a.label} and ${b.label} damage.`,
+        icon: a.icon,
+        ae: {
+          name: `Dual Resistance ${a.label}/${b.label} (Orbment)`,
+          changes: [affinityChange(a.idx, "RS"), affinityChange(b.idx, "RS")],
+        },
+      };
+    },
   },
   {
     id: "swordbreaker", label: "Swordbreaker", icon: "🗡️", cost: 1000, category: "defensive",
