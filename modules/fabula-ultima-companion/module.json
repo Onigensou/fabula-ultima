@@ -247,6 +247,7 @@
     "scripts/csb-extensions/CompactDynamicTable.js",
     "scripts/csb-extensions/visibilityPresetPicker.js",
     "scripts/csb-extensions/csb-formula-compat.js",
+    "scripts/csb-extensions/csb-derivation-perf.js",
     "scripts/reaction-system/reaction-buttonUI.js",
     "scripts/reaction-system/reaction-chooseSkill.js",
     "scripts/reaction-system/reaction-rebuildActionCard.js",
