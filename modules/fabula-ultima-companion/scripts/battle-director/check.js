@@ -18,6 +18,7 @@
 import { isCriticalHit } from "./skill-formulas.js";
 import { attrDieSize, readPropNum } from "./snapshot.js";
 import { warn } from "./logger.js";
+import { SimMode } from "./sim/sim-mode.js";
 
 // Pure derivation: given the two die faces (+ the roller's props + bonus), decide
 // the outcome. The single source of truth for crit / fumble. Sync — no rolling.
@@ -106,7 +107,14 @@ async function resolveCheckDieSwap({ actor, A1, A2, director = null }) {
 
   const askMode = configs.some((c) => c.mode === "ask");
 
-  if (askMode && director) {
+  // A sim has nobody to answer the picker, and it opens on EVERY accuracy check
+  // the owner makes (Keren's Psychokinesis), so the overlay would park the run
+  // until the stall watchdog fired. Fall through to the auto path below, which
+  // already assigns each skill's charge to the biggest upgrade — i.e. exactly
+  // what a player opening this picker would pick anyway. Note this is currently
+  // latent for Keren (DEX d12 > WLP d10 → no beneficial swap → no picker), but
+  // one DEX debuff makes the swap an upgrade and the picker appears.
+  if (askMode && director && !SimMode.active) {
     const label = [...new Set(configs.map((c) => c.label).filter(Boolean))].join(" · ") || "Die swap";
     // BOTH dice are shown, each with ALL its swap options (up OR down) + the change
     // and the granting skill. The picker enforces the per-target `budget` so the
@@ -137,6 +145,12 @@ async function resolveCheckDieSwap({ actor, A1, A2, director = null }) {
     out.push({ slot: u.slot, from: u.from, to: u.to, label: sourceFor(u.to) });
     usedDie.add(u.slot);
     remaining[u.to] -= 1;
+  }
+  if (out.length && askMode && SimMode.active) {
+    SimMode.note(
+      "die-swap",
+      `${actor?.name}: ${out.map((s) => `${s.slot} ${s.from}→${s.to}`).join(", ")} (auto — ask-mode picker skipped)`
+    );
   }
   return out;
 }

@@ -10,14 +10,23 @@
 //   - enemy-autopilot.js   — treat EVERY combatant as AI; zero the think-jitter
 //   - action-card.js       — resolve the action card instead of awaiting a click
 //   - attribute-pair-picker.js — answer with the defaults (Hinder's GM prompt)
+//   - list-picker.js / target-picker.js — answer with a hint, else first option
+//   - check.js             — skip the ask-mode die-swap picker; the auto path
+//                            below it already takes the biggest upgrade
+//   - skill-effects.js     — `prompt_number` takes its default instead of
+//                            opening a Dialog; the Soul Steal loot panel (which
+//                            BLOCKS resolve on a click) reports to the
+//                            transcript instead of rendering
 //   - standalone-reactions — NOT injected: it already honours the pre-existing
 //                            `__FU_HARNESS_ACCEPT_PASSIVES__` override, which
 //                            begin()/end() set and clear for us.
 //
 // Deliberately NOT touched: state-handlers, director.js, states.js, the damage
-// pipeline. The harness replaces the player, never the rules — a sim that ran on
-// its own math would just be a new estimate, and estimates are the thing we're
-// trying to stop trusting. See [[project_battle_director]].
+// pipeline — ask-mode incoming reducers are answered through skill-effects'
+// own `setDamageReactionAskDecider` hook (installShims) rather than a branch
+// inside the pipeline. The harness replaces the player, never the rules — a sim
+// that ran on its own math would just be a new estimate, and estimates are the
+// thing we're trying to stop trusting. See [[project_battle_director]].
 
 import { log, warn } from "../logger.js";
 import { Journal } from "./sim-journal.js";
@@ -66,6 +75,7 @@ const _state = {
   blocked: new Map(),   // turnKey → Set<action name that bounced>
   scripts: [],          // scripted directives (skill-under-test) — see scripted-action.js
   dice: null,           // { queue, restore } — the forced-dice override, when armed
+  dmgDecider: null,     // { uninstall } — the ask-mode damage-reaction answer
 };
 
 // ── The ONI shims ───────────────────────────────────────────────────────────
@@ -130,15 +140,65 @@ function installShims() {
   }
 
   _state.saved = saved;
+  installDamageReactionDecider();
 }
 
 function restoreShims() {
+  restoreDamageReactionDecider();
   const saved = _state.saved;
   if (!saved) return;
   const ONI = globalThis.ONI ?? {};
   if (saved.cr) ONI.CheckRequester = saved.cr;
   if (saved.opp) ONI.OpportunitySystem = saved.opp;
   _state.saved = null;
+}
+
+// ── Ask-mode INCOMING damage reductions ─────────────────────────────────────
+// Mercy, Unbreakable and friends are "you MAY halve / survive this" reducers:
+// resolveDamageReactions asks the defender yes/no before the hit lands. With no
+// decider installed that ask is a GM Dialog, which in a hands-free run is a hang
+// — and an invisible one, because it fires deep inside the damage pipeline
+// rather than at a decision point anyone is watching.
+//
+// skill-effects exposes `setDamageReactionAskDecider` for exactly this, so the
+// policy lives HERE and the damage pipeline stays untouched (see this file's
+// header). The policy: TAKE IT. The engine has already narrowed the ask to the
+// moments it matters — `condition_formula` blocks a spent once-per-conflict
+// reducer, and `reaction_damage_outcome: "would_reduce_to_zero"` limits a death
+// save to the hit that would actually kill — so by the time we are asked, a
+// player declining would just be choosing to eat the damage. The run's
+// `reactions: "skip"` knob still opts out, same as it does for unnamed card
+// pills.
+//
+// Imported dynamically: skill-effects imports THIS module, so a static import
+// back would close a cycle. The engine's own import is the same specifier with
+// no cache-bust, so this resolves to the same singleton the engine reads.
+function installDamageReactionDecider() {
+  const decide = async ({ target, ae, damage }) => {
+    if (_state.config.reactions === "skip") {
+      SimMode.note("damage-reaction", `${target?.name} declines "${ae?.name}" (run config: skip)`);
+      return false;
+    }
+    SimMode.note("damage-reaction", `${target?.name} takes "${ae?.name}" against ${damage} damage`);
+    return true;
+  };
+
+  _state.dmgDecider = { uninstall: null };
+  import("../skill-effects.js")
+    .then((mod) => {
+      // The run can end before a slow import lands; installing then would leak
+      // the decider into real play, where a GM must be the one to answer.
+      if (!_state.active) return;
+      mod.setDamageReactionAskDecider(decide);
+      _state.dmgDecider.uninstall = () => mod.setDamageReactionAskDecider(null);
+      log("[SIM] damage-reaction ask → auto-accept");
+    })
+    .catch((e) => warn("[SIM] could not install the damage-reaction decider", e));
+}
+
+function restoreDamageReactionDecider() {
+  try { _state.dmgDecider?.uninstall?.(); } catch {}
+  _state.dmgDecider = null;
 }
 
 // ── Forced dice (scripted skill-under-test) ─────────────────────────────────

@@ -29,6 +29,7 @@ import { computeIncomingDamage } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { getIntentChannel } from "./intent-channel.js";
+import { SimMode } from "./sim/sim-mode.js";
 import { INTENTS } from "./intents.js";
 
 const FLAG_NS = "fabula-ultima-companion";
@@ -3006,8 +3007,16 @@ async function applyPromptNumberEffect(row, ctx) {
   const injected = ctx?.harnessNumbers?.[varName];
   if (injected != null && Number.isFinite(Number(injected))) {
     value = snap(injected);
-  } else if (ctx.isPassive || typeof Dialog === "undefined" || typeof document === "undefined") {
-    value = defV; // auto-fire / headless — take the default, no UI
+  } else if (ctx.isPassive || SimMode.active || typeof Dialog === "undefined" || typeof document === "undefined") {
+    // Auto-fire / sim / headless — take the default, no UI. A sim reaches this
+    // only when the skill is DECLARED as an action (Marigold's Blazing Tether,
+    // which sits in her action_pattern_table); the reaction path already lands on
+    // `isPassive`. `prompt_default` defaults to the max option, so the sim spends
+    // the whole allowance — the same choice the auto-fire path makes.
+    value = defV;
+    if (SimMode.active && !ctx.isPassive) {
+      SimMode.note("prompt", `${ctx.skill?.name ?? "skill"}: ${varName} = ${defV} (default — no picker in a sim)`);
+    }
   } else {
     const entered = await promptNumberDialog({
       label: String(row.prompt_label ?? "Enter a number"),
@@ -9544,6 +9553,24 @@ async function transferLootToCaster(caster, sourceItem) {
 async function showLootTableDialog({ caster, results, ctx }) {
   if (!Array.isArray(results) || !results.length) return;
   const casterName = caster?.name ?? "";
+
+  // The panel is presentational, but it BLOCKS: RESOLVE waits on the GM's OK
+  // racing the owner's close intent, and a sim has neither — Soul Steal would
+  // park the run. The loot is already applied by this point (this only shows
+  // WHAT was won), so skipping the panel costs the sim nothing but the render.
+  // Report the haul to the transcript instead, which is the part a playtest
+  // actually wants to read back.
+  if (SimMode.active) {
+    for (const r of results) {
+      const won = (r?.won ?? []).map((w) => w.name).filter(Boolean);
+      const what = r?.missed ? "missed"
+        : r?.alreadyStolen ? "already stolen"
+        : r?.noTable ? "nothing to steal"
+        : (won.length ? won.join(", ") : "nothing");
+      SimMode.note("loot", `${casterName} → ${r?.targetName ?? "?"}: ${what}`);
+    }
+    return;
+  }
 
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
