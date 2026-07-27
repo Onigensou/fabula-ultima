@@ -1289,7 +1289,10 @@
               "consume_amount": "10",
               "consume_resource": "mp",
               "consume_self": false,
-              "effect_kind": "consume_resource",
+              "cost_amount": "10",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
               "effect_label": "barrage_cost",
               "from_resource": "",
               "grant_amount": "",
@@ -3105,10 +3108,13 @@
       "attribute": "attributeBar.current_hp"
     },
     "detectionModes": [],
-    "displayBars": 0,
+    "displayBars": 50,
     "displayName": 30,
     "disposition": 1,
     "flags": {
+      "barbrawl": {
+        "resourceBars": {}
+      },
       "token-variants": {
         "disableHUDButton": false,
         "randomImgDefault": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Handout%20Images/FBU_Pictures/Player%27s%20Characters/Yuri/Yuri1.png"

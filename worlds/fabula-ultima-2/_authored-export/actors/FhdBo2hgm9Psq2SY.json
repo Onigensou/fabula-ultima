@@ -569,6 +569,36 @@
               "allowed_skill_refs": "tag:dance",
               "effect_kind": "free_action",
               "effect_label": "dance_free"
+            },
+            "3": {
+              "chain_steps": "bd_cost, bd_untoken, bd_mark",
+              "effect_kind": "chain",
+              "effect_label": "bd_perform"
+            },
+            "4": {
+              "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_FLAG('Dancing', 'rememberedAction') != PERFORMED_SKILL)",
+              "consume_resource": "mp",
+              "cost_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_FLAG('Dancing', 'rememberedAction') != PERFORMED_SKILL)",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "bd_cost",
+              "target_ref": "self"
+            },
+            "5": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "bd_untoken",
+              "filter_tag": "dance-token",
+              "target_ref": "self"
+            },
+            "6": {
+              "ae_duplicate_mode": "replace",
+              "ae_remember_action": true,
+              "ae_template_ref": "Dancing",
+              "effect_kind": "apply_ae",
+              "effect_label": "bd_mark",
+              "target_ref": "self"
             }
           },
           "level": "1",
@@ -594,6 +624,13 @@
               "reaction_passive_mode": "ask",
               "reaction_source": "self",
               "reaction_trigger": "turn_end"
+            },
+            "3": {
+              "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && SKILL_HAS_TAG_MANAGED == 1",
+              "reaction_effect_ref": "bd_perform",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
             }
           },
           "skill_target": "",
@@ -1037,7 +1074,10 @@
               "consume_amount": "10",
               "consume_resource": "mp",
               "consume_self": false,
-              "effect_kind": "consume_resource",
+              "cost_amount": "10",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
               "effect_label": "fml_cost",
               "from_resource": "",
               "menu_label": "",
@@ -1078,6 +1118,32 @@
           "max_level": "1",
           "name": "Follow my lead",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && ACTION_DURATION >= 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "fml_do",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_performs_action",
+              "requires_skill": ""
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "",

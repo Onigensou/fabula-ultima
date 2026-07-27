@@ -945,7 +945,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "22zoFt3zhXjelhsX"
       },
@@ -1272,7 +1272,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "wJBq8w0Xuh7suRqm"
       },
@@ -1390,7 +1390,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "OfQc5hgDif7XsRH8"
       },
@@ -1715,7 +1715,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "ul6xqem2wH1VnYQK"
       },
@@ -1822,7 +1822,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "BykEf2Th3dTmg02o"
       },
@@ -1953,7 +1953,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "quJxn5TAZFaY5i7C"
       },
@@ -2240,7 +2240,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "KtD7PgidI510dvHa"
       },
@@ -2525,10 +2525,20 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "ftTbURtcbfwCg8CT": {
+              "id": "${item.id}",
+              "name": "Shield of Rejuvenation (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ftTbURtcbfwCg8CT"
+            }
+          },
           "item_type": "shield",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Shield of Rejuvenation",
+          "name": "+4 Shield of Rejuvenation",
           "optional_params": {},
           "plant_ef": "100",
           "reaction_config_table": {},
@@ -2536,6 +2546,14 @@
           "recipe_kind": "",
           "refine_count": 4,
           "refine_level": 4,
+          "related_item_list": {
+            "ftTbURtcbfwCg8CT": {
+              "id": "${item.id}",
+              "name": "Shield of Rejuvenation (Passive)",
+              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ftTbURtcbfwCg8CT"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -2549,7 +2567,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "sHMfimeSyKQcj8bM"
       },
@@ -2847,7 +2865,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "kBVCZiHd3Y8Fd7VH"
       },
@@ -3373,7 +3391,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "QeylCRYlLepwPTaJ"
       },
@@ -4094,7 +4112,7 @@
           "item_type": "armor",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "+1 Full Plate",
+          "name": "+4 Full Plate",
           "optional_params": {},
           "plant_ef": "100",
           "refine_count": 4,
@@ -4111,7 +4129,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "U1WUGQw6hkUo1La7"
       },
@@ -4414,7 +4432,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "QeylCRYlLepwPTaJ"
       },
@@ -4849,7 +4867,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "8mXI5OJRvKbBpmsm"
       },
@@ -5040,7 +5058,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "ROQw6telXF9qyZC8"
       },
@@ -5587,7 +5605,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "KoC4PHdQrp7r4rM9"
       },
@@ -5861,7 +5879,7 @@
           "img": "https://cdna.artstation.com/p/assets/images/images/024/014/374/large/marko-bubalo-jetpack-novi2.jpg?1581033568",
           "isCheck": false,
           "isOffensiveSpell": false,
-          "name": "Draconic Roar",
+          "name": "Lift off",
           "on_activate_effect_ref": "liftoff_fly",
           "skill_target": "Self",
           "skill_type": "Active",
@@ -5971,7 +5989,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "zF6faTFO5nlTBVt8"
       },
@@ -6092,7 +6110,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "QD5q9qkMu11On4UP"
       },
@@ -6431,7 +6449,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "YpRxmj2S5mNfkal2"
       },
@@ -6594,7 +6612,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "3UYXnhsSCTo0lV68"
       },
@@ -6782,7 +6800,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "WeoIipMyJ8Iq9jx4"
       },
@@ -7326,7 +7344,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "wRMiCt8CBlaBSpjE"
       },
@@ -7661,7 +7679,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "9vM7Xu5q3cj7EFQt"
       },
@@ -7789,7 +7807,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "bUSzzJWSTpDdpf6S"
       },
@@ -8547,7 +8565,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "oAP85eeLJCliYm2E"
       },
@@ -8657,7 +8675,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "LVLxu1HPQNbpB0Hx"
       },
@@ -9237,7 +9255,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "ALjvA9L7HbOEbuCS"
       },
@@ -9808,7 +9826,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "Ll5YDptyYjmwjuhW"
       },
@@ -10036,7 +10054,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "D1UEXDIcjCsAs85o"
       },
@@ -10424,7 +10442,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "UI9WP1hyxQomHxJb"
       },
@@ -10737,7 +10755,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "YdYhFx1vrvod4P2Y"
       },
@@ -11233,7 +11251,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "SJSmfMW8C8gzwsuT"
       },
@@ -11346,7 +11364,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "ky7HMdQIZBJxlPqx"
       },
@@ -11593,7 +11611,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "4Ew4B2v0hxhzGnpE"
       },
@@ -11760,7 +11778,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "YNtiW1MEga31ENWa"
       },
@@ -12563,7 +12581,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "8mXI5OJRvKbBpmsm"
       },
@@ -12603,6 +12621,34 @@
           "element": "fire",
           "id": "i2iiWtzT0FMQHRqj",
           "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+          "item_skill_active": {
+            "BlUyFnoWm15YzRgB": {
+              "id": "${item.id}",
+              "name": "Avatar of Vengeance: Pulse",
+              "skill_cost": "",
+              "skill_description": "<p>You channel the Avatar's flame, inflicting <strong>3 stacks of Burn</strong> on up to <strong>three creatures</strong> you can see.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.BlUyFnoWm15YzRgB"
+            },
+            "W9XLWch5BdPXVNXA": {
+              "id": "${item.id}",
+              "name": "Avatar of Vengeance: Dismiss",
+              "skill_cost": "",
+              "skill_description": "<p><em>As a free action, before or after your action on your turn,</em> you release the Avatar in a final blaze, dealing <strong>【30】 Fire damage</strong> to <strong>all enemies</strong> and ending the merge.</p><p>As you do, you may spend <strong>【6 Zero Power】</strong> to deal additional <strong>Fire damage</strong> to each enemy equal to <strong>【10 × their Burn stacks】</strong>, then remove all <strong>Burn</strong> from those enemies.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.W9XLWch5BdPXVNXA"
+            }
+          },
+          "item_skill_passive": {
+            "J73bonzoQZBStwbl": {
+              "id": "${item.id}",
+              "name": "Avatar of Vengeance: Merge",
+              "skill_cost": "",
+              "skill_description": "<p>You <strong>merge</strong> with the Avatar of Vengeance. While merged, whenever <strong>any creature's Burn</strong> triggers, you recover <strong>【2% of your Max HP】</strong> and <strong>【2% of your Max MP】</strong> <em>(rounded up)</em>.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.J73bonzoQZBStwbl"
+            }
+          },
           "name": "Avatar of Vengeance",
           "uuid": "Item.i2iiWtzT0FMQHRqj"
         },
@@ -12843,7 +12889,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "mw4wizzYTBtqsW8s"
       },
@@ -13192,7 +13238,7 @@
           "isReaction": true,
           "level": "1",
           "max_level": "1",
-          "name": "Dragontrap Bow (Passive)",
+          "name": "Glowstick (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -13282,7 +13328,10 @@
               "consume_amount": "6",
               "consume_resource": "zero_power",
               "consume_self": false,
-              "effect_kind": "consume_resource",
+              "cost_amount": "6",
+              "cost_operation": "add",
+              "cost_resource": "zero_power",
+              "effect_kind": "adjust_cost",
               "effect_label": "aov_overload_cost",
               "from_resource": "",
               "grant_amount": "",
@@ -13590,7 +13639,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "BXCY3beJ2HouEdSX"
       },
@@ -14478,7 +14527,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "6pUwTZO1peHgSBya"
       },
