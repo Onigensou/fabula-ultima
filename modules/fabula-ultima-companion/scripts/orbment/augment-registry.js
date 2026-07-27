@@ -24,11 +24,32 @@
 // bonus_magic_defense / check_mod_accuracy / extra_damage_mod_<X>; status
 // immunity condition_<status>="IM" (OVERRIDE); affinity resistance
 // affinity_<idx>=aeAffinityFloor("RS"/"IM"); element↔index verified on Fire Slime.
+//
+// v2 (2026-07-27): check_mod_init + check_mod_magic confirmed as EXISTING CSB
+// template columns on every PC (Hina/Blanche/Zarg all carry them), so Initiative
+// Up / Magic Up need no template change. check_mod_init feeds BOTH the backend
+// Initiative Group Check (director-initiative, via checkContext "init") and the
+// sheet's derived Initiative readout (attribute-api readDerived).
 
 const ADD = 2;       // CONST.ACTIVE_EFFECT_MODES.ADD
 const OVERRIDE = 5;  // CONST.ACTIVE_EFFECT_MODES.OVERRIDE
 
+// Equip-gated value for PROPS-BACKED keys — keys that ARE CSB template columns
+// (check_mod_*, affinity_*, condition_*, extra_damage_mod_*). CSB evaluates the
+// `${…}$` phrase when it aggregates the change into system.props, so the gate
+// works and the reader just sees a number.
 const equipGated = (n) => `\${isEquipped ? ${n} : 0}$`;
+
+// Value for AE-SCANNED keys — keys with NO template column, which the engine
+// reads straight off the AE change (heal_receiving_flat_all, spell_restore_mod;
+// see skill-formulas sumAeChangeKey). Those readers do `Number(change.value)`
+// on the RAW string, and Number("${isEquipped ? 5 : 0}$") is NaN → silently 0.
+// So AE-scanned keys MUST carry a plain number.
+//
+// They are still equip-gated, just by a different mechanism: the compiler creates
+// the AE `disabled: !isEquipped` and equipment-swap's AE sync maintains that on
+// swaps, while every AE scan skips disabled effects.
+const aeScanned = (n) => n;
 
 // Status immunity change: force condition_<status> to "IM". Equip-gated by the
 // compiler disabling the AE off-body (matches the world "Status Immunity" item).
@@ -52,8 +73,81 @@ const ELEMENTS = [
 ];
 const elementOf = (val) => ELEMENTS.find((e) => e.el === val) ?? null;
 
+// ── Multi-pick params ("choose TWO") ──────────────────────────────────────────
+// A param augment declares `pick: N` (default 1). For N > 1 the slot's `param`
+// stays a STRING — the chosen values joined by MULTI_SEP — so storage, the flag
+// record, normalizeSlot and the dedupe key all keep the single-value shape and
+// nothing downstream needs to learn about arrays.
+export const MULTI_SEP = "+";
+export const paramPickCount = (a) => Math.max(1, Number(a?.param?.pick ?? 1) || 1);
+export const splitParam = (v) =>
+  String(v ?? "").split(MULTI_SEP).map((s) => s.trim()).filter(Boolean);
+
+// Canonical param string: values ordered by their position in the option list, so
+// "ice+fire" and "fire+ice" resolve to the SAME stored param (and therefore the
+// same dedupe key). Single-pick params pass through unchanged.
+export function canonicalizeParam(augment, param) {
+  if (!augment?.param) return null;
+  if (paramPickCount(augment) === 1) return param ?? null;
+  const order = augment.param.options.map((o) => o.value);
+  const seen = new Set();
+  return splitParam(param)
+    .filter((v) => order.includes(v) && !seen.has(v) && seen.add(v))
+    .sort((a, b) => order.indexOf(a) - order.indexOf(b))
+    .join(MULTI_SEP);
+}
+
+// Validate a param against its augment. Returns null when OK, else an error
+// message. Enforces: known option values, exactly `pick` of them, no repeats.
+export function validateParam(augment, param) {
+  if (!augment?.param) return null;
+  const need = paramPickCount(augment);
+  const order = augment.param.options.map((o) => o.value);
+  const vals = need === 1 ? [param].filter((v) => v != null) : splitParam(param);
+  if (vals.length !== need)
+    return `"${augment.label}" needs ${need === 1 ? "a choice" : `${need} choices`} — pick ${need === 1 ? "one" : need} of its options.`;
+  if (new Set(vals).size !== vals.length)
+    return `"${augment.label}" needs ${need} DIFFERENT choices.`;
+  for (const v of vals) if (!order.includes(v)) return `"${augment.label}": unknown choice "${v}".`;
+  return null;
+}
+
 // The Basic Status Effects (Perfect Health covers exactly these).
 const BASIC_STATUSES = ["slow", "weak", "dazed", "shaken", "enraged", "poisoned"];
+
+// The 8 canonical FU species, matching the values authored into NPC
+// `system.props.species` (see director-init ROAR_BY_SPECIES).
+const SPECIES = [
+  { id: "beast",     label: "Beast",     icon: "🐺" },
+  { id: "construct", label: "Construct", icon: "⚙️" },
+  { id: "demon",     label: "Demon",     icon: "👿" },
+  { id: "elemental", label: "Elemental", icon: "🌀" },
+  { id: "humanoid",  label: "Humanoid",  icon: "🧍" },
+  { id: "monster",   label: "Monster",   icon: "👹" },
+  { id: "plant",     label: "Plant",     icon: "🌿" },
+  { id: "undead",    label: "Undead",    icon: "💀" },
+];
+const speciesOf = (v) => SPECIES.find((s) => s.id === v) ?? null;
+
+// Hunter damage formula. TARGET_SPECIES_IS_<X> (skill-formulas) returns 1/0 for
+// the trigger SUBJECT, and computeSenderDamageBonuses evaluates damage_amount
+// ONCE PER VICTIM, so the formula self-gates: +5 against a matching species, +0
+// otherwise — no condition_formula needed, and a Multi attack scores each target
+// independently. `min(..., 1)` keeps Dual Hunter at +5 (not +10) if a creature
+// ever matched both.
+const hunterFormula = (ids) => {
+  const terms = ids.map((id) => `TARGET_SPECIES_IS_${id.toUpperCase()}`);
+  return terms.length > 1 ? `min(${terms.join(" + ")}, 1) * 5` : `${terms[0]} * 5`;
+};
+const hunterRider = (ids) => ({
+  trigger: "creature_will_deal_damage",
+  effects: [{
+    effect_kind: "adjust_damage",
+    damage_operation: "add",
+    damage_stage: "outgoing",
+    damage_amount: hunterFormula(ids),
+  }],
+});
 
 // Shared on-hit status rider builder (Status / Status Plus).
 const onHitStatusRider = (status) => ({
@@ -72,9 +166,20 @@ export const AUGMENTS = [
   },
   {
     id: "hunter", label: "Hunter", icon: "🏹", cost: 300, category: "offensive",
-    appliesTo: ["weapon"], pending: true,
+    appliesTo: ["weapon"],
     summary: "Deals 5 extra damage to creatures of a particular Species.",
     ruleText: "The weapon deals 5 extra damage to creatures of a particular Species.",
+    param: { prompt: "Choose a Species", options: SPECIES.map((s) => ({ value: s.id, label: s.label, icon: s.icon })) },
+    build: (v) => {
+      const s = speciesOf(v);
+      if (!s) return {};
+      return {
+        label: `Hunter: ${s.label}`,
+        summary: `Deals 5 extra damage to ${s.label} creatures.`,
+        icon: s.icon,
+        rider: hunterRider([s.id]),
+      };
+    },
   },
   {
     id: "piercing", label: "Piercing", icon: "🩸", cost: 400, category: "offensive",
@@ -88,9 +193,21 @@ export const AUGMENTS = [
   },
   {
     id: "dual_hunter", label: "Dual Hunter", icon: "🏹", cost: 500, category: "offensive",
-    appliesTo: ["weapon"], pending: true,
+    appliesTo: ["weapon"],
     summary: "Deals 5 extra damage to creatures of one of two Species.",
     ruleText: "The weapon deals 5 extra damage to creatures belonging to one of two particular Species.",
+    param: { prompt: "Choose two Species", pick: 2, options: SPECIES.map((s) => ({ value: s.id, label: s.label, icon: s.icon })) },
+    build: (v) => {
+      const sp = splitParam(v).map(speciesOf).filter(Boolean);
+      if (sp.length !== 2) return {};
+      const [a, b] = sp;
+      return {
+        label: `Dual Hunter: ${a.label} + ${b.label}`,
+        summary: `Deals 5 extra damage to ${a.label} and ${b.label} creatures.`,
+        icon: a.icon,
+        rider: hunterRider([a.id, b.id]),
+      };
+    },
   },
   {
     id: "multi", label: "Multi (2)", icon: "🎯", cost: 1000, category: "offensive",
@@ -118,10 +235,15 @@ export const AUGMENTS = [
 
   // ═══ ARMOR & SHIELD — Enhancement (Core p.280) ═════════════════════════════
   {
+    // REBALANCE: RAW grants +4; we ship +2. BD re-rolls the Initiative Group
+    // Check EVERY round and it's a binary "who acts first" on a 2-die total
+    // (~11 avg) vs a DL in the 10-15 band, so +4 swung it far harder than the
+    // 500z price implies. Display strings say +2 so the UI never lies.
     id: "initiative_up", label: "Initiative Up", icon: "⚡", cost: 500, category: "enhancement",
-    appliesTo: ["armor", "shield"], pending: true,
-    summary: "+4 bonus to your Initiative modifier.",
-    ruleText: "You gain a +4 bonus to your Initiative modifier.",
+    appliesTo: ["armor", "shield"],
+    summary: "+2 bonus to your Initiative modifier.",
+    ruleText: "You gain a +2 bonus to your Initiative modifier.",
+    ae: { name: "Initiative Up (Orbment)", changes: [{ key: "check_mod_init", mode: ADD, value: equipGated(2) }] },
   },
   {
     id: "accuracy_up", label: "Accuracy Up", icon: "🎯", cost: 1000, category: "enhancement",
@@ -132,21 +254,33 @@ export const AUGMENTS = [
   },
   {
     id: "magic_up", label: "Magic Up", icon: "🔯", cost: 1000, category: "enhancement",
-    appliesTo: ["armor", "shield"], pending: true,
+    appliesTo: ["armor", "shield"],
     summary: "+1 bonus to your Magic Checks.",
     ruleText: "You gain a +1 bonus to your Magic Checks.",
+    ae: { name: "Magic Up (Orbment)", changes: [{ key: "check_mod_magic", mode: ADD, value: equipGated(1) }] },
   },
   {
+    // RECIPIENT-side: read off the HEALED actor, so it boosts any HP recovery
+    // the wearer receives regardless of who healed them. `heal_receiving_flat_all`
+    // is NOT a CSB template column — skill-formulas reads it straight off the AE
+    // changes (same as its fractional sibling heal_receiving_mod_all), so no
+    // template re-stamp is needed. Applied AFTER the fractional modifier.
     id: "vitality_up", label: "Vitality Up", icon: "💚", cost: 1000, category: "enhancement",
-    appliesTo: ["armor", "shield"], pending: true,
+    appliesTo: ["armor", "shield"],
     summary: "When you recover HP, you recover 5 extra HP.",
     ruleText: "When you recover HP, you recover 5 extra HP.",
+    ae: { name: "Vitality Up (Orbment)", changes: [{ key: "heal_receiving_flat_all", mode: ADD, value: aeScanned(5) }] },
   },
   {
+    // CASTER-side, spells only — the exact analogue of Secret Formula's
+    // item_restore_mod, added as a new family in skill-formulas
+    // resolveRestoreParts. AE-scanned (no template column), so it uses a plain
+    // value; see aeScanned above.
     id: "healing_up", label: "Healing Up", icon: "✚", cost: 1500, category: "enhancement",
-    appliesTo: ["armor", "shield"], pending: true,
+    appliesTo: ["armor", "shield"],
     summary: "Your HP-restoring spells restore 5 extra HP.",
     ruleText: "Spells you cast that restore Hit Points will restore 5 extra Hit Points.",
+    ae: { name: "Healing Up (Orbment)", changes: [{ key: "spell_restore_mod", mode: ADD, value: aeScanned(5) }] },
   },
   {
     id: "spell_up", label: "Spell Up", icon: "🔮", cost: 2000, category: "enhancement",
@@ -198,9 +332,24 @@ export const AUGMENTS = [
   },
   {
     id: "dual_resistance", label: "Dual Resistance", icon: "🛡️", cost: 1000, category: "defensive",
-    appliesTo: ["weapon", "armor", "shield"], pending: true,
+    appliesTo: ["weapon", "armor", "shield"],
     summary: "Resistance to two damage types (not physical).",
     ruleText: "You have Resistance to two damage types (not physical damage).",
+    param: { prompt: "Choose two damage types", pick: 2, options: ELEMENTS.map((e) => ({ value: e.el, label: e.label, icon: e.icon })) },
+    build: (v) => {
+      const els = splitParam(v).map(elementOf).filter(Boolean);
+      if (els.length !== 2) return {};
+      const [a, b] = els;
+      return {
+        label: `Dual Resistance: ${a.label} + ${b.label}`,
+        summary: `Resistance to ${a.label} and ${b.label} damage.`,
+        icon: a.icon,
+        ae: {
+          name: `Dual Resistance ${a.label}/${b.label} (Orbment)`,
+          changes: [affinityChange(a.idx, "RS"), affinityChange(b.idx, "RS")],
+        },
+      };
+    },
   },
   {
     id: "swordbreaker", label: "Swordbreaker", icon: "🗡️", cost: 1000, category: "defensive",

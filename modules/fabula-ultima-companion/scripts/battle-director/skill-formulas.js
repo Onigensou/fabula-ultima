@@ -2649,15 +2649,40 @@ export function resolveOutgoingDamageParts({ actor = null, props = null, kind = 
 // (Secret Formula's passive AE), so created potions restore extra but normal
 // heals are untouched. Returns a flat resource-agnostic bonus (RAW: "+SL×5 to
 // each restored amount").
-export function resolveRestoreParts({ actor = null, props = null, kind = null } = {}) {
+export function resolveRestoreParts({ actor = null, props = null, kind = null, skillType = null, resource = null } = {}) {
   const p = props ?? actor?.system?.props ?? null;
-  if (!p) return [];
   const parts = [];
+  // Props-backed families (the key IS a CSB template column, e.g. item_restore_mod).
+  // No-ops when there are no props to read — AE-backed families below still run.
   const add = (key, label) => {
+    if (!p) return;
     const total = _mnum(p[key]);
     if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label }));
   };
+  // AE-backed families: the key is NOT a template column so it never surfaces to
+  // system.props — read it off the actor's AE changes instead (same trick as
+  // heal_receiving_mod_all). Lets a new restore family ship without a re-stamp.
+  const addFromAE = (key, label) => {
+    const total = sumAeChangeKey(actor, key);
+    if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label }));
+  };
+
   if (String(kind ?? "").toLowerCase() === "item") add("item_restore_mod", "Restore (Item)");
+
+  // Healing Up (orbment): +N to HP restored by the caster's SPELLS.
+  //
+  // ⚠ The spell test can NOT be `kind === "spell"`. BD stamps both Skill AND
+  // Spell as ar.kind "Skill", so that check would never fire. The real
+  // discriminator — the one ACTION_IS_SPELL uses — is the casting item's
+  // system.props.skill_type, threaded in here as `skillType`.
+  //
+  // HP only: RAW is "spells that restore Hit Points", unlike item_restore_mod
+  // which is resource-agnostic.
+  const isSpell = String(kind ?? "").toLowerCase() === "spell"
+    || String(skillType ?? "").toLowerCase() === "spell";
+  if (isSpell && String(resource ?? "hp").toLowerCase() === "hp") {
+    addFromAE("spell_restore_mod", "Restore (Spell)");
+  }
   return parts;
 }
 
@@ -2674,22 +2699,56 @@ export function sumRestoreParts(parts) {
 // never become damage). Read by BOTH applyGrantEffect (apply) and
 // buildHealPerTarget (preview) so they can't drift. Resource-scoped by the
 // caller (HP recovery only — "healing"; MP restore is untouched).
+// The FRACTIONAL part alone. Prefer applyHealReceiving() below, which also
+// applies the flat part — this is kept for callers that need the raw multiplier.
 export function healReceivingMultiplier(targetActor) {
   if (!targetActor) return 1;
-  // Sum the modifier straight off the bearer's active-effect changes rather than
-  // system.props: unlike the damage_receiving_* family, `heal_receiving_mod_all`
-  // is NOT a CSB template column, so it never surfaces to system.props (verified).
-  // Reading the AE changes is column-independent and self-contained.
+  return Math.max(0, 1 + sumAeChangeKey(targetActor, "heal_receiving_mod_all"));
+}
+
+// Sum one modifier key off an actor's active-effect changes rather than
+// system.props. Needed for keys that are NOT CSB template columns and therefore
+// never surface to system.props at all — heal_receiving_mod_all,
+// heal_receiving_flat_all, spell_restore_mod (all verified absent from props on
+// Hina/Blanche/Zarg, 2026-07-27). Reading the AE changes is column-independent
+// and self-contained, so a new modifier key ships without a template re-stamp.
+//
+// Use `add()`-style props reads for keys that DO have a column (item_restore_mod,
+// the damage_receiving_* / extra_damage_mod_* families) — those benefit from
+// CSB's own aggregation.
+function sumAeChangeKey(actor, key) {
+  const targetActor = actor;
+  if (!targetActor) return 0;
   let mod = 0;
   const effects = targetActor.appliedEffects ?? targetActor.effects?.contents ?? targetActor.effects ?? [];
   for (const e of effects) {
     if (e?.disabled) continue;
     for (const c of (e.changes ?? [])) {
-      if (c?.key === "heal_receiving_mod_all") mod += Number(c.value) || 0;
+      if (c?.key === key) mod += Number(c.value) || 0;
     }
   }
-  if (!mod) return 1;
-  return Math.max(0, 1 + mod);
+  return mod;
+}
+
+// Apply the FULL recipient-side heal adjustment to a positive HP recovery:
+//
+//   final = max(0, floor(amount × (1 + heal_receiving_mod_all)) + heal_receiving_flat_all)
+//
+// Fractional FIRST, flat AFTER — so Vitality Up's "+5 extra HP" is a true final
+// addition and isn't itself halved by Bleed. (Bleed -50% + Vitality Up +5 on a
+// 20 heal = 15, not 12.) Clamped at 0: a heal can never become damage.
+//
+// This is the ONE entry point for recipient-side heal adjustment. Call it from
+// both the preview (buildHealPerTarget) and the apply path (applyGrantEffect) so
+// they can never disagree — that is the whole reason this helper exists.
+// HP recovery only; MP restore is untouched (resource-scoped by the caller).
+export function applyHealReceiving(targetActor, amount) {
+  const base = Number(amount) || 0;
+  if (!targetActor || base <= 0) return base;
+  const mult = Math.max(0, 1 + sumAeChangeKey(targetActor, "heal_receiving_mod_all"));
+  const flat = sumAeChangeKey(targetActor, "heal_receiving_flat_all");
+  const scaled = mult === 1 ? base : Math.floor(base * mult);
+  return Math.max(0, scaled + flat);
 }
 
 // Apply an `adjust_grant` op to an already-final restore amount — the heal

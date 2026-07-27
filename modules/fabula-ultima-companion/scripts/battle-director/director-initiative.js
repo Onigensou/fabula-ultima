@@ -49,11 +49,21 @@ export function readPcInitiativeModifier(actor) {
 }
 
 // Leader-selection proxy for PCs (they have no init score): higher DEX+INS die
-// sizes minus armor penalty = "quicker to act". Only used to pick who leads.
+// sizes plus the full Initiative modifier = "quicker to act". Only used to pick
+// who leads.
+//
+// The modifier here MUST match what rollInitiativeCheck actually applies, or a
+// character can be the fastest in the party on paper and still not be chosen to
+// lead. rollInitiativeCheck adds BOTH -init_penalty (armor, added directly) and
+// check_mod_init (added by the Check Requester via checkContext "init"), so the
+// proxy adds both too. Without check_mod_init an Initiative Up wearer would get
+// the bonus on their roll but never be favoured for the leader slot — and as a
+// helper their bonus only converts into a +1 for someone slower.
 function pcInitiativeProxy(actor) {
   const dex = numberish(actor?.system?.props?.dex_current, 8);
   const ins = numberish(actor?.system?.props?.ins_current, 8);
-  return dex + ins + readPcInitiativeModifier(actor);
+  const checkModInit = numberish(actor?.system?.props?.check_mod_init, 0);
+  return dex + ins + readPcInitiativeModifier(actor) + checkModInit;
 }
 
 // Tagged-check bonuses for the two ATTRIBUTES this check rolls: check_mod_dex +
