@@ -30,6 +30,7 @@ import { INTENTS } from "./intents.js";
 import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
 import { resourceLabel } from "./resources.js";
+import { computeEffectiveCost } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
@@ -2518,22 +2519,11 @@ export function rerenderCardTargetSurfaces(rootEl, { attacker, targets, perTarge
   } catch (e) { warn("rerenderCardTargetSurfaces: target list threw", e); }
 }
 
-// Effective action cost for the card preview — mirrors state-handlers'
-// computeEffectiveCost (additive-only today): base + Σ adjust_cost deltas, clamped
-// ≥ 0 per resource. Kept as a tiny local copy so action-card doesn't import the
-// resolve module (circular). Only resources the action already charges are adjusted
-// (an override lowers/raises an existing cost, it can't conjure one). Returns a
-// { res: amount } map.
-function effectiveCardCost(base, override) {
-  const out = {};
-  const b = base || {};
-  for (const [res, v0] of Object.entries(b)) {
-    let v = Number(v0) || 0;
-    if (override) v += Number(override[res]) || 0;
-    out[res] = Math.max(0, v);
-  }
-  return out;
-}
+// Effective action cost for the card preview — the SAME computeEffectiveCost the
+// RESOLVE debit uses (skill-cost.js is a leaf module, so importing it here costs no
+// cycle). The card bullet and the amount actually paid therefore cannot drift; the
+// previous local copy was a deliberate near-duplicate and drifted the moment
+// surcharge-seeding landed on one side only.
 // Format a resolved cost map like the CSB cost string ("6 MP", "3 HP · 2 MP", "Free").
 function formatCardCost(costMap) {
   const parts = Object.entries(costMap || {})
@@ -5531,13 +5521,16 @@ export async function postActionCard({ director, kind, payload }) {
             });
           }
           // Cost adjustment (adjust_cost reaction: Hypercognition discount /
-          // Cataclysm overcharge) — recompute the EFFECTIVE cost from base +
-          // composed override so the card's cost bullet reflects what RESOLVE will
-          // actually debit (previously the card kept the printed base cost). Null
-          // when no cost override this pass → the patcher reverts the bullet.
+          // Cataclysm overcharge / Barrage's extra-target surcharge) — recompute the
+          // EFFECTIVE cost from base + composed override so the card's cost bullet
+          // reflects what RESOLVE will actually debit (previously the card kept the
+          // printed base cost). Null when no cost override this pass → the patcher
+          // reverts the bullet. NOT gated on costSerialized: a surcharge can seed a
+          // cost on an action that natively charges nothing (Barrage on a plain
+          // Attack), and that MP is exactly what the bullet must start showing.
           let costDelta = null;
-          if (mutationResult.costOverride && arSnapshot.costSerialized) {
-            const eff = effectiveCardCost(arSnapshot.costSerialized, mutationResult.costOverride);
+          if (mutationResult.costOverride) {
+            const eff = computeEffectiveCost(arSnapshot.costSerialized, mutationResult.costOverride);
             const parts = Array.isArray(mutationResult.costOverride._parts)
               ? mutationResult.costOverride._parts : [];
             costDelta = { effectiveText: formatCardCost(eff), parts };

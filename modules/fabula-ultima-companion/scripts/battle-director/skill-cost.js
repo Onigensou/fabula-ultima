@@ -199,6 +199,54 @@ export function checkAffordable(actor, costMap) {
   return { ok: missing.length === 0, missing };
 }
 
+// ── Effective action cost — the SINGLE calc point ─────────────────────────
+// The one place a printed/base cost (`costSerialized`) combines with `adjust_cost`
+// overrides (`costOverride`) into the amount actually paid. The RESOLVE debit, the
+// action card's cost bullet, and every ACTION_EFFECTIVE_COST_* reader route through
+// this, so they can never drift. (Lives in skill-cost — a leaf module — so both
+// state-handlers and action-card can import it without a cycle.)
+//
+// FU's fixed operation order — and the reason the result is INDEPENDENT of the
+// order reactions were applied / clicked: accumulate every override raw, then
+// evaluate in canonical order — base + ALL additive deltas FIRST, then × ALL
+// multiplicative factors — then clamp ONCE at the end.
+//   ⚠ NEVER clamp per-application. A per-step clamp reintroduces order-dependence:
+//     base 10, overcharge +30, waive −MAX →
+//       waive-then-overcharge: max(0,10−MAX)=0 → +30 → 30   (overcharge survives!)
+//       accumulate-then-clamp: max(0, 10+30−MAX) = 0        (order-free, correct)
+//   ⚠ `waive` (Fugitive) is expressed as an additive delta ≥ the pool max, so the
+//     single 0-clamp zeroes the final cost regardless of any composed overcharge.
+//
+// Resources considered = those the action already charges (`base`) PLUS any a
+// SURCHARGE seeds. A POSITIVE delta may introduce a cost on a resource the action
+// doesn't natively charge — that's how an extra-target purchase (Barrage's +10 MP
+// on an otherwise free Attack) becomes part of the ACTION's cost, debited once at
+// RESOLVE, instead of a side debit at reaction-fire time. A NEGATIVE delta still
+// can't conjure one: a discount / waive's inert −MAX on an uncharged resource
+// remains the no-op it always was. `override` shape:
+//   { <res>: <additiveSum>, _mult?: { <res>: <productFactor> }, _parts?: [...] }
+// `_mult` is reserved for future multiplicative cost ops; today cost is additive
+// only, so the multiplicative branch is a no-op.
+export function computeEffectiveCost(base, override) {
+  const out = {};
+  const b = base || {};
+  const mult = override?._mult || null;
+  const resources = new Set(Object.keys(b));
+  for (const [res, delta] of Object.entries(override ?? {})) {
+    if (res.startsWith("_")) continue;                     // _mult / _parts metadata
+    if ((Number(delta) || 0) > 0) resources.add(res);       // surcharge may seed
+  }
+  for (const res of resources) {
+    let v = Number(b[res]) || 0;
+    if (override) v += Number(override[res]) || 0;         // additive FIRST (raw sum)
+    if (mult && Number.isFinite(Number(mult[res]))) {
+      v = Math.floor(v * Number(mult[res]));               // multiplicative SECOND (FU rounds down)
+    }
+    out[res] = Math.max(0, v);                             // clamp ONCE
+  }
+  return out;
+}
+
 // Debit — write the cost map to actor.system.props.*. Floors at 0;
 // caller is expected to gate first via checkAffordable. Returns
 // `{ ok, debited: { resource: amount } }`.
