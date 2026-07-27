@@ -103,6 +103,7 @@
             return;
         }
         patchItemContainerRowComputes(imports.ItemContainer);
+        patchActiveEffectPreCreateStamp(imports.CustomActiveEffect);
         patchActiveEffectFlagBatching(imports.CustomActiveEffect);
     });
 
@@ -185,7 +186,83 @@
         console.info(`${TAG} ItemContainer.getComputeFunctions patched (trivial row-column fast path).`);
     }
 
+    /* -------------------------------------------------------------- (3) --- */
+    // Stamp CSB's four bookkeeping flags DURING creation instead of after it, so
+    // the whole AE-create costs ONE document cycle instead of two.
+    //
+    // Patch (2) below already collapsed CSB's four sequential setFlags into one
+    // update — but that update is still a second full cycle (~500 ms on a heavy
+    // PC). The flags can't simply be written pre-create because `originalId` /
+    // `originalUuid` need the document's `_id`, and VERIFIED on this install:
+    // at `_preCreateOperation` time `id`, `_id` and `_source._id` are all null
+    // and `uuid` is the malformed "Actor.<id>.ActiveEffect." with an empty tail.
+    //
+    // So we assign the id ourselves and ask Foundry to honour it via
+    // `operation.keepId`. Measured: 1,018 ms / 2 passes -> 466 ms / 1 pass, with
+    // identical flag values and the assigned id surviving to the created doc.
+    //
+    // SAFETY — only for batches where EVERY document is a fresh creation (no
+    // incoming `_id`). `keepId` is per-operation, not per-document, so forcing it
+    // on a batch containing a COPY (effects duplicated from a template or another
+    // parent carry their source `_id`) could collide with the source document's
+    // id. Those batches fall through untouched and are handled by patch (2).
+    function patchActiveEffectPreCreateStamp(CustomActiveEffect) {
+        if (typeof CustomActiveEffect?._preCreateOperation !== 'function') {
+            console.warn(`${TAG} _preCreateOperation missing; skipping pre-create stamping.`);
+            return;
+        }
+        if (CustomActiveEffect._preCreateOperation.__fuPatched) return;
+        if (typeof foundry?.utils?.randomID !== 'function') {
+            console.warn(`${TAG} foundry.utils.randomID missing; skipping pre-create stamping.`);
+            return;
+        }
+
+        const orig = CustomActiveEffect._preCreateOperation;
+        const isFullBuilderTemplateEntity = (entity) =>
+            !!entity && ['_template', '_equippableItemTemplate'].includes(entity.type);
+
+        const patched = async function (documents, operation, user) {
+            try {
+                if (user?.id === game.user?.id && Array.isArray(documents) && documents.length) {
+                    const allFresh = documents.every(
+                        (d) => d && typeof d.updateSource === 'function' && !d._source?._id && !d.id
+                    );
+                    if (allFresh) {
+                        const sid = game.system.id;
+                        operation.keepId = true;
+                        for (const effect of documents) {
+                            const parent = effect.parent;
+                            if (!parent?.uuid) continue;
+                            const id = foundry.utils.randomID();
+                            effect.updateSource({
+                                _id: id,
+                                [`flags.${sid}.originalParentId`]: parent.id,
+                                [`flags.${sid}.originalId`]: id,
+                                [`flags.${sid}.originalUuid`]: `${parent.uuid}.ActiveEffect.${id}`,
+                                [`flags.${sid}.isFromTemplate`]: isFullBuilderTemplateEntity(parent)
+                            });
+                        }
+                    }
+                }
+            } catch (e) {
+                // Never let an optimisation break document creation — fall through
+                // to the normal path, where patch (2) still stamps the flags.
+                console.warn(`${TAG} pre-create stamping failed; falling back.`, e);
+            }
+            return orig.call(this, documents, operation, user);
+        };
+
+        patched.__fuPatched = true;
+        patched.__fuOriginal = orig;
+        CustomActiveEffect._preCreateOperation = patched;
+        console.info(`${TAG} CustomActiveEffect._preCreateOperation patched (pre-create flag stamping).`);
+    }
+
     /* -------------------------------------------------------------- (2) --- */
+    // Fallback for anything patch (3) deliberately skipped (copies, mixed
+    // batches) and for template parents, which CSB always re-stamps. When (3)
+    // has already stamped, the `originalUuid` guard makes this a no-op — no
+    // second cycle.
 
     function patchActiveEffectFlagBatching(CustomActiveEffect) {
         if (typeof CustomActiveEffect?._onCreateOperation !== 'function') {
