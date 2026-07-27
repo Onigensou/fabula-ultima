@@ -24,6 +24,12 @@
 // bonus_magic_defense / check_mod_accuracy / extra_damage_mod_<X>; status
 // immunity condition_<status>="IM" (OVERRIDE); affinity resistance
 // affinity_<idx>=aeAffinityFloor("RS"/"IM"); element↔index verified on Fire Slime.
+//
+// v2 (2026-07-27): check_mod_init + check_mod_magic confirmed as EXISTING CSB
+// template columns on every PC (Hina/Blanche/Zarg all carry them), so Initiative
+// Up / Magic Up need no template change. check_mod_init feeds BOTH the backend
+// Initiative Group Check (director-initiative, via checkContext "init") and the
+// sheet's derived Initiative readout (attribute-api readDerived).
 
 const ADD = 2;       // CONST.ACTIVE_EFFECT_MODES.ADD
 const OVERRIDE = 5;  // CONST.ACTIVE_EFFECT_MODES.OVERRIDE
@@ -118,10 +124,15 @@ export const AUGMENTS = [
 
   // ═══ ARMOR & SHIELD — Enhancement (Core p.280) ═════════════════════════════
   {
+    // REBALANCE: RAW grants +4; we ship +2. BD re-rolls the Initiative Group
+    // Check EVERY round and it's a binary "who acts first" on a 2-die total
+    // (~11 avg) vs a DL in the 10-15 band, so +4 swung it far harder than the
+    // 500z price implies. Display strings say +2 so the UI never lies.
     id: "initiative_up", label: "Initiative Up", icon: "⚡", cost: 500, category: "enhancement",
-    appliesTo: ["armor", "shield"], pending: true,
-    summary: "+4 bonus to your Initiative modifier.",
-    ruleText: "You gain a +4 bonus to your Initiative modifier.",
+    appliesTo: ["armor", "shield"],
+    summary: "+2 bonus to your Initiative modifier.",
+    ruleText: "You gain a +2 bonus to your Initiative modifier.",
+    ae: { name: "Initiative Up (Orbment)", changes: [{ key: "check_mod_init", mode: ADD, value: equipGated(2) }] },
   },
   {
     id: "accuracy_up", label: "Accuracy Up", icon: "🎯", cost: 1000, category: "enhancement",
@@ -132,9 +143,10 @@ export const AUGMENTS = [
   },
   {
     id: "magic_up", label: "Magic Up", icon: "🔯", cost: 1000, category: "enhancement",
-    appliesTo: ["armor", "shield"], pending: true,
+    appliesTo: ["armor", "shield"],
     summary: "+1 bonus to your Magic Checks.",
     ruleText: "You gain a +1 bonus to your Magic Checks.",
+    ae: { name: "Magic Up (Orbment)", changes: [{ key: "check_mod_magic", mode: ADD, value: equipGated(1) }] },
   },
   {
     id: "vitality_up", label: "Vitality Up", icon: "💚", cost: 1000, category: "enhancement",
