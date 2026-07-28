@@ -1,0 +1,28 @@
+#!/bin/sh
+# bug-report announcer (post-checkout) — companion to post-merge.
+#
+# Covers the paths post-merge misses: switching branches, and `git pull` styles
+# that resolve via checkout rather than merge. Same contract — announce shared
+# reports that changed between where you were and where you now are, and never
+# block.
+#
+# Args: $1 = previous HEAD, $2 = new HEAD, $3 = 1 for a branch checkout (0 for a
+# file checkout, which we ignore — restoring a file is not a move in history).
+#
+# Install (per clone — git config is NOT shared via the repo):
+#     git config core.hooksPath tools/safe-edit/hooks
+
+PREV="$1"
+NEW="$2"
+IS_BRANCH="$3"
+
+[ "$IS_BRANCH" = "1" ] || exit 0
+[ -n "$PREV" ] && [ -n "$NEW" ] || exit 0
+[ "$PREV" = "$NEW" ] && exit 0
+
+command -v node >/dev/null 2>&1 || exit 0
+[ -f tools/bug-report/bin/report-digest.js ] || exit 0
+
+node tools/bug-report/bin/report-digest.js --range "$PREV..$NEW" 2>/dev/null
+
+exit 0
