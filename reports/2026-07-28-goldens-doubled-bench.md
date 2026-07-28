@@ -1,7 +1,7 @@
 ---
 id: 2026-07-28-goldens-doubled-bench
 title: Compute goldens blessed from a doubled Regression Bench — every key got an id suffix
-status: fixed
+status: verified
 severity: major
 reporter: onigensou
 assignee: sarunphat
@@ -122,6 +122,23 @@ stray second dummy token cannot become a caster.
 
 I have not touched `collect.js` or `skill-regression.js` — the tool is yours and I did
 not want to collide with in-flight work.
+
+## Verified live (2026-07-28, Foundry 12.343)
+
+Ran the suite on a clean world to confirm the repaired goldens are what a real bench
+actually produces, rather than only what the arithmetic said they should be:
+
+```
+bench   -> Regression Bench (created), 66 actors / 482 skills
+           (boss:9, template:37, hero:16, guest:4), placed 67 new tokens
+check   -> compute mode, 482 skills, engine 1.0.423
+           ✓ no behavioral changes — all skills match golden.
+teardown-> torn down "Regression Bench" (67 tokens) — world holds no scaffolding
+```
+
+67 tokens for 66 casters + 1 dummy is the correct, undoubled count. `check` exited 0 and
+wrote nothing. So the repaired goldens are confirmed against live behaviour, and this
+doubles as end-to-end validation that your BD work causes no drift on our world.
 
 ## Notes
 
