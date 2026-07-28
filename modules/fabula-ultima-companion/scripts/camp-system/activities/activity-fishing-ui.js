@@ -51,13 +51,16 @@
   };
 
   // ---------------------------------------------------------------------------
-  // Fish tier tables (mirrors activity-fishing.js — needed for display)
+  // Fish tier tables (mirrors FISH_TABLE in activity-fishing.js — needed for
+  // display). MUST stay name-for-name identical: this client picks the name, the
+  // GM trusts it and looks it up in FISH_TABLE for the item id. A name present
+  // here but not there awards nothing.
   // ---------------------------------------------------------------------------
   const FISH_TIERS  = [
-    ["Small Fish",   "Mudfish",   "Pebblecarp"],
-    ["River Trout",  "Silverscale", "Speckled Bass"],
-    ["Coral Bass",   "Goldfish",  "Moonfish"],
-    ["Starfish",     "Dragonscale Carp", "Phantom Eel"],
+    ["Mudfish",     "Wind Bass",       "Bolt Eel",      "Mud Catfish",  "Flame Salmon", "Ice Pike"],
+    ["River Trout", "Shadow Sturgeon", "Shine Herring", "Toxic Puffer", "Blade Angler", "Lucky Loach"],
+    ["Moonfish",    "Stash Gar",       "Hearty Cod",    "Mindful Sole", "Keystone Ray", "Wandering Shark"],
+    ["Prophet Tuna", "Magnificent Mahi-mahi", "Golden Koi"],
   ];
   const TIER_NAMES  = ["Shallow Waters", "River Catch", "Deep Waters", "Legendary"];
   const TIER_COLORS = ["#7a8c7a",        "#3a7a35",     "#3a5a9a",    "#c8a84b"];

@@ -23,15 +23,47 @@
   const TOTAL_ROUNDS = 3;
 
   // ---------------------------------------------------------------------------
-  // Fish tier tables — entries with an id grant a real world item;
-  // entries without id are still placeholder (no item created yet).
-  // TODO: replace remaining placeholder entries with real item IDs later.
+  // Fish tier tables — every entry grants a real world item (💎 Material folder).
+  //
+  // MUST stay name-for-name identical to FISH_TIERS in activity-fishing-ui.js:
+  // the owner's client resolves the fish NAME locally and the GM trusts it, then
+  // looks the name up here for the item id. A name that exists in only one of the
+  // two tables silently awards nothing.
+  //
+  // Tier = sell price band (see the 💎 Material ladder): T1 15-25z, T2 40-100z,
+  // T3 90-150z, T4 150-500z. Rarity follows tier (Common/Uncommon/Rare/Legendary)
+  // and doubles as cooking potency 1/2/3/4.
   // ---------------------------------------------------------------------------
   const FISH_TABLE = [
-    [ { id: "fnd9BxHv1albIMpM", name: "Mudfish" },       { name: "Small Fish" },         { name: "Pebblecarp" }    ], // Tier 1
-    [ { id: "14X26PHWXppupLYt", name: "River Trout" },   { name: "Silverscale" },        { name: "Speckled Bass" } ], // Tier 2
-    [ { id: "czkjXYoh6vPaj5bQ", name: "Moonfish" },      { name: "Coral Bass" },         { name: "Goldfish" }      ], // Tier 3
-    [ { name: "Starfish" },                               { name: "Dragonscale Carp" },   { name: "Phantom Eel" }   ], // Tier 4 (Legendary)
+    [ // Tier 1 — Shallow Waters
+      { id: "fnd9BxHv1albIMpM", name: "Mudfish" },
+      { id: "n5oeHTFJ7MApEWe4", name: "Wind Bass" },
+      { id: "0ieofw23oYf5FNCc", name: "Bolt Eel" },
+      { id: "4Ddvp1twE1rwqB9P", name: "Mud Catfish" },
+      { id: "ZGvuE5jHpDgxMHNQ", name: "Flame Salmon" },
+      { id: "0xZvao2eWYVjrHp9", name: "Ice Pike" },
+    ],
+    [ // Tier 2 — River Catch
+      { id: "14X26PHWXppupLYt", name: "River Trout" },
+      { id: "uvtEB71f8xmQAiRB", name: "Shadow Sturgeon" },
+      { id: "FSj6trk1hdPaDpPd", name: "Shine Herring" },
+      { id: "s28J2fB5xoskAtwu", name: "Toxic Puffer" },
+      { id: "enbL361u8CaT5owG", name: "Blade Angler" },
+      { id: "ALRbhk8NLRpzUcPc", name: "Lucky Loach" },
+    ],
+    [ // Tier 3 — Deep Waters
+      { id: "czkjXYoh6vPaj5bQ", name: "Moonfish" },
+      { id: "zQfpEWAxwJjaBVIe", name: "Stash Gar" },
+      { id: "unAiIGTSSYpmonn8", name: "Hearty Cod" },
+      { id: "SOQKbs6yuSbbHkvv", name: "Mindful Sole" },
+      { id: "WtBVtnY6ergJWXHv", name: "Keystone Ray" },
+      { id: "bgVJ3tF898fertoZ", name: "Wandering Shark" },
+    ],
+    [ // Tier 4 — Legendary
+      { id: "epTljNMoOwYyy3FD", name: "Prophet Tuna" },
+      { id: "ZHfjikNnFjGQr8Kq", name: "Magnificent Mahi-mahi" },
+      { id: "lTqvatWNAQ4vdfkM", name: "Golden Koi" },
+    ],
   ];
 
   // ---------------------------------------------------------------------------
@@ -73,9 +105,9 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Award fish — looks up name in FISH_TABLE to find a real item ID.
-  // Entries without an id are still placeholder (no item created yet).
-  // TODO: replace remaining placeholder entries with real IDs in FISH_TABLE.
+  // Award fish — looks up name in FISH_TABLE to find the world item ID.
+  // Every table entry now has an id; the id-less branch below only fires if the
+  // UI resolved a name this table doesn't know (i.e. the two tables drifted).
   // ---------------------------------------------------------------------------
   async function _awardFish(actor, fishName) {
     const entry = FISH_TABLE.flat().find(e => e.name === fishName) ?? { name: fishName };
@@ -90,8 +122,7 @@
       await actor.createEmbeddedDocuments("Item", [data]);
       console.debug(TAG, `${actor.name} received: ${fishName}`);
     } else {
-      // TODO: replace with actual item creation when fish items are implemented
-      console.log(TAG, `${actor.name} caught: ${fishName} (placeholder — no item created yet)`);
+      console.warn(TAG, `No item id for "${fishName}" — FISH_TABLE and the UI's FISH_TIERS have drifted apart.`);
     }
   }
 
