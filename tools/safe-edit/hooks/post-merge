@@ -1,0 +1,31 @@
+#!/bin/sh
+# bug-report announcer (post-merge).
+#
+# After a pull that fast-forwards or merges, print any shared bug report the
+# other side filed, fixed, or verified. This is what makes reports/ self-
+# announcing: nobody has to remember a report exists, and because the text lands
+# in the terminal it is also visible to a Claude session that ran the pull.
+#
+# Install (per clone — git config is NOT shared via the repo):
+#     git config core.hooksPath tools/safe-edit/hooks
+#
+# NOTE: this fires on a merge/fast-forward pull. `git pull --rebase` runs
+# post-rewrite instead, and a plain branch switch runs post-checkout (also
+# wired). Never blocks: every failure path exits 0.
+
+# ORIG_HEAD is the pre-merge tip. If it is missing (first clone, odd state)
+# there is nothing meaningful to diff — stay quiet.
+if ! git rev-parse --verify --quiet ORIG_HEAD >/dev/null 2>&1; then
+  exit 0
+fi
+
+OLD=$(git rev-parse ORIG_HEAD 2>/dev/null)
+NEW=$(git rev-parse HEAD 2>/dev/null)
+[ "$OLD" = "$NEW" ] && exit 0
+
+command -v node >/dev/null 2>&1 || exit 0
+[ -f tools/bug-report/bin/report-digest.js ] || exit 0
+
+node tools/bug-report/bin/report-digest.js --range "$OLD..$NEW" 2>/dev/null
+
+exit 0
