@@ -77,8 +77,12 @@ increments per task, hence 964 against 482 keys. Checked explicitly:
 
 A clean single-token bench emits bare keys for everything except the 3 genuinely
 colliding names. Diffed against the contaminated goldens that is **~476 false `removed` +
-~476 false `added`**, and `hooks/regression-gate.js` fires automatically on skill edits —
-so the next person to touch a skill would have been told the whole catalogue drifted.
+~476 false `added`** — the next `check` on either side would have reported the whole
+catalogue as drifted.
+
+On this clone that would only have surfaced on a manual `check`: `hooks/regression-gate.js`
+is inert here because `.claude/settings.json` is untracked and does not exist. If you have
+the gate wired on your side, it would have fired on your next skill edit instead.
 
 ## Repair (da8af877)
 
