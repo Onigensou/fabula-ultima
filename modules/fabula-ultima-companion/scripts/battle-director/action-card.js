@@ -2253,12 +2253,21 @@ function appendTargetRow(root, r, kind, payload) {
         + `<span class="t-result ${cls}">${label}</span>`;
     }
     list.appendChild(div);
-    if (Array.isArray(payload?.perTargetResults)) payload.perTargetResults.push(r);
+    // REPLACE these arrays; never push into them. They come straight off the
+    // action result, which `freezeActionResult` deep-freezes — so `push` throws
+    // in strict mode. The throw was swallowed by the catch below, AFTER the DOM
+    // row had already been appended: the added target (Barrage splash /
+    // add_target) was visible on the card but absent from the data, so the
+    // recompute and CONFIRM resolved without it. Assigning a NEW array onto
+    // `payload` is fine — the frozen thing is the array, not the payload.
+    if (Array.isArray(payload?.perTargetResults)) {
+      payload.perTargetResults = [...payload.perTargetResults, r];
+    }
     if (Array.isArray(payload?.targets)) {
-      payload.targets.push({
+      payload.targets = [...payload.targets, {
         name: r.name, actorUuid: r.actorUuid, tokenImg: r.tokenImg,
         disposition: r.disposition, defense: r.defense, studied: r.studied,
-      });
+      }];
     }
   } catch (e) { warn("appendTargetRow threw", e); }
 }
@@ -2532,6 +2541,101 @@ function formatCardCost(costMap) {
   return parts.length ? parts.join(" · ") : "Free";
 }
 
+// ── Wire-safety for the structured card delta ────────────────────────────────
+// The delta now carries ROW DATA to player mirrors instead of a rendered
+// `.fud-bf-body` innerHTML dump. Rows come straight off the recompute, so they
+// can carry live Documents (Actor/Token) and heavy internals
+// (`bonusBreakdown.ops`). The first would THROW on `socket.emit` (structured
+// clone can't take a class instance); the second would undo the size win.
+//
+// `toWireSafe` keeps primitives, arrays and PLAIN objects and drops everything
+// else, so a Document can never reach the wire even if a new field starts
+// carrying one. Deliberately a DROP-LIST plus a plain-object rule rather than a
+// field whitelist: an over-pruned whitelist fails SILENTLY (a rendered field
+// goes blank on the mirror only), whereas shipping one extra scalar is merely
+// slightly larger. The render-critical field set is owned by buildPerTargetHTML
+// and would have to be mirrored by hand here otherwise.
+const WIRE_DROP_KEYS = new Set([
+  // Heavy recompute internals — the mirror re-renders from FINAL values, never
+  // from the op ledger that produced them.
+  "bonusBreakdown", "profile", "_profile", "ops", "raw",
+  // Live document handles. The plain-object rule below already drops these;
+  // named explicitly so a `toJSON()`-able wrapper can't serialise itself in.
+  "actor", "token", "tokenDoc", "actorDoc", "item", "skill", "weapon",
+]);
+
+function toWireSafe(v, depth = 0) {
+  if (v === undefined) return undefined;
+  if (v === null) return null;
+  const t = typeof v;
+  if (t === "string" || t === "number" || t === "boolean") return v;
+  if (t !== "object") return undefined;          // function / symbol / bigint
+  if (depth > 8) return undefined;               // runaway-nesting backstop
+  if (Array.isArray(v)) return v.map((x) => toWireSafe(x, depth + 1) ?? null);
+  const proto = Object.getPrototypeOf(v);
+  if (proto !== Object.prototype && proto !== null) return undefined;
+  const out = {};
+  for (const [k, val] of Object.entries(v)) {
+    if (WIRE_DROP_KEYS.has(k)) continue;
+    const sv = toWireSafe(val, depth + 1);
+    if (sv !== undefined) out[k] = sv;
+  }
+  return out;
+}
+
+// MAP, never filter — per-target rows are matched to `.fud-bf-target-row` by
+// INDEX, so dropping a row would repaint the wrong target.
+function projectRowsForWire(rows) {
+  return (Array.isArray(rows) ? rows : []).map((r) => (r ? toWireSafe(r) ?? null : null));
+}
+
+// Reaction Effects panel + damage-nullify strike. Extracted from the GM-side
+// `applyReactionEffectPreview` closure so the player mirror renders the panel
+// from the SAME code — previously it only ever arrived inside the innerHTML
+// dump. The caller resolves which effects are accepted; this is the pure
+// render half, driven by serialisable data.
+function renderReactionEffectPreview(cardEl, { effects = [], damageNullified = false } = {}) {
+  if (!cardEl) return;
+  // Damage panel strike — CSS strikes the number + shows a "No damage" note.
+  const dmgSection = cardEl.querySelector(".fud-bf-dmg");
+  if (dmgSection) dmgSection.classList.toggle("is-nullified", !!damageNullified);
+
+  let panel = cardEl.querySelector(".fud-bf-reaction-effects");
+  if (!effects.length) { if (panel) panel.remove(); return; }
+  if (!panel) {
+    panel = document.createElement("fieldset");
+    panel.className = "fud-bf-section fud-bf-reaction-effects";
+    // Place after the target list when present; otherwise insert just BEFORE
+    // the button row(s) so the panel never lands below CONFIRM. (Guard /
+    // no-target cards have no `.fud-bf-target-list`, which used to fall
+    // through to appendChild → panel rendered under the buttons.)
+    const afterTargets = cardEl.querySelector(".fud-bf-target-list")?.closest(".fud-bf-section")
+      ?? cardEl.querySelector(".fud-bf-target-list");
+    const firstBtnRow = cardEl.querySelector(".fud-bf-btn-row");
+    if (afterTargets && afterTargets.parentNode) {
+      afterTargets.parentNode.insertBefore(panel, afterTargets.nextSibling);
+    } else if (firstBtnRow && firstBtnRow.parentNode) {
+      firstBtnRow.parentNode.insertBefore(panel, firstBtnRow);
+    } else {
+      cardEl.appendChild(panel);
+    }
+  }
+  const chips = effects.map((e) => {
+    if (e.kind === "apply_ae") {
+      return `<span class="fud-bf-effect-chip is-status">${escapeHtml(e.statusName ?? e.label)}</span>`;
+    }
+    // Special keyword riders (Drain → self-heal note). Rendered as a status-
+    // style chip so it reads as a gameplay effect.
+    if (e.kind === "keyword") {
+      return `<span class="fud-bf-effect-chip is-status">${escapeHtml(e.label ?? e.keyword ?? "Effect")}</span>`;
+    }
+    return `<span class="fud-bf-effect-chip">${escapeHtml(e.label ?? "Effect")}</span>`;
+  }).join("");
+  // Uniform "Effects" legend (the reaction pill above already names the skill;
+  // repeating the carrier name here was redundant).
+  panel.innerHTML = `<legend>Effects</legend><div class="fud-bf-effect-chips">${chips}</div>`;
+}
+
 export function applyCardTargetMutationDelta(rootEl, delta) {
   if (!rootEl || !delta || !Array.isArray(delta.redirects)) return;
   const { redirects, hasDamageRows, rollTotal, element } = delta;
@@ -2782,6 +2886,104 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     } else if (!negated) {
       cardEl.classList.remove("is-negated-stamp");
     }
+  }
+
+  // ── Sections below were GM-ONLY in-place patches until the innerHTML mirror
+  //    was retired (they were the reason a `.fud-bf-body` dump had to be
+  //    broadcast at all). They now travel ON the delta so the player mirror
+  //    renders them through this SAME function.
+  //
+  //    ORDER IS LOAD-BEARING and matches the GM sequence these replaced:
+  //    surfaces → result rows → headline → effects. In particular the effects
+  //    panel runs LAST because the headline rebuild REPLACES the `.fud-bf-dmg`
+  //    element, which would otherwise drop its `is-nullified` strike.
+
+  // 1. Full target-surface rebuild (engagement row / portraits / Result list).
+  //    Present only when the target SET changed (redirect, add_target splash,
+  //    shield) or a no-damage verdict flipped — not on every recompute, so the
+  //    common bonus-toggle delta stays tiny.
+  if (delta.surfaces) {
+    try {
+      rerenderCardTargetSurfaces(rootEl, {
+        attacker: delta.surfaces.attacker ?? null,
+        targets: delta.surfaces.targets ?? [],
+        perTargetResults: delta.surfaces.perTargetResults ?? [],
+        element: delta.surfaces.element ?? null,
+        roll: delta.surfaces.roll ?? null,
+        vsMDef: !!delta.surfaces.vsMDef,
+        hasDamage: !!delta.surfaces.hasDamage,
+      });
+    } catch (e) { warn("applyCardTargetMutationDelta: surface rebuild threw", e); }
+  }
+
+  // 2. Non-redirect per-target result spans — the add_damage path (Cheap Shot
+  //    bonus toggles, Thermokinesis element overrides). The sender has already
+  //    excluded redirected slots (handled by the redirect loop above), grant
+  //    rows (not damage) and unstudied rows (masked "???" — painting a result
+  //    would leak "HIT N" onto a row whose DEF still reads "???").
+  //    Token uuid is tried first: it disambiguates two linked tokens of one actor.
+  for (const entry of (Array.isArray(delta.resultRows) ? delta.resultRows : [])) {
+    if (!entry) continue;
+    const rowEl = (entry.tokenUuid && rootEl.querySelector(
+      `.fud-bf-target-row[data-fud-target-token-uuid="${CSS.escape(String(entry.tokenUuid))}"]`
+    )) || (entry.actorUuid && rootEl.querySelector(
+      `.fud-bf-target-row[data-fud-target-actor-uuid="${CSS.escape(String(entry.actorUuid))}"]`
+    ));
+    if (!rowEl) continue;
+    const resultSpan = rowEl.querySelector(".t-result");
+    if (!resultSpan) continue;
+    // Reuse the canonical label/class logic so affinity verbs (WEAK / RESIST /
+    // NO EFFECT / HEALS) stay in sync everywhere.
+    const oldTNum = parseInt(resultSpan.querySelector(".t-num")?.textContent ?? "", 10);
+    resultSpan.className = `t-result ${resultClsFor(entry)}`;
+    resultSpan.innerHTML = resultLabelFor(entry);
+    // Running-number tween on this row's damage figure. No-ops when the row had
+    // no number (e.g. was MISS) or the value is unchanged.
+    const tNum = resultSpan.querySelector(".t-num");
+    if (tNum) animateCardNumber(tNum, oldTNum, Number(tNum.textContent), (v) => { tNum.textContent = String(v); });
+    // Sync the affinity badge too — it lives inside `.t-name` (name + badge),
+    // is NOT part of `.t-result`, and is built once at render. A reaction
+    // element override recomputes each target's affinity, so without this the
+    // badge would go stale against the new element while the verb updated.
+    const nameSpan = rowEl.querySelector(".t-name");
+    if (nameSpan) {
+      const aff = buildAffinityTagHTML({ affinity: entry.affinity, hit: entry.hit, studied: entry.studied });
+      nameSpan.innerHTML = `${escapeHtml(entry.name ?? "")}${aff ? ` ${aff}` : ""}`;
+    }
+  }
+
+  // 3. Headline damage fieldset. The sender ships the FINAL damage object (it
+  //    needs skill-effects' applyDamageOp to fold the reaction ops into an
+  //    itemised breakdown), so this side only renders it.
+  if (delta.damageHeadline?.damage) {
+    const dmgFieldset = rootEl.querySelector(".fud-bf-dmg");
+    if (dmgFieldset) {
+      const headlineRoll = delta.damageHeadline.roll ?? null;
+      const wasBlocked = dmgFieldset.classList.contains("is-blocked-dmg");
+      // Tween FROM what this client currently shows (not from the action's base
+      // value): on a second toggle of the same reaction the base would restart
+      // the animation from the wrong end. Matches the per-target spans above.
+      const oldShown = parseInt(dmgFieldset.querySelector(".fud-bf-dmg-number")?.textContent ?? "", 10);
+      const newHTML = buildDamagePreviewHTML({ damage: delta.damageHeadline.damage, roll: headlineRoll });
+      if (newHTML) {
+        dmgFieldset.outerHTML = newHTML;
+        const refreshed = rootEl.querySelector(".fud-bf-dmg");
+        if (refreshed && wasBlocked) refreshed.classList.add("is-blocked-dmg");
+        // Skip fumbles — they show "—", not a number.
+        if (refreshed && !headlineRoll?.isFumble) {
+          const numEl = refreshed.querySelector(".fud-bf-dmg-number");
+          if (numEl) animateCardNumber(numEl, oldShown, Number(delta.damageHeadline.damage?.finalIfHit), (v) => setLeadingNumberText(numEl, v));
+        }
+      }
+    }
+  }
+
+  // 4. Reaction Effects panel + damage-nullify strike. Always present on the
+  //    delta (it is a few bytes) so it re-asserts `is-nullified` after the
+  //    headline rebuild above replaced the element.
+  if (delta.effectPreview && cardEl) {
+    try { renderReactionEffectPreview(cardEl, delta.effectPreview); }
+    catch (e) { warn("applyCardTargetMutationDelta: effect preview threw", e); }
   }
 }
 
@@ -5167,6 +5369,18 @@ export async function postActionCard({ director, kind, payload }) {
               try { applyReactionEffectPreview(); } catch (e) { warn("recordPillDecision: heal-spread effect preview threw", e); }
               // Mirror the FINAL body (incl. restored decorations) to player
               // clients so observers see the spread heal too (read-only).
+              //
+              // ⚠ This is the LAST remaining `action-card-body-update` emit. The
+              // recompute path (recomputeTargetPreviews) now ships a structured
+              // delta instead, but heal-spread is a different shape: it does not
+              // patch surfaces, it REBUILDS the whole body from a mutated payload
+              // (headline restore halved + rows added/halved together), so there
+              // is no delta to express — the payload IS the card. It also fires
+              // once per add-target apply on one skill family (Potion Rain),
+              // not once per reaction on every damage action, so it is not on
+              // the hot path the delta work targeted. Retiring it would mean
+              // shipping `payload` + `kind` and having the mirror re-run
+              // rerenderActionCardBody itself.
               const bodyEl = root.querySelector(".fud-bf-body");
               const finalBody = bodyEl ? bodyEl.innerHTML : newBody;
               try {
@@ -5282,63 +5496,27 @@ export async function postActionCard({ director, kind, payload }) {
     //   • show an Effect panel listing the chosen statuses / resource costs.
     // Aggregates over every accepted candidate so toggling one pill in/out keeps
     // the panel consistent. Idempotent — fully rebuilt each call.
-    function applyReactionEffectPreview() {
-      const card = root.querySelector(".fud-bf-card");
-      if (!card) return;
-      const accepted = [];
-      for (const p of prePassives ?? []) {
-        if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
-        accepted.push(p);
-      }
+    // Which accepted reactions contribute preview chips / the damage strike.
+    // Split from the RENDER half (module-level renderReactionEffectPreview) so
+    // the same resolved data can ride the card delta out to player mirrors —
+    // it used to reach them only baked inside the `.fud-bf-body` innerHTML dump.
+    function computeReactionEffectPreviewData() {
       const effects = [];
       let damageNullified = false;
-      for (const p of accepted) {
+      for (const p of prePassives ?? []) {
+        if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
         if (p.previewDamageNullified) damageNullified = true;
         for (const e of (Array.isArray(p.previewEffects) ? p.previewEffects : [])) {
           effects.push({ ...e, via: p.carrierName ?? "Reaction" });
         }
       }
+      return { effects, damageNullified };
+    }
 
-      // Damage panel strike — toggle a class (CSS strikes the number + shows a
-      // "No damage" note).
-      const dmgSection = card.querySelector(".fud-bf-dmg");
-      if (dmgSection) dmgSection.classList.toggle("is-nullified", damageNullified);
-
-      // Effect panel — rebuild from scratch (removed when no effects).
-      let panel = card.querySelector(".fud-bf-reaction-effects");
-      if (!effects.length) { if (panel) panel.remove(); return; }
-      if (!panel) {
-        panel = document.createElement("fieldset");
-        panel.className = "fud-bf-section fud-bf-reaction-effects";
-        // Place after the target list when present; otherwise insert just
-        // BEFORE the button row(s) so the panel never lands below CONFIRM.
-        // (Guard / no-target cards have no `.fud-bf-target-list`, which used to
-        // fall through to appendChild → panel rendered under the buttons.)
-        const afterTargets = card.querySelector(".fud-bf-target-list")?.closest(".fud-bf-section")
-          ?? card.querySelector(".fud-bf-target-list");
-        const firstBtnRow = card.querySelector(".fud-bf-btn-row");
-        if (afterTargets && afterTargets.parentNode) {
-          afterTargets.parentNode.insertBefore(panel, afterTargets.nextSibling);
-        } else if (firstBtnRow && firstBtnRow.parentNode) {
-          firstBtnRow.parentNode.insertBefore(panel, firstBtnRow);
-        } else {
-          card.appendChild(panel);
-        }
-      }
-      const chips = effects.map((e) => {
-        if (e.kind === "apply_ae") {
-          return `<span class="fud-bf-effect-chip is-status">${escapeHtml(e.statusName ?? e.label)}</span>`;
-        }
-        // Special keyword riders (Drain → self-heal note). Rendered as a status-
-        // style chip so it reads as a gameplay effect.
-        if (e.kind === "keyword") {
-          return `<span class="fud-bf-effect-chip is-status">${escapeHtml(e.label ?? e.keyword ?? "Effect")}</span>`;
-        }
-        return `<span class="fud-bf-effect-chip">${escapeHtml(e.label ?? "Effect")}</span>`;
-      }).join("");
-      // Uniform "Effects" legend (the reaction pill above already names the
-      // skill; repeating the carrier name here was redundant).
-      panel.innerHTML = `<legend>Effects</legend><div class="fud-bf-effect-chips">${chips}</div>`;
+    function applyReactionEffectPreview() {
+      const card = root.querySelector(".fud-bf-card");
+      if (!card) return;
+      renderReactionEffectPreview(card, computeReactionEffectPreviewData());
     }
 
     // Phase 3 of the Cheap Shot integration: live damage preview update.
@@ -5621,8 +5799,6 @@ export async function postActionCard({ director, kind, payload }) {
               ? { previousBest: Number(arSnapshot.previousBest) || 0 }
               : null,
           };
-          applyCardTargetMutationDelta(root, delta);
-
           // Unified target-surface render — when a mutation CHANGED THE TARGET SET
           // (redirect / add_target / shield) OR flipped a NO-DAMAGE skill's per-target
           // verdict, regenerate ALL target-displaying surfaces (Engagement row,
@@ -5651,54 +5827,19 @@ export async function postActionCard({ director, kind, payload }) {
               ...r,
               redirectedFrom: mutTargets[i]?.redirectedFrom ?? r.redirectedFrom ?? null,
             }));
-            rerenderCardTargetSurfaces(root, {
-              attacker: payload?.attacker ?? arSnapshot.attacker ?? null,
-              targets: mutTargets,
-              perTargetResults: rowsSrc,
+            // Rides the DELTA (applied below) instead of rendering here, so the
+            // player mirror rebuilds the same surfaces from the same data rather
+            // than receiving a pre-rendered `.fud-bf-body` dump.
+            delta.surfaces = {
+              attacker: toWireSafe(payload?.attacker ?? arSnapshot.attacker ?? null),
+              targets: projectRowsForWire(mutTargets),
+              perTargetResults: projectRowsForWire(rowsSrc),
               element: arSnapshot.damage?.element ?? null,
-              roll: arSnapshot.roll ?? null,
+              roll: toWireSafe(arSnapshot.roll ?? null),
               vsMDef: redirectVsMDef,
               hasDamage: hasDamageRows,
-            });
+            };
           }
-
-          // Creatures dragged into the target set by this mutation (redirect
-          // destination / add_target splash) can now use their own "when I'm
-          // targeted" reactions — re-scan + inject those as fresh pills. No-op
-          // when the mutation added no new targets; no-reuse via cascadeFiredKeys.
-          if (!mutationResult.negated) {
-            try { await injectTargetedReactionsForNewTargets(mutTargets, original); }
-            catch (e) { warn("recomputeTargetPreviews: targeted re-scan threw", e); }
-          }
-
-          // Negated/Blocked action — auto-reject any still-pending (undecided) ask
-          // pills. Reacting to a nullified action is moot, and skipping them clears
-          // the Confirm lock (the data-fud-reactions-pending counter). Uses the pure
-          // DOM-commit (NOT recordPillDecision) to avoid re-entering this recompute.
-          if (mutationResult.negated || mutationResult.accuracyOverride?.blocked) {
-            for (const p of prePassives ?? []) {
-              if (p.mode !== "ask") continue;
-              const k = `${p.rowKey}:${p.carrierUuid}`;
-              if (reactionDecisionMap.has(k)) continue;   // already decided (incl. the negate/block pill itself)
-              reactionDecisionMap.set(k, "skip");
-              try { commitPillDecisionDom(p.rowKey, p.carrierUuid, "skip"); }
-              catch (e) { warn("auto-reject pending pill on negate threw", e); }
-            }
-          }
-
-          // NOTE: an `action-card-target-mutation` delta used to be broadcast here
-          // for the redirect visuals. It is deliberately NOT sent any more: the
-          // full-body swap at the end of this same synchronous pass (see the
-          // `action-card-body-update` broadcast below) is authoritative and
-          // carries a strict superset of this delta, so the mirror ended up
-          // applying the delta and then immediately overwriting it — a wasted
-          // payload per damage-touching reaction on every client.
-          //
-          // The player-side `action-card-target-mutation` handler is KEPT: the
-          // intended follow-up is to widen the delta vocabulary to cover the
-          // per-target damage spans + headline `.fud-bf-dmg` fieldset (the two
-          // things it lacks today) and retire the innerHTML swap entirely, at
-          // which point this emit comes back instead of the body dump.
 
           // Non-redirect result-span refresh — for the add_damage path
           // (Cheap Shot bonus toggles). Walks the recomputed list and
@@ -5706,50 +5847,45 @@ export async function postActionCard({ director, kind, payload }) {
           // already handled by the delta above). Gated on hasDamageRows
           // so non-damage Skills keep SUCCESS/FAILED labels.
           if (hasDamageRows) {
+            // SELECTION ONLY — the DOM work moved to the shared delta patcher
+            // (applyCardTargetMutationDelta section 2) so the player mirror
+            // paints the same rows from the same data. The skip rules are
+            // unchanged: redirected slots are handled by the redirect loop,
+            // grant rows aren't damage, and an unstudied row stays masked
+            // ("???") because painting a result there would leak "HIT N" onto a
+            // row whose DEF still reads "???".
+            //
+            // The shipped field set is exactly what resultClsFor / resultLabelFor
+            // / buildAffinityTagHTML read. `damageOverride` in particular is
+            // load-bearing: it drives the NULLIFIED label and the muted class for
+            // a soaked hit (Ninja Log), and dropping it would silently downgrade
+            // those rows to a plain "HIT 0".
+            const resultRows = [];
             for (let i = 0; i < recomputed.length; i++) {
               const origEntry = original[i];
               const entry = recomputed[i];
               if (!origEntry?.actorUuid || !entry) continue;
-              if (entry.redirectedFrom) continue; // already patched
-              // Unstudied target (player/friendly-attacker mask) → the result
-              // stays "???". The masked render hides DEF + outcome together;
-              // patching the result here would leak "HIT N" onto a row whose
-              // DEF still reads "???" (the inconsistency seen on Barrage-added
-              // rows, which DO carry an actor hook even when masked).
-              if (entry.studied === false) continue;
-              // Prefer the tokenUuid hook (unique per token — disambiguates two
-              // linked tokens of one actor); fall back to the actorUuid hook.
-              const rowEl = (origEntry.tokenUuid && root.querySelector(
-                `.fud-bf-target-row[data-fud-target-token-uuid="${CSS.escape(String(origEntry.tokenUuid))}"]`
-              )) || root.querySelector(
-                `.fud-bf-target-row[data-fud-target-actor-uuid="${CSS.escape(String(origEntry.actorUuid))}"]`
-              );
-              if (!rowEl) continue;
-              const resultSpan = rowEl.querySelector(".t-result");
-              if (!resultSpan) continue;
-              if (typeof entry.grantAmount === "number") continue; // grant rows aren't damage
-              // Reuse the canonical label/class logic so affinity verbs
-              // (WEAK / RESIST / NO EFFECT / HEALS) stay in sync everywhere.
-              const oldTNum = parseInt(resultSpan.querySelector(".t-num")?.textContent ?? "", 10);
-              resultSpan.className = `t-result ${resultClsFor(entry)}`;
-              resultSpan.innerHTML = resultLabelFor(entry);
-              // Running-number tween on this row's damage figure (same direction
-              // cues as the headline). No-ops when the row had no number (e.g.
-              // was MISS) or the value is unchanged.
-              const tNum = resultSpan.querySelector(".t-num");
-              if (tNum) animateCardNumber(tNum, oldTNum, Number(tNum.textContent), (v) => { tNum.textContent = String(v); });
-              // Sync the affinity badge too — it lives inside `.t-name` (name +
-              // badge), is NOT part of `.t-result`, and is built once at render.
-              // A reaction element override (Thermokinesis fire/ice) recomputes
-              // each target's affinity, so without this the badge (WEAK/RESIST/…)
-              // would go stale against the new element while the verb updated.
-              const nameSpan = rowEl.querySelector(".t-name");
-              if (nameSpan) {
-                const aff = buildAffinityTagHTML({ affinity: entry.affinity, hit: entry.hit, studied: entry.studied });
-                const nm = escapeHtml(entry.name ?? origEntry.name ?? "");
-                nameSpan.innerHTML = `${nm}${aff ? ` ${aff}` : ""}`;
-              }
+              if (entry.redirectedFrom) continue;                     // already patched
+              if (entry.studied === false) continue;                  // stays masked
+              if (typeof entry.grantAmount === "number") continue;    // grant rows aren't damage
+              resultRows.push({
+                // Prefer the tokenUuid hook (unique per token — disambiguates two
+                // linked tokens of one actor); actorUuid is the fallback.
+                tokenUuid: origEntry.tokenUuid ?? entry.tokenUuid ?? null,
+                actorUuid: origEntry.actorUuid ?? entry.actorUuid ?? null,
+                name: entry.name ?? origEntry.name ?? "",
+                hit: entry.hit,
+                crit: entry.crit,
+                affinity: entry.affinity ?? null,
+                damage: entry.damage,
+                resource: entry.resource ?? null,
+                studied: entry.studied,
+                damageOverride: entry.damageOverride
+                  ? { from: entry.damageOverride.from ?? null, to: entry.damageOverride.to ?? null }
+                  : null,
+              });
             }
+            delta.resultRows = resultRows;
 
             // Headline damage preview — the prominent `.fud-bf-dmg` fieldset
             // shows the weapon's base (finalIfHit) and its hover tooltip
@@ -5768,8 +5904,7 @@ export async function postActionCard({ director, kind, payload }) {
             // post-reduction semantics. Idempotent: no bonus (e.g. a toggled-off
             // reaction) → byte-identical to the COMPUTE-time preview, since we
             // always rebuild from the immutable `payload.damage`.
-            const dmgFieldset = root.querySelector(".fud-bf-dmg");
-            if (dmgFieldset && payload?.damage) {
+            if (payload?.damage) {
               let repEntry = null;
               for (let i = 0; i < recomputed.length; i++) {
                 const e = recomputed[i];
@@ -5826,60 +5961,99 @@ export async function postActionCard({ director, kind, payload }) {
                 && (mutRoll.rA !== payload.roll.rA || mutRoll.rB !== payload.roll.rB || mutRoll.total !== payload.roll.total));
               const headlineDamage = rollChanged ? mutationResult.recomputedDamage : patchedDamage;
               const headlineRoll = rollChanged ? mutRoll : (payload?.roll ?? null);
-              const wasBlocked = dmgFieldset.classList.contains("is-blocked-dmg");
-              const oldShown = Number(baseDamage?.finalIfHit);
-              const newHTML = buildDamagePreviewHTML({ damage: headlineDamage, roll: headlineRoll });
-              if (newHTML) {
-                dmgFieldset.outerHTML = newHTML;
-                const refreshed = root.querySelector(".fud-bf-dmg");
-                if (refreshed && wasBlocked) refreshed.classList.add("is-blocked-dmg");
-                // Running-number tween on the headline (skip fumbles — they show
-                // "—", not a number). Per-client + cosmetic; the broadcast HTML
-                // already carries the final value for late-joining mirrors.
-                if (refreshed && !headlineRoll?.isFumble) {
-                  const numEl = refreshed.querySelector(".fud-bf-dmg-number");
-                  if (numEl) animateCardNumber(numEl, oldShown, Number(headlineDamage?.finalIfHit), (v) => setLeadingNumberText(numEl, v));
-                }
-                // Headline number is left as buildDamagePreviewHTML rendered it:
-                // damage.finalIfHit = base + attacker-side reaction bonuses, BEFORE
-                // any per-target incoming reduction. So an AoE shows the pre-split
-                // base (e.g. 150) and each per-target row shows its own reduced
-                // value. (Previously re-pinned to the representative target's
-                // post-reduction rawDamage, which leaked one target's reduction —
-                // e.g. Defensive Mastery -1 → headline 149 — into the shared number.)
-              }
+              // Rendering — the fieldset rebuild, the `is-blocked-dmg` carry-over
+              // and the running-number tween — happens in the shared delta
+              // patcher, so the player mirror gets an identical headline instead
+              // of inheriting one inside a body dump.
+              //
+              // The number is whatever buildDamagePreviewHTML renders:
+              // damage.finalIfHit = base + attacker-side reaction bonuses, BEFORE
+              // any per-target incoming reduction. So an AoE shows the pre-split
+              // base (e.g. 150) and each per-target row shows its own reduced
+              // value. (Previously re-pinned to the representative target's
+              // post-reduction rawDamage, which leaked one target's reduction —
+              // e.g. Defensive Mastery -1 → headline 149 — into the shared number.)
+              delta.damageHeadline = {
+                damage: toWireSafe(headlineDamage),
+                roll: toWireSafe(headlineRoll),
+              };
             }
           }
-          // Mirror the fully-recomputed card BODY to every player client. The GM
-          // patched accuracy / per-target result spans / headline damage IN PLACE
-          // above (and via applyCardTargetMutationDelta), but the broadcast `delta`
-          // only carries redirects / defense / grants / accuracy — NOT the per-target
-          // damage spans or the headline `.fud-bf-dmg` fieldset (those live only on the
-          // GM's DOM, lines ~5164-5308). So a player's mirror went stale on any
-          // add_damage / element-override / reroll reaction: "only the GM side updates".
-          // Re-establish parity by shipping the final `.fud-bf-body` innerHTML through
-          // the existing `action-card-body-update` channel — offBodyUpdate swaps ONLY
-          // the body, leaving the reaction pills + buttons (siblings of .fud-bf-body)
-          // and their per-client state intact. Captured synchronously here, before
-          // animateCardNumber's requestAnimationFrame tween advances, so the numbers are
-          // already at their final values. Mirrors the heal-spread broadcast in
-          // recordPillDecision; the structured `delta` broadcast above is left in place
-          // (harmless — the body swap is authoritative and supersedes it on the mirror).
+          // Paint the GM's own card — ONE call that now covers every body surface
+          // (redirects, defense, grants, accuracy, cost, study, target surfaces,
+          // result spans, headline, effects panel). Everything below this point is
+          // pill-side or wire-side.
+          //
+          // Project the delta ONCE, then use the SAME object for the local paint
+          // and for the broadcast. Two reasons that pairing matters:
+          //
+          //  • Clone-safety. The WHOLE delta now crosses a socket, not just the
+          //    fields added for the mirror — and structured clone THROWS on a
+          //    class instance, so one future field carrying a Document would
+          //    break every recompute. The projection makes that structurally
+          //    impossible rather than a thing to remember.
+          //  • No silent divergence. Anything the projection drops breaks the
+          //    GM's OWN card too, so a projection bug shows up on the director's
+          //    screen (and in the sim / regression run) instead of hiding on the
+          //    thin-connection player's mirror where nobody would see it.
+          delta.effectPreview = computeReactionEffectPreviewData();
+          const wireDelta = toWireSafe(delta) ?? delta;
+          applyCardTargetMutationDelta(root, wireDelta);
+
+          // Creatures dragged into the target set by this mutation (redirect
+          // destination / add_target splash) can now use their own "when I'm
+          // targeted" reactions — re-scan + inject those as fresh pills. No-op
+          // when the mutation added no new targets; no-reuse via cascadeFiredKeys.
+          // Touches PILLS only (siblings of `.fud-bf-body`), so running it after
+          // the body paint above cannot disturb the surfaces just rendered.
+          if (!mutationResult.negated) {
+            try { await injectTargetedReactionsForNewTargets(mutTargets, original); }
+            catch (e) { warn("recomputeTargetPreviews: targeted re-scan threw", e); }
+          }
+
+          // Negated/Blocked action — auto-reject any still-pending (undecided) ask
+          // pills. Reacting to a nullified action is moot, and skipping them clears
+          // the Confirm lock (the data-fud-reactions-pending counter). Uses the pure
+          // DOM-commit (NOT recordPillDecision) to avoid re-entering this recompute.
+          if (mutationResult.negated || mutationResult.accuracyOverride?.blocked) {
+            for (const p of prePassives ?? []) {
+              if (p.mode !== "ask") continue;
+              const k = `${p.rowKey}:${p.carrierUuid}`;
+              if (reactionDecisionMap.has(k)) continue;   // already decided (incl. the negate/block pill itself)
+              reactionDecisionMap.set(k, "skip");
+              try { commitPillDecisionDom(p.rowKey, p.carrierUuid, "skip"); }
+              catch (e) { warn("auto-reject pending pill on negate threw", e); }
+            }
+          }
+
+          // Mirror to every player client as a STRUCTURED delta.
+          //
+          // This replaced an `action-card-body-update` broadcast that shipped the
+          // whole rendered `.fud-bf-body` innerHTML. That swap was correct by
+          // construction, but it sent the entire body to every client on every
+          // damage-touching reaction — and it existed only because the per-target
+          // result spans, the headline fieldset and the effects panel were painted
+          // GM-side and had no delta representation. All three now ride the delta
+          // (see applyCardTargetMutationDelta), so the mirror reaches the same
+          // state from data at a fraction of the bytes.
+          //
+          // effectPreview is re-resolved HERE rather than reused from above: the
+          // auto-reject sweep can flip pending pills to "skip", which changes
+          // which reactions contribute chips.
           try {
-            const bodyEl = root.querySelector(".fud-bf-body");
-            const finalBody = bodyEl ? bodyEl.innerHTML : null;
-            if (finalBody) {
-              const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+            wireDelta.effectPreview = toWireSafe(computeReactionEffectPreviewData());
+            const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+            if (onlineNonPrimary.length) {
               director?.intentChannel?.broadcastMenuOpen({
                 targetUserIds: onlineNonPrimary.map((u) => u.id),
                 menuSpec: {
-                  kind: "action-card-body-update",
+                  kind: "action-card-target-mutation",
                   combatId: director.combatId,
-                  bodyHtml: finalBody,
+                  delta: wireDelta,
                 },
               });
             }
-          } catch (e) { warn("recomputeTargetPreviews: body-update broadcast threw", e); }
+          } catch (e) { warn("recomputeTargetPreviews: delta broadcast threw", e); }
 
           return { cancelled: false };
         } catch (e) {

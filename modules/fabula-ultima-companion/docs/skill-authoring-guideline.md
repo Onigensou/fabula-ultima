@@ -66,6 +66,24 @@ Each rule names a real, verified example so it stays grounded.
   (Counterattack, Absorb MP, Painful Lesson) and standalone (turn/round
   start/end) → token-anchored menu.
 
+- **C1a — There are exactly TWO surfaces, and no third.** (1) Action-card
+  pills, while an action is IN FLIGHT, to manipulate that action's outcome;
+  (2) token-anchored pill list, when NO action is pending. The deciding
+  question is *"is there a pending action whose outcome this changes?"* — not
+  *"when does it fire"*. A reaction that changes what an in-flight action does
+  to you belongs on the CARD even though nothing has landed yet.
+
+- **C1b — Incoming `adjust_damage` has TWO homes; choosing the wrong one is a
+  silent behavior change, not a preference.** `creature_targeted_by_action` →
+  card pill, soak previewed BEFORE Apply
+  (`card-mutations.applyAdjustDamageMutation`). `creature_takes_damage` →
+  opt-in prompt at HP-write (`skill-effects.resolveDamageReactions`, the Mercy
+  family). Keren's Stubborn Scion is the FIRST and must stay there — moving it
+  would cost the pre-Apply preview, the pill UI and its interactive d6 roll.
+  Note `creature_targeted_by_action` is not in `TRIGGER_PHASE` at all, so C1's
+  phase map does not classify it. Full rule:
+  [skill-authoring-canon.md](skill-authoring-canon.md) → "The two-surface rule".
+
 - **C2 — Add a missing trigger as a new canonical trigger** (with subject side +
   filter matrix + template dropdown entry) rather than hardcoding behavior in the
   engine.

@@ -155,8 +155,18 @@ async function _reconcile(actor) {
 
   let changed = false;
   const events = [];
+  // Decide for every status FIRST, then issue at most three document calls.
+  // Each createEmbeddedDocuments / deleteEmbeddedDocuments / update is one full
+  // parent re-derive (~0.5s on a 100-item PC), so doing them per-status inside
+  // the loop made the cost linear in "how many statuses changed at once" — which
+  // is exactly the multi-AE stutter players feel. Foundry batches N documents in
+  // one operation for the price of one derive.
+  //
+  // Safe to decide against a single snapshot: each status only ever inspects AEs
+  // matching THAT status, so no iteration can invalidate another's lookup.
+  const list = actor.effects?.contents ?? [];
+  const toCreate = [], toDelete = [], toUpdate = [];
   for (const [status, info] of byStatus) {
-    const list = actor.effects?.contents ?? [];
     const derived = list.find((e) => e.flags?.[FLAG_NS]?.derivedStatus?.forStatus === status);
     const independent = list.find((e) => isStatusAe(e, status) && !isDerived(e));
     const wantedBy = [...info.wanted];
@@ -165,28 +175,35 @@ async function _reconcile(actor) {
       if (independent) {
         // Real status already present from another source (incl. crisis-reactor's
         // own Crisis during the coexist phase) — never add a second; drop a stale dupe.
-        if (derived) { await actor.deleteEmbeddedDocuments("ActiveEffect", [derived.id]); changed = true; }
+        if (derived) { toDelete.push(derived.id); changed = true; }
         continue;
       }
       if (!derived) {
         const data = await buildStatusData(status, wantedBy, { templateUuid: info.templateUuid, extraFlags: info.extraFlags });
         if (data) {
-          await actor.createEmbeddedDocuments("ActiveEffect", [data]);
+          toCreate.push(data);
           changed = true; events.push([status, "applied"]);
           log(`derived-status: applied "${status}" to ${actor.name} (by ${wantedBy.join(", ")})`);
         }
       } else {
         const cur = [...(derived.flags?.[FLAG_NS]?.derivedStatus?.byRules ?? [])].sort();
         if (JSON.stringify(cur) !== JSON.stringify([...wantedBy].sort())) {
-          await derived.update({ [`flags.${FLAG_NS}.derivedStatus.byRules`]: wantedBy });
+          toUpdate.push({ _id: derived.id, [`flags.${FLAG_NS}.derivedStatus.byRules`]: wantedBy });
         }
       }
     } else if (derived) {
-      await actor.deleteEmbeddedDocuments("ActiveEffect", [derived.id]);
+      toDelete.push(derived.id);
       changed = true; events.push([status, "removed"]);
       log(`derived-status: removed "${status}" from ${actor.name} (no rule satisfied)`);
     }
   }
+
+  // Deletes before creates: a stale-dupe delete and a fresh create never target
+  // the same status in one pass, but ordering this way keeps the icon row from
+  // briefly showing two of anything.
+  if (toDelete.length) await actor.deleteEmbeddedDocuments("ActiveEffect", toDelete);
+  if (toCreate.length) await actor.createEmbeddedDocuments("ActiveEffect", toCreate);
+  if (toUpdate.length) await actor.updateEmbeddedDocuments("ActiveEffect", toUpdate);
   return { changed, events };
 }
 

@@ -644,8 +644,16 @@ async function applyShieldRedirectMutation(ctx, cand, row) {
     // save / applies a rider). The on-hit rider path already skips it (dropped
     // from ar.hitTokenUuids by the split); this marks it so RESOLVE also drops it
     // from the `action_targets` consequence chain. See state-handlers ~L513.
+    // REPLACE the slot, never mutate the element. `ctx.targets` is a SHALLOW
+    // copy of `arSnapshot.targets` (see applyAcceptedCardMutations), and the
+    // snapshot came from `freezeActionResult`, which deep-freezes every target
+    // object. Assigning a property to one therefore throws in strict mode (ES
+    // modules always are) — observed 4x in a single battle, each throw aborting
+    // the whole recomputeTargetPreviews pass, so the card silently stopped
+    // repainting for the shield. The array itself is a fresh copy, so writing
+    // the INDEX is safe.
     const dMark = ctx.targets.findIndex((t) => t?.actorUuid === defendedUuid);
-    if (dMark !== -1) ctx.targets[dMark].shieldedOutOfChain = true;
+    if (dMark !== -1) ctx.targets[dMark] = { ...ctx.targets[dMark], shieldedOutOfChain: true };
     log(`shield_redirect: ${phantActor.name} (PV ${pv}) interposes for ${defendedName}; overflow → ${defendedName} forced, other effects nullified (via ${shieldedVia.via})`);
   } else {
     // Full redirect: drop the defended from the action's target set so its own

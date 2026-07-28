@@ -4,74 +4,141 @@
     "scene": "Regression Bench",
     "casters": [
       "⭐️ Fafnir",
+      "⭐️ Fafnir",
+      "⭐️ Geist",
       "⭐️ Geist",
       "⭐️ Gryphon",
+      "⭐️ Gryphon",
+      "⭐️ Jack",
       "⭐️ Jack",
       "⭐️ Jill",
+      "⭐️ Jill",
+      "⭐️ Love",
       "⭐️ Love",
       "⭐️ Rauben",
+      "⭐️ Rauben",
+      "⭐️ Wandering Flame",
       "⭐️ Wandering Flame",
       "Ace of Cards",
+      "Ace of Cards",
+      "Arcanist",
       "Arcanist",
       "Berserker",
+      "Berserker",
+      "Blanche",
       "Blanche",
       "Bruce",
+      "Bruce",
+      "Cherry",
       "Cherry",
       "Chiyo",
+      "Chiyo",
+      "Commander",
       "Commander",
       "Crysta",
+      "Crysta",
+      "Dancer",
       "Dancer",
       "Darkblade",
+      "Darkblade",
+      "Elementalist",
       "Elementalist",
       "Entropist",
+      "Entropist",
+      "Esper",
       "Esper",
       "Farian Pasta",
+      "Farian Pasta",
+      "Fjord",
       "Fjord",
       "Floralist",
+      "Floralist",
+      "Fury",
       "Fury",
       "Geist (Overworld)",
+      "Geist (Overworld)",
+      "Gourmet",
       "Gourmet",
       "Guardian",
+      "Guardian",
+      "Hako",
       "Hako",
       "Hexer",
+      "Hexer",
+      "Hina",
       "Hina",
       "Hina (Backup)",
+      "Hina (Backup)",
+      "Hunter",
       "Hunter",
       "Illusionist",
+      "Illusionist",
+      "Invoker",
       "Invoker",
       "Kalina",
+      "Kalina",
+      "Keren",
       "Keren",
       "Kiki",
+      "Kiki",
+      "Loremaster",
       "Loremaster",
       "Matador",
+      "Matador",
+      "Monk",
       "Monk",
       "Moses",
+      "Moses",
+      "Mutant",
       "Mutant",
       "Oki (Copy)",
+      "Oki (Copy)",
+      "Orator",
       "Orator",
       "Pirate",
+      "Pirate",
+      "Pyromancer",
       "Pyromancer",
       "RaiRai",
+      "RaiRai",
+      "Reaper",
       "Reaper",
       "Revolver",
+      "Revolver",
+      "Rogue",
       "Rogue",
       "Slayer",
+      "Slayer",
+      "Sniper",
       "Sniper",
       "Spell Fencer",
+      "Spell Fencer",
+      "Spiritist",
       "Spiritist",
       "St. Reefesia",
+      "St. Reefesia",
+      "Surtur",
       "Surtur",
       "Symbolist",
+      "Symbolist",
+      "Tactician",
       "Tactician",
       "Tailor",
+      "Tailor",
       "Tamer",
+      "Tamer",
+      "Test Target Enemy",
+      "Tinkerer",
       "Tinkerer",
       "Varan",
+      "Varan",
       "Weaponmaster",
+      "Weaponmaster",
+      "Zarg",
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 482,
+    "count": 964,
     "engineVersion": "1.0.423",
     "override": {
       "SL": 5,
@@ -85,7 +152,7 @@
     }
   },
   "skills": {
-    "Ace of Cards / Card Vanguard": {
+    "Ace of Cards / Card Vanguard #HBeFbx": {
       "caster": "Ace of Cards",
       "element": "",
       "hasDamage": false,
@@ -98,7 +165,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Ace of Cards / Magic Cards": {
+    "Ace of Cards / Magic Cards #DToDwH": {
       "caster": "Ace of Cards",
       "element": "",
       "hasDamage": false,
@@ -111,7 +178,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Arcanist / Revelation": {
+    "Arcanist / Revelation #7J7G9s": {
       "caster": "Arcanist",
       "element": "",
       "hasDamage": false,
@@ -124,7 +191,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Berserker / Berserk": {
+    "Berserker / Berserk #d3ziI9": {
       "caster": "Berserker",
       "element": "",
       "hasDamage": false,
@@ -137,7 +204,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Berserker / Berserker Showdown": {
+    "Berserker / Berserker Showdown #Ki2wEf": {
       "caster": "Berserker",
       "element": "",
       "hasDamage": false,
@@ -150,7 +217,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Berserker / Rumble!": {
+    "Berserker / Rumble! #n8zd0W": {
       "caster": "Berserker",
       "element": "",
       "hasDamage": false,
@@ -163,7 +230,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Blanche / Capote": {
+    "Blanche / Capote #bNQshb": {
       "caster": "Blanche",
       "element": "",
       "hasDamage": false,
@@ -176,7 +243,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Blanche / Castigo": {
+    "Blanche / Castigo #rHPTeO": {
       "caster": "Blanche",
       "element": "",
       "hasDamage": false,
@@ -189,7 +256,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Blanche / Descabello": {
+    "Blanche / Descabello #fvVWPG": {
       "caster": "Blanche",
       "element": "physical",
       "hasDamage": true,
@@ -211,7 +278,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Blanche / Heal": {
+    "Blanche / Heal #LMnXdh": {
       "caster": "Blanche",
       "element": "hp",
       "hasDamage": false,
@@ -233,14 +300,14 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Blanche / Invocation": {
+    "Blanche / Invocation #wecgr3": {
       "caster": "Blanche",
       "ok": false,
       "reason": "skipped",
       "skill": "Invocation",
       "skillType": "Active"
     },
-    "Blanche / Muleta": {
+    "Blanche / Muleta #F9KcVJ": {
       "caster": "Blanche",
       "element": "physical",
       "hasDamage": true,
@@ -266,7 +333,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Blanche / Protect": {
+    "Blanche / Protect #0bJVBv": {
       "caster": "Blanche",
       "element": "",
       "hasDamage": false,
@@ -279,7 +346,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Blanche / Tafallera": {
+    "Blanche / Tafallera #3PGlRQ": {
       "caster": "Blanche",
       "element": "physical",
       "hasDamage": true,
@@ -305,7 +372,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Blanche / Verónica": {
+    "Blanche / Verónica #t778u8": {
       "caster": "Blanche",
       "element": "",
       "hasDamage": false,
@@ -318,7 +385,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Blanche / Zero Power: Give me tips or 5stars": {
+    "Blanche / Zero Power: Give me tips or 5stars #1D1rFR": {
       "caster": "Blanche",
       "element": "hp",
       "hasDamage": false,
@@ -340,7 +407,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Bruce / One-Ilm Punch": {
+    "Bruce / One-Ilm Punch #SceVEp": {
       "caster": "Bruce",
       "element": "physical",
       "hasDamage": true,
@@ -366,7 +433,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Bruce / Provoke": {
+    "Bruce / Provoke #IeiuVV": {
       "caster": "Bruce",
       "element": "",
       "hasDamage": false,
@@ -379,7 +446,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Bruce / Zero Power: Teleport Slash": {
+    "Bruce / Zero Power: Teleport Slash #YxLBae": {
       "caster": "Bruce",
       "element": "physical",
       "hasDamage": true,
@@ -405,7 +472,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Cherry / Aura": {
+    "Cherry / Aura #6ozrsl": {
       "caster": "Cherry",
       "element": "",
       "hasDamage": false,
@@ -418,7 +485,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Cherry / Awaken": {
+    "Cherry / Awaken #uWycoB": {
       "caster": "Cherry",
       "element": "",
       "hasDamage": false,
@@ -431,7 +498,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Cherry / Barrier": {
+    "Cherry / Barrier #fhDfFf": {
       "caster": "Cherry",
       "element": "",
       "hasDamage": false,
@@ -444,7 +511,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Cherry / Blazing Impact": {
+    "Cherry / Blazing Impact #e7JAuB": {
       "caster": "Cherry",
       "element": "physical",
       "hasDamage": true,
@@ -470,7 +537,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Cherry / Cleanse": {
+    "Cherry / Cleanse #yMFnI4": {
       "caster": "Cherry",
       "element": "",
       "hasDamage": false,
@@ -483,7 +550,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Cherry / Fulgur": {
+    "Cherry / Fulgur #OGfqUY": {
       "caster": "Cherry",
       "element": "bolt",
       "hasDamage": true,
@@ -509,7 +576,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Cherry / Heal": {
+    "Cherry / Heal #MSQcMM": {
       "caster": "Cherry",
       "element": "hp",
       "hasDamage": false,
@@ -531,7 +598,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Cherry / Mercy": {
+    "Cherry / Mercy #ddH0Nj": {
       "caster": "Cherry",
       "element": "",
       "hasDamage": false,
@@ -544,7 +611,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Cherry / Protect": {
+    "Cherry / Protect #BQqmoI": {
       "caster": "Cherry",
       "element": "",
       "hasDamage": false,
@@ -557,7 +624,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Cherry / Sample Reaction": {
+    "Cherry / Sample Reaction #odTDGQ": {
       "caster": "Cherry",
       "element": "",
       "hasDamage": false,
@@ -570,7 +637,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Cherry / Sample Skill": {
+    "Cherry / Sample Skill #561dZw": {
       "caster": "Cherry",
       "element": "bolt",
       "hasDamage": true,
@@ -592,7 +659,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Cherry / Thunderbolt": {
+    "Cherry / Thunderbolt #qRGJkn": {
       "caster": "Cherry",
       "element": "bolt",
       "hasDamage": true,
@@ -618,7 +685,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Chiyo / Aero Blast": {
+    "Chiyo / Aero Blast #0mWxW5": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -631,7 +698,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Aero Hex": {
+    "Chiyo / Aero Hex #qKUsYW": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -644,7 +711,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Electro Blast": {
+    "Chiyo / Electro Blast #h5KYNe": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -657,7 +724,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Electro Hex": {
+    "Chiyo / Electro Hex #sLayy3": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -670,7 +737,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Geo Blast": {
+    "Chiyo / Geo Blast #mn10LT": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -683,7 +750,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Geo Hex": {
+    "Chiyo / Geo Hex #TnNl7u": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -696,14 +763,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Golem Dance": {
+    "Chiyo / Golem Dance #ZPTzPU": {
       "caster": "Chiyo",
       "ok": false,
       "reason": "skipped",
       "skill": "Golem Dance",
       "skillType": "Active"
     },
-    "Chiyo / Hydro Blast": {
+    "Chiyo / Hydro Blast #jSah6D": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -716,7 +783,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Hydro Hex": {
+    "Chiyo / Hydro Hex #OzeOb9": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -729,14 +796,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Invocation": {
+    "Chiyo / Invocation #Mea8Fn": {
       "caster": "Chiyo",
       "ok": false,
       "reason": "skipped",
       "skill": "Invocation",
       "skillType": "Active"
     },
-    "Chiyo / Myrmidon Dance": {
+    "Chiyo / Myrmidon Dance #unNYw2": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -749,7 +816,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Phoenix Dance": {
+    "Chiyo / Phoenix Dance #jeJWzC": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -762,7 +829,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Pyro Blast": {
+    "Chiyo / Pyro Blast #0ABI85": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -775,7 +842,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Pyro Hex": {
+    "Chiyo / Pyro Hex #127Rsu": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -788,7 +855,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Ripples": {
+    "Chiyo / Ripples #XRWtF9": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -801,7 +868,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Yeti Dance": {
+    "Chiyo / Yeti Dance #2XA9XT": {
       "caster": "Chiyo",
       "element": "",
       "hasDamage": false,
@@ -814,7 +881,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Commander / Bishop's Edict": {
+    "Commander / Bishop's Edict #atv5Mh": {
       "caster": "Commander",
       "element": "",
       "hasDamage": false,
@@ -827,7 +894,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Commander / Charging Cavalry": {
+    "Commander / Charging Cavalry #qhNwFC": {
       "caster": "Commander",
       "element": "",
       "hasDamage": false,
@@ -840,7 +907,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Commander / King's Castle": {
+    "Commander / King's Castle #VHMVsq": {
       "caster": "Commander",
       "element": "",
       "hasDamage": false,
@@ -853,7 +920,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Commander / Queen's Gambit": {
+    "Commander / Queen's Gambit #tPtT9d": {
       "caster": "Commander",
       "element": "",
       "hasDamage": false,
@@ -866,7 +933,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Crysta / Crescent Cut": {
+    "Crysta / Crescent Cut #VItgqL": {
       "caster": "Crysta",
       "element": "light",
       "hasDamage": true,
@@ -892,14 +959,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Angel Dance": {
+    "Dancer / Angel Dance #7Mfvgp": {
       "caster": "Dancer",
       "ok": false,
       "reason": "skipped",
       "skill": "Angel Dance",
       "skillType": "Active"
     },
-    "Dancer / Banshee Dance": {
+    "Dancer / Banshee Dance #YRAbGF": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -912,28 +979,28 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Bat Dance": {
+    "Dancer / Bat Dance #WP01tH": {
       "caster": "Dancer",
       "ok": false,
       "reason": "skipped",
       "skill": "Bat Dance",
       "skillType": "Active"
     },
-    "Dancer / Golem Dance": {
+    "Dancer / Golem Dance #XBDma3": {
       "caster": "Dancer",
       "ok": false,
       "reason": "skipped",
       "skill": "Golem Dance",
       "skillType": "Active"
     },
-    "Dancer / Griffin Dance": {
+    "Dancer / Griffin Dance #GoYE7s": {
       "caster": "Dancer",
       "ok": false,
       "reason": "skipped",
       "skill": "Griffin Dance",
       "skillType": "Active"
     },
-    "Dancer / Hydra Dance": {
+    "Dancer / Hydra Dance #sSgAIk": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -946,7 +1013,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Kraken Dance": {
+    "Dancer / Kraken Dance #56bR7S": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -959,7 +1026,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Lion Dance": {
+    "Dancer / Lion Dance #g24Ry8": {
       "caster": "Dancer",
       "element": null,
       "hasDamage": false,
@@ -972,7 +1039,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Meanad Dance": {
+    "Dancer / Meanad Dance #bY4zxV": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -985,7 +1052,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Myrmidon Dance": {
+    "Dancer / Myrmidon Dance #2bAU0P": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -998,7 +1065,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Nightmare Dance": {
+    "Dancer / Nightmare Dance #RCfUkh": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -1011,7 +1078,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Ouroboros Dance": {
+    "Dancer / Ouroboros Dance #uLsbNu": {
       "caster": "Dancer",
       "element": null,
       "hasDamage": false,
@@ -1024,7 +1091,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Peacock Dance": {
+    "Dancer / Peacock Dance #i2g3Ad": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -1037,7 +1104,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Phoenix Dance": {
+    "Dancer / Phoenix Dance #9Xfr4r": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -1050,7 +1117,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Satyr Dance": {
+    "Dancer / Satyr Dance #UY70at": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -1063,7 +1130,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Unicorn Dance": {
+    "Dancer / Unicorn Dance #pOJCpS": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -1076,7 +1143,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Dancer / Yeti Dance": {
+    "Dancer / Yeti Dance #WLcEXi": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
@@ -1089,7 +1156,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Darkblade / Shadow Strike": {
+    "Darkblade / Shadow Strike #1HA8s4": {
       "caster": "Darkblade",
       "element": "",
       "hasDamage": false,
@@ -1102,21 +1169,21 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Elementalist / Elemental Shroud": {
+    "Elementalist / Elemental Shroud #ozlNIV": {
       "caster": "Elementalist",
       "ok": false,
       "reason": "skipped",
       "skill": "Elemental Shroud",
       "skillType": "Spell"
     },
-    "Elementalist / Elemental Weapon": {
+    "Elementalist / Elemental Weapon #YuXMHY": {
       "caster": "Elementalist",
       "ok": false,
       "reason": "skipped",
       "skill": "Elemental Weapon",
       "skillType": "Spell"
     },
-    "Elementalist / Flare": {
+    "Elementalist / Flare #9Isyef": {
       "caster": "Elementalist",
       "element": "fire",
       "hasDamage": true,
@@ -1142,7 +1209,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Fulgur": {
+    "Elementalist / Fulgur #w9lawt": {
       "caster": "Elementalist",
       "element": "bolt",
       "hasDamage": true,
@@ -1168,7 +1235,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Glacies": {
+    "Elementalist / Glacies #aGLWy5": {
       "caster": "Elementalist",
       "element": "ice",
       "hasDamage": true,
@@ -1194,7 +1261,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Iceberg": {
+    "Elementalist / Iceberg #G29uRz": {
       "caster": "Elementalist",
       "element": "ice",
       "hasDamage": true,
@@ -1220,7 +1287,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Ignis": {
+    "Elementalist / Ignis #Y9RrHM": {
       "caster": "Elementalist",
       "element": "fire",
       "hasDamage": true,
@@ -1246,7 +1313,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Rift": {
+    "Elementalist / Rift #d9zSNb": {
       "caster": "Elementalist",
       "element": "earth",
       "hasDamage": true,
@@ -1272,7 +1339,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Soaring Strike": {
+    "Elementalist / Soaring Strike #W2qejU": {
       "caster": "Elementalist",
       "element": "",
       "hasDamage": false,
@@ -1285,7 +1352,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Terra": {
+    "Elementalist / Terra #RtKfww": {
       "caster": "Elementalist",
       "element": "earth",
       "hasDamage": true,
@@ -1311,7 +1378,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Thunderbolt": {
+    "Elementalist / Thunderbolt #PJgN7t": {
       "caster": "Elementalist",
       "element": "bolt",
       "hasDamage": true,
@@ -1337,7 +1404,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Ventus": {
+    "Elementalist / Ventus #9qWgAr": {
       "caster": "Elementalist",
       "element": "air",
       "hasDamage": true,
@@ -1363,7 +1430,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Volcano": {
+    "Elementalist / Volcano #650gWU": {
       "caster": "Elementalist",
       "element": "",
       "hasDamage": false,
@@ -1376,7 +1443,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Vortex": {
+    "Elementalist / Vortex #8MBEsO": {
       "caster": "Elementalist",
       "element": "air",
       "hasDamage": true,
@@ -1402,7 +1469,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Elementalist / Wind Wall": {
+    "Elementalist / Wind Wall #yUVlX1": {
       "caster": "Elementalist",
       "element": "",
       "hasDamage": false,
@@ -1415,7 +1482,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Entropist / Acceleration": {
+    "Entropist / Acceleration #5VyoCD": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1428,7 +1495,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Entropist / Anomaly": {
+    "Entropist / Anomaly #dcqsbU": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1441,7 +1508,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Entropist / Comet": {
+    "Entropist / Comet #hyOVR2": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1454,7 +1521,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Entropist / Dark Weapon": {
+    "Entropist / Dark Weapon #lqBTIn": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1467,7 +1534,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Entropist / Dispel": {
+    "Entropist / Dispel #oaYNOR": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1480,7 +1547,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Entropist / Divination": {
+    "Entropist / Divination #JTxCYy": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1493,7 +1560,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Entropist / Drain Spirit": {
+    "Entropist / Drain Spirit #WoZlCH": {
       "caster": "Entropist",
       "element": "mp",
       "hasDamage": true,
@@ -1519,7 +1586,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Entropist / Drain Vigor": {
+    "Entropist / Drain Vigor #0LlN4s": {
       "caster": "Entropist",
       "element": "dark",
       "hasDamage": true,
@@ -1545,7 +1612,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Entropist / Gamble": {
+    "Entropist / Gamble #IKi3is": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1558,7 +1625,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Entropist / Mirror": {
+    "Entropist / Mirror #Vf9sxA": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1571,7 +1638,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Entropist / Omega": {
+    "Entropist / Omega #GqNQna": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1584,7 +1651,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Entropist / Stolen Time": {
+    "Entropist / Stolen Time #M04rOK": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1597,7 +1664,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Entropist / Stop": {
+    "Entropist / Stop #wzOZsW": {
       "caster": "Entropist",
       "element": "",
       "hasDamage": false,
@@ -1623,7 +1690,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Entropist / Umbra": {
+    "Entropist / Umbra #w21rF2": {
       "caster": "Entropist",
       "element": "dark",
       "hasDamage": true,
@@ -1649,7 +1716,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Esper / Atmokinesis": {
+    "Esper / Atmokinesis #ICcWuE": {
       "caster": "Esper",
       "element": "",
       "hasDamage": false,
@@ -1662,7 +1729,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Esper / Brainwave Discharge": {
+    "Esper / Brainwave Discharge #Pw50kM": {
       "caster": "Esper",
       "element": "",
       "hasDamage": false,
@@ -1675,7 +1742,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Esper / Clairvoyance": {
+    "Esper / Clairvoyance #uFcB2i": {
       "caster": "Esper",
       "element": "",
       "hasDamage": false,
@@ -1688,7 +1755,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Esper / Gravitokinesis": {
+    "Esper / Gravitokinesis #9VIhBn": {
       "caster": "Esper",
       "element": "",
       "hasDamage": false,
@@ -1701,7 +1768,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Esper / Life Transference": {
+    "Esper / Life Transference #hmCaI4": {
       "caster": "Esper",
       "element": "hp",
       "hasDamage": false,
@@ -1723,7 +1790,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Esper / Photokinesis": {
+    "Esper / Photokinesis #nXh6Hb": {
       "caster": "Esper",
       "element": "",
       "hasDamage": false,
@@ -1736,7 +1803,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Esper / Psychic Backlash": {
+    "Esper / Psychic Backlash #nqDtuN": {
       "caster": "Esper",
       "element": "",
       "hasDamage": false,
@@ -1749,7 +1816,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Esper / Psychic Shield": {
+    "Esper / Psychic Shield #IAs1Ki": {
       "caster": "Esper",
       "element": "",
       "hasDamage": false,
@@ -1762,7 +1829,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Esper / Reassuring Presence": {
+    "Esper / Reassuring Presence #9y1Pm7": {
       "caster": "Esper",
       "element": "",
       "hasDamage": false,
@@ -1775,7 +1842,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Farian Pasta / Drain Spirit": {
+    "Farian Pasta / Drain Spirit #Df4Ugw": {
       "caster": "Farian Pasta",
       "element": "mp",
       "hasDamage": true,
@@ -1801,7 +1868,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Farian Pasta / Drain Vigor": {
+    "Farian Pasta / Drain Vigor #p2NOgr": {
       "caster": "Farian Pasta",
       "element": "dark",
       "hasDamage": true,
@@ -1827,7 +1894,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Fjord / Atmokinesis": {
+    "Fjord / Atmokinesis #LZsVCf": {
       "caster": "Fjord",
       "element": "",
       "hasDamage": false,
@@ -1840,7 +1907,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Fjord / Bladestorm": {
+    "Fjord / Bladestorm #vc78zT": {
       "caster": "Fjord",
       "element": "",
       "hasDamage": false,
@@ -1853,7 +1920,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Fjord / Bone Crusher": {
+    "Fjord / Bone Crusher #Iif5RM": {
       "caster": "Fjord",
       "element": "",
       "hasDamage": false,
@@ -1866,7 +1933,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Fjord / Breach": {
+    "Fjord / Breach #KddDjH": {
       "caster": "Fjord",
       "element": "",
       "hasDamage": false,
@@ -1879,7 +1946,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Fjord / Psychic Shield": {
+    "Fjord / Psychic Shield #ykgh1T": {
       "caster": "Fjord",
       "element": "",
       "hasDamage": false,
@@ -1892,7 +1959,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Arctic Narcissus": {
+    "Floralist / Arctic Narcissus #nIG6Tt": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -1905,7 +1972,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Blazing Chrysanthemum": {
+    "Floralist / Blazing Chrysanthemum #OSr1RD": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -1918,7 +1985,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Desert Dahlia": {
+    "Floralist / Desert Dahlia #hv1Wtm": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -1931,7 +1998,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Golden Ginkgo": {
+    "Floralist / Golden Ginkgo #0k9ZLm": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -1944,7 +2011,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Grave Asphodel": {
+    "Floralist / Grave Asphodel #OtQiLc": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -1957,7 +2024,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Hermit Iris": {
+    "Floralist / Hermit Iris #9jVZKT": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -1970,7 +2037,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Hookleaf Nightshade": {
+    "Floralist / Hookleaf Nightshade #UCq2xv": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -1983,7 +2050,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Horned Hawthorn": {
+    "Floralist / Horned Hawthorn #lZcbm1": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -1996,7 +2063,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Lunar Magnolia": {
+    "Floralist / Lunar Magnolia #loZn19": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2009,7 +2076,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Ocean Lotus": {
+    "Floralist / Ocean Lotus #WJ6dYf": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2022,7 +2089,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Pilgrim Gazalia": {
+    "Floralist / Pilgrim Gazalia #BTofC4": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2035,7 +2102,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Prancing Dandelion": {
+    "Floralist / Prancing Dandelion #JpPE14": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2048,7 +2115,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Regal Protea": {
+    "Floralist / Regal Protea #kLhCyC": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2061,7 +2128,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Remedy Lily": {
+    "Floralist / Remedy Lily #BCzLsy": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2074,7 +2141,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Serrated Rose": {
+    "Floralist / Serrated Rose #hFLV7c": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2087,7 +2154,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Silver Strelitzia": {
+    "Floralist / Silver Strelitzia #N12meU": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2100,7 +2167,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Star Peony": {
+    "Floralist / Star Peony #Z2E6Kc": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2113,7 +2180,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Striped Orchid": {
+    "Floralist / Striped Orchid #Jv331B": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2126,7 +2193,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Wardwattle": {
+    "Floralist / Wardwattle #1G2vrn": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2139,7 +2206,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Floralist / Wrathful Carnation": {
+    "Floralist / Wrathful Carnation #FMl0JY": {
       "caster": "Floralist",
       "element": "",
       "hasDamage": false,
@@ -2152,7 +2219,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Fury / Provoke": {
+    "Fury / Provoke #9t29ZA": {
       "caster": "Fury",
       "element": "",
       "hasDamage": false,
@@ -2165,7 +2232,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Geist (Overworld) / Dark Missionary": {
+    "Geist (Overworld) / Dark Missionary #hwRQZH": {
       "caster": "Geist (Overworld)",
       "element": "",
       "hasDamage": false,
@@ -2178,7 +2245,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Geist (Overworld) / Living Shadow": {
+    "Geist (Overworld) / Living Shadow #tkplYk": {
       "caster": "Geist (Overworld)",
       "element": "",
       "hasDamage": false,
@@ -2191,7 +2258,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Geist (Overworld) / Shadow Strike": {
+    "Geist (Overworld) / Shadow Strike #S01TD1": {
       "caster": "Geist (Overworld)",
       "element": "",
       "hasDamage": false,
@@ -2204,7 +2271,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Geist (Overworld) / Shadow Wall": {
+    "Geist (Overworld) / Shadow Wall #slPJ2k": {
       "caster": "Geist (Overworld)",
       "element": "",
       "hasDamage": false,
@@ -2217,7 +2284,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Geist (Overworld) / Shadowbringers": {
+    "Geist (Overworld) / Shadowbringers #kFPcc3": {
       "caster": "Geist (Overworld)",
       "element": "",
       "hasDamage": false,
@@ -2230,7 +2297,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Geist (Overworld) / Zero Power: The Blackest Night": {
+    "Geist (Overworld) / Zero Power: The Blackest Night #xc1wLk": {
       "caster": "Geist (Overworld)",
       "element": "",
       "hasDamage": false,
@@ -2243,7 +2310,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Gourmet / Cooking": {
+    "Gourmet / Cooking #qZjThO": {
       "caster": "Gourmet",
       "element": "",
       "hasDamage": false,
@@ -2256,7 +2323,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Guardian / Protect": {
+    "Guardian / Protect #fkYW0v": {
       "caster": "Guardian",
       "element": "",
       "hasDamage": false,
@@ -2269,7 +2336,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hako / Blink": {
+    "Hako / Blink #utumNu": {
       "caster": "Hako",
       "element": "",
       "hasDamage": false,
@@ -2282,7 +2349,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hako / Heal": {
+    "Hako / Heal #7IBdWH": {
       "caster": "Hako",
       "element": "hp",
       "hasDamage": false,
@@ -2304,7 +2371,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hexer / Abyss": {
+    "Hexer / Abyss #rMUwmk": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2317,7 +2384,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Acid Splash": {
+    "Hexer / Acid Splash #mimLjG": {
       "caster": "Hexer",
       "element": "poison",
       "hasDamage": true,
@@ -2343,7 +2410,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Aura of Decay": {
+    "Hexer / Aura of Decay #Vj3ji4": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2356,7 +2423,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Blind": {
+    "Hexer / Blind #K48xrr": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2382,7 +2449,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Deteriorate": {
+    "Hexer / Deteriorate #n7UPLA": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2408,7 +2475,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Muddle": {
+    "Hexer / Muddle #R3HZru": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2434,7 +2501,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Plague": {
+    "Hexer / Plague #GFGrFZ": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2460,7 +2527,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Pressure": {
+    "Hexer / Pressure #RMwJkR": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2486,7 +2553,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Seething Blight": {
+    "Hexer / Seething Blight #QQWpIw": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2512,7 +2579,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Shadow Mask": {
+    "Hexer / Shadow Mask #ThqoPn": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2525,14 +2592,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Symptom Shift": {
+    "Hexer / Symptom Shift #hCYJnd": {
       "caster": "Hexer",
       "ok": false,
       "reason": "skipped",
       "skill": "Symptom Shift",
       "skillType": "Spell"
     },
-    "Hexer / Transfer Life": {
+    "Hexer / Transfer Life #gvDNgf": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2545,7 +2612,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hexer / Venomous Weapon": {
+    "Hexer / Venomous Weapon #RO0wqO": {
       "caster": "Hexer",
       "element": "",
       "hasDamage": false,
@@ -2558,7 +2625,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hina (Backup) / Acceleration": {
+    "Hina (Backup) / Acceleration #mNOQFK": {
       "caster": "Hina (Backup)",
       "element": "",
       "hasDamage": false,
@@ -2571,7 +2638,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina (Backup) / Dispel": {
+    "Hina (Backup) / Dispel #bheVgo": {
       "caster": "Hina (Backup)",
       "element": "",
       "hasDamage": false,
@@ -2584,7 +2651,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina (Backup) / Divination": {
+    "Hina (Backup) / Divination #FBWC6v": {
       "caster": "Hina (Backup)",
       "element": "",
       "hasDamage": false,
@@ -2597,7 +2664,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina (Backup) / Drain Spirit": {
+    "Hina (Backup) / Drain Spirit #jb0job": {
       "caster": "Hina (Backup)",
       "element": "mp",
       "hasDamage": true,
@@ -2623,21 +2690,21 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina (Backup) / Elemental Shroud": {
+    "Hina (Backup) / Elemental Shroud #lWzQBQ": {
       "caster": "Hina (Backup)",
       "ok": false,
       "reason": "skipped",
       "skill": "Elemental Shroud",
       "skillType": "Spell"
     },
-    "Hina (Backup) / Elemental Weapon": {
+    "Hina (Backup) / Elemental Weapon #TPnGoy": {
       "caster": "Hina (Backup)",
       "ok": false,
       "reason": "skipped",
       "skill": "Elemental Weapon",
       "skillType": "Spell"
     },
-    "Hina (Backup) / Glacies": {
+    "Hina (Backup) / Glacies #yKqv5P": {
       "caster": "Hina (Backup)",
       "element": "ice",
       "hasDamage": true,
@@ -2663,7 +2730,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina (Backup) / Heal": {
+    "Hina (Backup) / Heal #Wtcdd4": {
       "caster": "Hina (Backup)",
       "element": "hp",
       "hasDamage": false,
@@ -2685,7 +2752,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina (Backup) / Iceberg": {
+    "Hina (Backup) / Iceberg #pcCBP6": {
       "caster": "Hina (Backup)",
       "element": "ice",
       "hasDamage": true,
@@ -2711,7 +2778,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina (Backup) / Stop": {
+    "Hina (Backup) / Stop #z1Gsqc": {
       "caster": "Hina (Backup)",
       "element": "",
       "hasDamage": false,
@@ -2737,7 +2804,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina (Backup) / Zero Power: A Million Possibility": {
+    "Hina (Backup) / Zero Power: A Million Possibility #oe3OP8": {
       "caster": "Hina (Backup)",
       "element": "",
       "hasDamage": false,
@@ -2750,7 +2817,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hina / Acceleration": {
+    "Hina / Acceleration #mNOQFK": {
       "caster": "Hina",
       "element": "",
       "hasDamage": false,
@@ -2763,7 +2830,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Avatar of Vengeance: Dismiss": {
+    "Hina / Avatar of Vengeance: Dismiss #W9XLWc": {
       "caster": "Hina",
       "element": "fire",
       "hasDamage": true,
@@ -2785,7 +2852,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hina / Avatar of Vengeance: Pulse": {
+    "Hina / Avatar of Vengeance: Pulse #BlUyFn": {
       "caster": "Hina",
       "element": null,
       "hasDamage": false,
@@ -2798,7 +2865,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hina / Cleanse": {
+    "Hina / Cleanse #rOdq8h": {
       "caster": "Hina",
       "element": "",
       "hasDamage": false,
@@ -2811,7 +2878,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Dispel": {
+    "Hina / Dispel #bheVgo": {
       "caster": "Hina",
       "element": "",
       "hasDamage": false,
@@ -2824,7 +2891,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Divination": {
+    "Hina / Divination #FBWC6v": {
       "caster": "Hina",
       "element": "",
       "hasDamage": false,
@@ -2837,7 +2904,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Draconic Roar": {
+    "Hina / Draconic Roar #O7KjXo": {
       "caster": "Hina",
       "element": "",
       "hasDamage": false,
@@ -2863,7 +2930,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hina / Drain Spirit": {
+    "Hina / Drain Spirit #jb0job": {
       "caster": "Hina",
       "element": "mp",
       "hasDamage": true,
@@ -2889,21 +2956,21 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Elemental Shroud": {
+    "Hina / Elemental Shroud #lWzQBQ": {
       "caster": "Hina",
       "ok": false,
       "reason": "skipped",
       "skill": "Elemental Shroud",
       "skillType": "Spell"
     },
-    "Hina / Elemental Weapon": {
+    "Hina / Elemental Weapon #TPnGoy": {
       "caster": "Hina",
       "ok": false,
       "reason": "skipped",
       "skill": "Elemental Weapon",
       "skillType": "Spell"
     },
-    "Hina / Encyclopedia Strike": {
+    "Hina / Encyclopedia Strike #gbwC7v": {
       "caster": "Hina",
       "element": "physical",
       "hasDamage": true,
@@ -2929,7 +2996,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hina / Glacies": {
+    "Hina / Glacies #yKqv5P": {
       "caster": "Hina",
       "element": "ice",
       "hasDamage": true,
@@ -3007,7 +3074,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Heal": {
+    "Hina / Heal #Wtcdd4": {
       "caster": "Hina",
       "element": "hp",
       "hasDamage": false,
@@ -3029,7 +3096,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Iceberg": {
+    "Hina / Iceberg #pcCBP6": {
       "caster": "Hina",
       "element": "ice",
       "hasDamage": true,
@@ -3055,7 +3122,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Lift off": {
+    "Hina / Lift off #H7HyFk": {
       "caster": "Hina",
       "element": "",
       "hasDamage": false,
@@ -3068,7 +3135,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hina / Protect": {
+    "Hina / Protect #aAf0Dx": {
       "caster": "Hina",
       "element": "",
       "hasDamage": false,
@@ -3081,7 +3148,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hina / Starfall": {
+    "Hina / Starfall #L1vZvN": {
       "caster": "Hina",
       "element": "",
       "hasDamage": false,
@@ -3094,7 +3161,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Starfall Comet": {
+    "Hina / Starfall Comet #3jT2Qf": {
       "caster": "Hina",
       "element": "light",
       "hasDamage": true,
@@ -3120,7 +3187,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Stop": {
+    "Hina / Stop #z1Gsqc": {
       "caster": "Hina",
       "element": "",
       "hasDamage": false,
@@ -3146,14 +3213,14 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Symptom Shift": {
+    "Hina / Symptom Shift #p7WldK": {
       "caster": "Hina",
       "ok": false,
       "reason": "skipped",
       "skill": "Symptom Shift",
       "skillType": "Spell"
     },
-    "Hina / Zero Power: A Million Possibility": {
+    "Hina / Zero Power: A Million Possibility #oe3OP8": {
       "caster": "Hina",
       "element": "",
       "hasDamage": false,
@@ -3166,7 +3233,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Bear Trap": {
+    "Hunter / Bear Trap #1d0tHk": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3179,7 +3246,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Blinding Powder Trap": {
+    "Hunter / Blinding Powder Trap #DKPitM": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3192,7 +3259,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Explosive Trap": {
+    "Hunter / Explosive Trap #KnKgcT": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3205,7 +3272,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Fly Trap": {
+    "Hunter / Fly Trap #6kgk19": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3218,7 +3285,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Lock-On": {
+    "Hunter / Lock-On #PXJfI3": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3231,7 +3298,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Mocking Trap": {
+    "Hunter / Mocking Trap #trEa5j": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3244,7 +3311,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Moth Trap": {
+    "Hunter / Moth Trap #zftNLU": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3257,7 +3324,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Poison Dart Trap": {
+    "Hunter / Poison Dart Trap #nMsiSJ": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3270,7 +3337,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Siren Trap": {
+    "Hunter / Siren Trap #illHZv": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3283,7 +3350,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Smoke bomb Trap": {
+    "Hunter / Smoke bomb Trap #o6K9UI": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3296,7 +3363,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Snap Out Trap": {
+    "Hunter / Snap Out Trap #ZbGMnT": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3309,7 +3376,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Snare Net Trap": {
+    "Hunter / Snare Net Trap #0DQ8Eo": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3322,7 +3389,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Soul Mirror Trap": {
+    "Hunter / Soul Mirror Trap #2MKyNv": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3335,7 +3402,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Sting Thing Trap": {
+    "Hunter / Sting Thing Trap #FpupPM": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3348,7 +3415,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Track": {
+    "Hunter / Track #CuOYNO": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3361,7 +3428,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Tripwire Trap": {
+    "Hunter / Tripwire Trap #4LoJNh": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3374,7 +3441,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hunter / Venomous Cloud Trap": {
+    "Hunter / Venomous Cloud Trap #evZSRL": {
       "caster": "Hunter",
       "element": "",
       "hasDamage": false,
@@ -3387,14 +3454,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Illusionist / Create Phantasm: Dread": {
+    "Illusionist / Create Phantasm: Dread #XK5soD": {
       "caster": "Illusionist",
       "ok": false,
       "reason": "skipped",
       "skill": "Create Phantasm: Dread",
       "skillType": "Spell"
     },
-    "Illusionist / Create Phantasm: Mockery": {
+    "Illusionist / Create Phantasm: Mockery #IIp1xn": {
       "caster": "Illusionist",
       "element": "",
       "hasDamage": false,
@@ -3420,7 +3487,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Illusionist / Create Phantasm: Numen": {
+    "Illusionist / Create Phantasm: Numen #5yMi0U": {
       "caster": "Illusionist",
       "element": null,
       "hasDamage": false,
@@ -3433,14 +3500,14 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Illusionist / Create Phantasm: Strike": {
+    "Illusionist / Create Phantasm: Strike #BbbVFE": {
       "caster": "Illusionist",
       "ok": false,
       "reason": "skipped",
       "skill": "Create Phantasm: Strike",
       "skillType": "Spell"
     },
-    "Illusionist / Detonate Phantasm": {
+    "Illusionist / Detonate Phantasm #HdLfn0": {
       "caster": "Illusionist",
       "element": "VAR_ELEMENT",
       "hasDamage": false,
@@ -3453,7 +3520,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Illusionist / Essence Sacrifice": {
+    "Illusionist / Essence Sacrifice #yPNASz": {
       "caster": "Illusionist",
       "element": "",
       "hasDamage": false,
@@ -3466,7 +3533,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Illusionist / Illusory Shield": {
+    "Illusionist / Illusory Shield #0uyxLh": {
       "caster": "Illusionist",
       "element": null,
       "hasDamage": false,
@@ -3479,7 +3546,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Illusionist / Mirage Blitz": {
+    "Illusionist / Mirage Blitz #f9jYqJ": {
       "caster": "Illusionist",
       "element": "physical",
       "hasDamage": true,
@@ -3505,7 +3572,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Illusionist / Multi Shatter": {
+    "Illusionist / Multi Shatter #3AvBqp": {
       "caster": "Illusionist",
       "element": "physical",
       "hasDamage": true,
@@ -3531,14 +3598,14 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Illusionist / Nocebo Weapon": {
+    "Illusionist / Nocebo Weapon #ay4pMD": {
       "caster": "Illusionist",
       "ok": false,
       "reason": "skipped",
       "skill": "Nocebo Weapon",
       "skillType": "Spell"
     },
-    "Illusionist / Phantasmal Recovery": {
+    "Illusionist / Phantasmal Recovery #Bxr578": {
       "caster": "Illusionist",
       "element": "",
       "hasDamage": false,
@@ -3577,7 +3644,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Illusionist / Spectral Light": {
+    "Illusionist / Spectral Light #MbmzXK": {
       "caster": "Illusionist",
       "element": "",
       "hasDamage": false,
@@ -3603,7 +3670,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Illusionist / Vital Sacrifice": {
+    "Illusionist / Vital Sacrifice #LpUX9O": {
       "caster": "Illusionist",
       "element": "",
       "hasDamage": false,
@@ -3616,7 +3683,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Aero Blast": {
+    "Invoker / Aero Blast #egWGfp": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3629,7 +3696,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Aero Hex": {
+    "Invoker / Aero Hex #5FONI3": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3642,7 +3709,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Electro Blast": {
+    "Invoker / Electro Blast #NAZGLy": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3655,7 +3722,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Electro Hex": {
+    "Invoker / Electro Hex #zvxgg9": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3668,7 +3735,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Geo Blast": {
+    "Invoker / Geo Blast #WiSsEg": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3681,7 +3748,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Geo Hex": {
+    "Invoker / Geo Hex #8K3L3T": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3694,7 +3761,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Hydro Blast": {
+    "Invoker / Hydro Blast #IY4zRs": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3707,7 +3774,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Hydro Hex": {
+    "Invoker / Hydro Hex #3ePNUc": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3720,14 +3787,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Invocation": {
+    "Invoker / Invocation #SD49WS": {
       "caster": "Invoker",
       "ok": false,
       "reason": "skipped",
       "skill": "Invocation",
       "skillType": "Active"
     },
-    "Invoker / Invoke: Breeze": {
+    "Invoker / Invoke: Breeze #fJCUpy": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3740,7 +3807,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Invoke: Burst": {
+    "Invoker / Invoke: Burst #H805Gc": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3753,7 +3820,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Invoke: Chill": {
+    "Invoker / Invoke: Chill #NJKraq": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3766,7 +3833,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Invoke: Frostbite": {
+    "Invoker / Invoke: Frostbite #xV9lET": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3779,7 +3846,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Invoke: Growth": {
+    "Invoker / Invoke: Growth #llFmma": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3792,7 +3859,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Invoke: Quicksand": {
+    "Invoker / Invoke: Quicksand #R2ly0T": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3805,7 +3872,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Invoke: Smoke": {
+    "Invoker / Invoke: Smoke #8jSz2j": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3818,7 +3885,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Invoke: Static": {
+    "Invoker / Invoke: Static #mDsvZS": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3831,7 +3898,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Invoke: Thunder": {
+    "Invoker / Invoke: Thunder #uOi6Qr": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3844,7 +3911,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Invoke: Twister": {
+    "Invoker / Invoke: Twister #iTw1Eu": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3857,7 +3924,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Pyro Blast": {
+    "Invoker / Pyro Blast #BrHUll": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3870,7 +3937,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Pyro Hex": {
+    "Invoker / Pyro Hex #HWGgKM": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3883,7 +3950,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Ripples": {
+    "Invoker / Ripples #ROzv7A": {
       "caster": "Invoker",
       "element": "",
       "hasDamage": false,
@@ -3896,7 +3963,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Kalina / Dragonfire Dive": {
+    "Kalina / Dragonfire Dive #uo5X0w": {
       "caster": "Kalina",
       "element": "physical",
       "hasDamage": true,
@@ -3922,7 +3989,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Kalina / Remedy": {
+    "Kalina / Remedy #nRB08n": {
       "caster": "Kalina",
       "element": "",
       "hasDamage": false,
@@ -3935,7 +4002,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Kalina / Skyfall Dive": {
+    "Kalina / Skyfall Dive #hf3NWm": {
       "caster": "Kalina",
       "element": "physical",
       "hasDamage": true,
@@ -3961,7 +4028,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Keren / Brainwave Discharge": {
+    "Keren / Brainwave Discharge #yyaIgd": {
       "caster": "Keren",
       "element": "",
       "hasDamage": false,
@@ -3974,7 +4041,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Keren / Charm": {
+    "Keren / Charm #rs7BtA": {
       "caster": "Keren",
       "element": "",
       "hasDamage": false,
@@ -3987,14 +4054,14 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Keren / Create Phantasm: Dread": {
+    "Keren / Create Phantasm: Dread #YIUYJE": {
       "caster": "Keren",
       "ok": false,
       "reason": "skipped",
       "skill": "Create Phantasm: Dread",
       "skillType": "Spell"
     },
-    "Keren / Create Phantasm: Numen": {
+    "Keren / Create Phantasm: Numen #icaJRh": {
       "caster": "Keren",
       "element": "",
       "hasDamage": false,
@@ -4007,14 +4074,14 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Keren / Create Phantasm: Strike": {
+    "Keren / Create Phantasm: Strike #4A5Vht": {
       "caster": "Keren",
       "ok": false,
       "reason": "skipped",
       "skill": "Create Phantasm: Strike",
       "skillType": "Spell"
     },
-    "Keren / Detonate Phantasm": {
+    "Keren / Detonate Phantasm #4zqAMz": {
       "caster": "Keren",
       "element": "VAR_ELEMENT",
       "hasDamage": false,
@@ -4027,7 +4094,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Keren / Illusory Shield": {
+    "Keren / Illusory Shield #zBJhr4": {
       "caster": "Keren",
       "element": "",
       "hasDamage": false,
@@ -4040,7 +4107,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Keren / Life Transference": {
+    "Keren / Life Transference #fWSnV0": {
       "caster": "Keren",
       "element": "hp",
       "hasDamage": false,
@@ -4062,14 +4129,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Keren / Nocebo Weapon": {
+    "Keren / Nocebo Weapon #LwbHBK": {
       "caster": "Keren",
       "ok": false,
       "reason": "skipped",
       "skill": "Nocebo Weapon",
       "skillType": "Spell"
     },
-    "Keren / See you later": {
+    "Keren / See you later #C2iRL9": {
       "caster": "Keren",
       "element": "",
       "hasDamage": false,
@@ -4082,7 +4149,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Keren / Soul Steal": {
+    "Keren / Soul Steal #EkwslQ": {
       "caster": "Keren",
       "element": "",
       "hasDamage": false,
@@ -4108,7 +4175,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Keren / Zero Power: Last Den of Cinders": {
+    "Keren / Zero Power: Last Den of Cinders #OoQjrz": {
       "caster": "Keren",
       "element": "fire",
       "hasDamage": true,
@@ -4130,7 +4197,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Kiki / Bladestorm": {
+    "Kiki / Bladestorm #8T5Bs1": {
       "caster": "Kiki",
       "element": "",
       "hasDamage": false,
@@ -4143,7 +4210,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Kiki / Bone Crusher": {
+    "Kiki / Bone Crusher #j6Wfzl": {
       "caster": "Kiki",
       "element": "",
       "hasDamage": false,
@@ -4156,7 +4223,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Kiki / Breach": {
+    "Kiki / Breach #4yeDMF": {
       "caster": "Kiki",
       "element": "",
       "hasDamage": false,
@@ -4169,14 +4236,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Kiki / Elemental Shroud": {
+    "Kiki / Elemental Shroud #o6Wv93": {
       "caster": "Kiki",
       "ok": false,
       "reason": "skipped",
       "skill": "Elemental Shroud",
       "skillType": "Spell"
     },
-    "Kiki / Flare": {
+    "Kiki / Flare #pIO0Lg": {
       "caster": "Kiki",
       "element": "fire",
       "hasDamage": true,
@@ -4202,7 +4269,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Kiki / Iceberg": {
+    "Kiki / Iceberg #aXKsu9": {
       "caster": "Kiki",
       "element": "ice",
       "hasDamage": true,
@@ -4228,7 +4295,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Kiki / Rift": {
+    "Kiki / Rift #35rXj9": {
       "caster": "Kiki",
       "element": "earth",
       "hasDamage": true,
@@ -4254,7 +4321,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Kiki / Thunderbolt": {
+    "Kiki / Thunderbolt #TKafb6": {
       "caster": "Kiki",
       "element": "bolt",
       "hasDamage": true,
@@ -4280,7 +4347,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Kiki / Vortex": {
+    "Kiki / Vortex #nPiDX4": {
       "caster": "Kiki",
       "element": "air",
       "hasDamage": true,
@@ -4306,7 +4373,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Kiki / Wind Wall": {
+    "Kiki / Wind Wall #NF731W": {
       "caster": "Kiki",
       "element": "",
       "hasDamage": false,
@@ -4319,7 +4386,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Loremaster / Predictable!": {
+    "Loremaster / Predictable! #j0eYOp": {
       "caster": "Loremaster",
       "element": "",
       "hasDamage": false,
@@ -4332,7 +4399,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Capote": {
+    "Matador / Capote #HewqVD": {
       "caster": "Matador",
       "element": "",
       "hasDamage": false,
@@ -4345,7 +4412,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Castigo": {
+    "Matador / Castigo #WsTQiV": {
       "caster": "Matador",
       "element": "",
       "hasDamage": false,
@@ -4358,7 +4425,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Corrida Finale": {
+    "Matador / Corrida Finale #HWhjzK": {
       "caster": "Matador",
       "element": "",
       "hasDamage": false,
@@ -4371,7 +4438,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Descabello": {
+    "Matador / Descabello #qmpBr6": {
       "caster": "Matador",
       "element": "physical",
       "hasDamage": true,
@@ -4393,7 +4460,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Faena": {
+    "Matador / Faena #eSupFR": {
       "caster": "Matador",
       "element": "",
       "hasDamage": false,
@@ -4406,7 +4473,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Festivities": {
+    "Matador / Festivities #VnPWNA": {
       "caster": "Matador",
       "element": "",
       "hasDamage": false,
@@ -4419,7 +4486,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Muleta": {
+    "Matador / Muleta #if9raW": {
       "caster": "Matador",
       "element": "physical",
       "hasDamage": true,
@@ -4445,7 +4512,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Ole!": {
+    "Matador / Ole! #4h8IoA": {
       "caster": "Matador",
       "element": "",
       "hasDamage": false,
@@ -4458,7 +4525,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Tafallera": {
+    "Matador / Tafallera #xY0aw9": {
       "caster": "Matador",
       "element": "physical",
       "hasDamage": true,
@@ -4484,7 +4551,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Triumphal Salute": {
+    "Matador / Triumphal Salute #sbtEj5": {
       "caster": "Matador",
       "element": "",
       "hasDamage": false,
@@ -4497,7 +4564,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Matador / Verónica": {
+    "Matador / Verónica #TW1zRK": {
       "caster": "Matador",
       "element": "",
       "hasDamage": false,
@@ -4510,7 +4577,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Monk / Beaded Weapon": {
+    "Monk / Beaded Weapon #v4Yvk3": {
       "caster": "Monk",
       "element": "",
       "hasDamage": false,
@@ -4523,7 +4590,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Monk / Soul Renewal": {
+    "Monk / Soul Renewal #DbxJEC": {
       "caster": "Monk",
       "element": "",
       "hasDamage": false,
@@ -4536,7 +4603,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Monk / Spirit Shot": {
+    "Monk / Spirit Shot #JhyL6s": {
       "caster": "Monk",
       "element": "",
       "hasDamage": false,
@@ -4549,7 +4616,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Monk / Spiritual Fortress": {
+    "Monk / Spiritual Fortress #Kf8iCC": {
       "caster": "Monk",
       "element": "",
       "hasDamage": false,
@@ -4562,7 +4629,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Moses / Breach": {
+    "Moses / Breach #uFIHGe": {
       "caster": "Moses",
       "element": "",
       "hasDamage": false,
@@ -4575,14 +4642,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Moses / Elemental Weapon": {
+    "Moses / Elemental Weapon #qNCk5p": {
       "caster": "Moses",
       "ok": false,
       "reason": "skipped",
       "skill": "Elemental Weapon",
       "skillType": "Spell"
     },
-    "Moses / Soaring Strike": {
+    "Moses / Soaring Strike #RkUaLe": {
       "caster": "Moses",
       "element": "",
       "hasDamage": false,
@@ -4595,7 +4662,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Mutant / Amphibia": {
+    "Mutant / Amphibia #QnVaf2": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4608,7 +4675,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Arpaktida": {
+    "Mutant / Arpaktida #zAufbw": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4621,7 +4688,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Dynamotheria": {
+    "Mutant / Dynamotheria #UrkVW9": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4634,7 +4701,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Electrophora": {
+    "Mutant / Electrophora #VoScyz": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4647,7 +4714,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Neurophagodia": {
+    "Mutant / Neurophagodia #Tul2Py": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4660,7 +4727,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Placophora": {
+    "Mutant / Placophora #cCkp2E": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4673,7 +4740,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Pneumophora": {
+    "Mutant / Pneumophora #TMIIfw": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4686,7 +4753,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Polypoda": {
+    "Mutant / Polypoda #j7abXE": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4699,7 +4766,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Pterotheria": {
+    "Mutant / Pterotheria #UlyxEN": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4712,7 +4779,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Pyrophora": {
+    "Mutant / Pyrophora #0USDgl": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4725,7 +4792,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Tachytheria": {
+    "Mutant / Tachytheria #rZ99b0": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4738,7 +4805,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Theriomorphosis": {
+    "Mutant / Theriomorphosis #tThDgD": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4751,7 +4818,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Mutant / Toxicophora": {
+    "Mutant / Toxicophora #v4Zo5f": {
       "caster": "Mutant",
       "element": "",
       "hasDamage": false,
@@ -4764,7 +4831,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Oki (Copy) / Bladestorm": {
+    "Oki (Copy) / Bladestorm #8bczZ2": {
       "caster": "Oki (Copy)",
       "element": "",
       "hasDamage": false,
@@ -4777,7 +4844,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Oki (Copy) / Bone Crusher": {
+    "Oki (Copy) / Bone Crusher #NFklhr": {
       "caster": "Oki (Copy)",
       "element": "",
       "hasDamage": false,
@@ -4790,7 +4857,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Oki (Copy) / Breach": {
+    "Oki (Copy) / Breach #66jHIr": {
       "caster": "Oki (Copy)",
       "element": "",
       "hasDamage": false,
@@ -4803,7 +4870,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Orator / Condemn": {
+    "Orator / Condemn #JlC5Ki": {
       "caster": "Orator",
       "element": "",
       "hasDamage": false,
@@ -4816,7 +4883,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Orator / Disarming Rhetoric": {
+    "Orator / Disarming Rhetoric #WoFkaw": {
       "caster": "Orator",
       "element": "",
       "hasDamage": false,
@@ -4829,7 +4896,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Orator / Encourage": {
+    "Orator / Encourage #YMvMMB": {
       "caster": "Orator",
       "element": "",
       "hasDamage": false,
@@ -4842,7 +4909,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Orator / My Trust in You": {
+    "Orator / My Trust in You #uaAxdT": {
       "caster": "Orator",
       "element": "",
       "hasDamage": false,
@@ -4855,7 +4922,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Orator / Unexpected Ally": {
+    "Orator / Unexpected Ally #WT0Tpv": {
       "caster": "Orator",
       "element": "",
       "hasDamage": false,
@@ -4868,7 +4935,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Anchor Smash": {
+    "Pirate / Anchor Smash #uZ8tbr": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -4881,7 +4948,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Arm Hook": {
+    "Pirate / Arm Hook #ASzCiH": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -4894,7 +4961,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Barrel Bomb": {
+    "Pirate / Barrel Bomb #iJSdrb": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -4907,7 +4974,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Blood Chalice": {
+    "Pirate / Blood Chalice #Jujq07": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -4920,7 +4987,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Boardside Cannon Salvo": {
+    "Pirate / Boardside Cannon Salvo #73MNuU": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -4933,7 +5000,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Cannon": {
+    "Pirate / Cannon #CuPSBK": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -4946,7 +5013,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Cursed Dagger": {
+    "Pirate / Cursed Dagger #lHrOuM": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -4959,7 +5026,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Grenadose": {
+    "Pirate / Grenadose #X22J5u": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -4972,7 +5039,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Hook Throw": {
+    "Pirate / Hook Throw #TlBPEq": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -4985,7 +5052,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Magic Conch": {
+    "Pirate / Magic Conch #kHoPUc": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -4998,7 +5065,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Magic Monocular": {
+    "Pirate / Magic Monocular #khg9JC": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -5011,7 +5078,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pirate / Spare Bullet": {
+    "Pirate / Spare Bullet #TS078R": {
       "caster": "Pirate",
       "element": "",
       "hasDamage": false,
@@ -5024,7 +5091,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Chain Fireball": {
+    "Pyromancer / Chain Fireball #w0VZSk": {
       "caster": "Pyromancer",
       "element": "fire",
       "hasDamage": true,
@@ -5050,7 +5117,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Conflagration": {
+    "Pyromancer / Conflagration #qVdHlH": {
       "caster": "Pyromancer",
       "element": "",
       "hasDamage": false,
@@ -5063,7 +5130,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Explosion": {
+    "Pyromancer / Explosion #Yu5dQO": {
       "caster": "Pyromancer",
       "element": "fire",
       "hasDamage": true,
@@ -5089,7 +5156,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Fire Bolt": {
+    "Pyromancer / Fire Bolt #4rffYI": {
       "caster": "Pyromancer",
       "element": "fire",
       "hasDamage": true,
@@ -5115,7 +5182,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Fire Wall": {
+    "Pyromancer / Fire Wall #VYHRrw": {
       "caster": "Pyromancer",
       "element": "",
       "hasDamage": false,
@@ -5128,7 +5195,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Flame Weapon": {
+    "Pyromancer / Flame Weapon #KVoG9T": {
       "caster": "Pyromancer",
       "element": "",
       "hasDamage": false,
@@ -5141,7 +5208,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Flarestorm": {
+    "Pyromancer / Flarestorm #PXAsCS": {
       "caster": "Pyromancer",
       "element": "",
       "hasDamage": false,
@@ -5154,7 +5221,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Heat Body": {
+    "Pyromancer / Heat Body #Dm9Sw9": {
       "caster": "Pyromancer",
       "element": "",
       "hasDamage": false,
@@ -5167,7 +5234,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Ignites": {
+    "Pyromancer / Ignites #T1SXrV": {
       "caster": "Pyromancer",
       "element": "",
       "hasDamage": false,
@@ -5180,7 +5247,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Kindle Fire": {
+    "Pyromancer / Kindle Fire #UmEj9x": {
       "caster": "Pyromancer",
       "element": "",
       "hasDamage": false,
@@ -5193,7 +5260,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Pyromancer / Self Destruct": {
+    "Pyromancer / Self Destruct #YtuVZv": {
       "caster": "Pyromancer",
       "element": "",
       "hasDamage": false,
@@ -5206,14 +5273,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "RaiRai / Elemental Weapon": {
+    "RaiRai / Elemental Weapon #4iCEAy": {
       "caster": "RaiRai",
       "ok": false,
       "reason": "skipped",
       "skill": "Elemental Weapon",
       "skillType": "Spell"
     },
-    "RaiRai / Fulgur": {
+    "RaiRai / Fulgur #tIctEm": {
       "caster": "RaiRai",
       "element": "bolt",
       "hasDamage": true,
@@ -5239,7 +5306,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "RaiRai / Thunderbolt": {
+    "RaiRai / Thunderbolt #k7TEKN": {
       "caster": "RaiRai",
       "element": "bolt",
       "hasDamage": true,
@@ -5265,7 +5332,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Reaper / Corpse Explosion": {
+    "Reaper / Corpse Explosion #754j4K": {
       "caster": "Reaper",
       "element": "",
       "hasDamage": false,
@@ -5278,7 +5345,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Reaper / Death's Shadow": {
+    "Reaper / Death's Shadow #FJVJR2": {
       "caster": "Reaper",
       "element": "dark",
       "hasDamage": true,
@@ -5304,7 +5371,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Reaper / Executioner's Gallow": {
+    "Reaper / Executioner's Gallow #V7stYs": {
       "caster": "Reaper",
       "element": "",
       "hasDamage": false,
@@ -5317,7 +5384,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Reaper / Harvest Moon": {
+    "Reaper / Harvest Moon #MooqOU": {
       "caster": "Reaper",
       "element": "dark",
       "hasDamage": true,
@@ -5343,7 +5410,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Reaper / Keeper of the Dead": {
+    "Reaper / Keeper of the Dead #IUeX3G": {
       "caster": "Reaper",
       "element": "",
       "hasDamage": false,
@@ -5356,7 +5423,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Reaper / Reaper's Scythe": {
+    "Reaper / Reaper's Scythe #eLkhOF": {
       "caster": "Reaper",
       "element": "",
       "hasDamage": false,
@@ -5369,7 +5436,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Reaper / Rest in Peace": {
+    "Reaper / Rest in Peace #dUn7Wy": {
       "caster": "Reaper",
       "element": "dark",
       "hasDamage": true,
@@ -5395,7 +5462,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Reaper / Soul Conversion": {
+    "Reaper / Soul Conversion #RmSPDH": {
       "caster": "Reaper",
       "element": "",
       "hasDamage": false,
@@ -5408,7 +5475,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Reaper / Soul Strike": {
+    "Reaper / Soul Strike #nR7Xkf": {
       "caster": "Reaper",
       "element": "",
       "hasDamage": false,
@@ -5434,7 +5501,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Reaper / Spirit Cleaver": {
+    "Reaper / Spirit Cleaver #bkbpif": {
       "caster": "Reaper",
       "element": "",
       "hasDamage": false,
@@ -5447,7 +5514,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Reaper / Twilight Requiem": {
+    "Reaper / Twilight Requiem #aAlFbk": {
       "caster": "Reaper",
       "element": "",
       "hasDamage": false,
@@ -5460,7 +5527,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Revolver / Fastest Finger": {
+    "Revolver / Fastest Finger #PpurQL": {
       "caster": "Revolver",
       "element": "",
       "hasDamage": false,
@@ -5473,7 +5540,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Revolver / Six-Iron Saint": {
+    "Revolver / Six-Iron Saint #IiBHyv": {
       "caster": "Revolver",
       "element": "",
       "hasDamage": false,
@@ -5486,7 +5553,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Rogue / See you later": {
+    "Rogue / See you later #U3WN91": {
       "caster": "Rogue",
       "element": null,
       "hasDamage": false,
@@ -5499,7 +5566,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Rogue / Soul Steal": {
+    "Rogue / Soul Steal #M7Asn4": {
       "caster": "Rogue",
       "element": "",
       "hasDamage": false,
@@ -5525,7 +5592,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Slayer / Bane Oils": {
+    "Slayer / Bane Oils #8OjnNG": {
       "caster": "Slayer",
       "element": "",
       "hasDamage": false,
@@ -5538,7 +5605,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Sniper / Camouflage": {
+    "Sniper / Camouflage #XVapGh": {
       "caster": "Sniper",
       "element": "",
       "hasDamage": false,
@@ -5551,7 +5618,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Sniper / Heartbreak": {
+    "Sniper / Heartbreak #rLYDyj": {
       "caster": "Sniper",
       "element": "",
       "hasDamage": false,
@@ -5564,7 +5631,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Sniper / Phantom Snipe": {
+    "Sniper / Phantom Snipe #1W4zI3": {
       "caster": "Sniper",
       "element": "physical",
       "hasDamage": true,
@@ -5590,7 +5657,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Spell Fencer / Spellblade Rhapsody": {
+    "Spell Fencer / Spellblade Rhapsody #qpwpbA": {
       "caster": "Spell Fencer",
       "element": "",
       "hasDamage": false,
@@ -5603,7 +5670,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Spiritist / Aura": {
+    "Spiritist / Aura #B84lIj": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5616,7 +5683,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Awaken": {
+    "Spiritist / Awaken #GhnKOD": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5629,7 +5696,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Barrier": {
+    "Spiritist / Barrier #PNmiQ7": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5642,7 +5709,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Cleanse": {
+    "Spiritist / Cleanse #YqYKqd": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5655,7 +5722,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Enrage": {
+    "Spiritist / Enrage #xDrg3b": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5681,7 +5748,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Hallucination": {
+    "Spiritist / Hallucination #yoGSws": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5707,7 +5774,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Heal": {
+    "Spiritist / Heal #4k1Agl": {
       "caster": "Spiritist",
       "element": "hp",
       "hasDamage": false,
@@ -5729,7 +5796,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Hope": {
+    "Spiritist / Hope #eOcxwD": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5742,7 +5809,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Spiritist / Lux": {
+    "Spiritist / Lux #mv6mmu": {
       "caster": "Spiritist",
       "element": "light",
       "hasDamage": true,
@@ -5768,7 +5835,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Mercy": {
+    "Spiritist / Mercy #kbnDyV": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5781,7 +5848,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Reinforce": {
+    "Spiritist / Reinforce #QPX6ZW": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5794,7 +5861,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Soul Weapon": {
+    "Spiritist / Soul Weapon #DAt1eR": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5807,7 +5874,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Spiritist / Torpor": {
+    "Spiritist / Torpor #KTdpCa": {
       "caster": "Spiritist",
       "element": "",
       "hasDamage": false,
@@ -5833,7 +5900,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "St. Reefesia / Blazing Impact": {
+    "St. Reefesia / Blazing Impact #OEC7gA": {
       "caster": "St. Reefesia",
       "element": "fire",
       "hasDamage": true,
@@ -5859,7 +5926,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Surtur / Bladestorm": {
+    "Surtur / Bladestorm #OU2KOs": {
       "caster": "Surtur",
       "element": "",
       "hasDamage": false,
@@ -5872,7 +5939,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Surtur / Shadow Strike": {
+    "Surtur / Shadow Strike #DRVh6D": {
       "caster": "Surtur",
       "element": "",
       "hasDamage": false,
@@ -5885,7 +5952,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Clean Slate": {
+    "Symbolist / Clean Slate #gtrVz7": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -5898,7 +5965,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Binding": {
+    "Symbolist / Symbol of Binding #arovrO": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -5911,7 +5978,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Creation": {
+    "Symbolist / Symbol of Creation #Hva2Ya": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -5924,7 +5991,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Despair": {
+    "Symbolist / Symbol of Despair #uoGonw": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -5937,7 +6004,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Destiny": {
+    "Symbolist / Symbol of Destiny #k1LGaU": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -5950,7 +6017,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Elements": {
+    "Symbolist / Symbol of Elements #0Nfqeq": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -5963,7 +6030,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Enmity": {
+    "Symbolist / Symbol of Enmity #1VhFAu": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -5976,7 +6043,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Flux": {
+    "Symbolist / Symbol of Flux #QkQMtj": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -5989,7 +6056,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Forbiddance": {
+    "Symbolist / Symbol of Forbiddance #z43aI0": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6002,7 +6069,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Growth": {
+    "Symbolist / Symbol of Growth #fAfsLc": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6015,7 +6082,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Metamorphosis": {
+    "Symbolist / Symbol of Metamorphosis #3JJX2R": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6028,7 +6095,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Prosperity": {
+    "Symbolist / Symbol of Prosperity #JOy1HU": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6041,7 +6108,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Protection": {
+    "Symbolist / Symbol of Protection #ri4HzD": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6054,7 +6121,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Rebellion": {
+    "Symbolist / Symbol of Rebellion #9tFiOh": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6067,7 +6134,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Rebirth": {
+    "Symbolist / Symbol of Rebirth #B6Siy5": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6080,7 +6147,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Revenge": {
+    "Symbolist / Symbol of Revenge #0coggr": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6093,7 +6160,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Sacrifice": {
+    "Symbolist / Symbol of Sacrifice #vAcfUR": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6106,7 +6173,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Sorcery": {
+    "Symbolist / Symbol of Sorcery #N86qNw": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6119,7 +6186,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Truth": {
+    "Symbolist / Symbol of Truth #cFZaLH": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6132,7 +6199,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Symbolist / Symbol of Weakness": {
+    "Symbolist / Symbol of Weakness #XbBIUm": {
       "caster": "Symbolist",
       "element": "",
       "hasDamage": false,
@@ -6145,7 +6212,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tactician / Art of War": {
+    "Tactician / Art of War #srjJdA": {
       "caster": "Tactician",
       "element": "",
       "hasDamage": false,
@@ -6158,7 +6225,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tactician / Chain Strategem": {
+    "Tactician / Chain Strategem #9rTN4c": {
       "caster": "Tactician",
       "element": "",
       "hasDamage": false,
@@ -6171,7 +6238,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tactician / Last Stand": {
+    "Tactician / Last Stand #7T1cLH": {
       "caster": "Tactician",
       "element": "",
       "hasDamage": false,
@@ -6184,7 +6251,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tactician / Strategic Retreat": {
+    "Tactician / Strategic Retreat #lnzoeu": {
       "caster": "Tactician",
       "element": "",
       "hasDamage": false,
@@ -6197,7 +6264,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tactician / Synergize": {
+    "Tactician / Synergize #l2mC9U": {
       "caster": "Tactician",
       "element": "",
       "hasDamage": false,
@@ -6210,7 +6277,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tailor / Dance of the Marionette": {
+    "Tailor / Dance of the Marionette #LnuSUT": {
       "caster": "Tailor",
       "element": "",
       "hasDamage": false,
@@ -6223,7 +6290,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tailor / Down to Size": {
+    "Tailor / Down to Size #nOaiQB": {
       "caster": "Tailor",
       "element": "",
       "hasDamage": false,
@@ -6236,7 +6303,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tailor / Taking Measurement": {
+    "Tailor / Taking Measurement #kOPeLf": {
       "caster": "Tailor",
       "element": "",
       "hasDamage": false,
@@ -6249,7 +6316,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tamer / Negotiate": {
+    "Tamer / Negotiate #W2Y6J1": {
       "caster": "Tamer",
       "element": "",
       "hasDamage": false,
@@ -6262,7 +6329,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tamer / Rapid Hybridization": {
+    "Tamer / Rapid Hybridization #SSTuLA": {
       "caster": "Tamer",
       "element": "",
       "hasDamage": false,
@@ -6275,7 +6342,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tinkerer / Advance Alchemy": {
+    "Tinkerer / Advance Alchemy #2CU1xc": {
       "caster": "Tinkerer",
       "element": "",
       "hasDamage": false,
@@ -6288,7 +6355,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tinkerer / Advance Infusion": {
+    "Tinkerer / Advance Infusion #BFhYkw": {
       "caster": "Tinkerer",
       "element": "",
       "hasDamage": false,
@@ -6301,7 +6368,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tinkerer / Basic Alchemy": {
+    "Tinkerer / Basic Alchemy #qxQLcO": {
       "caster": "Tinkerer",
       "element": "",
       "hasDamage": false,
@@ -6314,7 +6381,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tinkerer / Basic Infusion": {
+    "Tinkerer / Basic Infusion #iMIP8m": {
       "caster": "Tinkerer",
       "element": "",
       "hasDamage": false,
@@ -6327,7 +6394,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tinkerer / Gadgets": {
+    "Tinkerer / Gadgets #s4Lb3c": {
       "caster": "Tinkerer",
       "element": "",
       "hasDamage": false,
@@ -6340,7 +6407,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tinkerer / Magicannon": {
+    "Tinkerer / Magicannon #rS0P4r": {
       "caster": "Tinkerer",
       "element": "",
       "hasDamage": false,
@@ -6353,7 +6420,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tinkerer / Magicsphere": {
+    "Tinkerer / Magicsphere #P78MPR": {
       "caster": "Tinkerer",
       "element": "",
       "hasDamage": false,
@@ -6366,7 +6433,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tinkerer / Magitech Override": {
+    "Tinkerer / Magitech Override #kpcgah": {
       "caster": "Tinkerer",
       "element": "",
       "hasDamage": false,
@@ -6379,7 +6446,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tinkerer / Superior Alchemy": {
+    "Tinkerer / Superior Alchemy #snuG4D": {
       "caster": "Tinkerer",
       "element": "",
       "hasDamage": false,
@@ -6392,7 +6459,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Tinkerer / Superior Infusion": {
+    "Tinkerer / Superior Infusion #c7Zmwh": {
       "caster": "Tinkerer",
       "element": "",
       "hasDamage": false,
@@ -6405,7 +6472,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Varan / Adrenaline Endure": {
+    "Varan / Adrenaline Endure #47Aqnc": {
       "caster": "Varan",
       "element": "",
       "hasDamage": false,
@@ -6418,7 +6485,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Varan / Adrenaline Rush": {
+    "Varan / Adrenaline Rush #Sb6yej": {
       "caster": "Varan",
       "element": "",
       "hasDamage": false,
@@ -6431,14 +6498,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Varan / Elemental Weapon": {
+    "Varan / Elemental Weapon #jY2rUW": {
       "caster": "Varan",
       "ok": false,
       "reason": "skipped",
       "skill": "Elemental Weapon",
       "skillType": "Spell"
     },
-    "Varan / Glacies": {
+    "Varan / Glacies #WhQkZu": {
       "caster": "Varan",
       "element": "ice",
       "hasDamage": true,
@@ -6464,7 +6531,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Varan / Iceberg": {
+    "Varan / Iceberg #Nw2G6J": {
       "caster": "Varan",
       "element": "ice",
       "hasDamage": true,
@@ -6490,7 +6557,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Weaponmaster / Bladestorm": {
+    "Weaponmaster / Bladestorm #7Ptjd7": {
       "caster": "Weaponmaster",
       "element": "",
       "hasDamage": false,
@@ -6503,7 +6570,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Weaponmaster / Bone Crusher": {
+    "Weaponmaster / Bone Crusher #8IioHt": {
       "caster": "Weaponmaster",
       "element": "",
       "hasDamage": false,
@@ -6542,14 +6609,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Angel Dance": {
+    "Zarg / Angel Dance #563HNr": {
       "caster": "Zarg",
       "ok": false,
       "reason": "skipped",
       "skill": "Angel Dance",
       "skillType": "Active"
     },
-    "Zarg / Barrage": {
+    "Zarg / Barrage #mv4dNc": {
       "caster": "Zarg",
       "element": "",
       "hasDamage": false,
@@ -6562,14 +6629,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Bat Dance": {
+    "Zarg / Bat Dance #Q1cdHy": {
       "caster": "Zarg",
       "ok": false,
       "reason": "skipped",
       "skill": "Bat Dance",
       "skillType": "Active"
     },
-    "Zarg / Gadgets": {
+    "Zarg / Gadgets #H663NG": {
       "caster": "Zarg",
       "element": "",
       "hasDamage": false,
@@ -6582,21 +6649,21 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Golem Dance": {
+    "Zarg / Golem Dance #w8lI13": {
       "caster": "Zarg",
       "ok": false,
       "reason": "skipped",
       "skill": "Golem Dance",
       "skillType": "Active"
     },
-    "Zarg / Griffin Dance": {
+    "Zarg / Griffin Dance #AzCQXi": {
       "caster": "Zarg",
       "ok": false,
       "reason": "skipped",
       "skill": "Griffin Dance",
       "skillType": "Active"
     },
-    "Zarg / High Speed": {
+    "Zarg / High Speed #KlUH81": {
       "caster": "Zarg",
       "element": "",
       "hasDamage": false,
@@ -6609,7 +6676,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Lion Dance": {
+    "Zarg / Lion Dance #RJUqK8": {
       "caster": "Zarg",
       "element": "",
       "hasDamage": false,
@@ -6622,7 +6689,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Myrmidon Dance": {
+    "Zarg / Myrmidon Dance #KL2yI8": {
       "caster": "Zarg",
       "element": "",
       "hasDamage": false,
@@ -6635,7 +6702,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Ouroboros Dance": {
+    "Zarg / Ouroboros Dance #bik5TL": {
       "caster": "Zarg",
       "element": "",
       "hasDamage": false,
@@ -6648,7 +6715,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / See you later": {
+    "Zarg / See you later #c3zfGA": {
       "caster": "Zarg",
       "element": "",
       "hasDamage": false,
@@ -6661,7 +6728,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Soul Steal": {
+    "Zarg / Soul Steal #xy4AK6": {
       "caster": "Zarg",
       "element": "",
       "hasDamage": false,
@@ -6687,7 +6754,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Unicorn Dance": {
+    "Zarg / Unicorn Dance #lpl9N7": {
       "caster": "Zarg",
       "element": "hp",
       "hasDamage": false,
@@ -6709,7 +6776,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Warning Shot": {
+    "Zarg / Warning Shot #kTZD5W": {
       "caster": "Zarg",
       "element": "",
       "hasDamage": false,
@@ -6722,14 +6789,14 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Zero Power: Meteor Shower": {
+    "Zarg / Zero Power: Meteor Shower #NwH4UI": {
       "caster": "Zarg",
       "ok": false,
       "reason": "skipped",
       "skill": "Zero Power: Meteor Shower",
       "skillType": "Active"
     },
-    "⭐️ Fafnir / Condemn": {
+    "⭐️ Fafnir / Condemn #XohaJJ": {
       "caster": "⭐️ Fafnir",
       "element": "dark",
       "hasDamage": true,
@@ -6755,7 +6822,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Fafnir / Draconic Domination": {
+    "⭐️ Fafnir / Draconic Domination #mYlHtb": {
       "caster": "⭐️ Fafnir",
       "element": "",
       "hasDamage": false,
@@ -6768,7 +6835,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Fafnir / Ruinous Breath": {
+    "⭐️ Fafnir / Ruinous Breath #5G44tR": {
       "caster": "⭐️ Fafnir",
       "element": "bolt",
       "hasDamage": true,
@@ -6790,7 +6857,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Fafnir / Searing Brand": {
+    "⭐️ Fafnir / Searing Brand #eLMFbg": {
       "caster": "⭐️ Fafnir",
       "element": "",
       "hasDamage": false,
@@ -6803,7 +6870,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Fafnir / Storm Calm": {
+    "⭐️ Fafnir / Storm Calm #5BLT8r": {
       "caster": "⭐️ Fafnir",
       "element": "mp",
       "hasDamage": false,
@@ -6825,7 +6892,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Fafnir / Summon Elemental Drake": {
+    "⭐️ Fafnir / Summon Elemental Drake #C286kW": {
       "caster": "⭐️ Fafnir",
       "element": "",
       "hasDamage": false,
@@ -6838,7 +6905,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Fafnir / Torment": {
+    "⭐️ Fafnir / Torment #D9P5ID": {
       "caster": "⭐️ Fafnir",
       "element": "",
       "hasDamage": false,
@@ -6851,7 +6918,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Fafnir / Zero Power: Cruel Ultimatum": {
+    "⭐️ Fafnir / Zero Power: Cruel Ultimatum #mZnxgj": {
       "caster": "⭐️ Fafnir",
       "element": "",
       "hasDamage": false,
@@ -6864,7 +6931,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Geist / Dark Missionary": {
+    "⭐️ Geist / Dark Missionary #hwRQZH": {
       "caster": "⭐️ Geist",
       "element": "",
       "hasDamage": false,
@@ -6877,7 +6944,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Geist / Living Shadow": {
+    "⭐️ Geist / Living Shadow #tkplYk": {
       "caster": "⭐️ Geist",
       "element": "",
       "hasDamage": false,
@@ -6890,7 +6957,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Geist / Shadow Strike": {
+    "⭐️ Geist / Shadow Strike #S01TD1": {
       "caster": "⭐️ Geist",
       "element": "",
       "hasDamage": false,
@@ -6903,7 +6970,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Geist / Shadow Wall": {
+    "⭐️ Geist / Shadow Wall #slPJ2k": {
       "caster": "⭐️ Geist",
       "element": "shield",
       "hasDamage": false,
@@ -6925,7 +6992,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Geist / Shadowbringers": {
+    "⭐️ Geist / Shadowbringers #kFPcc3": {
       "caster": "⭐️ Geist",
       "element": "",
       "hasDamage": false,
@@ -6938,7 +7005,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Geist / Zero Power: The Blackest Night": {
+    "⭐️ Geist / Zero Power: The Blackest Night #xc1wLk": {
       "caster": "⭐️ Geist",
       "element": "",
       "hasDamage": false,
@@ -6951,7 +7018,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Gryphon / Aerial Shockwave": {
+    "⭐️ Gryphon / Aerial Shockwave #qxvfCL": {
       "caster": "⭐️ Gryphon",
       "element": "air",
       "hasDamage": true,
@@ -6977,7 +7044,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Gryphon / Air Blast": {
+    "⭐️ Gryphon / Air Blast #Rl8hDA": {
       "caster": "⭐️ Gryphon",
       "element": "air",
       "hasDamage": true,
@@ -7003,7 +7070,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Gryphon / Turbulence Wind": {
+    "⭐️ Gryphon / Turbulence Wind #eQZ0Jj": {
       "caster": "⭐️ Gryphon",
       "element": "",
       "hasDamage": false,
@@ -7016,7 +7083,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Gryphon / Wind Wall": {
+    "⭐️ Gryphon / Wind Wall #CaOZAP": {
       "caster": "⭐️ Gryphon",
       "element": "",
       "hasDamage": false,
@@ -7029,7 +7096,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Gryphon / Zero Power: Downburst": {
+    "⭐️ Gryphon / Zero Power: Downburst #Z5LoMh": {
       "caster": "⭐️ Gryphon",
       "element": "air",
       "hasDamage": true,
@@ -7055,7 +7122,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Jack / Burning Arrow": {
+    "⭐️ Jack / Burning Arrow #gkr0Qj": {
       "caster": "⭐️ Jack",
       "element": "fire",
       "hasDamage": true,
@@ -7081,7 +7148,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Jack / Poison Arrow": {
+    "⭐️ Jack / Poison Arrow #zGXNV8": {
       "caster": "⭐️ Jack",
       "element": "poison",
       "hasDamage": true,
@@ -7107,7 +7174,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Jack / Snaring Arrow": {
+    "⭐️ Jack / Snaring Arrow #cB66iW": {
       "caster": "⭐️ Jack",
       "element": "air",
       "hasDamage": true,
@@ -7133,7 +7200,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Jack / Zero Power: Apex Arrow": {
+    "⭐️ Jack / Zero Power: Apex Arrow #c2mUdp": {
       "caster": "⭐️ Jack",
       "element": "air",
       "hasDamage": true,
@@ -7159,7 +7226,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Jill / Cleaving Strike": {
+    "⭐️ Jill / Cleaving Strike #Wsf5LZ": {
       "caster": "⭐️ Jill",
       "element": "physical",
       "hasDamage": true,
@@ -7185,7 +7252,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Jill / Mug": {
+    "⭐️ Jill / Mug #6b3lDx": {
       "caster": "⭐️ Jill",
       "element": "physical",
       "hasDamage": true,
@@ -7211,7 +7278,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Jill / Pulverize": {
+    "⭐️ Jill / Pulverize #6GHf0K": {
       "caster": "⭐️ Jill",
       "element": "physical",
       "hasDamage": true,
@@ -7237,7 +7304,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Jill / Zero Power: Temper Tantrum": {
+    "⭐️ Jill / Zero Power: Temper Tantrum #fMXFrW": {
       "caster": "⭐️ Jill",
       "element": "",
       "hasDamage": false,
@@ -7250,7 +7317,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Love / Come! My Amigo!": {
+    "⭐️ Love / Come! My Amigo! #BX3rNn": {
       "caster": "⭐️ Love",
       "element": "",
       "hasDamage": false,
@@ -7263,7 +7330,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Love / Gangster Paradise": {
+    "⭐️ Love / Gangster Paradise #GLAIUB": {
       "caster": "⭐️ Love",
       "element": "",
       "hasDamage": false,
@@ -7276,7 +7343,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Love / Heartache": {
+    "⭐️ Love / Heartache #Aeiy7b": {
       "caster": "⭐️ Love",
       "element": "",
       "hasDamage": false,
@@ -7289,7 +7356,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Love / One more for you": {
+    "⭐️ Love / One more for you #hIOqaq": {
       "caster": "⭐️ Love",
       "element": "",
       "hasDamage": false,
@@ -7302,7 +7369,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Love / Rock your World": {
+    "⭐️ Love / Rock your World #kjhowu": {
       "caster": "⭐️ Love",
       "element": "",
       "hasDamage": false,
@@ -7315,7 +7382,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Love / Shout my Soul": {
+    "⭐️ Love / Shout my Soul #EvGcS4": {
       "caster": "⭐️ Love",
       "element": "air",
       "hasDamage": true,
@@ -7337,7 +7404,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "⭐️ Love / Zero Power: Love Serenade": {
+    "⭐️ Love / Zero Power: Love Serenade #Yy7YHR": {
       "caster": "⭐️ Love",
       "element": "",
       "hasDamage": false,
@@ -7350,7 +7417,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Rauben / All you can take": {
+    "⭐️ Rauben / All you can take #fKgQH2": {
       "caster": "⭐️ Rauben",
       "element": "",
       "hasDamage": false,
@@ -7363,7 +7430,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Rauben / Bandit Raid": {
+    "⭐️ Rauben / Bandit Raid #89Jm94": {
       "caster": "⭐️ Rauben",
       "element": "physical",
       "hasDamage": true,
@@ -7389,7 +7456,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Rauben / Cleaving Strike": {
+    "⭐️ Rauben / Cleaving Strike #OjMjKZ": {
       "caster": "⭐️ Rauben",
       "element": "physical",
       "hasDamage": true,
@@ -7415,7 +7482,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Rauben / Mug": {
+    "⭐️ Rauben / Mug #wi49pX": {
       "caster": "⭐️ Rauben",
       "element": "physical",
       "hasDamage": true,
@@ -7441,7 +7508,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Rauben / Oi! Come help me now!": {
+    "⭐️ Rauben / Oi! Come help me now! #cTAzHq": {
       "caster": "⭐️ Rauben",
       "element": "",
       "hasDamage": false,
@@ -7454,7 +7521,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Rauben / Zero Power: Night of Hundred Bandits": {
+    "⭐️ Rauben / Zero Power: Night of Hundred Bandits #IxJRQV": {
       "caster": "⭐️ Rauben",
       "element": "physical",
       "hasDamage": true,
@@ -7476,7 +7543,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Wandering Flame / Diving Blaze Kick": {
+    "⭐️ Wandering Flame / Diving Blaze Kick #IUa5IU": {
       "caster": "⭐️ Wandering Flame",
       "element": "fire",
       "hasDamage": true,
@@ -7502,7 +7569,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Wandering Flame / Flamethrower": {
+    "⭐️ Wandering Flame / Flamethrower #Q0jlnW": {
       "caster": "⭐️ Wandering Flame",
       "element": "fire",
       "hasDamage": true,
@@ -7528,7 +7595,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Wandering Flame / Overblaze": {
+    "⭐️ Wandering Flame / Overblaze #PwBU6P": {
       "caster": "⭐️ Wandering Flame",
       "element": "fire",
       "hasDamage": true,
@@ -7550,7 +7617,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "⭐️ Wandering Flame / Zero Power: Meteor Impact": {
+    "⭐️ Wandering Flame / Zero Power: Meteor Impact #f54JuN": {
       "caster": "⭐️ Wandering Flame",
       "element": "fire",
       "hasDamage": true,

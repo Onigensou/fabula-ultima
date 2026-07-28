@@ -184,6 +184,52 @@ They map directly to the lint + spec-guard rules below:
 
 ## Reaction UI policy (locked 2026-05-30)
 
+### The two-surface rule (locked 2026-07-28)
+
+**There are exactly TWO places a reaction can surface. There is no third.**
+
+| # | Surface | Shows when | Exists to |
+|---|---|---|---|
+| 1 | **Action-card reaction pills** | there IS an action in flight | manipulate that action's **outcome** — accuracy, damage, defense, target set, cost |
+| 2 | **Token-anchored pill list** (`ReactionMenu.spawn`) | there is **no pending action** | everything else — conflict/round/turn boundaries, and post-resolve riders |
+
+The deciding question is **"is there a pending action whose outcome
+this changes?"** — NOT "when in the timeline does it fire". A reaction
+that alters what an in-flight action does *to you* belongs on the CARD,
+even though the damage has not landed yet. If nothing is in flight, it
+is a pill list on the token.
+
+#### Corollary — incoming `adjust_damage` has TWO homes; do not conflate them
+
+This is the trap. Both spellings are legitimate and they are not
+interchangeable:
+
+| Path | Trigger | Surface | Applies |
+|---|---|---|---|
+| `card-mutations.applyAdjustDamageMutation` | `creature_targeted_by_action` | **1** — card pill | folded into the card's predicted per-target damage, so the defender sees the soak **before Apply** |
+| `skill-effects.resolveDamageReactions` | `creature_takes_damage` | **2** — opt-in prompt at HP-write | after the card is gone (Mercy's "survive at 1 HP" family) |
+
+Worked example — Keren's **Stubborn Scion** ("you MAY halve it", plus an
+interactive d6 fatigue roll) is authored `creature_targeted_by_action` /
+`reaction_passive_mode: "ask"`, i.e. **surface 1, and that is correct**.
+Re-triggering it to `creature_takes_damage` would strip the pre-Apply
+preview, the pill UI, and the interactive roll. Verified 2026-07-28 —
+do not "fix" it.
+
+#### ⚠ `TRIGGER_PHASE` is not exhaustive
+
+`creature_targeted_by_action` is **absent from
+`director-triggers.js`** entirely — not in `DIRECTOR_NATIVE_TRIGGERS`,
+not in `TRIGGER_PHASE`, so `phaseOf()` returns `null` for it. It is
+scanned directly by the card path instead: at CONFIRM in
+`state-handlers`, and re-scanned mid-card by
+`reaction-derive.deriveTargetedCandidates` when a redirect / add_target
+drags a new creature into the target set. So the phase map below
+classifies *most* triggers, but the defender-side card family lives
+outside it. Read the map as a routing table, not as the census.
+
+### Phase map
+
 Two co-existing UIs, classified by **trigger phase** in
 `scripts/battle-director/director-triggers.js` (`TRIGGER_PHASE` map).
 The dispatch site reads the phase to pick the UI — no per-handler

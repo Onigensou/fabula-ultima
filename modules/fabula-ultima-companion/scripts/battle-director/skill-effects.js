@@ -20,6 +20,10 @@
 import { log, warn } from "./logger.js";
 import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
+// The amount selector lives in its own leaf module so remote-pick can render it
+// on a player's client without dragging the effect engine along. Re-exported
+// below for the existing importers of `promptNumberDialog`.
+import { promptNumberDialog } from "./number-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
@@ -194,14 +198,66 @@ export async function sweepTransientAEsAtSceneEnd() {
 //     if (ae) await ae.delete();
 //   }
 // Injectable decision hook for "ask"-mode incoming damage reductions in
-// resolveDamageReactions. Live play leaves this null → a GM-side confirm dialog.
-// The harness (and a future owner-routing layer) set it to drive the yes/no
-// without UI. Signature: async ({ target, ae, row, effectRow, damage, curHp })
-// => boolean. Set it via the SAME (non-cache-busted) module import the engine
-// uses, or the singleton won't match.
+// resolveDamageReactions. Live play leaves this null → the owner-routed opt-in
+// below. The harness sets it to drive the yes/no without UI. Signature:
+// async ({ target, ae, row, effectRow, damage, curHp }) => boolean. Set it via
+// the SAME (non-cache-busted) module import the engine uses, or the singleton
+// won't match.
 let _damageReactionAskDecider = null;
 export function setDamageReactionAskDecider(fn) {
   _damageReactionAskDecider = (typeof fn === "function") ? fn : null;
+}
+
+// "Use this reaction?" for an OPTIONAL incoming-damage reduction, asked of the
+// creature actually taking the hit. Rendered as the shared two-row list picker
+// (same UI family as every other BD choice) rather than a raw Foundry Dialog,
+// and routed to the DEFENDER's online owner with the GM racing an identical
+// local copy — so a player decides whether to burn their own Ninja Log, and the
+// GM can still answer for an NPC or an idle/offline player.
+//
+// Cancel / dismiss / timeout = DECLINE, matching the old dialog's `close`
+// behavior: an optional mitigation must never fire on a non-answer.
+async function promptDefenderOptIn({ target, ae, damage }) {
+  if (typeof document === "undefined") return false;
+  const listArgs = {
+    title: ae?.name || "Reaction",
+    subtitle: `${target?.name ?? "Target"} is about to take ${damage} damage — use ${ae?.name ?? "this reaction"}?`,
+    options: [
+      { primary: `Use ${ae?.name ?? "reaction"}`, value: 1, imageUrl: ae?.img || null },
+      { primary: "Decline", value: 0 },
+    ],
+    cancelLabel: "Decline",
+  };
+  let picked = null;
+  const ownerUserId = game.user?.isGM ? ownerUserIdForDamageTarget(target) : null;
+  const channel = ownerUserId ? getIntentChannel() : null;
+  if (ownerUserId && channel) {
+    const director = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
+    const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+    picked = await remotePick({
+      channel, targetUserId: ownerUserId, combatId: director?.combatId ?? null,
+      kind: REMOTE_PICK_KINDS.LIST, onTimeoutValue: null, spec: listArgs,
+    });
+  } else {
+    picked = await pickFromList(listArgs);
+  }
+  // pickFromList resolves the chosen row's `value`; only the accept row is 1.
+  return picked === 1;
+}
+
+// First ACTIVE non-GM owner of the creature taking the hit. Same canonical
+// shape as soul-steal-result.ownerUserIdForActor; inlined so the damage path
+// doesn't pull a UI module in mid-resolve.
+function ownerUserIdForDamageTarget(actor) {
+  if (!actor) return null;
+  const candidates = (game.users?.contents ?? []).filter((u) => {
+    if (u.isGM) return false;
+    if (!u.active) return false;
+    try { return actor.testUserPermission?.(u, "OWNER"); } catch { return false; }
+  });
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => a.id.localeCompare(b.id));
+  return candidates[0].id;
 }
 
 export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null } = {}) {
@@ -242,11 +298,21 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
       const src = tRow.reaction_source ?? "self";
       if (src !== "self" && src !== "all" && src !== "") continue;
 
-      // Firing mode. Blank / force / on → AUTO-apply (Mercy, Beyond, Ninja Log —
-      // engine-mandatory or always-on reducers; unchanged). "off" → skip. "ask"
-      // → the reduction is the defender's CHOICE (gated below, just before it
-      // applies) so a "you MAY halve it" reaction (Stubborn Scion) doesn't fire —
-      // and doesn't pay its cost — unless the player opts in.
+      // Firing mode. Blank / force / on → AUTO-apply (Mercy, Beyond — engine-
+      // mandatory or always-on reducers; unchanged). "off" → skip. "ask" → the
+      // reduction is the defender's CHOICE (gated below, just before it applies)
+      // so a "you MAY halve it" reducer doesn't fire — and doesn't pay its cost —
+      // unless the player opts in.
+      //
+      // ⚠ This is the HP-WRITE path, reached ONLY by `creature_takes_damage`
+      // (see the trigger filter above). A defender reaction that should show its
+      // soak on the action card BEFORE Apply is authored
+      // `creature_targeted_by_action` and handled by
+      // card-mutations.applyAdjustDamageMutation instead — a different surface,
+      // not a different spelling of this one. Keren's Stubborn Scion was cited
+      // here as this path's example and is NOT one: it is a card-pill reaction.
+      // Both homes are legitimate; see "the two-surface rule" in
+      // docs/skill-authoring-canon.md before moving a reducer between them.
       const dmgReactMode = String(tRow.reaction_passive_mode ?? "").trim().toLowerCase();
       if (dmgReactMode === "off") continue;
 
@@ -289,27 +355,19 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
 
       // "ask" mode: the defender opts in BEFORE the hit lands (true optional
       // pre-mitigation). Decline → the whole row is skipped (no reduction, no
-      // follow-up cost). The injected decider drives the harness / a future
-      // owner-route; otherwise a GM-side confirm. Headless with no decider =
-      // decline (safe default for an OPTIONAL reaction).
+      // follow-up cost). The injected decider drives the harness; otherwise the
+      // choice is OWNER-ROUTED — it belongs to the DEFENDER, who is usually not
+      // the actor whose action is resolving, so it can't ride ctx.remotePrompt
+      // (that points at the attacker). promptDefenderOptIn resolves the victim's
+      // own owner and races the GM locally. Headless with no decider = decline
+      // (safe default for an OPTIONAL reaction).
       if (dmgReactMode === "ask") {
         let accept = false;
         try {
           if (_damageReactionAskDecider) {
             accept = !!(await _damageReactionAskDecider({ target, ae, row: tRow, effectRow: effRow, damage: dmg, curHp }));
-          } else if (typeof Dialog !== "undefined" && typeof document !== "undefined") {
-            accept = await new Promise((resolve) => {
-              new Dialog({
-                title: ae.name || "Reaction",
-                content: `<p><b>${target.name}</b> is about to take <b>${dmg}</b> damage.</p><p>Use <b>${ae.name}</b>?</p>`,
-                buttons: {
-                  yes: { label: "Yes", callback: () => resolve(true) },
-                  no:  { label: "No",  callback: () => resolve(false) },
-                },
-                default: "no",
-                close: () => resolve(false),
-              }).render(true);
-            });
+          } else {
+            accept = await promptDefenderOptIn({ target, ae, damage: dmg });
           }
         } catch (e) {
           warn(`resolveDamageReactions: ask-mode prompt threw on "${ae.name}"`, e);
@@ -2934,6 +2992,24 @@ async function applyAdjustChargesEffect(row, ctx) {
   return { ok: true, kind: "adjust_charges", applied };
 }
 
+// Owner-routed amount picker. Same contract as promptMenuList: when the ctx
+// carries a `remotePrompt` (the acting/reacting actor has an online player
+// owner) the wheel opens on THEIR client with the GM racing an identical local
+// copy; otherwise it renders GM-local as before. Without this, a player casting
+// a "choose how much" skill never saw the prompt — the GM picked the amount on
+// their behalf. See remote-pick.js.
+async function promptNumberRouted(numberArgs, ctx) {
+  if (ctx?.remotePrompt?.channel && ctx.remotePrompt.targetUserId) {
+    const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+    return await remotePick({
+      channel: ctx.remotePrompt.channel, targetUserId: ctx.remotePrompt.targetUserId,
+      combatId: ctx.remotePrompt.combatId ?? null, kind: REMOTE_PICK_KINDS.NUMBER,
+      onTimeoutValue: null, spec: numberArgs,
+    });
+  }
+  return await promptNumberDialog(numberArgs);
+}
+
 // ── prompt_number ─────────────────────────────────────────────────────────
 //
 // Interactive amount picker. Opens a number-input Dialog (min..max), clamps the
@@ -3018,10 +3094,10 @@ async function applyPromptNumberEffect(row, ctx) {
       SimMode.note("prompt", `${ctx.skill?.name ?? "skill"}: ${varName} = ${defV} (default — no picker in a sim)`);
     }
   } else {
-    const entered = await promptNumberDialog({
+    const entered = await promptNumberRouted({
       label: String(row.prompt_label ?? "Enter a number"),
       min: minV, max: maxOption, step: stepV, def: defV, title: ctx.skill?.name ?? "Choose Amount",
-    });
+    }, ctx);
     // Cancel / close / Escape (null) is an ABORT, NOT a min pick — don't capture a
     // value, and clear any stale one so a re-open re-prompts. The caller
     // (previewReactionMenu) turns abort into a reverted reaction pill.
@@ -3197,188 +3273,9 @@ async function applyPromptElementEffect(row, ctx) {
   return { ok: true, kind: "prompt_element", value: chosen };
 }
 
-// Horizontal picker-wheel (carousel) amount selector. The value in the CENTER
-// slot is the selection; the player drags the strip so the number they want lands
-// in the middle, and numbers fade + shrink as they approach the left/right edges.
-// Wheel-scroll and clicking a number also center it; snap-scroll settles on the
-// nearest. Returns the chosen integer, or null if dismissed. Options are the
-// stepped grid min, min+step, …, max.
-export async function promptNumberDialog({ label, min, max, step = 1, def, title }) {
-  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const stp = Math.max(1, Math.floor(Number(step) || 1));
-  const opts = [];
-  for (let v = min; v <= max; v += stp) opts.push(v);
-  if (!opts.length) opts.push(min);
-  const initial = opts.includes(def) ? def : opts[opts.length - 1];
-  return new Promise((resolve) => {
-    let resolved = false;
-    let selected = initial;
-    let cleanup = null;
-    const done = (v) => { if (!resolved) { resolved = true; try { cleanup?.(); } catch { /* noop */ } resolve(v); } };
-    const content = `
-      <style>
-        .fud-numc-wrap{display:flex;flex-direction:column;gap:8px;padding:4px 2px;}
-        .fud-numc-view{position:relative;overflow:hidden;padding:12px 0;width:288px;max-width:82vw;margin:0 auto;
-          -webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);
-          mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);}
-        .fud-numc-slot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-          width:60px;height:46px;border-radius:10px;border:1px solid #5ab3d4;
-          background:rgba(90,179,212,0.16);z-index:0;pointer-events:none;}
-        .fud-numc-scroll{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;user-select:none;touch-action:pan-x;}
-        .fud-numc-scroll::-webkit-scrollbar{display:none;}
-        .fud-numc-track{display:flex;gap:6px;position:relative;width:max-content;min-width:max-content;}
-        .fud-numc-item{flex:0 0 auto;scroll-snap-align:center;min-width:54px;padding:10px 4px;
-          text-align:center;font-size:19px;font-weight:700;line-height:1;color:inherit;
-          cursor:grab;user-select:none;z-index:1;transition:opacity .06s linear,transform .06s linear;}
-        .fud-numc-grab{cursor:grabbing !important;}
-      </style>
-      <div class="fud-numc-wrap">
-        <label style="font-size:13px;">${esc(label)}</label>
-        <div class="fud-numc-view">
-          <div class="fud-numc-slot"></div>
-          <div class="fud-numc-scroll" role="slider" aria-label="${esc(label)}" aria-valuemin="${min}" aria-valuemax="${max}" aria-valuenow="${initial}" tabindex="0">
-            <div class="fud-numc-track">
-              ${opts.map((v) => `<div class="fud-numc-item" data-val="${v}">${v}</div>`).join("")}
-            </div>
-          </div>
-        </div>
-        <div style="font-size:11px;opacity:0.75;text-align:center;">Drag to spin · <b class="fud-numc-sel">${initial}</b> · step ${stp} · ${min}–${max}</div>
-      </div>`;
-    const dlg = new Dialog({
-      title,
-      content,
-      buttons: {
-        cancel: { icon: '<i class="fas fa-times"></i>', label: "Cancel", callback: () => done(null) },
-        ok: { icon: '<i class="fas fa-check"></i>', label: "Confirm", callback: () => done(selected) },
-      },
-      default: "ok",
-      // Cancel button / header-X / Escape all resolve null → the caller treats it as
-      // an abort (no selection confirmed), NOT as picking the minimum.
-      close: () => done(null),
-      render: (html) => {
-        const root = html?.[0] ?? html;
-        const scroll = root?.querySelector?.(".fud-numc-scroll");
-        const track = root?.querySelector?.(".fud-numc-track");
-        const items = Array.from(root?.querySelectorAll?.(".fud-numc-item") ?? []);
-        const selEl = root?.querySelector?.(".fud-numc-sel");
-        if (!scroll || !track || !items.length) return;
-
-        // Pad the track so the FIRST and LAST numbers can still reach the center.
-        // Floor the width at the FIXED viewport width (288) so the padding is correct
-        // even when this runs mid-animate-in while scroll.clientWidth still reads 0 —
-        // that produced 0 padding → no overflow → nothing to drag.
-        const VIEW_W = 288;
-        const setPad = () => {
-          const cw = Math.max(VIEW_W, scroll.clientWidth || 0);
-          const iw = items[0].offsetWidth || 54;
-          const p = Math.max(0, (cw - iw) / 2);
-          track.style.paddingLeft = track.style.paddingRight = `${p}px`;
-        };
-        setPad();
-
-        // Fade + shrink each number by its distance from center; the nearest number
-        // is the live selection. Called SYNCHRONOUSLY (no requestAnimationFrame —
-        // rAF is paused when the tab is backgrounded, which stalled the selection
-        // update) on every scroll and directly during a drag.
-        const update = () => {
-          const cRect = scroll.getBoundingClientRect();
-          const cx = cRect.left + cRect.width / 2;
-          const half = (cRect.width / 2) || 1;
-          let best = null, bestDist = Infinity;
-          for (const it of items) {
-            const r = it.getBoundingClientRect();
-            const dist = Math.abs((r.left + r.width / 2) - cx);
-            const ratio = Math.min(1, dist / half);
-            it.style.opacity = String(Math.max(0.12, 1 - 0.9 * ratio));
-            it.style.transform = `scale(${(1 - 0.34 * ratio).toFixed(3)})`;
-            if (dist < bestDist) { bestDist = dist; best = it; }
-          }
-          if (best) {
-            selected = Number(best.dataset.val);
-            if (selEl) selEl.textContent = String(selected);
-            scroll.setAttribute("aria-valuenow", String(selected));
-          }
-        };
-        scroll.addEventListener("scroll", update, { passive: true });
-
-        const centerOn = (el, smooth = true) => {
-          const cRect = scroll.getBoundingClientRect();
-          const r = el.getBoundingClientRect();
-          scroll.scrollBy({ left: (r.left + r.width / 2) - (cRect.left + cRect.width / 2), behavior: smooth ? "smooth" : "auto" });
-          update();
-        };
-
-        // Vertical wheel → horizontal spin.
-        scroll.addEventListener("wheel", (e) => { if (e.deltaY) { scroll.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
-
-        // Mouse drag-to-spin. `mousedown` on the strip, but `mousemove`/`mouseup`
-        // on `document` so a fast drag that leaves the strip keeps tracking. Snap is
-        // disabled WHILE dragging — `scroll-snap-type: mandatory` otherwise keeps
-        // yanking scrollLeft back to a snap point, which is exactly what made the
-        // drag look frozen — then re-enabled + centered on release. Touch uses the
-        // native snap-scroll (touch-action: pan-x), so it needs no JS drag.
-        let isDown = false, startX = 0, startScroll = 0, moved = false;
-        const moveDrag = (e) => {
-          if (!isDown) return;
-          const dx = e.clientX - startX;
-          if (Math.abs(dx) > 3) moved = true;
-          scroll.scrollLeft = startScroll - dx;
-          update();
-          e.preventDefault();
-        };
-        const endDrag = () => {
-          if (!isDown) return;
-          isDown = false; scroll.classList.remove("fud-numc-grab");
-          scroll.style.scrollSnapType = "x mandatory";
-          const cRect = scroll.getBoundingClientRect();
-          const cx = cRect.left + cRect.width / 2;
-          let best = null, bd = Infinity;
-          for (const it of items) { const r = it.getBoundingClientRect(); const d = Math.abs((r.left + r.width / 2) - cx); if (d < bd) { bd = d; best = it; } }
-          if (best) centerOn(best);
-        };
-        scroll.addEventListener("mousedown", (e) => {
-          isDown = true; moved = false; startX = e.clientX; startScroll = scroll.scrollLeft;
-          scroll.style.scrollSnapType = "none"; scroll.classList.add("fud-numc-grab");
-          e.preventDefault();
-        });
-        document.addEventListener("mousemove", moveDrag);
-        document.addEventListener("mouseup", endDrag);
-        cleanup = () => {
-          document.removeEventListener("mousemove", moveDrag);
-          document.removeEventListener("mouseup", endDrag);
-        };
-
-        // Click a number to bring it to the center (unless it was a drag).
-        for (const it of items) it.addEventListener("click", () => { if (!moved) centerOn(it); });
-        // Arrow keys nudge the selection.
-        scroll.addEventListener("keydown", (e) => {
-          const i = items.findIndex((x) => Number(x.dataset.val) === selected);
-          if (e.key === "ArrowRight" && i < items.length - 1) { centerOn(items[i + 1]); e.preventDefault(); }
-          else if (e.key === "ArrowLeft" && i > 0) { centerOn(items[i - 1]); e.preventDefault(); }
-        });
-
-        // Center the default value on open, and RE-center whenever the strip's size
-        // changes. Foundry animates the dialog in, so the scroll box often has width
-        // 0 on the first render pass — a single early setPad() then leaves the track
-        // with no padding and (with only a few options) NO scrollable overflow, which
-        // is exactly why the drag moved nothing (scrollLeft pinned at 0). A
-        // ResizeObserver recomputes padding + centering once the real width lands; the
-        // fixed viewport width also guarantees overflow regardless of option count.
-        const initEl = items.find((it) => Number(it.dataset.val) === initial) ?? items[items.length - 1];
-        const recenter = () => { setPad(); const cur = items.find((it) => Number(it.dataset.val) === selected) ?? initEl; centerOn(cur, false); update(); };
-        recenter();
-        setTimeout(recenter, 30);
-        setTimeout(recenter, 200);
-        let ro = null;
-        try { ro = new ResizeObserver(() => recenter()); ro.observe(scroll); } catch (e) { /* noop */ }
-        const dragCleanup = cleanup;
-        cleanup = () => { try { ro?.disconnect(); } catch (e) { /* noop */ } dragCleanup?.(); };
-      },
-    });
-    dlg.render(true);
-  });
-}
+// Re-export so importers that reached for the amount selector through
+// skill-effects keep working after the move to number-picker.js.
+export { promptNumberDialog };
 
 // ── confirm — N-button decision dialog (gate or branch) ──────────────────
 // A reusable confirmation/decision step rendered as a parchment overlay
@@ -8309,7 +8206,7 @@ async function applyTransferAeEffect(row, ctx) {
     // passive/auto → take all, or the first maxCount.
     let effs = matches;
     if (useFilter && !ctx.isPassive && !autoSelect) {
-      const picked = await pickFromList({
+      const picked = await promptMenuList({
         title: String(row.menu_title ?? "Transfer effects"),
         subtitle: row.menu_subtitle ? String(row.menu_subtitle) : `${src.name} → ${dest.name}`,
         options: matches.map((e) => ({ primary: e.name, value: e.id, imageUrl: e.img || null })),
@@ -8317,7 +8214,7 @@ async function applyTransferAeEffect(row, ctx) {
         maxSelect: takeAll ? 0 : maxCount,
         preselectAll: maxCount >= matches.length,
         confirmLabel: "Confirm",
-      });
+      }, ctx, row);
       if (picked == null) {
         log(`skill-effects.transfer_ae: ${src.name} picker cancelled; skipping`);
         continue;
@@ -9166,7 +9063,7 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
           }));
           const title = String(row.menu_title ?? `Choose a ${filterTag} to remove`);
           const subtitle = `${actor.name}${row.menu_subtitle ? ` · ${row.menu_subtitle}` : ""}`;
-          idx = await pickFromList({ title, subtitle, options: menuOptionsToRows(options) });
+          idx = await promptMenuList({ title, subtitle, options: menuOptionsToRows(options) }, ctx, row);
         }
         if (idx == null) {
           // Cancel → abort (pre_activate wizard back-nav / drop to Action Menu).
@@ -9220,7 +9117,7 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
         }));
         const title = String(row.menu_title ?? `Choose a ${filterTag} to remove`);
         const subtitle = `${actor.name}${row.menu_subtitle ? ` · ${row.menu_subtitle}` : ""}`;
-        chosenIdx = await pickFromList({ title, subtitle, options: menuOptionsToRows(options) });
+        chosenIdx = await promptMenuList({ title, subtitle, options: menuOptionsToRows(options) }, ctx, row);
       }
       if (chosenIdx == null) {
         log(`skill-effects.remove_tagged_ae: ${actor.name} picker cancelled; skipping rest of this target`);
@@ -9652,15 +9549,21 @@ async function showLootTableDialog({ caster, results, ctx }) {
     await import("./soul-steal-result.js");
   const combatId = ctx?.dCombat?.combatId ?? ctx?.dCombat?.combat?.id ?? "default";
 
-  // Broadcast to EVERY active player so the whole table sees the result. Each
-  // client decides locally — from menuSpec.ownerUserId — whether it can close
-  // (the action owner) or is read-only (a spectator).
+  // Broadcast to EVERY other active client so the whole table sees the result.
+  // Each client decides locally — from menuSpec.ownerUserId — whether it can
+  // close (the action owner) or is read-only (a spectator).
+  //
+  // Recipients are "active and not me", NOT "active non-GM": a SECOND GM is a
+  // spectator like anyone else, and filtering them out left them the only seat
+  // at the table with no panel. This matches the action-card mirror and every
+  // other card-side broadcast; the primary GM is excluded because it renders
+  // its own local copy below.
   const channel = getIntentChannel();
   const ownerUserId = game.user?.isGM ? ownerUserIdForActor(caster) : null;
   const broadcastedIds = [];
   if (game.user?.isGM && channel) {
     broadcastedIds.push(...(game.users?.contents ?? [])
-      .filter((u) => !u.isGM && u.active)
+      .filter((u) => u.active && u.id !== game.user?.id)
       .map((u) => u.id));
     if (broadcastedIds.length) {
       try {
