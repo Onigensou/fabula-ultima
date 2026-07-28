@@ -837,6 +837,12 @@
         "parent": "UmLsjl22ZsyVMcwY"
       },
       {
+        "id": "M5VOqokm97pmFqrA",
+        "name": "Fish",
+        "type": "Item",
+        "parent": "36rowiHAcXnIPsKK"
+      },
+      {
         "id": "FZRg6Vu4pnK8I9Do",
         "name": "Fishes",
         "type": "JournalEntry",
@@ -3365,6 +3371,12 @@
         "effects": 0
       },
       {
+        "id": "enbL361u8CaT5owG",
+        "name": "Blade Angler",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Ynm3WTFFRbstiI5D",
         "name": "Blade&Gun",
         "type": "equippableItem",
@@ -3547,6 +3559,12 @@
       {
         "id": "5XAuMMbDPlLzhJLw",
         "name": "Bolt",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "0ieofw23oYf5FNCc",
+        "name": "Bolt Eel",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5345,6 +5363,12 @@
         "effects": 0
       },
       {
+        "id": "ZGvuE5jHpDgxMHNQ",
+        "name": "Flame Salmon",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "eZCGq7YEO3hMYuSX",
         "name": "Flame Weapon",
         "type": "equippableItem",
@@ -5861,6 +5885,12 @@
         "effects": 0
       },
       {
+        "id": "lTqvatWNAQ4vdfkM",
+        "name": "Golden Koi",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "His63KQSRmc72YE8",
         "name": "Golden Mace",
         "type": "equippableItem",
@@ -6359,6 +6389,12 @@
         "effects": 0
       },
       {
+        "id": "unAiIGTSSYpmonn8",
+        "name": "Hearty Cod",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "GBixGFmKRv0B1Lgj",
         "name": "Hearty Hot-Pot",
         "type": "equippableItem",
@@ -6673,6 +6709,12 @@
       {
         "id": "Von3QRbnRN7fv06M",
         "name": "Ice Pick",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "0xZvao2eWYVjrHp9",
+        "name": "Ice Pike",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7097,6 +7139,12 @@
         "effects": 2
       },
       {
+        "id": "WtBVtnY6ergJWXHv",
+        "name": "Keystone Ray",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "9o2rspcBHnzDTRIS",
         "name": "Kindle Fire",
         "type": "equippableItem",
@@ -7403,6 +7451,12 @@
         "effects": 1
       },
       {
+        "id": "ALRbhk8NLRpzUcPc",
+        "name": "Lucky Loach",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "0AlyI2roR4BT5RAv",
         "name": "Lucky Mallet",
         "type": "equippableItem",
@@ -7597,6 +7651,12 @@
       {
         "id": "0ck1GxqWmIQU4YKe",
         "name": "Magna Ventus Alta",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "ZHfjikNnFjGQr8Kq",
+        "name": "Magnificent Mahi-mahi",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7873,6 +7933,12 @@
       {
         "id": "wn5NRP955txSJhYm",
         "name": "Milk",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SOQKbs6yuSbbHkvv",
+        "name": "Mindful Sole",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9041,6 +9107,12 @@
         "effects": 0
       },
       {
+        "id": "epTljNMoOwYyy3FD",
+        "name": "Prophet Tuna",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "ZySnR7edyoUvFZM3",
         "name": "Prophetic Defender",
         "type": "equippableItem",
@@ -10001,6 +10073,12 @@
         "effects": 0
       },
       {
+        "id": "uvtEB71f8xmQAiRB",
+        "name": "Shadow Sturgeon",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "jyFW3rkXRbgD84RP",
         "name": "Shadow Tunic",
         "type": "equippableItem",
@@ -10041,6 +10119,12 @@
         "name": "Shield of Spring",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "FSj6trk1hdPaDpPd",
+        "name": "Shine Herring",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "vNzVes988MJdlWGn",
@@ -10111,6 +10195,12 @@
       {
         "id": "HSoIN3UQEXbQK5K4",
         "name": "Silky Gloves",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "4Ddvp1twE1rwqB9P",
+        "name": "Silt Catfish",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10581,6 +10671,12 @@
         "name": "Starweave Confection",
         "type": "equippableItem",
         "effects": 1
+      },
+      {
+        "id": "zQfpEWAxwJjaBVIe",
+        "name": "Stash Gar",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "AwsFia1QQRoedLw4",
@@ -11273,6 +11369,12 @@
         "effects": 0
       },
       {
+        "id": "s28J2fB5xoskAtwu",
+        "name": "Toxic Puffer",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "gKtmxirmCNKv4A9d",
         "name": "Toxicophora",
         "type": "equippableItem",
@@ -11729,6 +11831,12 @@
         "effects": 0
       },
       {
+        "id": "bgVJ3tF898fertoZ",
+        "name": "Wandering Shark",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "1p00ZSQnl4RwuxnI",
         "name": "Waraxe",
         "type": "equippableItem",
@@ -11845,6 +11953,12 @@
       {
         "id": "SqaW8fCWW1tdQWng",
         "name": "Wildlife Expert",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "n5oeHTFJ7MApEWe4",
+        "name": "Wind Bass",
         "type": "equippableItem",
         "effects": 0
       },
@@ -17826,46 +17940,6 @@
           }
         ],
         "effects": 0
-      },
-      {
-        "id": "09izWspo66G7mMIW",
-        "name": "Inferex (Reanimated)",
-        "type": "character",
-        "items": [
-          {
-            "id": "YkxXYCZHlJdbztS5",
-            "name": "(Empty)"
-          },
-          {
-            "id": "X9puyEPw6tszEmZ9",
-            "name": "Blast Breath"
-          },
-          {
-            "id": "tS917pzU8Wapqkv9",
-            "name": "Charred Bone"
-          },
-          {
-            "id": "msdUrwq2F4LO3xy4",
-            "name": "Chomp"
-          },
-          {
-            "id": "u3oouZ93UHsyGpZd",
-            "name": "Flamethrower"
-          },
-          {
-            "id": "AK9s8WPheeGfYPn5",
-            "name": "Polymorph Potion: Inferex"
-          },
-          {
-            "id": "R2LF5ZqUDyRNT2pG",
-            "name": "Undead"
-          },
-          {
-            "id": "mPvukNO6W1XVqHxr",
-            "name": "Voracious"
-          }
-        ],
-        "effects": 2
       },
       {
         "id": "ZD4NhyLLgo4n5fSX",
