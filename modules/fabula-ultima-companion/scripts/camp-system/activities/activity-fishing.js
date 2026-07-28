@@ -39,7 +39,7 @@
       { id: "fnd9BxHv1albIMpM", name: "Mudfish" },
       { id: "n5oeHTFJ7MApEWe4", name: "Wind Bass" },
       { id: "0ieofw23oYf5FNCc", name: "Bolt Eel" },
-      { id: "4Ddvp1twE1rwqB9P", name: "Mud Catfish" },
+      { id: "4Ddvp1twE1rwqB9P", name: "Silt Catfish" },
       { id: "ZGvuE5jHpDgxMHNQ", name: "Flame Salmon" },
       { id: "0xZvao2eWYVjrHp9", name: "Ice Pike" },
     ],

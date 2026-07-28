@@ -57,7 +57,7 @@
   // here but not there awards nothing.
   // ---------------------------------------------------------------------------
   const FISH_TIERS  = [
-    ["Mudfish",     "Wind Bass",       "Bolt Eel",      "Mud Catfish",  "Flame Salmon", "Ice Pike"],
+    ["Mudfish",     "Wind Bass",       "Bolt Eel",      "Silt Catfish", "Flame Salmon", "Ice Pike"],
     ["River Trout", "Shadow Sturgeon", "Shine Herring", "Toxic Puffer", "Blade Angler", "Lucky Loach"],
     ["Moonfish",    "Stash Gar",       "Hearty Cod",    "Mindful Sole", "Keystone Ray", "Wandering Shark"],
     ["Prophet Tuna", "Magnificent Mahi-mahi", "Golden Koi"],
