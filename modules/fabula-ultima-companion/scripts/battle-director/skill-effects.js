@@ -298,11 +298,21 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
       const src = tRow.reaction_source ?? "self";
       if (src !== "self" && src !== "all" && src !== "") continue;
 
-      // Firing mode. Blank / force / on → AUTO-apply (Mercy, Beyond, Ninja Log —
-      // engine-mandatory or always-on reducers; unchanged). "off" → skip. "ask"
-      // → the reduction is the defender's CHOICE (gated below, just before it
-      // applies) so a "you MAY halve it" reaction (Stubborn Scion) doesn't fire —
-      // and doesn't pay its cost — unless the player opts in.
+      // Firing mode. Blank / force / on → AUTO-apply (Mercy, Beyond — engine-
+      // mandatory or always-on reducers; unchanged). "off" → skip. "ask" → the
+      // reduction is the defender's CHOICE (gated below, just before it applies)
+      // so a "you MAY halve it" reducer doesn't fire — and doesn't pay its cost —
+      // unless the player opts in.
+      //
+      // ⚠ This is the HP-WRITE path, reached ONLY by `creature_takes_damage`
+      // (see the trigger filter above). A defender reaction that should show its
+      // soak on the action card BEFORE Apply is authored
+      // `creature_targeted_by_action` and handled by
+      // card-mutations.applyAdjustDamageMutation instead — a different surface,
+      // not a different spelling of this one. Keren's Stubborn Scion was cited
+      // here as this path's example and is NOT one: it is a card-pill reaction.
+      // Both homes are legitimate; see "the two-surface rule" in
+      // docs/skill-authoring-canon.md before moving a reducer between them.
       const dmgReactMode = String(tRow.reaction_passive_mode ?? "").trim().toLowerCase();
       if (dmgReactMode === "off") continue;
 
