@@ -79,6 +79,17 @@
 #      .claude/settings.json, which is NOT tracked. Opt in deliberately.
 !/tools/hot-reload-map/
 !/tools/hot-reload-map/**
+!/tools/bug-report/
+!/tools/bug-report/**
+
+# -----------------------------
+# Shared bug reports (see reports/README.md)
+# -----------------------------
+# One markdown file per report, announced on pull by the post-merge /
+# post-checkout hooks. Deliberately tracked: a report is the handoff between the
+# two of us, so it has to travel with the code it describes.
+!/reports/
+!/reports/**
 
 # -----------------------------
 # LevelDB runtime files — never commit these.
