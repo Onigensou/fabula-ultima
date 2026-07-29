@@ -14,6 +14,29 @@
 
 import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
+import { isBackgroundedFor, hasOtherViewers } from "./presentation-clock.js";
+
+// How long the window must be continuously hidden before we start discarding
+// animations. On Windows `document.hidden` flips true for an ordinary alt-tab
+// to a maximised app, so an instantaneous check would eat any animation that
+// began during a one-second glance away — you would tab back to damage already
+// applied and no cinematic. Waiting costs at most a few unseen animations at
+// the head of a real tab-away; they still complete on their own timers.
+const BACKGROUND_GRACE_MS = 4000;
+
+// Animations are the ONE presentation surface this client runs on everyone
+// else's behalf: BD executes the script GM-side and Sequencer's `.play()`
+// broadcasts the result (verified: 0 of 126 authored scripts use `.locally()`
+// or `.forUsers()`). So unlike the banner/card/loader surfaces — where the
+// socket broadcast has already left before the local dwell — skipping playback
+// here would strip the animation from the PLAYERS' screens too, and collapsing
+// the damage gate would land damage early while they are still watching it.
+//
+// Therefore fast-forward only when nobody else is connected. With a table
+// present we keep the original behaviour exactly: the script runs, the gate
+// waits, the 35 s failsafe is the backstop. Slower, but never wrong.
+const canFastForwardAnimation = () =>
+  isBackgroundedFor(BACKGROUND_GRACE_MS) && !hasOtherViewers();
 
 // Compiled function cache — avoids re-parsing the same animation script on
 // every use. Keyed by script text (exact string), module-level singleton.
@@ -246,6 +269,17 @@ async function executeAnimationScript({
   abortPromise = null,
   timeoutMs = 35000,
 }) {
+  // Backgrounded window with nobody else connected: don't run the script at
+  // all. Sequencer would only queue effects that burst-replay on refocus — the
+  // exact symptom this avoids — and the gate would stall on its failsafe
+  // meanwhile. Return immediately so the caller advances to RESOLVE and the
+  // damage still lands on time. See canFastForwardAnimation for why the
+  // other-viewers check is not optional.
+  if (canFastForwardAnimation()) {
+    log("[BD Anim] window hidden + no other viewers — skipping playback, advancing straight through the gate");
+    return;
+  }
+
   // Resolve token placeables for the `targets` argument. Scripts typically
   // call target.position, target.center, etc. on the placeable.
   const targets = (targetTokenUuids ?? []).map((u) => {
@@ -275,6 +309,20 @@ async function executeAnimationScript({
 
   // Race the normal gate against the (optional) abort signal so skipAnimation()
   // resolves the gate immediately without needing a separate state transition.
+  //
+  // ⚠ Deliberately NOT raced against "window became hidden". An animation that
+  // is ALREADY IN FLIGHT is left to finish on its own terms: tabbing away then
+  // collapsing the gate would apply damage at the moment of the tab-away rather
+  // than at the scripted impact frame, and on return you would watch a stale
+  // cinematic play over a state that had already moved on.
+  //
+  // Letting it run costs far less than it looks like it should, because nothing
+  // here is frozen — only unrendered. Measured on a genuinely hidden window:
+  // `new Sequence().wait(500).play()` resolves in ~1965 ms (the 1 s setTimeout
+  // clamp, ~4x), NOT never. So the 35 s failsafe is very nearly a dead path and
+  // the real cost is a few seconds on the one animation that was mid-flight.
+  // Every action AFTER it starts hidden and is skipped outright by
+  // canFastForwardAnimation() above.
   const gate = waitForDamageMoment(timingMode, timingOffset, { timeoutMs });
   const gatePromise = abortPromise ? Promise.race([gate, abortPromise]) : gate;
 
@@ -402,6 +450,16 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
   };
   Hooks.on("oni:animationEnd", onEnd);
   const endFailsafe = setTimeout(() => onEnd(), 35000);
+  // The damage gate is not the only thing that stalls in a hidden window: this
+  // end-promise is pushed onto ctx.pendingAnimations and awaited by the reaction
+  // dispatcher before the round advances (see applyPlayAnimationEffect). Without
+  // the same hidden race it would hold the round for the full 35 s failsafe even
+  // though executeAnimationScript below returned instantly. onEnd is idempotent
+  // and tolerates a bare call (no payload → passes the caster filter).
+  // No hidden-window collapse here either — same reasoning as the damage gate
+  // above. This promise gates round advance, so cutting it short on a tab-away
+  // would advance the round mid-cinematic. The script's own timers keep running
+  // while hidden (clamped), so the emit still arrives.
   endPromise.finally(() => clearTimeout(endFailsafe));
 
   await executeAnimationScript({

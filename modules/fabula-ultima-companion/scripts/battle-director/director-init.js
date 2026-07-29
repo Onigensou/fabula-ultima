@@ -32,6 +32,7 @@ import { playBattleStartBanner } from "./director-round-banner.js";
 import { showBattleLoader, hideBattleLoader } from "./director-battle-loader.js";
 import { buildDirectorHud, dbPartyActorIds } from "./director-player-hud.js";
 import { extractAnimationUrlsFromActors } from "./director-animation.js";
+import { pWait, shouldRender } from "./presentation-clock.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -39,7 +40,10 @@ const FLAG_DIRECTOR_SPAWNED = "directorSpawned";
 
 // ─── Helpers ───────────────────────────────────────────────────────────
 
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+// Presentation dwell — zero while hidden. All three uses are cinematic timing
+// (entrance fade delay, dash stagger, post-curtain settle); the first two sit
+// inside playEntranceAnimation, which a hidden window skips outright.
+const wait = pWait;
 
 async function safeFromUuid(uuid) {
   if (!uuid) return null;
@@ -112,6 +116,10 @@ async function raiseCurtain() {
 async function dropCurtain() {
   const api = globalThis.FUCompanion?.api?.animationCache;
   if (!api?.dropCurtain) { log("dropCurtain: animationCache unavailable, skipping"); return; }
+  // NOTE: `fadeOutMs` is TRANSMITTED in the broadcast (animation-asset-cache
+  // emits it to every client), so it is NOT a local dwell to shorten — cutting
+  // it on a hidden GM would change the curtain fade on everyone's screen.
+  // Left at the authored value deliberately.
   try { await api.dropCurtain({ fadeOutMs: 600, broadcast: true }); log("Curtain dropped"); }
   catch (e) { warn("dropCurtain threw", e); }
 }
@@ -833,7 +841,13 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
   try { _entranceSocket?.executeForOthers?.(ACTION_ENTRANCE, payload); }
   catch (e) { warn("entrance: broadcast failed", e); }
 
-  await playEntranceLocal(payload);
+  // The broadcast above has already left, and every other client renders the
+  // entrance itself (each judging its OWN visibility). Skip only our local
+  // playback when hidden: it is an rAF sprite tween, which cannot advance in a
+  // hidden window and would park PREP until refocus. The alpha persist below
+  // still runs, so the end state is identical either way.
+  if (shouldRender()) await playEntranceLocal(payload);
+  else log("entrance: window hidden — broadcast sent, local playback skipped");
 
   try {
     const scene = (partyTokens?.[0] ?? enemyTokens?.[0])?.parent ?? canvas?.scene ?? null;
@@ -1165,6 +1179,11 @@ export async function runDirectorInit(payload) {
   // top→bottom; enemies fade in). In lean mode there's no curtain to reveal
   // from, so we just persist the durable alpha:1 directly (the same write the
   // entrance tail does at the end of playEntranceAnimation) — no dash/fade.
+  // NOTE: do NOT add `|| isWindowHidden()` here. playEntranceAnimation
+  // BROADCASTS the entrance to every other client before playing it locally;
+  // skipping the whole call on a hidden GM would strip the entrance from the
+  // players too. The hidden-window handling lives INSIDE that function, where
+  // it skips only our own local playback.
   if (lean) {
     try {
       const ids = [...partyTokens, ...enemyTokens].map((t) => t.id);

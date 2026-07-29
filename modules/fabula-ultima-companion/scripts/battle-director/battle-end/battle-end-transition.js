@@ -17,6 +17,10 @@ import { log, warn } from "../logger.js";
 const MODULE_ID      = "fabula-ultima-companion";
 const SOCKET_CHANNEL = `module.${MODULE_ID}`;
 
+// NOT a presentation dwell — deliberately NOT presentation-clock's `pWait`.
+// The only use is the poll interval inside waitForCanvasReady(), and a wait
+// that collapses to zero while the window is hidden would turn that loop into
+// a busy-spin pegging a core until its 8 s deadline. Keep it a real delay.
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
 
 async function stopTrackFromAnyPlaylist(trackName) {

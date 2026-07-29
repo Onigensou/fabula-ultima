@@ -47,6 +47,7 @@
 import { log, warn } from "../../logger.js";
 import { stopBattleBgm, playBattleBgm } from "../../director-vfx.js";
 import { setCrestsHiddenLocal } from "../../domination-crest.js";
+import { pWait, interval, shouldRender } from "../../presentation-clock.js";
 
 const MODULE_ID   = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_BLACKEST_NIGHT_PLAY";
@@ -134,7 +135,10 @@ const CFG = {
   namecardHoldMs: 2700,       // (+1s per review)
 };
 
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+// Presentation dwell — zero while hidden. Every use here is a cinematic beat
+// (settle, hold, pan, fade). The ONE paced loop in this file, heartbeatSpan(),
+// deliberately uses `interval` instead — see the note there.
+const wait = pWait;
 
 let _socket = null;
 
@@ -526,12 +530,18 @@ function pulseSprite(root) {
 // Run heartbeats (SFX + optional sprite pulse) every `intervalMs` across
 // `spanMs`, then resolve.
 async function heartbeatSpan(spanMs, intervalMs, spriteEl) {
+  // Hidden window: there is no sprite to pulse and nobody to hear the cue, so
+  // skip the span outright rather than holding the timeline for spanMs.
+  if (!shouldRender()) return;
   const t0 = performance.now();
   while (performance.now() - t0 < spanMs) {
     heartbeat();
     if (spriteEl) pulseSprite(spriteEl);
     const remaining = spanMs - (performance.now() - t0);
-    await wait(Math.min(intervalMs, Math.max(0, remaining)));
+    // `interval`, NOT the dwell helper: this loop does WORK each tick (a SFX
+    // and a sprite pulse). A wait that collapsed to zero would fire thousands
+    // of heartbeats in a tight spin instead of pacing them.
+    await interval(Math.min(intervalMs, Math.max(0, remaining)));
   }
 }
 

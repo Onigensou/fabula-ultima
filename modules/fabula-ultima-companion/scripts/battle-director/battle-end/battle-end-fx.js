@@ -6,11 +6,13 @@
 
 import { log, warn } from "../logger.js";
 import { stopBattleBgm } from "../director-vfx.js";
+import { pWait } from "../presentation-clock.js";
 
 const MODULE_ID     = "fabula-ultima-companion";
 const SOCKET_CHANNEL = `module.${MODULE_ID}`;
 
-const wait = (ms) => new Promise(r => setTimeout(r, ms));
+// Presentation dwell — zero while hidden (the only use is a cinematic hold).
+const wait = pWait;
 
 function makeRunId(prefix) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;

@@ -32,6 +32,7 @@
 
 import { log, warn } from "./logger.js";
 import { registerSurface, unregisterSurface } from "./director-surfaces.js";
+import { pWait, shouldRender, interval, hasOtherViewers } from "./presentation-clock.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_SHOW = "FU_DIRECTOR_LOADER_SHOW";
@@ -54,7 +55,10 @@ const DEFAULT_MIN_SHOW_MS = 800;
 // rings alone still read fine).
 const EMBLEM_GLYPH = "fa-solid fa-khanda";
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// Presentation dwell — zero while hidden. The only use is the loader's
+// minimum-show floor, which exists purely so the curtain isn't a visual flash;
+// there is nothing to not-flash on a hidden client.
+const sleep = pWait;
 
 let _socket = null;
 let _surfaceId = null;
@@ -248,11 +252,18 @@ async function hideLoaderLocal() {
     layer.style.transition = `opacity ${FADE_OUT_MS}ms ease-in`;
     void layer.offsetHeight;
     layer.style.opacity = "0";
-    await new Promise((resolve) => {
-      const done = () => resolve();
-      const fallback = setTimeout(done, FADE_OUT_MS + 80);
-      layer.addEventListener("transitionend", () => { clearTimeout(fallback); done(); }, { once: true });
-    });
+    // A hidden window paints nothing, so the CSS transition never runs and
+    // `transitionend` never fires — leaving only the fallback timer, which
+    // Chromium clamps to its >=1 s hidden-tab floor. That is a full second of
+    // PREP stall per hide for a fade nobody can see. Drop straight to the end
+    // state instead; the layer is dismissed either way.
+    if (shouldRender()) {
+      await new Promise((resolve) => {
+        const done = () => resolve();
+        const fallback = setTimeout(done, FADE_OUT_MS + 80);
+        layer.addEventListener("transitionend", () => { clearTimeout(fallback); done(); }, { once: true });
+      });
+    }
     layer.classList.remove("active");
   } catch (e) {
     warn("hideLoaderLocal threw", e);
@@ -277,7 +288,15 @@ export function showBattleLoader({ broadcast = true } = {}) {
 // handoff — the overlay never covers the battlefield reveal).
 export async function hideBattleLoader({ broadcast = true, minShowMs = DEFAULT_MIN_SHOW_MS } = {}) {
   const elapsed = _shownAt ? (performance.now() - _shownAt) : minShowMs;
-  if (elapsed < minShowMs) await sleep(minShowMs - elapsed);
+  if (elapsed < minShowMs) {
+    // ⚠ This floor sits IN FRONT OF the hide broadcast below, so it is NOT a
+    // purely local dwell: collapsing it on a hidden GM would dismiss the loader
+    // ~800ms early on every OTHER client too, flashing it. Only fast-forward it
+    // when nobody else is watching. (The local fade further down IS local-only
+    // and stays clock-aware.)
+    const remaining = minShowMs - elapsed;
+    await (hasOtherViewers() ? interval(remaining) : sleep(remaining));
+  }
   if (broadcast) {
     try { _socket?.executeForOthers?.(ACTION_HIDE); }
     catch (e) { warn("director-battle-loader: hide broadcast failed", e); }

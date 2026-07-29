@@ -30,6 +30,7 @@
 import { log, warn } from "../logger.js";
 import { playSfx, preloadSfx } from "../director-sfx.js";
 import { enqueueCard, setCardDrainFn, passiveCardQueue } from "./director-passive-card-queue.js";
+import { pWait } from "../presentation-clock.js";
 
 export { passiveCardQueue };
 
@@ -45,7 +46,11 @@ const ACTIVE_KEY = "__FUD_PASSIVE_CARD_ACTIVE__";
 
 let _socket = null;
 
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+// Presentation dwell — zero while hidden. This gates the card QUEUE drain, so
+// on a backgrounded client the queue empties immediately instead of holding
+// every pending card for its full enter/hold/exit and flushing them in a burst
+// on refocus. The queue's promise contract is unchanged.
+const wait = pWait;
 
 // ── Client-side styles ───────────────────────────────────────────────
 

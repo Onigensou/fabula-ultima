@@ -18,6 +18,7 @@
 
 import { log, warn } from "./logger.js";
 import { registerSurface, unregisterSurface } from "./director-surfaces.js";
+import { pWait } from "./presentation-clock.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_ROUND_PLAY";
@@ -557,7 +558,10 @@ function ensureLayer() {
   return layer;
 }
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// Presentation dwell — collapses to zero while the window is hidden, so a
+// backgrounded client doesn't park on each banner hold and then replay the
+// whole round-banner sequence on refocus. See presentation-clock.js.
+const sleep = pWait;
 
 // ── exit: fade out + clear the docked banner ──────────────────────────────
 // Used both on round change (before the next banner enters) and at battle end.
