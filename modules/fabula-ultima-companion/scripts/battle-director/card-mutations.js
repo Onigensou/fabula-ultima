@@ -1153,6 +1153,31 @@ async function applyAdjustDefenseMutation(ctx, cand, row) {
 //     damage_stage:     "incoming",                            // required
 //     damage_operation: "set"|"add"|"subtract"|"multiply"|"cap"|"floor",
 //     damage_amount:    <number | formula> }
+// ── Deferred one-shot carrier consumption (generic) ──────────────────────
+// The Apply→Spent half of a card-previewed reaction. A row opts in with
+// `consume_carrier_charge: true`; this RECORDS the intent to spend one charge
+// off the carrier AE. It deliberately does NOT write: the card mutation runs
+// many times during preview, so the only safe write site is the CONFIRM path
+// (state-handlers), which drains this exactly once — meaning a cancelled action
+// never spends the buff (the consume-at-commitment rule).
+//
+// Deduped by carrier uuid: a multi-target action, or any re-preview pass, must
+// still queue a SINGLE consume. Only AE carriers are eligible — an item carrier
+// has no per-use charge to spend.
+//
+// Sibling of the `writeback_carrier_charge` → `ctx.chargeWrites` channel; that
+// one SETS a value-dependent charge, this one CONSUMES one and lets the shared
+// charges API delete the AE at zero (the "ready AE vanishes on use" idiom).
+function recordCarrierConsume(ctx, cand, row) {
+  if (row?.consume_carrier_charge !== true) return;
+  const uuid = cand?.carrierUuid;
+  if (!uuid || cand?.carrierKind !== "ae") return;
+  const list = (ctx.carrierConsumes ??= []);
+  if (list.some((c) => c.aeUuid === uuid)) return;
+  list.push({ aeUuid: uuid, count: 1, deleteWhenEmpty: true });
+  log(`carrier consume queued: ${cand?.carrierName ?? uuid} (commits at CONFIRM)`);
+}
+
 async function applyAdjustDamageMutation(ctx, cand, row) {
   const { readAdjustment, applyAdjustOp } = await import("./skill-formulas.js");
   const { op, amountFormula, stage } = readAdjustment(row, "damage");
@@ -1230,6 +1255,7 @@ async function applyAdjustDamageMutation(ctx, cand, row) {
     damageOverride: { from: baseFrom, to: newDmg, op, amount, ops, via, reactorName: cand?.reactorActorName ?? null },
   };
   log(`adjust_damage: ${op} ${amount} on ${pt.name ?? reactorUuid} — damage ${oldDmg} → ${newDmg} (via ${via})`);
+  recordCarrierConsume(ctx, cand, row);
   return "applied";
 }
 
@@ -1908,6 +1934,10 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     // set_check_die's old-face writeback) — applied EXACTLY once by the commit
     // path, never on a preview pass. [{ aeUuid, charges }].
     chargeWrites: ctx.chargeWrites ?? null,
+    // Generic deferred ONE-SHOT carrier consumption (`consume_carrier_charge`) —
+    // the Apply→Spent half of a card-previewed reaction. Same commit-once
+    // contract as chargeWrites. [{ aeUuid, count, deleteWhenEmpty }].
+    carrierConsumes: ctx.carrierConsumes ?? null,
   };
 }
 

@@ -15514,6 +15514,10 @@
             "name": "Dragonslayer Pendant"
           },
           {
+            "id": "Jw86wvSlwm4pke4B",
+            "name": "Dragonslayer Pendant (gear skill)"
+          },
+          {
             "id": "P6VI53iKqeVaeciW",
             "name": "Eisendrache Seal"
           },
@@ -16962,6 +16966,78 @@
         "effects": 0
       },
       {
+        "id": "HjOIH2Bmj485C18Y",
+        "name": "Hellhound (Reanimated)",
+        "type": "character",
+        "items": [
+          {
+            "id": "weOyBRmuXnvzycl9",
+            "name": "(Empty)"
+          },
+          {
+            "id": "lV74fYrlQPN2CeGd",
+            "name": "Animal Fang"
+          },
+          {
+            "id": "3pOyST3Pn3p18oSb",
+            "name": "Animal Fur"
+          },
+          {
+            "id": "SZc2mYVhrmtOMSVm",
+            "name": "Bite"
+          },
+          {
+            "id": "u6YRNgn4WzJXDqLb",
+            "name": "Flame Breath"
+          },
+          {
+            "id": "9N0IWdt3BWjcLd8x",
+            "name": "On the Hunt"
+          },
+          {
+            "id": "0v5EYWSTa4pdAU8U",
+            "name": "Pounce"
+          }
+        ],
+        "effects": 1
+      },
+      {
+        "id": "YcAx35co9fXIpsOS",
+        "name": "Hellhound (Reanimated)",
+        "type": "character",
+        "items": [
+          {
+            "id": "weOyBRmuXnvzycl9",
+            "name": "(Empty)"
+          },
+          {
+            "id": "lV74fYrlQPN2CeGd",
+            "name": "Animal Fang"
+          },
+          {
+            "id": "3pOyST3Pn3p18oSb",
+            "name": "Animal Fur"
+          },
+          {
+            "id": "SZc2mYVhrmtOMSVm",
+            "name": "Bite"
+          },
+          {
+            "id": "u6YRNgn4WzJXDqLb",
+            "name": "Flame Breath"
+          },
+          {
+            "id": "9N0IWdt3BWjcLd8x",
+            "name": "On the Hunt"
+          },
+          {
+            "id": "0v5EYWSTa4pdAU8U",
+            "name": "Pounce"
+          }
+        ],
+        "effects": 1
+      },
+      {
         "id": "OYFcMSkBHGLXlFwq",
         "name": "Hellir",
         "type": "character",
@@ -18393,6 +18469,10 @@
           {
             "id": "ujmt7QnAEe0dWLyc",
             "name": "Frozen Envy"
+          },
+          {
+            "id": "2RRgVUpoPoad88Go",
+            "name": "Frozen Envy (gear skill)"
           },
           {
             "id": "5Og29tisnmhrTUjM",
