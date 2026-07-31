@@ -17942,6 +17942,86 @@
         "effects": 0
       },
       {
+        "id": "1RarFJYGdpDTr3eV",
+        "name": "Inferex (Reanimated)",
+        "type": "character",
+        "items": [
+          {
+            "id": "YkxXYCZHlJdbztS5",
+            "name": "(Empty)"
+          },
+          {
+            "id": "X9puyEPw6tszEmZ9",
+            "name": "Blast Breath"
+          },
+          {
+            "id": "tS917pzU8Wapqkv9",
+            "name": "Charred Bone"
+          },
+          {
+            "id": "msdUrwq2F4LO3xy4",
+            "name": "Chomp"
+          },
+          {
+            "id": "u3oouZ93UHsyGpZd",
+            "name": "Flamethrower"
+          },
+          {
+            "id": "AK9s8WPheeGfYPn5",
+            "name": "Polymorph Potion: Inferex"
+          },
+          {
+            "id": "R2LF5ZqUDyRNT2pG",
+            "name": "Undead"
+          },
+          {
+            "id": "mPvukNO6W1XVqHxr",
+            "name": "Voracious"
+          }
+        ],
+        "effects": 2
+      },
+      {
+        "id": "wh5WozAHLdUKeM91",
+        "name": "Inferex (Reanimated)",
+        "type": "character",
+        "items": [
+          {
+            "id": "YkxXYCZHlJdbztS5",
+            "name": "(Empty)"
+          },
+          {
+            "id": "X9puyEPw6tszEmZ9",
+            "name": "Blast Breath"
+          },
+          {
+            "id": "tS917pzU8Wapqkv9",
+            "name": "Charred Bone"
+          },
+          {
+            "id": "msdUrwq2F4LO3xy4",
+            "name": "Chomp"
+          },
+          {
+            "id": "u3oouZ93UHsyGpZd",
+            "name": "Flamethrower"
+          },
+          {
+            "id": "AK9s8WPheeGfYPn5",
+            "name": "Polymorph Potion: Inferex"
+          },
+          {
+            "id": "R2LF5ZqUDyRNT2pG",
+            "name": "Undead"
+          },
+          {
+            "id": "mPvukNO6W1XVqHxr",
+            "name": "Voracious"
+          }
+        ],
+        "effects": 2
+      },
+      {
         "id": "ZD4NhyLLgo4n5fSX",
         "name": "Ink Fable",
         "type": "character",
