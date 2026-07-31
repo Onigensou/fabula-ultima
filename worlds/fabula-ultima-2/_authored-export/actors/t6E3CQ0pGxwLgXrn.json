@@ -4472,7 +4472,7 @@
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
-              "condition_formula": "TARGET_SPECIES_IS_DRAGON",
+              "condition_formula": "TARGET_SUBTYPE_IS_DRAGON",
               "reaction_action_intent": "",
               "reaction_action_target": "",
               "reaction_damage_amount": "",

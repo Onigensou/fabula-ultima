@@ -1689,6 +1689,38 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .trim();
           return species && species === needle ? 1 : 0;
         }
+        // Dynamic SUBTYPE_IS_<X> / TARGET_SUBTYPE_IS_<X> — the SUB-species twins of
+        // SPECIES_IS_<X> / TARGET_SPECIES_IS_<X>, reading `system.props.subtype_list`
+        // instead of `species`. Needed because the FU species field is coarse: every
+        // dragon in this world is species MONSTER and carries its real kind in the
+        // subtype (Fafnir + the Drakes are all MONSTER / DRAGON), so a "deal more
+        // damage to dragons" gate can only be written against the subtype. Powers the
+        // Dragonslayer Pendant's TARGET_SUBTYPE_IS_DRAGON multiplier.
+        //
+        // The prop is a LIST by name and single-valued in the current data; split on
+        // comma/semicolon/pipe and match ANY entry so a future multi-subtype actor
+        // (e.g. "DRAGON, UNDEAD") still answers 1 to both. Case-insensitive;
+        // underscores → spaces. Actors with no subtype (PCs) return 0.
+        if (name.startsWith("SUBTYPE_IS_") || name.startsWith("TARGET_SUBTYPE_IS_")) {
+          const isTarget = name.startsWith("TARGET_");
+          const needle = name
+            .slice((isTarget ? "TARGET_SUBTYPE_IS_" : "SUBTYPE_IS_").length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          let source = actor;
+          if (isTarget) {
+            const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+            if (!subjectUuid) return 0;
+            source = _resolveActorByUuidSync(subjectUuid);
+          }
+          if (!source) return 0;
+          const subtypes = String(source?.system?.props?.subtype_list ?? "")
+            .split(/[,;|]/)
+            .map((s) => s.replace(/_/g, " ").toLowerCase().trim())
+            .filter(Boolean);
+          return subtypes.includes(needle) ? 1 : 0;
+        }
         // TARGET_IS_VILLAIN — 1 when the trigger SUBJECT (payload.subjectActorUuid)
         // is a Villain NPC (`system.props.isVillain` truthy), else 0. PCs and
         // ordinary NPCs → 0. Subject-based twin of TARGET_SPECIES_IS_<X> (reads the
