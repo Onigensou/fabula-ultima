@@ -5613,6 +5613,36 @@ const Confirm = {
               }
             }
           } catch (e) { warn("CONFIRM: deferred charge write threw", e); }
+          // Deferred ONE-SHOT carrier consumption — the Apply→Spent half of a
+          // card-previewed reaction (`consume_carrier_charge`). Same contract as
+          // the charge writes above: the mutation only RECORDED the intent, and
+          // THIS path runs once, so a cancelled action never spends the buff.
+          // `consume` deletes the AE at zero, so a spent one-shot buff removes
+          // itself and stops offering (no 0-charge carrier lingers to re-fire).
+          try {
+            const consumes = Array.isArray(r.carrierConsumes) ? r.carrierConsumes : [];
+            if (consumes.length) {
+              const charges = await import("./skill-charges.js");
+              for (const cc of consumes) {
+                if (!cc?.aeUuid) continue;
+                const ae = await fromUuid(cc.aeUuid).catch(() => null);
+                if (!ae) continue;
+                const res = await charges.consume(ae, {
+                  count: Number(cc.count) || 1,
+                  deleteWhenEmpty: cc.deleteWhenEmpty !== false,
+                });
+                // An author may forget `ae_initial_charges`; a one-shot buff with
+                // no charge flag would otherwise persist forever. Honour the
+                // declared intent and remove it.
+                if (!res?.ok && res?.reason === "no-charges-flag") {
+                  await ae.delete();
+                  log(`CONFIRM: carrier consume — ${ae.name} had no charges; deleted (one-shot intent)`);
+                } else {
+                  log(`CONFIRM: carrier consume — ${ae.name} remaining ${res?.remaining ?? "?"}${res?.deleted ? " (deleted)" : ""}`);
+                }
+              }
+            }
+          } catch (e) { warn("CONFIRM: carrier consume threw", e); }
         }
       } catch (e) { warn("CONFIRM: target-set mutation threw", e); }
       // Infusion element override (change_damage_element): if every hit now

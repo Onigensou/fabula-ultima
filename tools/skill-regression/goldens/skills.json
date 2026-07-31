@@ -738,16 +738,10 @@
     },
     "Chiyo / Myrmidon Dance": {
       "caster": "Chiyo",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "skipped",
       "skill": "Myrmidon Dance",
-      "skillType": "Active",
-      "targets": 1
+      "skillType": "Active"
     },
     "Chiyo / Phoenix Dance": {
       "caster": "Chiyo",
@@ -987,16 +981,10 @@
     },
     "Dancer / Myrmidon Dance": {
       "caster": "Dancer",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "skipped",
       "skill": "Myrmidon Dance",
-      "skillType": "Active",
-      "targets": 1
+      "skillType": "Active"
     },
     "Dancer / Nightmare Dance": {
       "caster": "Dancer",
@@ -6624,16 +6612,10 @@
     },
     "Zarg / Myrmidon Dance": {
       "caster": "Zarg",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "skipped",
       "skill": "Myrmidon Dance",
-      "skillType": "Active",
-      "targets": 1
+      "skillType": "Active"
     },
     "Zarg / Ouroboros Dance": {
       "caster": "Zarg",

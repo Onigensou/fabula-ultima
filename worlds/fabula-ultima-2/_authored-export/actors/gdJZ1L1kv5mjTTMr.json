@@ -631,6 +631,110 @@
       "type": "equippableItem"
     },
     {
+      "_id": "2RRgVUpoPoad88Go",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785432767877,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1724.gif",
+      "name": "Frozen Envy (gear skill)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "ujmt7QnAEe0dWLyc",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit one or more creatures with this weapon, if you have at least one Bond of inferiority, you may recover <strong>10 MP</strong>. Each target hit by this weapon suffers <strong>Slow</strong>.</p>",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Slow",
+              "damage_amount": "",
+              "damage_operation": "",
+              "damage_stage": "",
+              "effect_kind": "apply_ae",
+              "effect_label": "fe_slow",
+              "grant_amount": "",
+              "grant_resource": "",
+              "target_ref": "trigger_subject"
+            },
+            "1": {
+              "ae_duplicate_mode": "",
+              "ae_template_ref": "",
+              "damage_amount": "",
+              "damage_operation": "",
+              "damage_stage": "",
+              "effect_kind": "grant",
+              "effect_label": "fe_mp",
+              "grant_amount": "10",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1724.gif",
+          "isCheck": false,
+          "name": "Frozen Envy (gear skill)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_action_intent": "",
+              "reaction_action_target": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "fe_slow",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
+            },
+            "1": {
+              "condition_formula": "BOND_COUNT_INFERIORITY >= 1",
+              "reaction_action_intent": "",
+              "reaction_action_target": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "fe_mp",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "zUM6QfiO2ifMv7zH"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "4A5VhtRnxluDI78z",
       "_stats": {
         "compendiumSource": "Item.TpHy6WcxSkQRhgtS",
