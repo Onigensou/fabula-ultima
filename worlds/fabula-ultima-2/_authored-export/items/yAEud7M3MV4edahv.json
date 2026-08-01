@@ -13,14 +13,14 @@
       "version": "4.8.5"
     }
   },
-  "folder": "HxH8pRIAy3tVzGFP",
+  "folder": "e5jNeoN9jNLkCpV3",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Eve/CodeElectraSkill1.png",
   "name": "Zero Trigger: Strategy",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "sort": 0,
+  "sort": 100000,
   "system": {
     "props": {
       "class": "NPC",

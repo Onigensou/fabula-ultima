@@ -1,0 +1,90 @@
+{
+  "_id": "0LEghOv3aJyZVyVs",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785585357668,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "AF1TjOn1OTJNHrkx",
+  "formula": "1d4",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Valley of the Dragon - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "jijIZgpjNPuzXnYw",
+      "documentCollection": "Actor",
+      "documentId": "I2sSkVIQ4FCunZBE",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Skizzik",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "mpiqODrAAgCsYc4Z",
+      "documentCollection": "Actor",
+      "documentId": "A1VzokzJPoyxobCd",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Electro Slime",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "oEOPo42bXqpixSmi",
+      "documentCollection": "Actor",
+      "documentId": "TvLv878yZLNUAWNN",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Qilin",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "tDgn8ced2HrbvAfR",
+      "documentCollection": "Actor",
+      "documentId": "sTGMdYipYCG36aBO",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Lightning Prism",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

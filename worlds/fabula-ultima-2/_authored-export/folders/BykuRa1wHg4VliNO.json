@@ -1,0 +1,19 @@
+{
+  "_id": "BykuRa1wHg4VliNO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785586329170,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "OeC0hsLCW5zTWD6w",
+  "name": "Fafnir Castle",
+  "sort": 0,
+  "sorting": "a",
+  "type": "RollTable"
+}

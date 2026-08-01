@@ -13,14 +13,14 @@
       "version": "4.8.5"
     }
   },
-  "folder": "HxH8pRIAy3tVzGFP",
+  "folder": "e5jNeoN9jNLkCpV3",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Ain/APHA.png",
   "name": "Zero Trigger: Foresight",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "sort": 0,
+  "sort": 125000,
   "system": {
     "props": {
       "active_effect_config_table": {},

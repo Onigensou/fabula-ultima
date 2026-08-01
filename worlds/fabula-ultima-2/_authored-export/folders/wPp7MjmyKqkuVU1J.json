@@ -2,7 +2,7 @@
   "_id": "wPp7MjmyKqkuVU1J",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1769663260011,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
@@ -13,7 +13,7 @@
   "flags": {},
   "folder": "OeC0hsLCW5zTWD6w",
   "name": "Vastwind Field",
-  "sort": 300000,
+  "sort": 700000,
   "sorting": "a",
   "type": "RollTable"
 }

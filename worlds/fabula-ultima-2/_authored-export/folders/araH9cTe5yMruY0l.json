@@ -1,0 +1,19 @@
+{
+  "_id": "araH9cTe5yMruY0l",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785585357378,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "OeC0hsLCW5zTWD6w",
+  "name": "Valley of the Dragon",
+  "sort": 500000,
+  "sorting": "a",
+  "type": "RollTable"
+}

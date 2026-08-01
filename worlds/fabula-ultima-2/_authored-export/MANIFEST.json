@@ -663,10 +663,22 @@
         "parent": "Zjdcb78RbBA1hP9j"
       },
       {
+        "id": "fB2fAXlolioFKFSI",
+        "name": "Encounter",
+        "type": "RollTable",
+        "parent": "BykuRa1wHg4VliNO"
+      },
+      {
         "id": "jXNQkkwQJtCLmqd8",
         "name": "Encounter",
         "type": "RollTable",
         "parent": "wPp7MjmyKqkuVU1J"
+      },
+      {
+        "id": "to3QkbU70EQKKxHW",
+        "name": "Encounter",
+        "type": "RollTable",
+        "parent": "araH9cTe5yMruY0l"
       },
       {
         "id": "vO8VvrIw13i7CdMM",
@@ -681,10 +693,22 @@
         "parent": "EPe7ml6WmzFyqmol"
       },
       {
+        "id": "5Rg3NSMXFKjTHHsk",
+        "name": "Enemies",
+        "type": "RollTable",
+        "parent": "BykuRa1wHg4VliNO"
+      },
+      {
         "id": "ACbjEa7skiKy2L4p",
         "name": "Enemies",
         "type": "RollTable",
         "parent": "6VSWiGLdL80c969w"
+      },
+      {
+        "id": "AF1TjOn1OTJNHrkx",
+        "name": "Enemies",
+        "type": "RollTable",
+        "parent": "araH9cTe5yMruY0l"
       },
       {
         "id": "hx7YRkgeDiYN91MO",
@@ -759,6 +783,18 @@
         "parent": "Zsb2yoayhdKZd3IA"
       },
       {
+        "id": "MN4u8ohWRo25Xj5h",
+        "name": "Event",
+        "type": "RollTable",
+        "parent": "araH9cTe5yMruY0l"
+      },
+      {
+        "id": "eQMCi89fUXUdraJc",
+        "name": "Event",
+        "type": "RollTable",
+        "parent": "BykuRa1wHg4VliNO"
+      },
+      {
         "id": "iBCCcaig7x28MuO5",
         "name": "Event",
         "type": "RollTable",
@@ -811,6 +847,12 @@
         "name": "Fabula_Ultima_simple rules",
         "type": "JournalEntry",
         "parent": null
+      },
+      {
+        "id": "BykuRa1wHg4VliNO",
+        "name": "Fafnir Castle",
+        "type": "RollTable",
+        "parent": "OeC0hsLCW5zTWD6w"
       },
       {
         "id": "NeeNG1EvptEsQ9lg",
@@ -2049,6 +2091,12 @@
         "parent": "97p1xGjGPYztDsVo"
       },
       {
+        "id": "4bqgn7jZFnmardZp",
+        "name": "Treasure",
+        "type": "RollTable",
+        "parent": "araH9cTe5yMruY0l"
+      },
+      {
         "id": "9LaJVdEJbCUtGA5b",
         "name": "Treasure",
         "type": "RollTable",
@@ -2071,6 +2119,12 @@
         "name": "Treasure",
         "type": "RollTable",
         "parent": "Zjdcb78RbBA1hP9j"
+      },
+      {
+        "id": "P6epyIfueydL8Bu4",
+        "name": "Treasure",
+        "type": "RollTable",
+        "parent": "BykuRa1wHg4VliNO"
       },
       {
         "id": "dfZOIscssH4Tgqd3",
@@ -2155,6 +2209,12 @@
         "name": "Valley of the Dragon",
         "type": "Scene",
         "parent": "yvRW0RqT5kwSxKFl"
+      },
+      {
+        "id": "araH9cTe5yMruY0l",
+        "name": "Valley of the Dragon",
+        "type": "RollTable",
+        "parent": "OeC0hsLCW5zTWD6w"
       },
       {
         "id": "8UrFEBywo3APQenl",
@@ -12179,6 +12239,12 @@
         "effects": 2
       },
       {
+        "id": "ECmwhk4DT6r6sjNX",
+        "name": "Zero Power: The Blackest Night",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "9jOBSPY17nxY6QCy",
         "name": "Zero Trigger: Foresight",
         "type": "equippableItem",
@@ -15095,6 +15161,26 @@
         "name": "Eisendrachian Knight",
         "type": "character",
         "items": [],
+        "effects": 0
+      },
+      {
+        "id": "A1VzokzJPoyxobCd",
+        "name": "Electro Slime",
+        "type": "character",
+        "items": [
+          {
+            "id": "mdcuBtzL5PWDIUyS",
+            "name": "Electro Explosion"
+          },
+          {
+            "id": "k0uNeyXmxVZg6C6x",
+            "name": "Static Shot"
+          },
+          {
+            "id": "uoaz0irHsOyvsa22",
+            "name": "Tackle"
+          }
+        ],
         "effects": 0
       },
       {
@@ -18908,6 +18994,26 @@
         "effects": 0
       },
       {
+        "id": "sTGMdYipYCG36aBO",
+        "name": "Lightning Prism",
+        "type": "character",
+        "items": [
+          {
+            "id": "TCaVBk4RDaht1x9c",
+            "name": "Arc Spark"
+          },
+          {
+            "id": "pV3KgStkZyidF4uD",
+            "name": "Fulgur Finis"
+          },
+          {
+            "id": "TDfsEA9gh8Pc6aUP",
+            "name": "Overcharge"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "fTyS72uDFqHwUy18",
         "name": "Living Shadow",
         "type": "character",
@@ -20027,6 +20133,26 @@
         "effects": 0
       },
       {
+        "id": "TvLv878yZLNUAWNN",
+        "name": "Qilin",
+        "type": "character",
+        "items": [
+          {
+            "id": "0hLD12lSvD3sw40G",
+            "name": "Hooves"
+          },
+          {
+            "id": "3JBSipAdIt17tf68",
+            "name": "Lightning Charge"
+          },
+          {
+            "id": "zNhzAhg1phFoHW8q",
+            "name": "Rail Stream"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "NIzI8uoyqahenb39",
         "name": "RaiRai",
         "type": "character",
@@ -20687,6 +20813,22 @@
         "name": "Sheryl",
         "type": "character",
         "items": [],
+        "effects": 0
+      },
+      {
+        "id": "I2sSkVIQ4FCunZBE",
+        "name": "Skizzik",
+        "type": "character",
+        "items": [
+          {
+            "id": "IbE6lOJCeAs8Bb4n",
+            "name": "Chain Reaction"
+          },
+          {
+            "id": "vBuHp8f6NHuYNojr",
+            "name": "Thunder Strike"
+          }
+        ],
         "effects": 0
       },
       {
@@ -22904,6 +23046,71 @@
         "results": 1
       },
       {
+        "id": "h2UugZ9iirGWux94",
+        "name": "Fafnir Castle - Accessory",
+        "results": 0
+      },
+      {
+        "id": "xyoBbBh1C3nASU73",
+        "name": "Fafnir Castle - Armor",
+        "results": 0
+      },
+      {
+        "id": "nryfcFqjRmhc5Xp0",
+        "name": "Fafnir Castle - Clock Event",
+        "results": 0
+      },
+      {
+        "id": "U3Q8XFLBcOdqdy8o",
+        "name": "Fafnir Castle - Consumable",
+        "results": 0
+      },
+      {
+        "id": "hpCzLw5RI4wQNtF7",
+        "name": "Fafnir Castle - Encounter",
+        "results": 0
+      },
+      {
+        "id": "oVJkUYCxsiHW6guM",
+        "name": "Fafnir Castle - Enemies",
+        "results": 0
+      },
+      {
+        "id": "y7iU5LWEwxGwrGug",
+        "name": "Fafnir Castle - Hazard",
+        "results": 0
+      },
+      {
+        "id": "MAaTfqZCgSN9zOXg",
+        "name": "Fafnir Castle - Item",
+        "results": 8
+      },
+      {
+        "id": "1rLmUBY4E7xxrOlA",
+        "name": "Fafnir Castle - Material",
+        "results": 0
+      },
+      {
+        "id": "XoRNxlbL74vXicu5",
+        "name": "Fafnir Castle - Skill Check",
+        "results": 0
+      },
+      {
+        "id": "aK4ojp7R73e7cKzj",
+        "name": "Fafnir Castle - Treasure",
+        "results": 0
+      },
+      {
+        "id": "Uzf4acZaV3JhTuY9",
+        "name": "Fafnir Castle - Weapon",
+        "results": 0
+      },
+      {
+        "id": "s9l5WNWplrNJIG0V",
+        "name": "Fafnir Castle - Zenit",
+        "results": 12
+      },
+      {
         "id": "Cif65dOA8pczlg6f",
         "name": "Milky Holstein",
         "results": 8
@@ -23047,6 +23254,71 @@
         "id": "nTcCBVqpj1EYIZHY",
         "name": "Tidal Predator",
         "results": 6
+      },
+      {
+        "id": "86Lj4WaVPFkt286A",
+        "name": "Valley of the Dragon - Accessory",
+        "results": 0
+      },
+      {
+        "id": "VgiHGix1LOByKDdu",
+        "name": "Valley of the Dragon - Armor",
+        "results": 0
+      },
+      {
+        "id": "11corNhirrKGdkGE",
+        "name": "Valley of the Dragon - Clock Event",
+        "results": 0
+      },
+      {
+        "id": "S4PHPxGHldBoJVxj",
+        "name": "Valley of the Dragon - Consumable",
+        "results": 0
+      },
+      {
+        "id": "Oijx8ksubxq9pc1R",
+        "name": "Valley of the Dragon - Encounter",
+        "results": 12
+      },
+      {
+        "id": "0LEghOv3aJyZVyVs",
+        "name": "Valley of the Dragon - Enemies",
+        "results": 4
+      },
+      {
+        "id": "nrt4wbj4Unk8Xi9W",
+        "name": "Valley of the Dragon - Hazard",
+        "results": 0
+      },
+      {
+        "id": "NLPoKqwDtbfTc2JA",
+        "name": "Valley of the Dragon - Item",
+        "results": 8
+      },
+      {
+        "id": "QailcoOmaoZW0v6b",
+        "name": "Valley of the Dragon - Material",
+        "results": 0
+      },
+      {
+        "id": "6wpUcG8RjL8A05Kd",
+        "name": "Valley of the Dragon - Skill Check",
+        "results": 0
+      },
+      {
+        "id": "DMeYaPoSPUxH6xVE",
+        "name": "Valley of the Dragon - Treasure",
+        "results": 0
+      },
+      {
+        "id": "StbIP7EczNqm98PR",
+        "name": "Valley of the Dragon - Weapon",
+        "results": 0
+      },
+      {
+        "id": "3tGY9xvFTeQhFIzU",
+        "name": "Valley of the Dragon - Zenit",
+        "results": 12
       },
       {
         "id": "oDiuDJRoayGJwr1L",

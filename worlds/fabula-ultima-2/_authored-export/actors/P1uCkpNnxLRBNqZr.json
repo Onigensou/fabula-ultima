@@ -39,7 +39,7 @@
       }
     }
   },
-  "folder": "Nd8LnosrPid1eX1r",
+  "folder": "4gMC1IxdJlF59BSi",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Fafnir_Lightning.png",
   "items": [
     {
@@ -1529,7 +1529,7 @@
     },
     "width": 1.5
   },
-  "sort": 3300000,
+  "sort": 100000,
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {

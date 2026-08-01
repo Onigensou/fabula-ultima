@@ -1,0 +1,198 @@
+{
+  "_id": "Oijx8ksubxq9pc1R",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785585357739,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    }
+  },
+  "folder": "to3QkbU70EQKKxHW",
+  "formula": "1d12",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Valley of the Dragon - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "1ZOIZMNH5ZKeJws4",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Skizzik, Qilin, Skizzik",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "5aaUGpydCDk79NHH",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Skizzik, Lightning Prism",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "7cvrskE2oE8ep1ah",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Lightning Prism, Qilin, Lightning Prism",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "b8UDhBPQTLIeH3TL",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Lightning Prism, Skizzik, Lightning Prism",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "BezItiTo9qkyhnKd",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Electro Slime, Lightning Prism, Electro Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "biKS7vAToU5ULK1f",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Skizzik, Lightning Prism, Skizzik",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "d3RsC5JE6cVnN61X",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Electro Slime, Qilin, Electro Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "gIT4bWG1ls8WXF1K",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Skizzik, Skizzik",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "jFcMjociVlKbB9Zu",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Electro Slime, Electro Slime, Electro Slime, Electro Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "ofd3pnxZ3fDM7EXO",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Qilin, Skizzik, Lightning Prism",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "tpHWn6Gdge7ndXiB",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Electro Slime, Electro Slime, Electro Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "zV5BqRP5XgGXSQKQ",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Electro Slime, Skizzik, Electro Slime",
+      "type": "text",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

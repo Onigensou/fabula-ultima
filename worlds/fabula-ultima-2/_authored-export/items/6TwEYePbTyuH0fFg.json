@@ -13,14 +13,14 @@
       "version": "4.8.5"
     }
   },
-  "folder": "HxH8pRIAy3tVzGFP",
+  "folder": "e5jNeoN9jNLkCpV3",
   "img": "icons/svg/item-bag.svg",
   "name": "Zero Trigger: Motivation",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "sort": 0,
+  "sort": 150000,
   "system": {
     "props": {
       "active_effect_config_table": {},
