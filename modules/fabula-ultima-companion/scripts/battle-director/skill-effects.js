@@ -4920,8 +4920,79 @@ async function dealDamageApply(row, ctx, d) {
       // MP-burn (damage_resource "mp") goes straight to applyDamageToTarget's MP
       // path — no affinity/shield ruling (MP loss has neither). HP damage takes the
       // full incoming ruleset. Both clamp at 0 + fire their loss VFX inside the commit.
+      // EXCEPTION (ruling 2026-08-02) — when the damage IS sourced from a
+      // creature, that creature's outgoing modifiers apply. This covers a
+      // consumable they use, a spell's deal_damage rider, and an AE-carried
+      // rider such as delayed damage (credited to the APPLIER, not the bearer).
+      // What stays ambient, per the same ruling:
+      //   • canonical status ticks (Burn, Envenom, …) — a condition is not
+      //     "owned" by anyone; neither the bearer's nor the applier's bonuses
+      //     inflate it. Detected via the curated Debuff/Buff containers by
+      //     status id, so it holds for any condition added later.
+      //   • anything where the source resolves to the victim itself.
+      // Reuses the public pure-math entry so the outgoing key family stays in
+      // one place. targetProps is deliberately omitted — target-side reduction
+      // and affinity belong to computeIncomingDamage below; passing it here
+      // would apply them twice. attackRange/isSpellish/weaponType are left at
+      // their defaults, so only `_all`, `_{element}` and `_item` contribute: an
+      // effect row has no weapon and no melee/ranged identity to speak of.
+      // `_item` DOES apply when the row's source is a consumable — using an item
+      // is exactly what `extra_damage_mod_item` scores (Zarg's +4 → Wind Stone
+      // 40 becomes 44). Both the consumable-carries-effect_table shape and the
+      // linked-`_skill`-inside-a-container shape count as an item use.
+      // Same caster chain CASTER_LEVEL/describeGrant use — reactorActor is the
+      // acting creature on a direct cast, liveAttacker at preview, applierActor
+      // only for an AE-carried rider. (An earlier `isPassive === false` gate here
+      // was dead: on a direct cast the flag is undefined, so no caster ever
+      // resolved and the whole outgoing pass silently no-opped.)
+      let _srcActor = ctx.reactorActor ?? ctx.liveAttacker ?? applierActor ?? null;
+      let _isItemUse = false;
+      if (_srcActor) {
+        try {
+          // The row's carrier. `ctx.sourceUuid` is populated only for AE-carried
+          // rows (riders / ticks); a DIRECT cast leaves it null and exposes the
+          // cast document as `ctx.skill` — keying off sourceUuid alone made this
+          // whole branch dead for the ordinary "use a consumable" case.
+          const _carrier = ctx.sourceUuid ? await fromUuid(ctx.sourceUuid).catch(() => null) : null;
+          if (_carrier?.documentName === "ActiveEffect"
+              && resolveCanonicalConditionTemplate(_carrier.statuses)) {
+            _srcActor = null;   // ambient condition tick
+          }
+          const _srcItem = _carrier?.documentName === "Item" ? _carrier : (ctx.skill ?? null);
+          if (_srcActor && _srcItem) {
+            const _own = String(_srcItem.system?.props?.item_type ?? "").toLowerCase();
+            if (_own === "consumable") _isItemUse = true;
+            else {
+              // Linked `_skill` — the consumable identity lives on its container.
+              // Resolve against the item's OWN parent actor, not the caster: a
+              // shared-stash item is used by someone who doesn't own it.
+              const _cid = String(_srcItem.system?.container ?? "").trim();
+              const _container = _cid ? _srcItem.parent?.items?.get?.(_cid) : null;
+              _isItemUse = String(_container?.system?.props?.item_type ?? "").toLowerCase() === "consumable";
+            }
+          }
+        } catch { /* carrier gone — treat as ambient */ }
+      }
+      if (_srcActor && _srcActor.id === actor.id) _srcActor = null;
+      let _outgoing = amount;
+      if (_srcActor) {
+        try {
+          const _c = globalThis.FUCompanion?.api?.applyDamage?.compute?.({
+            baseDamage: amount,
+            elementType: element,
+            isItem: _isItemUse,
+            attackerProps: _srcActor.system?.props ?? null,
+          });
+          if (Number.isFinite(_c?.finalPreAffinity)) _outgoing = _c.finalPreAffinity;
+        } catch (e) {
+          warn("skill-effects.deal_damage: outgoing-modifier pass failed", e);
+        }
+      }
+      // MP-burn keeps the RAW `amount`, not `_outgoing`: the extra_damage_mod_*
+      // family scores damage dealt, and draining MP is resource denial rather
+      // than damage (it already skips affinity and shield for the same reason).
       const isMp = d.damageResource === "mp";
-      const ruled = isMp ? null : computeIncomingDamage(actor, { base: amount, element, ignoreAffinity });
+      const ruled = isMp ? null : computeIncomingDamage(actor, { base: _outgoing, element, ignoreAffinity });
       const hpBefore = readPropNum(actor, ["current_hp", "hp"]);
       const res = await applyDamageToTarget({
         target: actor,

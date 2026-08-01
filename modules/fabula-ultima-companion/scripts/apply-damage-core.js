@@ -37,6 +37,7 @@
 //     extra_damage_mod_melee / _ranged / _spell
 //     extra_damage_mod_{element}     (physical/air/bolt/dark/earth/fire/ice/light/poison)
 //     extra_damage_mod_{weaponKey}   (arcane/bow/brawling/dagger/firearm/flail/heavy/spear/sword/thrown)
+//     extra_damage_mod_item          (consumable use — needs opts.isItem, not a weaponKey)
 //
 //   Target incoming flat reduction:
 //     damage_receiving_mod_all
@@ -208,13 +209,24 @@
   //   extra_damage_mod_melee / _ranged / _spell
   //   extra_damage_mod_{element}
   //   extra_damage_mod_{weaponKey}
-  function getAttackerFlatOutgoing(attackerProps, { elementType, attackRange, isSpellish, weaponKey }) {
+  //   extra_damage_mod_item          (damage dealt by USING a consumable)
+  //
+  // `item` is its own category, NOT a weaponKey: there is no `item_ef` on the
+  // sheet, so it can never arrive through extractWeaponKey — hence the explicit
+  // `isItem` flag. The action pipeline already scores this family on its own side
+  // (action-profile's `kind === "item"` → skill-formulas' "Damage (Item)", which is
+  // how Secret Formula's +4 AE reaches a created item); this flag is what lets the
+  // SAME family reach damage that arrives through this core instead, i.e. a
+  // consumable's `deal_damage` effect row. Each damage instance is scored once —
+  // the two paths handle disjoint numbers, they don't stack on one value.
+  function getAttackerFlatOutgoing(attackerProps, { elementType, attackRange, isSpellish, isItem, weaponKey }) {
     if (!attackerProps) return 0;
     let total = _prop(attackerProps, "extra_damage_mod_all");
     const range = normalizeAttackRange(attackRange);
     if (range === "melee")  total += _prop(attackerProps, "extra_damage_mod_melee");
     if (range === "ranged") total += _prop(attackerProps, "extra_damage_mod_ranged");
     if (isSpellish)         total += _prop(attackerProps, "extra_damage_mod_spell");
+    if (isItem)             total += _prop(attackerProps, "extra_damage_mod_item");
     if (elementType && elementType !== "elementless")
       total += _prop(attackerProps, `extra_damage_mod_${elementType}`);
     if (weaponKey)
@@ -325,6 +337,7 @@
    * @param {string}      [opts.elementType]        default "elementless"
    * @param {string}      [opts.attackRange]        "Melee" | "Ranged" | null
    * @param {boolean}     [opts.isSpellish]
+   * @param {boolean}     [opts.isItem]             damage dealt by USING a consumable
    * @param {string}      [opts.weaponType]         e.g. "sword_ef"
    * @param {string|null} [opts.damageClass]        explicit override; undefined = auto-derive
    * @param {boolean}     [opts.isCrit]
@@ -341,6 +354,7 @@
     elementType        = "elementless",
     attackRange        = null,
     isSpellish         = false,
+    isItem             = false,
     weaponType         = "none_ef",
     damageClass,
     isCrit             = false,
@@ -353,7 +367,7 @@
   } = {}) {
     const log = [];
     const weaponKey = extractWeaponKey(weaponType);
-    const ctx = { elementType, attackRange, isSpellish, weaponKey };
+    const ctx = { elementType, attackRange, isSpellish, isItem, weaponKey };
     const resolvedDamageClass = deriveDamageClass({ damageClass, isSpellish, weaponType });
 
     let x = _num(baseDamage);
@@ -405,6 +419,7 @@
    * @param {string}      [opts.elementType]
    * @param {string}      [opts.attackRange]         "Melee" | "Ranged" | null
    * @param {boolean}     [opts.isSpellish]
+   * @param {boolean}     [opts.isItem]               damage dealt by USING a consumable
    * @param {string}      [opts.weaponType]           e.g. "sword_ef"
    * @param {string|null} [opts.damageClass]          "strike"|"magic"|null|undefined (auto)
    * @param {string}      [opts.valueType]            "hp"|"mp"|"shield"
@@ -435,6 +450,7 @@
     elementType        = "elementless",
     attackRange        = null,
     isSpellish         = false,
+    isItem             = false,
     weaponType         = "none_ef",
     damageClass,
     valueType          = "hp",
@@ -507,7 +523,7 @@
       // Steps 0-8: pure math
       const { finalPreAffinity, breakdown } = computeDamage({
         baseDamage: resolvedBase,
-        elementType, attackRange, isSpellish, weaponType, damageClass, isCrit,
+        elementType, attackRange, isSpellish, isItem, weaponType, damageClass, isCrit,
         attackerProps: resolvedAttackerProps, targetProps: props, ignoreDR,
         actionBonusFlat, actionOutgoingMult, actionReductionFlat,
       });
