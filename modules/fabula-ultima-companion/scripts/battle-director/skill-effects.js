@@ -1163,6 +1163,13 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
       // (e.g. an MP-drain) is a mechanic, not the caster's cost.
       const tref = String(row.target_ref ?? "self").trim() || "self";
       if (tref !== "self") return;
+      // A DRAIN is not a cost. `on_empty:"drain"` takes whatever is left rather
+      // than demanding the full amount, so being short must NOT mark the row
+      // unavailable — otherwise a forced HP-loss curse (Cursed Sword) switches
+      // itself off at exactly the moment it matters, gated "Low HP" while the
+      // wielder is dying. Affordability only means "can you pay in full", which
+      // a drain never requires.
+      if (String(row.on_empty ?? "").trim().toLowerCase() === "drain") return;
       const resource = String(row.consume_resource ?? row.grant_resource ?? "").trim().toLowerCase();
       const def = RESOURCE_PROPS[resource];
       if (!def) return;
@@ -4822,6 +4829,12 @@ function describeDealDamage(row, ctx = {}) {
     // MP path, which clamps at 0 and fires the −N loss VFX but skips affinity /
     // shield / the HP crisis-ledger (MP loss has none of those).
     damageResource: String(row.damage_resource ?? "hp").trim().toLowerCase() || "hp",
+    // Action keywords carried by THIS damage instance (comma/newline list) —
+    // the effect-damage counterpart of a weapon's `action_keywords` prop and of
+    // an `apply_action_keyword` reaction. Currently only `crush` is read by the
+    // incoming ruleset ("cannot be Reduce and ignore immunity"), which is what
+    // lets a curse/drain land past DR and Immunity.
+    damageKeywords: String(row.damage_keywords ?? "").trim(),
   };
 }
 
@@ -4992,7 +5005,9 @@ async function dealDamageApply(row, ctx, d) {
       // family scores damage dealt, and draining MP is resource denial rather
       // than damage (it already skips affinity and shield for the same reason).
       const isMp = d.damageResource === "mp";
-      const ruled = isMp ? null : computeIncomingDamage(actor, { base: _outgoing, element, ignoreAffinity });
+      const ruled = isMp ? null : computeIncomingDamage(actor, {
+        base: _outgoing, element, ignoreAffinity, keywords: d.damageKeywords,
+      });
       const hpBefore = readPropNum(actor, ["current_hp", "hp"]);
       const res = await applyDamageToTarget({
         target: actor,
@@ -5283,6 +5298,16 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
     return { ok: true, kind: "consume_resource", applied: [], reason: "zero-amount" };
   }
   const onEmpty = String(row.on_empty ?? "abort").toLowerCase();
+  // `consume_can_defeat` — report an HP debit from this row to the battle
+  // director (fireResourceChangeTrigger) so the settle's Crisis and Defeat
+  // reactors see it. A plain consume writes HP silently: Crisis still lands
+  // (derived-status-reactor's standing updateActor hook), but DEFEAT does NOT —
+  // auto-defeat.js is NPC-only (it gates on npc_rank) and the PC KO path lives
+  // in the BD settle, which only reads ledgered changes. So without this a
+  // "you lose X HP" curse can empty your HP bar and never knock you out.
+  // Off by default: an ordinary cost should not be able to defeat its payer.
+  // ORTHOGONAL to draining below the available amount — that is `on_empty`.
+  const canDefeat = row.consume_can_defeat === true || String(row.consume_can_defeat).toLowerCase() === "true";
   const applied = [];
   for (const token of targetResult.tokens) {
     const actor = token.actor;
@@ -5296,10 +5321,32 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
       if (onEmpty === "abort") {
         return { ok: false, kind: "consume_resource", reason: "insufficient", abort: true };
       }
-      // Other behaviors (skip / warn) would continue here — kept minimal for ship.
-      continue;
+      // "drain" takes whatever is left — writeResourceDelta clamps at the
+      // resource's hardMin, so this lands the actor on 0 rather than refusing.
+      // A curse must still bite when you can't afford it.
+      if (onEmpty !== "drain") continue;               // abort handled above; skip / warn: unchanged
     }
+    const hpBefore = canDefeat ? readPropNum(actor, ["current_hp", "hp"]) : 0;
     const result = await writeResourceDelta(actor, def, -effAmount);
+    if (result.ok && canDefeat && resource === "hp") {
+      // Itemize onto the director's ledger so the settle sees this loss (crisis
+      // + defeat). No-op out of combat (getActiveDirector() → null).
+      const _director = ctx?.director
+        ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
+      if (_director) {
+        const delta = readPropNum(actor, ["current_hp", "hp"]) - hpBefore;
+        if (delta < 0) {
+          fireResourceChangeTrigger({
+            director: _director, actor,
+            tokenUuid: token.uuid ?? token.document?.uuid ?? null,
+            resource: "hp", direction: "loss", amount: Math.abs(delta),
+            cause: String(row.consume_cause ?? "hazard").trim().toLowerCase() || "hazard",
+            originLabel: ctx.sourceLabel ?? ctx.skill?.name ?? row.effect_label ?? "Loss",
+            originUuid: ctx.sourceUuid ?? ctx.skill?.uuid ?? null,
+          });
+        }
+      }
+    }
     if (result.ok) {
       applied.push({ actorUuid: actor.uuid, resource, delta: result.applied, newValue: result.newValue });
       // Spend float over the payer's token. `result.applied` is negative for

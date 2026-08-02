@@ -53,16 +53,47 @@ export function applyClassAffinityAndMult(actor, value, {
   damageClass = null,
   ignoreAffinity = false,
   elementAbsorbed = false,
+  // Crush keyword ("Damage Dealt by this action cannot be Reduce"): skip any
+  // axis that would LOWER the value. Axes that RAISE it (VU, a >1 mult) still
+  // apply — "cannot be reduced" is not "cannot be increased".
+  noReduction = false,
 } = {}) {
   let v = value;
-  const classCode = ignoreAffinity ? null : classAffinityCode(actor, damageClass);
+  let classCode = ignoreAffinity ? null : classAffinityCode(actor, damageClass);
+  // Crush steps the damage-CLASS affinity down one level too (same ladder).
+  if (noReduction && classCode) {
+    const stepped = crushAffinity(classCode);
+    classCode = stepped === "NE" ? null : stepped;
+  }
   if (classCode) v = applyAffinityToDamage(v, classCode);
   const absorbed = elementAbsorbed || classCode === "AB";
   if (!absorbed) {
     const mult = _num(actor?.flags?.[FLAG_NS]?.damage_taken_mult, 1);
-    if (mult > 0 && mult !== 1) v = Math.ceil(v * mult);
+    if (mult > 0 && mult !== 1 && !(noReduction && mult < 1)) v = Math.ceil(v * mult);
   }
   return { value: Math.max(0, Math.ceil(v)), absorbed };
+}
+
+// Crush steps the target's affinity DOWN exactly ONE level on the ladder
+//   NE < RS < IM < AB
+// so AB→IM, IM→RS, RS→NE, and NE stays NE (the floor). VU sits BELOW NE and is
+// never touched: Crush strips defence, it does not create vulnerability.
+// This is a partial bypass by design — a Crush hit on an Immune target is still
+// Resistant (halved), not full damage.
+const CRUSH_STEP_DOWN = Object.freeze({ AB: "IM", IM: "RS", RS: "NE" });
+export function crushAffinity(code) {
+  return CRUSH_STEP_DOWN[String(code ?? "").toUpperCase()] ?? code;
+}
+
+// Does this keyword list carry Crush? Keywords reach the ruleset from three
+// places (an item's own `action_keywords` prop, an `apply_action_keyword`
+// reaction, or a `deal_damage` row's `damage_keywords`), so normalise here.
+export function hasCrush(keywords) {
+  if (!keywords) return false;
+  const list = Array.isArray(keywords)
+    ? keywords
+    : String(keywords).split(/[,\n]/);
+  return list.some((k) => String(k).trim().toLowerCase() === "crush");
 }
 
 export function computeIncomingDamage(actor, {
@@ -76,12 +107,20 @@ export function computeIncomingDamage(actor, {
   // null / "none" → inert (effect damage, spells, MP). Gated under ignoreAffinity
   // alongside the other affinity axes.
   weaponType = null,
+  // Action keywords in play for this hit. Only `crush` affects the incoming
+  // ruleset today — Keyword Repository: "Damage Dealt by this action cannot be
+  // Reduce and ignore immunity". It therefore skips DR (flat + %), a reducing
+  // weapon-efficiency, and downgrades RS/IM to NE — while leaving VU/AB and any
+  // damage-INCREASING axis untouched. Shields are NOT bypassed: they are a
+  // separate resource band consumed in applyDamageToTarget, not a reduction.
+  keywords = null,
 } = {}) {
   const breakdown = [];
   let v = Math.max(0, Math.ceil(_num(base)));
+  const crush = hasCrush(keywords);
 
   // 1) Damage reduction (flat + %).
-  if (!ignoreDR) {
+  if (!ignoreDR && !crush) {
     const red = resolveIncomingReduction({ actor, elementType: element, range, raw: v });
     v = red.value;
     if (red.parts?.length) breakdown.push(...red.parts);
@@ -92,7 +131,8 @@ export function computeIncomingDamage(actor, {
   //     Inert without a weapon family (spells / MP / effect damage).
   if (!ignoreAffinity) {
     const effPct = readWeaponEfficiency(actor, weaponType);
-    if (effPct !== 100) {
+    // Crush ignores an efficiency that would REDUCE; a >100% one still applies.
+    if (effPct !== 100 && !(crush && effPct < 100)) {
       const before = v;
       v = Math.ceil(v * (effPct / 100));
       if (v !== before) breakdown.push({ source: `Weapon efficiency ${effPct}%`, amount: v - before });
@@ -115,13 +155,18 @@ export function computeIncomingDamage(actor, {
 
   // 2) Element affinity (+ status-forced VU). RS/VU/IM applied here; AB/NE
   //    leave the value untouched (AB heals downstream).
-  const elementCode = ignoreAffinity ? "NE" : resolveAffinity(actor, element);
+  let elementCode = ignoreAffinity ? "NE" : resolveAffinity(actor, element);
+  // Crush: step the element affinity down one level (AB→IM→RS→NE, floor NE).
+  // Note AB→IM cancels the absorb, so `elementAbsorbed` below reads false and
+  // the hit stops healing the target — but it lands as 0 (Immune), not full.
+  if (crush) elementCode = crushAffinity(elementCode);
   v = applyAffinityToDamage(v, elementCode);
 
   // 3) Damage-class affinity + 4) universal multiplier — via the shared helper so
   //    the attack path (action-profile) applies them identically.
   const cm = applyClassAffinityAndMult(actor, v, {
     damageClass, ignoreAffinity, elementAbsorbed: elementCode === "AB",
+    noReduction: crush,
   });
   v = cm.value;
   const absorbed = cm.absorbed;

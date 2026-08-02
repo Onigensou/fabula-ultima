@@ -21,7 +21,7 @@ import {
   applyCritDamage, resolveIncomingReduction, applyHealReceiving, normalizeDamageType, applyAdjustOp,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense } from "./snapshot.js";
-import { applyClassAffinityAndMult } from "./damage-ruleset.js";
+import { applyClassAffinityAndMult, crushAffinity } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck, decideHit } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
@@ -453,10 +453,16 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       for (const cond of (e.conditions ?? [])) {
         if (FORCED_VU_BY_STATUS[cond] === primary.element) { aff = "VU"; break; }
       }
-      // Inherent Pierce keyword: ignore Resistance (RS → NE) — VU/IM/AB are
-      // left untouched. Mirrors the reaction-side pierce in
-      // skill-effects.recomputePerTargetDamages so both paths agree.
-      if (primary.keywords?.includes("pierce") && aff === "RS") aff = "NE";
+      // NOTE: `pierce` does NOT touch affinity. Canon Pierce (Keyword
+      // Repository) is ONLY "deals 50% damage if the Accuracy check is lower
+      // than the target's defense" — the pierce-MISS rule, carried separately by
+      // `primary.pierce` (see applyOutcomeOverrides). Until 2026-08-02 this line
+      // also downgraded RS→NE, so every canon-Pierce action (Iceberg, Rail
+      // Stream, Create Phantasm: Strike) silently ignored Resistance too — a buff
+      // nobody authored. Resistance-bypass now belongs to `crush` alone.
+      // Inherent Crush keyword: step affinity DOWN one level on NE < RS < IM < AB
+      // (AB→IM, IM→RS, RS→NE; NE is the floor, VU untouched).
+      if (primary.keywords?.includes("crush")) aff = crushAffinity(aff);
       return aff;
     };
 
@@ -495,9 +501,14 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       const liveTarget = (!primary.isMpDamage) ? await fromUuid(e.actorUuid).catch(() => null) : null;
 
       if (!primary.isMpDamage) {
-        const red = resolveIncomingReduction({
-          actor: liveTarget, elementType: primary.element, range: primary.rangeKind ?? null, raw: rawDamage,
-        });
+        // Crush skips damage reduction entirely ("cannot be Reduce"). Checked
+        // against the action's inherent keywords here; a reaction-granted crush
+        // is folded in below alongside the reaction pierce.
+        const red = primary.keywords?.includes("crush")
+          ? { value: rawDamage, parts: [] }
+          : resolveIncomingReduction({
+              actor: liveTarget, elementType: primary.element, range: primary.rangeKind ?? null, raw: rawDamage,
+            });
         rawDamage = red.value;
         damageModParts.push(...red.parts);
         if (check.isCrit) {
@@ -572,14 +583,16 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 
       // Affinity — a reaction element override wins (use its per-subject-resolved
       // affinity, falling back to the target snapshot's affinity for that element);
-      // else the native element's affinity. A reaction pierce keyword ALSO
-      // downgrades RS→NE (mirrors the inherent primary.keywords pierce).
+      // else the native element's affinity. A reaction-granted `pierce` no longer
+      // touches affinity (see the inherent path above): affinity-bypass is
+      // `crush`, pierce is the miss-for-half rule only.
       affinityCode = computeAffinity();
       if (reactionElement) {
         const eop = [...targetOps].reverse().find((o) => o.op === "element" && o.element === reactionElement);
         affinityCode = (eop && eop.affinity != null) ? String(eop.affinity) : String(e.affinities?.[reactionElement] ?? "NE");
       }
-      if (reactionKeywords?.includes("pierce") && affinityCode === "RS") affinityCode = "NE";
+      // Reaction-granted Crush — same one-level step as the inherent one above.
+      if (reactionKeywords?.includes("crush")) affinityCode = crushAffinity(affinityCode);
       damageVal = applyAffinityToDamage(rawDamage, affinityCode);
 
       // Damage-class affinity (strike/magic) + universal damage_taken_mult — the

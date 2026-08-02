@@ -32,6 +32,7 @@ const DEAL_OR_ADJUST_VIS = `or(equalText(sameRow("effect_kind",''), "deal_damage
 const TGT_VIS = `equalText(sameRow("effect_kind",''), "targeting")`;
 const APPLY_AE_VIS = `equalText(sameRow("effect_kind",''), "apply_ae")`;
 const KEYWORD_VIS = `equalText(sameRow("effect_kind",''), "apply_action_keyword")`;
+const CONSUME_RES_VIS = `equalText(sameRow("effect_kind",''), "consume_resource")`;
 // adjust_charges — charge arithmetic on a target's named charge-AE.
 const ADJUST_CHARGES_VIS = `equalText(sameRow("effect_kind",''), "adjust_charges")`;
 // trigger_status — fire a charge-based status's own tick N× on the target(s).
@@ -130,6 +131,8 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // [[feedback_csb_template_gating]].
   textCol("damage_element", "Damage Element", { tooltip: "deal_damage element: fire/ice/bolt/earth/air/light/dark/physical/poison (default elementless).", vis: DEAL_VIS }),
   checkboxCol("damage_ignore_affinity", "Ignore Affinity", { tooltip: "deal_damage lands flat — skips RS/VU/IM/AB + condition-forced VU (for fixed/'true' damage like an opposed-check consequence). DR/shield still apply.", vis: DEAL_VIS }),
+  textCol("damage_keywords", "Damage Keywords", { tooltip: "Comma-separated action keywords carried by THIS damage instance (the effect-damage counterpart of a weapon's action_keywords). Currently read: crush = damage cannot be reduced (skips flat + % DR, a reducing weapon-efficiency, and a <1 damage_taken_mult) and ignores Immunity (RS and IM read as NE). VU/AB and damage-increasing axes still apply; shields still absorb.", vis: DEAL_VIS }),
+  checkboxCol("consume_can_defeat", "Can Defeat Target", { tooltip: "consume_resource: report an HP debit from this row to the battle director so the settle's Crisis and Defeat reactors fire — i.e. this loss can knock the target out. A plain consume writes HP silently, so it can empty the HP bar without ever KO-ing (Crisis still lands via the standing updateActor hook; Defeat does not, because auto-defeat is NPC-only). Turn ON for 'you lose X HP' curses (Cursed Sword); leave OFF for ordinary costs, which should never defeat their payer. To also let the debit take the LAST points instead of refusing when the target is short, set On Empty = drain — that is a separate control.", vis: CONSUME_RES_VIS }),
   selectCol("damage_cause", "Damage Cause", [
     { key: "hazard", value: "Hazard (Burn/Poison/environment — not an attack)" },
     { key: "damage", value: "Damage (creature-inflicted — counts as an attack)" },
@@ -186,9 +189,9 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // recomputePerTargetDamages. Author via a creature_will_deal_damage reaction
   // (e.g. Chomp: TRIGGER_IS_SELF == 1 && RAW_DAMAGE >= 100 → apply_action_keyword pierce).
   selectCol("action_keyword", "Action Keyword", [
-    { key: "pierce", value: "Pierce (ignore Resistance)" },
     { key: "drain",  value: "Drain (heal user 50% of damage dealt)" },
-  ], { tooltip: "apply_action_keyword: the keyword applied to this hit. Pierce = the target's Resistance (RS) is treated as neutral for this hit (VU/IM/AB unchanged). Drain = the attacker recovers HP equal to half the HP damage this hit deals (Tinkerer Vampire infusion; matches the Keyword Repository).", vis: KEYWORD_VIS, defaultValue: "pierce" }),
+    { key: "crush",  value: "Crush (step affinity down one level)" },
+  ], { tooltip: "apply_action_keyword: the keyword applied to this hit. Drain = the attacker recovers HP equal to half the HP damage this hit deals (Tinkerer Vampire infusion; matches the Keyword Repository). Crush = damage cannot be reduced (skips flat + % DR, a reducing weapon-efficiency, and a <1 damage_taken_mult) AND steps the target affinity DOWN one level on NE < RS < IM < AB (AB→IM, IM→RS, RS→NE; NE is the floor, VU untouched). Shields still absorb. NO DEFAULT ON PURPOSE — an unset row applies no keyword. The old default was 'pierce', which is how the Tinkerer's Vampire infusion silently shipped as ignore-Resistance instead of Drain: the author never touched the dropdown.", vis: KEYWORD_VIS, defaultValue: "" }),
   // GENERIC row gate — a non-empty formula gates this row at dispatch (falsy →
   // skip the row, chain continues) AND, when the row is a menu option
   // (referenced by an open_action_menu), drops the option from the menu entirely.
