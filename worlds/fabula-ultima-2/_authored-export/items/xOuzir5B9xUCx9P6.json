@@ -1,0 +1,116 @@
+{
+  "_id": "xOuzir5B9xUCx9P6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785680859211,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Great%20Sword/Icon-Force_Stealer.webp",
+  "name": "Cursed Sword (gear skill)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Y9y95j2PQAwF2K3H",
+    "props": {
+      "cost": "",
+      "description": "<p>At the start of your turn you lose <strong>20% of your maximum Hit Points</strong> while this weapon is equipped. This loss is <em>elementless</em> — no affinity reduces it.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "",
+          "consume_amount": "ceil(MAX_HP * 0.2)",
+          "consume_can_defeat": true,
+          "consume_cause": "hazard",
+          "consume_resource": "hp",
+          "consume_vital": "",
+          "damage_amount": "",
+          "damage_element": "",
+          "damage_keywords": "",
+          "damage_verbosity": "",
+          "effect_kind": "consume_resource",
+          "effect_label": "cs_drain",
+          "on_empty": "drain",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "",
+          "reaction_requires_weapon_used": "",
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "",
+          "requires_skill": "",
+          "target_ref": "self"
+        }
+      },
+      "id": "nhBGa2yqnaY3bavM",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Great%20Sword/Icon-Force_Stealer.webp",
+      "isCheck": false,
+      "name": "Cursed Sword (gear skill)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "",
+          "damage_amount": "",
+          "damage_element": "",
+          "effect_kind": "",
+          "effect_label": "",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "cs_drain",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": "",
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "turn_start",
+          "requires_skill": "",
+          "target_ref": ""
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Actor.Z4CFy505cD3nzl1W.Item.nhBGa2yqnaY3bavM"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "xOuzir5B9xUCx9P6"
+  },
+  "type": "equippableItem"
+}

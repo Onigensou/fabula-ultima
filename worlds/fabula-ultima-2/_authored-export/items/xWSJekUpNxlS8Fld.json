@@ -1,0 +1,110 @@
+{
+  "_id": "xWSJekUpNxlS8Fld",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785679911421,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Bandit_Gloves.webp",
+  "name": "Bandit Gloves (gear skill)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "6vnqLdS9ER3gWiSc",
+    "props": {
+      "cost": "",
+      "description": "<p>Whenever you perform <strong>Soul Steal</strong>, you may perform a <strong>Free Attack</strong> with an equipped <strong>melee</strong> weapon. High Roll counts as <strong>0</strong> for that attack's damage.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "accuracy_amount": "",
+          "accuracy_operation": "",
+          "action_ref": "Attack",
+          "ae_duplicate_mode": "",
+          "ae_template_ref": "",
+          "allowed_types": "",
+          "chain_steps": "",
+          "check_bonus_formula": "",
+          "condition_formula": "",
+          "damage_amount": "",
+          "damage_bonus_formula": "",
+          "damage_element": "",
+          "damage_operation": "",
+          "damage_stage": "",
+          "effect_kind": "free_action",
+          "effect_label": "bg_free_attack",
+          "free_hr_as_zero": true,
+          "free_mode": false,
+          "free_of_cost": false,
+          "grant_amount": "",
+          "grant_resource": "",
+          "grant_target": "",
+          "max_mp_cost": "",
+          "menu_description": "",
+          "menu_label": "",
+          "reaction_effect_ref": "",
+          "reaction_passive_mode": "",
+          "reaction_source": "",
+          "reaction_trigger": "",
+          "target_ref": ""
+        }
+      },
+      "id": "jiM9FZ5IomG2Tife",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Bandit_Gloves.webp",
+      "isCheck": false,
+      "name": "Bandit Gloves (gear skill)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "HAS_MELEE_WEAPON == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "bg_free_attack",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "Soul Steal",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_completes_skill",
+          "requires_skill": ""
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Actor.Z4CFy505cD3nzl1W.Item.jiM9FZ5IomG2Tife"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "xWSJekUpNxlS8Fld"
+  },
+  "type": "equippableItem"
+}

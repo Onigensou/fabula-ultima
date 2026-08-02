@@ -1,0 +1,129 @@
+{
+  "_id": "kHtY4xWAMWfcBwfg",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785679137866,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1139.gif",
+  "name": "Psychic Dagger (gear skill)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "3PPbTNuD6rPBkICm",
+    "props": {
+      "cost": "",
+      "description": "<p>While your <strong>Brainwave Clock</strong> has filled sections, attacks made with <strong>+6 Psychic Dagger</strong> gain <strong>+1 Accuracy</strong> and <strong>+2 damage</strong> per filled section.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "accuracy_amount": "AE_CHARGES_BRAINWAVE_CLOCK",
+          "accuracy_operation": "add",
+          "ae_duplicate_mode": "",
+          "ae_template_ref": "",
+          "damage_amount": "",
+          "damage_operation": "",
+          "damage_stage": "",
+          "effect_kind": "adjust_accuracy",
+          "effect_label": "pd_acc",
+          "grant_amount": "",
+          "grant_resource": "",
+          "target_ref": ""
+        },
+        "1": {
+          "accuracy_amount": "",
+          "accuracy_operation": "",
+          "ae_duplicate_mode": "",
+          "ae_template_ref": "",
+          "damage_amount": "AE_CHARGES_BRAINWAVE_CLOCK * 2",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "pd_dmg",
+          "grant_amount": "",
+          "grant_resource": "",
+          "target_ref": ""
+        }
+      },
+      "id": "aRgR0Hn1ejPNmzqB",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1139.gif",
+      "isCheck": false,
+      "name": "Psychic Dagger (gear skill)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "AE_CHARGES_BRAINWAVE_CLOCK > 0",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "Attack,Spell,Skill",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "pd_acc",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": true,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_performs_action",
+          "requires_skill": ""
+        },
+        "1": {
+          "condition_formula": "AE_CHARGES_BRAINWAVE_CLOCK > 0 && DAMAGE_IS_HP == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "pd_dmg",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": true,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_will_deal_damage",
+          "requires_skill": ""
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.aRgR0Hn1ejPNmzqB"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "kHtY4xWAMWfcBwfg"
+  },
+  "type": "equippableItem"
+}

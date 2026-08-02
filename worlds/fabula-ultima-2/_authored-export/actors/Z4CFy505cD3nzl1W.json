@@ -5113,7 +5113,7 @@
               "menu_label": "Vampire"
             },
             "24": {
-              "action_keyword": "pierce",
+              "action_keyword": "drain",
               "condition_formula": "",
               "effect_kind": "apply_action_keyword",
               "effect_label": "inf_drain"
@@ -5329,6 +5329,112 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "lmVVp510JjCT0H0c"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "jiM9FZ5IomG2Tife",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785679625549,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Bandit_Gloves.webp",
+      "name": "Bandit Gloves (gear skill)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "Q08hw2qju0mUF6ih",
+        "props": {
+          "cost": "",
+          "description": "<p>Whenever you perform <strong>Soul Steal</strong>, you may perform a <strong>Free Attack</strong> with an equipped <strong>melee</strong> weapon. High Roll counts as <strong>0</strong> for that attack's damage.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "accuracy_amount": "",
+              "accuracy_operation": "",
+              "action_ref": "Attack",
+              "ae_duplicate_mode": "",
+              "ae_template_ref": "",
+              "allowed_types": "",
+              "chain_steps": "",
+              "check_bonus_formula": "",
+              "condition_formula": "",
+              "damage_amount": "",
+              "damage_bonus_formula": "",
+              "damage_element": "",
+              "damage_operation": "",
+              "damage_stage": "",
+              "effect_kind": "free_action",
+              "effect_label": "bg_free_attack",
+              "free_hr_as_zero": true,
+              "free_mode": false,
+              "free_of_cost": false,
+              "grant_amount": "",
+              "grant_resource": "",
+              "grant_target": "",
+              "max_mp_cost": "",
+              "menu_description": "",
+              "menu_label": "",
+              "reaction_effect_ref": "",
+              "reaction_passive_mode": "",
+              "reaction_source": "",
+              "reaction_trigger": "",
+              "target_ref": ""
+            }
+          },
+          "isCheck": false,
+          "name": "Bandit Gloves (gear skill)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_MELEE_WEAPON == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "bg_free_attack",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Soul Steal",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_completes_skill",
+              "requires_skill": ""
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "tGgGFGEavGVjJVAz"
       },
       "type": "equippableItem"
     },
@@ -6969,6 +7075,118 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "aITJntRz2m10Rgeo"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "nhBGa2yqnaY3bavM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785680619037,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Great%20Sword/Icon-Force_Stealer.webp",
+      "name": "Cursed Sword (gear skill)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "jzOXjJXsUWUNXRI3",
+        "props": {
+          "cost": "",
+          "description": "<p>At the start of your turn you lose <strong>20% of your maximum Hit Points</strong> while this weapon is equipped. This loss is <em>elementless</em> — no affinity reduces it.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "consume_amount": "ceil(MAX_HP * 0.2)",
+              "consume_can_defeat": true,
+              "consume_cause": "hazard",
+              "consume_resource": "hp",
+              "consume_vital": "",
+              "damage_amount": "",
+              "damage_element": "",
+              "damage_keywords": "",
+              "damage_verbosity": "",
+              "effect_kind": "consume_resource",
+              "effect_label": "cs_drain",
+              "on_empty": "drain",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "",
+              "reaction_requires_weapon_used": "",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "",
+              "requires_skill": "",
+              "target_ref": "self"
+            }
+          },
+          "isCheck": false,
+          "name": "Cursed Sword (gear skill)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "damage_amount": "",
+              "damage_element": "",
+              "effect_kind": "",
+              "effect_label": "",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "cs_drain",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_requires_weapon_used": "",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "turn_start",
+              "requires_skill": "",
+              "target_ref": ""
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "tGgGFGEavGVjJVAz"
       },
       "type": "equippableItem"
     },

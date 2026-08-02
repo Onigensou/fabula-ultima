@@ -402,7 +402,7 @@
               "effect_label": "chomp_kill_bonus"
             },
             "2": {
-              "action_keyword": "pierce",
+              "action_keyword": "crush",
               "condition_formula": "FINAL_DAMAGE >= 100",
               "effect_kind": "apply_action_keyword",
               "effect_label": "chomp_pierce"

@@ -3095,6 +3095,12 @@
         "effects": 0
       },
       {
+        "id": "xWSJekUpNxlS8Fld",
+        "name": "Bandit Gloves (gear skill)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Ki373XheqcmzPYfM",
         "name": "Bandit Jacket",
         "type": "equippableItem",
@@ -4411,6 +4417,12 @@
       {
         "id": "Y9y95j2PQAwF2K3H",
         "name": "Cursed Sword",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "xOuzir5B9xUCx9P6",
+        "name": "Cursed Sword (gear skill)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9223,6 +9235,12 @@
       {
         "id": "3PPbTNuD6rPBkICm",
         "name": "Psychic Dagger",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "kHtY4xWAMWfcBwfg",
+        "name": "Psychic Dagger (gear skill)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -18617,6 +18635,10 @@
             "name": "Phoenix Feather"
           },
           {
+            "id": "aRgR0Hn1ejPNmzqB",
+            "name": "Psychic Dagger (gear skill)"
+          },
+          {
             "id": "hZF1clWz4uuZixDS",
             "name": "Psychic Gifts"
           },
@@ -22600,6 +22622,10 @@
             "name": "Bandit Gloves"
           },
           {
+            "id": "jiM9FZ5IomG2Tife",
+            "name": "Bandit Gloves (gear skill)"
+          },
+          {
             "id": "mv4dNcGM84BH46mZ",
             "name": "Barrage"
           },
@@ -22634,6 +22660,10 @@
           {
             "id": "jzOXjJXsUWUNXRI3",
             "name": "Cursed Sword"
+          },
+          {
+            "id": "nhBGa2yqnaY3bavM",
+            "name": "Cursed Sword (gear skill)"
           },
           {
             "id": "B5EA1iq4j0wYzpo5",

@@ -1220,7 +1220,7 @@
               "to_resource": ""
             },
             "24": {
-              "action_keyword": "pierce",
+              "action_keyword": "drain",
               "condition_formula": "",
               "consume_self": false,
               "effect_kind": "apply_action_keyword",

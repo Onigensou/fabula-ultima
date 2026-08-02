@@ -221,7 +221,7 @@
           "menu_label": "Vampire"
         },
         "24": {
-          "action_keyword": "pierce",
+          "action_keyword": "drain",
           "condition_formula": "",
           "effect_kind": "apply_action_keyword",
           "effect_label": "inf_drain"
