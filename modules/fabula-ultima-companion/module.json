@@ -43,8 +43,6 @@
     "scripts/dialog-system/dialog-examineUI.js",
     "scripts/command-system/command-itemCreate.js",
     "scripts/screen-transition/screen-transition.js",
-    "scripts/main.js",
-    "scripts/speech-bubble.js",
     "scripts/free-action-state.js",
     "scripts/turn-ui-manager.js",
     "scripts/action-animation/animation-asset-cache.js",
@@ -418,7 +416,8 @@
     "scripts/battle-director/battle-end/battle-end-summary-ui.js",
     "scripts/battle-director/battle-end/battle-end-transition.js",
     "scripts/battle-director/battle-end/battle-end-cleanup.js",
-    "scripts/battle-director/battle-end/battle-end-rewards.js"
+    "scripts/battle-director/battle-end/battle-end-rewards.js",
+    "scripts/main.js"
   ],
   "styles": [
     "styles/style.css",

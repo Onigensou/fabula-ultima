@@ -141,15 +141,14 @@ Hooks.once("ready", async () => {
     return;
   }
 
-  // Demo (optional; safe to remove)
-  try {
-    socket.executeForEveryone("hello", game.user.name);
-    socket.executeForEveryone(showHelloMessage, game.user.name);
-    const result = await socket.executeAsGM("add", 5, 3);
-    console.debug(`[FU Companion] GM calculated: ${result}`);
-  } catch (e) {
-    console.warn("[FU Companion] Demo calls failed:", e);
-  }
+  // The socketlib demo round-trip that used to live here (executeForEveryone
+  // "hello" x2 + executeAsGM "add") was REMOVED 2026-08-02, when this file was
+  // switched from a never-parsed classic script to an esmodule. It was already
+  // marked "optional; safe to remove", and it had never actually run — turning
+  // the file on would have started broadcasting a greeting to every connected
+  // client on every world load. Activating dead code should not silently add
+  // chatter nobody asked for. The `hello` / `add` handlers stay registered
+  // above; they are what the demo exercised.
 });
 
 /* ================================
@@ -206,8 +205,13 @@ function add(a, b) {
   return a + b;
 }
 
-// scripts/main.js
-import { runJRPGSpeechBubble } from "./features/speech-bubble.js";
+// NOTE: this file is an ESMODULE (module.json `esmodules`). It was previously
+// declared as a classic `scripts` entry while containing this top-level import,
+// so the whole file failed to parse ("Cannot use import statement outside a
+// module") and NONE of it ever ran — including healGearSkillGrantProjections()
+// below. Fixed 2026-08-02. Path corrected too: the target is ./speech-bubble.js,
+// not ./features/speech-bubble.js, which does not exist.
+import { runJRPGSpeechBubble } from "./speech-bubble.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const CURSOR_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Cursor1.ogg";
