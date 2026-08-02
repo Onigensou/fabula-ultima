@@ -186,13 +186,13 @@
             "1": {
               "$deleted": false,
               "chain_steps": "cat_10_mp, cat_10_dmg",
-              "condition_formula": "SL >= 1 && CUR_MP >= ACTION_MP_COST + 10",
+              "condition_formula": "SL >= 1 && CUR_MP >= ACTION_COST_MP + 10",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "prompt_number",
               "effect_label": "cat_prompt",
               "prompt_label": "Overcharge: increase MP cost (+5 damage per 10 MP)",
-              "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor((CUR_MP - ACTION_MP_COST)/10)*10 )",
+              "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor((CUR_MP - ACTION_COST_MP)/10)*10 )",
               "prompt_min": "10",
               "prompt_step": "10",
               "prompt_var": "overcharge"
@@ -216,7 +216,7 @@
             "4": {
               "$deleted": false,
               "chain_steps": "cat_20_mp, cat_20_dmg",
-              "condition_formula": "SL >= 2 && CUR_MP >= ACTION_MP_COST + 20",
+              "condition_formula": "SL >= 2 && CUR_MP >= ACTION_COST_MP + 20",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "chain",
@@ -241,7 +241,7 @@
             "7": {
               "$deleted": false,
               "chain_steps": "cat_30_mp, cat_30_dmg",
-              "condition_formula": "SL >= 3 && CUR_MP >= ACTION_MP_COST + 30",
+              "condition_formula": "SL >= 3 && CUR_MP >= ACTION_COST_MP + 30",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "chain",
@@ -277,7 +277,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_MP_COST + 10",
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10",
               "reaction_effect_ref": "cat_root",
               "reaction_passive_mode": "ask",
               "reaction_source": "self",
