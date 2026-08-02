@@ -36,6 +36,14 @@ Scenes are covered separately by preflight's per-scene golden (`bless`). Output:
 CSB-derived sheet fields and volatile `_stats` timestamps are stripped, and all
 keys are sorted, so diffs reflect real content changes only.
 
+**Session recordings are stripped too** — `system.props.battle_log` and
+`battle_log_table` are written by play (and by every sim run), never authored.
+Left in, they swamped the review surface: one migration commit carried a
+182-line party-actor change that touched no skill, table or item. Noise that
+size is exactly what hides a one-line removal, which is the whole thing this
+tool exists to catch. Add any future play-written prop to `VOLATILE_PROPS` in
+`bin/world-export.js`.
+
 ## Commands
 
 ```
@@ -78,7 +86,22 @@ it's your private "last reviewed" marker, never shared.
 
 ## Submit workflow
 
-1. Close Foundry.
+1. Close Foundry — and **verify it actually closed**. ⚠ An in-page
+   `game.shutDown()` is NOT enough: measured 2026-08-02, it disconnects the
+   calling client (users drops to 0) but `/api/status` keeps reporting
+   `active: true` and every collection keeps its LOCK, so step 2 still refuses.
+   `POST /setup {action:"shutdown"}` returns 403 without an elevated admin
+   session, which an empty `adminKey` does not grant. The reliable lever is
+   stopping the server process; confirm with:
+
+   ```
+   curl -s http://localhost:30000/api/status     # want: {"active":false}  (or no response)
+   ```
+
+   Stopping the process is safe for the data — LevelDB is crash-safe, and step 2
+   is itself the integrity check (it opens every collection and fails loudly on
+   an inconsistent DB). On this machine `tools/test-bridge-client/close-world.mjs`
+   does the stop-and-verify in one go (local-only; `tools/*` is gitignored).
 2. `node tools/safe-edit/bin/world-export.js report` — review the diff and,
    above all, the **removal warnings**. If a removal is unexpected, STOP and
    reconcile (restore the dropped content) before going further.

@@ -784,4 +784,4 @@ await tileDoc.setFlag(MODULE_ID, "trPromptMessageId", msg.id);
   };
 
   log("Installed.");
-})();
+});

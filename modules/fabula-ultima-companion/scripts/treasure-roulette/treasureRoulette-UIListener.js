@@ -84,4 +84,4 @@ Hooks.once("ready", () => {
     }
   });
   log("Installed. Listening on:", SOCKET_CHANNEL);
-})();
+});

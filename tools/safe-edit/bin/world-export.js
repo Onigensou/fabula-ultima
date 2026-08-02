@@ -69,6 +69,20 @@ const VOLATILE_STATS = ["modifiedTime", "lastModifiedBy"];
 // reflects the authored playlist (which sounds it contains), not what's playing.
 const VOLATILE_PLAYBACK = ["playing", "pausedTime", "timeSerial"];
 
+// Session RECORDINGS under `system.props` — written by play, never authored.
+// The battle log grows every combat (and every sim run), so a single play
+// session rewrites tens of KB on the party actor. Left in, it swamped a real
+// submit diff: the ACTION_COST_MP migration commit carried a 182-line
+// EXFURSION Party change that touched no reaction_config_table, effect_table
+// or items at all.
+//
+// That is not cosmetic. This export is the review surface that makes a binary
+// world push auditable — its whole job is to make a dropped skill VISIBLE. A
+// pile of session noise is precisely what hides a one-line removal, which is
+// how the Fafnir moveset went missing in the first place. Strip it so the diff
+// only ever shows authored content.
+const VOLATILE_PROPS = ["battle_log", "battle_log_table"];
+
 function exportDir(world) {
   return path.join(worldDataDir(world), "..", "_authored-export");
 }
@@ -150,6 +164,9 @@ function sortEmbedded(doc) {
 function sanitize(doc) {
   if (doc && typeof doc.system === "object" && doc.system) {
     for (const k of DERIVED_SYSTEM_FIELDS) delete doc.system[k];
+    if (typeof doc.system.props === "object" && doc.system.props) {
+      for (const k of VOLATILE_PROPS) delete doc.system.props[k];
+    }
   }
   if (doc && typeof doc._stats === "object" && doc._stats) {
     for (const k of VOLATILE_STATS) delete doc._stats[k];

@@ -391,4 +391,4 @@ Hooks.once("ready", () => {
   };
   
   log(`Installed as window["${KEY}"]. Listening on:`, SOCKET_CHANNEL);
-})();
+});
