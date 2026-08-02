@@ -106,13 +106,15 @@ async function loadDeps() {
 // against the COMPUTE-stage ar. Used by both Attack and Skill simulators
 // to validate pill-accepted reactions (Cheap Shot family) without driving
 // the live action-card click flow. Returns the new frozen ar with
-// `perTargetResults` updated and `acceptedPrePassives` stamped.
+// `perTargetResults` updated and `acceptedCardReactions` stamped.
 //
-// `prePassives` filter shape:
-//   - true                          → accept EVERY matching pre-passive (rare; risky if multiple match)
-//   - ["Cheap Shot", "Vanish", ...] → accept only candidates whose carrierName matches one of these
-async function applyPrePassivesToActionResult({ ar, attackerActor, prePassives, dCombat, deps }) {
-  if (!prePassives) return ar;
+// `accept` is a FILTER, not a candidate list (the engine's own list is
+// `cardReactions` — do not confuse the two). Shape:
+//   - undefined / falsy              → accept nothing; the ar comes back untouched
+//   - true                           → accept EVERY matching card-reaction (rare; risky if multiple match)
+//   - ["Cheap Shot", "Vanish", ...]  → accept only candidates whose carrierName matches one of these
+async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept, dCombat, deps }) {
+  if (!accept) return ar;
   if (!Array.isArray(ar?.perTargetResults) || !ar.perTargetResults.length) return ar;
   if (!ar.hasDamage && ar.kind !== "Attack") return ar;
   const { findPassiveCandidates, recomputeActionProfile, freezeActionResult } = deps;
@@ -160,13 +162,13 @@ async function applyPrePassivesToActionResult({ ar, attackerActor, prePassives, 
         payload: payloadForTrigger,
       });
     } catch (e) {
-      console.warn(`${TAG} prePassives findPassiveCandidates threw for ${entry?.name}`, e);
+      console.warn(`${TAG} acceptReactions findPassiveCandidates threw for ${entry?.name}`, e);
       continue;
     }
     for (const cand of cands ?? []) {
       // Filter to allowed names.
-      if (prePassives !== true) {
-        const namesArr = Array.isArray(prePassives) ? prePassives : [];
+      if (accept !== true) {
+        const namesArr = Array.isArray(accept) ? accept : [];
         const accepted = namesArr.some((n) => cand.carrierName?.includes(n) || n.includes(cand.carrierName ?? ""));
         if (!accepted) continue;
       }
@@ -200,13 +202,13 @@ async function applyPrePassivesToActionResult({ ar, attackerActor, prePassives, 
       recomputed = delta.perTargetResults;
     }
   } catch (e) {
-    console.warn(`${TAG} prePassives recompute threw`, e);
+    console.warn(`${TAG} acceptReactions recompute threw`, e);
   }
   return freezeActionResult({
     ...ar,
     perTargetResults: recomputed,
-    acceptedPrePassives: applied,
-    evaluatedPrePassives: applied.map((c) => ({ carrierUuid: c.carrierUuid, rowKey: c.rowKey })),
+    acceptedCardReactions: applied,
+    evaluatedCardReactions: applied.map((c) => ({ carrierUuid: c.carrierUuid, rowKey: c.rowKey })),
   });
 }
 
@@ -759,7 +761,7 @@ function summarizeWrites(captures) {
 // are completely blind to.
 //
 // v1 scope: the post-roll action card body/headline/buttons + the
-// pre-passive pill rows. NOT captured: the pre-passive header BONUS preview
+// card-reaction pill rows. NOT captured: the card-reaction header BONUS preview
 // (needs CONFIRM's payload builder extracted) and the player-client mirror
 // HTML. A green run does not claim those are covered.
 //
@@ -775,7 +777,7 @@ function captureActionCard(ar, deps) {
   const payload = typeof composeActionCardRenderPayload === "function"
     ? composeActionCardRenderPayload(ar)
     : { ...ar };  // fallback: pre-extraction harness against newer disk
-  const prePassives = Array.isArray(payload.prePassives) ? payload.prePassives : [];
+  const cardReactions = Array.isArray(payload.cardReactions) ? payload.cardReactions : [];
   let card = null;
   try {
     card = composeActionCardObject({ kind: ar.kind, payload });
@@ -800,7 +802,7 @@ function captureActionCard(ar, deps) {
     // Plain text, tags stripped — the field tests grep. stripHtmlForDesc caps
     // at 320 chars, so strip the title/body separately and join for full text.
     text: [card.titleText, card.subtitle, card.body, card.buttons].map((h) => strip(h)).filter(Boolean).join(" | "),
-    pills: prePassives.map((p) => ({ name: p.carrierName ?? p.name ?? "?", mode: p.mode ?? null, available: p.available !== false })),
+    pills: cardReactions.map((p) => ({ name: p.carrierName ?? p.name ?? "?", mode: p.mode ?? null, available: p.available !== false })),
   };
 }
 
@@ -1047,18 +1049,18 @@ async function runDirectorSkillSimulate(args = {}) {
   // Pre-pass aggregator — same as the attack simulator. Lets damage-bearing
   // Skills validate Cheap Shot-style reactions (`creature_will_deal_damage`
   // + `add_damage`) without driving the live action-card click flow.
-  if (args.prePassives) {
+  if (args.acceptReactions) {
     try {
       const round0 = Number.isFinite(args.round) ? args.round : 1;
       const attackerActor = await fromUuid(args.casterTokenUuid).then((d) => d?.actor ?? null).catch(() => null);
       if (attackerActor) {
-        ar = await applyPrePassivesToActionResult({
-          ar, attackerActor, prePassives: args.prePassives,
+        ar = await applyAcceptedReactionsToActionResult({
+          ar, attackerActor, accept: args.acceptReactions,
           dCombat: { round: round0, currentTurnResolved: false },
           deps,
         });
       }
-    } catch (e) { console.warn(`${TAG} skill prePassives threw`, e); }
+    } catch (e) { console.warn(`${TAG} skill acceptReactions threw`, e); }
   }
 
   // Render-capture — build the action card the way CONFIRM does (post-roll,
@@ -1290,20 +1292,20 @@ async function runDirectorAttackSimulate(args = {}) {
       }
 
       let ar = compute.actionResult;
-      // Pre-pass aggregator — `prePassives` arg simulates CONFIRM-stage
+      // Pre-pass aggregator — the `acceptReactions` arg simulates CONFIRM-stage
       // pill-accepts for `creature_will_deal_damage` reactions (Cheap Shot
       // family). Bonus damage is baked into perTargetResults before RESOLVE.
-      if (args.prePassives) {
+      if (args.acceptReactions) {
         try {
           const attackerActor = await fromUuid(args.attackerTokenUuid).then((d) => d?.actor ?? null).catch(() => null);
           if (attackerActor) {
-            ar = await applyPrePassivesToActionResult({
-              ar, attackerActor, prePassives: args.prePassives,
+            ar = await applyAcceptedReactionsToActionResult({
+              ar, attackerActor, accept: args.acceptReactions,
               dCombat: { round, currentTurnResolved: false },
               deps,
             });
           }
-        } catch (e) { console.warn(`${TAG} attack prePassives threw`, e); }
+        } catch (e) { console.warn(`${TAG} attack acceptReactions threw`, e); }
       }
       // Render-capture for this pass (post-roll, pre-RESOLVE). Non-fatal.
       try {

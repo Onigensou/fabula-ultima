@@ -896,7 +896,7 @@ export async function computeActionProfile(input) {
   if (Array.isArray(acceptedReactions) && acceptedReactions.length) {
     try {
       opsMap = await computeSenderDamageBonuses({
-        casterActor: liveAttacker, acceptedPrePassives: acceptedReactions,
+        casterActor: liveAttacker, acceptedCardReactions: acceptedReactions,
         dCombat: { round: ctx?.round ?? 0 },
       });
     } catch (e) { warn("computeActionProfile: computeSenderDamageBonuses threw", e); }
@@ -1224,7 +1224,7 @@ export async function buildActionViewFromAr(ar) {
 // buildPerTarget sees full affinity/condition/defense data even if the ar entry
 // was slim; the `redirectedFrom` swap marker is preserved across the re-snapshot
 // and re-attached to the flat output rows. `acceptedReactions` are the accepted
-// pre-passive candidates (their appliesToTargetUuids should already be refreshed
+// card-reaction candidates (their appliesToTargetUuids should already be refreshed
 // via skill-effects.refreshReactionSubjects). Returns the projected delta
 // (perTargetResults, damage, hitTokenUuids, …) or null on hard failure.
 export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null, grantOverride = null, defenseOverrides = null, damageOverrides = null } = {}) {

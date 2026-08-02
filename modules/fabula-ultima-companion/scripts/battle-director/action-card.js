@@ -1879,11 +1879,11 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
       : roll
         ? `<p><b>HR:</b> — (HR treated as 0)</p>`
         : `<p><b>HR:</b> — (no Check rolled)</p>`;
-  const prePassiveBonus = Number(damage.prePassiveBonus ?? 0) || 0;
+  const cardReactionBonus = Number(damage.cardReactionBonus ?? 0) || 0;
   const formula = roll?.isFumble
     ? `<p><b>Final:</b> — (fumble auto-misses)</p>`
-    : prePassiveBonus > 0
-      ? `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} + ${prePassiveBonus} (passive) = <b>${damage.finalIfHit ?? 0}</b></p>`
+    : cardReactionBonus > 0
+      ? `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} + ${cardReactionBonus} (passive) = <b>${damage.finalIfHit ?? 0}</b></p>`
       : `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} = <b>${damage.finalIfHit ?? 0}</b></p>`;
 
   // Per-source breakdown of where the base damage bonus came from. Same
@@ -3066,8 +3066,8 @@ function buildGuardCard({ attacker, coverTarget }) {
     : "";
 
   // Reaction surface is rendered uniformly by the central card spawner
-  // (via `payload.prePassives` → `buildReactionPillRow`). State-handlers
-  // CONFIRM populates `prePassives` for Guard via findPassiveCandidates
+  // (via `payload.cardReactions` → `buildReactionPillRow`). State-handlers
+  // CONFIRM populates `cardReactions` for Guard via findPassiveCandidates
   // with trigger `creature_guards`. No per-card duplication needed.
 
   return {
@@ -4006,7 +4006,7 @@ function buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish }) 
 // Build just the pill elements (no row wrapper) for a candidate list. Shared by
 // the initial row render and the cascade-injection append path so dynamically
 // added reactions (Bullet Break after Crossfire) render identically.
-function buildReactionPills(prePassives) {
+function buildReactionPills(cardReactions) {
   // Hide "off" (auto-rejected). Show "on" + "force" + "ask" — Force-mode
   // is engine-mandatory, no player decision, but the effect is often
   // player-meaningful (Bodyguard grants RS to all damage, etc.) so it
@@ -4017,7 +4017,7 @@ function buildReactionPills(prePassives) {
   // rows DO surface, rendered dimmed with the cost reason ("Low IP") so the
   // player sees the reaction exists and why they can't use it (vs it silently
   // vanishing).
-  const visible = prePassives.filter((p) =>
+  const visible = cardReactions.filter((p) =>
     p?.mode !== "off" && !(p?.available === false && p?.unavailableKind === "condition")
   );
   if (!visible.length) return "";
@@ -4124,8 +4124,8 @@ function buildReactionPills(prePassives) {
   }).join("");
 }
 
-function buildReactionPillRow(prePassives) {
-  const pillsHtml = buildReactionPills(prePassives);
+function buildReactionPillRow(cardReactions) {
+  const pillsHtml = buildReactionPills(cardReactions);
   if (!pillsHtml) return "";
   return `
     <div class="fud-bf-reactions-row">
@@ -4419,10 +4419,10 @@ export function composeActionCardObject({ kind, payload }) {
 // the other — that exact drift mislabeled a captured spell card's MDEF row as
 // "DEF" (skillType was missing from the harness payload). Callers override the
 // few fields they own/derive: CONFIRM swaps in the invoke-stamped attacker,
-// post-splice targets/perTargetResults, the live prePassives, and the
+// post-splice targets/perTargetResults, the live cardReactions, and the
 // onAddTargetApply callback; the harness uses these defaults as-is.
 // The exact set of (serializable, snapshot-only) fields the card builders read.
-// `prePassives` is handled separately (acceptedPrePassives fallback) and the live
+// `cardReactions` is handled separately (acceptedCardReactions fallback) and the live
 // `attackerActor` doc is deliberately NOT here — only buildEquipmentCard reads it,
 // and Equipment stays on the HTML-broadcast path (see projectActionCardRenderPayload
 // + ACTION_CARD_LOCAL_RENDER_KINDS). Keep this list and the builders' destructures
@@ -4433,6 +4433,10 @@ const ACTION_CARD_RENDER_KEYS = [
   // Guard / Study / Hinder / Item:
   "coverTarget", "target", "tier", "previousBest", "improved", "dl", "success",
   "itemCandidates", "ip",
+  // Does this action roll accuracy at all? The canonical capability flag — never
+  // re-derive it as kind==="Attack"||isCheck. Needed by the mid-card targeted
+  // re-derive to compute `defenseResolved` the same way CONFIRM does.
+  "canMiss",
   // Skill / Spell:
   "skillName", "skillImg", "skillType", "defenseTargetType", "skillRange",
   "skillTarget", "damageType", "hasDamage", "hasHealing", "rawCost",
@@ -4444,8 +4448,8 @@ const ACTION_CARD_RENDER_KEYS = [
 export function composeActionCardRenderPayload(ar) {
   const out = {};
   for (const k of ACTION_CARD_RENDER_KEYS) out[k] = ar[k];
-  out.prePassives = Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives
-    : (Array.isArray(ar.prePassives) ? ar.prePassives : []);
+  out.cardReactions = Array.isArray(ar.acceptedCardReactions) ? ar.acceptedCardReactions
+    : (Array.isArray(ar.cardReactions) ? ar.cardReactions : []);
   return out;
 }
 
@@ -4460,7 +4464,7 @@ const ACTION_CARD_LOCAL_RENDER_KINDS = new Set(["Attack", "Guard", "Study", "Hin
 // Display-only projection of a reaction candidate — exactly the fields
 // buildReactionPills reads. The full candidate carries GM-only resolution state
 // (payloadAtFire, chosen picks, callbacks) we must neither need nor ship.
-function projectPrePassiveForRender(p) {
+function projectCardReactionForRender(p) {
   return {
     rowKey: p?.rowKey ?? null,
     carrierUuid: p?.carrierUuid ?? null,
@@ -4487,8 +4491,8 @@ function projectActionCardRenderPayload(payload) {
   if (!payload) return null;
   const out = {};
   for (const k of ACTION_CARD_RENDER_KEYS) out[k] = payload[k];
-  out.prePassives = (Array.isArray(payload.prePassives) ? payload.prePassives : [])
-    .map(projectPrePassiveForRender);
+  out.cardReactions = (Array.isArray(payload.cardReactions) ? payload.cardReactions : [])
+    .map(projectCardReactionForRender);
   return out;
 }
 
@@ -4561,8 +4565,8 @@ function projectActionResultForRender(ar) {
 // byte-identical. Does not attach to the document (the caller owns placement +
 // the is-visible transition). Returns the root element and the initial pending-
 // reaction count (the GM gates Confirm / auto-resolve on it).
-function assembleActionCardRoot({ card, prePassives, rootId }) {
-  const list = Array.isArray(prePassives) ? prePassives : [];
+function assembleActionCardRoot({ card, cardReactions, rootId }) {
+  const list = Array.isArray(cardReactions) ? cardReactions : [];
   const askPassives = list.filter((p) => p?.mode === "ask" && p?.available !== false);
   const reactionRowHtml = list.length ? buildReactionPillRow(list) : "";
   // `initialPending` (ALL actionable ask pills) arms the GM's REACTION_CHOICE
@@ -4696,7 +4700,7 @@ export async function postActionCard({ director, kind, payload }) {
   const prior = _overlays.get(director.combatId);
   if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(director.combatId); }
 
-  // Pre-compute bonus from auto-accepted (on/force) pre-passives so the
+  // Pre-compute bonus from auto-accepted (on/force) card-reactions so the
   // damage header reflects passive bonuses before the player confirms.
   // "ask"-mode passives are uncertain — we don't pre-apply them to the header.
   // on AND force both auto-apply (isAutoFireReactionMode) — force is engine-
@@ -4704,14 +4708,14 @@ export async function postActionCard({ director, kind, payload }) {
   // Fire-and-forget: any throw leaves effectivePayload = payload (no bonus shown).
   let effectivePayload = payload;
   {
-    const autoPassives = (Array.isArray(payload?.prePassives) ? payload.prePassives : [])
+    const autoCardReactions = (Array.isArray(payload?.cardReactions) ? payload.cardReactions : [])
       .filter((p) => isAutoFireReactionMode(p?.mode) && p?.available !== false);
-    if (autoPassives.length && payload?.attackerActor && Array.isArray(payload?.perTargetResults)) {
+    if (autoCardReactions.length && payload?.attackerActor && Array.isArray(payload?.perTargetResults)) {
       try {
         const { computeSenderDamageBonuses } = await import("./skill-effects.js");
         const bonusMap = await computeSenderDamageBonuses({
           casterActor: payload.attackerActor,
-          acceptedPrePassives: autoPassives,
+          acceptedCardReactions: autoCardReactions,
           dCombat: director.dCombat,
         });
         if (bonusMap.size > 0) {
@@ -4722,12 +4726,12 @@ export async function postActionCard({ director, kind, payload }) {
               damage: {
                 ...payload.damage,
                 finalIfHit: (payload.damage.finalIfHit ?? 0) + maxBonus,
-                prePassiveBonus: maxBonus,
+                cardReactionBonus: maxBonus,
               },
             };
           }
         }
-      } catch (e) { warn("postActionCard: pre-passive bonus preview threw", e); }
+      } catch (e) { warn("postActionCard: card-reaction bonus preview threw", e); }
     }
   }
 
@@ -4798,7 +4802,7 @@ export async function postActionCard({ director, kind, payload }) {
   // a pill row with Apply/Skip buttons; on-mode is auto-accepted and
   // shown as a chip without buttons; off-mode is skipped (no pill).
   // Confirm is locked while any ask pill is undecided.
-  const prePassives = Array.isArray(payload?.prePassives) ? payload.prePassives : [];
+  const cardReactions = Array.isArray(payload?.cardReactions) ? payload.cardReactions : [];
   // Stamp each reaction candidate with the user who owns its REACTOR so
   // the mirror can gate Apply/Skip per-pill (a player applies only their
   // own creature's reactions). Self-reactions (no reactorActorUuid) react
@@ -4809,7 +4813,7 @@ export async function postActionCard({ director, kind, payload }) {
       ?? payload?.attackerActor?.uuid
       ?? payload?.attackerActorUuid
       ?? null;
-    for (const p of prePassives) {
+    for (const p of cardReactions) {
       try {
         p.reactorOwnerUserId = await resolveCardOwnerUserId(p.reactorActorUuid ?? attackerActorUuid);
       } catch { p.reactorOwnerUserId = null; }
@@ -4820,7 +4824,7 @@ export async function postActionCard({ director, kind, payload }) {
   // REACTION_CHOICE listener loop below so the owner can apply their own reactions;
   // the Confirm LOCK itself is driven by the third-party-only counter baked into
   // the card's data-fud-reactions-pending attribute (see assembleActionCardRoot).
-  const { root, initialPending } = assembleActionCardRoot({ card, prePassives, rootId: ROOT_ID });
+  const { root, initialPending } = assembleActionCardRoot({ card, cardReactions, rootId: ROOT_ID });
   document.body.appendChild(root);
   requestAnimationFrame(() => root.classList.add("is-visible"));
 
@@ -4966,7 +4970,7 @@ export async function postActionCard({ director, kind, payload }) {
     // auto-rejected and not rendered. Both decisions are recorded
     // immediately so the resolve path sees the full picture.
     const reactionDecisionMap = new Map(); // rowKey:carrierUuid → "apply"|"skip"
-    for (const p of prePassives) {
+    for (const p of cardReactions) {
       const key = `${p.rowKey}:${p.carrierUuid}`;
       // "on" + "force" both auto-apply (force is engine-mandatory, on
       // is player-set auto-apply; same effect on the decision map) — but NOT
@@ -4979,7 +4983,7 @@ export async function postActionCard({ director, kind, payload }) {
 
     function snapshotReactionDecisions() {
       const out = [];
-      for (const p of prePassives) {
+      for (const p of cardReactions) {
         const key = `${p.rowKey}:${p.carrierUuid}`;
         const decision = reactionDecisionMap.get(key) ?? "skip";
         out.push({
@@ -5163,7 +5167,7 @@ export async function postActionCard({ director, kind, payload }) {
         const se = await import("./skill-effects.js?cb=" + Date.now());
         // Ledger = accepted candidates that represent a completed skill.
         const ledger = [];
-        for (const p of prePassives) {
+        for (const p of cardReactions) {
           if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
           ledger.push({
             reactorActorUuid: p.reactorActorUuid ?? payload?.attackerActor?.uuid ?? null,
@@ -5186,7 +5190,7 @@ export async function postActionCard({ director, kind, payload }) {
             resolveActorByUuid: (u) => fromUuid(u).catch(() => null),
           },
         });
-        const { added } = rd.diffCandidates(prePassives, derived);
+        const { added } = rd.diffCandidates(cardReactions, derived);
         if (!added.length) return;
         const cascadeAttackerUuid = payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null;
         for (const c of added) {
@@ -5199,7 +5203,7 @@ export async function postActionCard({ director, kind, payload }) {
             ? ownerUserIdForActor(reactor)
             : await resolveCardOwnerUserId(cascadeAttackerUuid);
           cascadeFiredKeys.add(rd.candidateKey(c));
-          prePassives.push(c);
+          cardReactions.push(c);
         }
         appendCascadePills(added);
         log(`injectCascadeReactions: +${added.length} cascade reaction(s) [${added.map((c) => c.carrierName).join(", ")}]`);
@@ -5216,17 +5220,31 @@ export async function postActionCard({ director, kind, payload }) {
     // + diffCandidates so a reaction (rowKey:carrier:reactor) is offered at most
     // once — NO REUSE — which also makes any redirect→react→redirect chain
     // self-terminate.
-    async function injectTargetedReactionsForNewTargets(mutTargets, originalRows) {
+    // `recomputedRows` = the POST-mutation per-target results. Needed so each new
+    // subject carries its own predicted `incomingDamage` (INCOMING_DAMAGE) — a
+    // redirect destination's damage only exists after the mutation recomputes, so
+    // it cannot come from the CONFIRM-time snapshot.
+    async function injectTargetedReactionsForNewTargets(mutTargets, originalRows, recomputedRows) {
       try {
         const rd = await import("./reaction-derive.js?cb=" + Date.now());
         const se = await import("./skill-effects.js?cb=" + Date.now());
         const origActorUuids = new Set((originalRows ?? []).map((r) => r?.actorUuid).filter(Boolean));
+        // Predicted damage per subject, keyed by token then actor — same shape
+        // and same miss/heal-means-zero rule as the CONFIRM scan, so a beneficial
+        // or missed action leaves INCOMING_DAMAGE at 0 and a "when you take
+        // damage" reaction stays dormant instead of burning its charge.
+        const rows = Array.isArray(recomputedRows) ? recomputedRows : [];
+        const damageFor = (t) => {
+          const row = rows.find((r) => (t?.tokenUuid && r?.tokenUuid === t.tokenUuid))
+            ?? rows.find((r) => r?.actorUuid === t?.actorUuid);
+          return row?.hit ? Math.max(0, Number(row.damage ?? 0) || 0) : 0;
+        };
         // New subjects = entries a mutation brought in: a redirected slot (carries
         // redirectedFrom), an add_target splash (addedVia), or an actorUuid absent
         // from the pre-mutation rows.
         const newSubjects = (mutTargets ?? [])
           .filter((t) => t && (t.redirectedFrom || t.addedVia || !origActorUuids.has(t.actorUuid)))
-          .map((t) => ({ actorUuid: t.actorUuid, tokenUuid: t.tokenUuid }));
+          .map((t) => ({ actorUuid: t.actorUuid, tokenUuid: t.tokenUuid, incomingDamage: damageFor(t) }));
         if (!newSubjects.length) return;
 
         const attackerActorUuid = payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null;
@@ -5246,6 +5264,8 @@ export async function postActionCard({ director, kind, payload }) {
           actionIntent: payload?.actionIntent ?? (kind === "Attack" ? "harmful" : null),
           actionKind: kind,
           actionName: payload?.skillName ?? payload?.weapon?.name ?? kind,
+          // No `?? kind` fallback — see buildTargetedPayload.
+          sourceSkillName: payload?.skillName ?? payload?.weapon?.name ?? null,
           checkTotal: payload?.roll?.total ?? payload?.checkTotal ?? null,
           isCrit: !!payload?.roll?.isCrit,
           isFumble: !!payload?.roll?.isFumble,
@@ -5253,13 +5273,23 @@ export async function postActionCard({ director, kind, payload }) {
           weaponType: payload?.weapon?.weaponType ?? null,
           damageType: payload?.damage?.element ?? payload?.damageType ?? null,
           targetTokenUuids: (mutTargets ?? []).map((t) => t?.tokenUuid).filter(Boolean),
+          // Which Defense this action's Check resolves against — SAME derivation
+          // as the CONFIRM scan (explicit defense_target_type wins, else Spell →
+          // MDEF), gated on canMiss so a no-Check action reads null. Feeds
+          // ATTACK_VS_DEF / ATTACK_VS_MDEF for the newly-targeted creature.
+          defenseResolved: payload?.canMiss
+            ? (resolvesVsMagicDefense({
+                defenseTargetType: payload?.defenseTargetType,
+                isSpell: String(payload?.skillType ?? "").toLowerCase() === "spell",
+              }) ? "mdef" : "def")
+            : null,
         };
 
         const derived = await rd.deriveTargetedCandidates({
           newSubjects, reactorActors, cardCtx, firedKeys: cascadeFiredKeys,
           deps: { findPassiveCandidates: se.findPassiveCandidates },
         });
-        const { added } = rd.diffCandidates(prePassives, derived);
+        const { added } = rd.diffCandidates(cardReactions, derived);
         if (!added.length) return;
         for (const c of added) {
           // Per-pill owner (see initial enrichment) — these are reactions of
@@ -5268,7 +5298,7 @@ export async function postActionCard({ director, kind, payload }) {
             c.reactorOwnerUserId = await resolveCardOwnerUserId(c.reactorActorUuid ?? attackerActorUuid);
           } catch { c.reactorOwnerUserId = null; }
           cascadeFiredKeys.add(rd.candidateKey(c));
-          prePassives.push(c);
+          cardReactions.push(c);
         }
         appendCascadePills(added);
         log(`injectTargetedReactionsForNewTargets: +${added.length} reaction(s) for ${newSubjects.length} newly-targeted creature(s)`);
@@ -5324,7 +5354,7 @@ export async function postActionCard({ director, kind, payload }) {
       // ("shared roll, post-roll pick") and returns their result rows. The rows
       // are appended to the result list. A cancelled / empty / unaffordable
       // pick leaves the pill actionable (cost-last-in-chain → nothing spent).
-      const addTargetCand = (prePassives ?? []).find(
+      const addTargetCand = (cardReactions ?? []).find(
         (p) => String(p.rowKey) === String(rowKey)
           && String(p.carrierUuid) === String(carrierUuid)
           && p._addTarget
@@ -5410,7 +5440,7 @@ export async function postActionCard({ director, kind, payload }) {
         // "aim vs free attack". The picks are cached on the candidate and
         // replayed at RESOLVE so nothing double-prompts; the chosen effects feed
         // the card's Effect panel below. Cancelling the menu rewinds the pill.
-        const cand = (prePassives ?? []).find(
+        const cand = (cardReactions ?? []).find(
           (p) => String(p.rowKey) === String(rowKey) && String(p.carrierUuid) === String(carrierUuid)
         );
         if (cand) {
@@ -5473,7 +5503,7 @@ export async function postActionCard({ director, kind, payload }) {
         // skip — clear any cached apply-click menu picks for this candidate,
         // re-run recompute (restores damage), and re-render the Effect panel
         // (drops chips for the now-skipped reaction).
-        const cand = (prePassives ?? []).find(
+        const cand = (cardReactions ?? []).find(
           (p) => String(p.rowKey) === String(rowKey) && String(p.carrierUuid) === String(carrierUuid)
         );
         if (cand) { cand.chosenMenuPicks = null; cand.previewEffects = null; cand.previewDamageNullified = false; }
@@ -5503,7 +5533,7 @@ export async function postActionCard({ director, kind, payload }) {
     function computeReactionEffectPreviewData() {
       const effects = [];
       let damageNullified = false;
-      for (const p of prePassives ?? []) {
+      for (const p of cardReactions ?? []) {
         if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
         if (p.previewDamageNullified) damageNullified = true;
         for (const e of (Array.isArray(p.previewEffects) ? p.previewEffects : [])) {
@@ -5552,7 +5582,7 @@ export async function postActionCard({ director, kind, payload }) {
       _previewInFlight = (async () => {
         try {
           const accepted = [];
-          for (const p of prePassives) {
+          for (const p of cardReactions) {
             const k = `${p.rowKey}:${p.carrierUuid}`;
             if (reactionDecisionMap.get(k) === "apply") accepted.push(p);
           }
@@ -5606,7 +5636,7 @@ export async function postActionCard({ director, kind, payload }) {
             // Check + damage descriptor fields that the Skill/Spell recompute
             // reads off the ar (describePrimary → ar.damageBonus; computeCheck →
             // ar.isCheck/checkBonus/rolledA1/rolledA2). Omitting them made an
-            // OFFENSIVE SPELL recompute (e.g. Glacies + a force prePassive like
+            // OFFENSIVE SPELL recompute (e.g. Glacies + a force card reaction like
             // Magical Artillery) lose `check.required` — so effectiveHr fell to 0
             // AND the +N damage bonus dropped — collapsing the row to damage 0,
             // which renders "NO EFFECT" despite the hit. The Attack path reads
@@ -6007,7 +6037,7 @@ export async function postActionCard({ director, kind, payload }) {
           // Touches PILLS only (siblings of `.fud-bf-body`), so running it after
           // the body paint above cannot disturb the surfaces just rendered.
           if (!mutationResult.negated) {
-            try { await injectTargetedReactionsForNewTargets(mutTargets, original); }
+            try { await injectTargetedReactionsForNewTargets(mutTargets, original, recomputed); }
             catch (e) { warn("recomputeTargetPreviews: targeted re-scan threw", e); }
           }
 
@@ -6016,7 +6046,7 @@ export async function postActionCard({ director, kind, payload }) {
           // the Confirm lock (the data-fud-reactions-pending counter). Uses the pure
           // DOM-commit (NOT recordPillDecision) to avoid re-entering this recompute.
           if (mutationResult.negated || mutationResult.accuracyOverride?.blocked) {
-            for (const p of prePassives ?? []) {
+            for (const p of cardReactions ?? []) {
               if (p.mode !== "ask") continue;
               const k = `${p.rowKey}:${p.carrierUuid}`;
               if (reactionDecisionMap.has(k)) continue;   // already decided (incl. the negate/block pill itself)
@@ -6073,7 +6103,7 @@ export async function postActionCard({ director, kind, payload }) {
     // panel. Fire-and-forget so the card return isn't blocked.
     (async () => {
       try {
-        for (const p of prePassives ?? []) {
+        for (const p of cardReactions ?? []) {
           if (!isAutoFireReactionMode(p?.mode)) continue;
           if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
           if (Array.isArray(p.chosenMenuPicks)) continue;   // already resolved
@@ -6949,7 +6979,7 @@ export async function postActionCard({ director, kind, payload }) {
           SimMode.setElementFallback(bestElementForCard(cardAr, director));
 
           const decisions = decideReactions({
-            prePassives,
+            cardReactions,
             ar: cardAr,
             director,
             decided: new Set(reactionDecisionMap.keys()),
@@ -7354,7 +7384,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
         if (built) {
           const { root } = assembleActionCardRoot({
             card: built,
-            prePassives: menuSpec.renderPayload.prePassives,
+            cardReactions: menuSpec.renderPayload.cardReactions,
             rootId: ROOT_ID,
           });
           cardHtml = root.outerHTML;

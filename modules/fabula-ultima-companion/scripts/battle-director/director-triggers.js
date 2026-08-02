@@ -90,6 +90,20 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // The post-resolve `creature_deals_damage` trigger stays for
   // Drain-Spirit-style grants that fire after damage commits.
   "creature_will_deal_damage",
+  // Performer-side "I acted" hook — fires DURING the action card, scanned twice
+  // at CONFIRM (once for the action-taker's own riders, once over bystanders who
+  // can react to someone else acting). Barrage / Adversity / Divination.
+  "creature_performs_action",
+  // Defender-side "something targeted me" hook — fires DURING the action card,
+  // scanned per target × per combatant, plus a mid-card re-derive for creatures
+  // dragged in by a redirect / add_target. Protect / Ninja Log / Stubborn Scion.
+  //
+  // Both of these were absent from this file entirely until 2026-08-02 while
+  // driving three of the seven card scans. The lint never flagged it because its
+  // vocabulary is the UNION of this set and the legacy `oni.ReactionTriggers`
+  // registry, which already carried them — so this is a consistency fix, not a
+  // behavioural one.
+  "creature_targeted_by_action",
   // Post-Guard trigger — fires once per Guard action with whether the
   // guarder covered an ally. Bodyguard (Guardian Core RAW p.197) listens
   // with `didCoverAlly === true` to apply RS-to-all-affinities AE to the
@@ -187,9 +201,16 @@ export const STANDALONE_TRIGGERS = new Set([
 // ── Phase classification — single source of truth for UI routing ────
 //
 // Locked 2026-05-30: the reaction system runs TWO co-existing UIs,
-// not one. Each trigger declares which phase it belongs to; the FSM
-// dispatch site reads this to pick the UI without per-handler
-// conditionals.
+// not one. Each trigger declares which phase it belongs to.
+//
+// This map is ENFORCED, not decorative (2026-08-02): every card scan in
+// state-handlers CONFIRM funnels its candidates through
+// `addCardReactions(trigger, cands)`, which warns if `phaseOf(trigger)`
+// is not "pre-resolve". It does NOT dispatch — each scan still builds its
+// own payload and walks its own iteration shape, because the payload IS
+// the per-trigger identifier vocabulary and can't be parameterized. See
+// [[project-card-reaction-scan-registry]] for what a real registry would
+// have to absorb.
 //
 //   "pre-resolve"  — the trigger fires DURING an action card window
 //                    and can manipulate the action's values. UI:
@@ -216,6 +237,13 @@ export const STANDALONE_TRIGGERS = new Set([
 // Authoring: when adding a NEW trigger to DIRECTOR_NATIVE_TRIGGERS,
 // also add it here. The lint enforces every native trigger has a
 // declared phase (see runTemplateEngineEnums).
+//
+// ⚠ The reverse does NOT hold: `creature_performs_action` and
+// `creature_targeted_by_action` are declared here (they drive three of
+// CONFIRM's card scans) but are deliberately NOT in
+// DIRECTOR_NATIVE_TRIGGERS — that set feeds reaction-config-lint's
+// accepted trigger vocabulary for authored rows, so adding them is a
+// separate, content-affecting decision.
 export const TRIGGER_PHASE = Object.freeze({
   // Pre-resolve — pills on the action card.
   "caster_short_on_mp":         "pre-resolve",
@@ -225,13 +253,24 @@ export const TRIGGER_PHASE = Object.freeze({
   // Card-scoped: cascades into the live action-card pill list via re-derive when
   // a reaction completes during the card's reaction window (Bullet Break).
   "creature_completes_skill":   "pre-resolve",
+  // Performer-side ("I acted") + observer variant. Scanned twice at CONFIRM —
+  // once for the action-taker's own riders, once over the bystanders — both
+  // landing on the same card. Barrage / Adversity / Divination ride this.
+  "creature_performs_action":   "pre-resolve",
+  // Defender-side ("something targeted me"). Scanned at CONFIRM per target ×
+  // per combatant, plus the mid-card re-derive in reaction-derive.js. Protect /
+  // Ninja Log / Stubborn Scion ride this.
+  "creature_targeted_by_action": "pre-resolve",
+  // Named "post-Guard" by RAW shape, but it is SCANNED AT CONFIRM and its rows
+  // surface as pills on the Guard action card (Bodyguard's "Active" chip), so
+  // its UI phase is pre-resolve. Was mis-declared post-resolve until 2026-08-02.
+  "creature_guards":            "pre-resolve",
   // Post-resolve — token-anchored menu, fires after action commits.
   "creature_deals_damage":      "post-resolve",
   "creature_completes_attack":  "post-resolve",
   "creature_completes_item":    "post-resolve",
   "creature_completes_action":  "post-resolve",
   "creature_takes_damage":      "post-resolve",
-  "creature_guards":            "post-resolve",
   // Resource-ledger family (post-commit, subject = the changed creature).
   "creature_lose_resource":     "post-resolve",
   "creature_gain_resource":     "post-resolve",

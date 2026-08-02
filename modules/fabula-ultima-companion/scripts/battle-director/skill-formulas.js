@@ -554,6 +554,15 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Fugitive Experiment ("suffer 1d8 Instability to ignore a ≤100 HP/MP/IP cost").
       // 0 outside that trigger (payload doesn't carry it), so a stray gate is safe.
       case "ACTION_COST_HP": return Math.max(0, Number(payload?.costHp ?? 0) || 0);
+      // ⚠ AMOUNT, NOT A FLAG. `ACTION_COST_MP` parses like "does the action cost
+      // MP?" but it returns the cost itself. For "does it cost anything",
+      // compare: `> 0` (Fugitive Experiment:
+      // `ACTION_COST_TOTAL > 0 && ACTION_COST_TOTAL <= 100`).
+      //
+      // CANONICAL family: ACTION_COST_HP / _MP / _IP / _TOTAL, all reading
+      // `costHp`/`costMp`/`costIp` off the shared actionBase. The legacy
+      // `ACTION_MP_COST` spelling (and its rival `actionMpCost` payload field)
+      // was the odd one out; both were collapsed into this family 2026-08-02.
       case "ACTION_COST_MP": return Math.max(0, Number(payload?.costMp ?? 0) || 0);
       case "ACTION_COST_IP": return Math.max(0, Number(payload?.costIp ?? 0) || 0);
       case "ACTION_COST_TOTAL":
@@ -1042,13 +1051,17 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "ACTION_ROLLS_ACCURACY": {
         return payload?.actionCanMiss === true ? 1 : 0;
       }
-      // The in-flight action's native MP cost (printed/serialized), stamped on the
-      // creature_will_deal_damage payload. Lets a damage-window cost reaction
-      // (Cataclysm's overcharge) gate affordability against the FULL resulting
-      // cost — `CUR_MP >= ACTION_MP_COST + <overcharge>` — since the overcharge is
-      // folded into the spell's single (clamping) debit. 0 outside that context.
+      // ⚠ DEPRECATED 2026-08-02 — use ACTION_COST_MP. Same number, canonical
+      // family name (ACTION_COST_HP/_MP/_IP/_TOTAL). Delegates rather than
+      // duplicating the read, so the two can never disagree again.
+      //
+      // The reader is KEPT deliberately, per the canon's transition-state rule
+      // ("drop the reader only after the sweep"). The in-world sweep covered
+      // Cataclysm, the only local user — but this world is shared with a co-dev
+      // whose authored rows aren't visible from here, and a dropped reader would
+      // silently read 0 rather than error. Remove once that's confirmed clear.
       case "ACTION_MP_COST":
-        return Number(payload?.actionMpCost ?? 0) || 0;
+        return Math.max(0, Number(payload?.costMp ?? 0) || 0);
       // 1 if the in-flight action is a FREE cast (a free_of_cost free action —
       // e.g. a Bimagus free spell). Lets Cataclysm exclude free casts (RAW: a
       // free spell "costs no MP", so its cost can't be increased). Stamped on the

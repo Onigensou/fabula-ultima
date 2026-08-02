@@ -330,7 +330,28 @@
     }
   }
 
+  // Re-entrancy guard. `pollInbox` awaits `handleRequest`, so one long request
+  // (a bench build, a 30-skill regression page) keeps a tick inside this
+  // function for minutes. The watchdog stamps staleness off `lastPollTickAt`,
+  // which only advances when a tick STARTS — so a legitimately-long request
+  // looks like a stalled chain, the watchdog re-arms, and a SECOND poll chain
+  // starts while the first is still mid-request. Two chains listing the same
+  // inbox is how one `bench` invocation built two "Regression Bench" scenes
+  // ~200ms apart (2026-08-02). Serialising here makes the overlap impossible;
+  // the watchdog's re-arm then just replaces the timer, which is harmless.
+  let polling = false;
+
   async function pollInbox() {
+    if (polling) return;
+    polling = true;
+    try {
+      return await pollInboxInner();
+    } finally {
+      polling = false;
+    }
+  }
+
+  async function pollInboxInner() {
     let listing;
     try {
       listing = await FilePicker.browse(SOURCE, inboxDir());
@@ -375,6 +396,10 @@
       } catch (e) {
         console.error(`${TAG} request handler threw`, e, fileUrl);
       }
+      // A long request is PROGRESS, not a stall. Without this the watchdog
+      // (stale at 60s, measured from the last tick START) fires mid-request and
+      // re-arms the poll chain — see the re-entrancy note above.
+      lastPollTickAt = Date.now();
     }
   }
 
@@ -771,6 +796,35 @@
     await boot();
   }
 
+  // Quarantine every request already sitting in the inbox at boot. Such a
+  // request was written by a client of a PREVIOUS bridge session; that client
+  // is gone (or has long since timed out), so nobody is waiting on the result —
+  // but re-running it would re-apply a world mutation. Observed 2026-08-02: a
+  // headless client killed mid-run left two `req-rg-*.json` behind, and the
+  // next boot replayed a bench build, creating a SECOND "Regression Bench"
+  // scene ~200ms after the legitimate one (which then made `teardown` refuse:
+  // "2 scenes named … — refusing to guess").
+  //
+  // The pre-existing outbox dedup (skip when res-<id>.json exists) does not
+  // cover this: it only helps while the RESPONSE file survives, and a client
+  // that deletes the res but dies before deleting the req — or one killed
+  // between the two unlinks — leaves exactly the replayable state.
+  //
+  // Marking them processed (rather than deleting) keeps the files around for
+  // post-mortem, and the ordinary FIFO eviction cleans the set up later.
+  async function quarantineStaleInbox() {
+    let listing = null;
+    try { listing = await FilePicker.browse(SOURCE, inboxDir()); }
+    catch { return; }
+    const stale = (listing?.files ?? []).filter(f => /\/req-[A-Za-z0-9_-]+\.json$/.test(f));
+    if (!stale.length) return;
+    for (const fileUrl of stale) markProcessed(fileUrl);
+    console.warn(
+      `${TAG} quarantined ${stale.length} stale inbox request(s) from a previous session — NOT replayed: `
+      + stale.map(f => f.split("/").pop()).join(", ")
+    );
+  }
+
   async function boot() {
     await ensureDir(inboxDir());
     await ensureDir(outboxDir());
@@ -780,6 +834,10 @@
     lastActivityAt = Date.now();
     lastHeartbeatAt = Date.now();
     lastPollTickAt = 0;
+
+    // MUST run before the first poll — otherwise the poll loop picks the
+    // leftovers up and re-executes them.
+    await quarantineStaleInbox();
 
     await writeHeartbeat();
 

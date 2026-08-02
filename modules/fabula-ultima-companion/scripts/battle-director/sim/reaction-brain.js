@@ -434,11 +434,11 @@ const POLICIES = {
 // Decide every UNDECIDED (i.e. ask-mode) pill on this card. Auto-fire ("on"/
 // "force") and "off" pills are already resolved by the card itself and are not
 // ours to touch. Returns [{ rowKey, carrierUuid, decision, hint }].
-export function decideReactions({ prePassives, ar, director, decided }) {
+export function decideReactions({ cardReactions, ar, director, decided }) {
   const out = [];
   const fallback = SimMode.config?.reactions === "apply" ? "apply" : "skip";
 
-  for (const p of prePassives ?? []) {
+  for (const p of cardReactions ?? []) {
     const key = `${p.rowKey}:${p.carrierUuid}`;
     if (decided?.has(key)) continue;          // auto-fire / off — already settled
 

@@ -43,10 +43,33 @@ if (!api?.runDirectorSkillCompute) {
   return { ok: false, error: "director test harness not registered (FUCompanion.api.test missing)" };
 }
 
-const scene = (sceneName && game.scenes.find((s) => s.name === sceneName))
+// An EXPLICIT --scene that doesn't exist must fail loudly. Falling back to the
+// active scene here produced a badly misattributed error: the run reported
+// `dummy "X" not found on scene "Dragonslayer Title"` when the real problem was
+// that "Regression Bench" didn't exist at all — sending you looking for a
+// missing token instead of a missing scene.
+const requestedScene = sceneName ? game.scenes.find((s) => s.name === sceneName) : null;
+if (sceneName && !requestedScene) {
+  return { ok: false, error: `requested scene "${sceneName}" does not exist (run \`bench\` first, or drop --scene to use the active one)` };
+}
+const scene = requestedScene
   || game.scenes.find((s) => s.active)
   || game.scenes.find((s) => s.name === "Training Ground");
 if (!scene) return { ok: false, error: "no roster scene (pass sceneName, or activate one)" };
+
+// The roster scene MUST be the CANVAS scene. The harness resolves
+// `target_ref: "self"` (and other placeable lookups) through `canvas`, so
+// collecting against a non-canvas scene silently no-ops every self-targeting
+// effect — a whole class of skills fingerprints as "did nothing" instead of
+// erroring. This bit us after a client restart reset the canvas: `bench` builds
+// the scene but never views it. See the `skill-test` memory's canvas-scene
+// warning. Idempotent — a no-op when it's already the viewed scene.
+if (canvas?.scene?.id !== scene.id) {
+  try { await scene.view(); }
+  catch (e) {
+    return { ok: false, error: `could not view scene "${scene.name}" (needed: the roster scene must be the canvas scene): ${e?.message ?? e}` };
+  }
+}
 
 const toks = Array.from(scene.tokens).filter((t) => t.actor);
 

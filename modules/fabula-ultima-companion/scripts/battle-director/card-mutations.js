@@ -1609,7 +1609,7 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
     const mutatedAr = { ...ar, roll: mut.roll ?? ar.roll, targets: mutatedTargets, perTargetResults };
     if (attackerActor) {
       const { refreshReactionSubjects } = await import("./skill-effects.js" + sfx);
-      try { await refreshReactionSubjects({ acceptedPrePassives: accepted, ar: mutatedAr, attackerActor }); }
+      try { await refreshReactionSubjects({ acceptedCardReactions: accepted, ar: mutatedAr, attackerActor }); }
       catch (e) { warn("applyTargetSetMutation: refreshReactionSubjects threw", e); }
     }
     const { recomputeActionProfile } = await import("./action-profile.js" + sfx);
@@ -1697,7 +1697,7 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
 // performer-side candidate anyway (they gate on `reactorActorUuid`, which a
 // self-reaction doesn't have) — so the preview and the commit compose the SAME
 // surcharge from the same rows.
-export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives, remotePrompt = null, costOnlyAccepted = null) {
+export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactions, remotePrompt = null, costOnlyAccepted = null) {
   const targets = Array.isArray(arSnapshot.targets) ? [...arSnapshot.targets] : [];
   const perTargets = Array.isArray(arSnapshot.perTargetResults) ? [...arSnapshot.perTargetResults] : [];
   // `remotePrompt` rides on the mutation ctx so the redirect/add_target chain
@@ -1730,7 +1730,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
   // override for the card UI. RESOLVE honors `ar.negated` to skip the outcome +
   // effect/reaction firing. Short-circuits the other phases (they're moot).
   let negated = false;
-  for (const cand of acceptedPrePassives ?? []) {
+  for (const cand of acceptedCardReactions ?? []) {
     const effectTable = await readEffectTableForCandidate(cand);
     if (!effectTable) continue;
     const rows = expandEffectChain(effectTable, cand.ref);
@@ -1760,7 +1760,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
   // today — `reactorActorUuid` is the discriminator). A cancelled
   // picker short-circuits the whole pipeline so the caller can revert
   // the provisional pill decision.
-  for (const cand of acceptedPrePassives ?? []) {
+  for (const cand of acceptedCardReactions ?? []) {
     if (!cand?.reactorActorUuid) continue;
     const effectTable = await readEffectTableForCandidate(cand);
     if (!effectTable) continue;
@@ -1791,7 +1791,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
   // here — the latter carry no `reactorActorUuid` (only a carrier), so gate on
   // having a carrier and let the reactor fall back to the action-taker inside
   // applyAdjustAccuracyMutation.
-  for (const cand of acceptedPrePassives ?? []) {
+  for (const cand of acceptedCardReactions ?? []) {
     if (!cand?.reactorActorUuid && !cand?.carrierUuid) continue;
     const effectTable = await readEffectTableForCandidate(cand);
     if (!effectTable) continue;
@@ -1848,7 +1848,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
   // debit). ONLY adjust_cost is taken from the menu expansion — the picked
   // option's adjust_damage is handled by computeSenderDamageBonuses, and rows
   // already reachable via the plain chain were handled in Phase 2 (skipped here).
-  for (const cand of acceptedPrePassives ?? []) {
+  for (const cand of acceptedCardReactions ?? []) {
     if (!Array.isArray(cand?.chosenMenuPicks) || !cand.chosenMenuPicks.length) continue;
     const effectTable = await readEffectTableForCandidate(cand);
     if (!effectTable) continue;
@@ -1907,7 +1907,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
   // the locked roll. The grappler's Grappling AE (self reaction on
   // creature_targeted_by_action) is the only producer today; Barrage's
   // attacker-side add_target is tagged `_addTarget` and excluded upstream.
-  mutationsApplied += await runAddTargetPhase(ctx, acceptedPrePassives);
+  mutationsApplied += await runAddTargetPhase(ctx, acceptedCardReactions);
 
   return {
     targets: ctx.targets,

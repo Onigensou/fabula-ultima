@@ -62,7 +62,7 @@ import { rollCheck, checkVsThreshold } from "./check.js";
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
 import { dispatchStandaloneTrigger, clearAllStandaloneMenus } from "./standalone-reactions.js";
-import { STANDALONE_TRIGGERS } from "./director-triggers.js";
+import { STANDALONE_TRIGGERS, phaseOf } from "./director-triggers.js";
 import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, topIsResolveDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 // Grappled (Advanced Debuff) — turn-start break-free helpers.
 import { isGrappled, breakFree } from "./grappled.js";
@@ -422,7 +422,7 @@ async function resolveAction(director, ar, opts = {}) {
   //     completes_attack / _spell / action-kind). The card already shows "Blocked"
   //     with all per-target hits zeroed.
   if (ar.negated) {
-    const accepted = Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives : [];
+    const accepted = Array.isArray(ar.acceptedCardReactions) ? ar.acceptedCardReactions : [];
     if (accepted.length) {
       const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
       const negPayload = {
@@ -444,7 +444,7 @@ async function resolveAction(director, ar, opts = {}) {
             if (cand.payloadAtFire) firePayload = cand.payloadAtFire;
           }
           await firePreAcceptedCandidate({ director, casterActor: fireActor, candidate: cand, payload: firePayload });
-        } catch (e) { warn(`resolveAction(negated): prePassive "${cand?.carrierName}" threw`, e); }
+        } catch (e) { warn(`resolveAction(negated): card reaction "${cand?.carrierName}" threw`, e); }
       }
     }
     log(`resolveAction: ${ar.kind} by ${casterActor.name} NEGATED — fired accepted reactions, skipped outcome + post-resolve triggers`);
@@ -890,7 +890,7 @@ async function resolveAction(director, ar, opts = {}) {
     subjectActorUuid: hpLossTargetActorUuids.length === 1 ? hpLossTargetActorUuids[0] : null,
     subjectTokenUuid: hpLossTargetTokenUuids.length === 1 ? hpLossTargetTokenUuids[0] : null,
   };
-  const accepted = Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives : [];
+  const accepted = Array.isArray(ar.acceptedCardReactions) ? ar.acceptedCardReactions : [];
   if (accepted.length) {
     const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
     for (const cand of accepted) {
@@ -904,7 +904,7 @@ async function resolveAction(director, ar, opts = {}) {
         // families — Protect, completes_spell — never set this field, so they
         // are unaffected.)
         if (Array.isArray(cand?.appliesToTargetUuids) && cand.appliesToTargetUuids.length === 0) {
-          log(`resolveAction: prePassive "${cand?.carrierName}" not fired — 0 hit targets (no cost/effect)`);
+          log(`resolveAction: card reaction "${cand?.carrierName}" not fired — 0 hit targets (no cost/effect)`);
           continue;
         }
         // Third-party reactions (Protect on an Attack(ally) card) carry
@@ -933,7 +933,7 @@ async function resolveAction(director, ar, opts = {}) {
         await firePreAcceptedCandidate({
           director, casterActor: fireActor, candidate: cand, payload: firePayload,
         });
-      } catch (e) { warn(`Skill resolve: prePassive "${cand?.carrierName}" threw`, e); }
+      } catch (e) { warn(`Skill resolve: card reaction "${cand?.carrierName}" threw`, e); }
     }
   }
 
@@ -1074,7 +1074,7 @@ async function resolveAction(director, ar, opts = {}) {
   //    actions don't fire this trigger. Queued for post-save firing
   //    same as creature_deals_damage.
   if (String(skill?.system?.props?.skill_type ?? "").toLowerCase() === "spell") {
-    const evaluated = Array.isArray(ar.evaluatedPrePassives) ? ar.evaluatedPrePassives : [];
+    const evaluated = Array.isArray(ar.evaluatedCardReactions) ? ar.evaluatedCardReactions : [];
     queuePostResolveTrigger(director, {
       casterActor,
       trigger: "creature_completes_spell",
@@ -4418,33 +4418,118 @@ const Confirm = {
 
     }
 
-    // Pre-resolve passive evaluation — "during action card" reactions
-    // that manipulate the active action's values (Healing Power,
-    // Support Magic, etc.). Each candidate gets a pill on the action
-    // card so the player can opt in/out BEFORE Confirm. The decisions
-    // are stashed in actionResult.acceptedPrePassives, and RESOLVE
-    // applies them via firePreAcceptedCandidate. The post-resolve
-    // `creature_completes_spell` dispatcher at line ~387 then skips
-    // any candidate already evaluated here (no double-fire).
+    // CARD REACTIONS — the pre-resolve surface. "During action card"
+    // reactions that manipulate the ACTIVE action's values (Healing Power,
+    // Support Magic, Cheap Shot, Protect, …). Each candidate gets a pill on
+    // the action card so the player can opt in/out BEFORE Confirm. The
+    // decisions are stashed in actionResult.acceptedCardReactions, and
+    // RESOLVE applies them via firePreAcceptedCandidate. The post-resolve
+    // dispatcher then skips anything already in evaluatedCardReactions
+    // (no double-fire).
     //
-    // Currently scoped to Spell-type actions whose trigger matches
-    // `creature_completes_spell` (the only canonically pre-resolve
-    // trigger in the system today). The classification should grow to
-    // a trigger-phase registry as more pre-resolve triggers land
-    // (caster_short_on_mp is already pre-resolve via the cost gate;
-    // start_of_turn etc. are standalone, no card).
-    let prePassives = [];
+    // The scans below are the CONFIRM-stage producers of this list (the live
+    // array is also appended to mid-card by action-card's reactive re-derive —
+    // see reaction-derive.js). Each scan owns its payload builder and its
+    // iteration shape (action-level / per-target aggregate / per-target ×
+    // per-combatant) — the payload IS that trigger's identifier vocabulary, so
+    // it can't be parameterized into a generic dispatcher. See
+    // [[project-card-reaction-scan-registry]].
+    //
+    // What IS shared is the funnel: every scan pushes through
+    // `addCardReactions(trigger, cands)`, which
+    //   1. asserts the trigger is declared "pre-resolve" in TRIGGER_PHASE —
+    //      so director-triggers.js is enforced rather than decorative, and a
+    //      new scan on an undeclared/mis-declared trigger warns loudly
+    //      instead of diverging silently; and
+    //   2. stamps `phaseTrigger` on each candidate, so a pill can be traced
+    //      back to the scan that produced it.
+    const cardReactions = [];
+    const addCardReactions = (trigger, cands) => {
+      if (phaseOf(trigger) !== "pre-resolve") {
+        warn(`CONFIRM: card scan uses "${trigger}", which is not declared "pre-resolve" in TRIGGER_PHASE `
+          + `(director-triggers.js). Its pills may be surfacing on the wrong UI — fix the phase map or the scan.`);
+      }
+      for (const cand of cands ?? []) {
+        if (!cand) continue;
+        cand.phaseTrigger = trigger;
+        cardReactions.push(cand);
+      }
+    };
+
+    // ── Shared ACTION-LEVEL payload base ────────────────────────────────
+    // Every scan below spreads this FIRST, then states its own keys — so an
+    // explicit key always wins and this can only FILL GAPS, never change a
+    // value a scan already sets. That is what makes it safe to add here.
+    //
+    // Why it exists: the payload is the per-trigger identifier vocabulary, and
+    // growing each scan's literal by hand meant a field added for one trigger
+    // was simply absent under the others, where the gate then FAILS CLOSED
+    // (reads 0 / never matches) with no error. Measured 2026-08-02:
+    // `skillTags`/`skillDuration` existed only on Item+Performer, `isCrit`/
+    // `isFumble` were missing from the damage window, `defenseResolved` existed
+    // only on the third-party scan. Verified 0 authored rows relied on those
+    // gaps, so filling them is behaviour-neutral for existing content and only
+    // unblocks future authoring.
+    //
+    // ONLY genuinely action-level facts belong here. Anything whose meaning
+    // shifts per scan — `sourceActorUuid` (attacker for performer-side scans,
+    // the SUBJECT for target-side ones), subject/target ids, per-target damage,
+    // costs, roll dice — must stay in the individual scans.
+    let actingSkillTags = "";
+    let actingSkillDuration = "";
+    try {
+      const actingSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
+      actingSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
+      actingSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
+    } catch (_) { /* noop — tags/duration are optional gates */ }
+    const actionBase = Object.freeze({
+      actionKind: ar.kind ?? null,
+      actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+      actionIsCheck: !!ar.isCheck,
+      actionCanMiss: !!ar.canMiss,
+      actionName: ar.skillName ?? ar.weapon?.name ?? ar.kind,
+      // No `?? kind` fallback: blank means "ambient" to the source-skill filter.
+      sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
+      skillTags: actingSkillTags,
+      skillDuration: actingSkillDuration,
+      isCrit: !!ar.roll?.isCrit,
+      isFumble: !!ar.roll?.isFumble,
+      checkTotal: Number(ar.roll?.total ?? 0) || 0,
+      weaponType: ar.weapon?.weaponType ?? null,
+      weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+      damageType: ar.damageType ?? ar.damage?.element ?? null,
+      skillUuid: ar.skillUuid ?? null,
+      weaponUuid: ar.weapon?.uuid ?? null,
+      actionIntent: ar.actionIntent,
+      // Native resource cost of the in-flight action. ONE canonical spelling for
+      // the whole family (`costHp`/`costMp`/`costIp`), read by ACTION_COST_HP /
+      // _MP / _IP / _TOTAL. The damage scan used to stamp a rival `actionMpCost`
+      // for the same number, which is how the identifier split into two names —
+      // living here means neither can drift again.
+      costHp: Number(ar.costSerialized?.hp ?? 0) || 0,
+      costMp: Number(ar.costSerialized?.mp ?? 0) || 0,
+      costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
+      // Which Defense the action's Check resolves against — null when it rolls
+      // no Check. Same derivation the hit test and card labels use.
+      defenseResolved: ar.canMiss
+        ? (resolvesVsMagicDefense({
+            defenseTargetType: ar.defenseTargetType,
+            isSpell: String(ar.skillType ?? "").toLowerCase() === "spell",
+          }) ? "mdef" : "def")
+        : null,
+    });
 
     // Spell-side dispatch — creature_completes_spell. Action-level (not
     // per-target). Healing Power + Support Magic chain off this.
     if (ar.kind === "Skill" && ar.skillType?.toLowerCase() === "spell" && attackerActor) {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();
-        prePassives = await findPassiveCandidates({
+        const spellCands = await findPassiveCandidates({
           casterActor: attackerActor,
           trigger: "creature_completes_spell",
           includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
           payload: {
+            ...actionBase,   // action-level defaults; every explicit key below overrides
             spellUuid: ar.skillUuid ?? null,
             spellName: ar.skillName ?? null,
             targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
@@ -4456,8 +4541,15 @@ const Confirm = {
             // (Advantage's "offensive spell only" self-consume) evaluates the
             // same way whether the row fires pre- or post-resolve.
             actionCanMiss: !!ar.canMiss,
+            // Acting skill name — `reaction_source_skill` FAILS CLOSED without it
+            // (passesMatchFilters rejects the row when the filter is set and this
+            // is blank), so a self-scoping row authored on this trigger could
+            // never fire. Was stamped only on the damage/performer/observer
+            // payloads until 2026-08-02.
+            sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
           },
         });
+        addCardReactions("creature_completes_spell", spellCands);
       } catch (e) {
         warn("CONFIRM: findPassiveCandidates threw", e);
       }
@@ -4486,6 +4578,7 @@ const Confirm = {
           trigger: "creature_uses_item",
           includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
           payload: {
+            ...actionBase,   // action-level defaults; every explicit key below overrides
             targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
             targets: (ar.targets ?? []).map((t) => t.tokenUuid),
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
@@ -4497,9 +4590,12 @@ const Confirm = {
             skillUuid: ar.skillUuid ?? null,
             skillTags: usedSkillTags,
             skillDuration: usedSkillDuration,
+            // See the spell scan: without this, `reaction_source_skill` can
+            // never match on this trigger.
+            sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
           },
         });
-        for (const cand of itemCands ?? []) prePassives.push(cand);
+        addCardReactions("creature_uses_item", itemCands);
       } catch (e) {
         warn("CONFIRM: creature_uses_item findPassiveCandidates threw", e);
       }
@@ -4555,11 +4651,12 @@ const Confirm = {
           // effect + any cost land solely on a hit (RAW: Warning Shot only
           // "counts" when it connects). ≥1 hit → fires ONCE for all hit
           // targets; full miss → pill shows but the chain is skipped at apply
-          // (see acceptedPrePassives gate in resolveAction).
+          // (see acceptedCardReactions gate in resolveAction).
           const matchedTarget = (ar.targets ?? []).find((t) => t?.actorUuid === subjectActorUuid);
           const subjectTokenUuid = entry.tokenUuid ?? matchedTarget?.tokenUuid ?? null;
 
           const payloadForTrigger = {
+            ...actionBase,   // action-level defaults; every explicit key below overrides
             subjectActorUuid,
             subjectTokenUuid,
             // The performing action's kind ("Attack" | "Skill"), so a
@@ -4573,11 +4670,11 @@ const Confirm = {
             // read 0 here, so a spell-gated damage reaction could never surface.
             actionSkillType: String(ar.skillType ?? "").toLowerCase(),
             actionIsCheck: !!ar.isCheck,
-            // The spell's native MP cost + whether this is a FREE cast — read by
-            // ACTION_MP_COST / ACTION_IS_FREE_CAST so a damage-window cost reaction
-            // (Cataclysm's overcharge → adjust_cost) can gate affordability against
-            // the full resulting cost and exclude free casts.
-            actionMpCost: Number(ar.costSerialized?.mp ?? 0) || 0,
+            // Whether this is a FREE cast — read by ACTION_IS_FREE_CAST so a
+            // damage-window cost reaction (Cataclysm's overcharge → adjust_cost)
+            // can exclude free casts. The MP cost itself now comes from
+            // `actionBase.costMp` (ACTION_COST_MP); the old rival `actionMpCost`
+            // field was retired 2026-08-02 — see skill-formulas' note.
             actionIsFreeCast: !!freeActions.get(ar.attacker?.actorId)?.freeOfCost,
             targets: allTargetUuids,
             hitTargets: hitTargetUuids,
@@ -4645,10 +4742,8 @@ const Confirm = {
             }
           }
         }
-        for (const cand of byKey.values()) {
-          delete cand._payloadFromHit;
-          prePassives.push(cand);
-        }
+        for (const cand of byKey.values()) delete cand._payloadFromHit;
+        addCardReactions("creature_will_deal_damage", byKey.values());
       } catch (e) {
         warn("CONFIRM: will_deal_damage dispatch threw", e);
       }
@@ -4680,6 +4775,7 @@ const Confirm = {
           performSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
         } catch (_) { /* noop */ }
         const performPayload = {
+          ...actionBase,   // action-level defaults; every explicit key below overrides
             sourceActorUuid: ar.attackerActorRef,
             subjectActorUuid: ar.attackerActorRef,
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
@@ -4772,7 +4868,7 @@ const Confirm = {
             if (twMode.startsWith("two-weapon")) continue;
             cand._addTarget = true;
           }
-          prePassives.push(cand);
+          addCardReactions("creature_performs_action", [cand]);
         }
       } catch (e) {
         warn("CONFIRM: creature_performs_action dispatch threw", e);
@@ -4805,6 +4901,7 @@ const Confirm = {
         const attackerActorUuid = attackerActor.uuid;
         const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
         const observerPayload = {
+          ...actionBase,   // action-level defaults; every explicit key below overrides
           // Subject = the performer. reaction_source (all/ally/enemy) keys off this;
           // check_reroll rerolls the action-taker, who IS the subject here.
           sourceActorUuid: attackerActorUuid,
@@ -4859,7 +4956,7 @@ const Confirm = {
             if (seenObs.has(dedup)) continue;
             seenObs.add(dedup);
             log(`CONFIRM: observer reaction matched — reactor=${reactor.name} skill=${cand.carrierName} (performer=${ar.attacker?.name ?? attackerActorUuid})`);
-            prePassives.push({
+            addCardReactions("creature_performs_action", [{
               ...cand,
               reactorActorUuid: reactor.uuid,
               reactorActorName: reactor.name,
@@ -4868,7 +4965,7 @@ const Confirm = {
               subjectActorUuid: attackerActorUuid,
               subjectTokenUuid: ar.attacker?.tokenUuid ?? null,
               payloadAtFire:    observerPayload,
-            });
+            }]);
           }
         }
       } catch (e) {
@@ -4895,6 +4992,8 @@ const Confirm = {
     // vs the reactor — Protect (`source: ally`) matches when T is
     // Blanche's ally. Dedup by (rowKey, carrierUuid, reactorUuid): a
     // bearer who could protect any of 3 allies still surfaces once.
+    // One contract check per card, not per (target × reactor).
+    let _targetedPayloadContractChecked = false;
     const fireCreatureTargetedByAction =
       attackerActor &&
       Array.isArray(ar.targets) &&
@@ -4953,6 +5052,7 @@ const Confirm = {
             ? Math.max(0, Number(subjectPt.damage ?? 0) || 0)
             : 0;
           const payloadForTrigger = {
+            ...actionBase,   // action-level defaults; every explicit key below overrides
             sourceActorUuid: subjectActorUuid,
             subjectActorUuid,
             subjectTokenUuid,
@@ -4963,6 +5063,13 @@ const Confirm = {
             actionIntent: effectiveIntent,
             actionKind: ar.kind,
             actionName: ar.skillName ?? ar.weapon?.name ?? ar.kind,
+            // The INCOMING action's skill/weapon name, so a defender-side row can
+            // scope itself with `reaction_source_skill` ("when targeted by <X>").
+            // That filter FAILS CLOSED without this field, so such a row could
+            // never fire on this trigger before 2026-08-02. Note `actionName`
+            // above falls back to ar.kind — this one must NOT, since a blank
+            // means "ambient, fire on any action" to the matcher.
+            sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
             // Roll result + weapon range threaded so post-roll bystander
             // reactions can gate/scale on the attacker's Accuracy Check —
             // Crossfire fires only on a ranged, non-crit attack
@@ -4991,6 +5098,25 @@ const Confirm = {
               : null,
           };
 
+          // Contract check against the OTHER builder of this same payload
+          // (reaction-derive.buildTargetedPayload, used for mid-card new
+          // targets). The two drifted silently once — the derive side lacked
+          // `incomingDamage` + `defenseResolved`, so INCOMING_DAMAGE and
+          // ATTACK_VS_DEF/_MDEF read 0 for any creature dragged in by a redirect
+          // and their reactions stayed dormant. Missing payload keys FAIL CLOSED,
+          // so nothing errors — hence this explicit warn. Runs once per card.
+          if (!_targetedPayloadContractChecked) {
+            _targetedPayloadContractChecked = true;
+            try {
+              const { TARGETED_PAYLOAD_KEYS } = await import("./reaction-derive.js");
+              const missing = (TARGETED_PAYLOAD_KEYS ?? []).filter((k) => !(k in payloadForTrigger));
+              if (missing.length) {
+                warn(`CONFIRM: creature_targeted_by_action payload is missing contract key(s) [${missing.join(", ")}] `
+                  + `— reaction-derive.TARGETED_PAYLOAD_KEYS and this scan have drifted; gates on those keys fail closed.`);
+              }
+            } catch (e) { /* contract check is advisory — never break the card */ }
+          }
+
           for (const reactor of reactorActors.values()) {
             let cands;
             try {
@@ -5009,7 +5135,7 @@ const Confirm = {
               if (seenKeys.has(dedup)) continue;
               seenKeys.add(dedup);
               log(`CONFIRM: third-party reaction matched — reactor=${reactor.name} skill=${cand.carrierName} (subject=${target?.name ?? subjectActorUuid})`);
-              prePassives.push({
+              addCardReactions("creature_targeted_by_action", [{
                 ...cand,
                 reactorActorUuid: reactor.uuid,
                 reactorActorName: reactor.name,
@@ -5018,7 +5144,7 @@ const Confirm = {
                 subjectActorUuid,
                 subjectTokenUuid,
                 payloadAtFire: payloadForTrigger,
-              });
+              }]);
             }
           }
 
@@ -5045,7 +5171,7 @@ const Confirm = {
                   if (seenKeys.has(dedup)) continue;
                   seenKeys.add(dedup);
                   log(`CONFIRM: target-owned reaction matched — target=${target?.name ?? subjectActorUuid} skill=${cand.carrierName}`);
-                  prePassives.push({
+                  addCardReactions("creature_targeted_by_action", [{
                     ...cand,
                     reactorActorUuid: subjectActorUuid,
                     reactorActorName: target?.name ?? targetActorDoc.name,
@@ -5054,7 +5180,7 @@ const Confirm = {
                     subjectActorUuid,
                     subjectTokenUuid,
                     payloadAtFire: payloadForTrigger,
-                  });
+                  }]);
                 }
               }
             } catch (e) {
@@ -5089,6 +5215,7 @@ const Confirm = {
           trigger: "creature_guards",
           includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
           payload: {
+            ...actionBase,   // action-level defaults; every explicit key below overrides
             sourceActorUuid:      guarderUuid,
             sourceTokenUuid:      ar.attacker?.tokenUuid ?? null,
             guarderActorUuid:     guarderUuid,
@@ -5098,11 +5225,14 @@ const Confirm = {
             coveredAllyTokenUuid: cov?.tokenUuid ?? null,
             targets:              coveredTokenUuids,
             targetTokenUuids:     coveredTokenUuids,
+            // Guard has no skill of its own, so this is normally null — but the
+            // key must EXIST for consistency with the other scans, and a weapon
+            // -sourced Guard variant would populate it. `reaction_source_skill`
+            // fails closed when the field is absent.
+            sourceSkillName:      ar.skillName ?? ar.weapon?.name ?? null,
           },
         });
-        for (const cand of guardCands ?? []) {
-          prePassives.push(cand);
-        }
+        addCardReactions("creature_guards", guardCands);
       } catch (e) {
         warn("CONFIRM: creature_guards findPassiveCandidates threw", e);
       }
@@ -5119,7 +5249,7 @@ const Confirm = {
     let cardTargets = ar.targets;
     let cardPerTargets = ar.perTargetResults;
     try {
-      const forceAdds = (prePassives ?? []).filter(
+      const forceAdds = (cardReactions ?? []).filter(
         (p) => (p.mode === "force" || p.mode === "on") && !p._addTarget);
       if (forceAdds.length) {
         const { applyAddTargetSplices } = await import("./card-mutations.js?cb=" + Date.now());
@@ -5150,13 +5280,13 @@ const Confirm = {
         // Shared render-field set — single source with the test harness (see
         // composeActionCardRenderPayload). CONFIRM overrides the fields it
         // owns/derives below (invoke-stamped attacker, post-splice targets +
-        // perTargetResults, live prePassives, the onAddTargetApply callback).
+        // perTargetResults, live cardReactions, the onAddTargetApply callback).
         ...composeActionCardRenderPayload(ar),
         attacker: { ...ar.attacker, invokeCapability, invokePointCount },
         attackerActor,
         targets: cardTargets,
         perTargetResults: cardPerTargets,
-        prePassives,
+        cardReactions,
         // GM-side callback the Barrage (creature_performs_action) pill's "Apply"
         // runs on the POST-ROLL card. Fires the reaction's add_target chain
         // (JRPG picker + MP cost), then projects the picked target(s) against
@@ -5490,8 +5620,22 @@ const Confirm = {
       // Basing the recompute on the stale captured `ar` would drop them.
       const liveAr = director.ctx.actionResult ?? ar;
       const acceptedDecisions = result.reactionDecisions.filter((d) => d?.decision === "apply");
-      const candFor = (d) => (prePassives ?? []).find(
+      const candFor = (d) => (cardReactions ?? []).find(
         (p) => p.rowKey === d.rowKey && p.carrierUuid === d.carrierUuid);
+      // Carry the scan's `phaseTrigger` from the CANDIDATE onto the DECISION.
+      // `acceptedCardReactions` stores decision objects (rowKey/carrierUuid +
+      // verdict), which are NOT the candidate objects addCardReactions stamped —
+      // so without this hop the stamp never reaches the actionResult and a pill
+      // can't be traced back to the scan that produced it. Caught by a live sim
+      // 2026-08-02: every accepted reaction read `phaseTrigger: undefined`.
+      // Mutates in place (rather than cloning) so downstream identity
+      // comparisons on the decision objects are unaffected.
+      for (const d of result.reactionDecisions) {
+        try {
+          const c = d ? candFor(d) : null;
+          if (c?.phaseTrigger && !d.phaseTrigger) d.phaseTrigger = c.phaseTrigger;
+        } catch (_) { /* tracing metadata is never worth breaking a decision */ }
+      }
       // Barrage (_addTarget) splices its extra target at Apply-click, not at
       // RESOLVE. Exclude it from the full mutation pass so RESOLVE's re-fire
       // (firePreAcceptedCandidate) doesn't re-prompt the picker or re-splice —
@@ -5681,8 +5825,8 @@ const Confirm = {
         ...(studyTierPatch ? studyTierPatch : {}),
         ...(recomputedHeadlineDamage ? { damage: recomputedHeadlineDamage } : {}),
         ...(newDamageType ? { damageType: newDamageType } : {}),
-        acceptedPrePassives: applied,
-        evaluatedPrePassives: evaluated,
+        acceptedCardReactions: applied,
+        evaluatedCardReactions: evaluated,
         accuracyOverride,
         costOverride,
         // negate_action (Shadow Possession) — RESOLVE skips outcome + effect/

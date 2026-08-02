@@ -1480,7 +1480,7 @@ export function isActionCreatingReactionForAE(ae, reactionRow) {
 // pass the hard match gates BUT fail their condition_formula or chain
 // affordability check are returned. Default behavior (legacy) drops them
 // for callers that just want "what can fire right now" — Cheap Shot
-// pre-passive aggregator, etc. The standalone-reaction dispatcher opts
+// card-reaction aggregator, etc. The standalone-reaction dispatcher opts
 // in with `includeUnavailable: true` so it can surface them as disabled
 // blades with badges ("Not enough MP" / "Conditions not met") rather
 // than silently filtering them — the player gets visible feedback for
@@ -2101,11 +2101,11 @@ function readAdjustRow(row) {
 // (and SL via the carrier skill's level) resolve cleanly.
 export async function computeSenderDamageBonuses({
   casterActor,
-  acceptedPrePassives,
+  acceptedCardReactions,
   dCombat,
 } = {}) {
   const out = new Map();
-  if (!Array.isArray(acceptedPrePassives) || !acceptedPrePassives.length) return out;
+  if (!Array.isArray(acceptedCardReactions) || !acceptedCardReactions.length) return out;
 
   // Per-subject base (pre-bonus) damage — used to project FINAL_DAMAGE for any
   // keyword condition gates (e.g. pierce "FINAL_DAMAGE >= 100"). Same value the
@@ -2115,7 +2115,7 @@ export async function computeSenderDamageBonuses({
   // also reachable by tokenUuid (linked-token disambiguation).
   const tokenAlias = new Map();
 
-  for (const cand of acceptedPrePassives) {
+  for (const cand of acceptedCardReactions) {
     if (!cand?.ref) continue;
     // Carrier resolution mirrors firePreAcceptedCandidate so item-bound
     // and AE-bound effects both work. Bail on missing carriers — a
@@ -2334,14 +2334,14 @@ export async function computeSenderDamageBonuses({
 // call). Only touches creature_will_deal_damage candidates that carry a subject
 // list; everything else is left alone. Mutates the candidate objects so the
 // caller's subsequent computeSenderDamageBonuses sees the refreshed subjects.
-export async function refreshReactionSubjects({ acceptedPrePassives, ar, attackerActor } = {}) {
-  if (!Array.isArray(acceptedPrePassives) || !acceptedPrePassives.length || !attackerActor || !ar) return;
+export async function refreshReactionSubjects({ acceptedCardReactions, ar, attackerActor } = {}) {
+  if (!Array.isArray(acceptedCardReactions) || !acceptedCardReactions.length || !attackerActor || !ar) return;
   const hitRows = (ar.perTargetResults ?? []).filter((r) => r?.hit && r?.actorUuid);
   if (!hitRows.length) return;
   const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid).filter(Boolean);
   const hitTokenUuids = hitRows.map((r) => r.tokenUuid).filter(Boolean);
 
-  for (const cand of acceptedPrePassives) {
+  for (const cand of acceptedCardReactions) {
     if (!cand || !Array.isArray(cand.appliesToTargetUuids)) continue; // not a per-target aggregated cand
     // Confirm this candidate is a creature_will_deal_damage reaction (only those
     // carry the per-target subject list this function maintains).

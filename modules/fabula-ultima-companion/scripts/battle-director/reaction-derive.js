@@ -93,28 +93,64 @@ export async function deriveCascadeCandidates({ ledger, cardCtx, firedKeys, deps
   return out;
 }
 
+// Canonical key set for a `creature_targeted_by_action` payload — the CONTRACT
+// shared by the TWO places that build one:
+//   1. state-handlers CONFIRM  (the initial per-target × per-reactor scan)
+//   2. buildTargetedPayload    (mid-card re-derive, below)
+//
+// Both must produce every key here, because the formula identifiers a
+// defender-side reaction can gate on read straight off the payload and FAIL
+// CLOSED when a field is missing — a dropped key doesn't error, it silently
+// makes the reaction dormant. CONFIRM asserts against this list (dev-warn), so
+// the next divergence is a console warning instead of a skill that quietly
+// stops working. Add a key here whenever either builder gains one.
+export const TARGETED_PAYLOAD_KEYS = Object.freeze([
+  "sourceActorUuid", "subjectActorUuid", "subjectTokenUuid", "incomingDamage",
+  "targetTokenUuids", "attackerActorUuid", "attackerTokenUuid", "actionIntent",
+  "actionKind", "actionName", "sourceSkillName", "checkTotal", "isCrit", "isFumble",
+  "weaponRange", "weaponType", "damageType", "defenseResolved",
+]);
+
 // Build the `creature_targeted_by_action` payload for ONE subject (a creature
 // that just BECAME a target via a mid-card mutation — redirect destination or
 // add_target splash). Mirrors the CONFIRM-time scan's payload so the same gates
 // resolve: `sourceActorUuid` = the subject (the reaction_source self/ally/enemy
 // filter keys off it), plus the attacker + roll context.
+//
+// `subject.incomingDamage` — the damage THIS subject is now predicted to take,
+// read by INCOMING_DAMAGE. Threaded per-subject by the caller from the
+// POST-mutation per-target rows (a redirect destination's predicted damage only
+// exists after the mutation recomputes). Without it, a "when you take damage"
+// reaction (Ninja Log) stayed dormant on a redirected hit while working
+// normally on a hit targeted at CONFIRM time — fixed 2026-08-02.
 export function buildTargetedPayload(subject, cardCtx) {
   return {
     sourceActorUuid:   subject?.actorUuid ?? null,
     subjectActorUuid:  subject?.actorUuid ?? null,
     subjectTokenUuid:  subject?.tokenUuid ?? null,
+    // Per-SUBJECT (everything else here is action-level).
+    incomingDamage:    Math.max(0, Number(subject?.incomingDamage ?? 0) || 0),
     targetTokenUuids:  cardCtx?.targetTokenUuids ?? [],
     attackerActorUuid: cardCtx?.attackerActorUuid ?? null,
     attackerTokenUuid: cardCtx?.attackerTokenUuid ?? null,
     actionIntent:      cardCtx?.actionIntent ?? null,
     actionKind:        cardCtx?.actionKind ?? null,
     actionName:        cardCtx?.actionName ?? null,
+    // Must mirror CONFIRM's third-party scan — `reaction_source_skill` fails
+    // closed without it. Unlike `actionName` this must NOT fall back to the
+    // action kind: a blank means "ambient, fire on any action" to the matcher.
+    sourceSkillName:   cardCtx?.sourceSkillName ?? null,
     checkTotal:        cardCtx?.checkTotal ?? null,
     isCrit:            cardCtx?.isCrit ?? null,
     isFumble:          cardCtx?.isFumble ?? null,
     weaponRange:       cardCtx?.weaponRange ?? null,
     weaponType:        cardCtx?.weaponType ?? null,
     damageType:        cardCtx?.damageType ?? null,
+    // "def" | "mdef" | null — read by ATTACK_VS_DEF / ATTACK_VS_MDEF so a
+    // Defense-specific reaction (Verónica's +2 DEF) fires only on attacks its
+    // Defense would actually touch. Was absent here, so those gates read 0 for
+    // any mid-card new target.
+    defenseResolved:   cardCtx?.defenseResolved ?? null,
   };
 }
 

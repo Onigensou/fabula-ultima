@@ -497,7 +497,16 @@ export async function run({
     // Put any charged boss ZP back on the world actor — before the clones are
     // swept and unconditionally, so a charged boss never leaks into real play.
     try { await restoreEnemyZp(zpRestore); } catch (e) { warn("[SIM] restore boss ZP threw", e); }
-    await deleteClones(clones);
+    // MUST be guarded like its siblings. `Actor.deleteDocuments` can reject —
+    // a clone already swept by the director's own token teardown, a permission
+    // hiccup, a concurrent delete — and an unguarded rejection here aborts the
+    // whole `finally`, so `forceEndSim` below never runs. That is exactly the
+    // leak this block's comment warns about: SimMode.active stays set, every
+    // later sim is refused with "A sim is already in progress", and the next
+    // REAL action card a GM opens confirms itself. Observed 2026-08-02.
+    // Recovery for a stuck flag is `FUCompanion.api.experimental.sim.abort()`.
+    try { await deleteClones(clones); } catch (e) { warn("[SIM] clone sweep threw", e); }
+    // Unconditional — nothing above may prevent this from running.
     forceEndSim("run complete");
   }
 
