@@ -3693,7 +3693,7 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "chain_steps": "syl_confirm,syl_cost,syl_leave",
+              "chain_steps": "syl_leave",
               "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "syl_root",
@@ -3714,20 +3714,6 @@
               "effect_label": "syl_confirm",
               "from_resource": "",
               "menu_label": "",
-              "to_resource": ""
-            },
-            "2": {
-              "consume_amount": "1",
-              "consume_resource": "fp",
-              "consume_self": false,
-              "effect_kind": "consume_resource",
-              "effect_label": "syl_cost",
-              "from_resource": "",
-              "grant_amount": "",
-              "grant_resource": "",
-              "menu_label": "",
-              "on_empty": "abort",
-              "target_ref": "self",
               "to_resource": ""
             },
             "3": {
@@ -3756,7 +3742,7 @@
           "name": "See you later",
           "on_activate_effect_ref": "syl_root",
           "optional_params": {},
-          "pre_activate_effect_ref": "",
+          "pre_activate_effect_ref": "syl_confirm",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
