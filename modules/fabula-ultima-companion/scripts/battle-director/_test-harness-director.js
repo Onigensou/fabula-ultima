@@ -918,6 +918,51 @@ function installPassiveAutoAcceptor(acceptPassives) {
   };
 }
 
+// Declare that NOBODY IS AT THE KEYBOARD for the duration of a harness run.
+//
+// `skill-effects.noHumanToAsk()` reads this global and answers blocking gates
+// with their non-answer default instead of rendering a modal: a `confirm` row
+// auto-confirms, a defender opt-in declines, `prompt_number` takes its default.
+//
+// Why this had to exist: a chain containing an interactive row rendered a real
+// dialog into a headless client and awaited a click that could never come. The
+// run then never reached its `finally`, so the write-capture prototype patches
+// installed by `installWriteCaptures()` stayed installed — and from that moment
+// every `item.update()` / `deleteEmbeddedDocuments()` in the page was captured
+// instead of committed, reporting success while changing nothing. A single
+// unanswerable dialog silently poisoned the entire client.
+//
+// Deliberately does NOT cover `open_action_menu`: those skills already resolve
+// via the collector's 12s guard and are baselined as `skipped` in skip.json.
+// Auto-answering them would change 31 golden fingerprints — a separate, opt-in
+// decision, not a side effect of fixing a hang.
+function installHeadlessGates() {
+  const prev = globalThis.__FU_HARNESS_HEADLESS__;
+  globalThis.__FU_HARNESS_HEADLESS__ = true;
+  return {
+    restore() {
+      if (prev === undefined) delete globalThis.__FU_HARNESS_HEADLESS__;
+      else globalThis.__FU_HARNESS_HEADLESS__ = prev;
+    },
+  };
+}
+
+// Last-resort watchdog: never let a harness run hang forever.
+//
+// `installHeadlessGates` removes the KNOWN blocking gates, but any future
+// unanswerable await would reintroduce the poisoned-client failure above. This
+// races the run against a deadline so the `finally` ALWAYS executes and the
+// prototype patches always come back off. A timed-out run returns a normal
+// error result; it does not leave the page in a state where writes vanish.
+const HARNESS_RUN_TIMEOUT_MS = 60000;
+function withHarnessTimeout(promise, label, ms = HARNESS_RUN_TIMEOUT_MS) {
+  let timer = null;
+  const timeout = new Promise((resolve) => {
+    timer = setTimeout(() => resolve({ __harnessTimeout: true, label, ms }), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => { if (timer) clearTimeout(timer); });
+}
+
 // Install pre-applied AEs on the target actors. These DO mutate the
 // world briefly — necessary because Foundry doesn't expose a clean
 // shadow-effects layer and the resolveDamageReactions / firePassive
@@ -1091,6 +1136,7 @@ async function runDirectorSkillSimulate(args = {}) {
   // unconditionally and `off`-mode never fire.
   const acceptPassives = args.acceptPassives ?? false;
   const passiveAcceptor = installPassiveAutoAcceptor(acceptPassives);
+  const headlessGates = installHeadlessGates();
   const { captures, restore } = installWriteCaptures();
   let resolveError = null;
   try {
@@ -1098,19 +1144,25 @@ async function runDirectorSkillSimulate(args = {}) {
     if (!resolveHandler?.onEnter) {
       restore();
       passiveAcceptor.restore();
+      headlessGates.restore();
       await seeded.cleanup();
       await preApplied.cleanup();
       formulaOverrides.restore();
       return { ok: false, reason: "resolve_handler_missing" };
     }
-    await resolveHandler.onEnter(synthDirector, {
-      triggerIntent: { type: INTENTS.CONFIRM_ACTION },
-    });
+    const outcome = await withHarnessTimeout(
+      resolveHandler.onEnter(synthDirector, { triggerIntent: { type: INTENTS.CONFIRM_ACTION } }),
+      "skill RESOLVE",
+    );
+    if (outcome?.__harnessTimeout) {
+      resolveError = { message: `RESOLVE did not settle within ${outcome.ms}ms — treated as a harness timeout so the prototype patches are restored`, timeout: true };
+    }
   } catch (e) {
     resolveError = { message: String(e?.message ?? e), stack: String(e?.stack ?? "").slice(0, 500) };
   } finally {
     restore();
     passiveAcceptor.restore();
+    headlessGates.restore();
     await seeded.cleanup();
     await preApplied.cleanup();
     formulaOverrides.restore();
@@ -1264,6 +1316,7 @@ async function runDirectorAttackSimulate(args = {}) {
   // captures stay installed for the whole simulate, restored in finally.
   const acceptPassives = args.acceptPassives ?? false;
   const passiveAcceptor = installPassiveAutoAcceptor(acceptPassives);
+  const headlessGates = installHeadlessGates();
   const { captures, restore } = installWriteCaptures();
 
   const passResults = [];
@@ -1288,6 +1341,7 @@ async function runDirectorAttackSimulate(args = {}) {
         formulaOverrides.restore();
         restore();
         passiveAcceptor.restore();
+        headlessGates.restore();
         return compute;
       }
 
@@ -1319,9 +1373,16 @@ async function runDirectorAttackSimulate(args = {}) {
         enqueue() {}, dispatch() {},
       };
       try {
-        await STATE_HANDLERS[STATES.RESOLVE].onEnter(synthDirector, {
-          triggerIntent: { type: INTENTS.CONFIRM_ACTION },
-        });
+        const outcome = await withHarnessTimeout(
+          STATE_HANDLERS[STATES.RESOLVE].onEnter(synthDirector, {
+            triggerIntent: { type: INTENTS.CONFIRM_ACTION },
+          }),
+          "attack RESOLVE",
+        );
+        if (outcome?.__harnessTimeout) {
+          resolveError = { pass: passIndex + 1, message: `RESOLVE did not settle within ${outcome.ms}ms — treated as a harness timeout so the prototype patches are restored`, timeout: true };
+          break;
+        }
       } catch (e) {
         resolveError = { pass: passIndex + 1, message: String(e?.message ?? e), stack: String(e?.stack ?? "").slice(0, 500) };
         break;
@@ -1352,6 +1413,7 @@ async function runDirectorAttackSimulate(args = {}) {
   } finally {
     restore();
     passiveAcceptor.restore();
+    headlessGates.restore();
     await preApplied.cleanup();
     formulaOverrides.restore();
   }
@@ -1402,6 +1464,7 @@ async function runDirectorPassiveTriggerTest(args = {}) {
   const seeded = await installSeededProps(args.seed);
   const acceptPassives = args.acceptPassives ?? false;
   const passiveAcceptor = installPassiveAutoAcceptor(acceptPassives);
+  const headlessGates = installHeadlessGates();
   const { captures, restore } = installWriteCaptures();
 
   let result = null;
@@ -1421,6 +1484,7 @@ async function runDirectorPassiveTriggerTest(args = {}) {
   } finally {
     restore();
     passiveAcceptor.restore();
+    headlessGates.restore();
     await seeded.cleanup();
     await preApplied.cleanup();
     formulaOverrides.restore();

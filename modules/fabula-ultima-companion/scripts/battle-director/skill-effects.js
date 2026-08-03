@@ -217,8 +217,36 @@ export function setDamageReactionAskDecider(fn) {
 //
 // Cancel / dismiss / timeout = DECLINE, matching the old dialog's `close`
 // behavior: an optional mitigation must never fire on a non-answer.
+// ── Human-gate detection ───────────────────────────────────────────────────
+// "Is there a human who can answer a blocking dialog right now?"
+//
+// Three ways the answer is NO: a passive/preview evaluation (`ctx.isPassive`),
+// an automated playtest (`SimMode.active`), or the DIRECTOR TEST HARNESS, which
+// drives real COMPUTE/RESOLVE from a script with nobody at the keyboard.
+//
+// The harness case was missing, and the failure mode was the worst kind: a chain
+// containing a `confirm` row rendered a modal into a headless client and awaited
+// a click forever. The run never returned, so `runDirectorSkillSimulate`'s
+// `finally` never restored its write-capture prototype patches — after which
+// EVERY later write in that page was silently swallowed (an `item.update()` that
+// reports success and changes nothing). Measured on `Zarg :: See you later`
+// (chain: confirm → consume → leave) and on any `prePassives` run whose reaction
+// needs an answer. One unanswerable dialog therefore poisoned the whole client.
+//
+// `__FU_HARNESS_HEADLESS__` follows the harness's existing global idiom
+// (`__FU_HARNESS_FORMULA_OVERRIDES__`, `__FU_HARNESS_ACCEPT_PASSIVES__`), each
+// set + restored by an install* helper in _test-harness-director.js.
+function noHumanToAsk(ctx) {
+  return !!(ctx?.isPassive
+    || SimMode.active
+    || globalThis.__FU_HARNESS_HEADLESS__ === true
+    || typeof Dialog === "undefined"
+    || typeof document === "undefined");
+}
+
 async function promptDefenderOptIn({ target, ae, damage }) {
   if (typeof document === "undefined") return false;
+  if (globalThis.__FU_HARNESS_HEADLESS__ === true) return false;   // non-answer = DECLINE
   const listArgs = {
     title: ae?.name || "Reaction",
     subtitle: `${target?.name ?? "Target"} is about to take ${damage} damage — use ${ae?.name ?? "this reaction"}?`,
@@ -3090,7 +3118,7 @@ async function applyPromptNumberEffect(row, ctx) {
   const injected = ctx?.harnessNumbers?.[varName];
   if (injected != null && Number.isFinite(Number(injected))) {
     value = snap(injected);
-  } else if (ctx.isPassive || SimMode.active || typeof Dialog === "undefined" || typeof document === "undefined") {
+  } else if (noHumanToAsk(ctx)) {
     // Auto-fire / sim / headless — take the default, no UI. A sim reaches this
     // only when the skill is DECLARED as an action (Marigold's Blazing Tether,
     // which sits in her action_pattern_table); the reaction path already lands on
@@ -3387,7 +3415,7 @@ function confirmButtonDialog({ title, message, buttons, cancelLabel, cancelStyle
 async function applyConfirmEffect(row, ctx) {
   const title = String(row.confirm_title ?? ctx.skill?.name ?? "Confirm");
   const message = String(row.confirm_message ?? "Are you sure?");
-  const headless = ctx.isPassive || typeof Dialog === "undefined" || typeof document === "undefined";
+  const headless = noHumanToAsk(ctx);
   const refs = parseEffectRefList(row.confirm_button_refs);
 
   if (refs.length) {

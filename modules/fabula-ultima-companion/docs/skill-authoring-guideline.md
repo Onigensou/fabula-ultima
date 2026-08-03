@@ -279,12 +279,18 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
   (`runDirectorSkillCompute` / `runDirectorSkillSimulate`). Don't launch a combat
   for what the harness can model. **But know the harness's three blind spots — each
   one reports a WORKING skill as dead, which is the expensive direction of wrong:**
-  - **Pre-resolve reactions need `prePassives`.** `runDirectorAttackSimulate`
-    applies `creature_will_deal_damage` rows only when you pass
-    `prePassives: true` (or `["<carrierName>"]`) — see
-    `_test-harness-director.js`, `applyPrePassivesToActionResult`. Omit it and the
-    reaction never dispatches: damage comes back identical with the gate true,
-    false, or literally `1`.
+  - **Pre-resolve reactions must be explicitly accepted, and the arg name DIFFERS
+    per entry point.** `runDirectorAttackSimulate` takes **`acceptReactions`**;
+    `runDirectorSkillSimulate` takes **`prePassives`**. Same concept, two names —
+    passing the wrong one is silently ignored (no warning, no error), and the
+    `creature_will_deal_damage` row simply never dispatches, so damage comes back
+    identical whether the gate is true, false, or literally `1`. This cost a whole
+    debugging pass on the Dragonslayer Pendant. Value: `true` = accept every
+    candidate, or `["<carrierName>"]` to accept only some.
+  - **Read the result from `res.passes[0].actionResult`,** not `res.actionResult`
+    — the simulate returns per-pass results (two-weapon produces two) and there is
+    no top-level `actionResult`. Reading the wrong field yields `undefined`, which
+    looks exactly like "the reaction didn't fire".
   - **COMPUTE is thin for effect rows.** `deal_damage` / `grant` land in RESOLVE,
     so a COMPUTE-only run shows `damage: 0` for a skill that works. Use simulate
     for anything whose payload is an `effect_table` row.
@@ -328,6 +334,13 @@ Kept visible so nobody "discovers" these as new bugs, and so a rule isn't assume
 | **E3a / E3** | **57** | Local copies of a hub condition with NO tags — invisible to cleanse, `STATUS_COUNT`, `remove_tagged_ae`, HUD. Worst: Flying ×17, Envenomed ×5. Jack's Snaring Arrow "Slow", Burning Arrow "Burn", Poison Arrow "Poisoned" are all uncleansable. **Highest-value fix in this table** — it silently breaks a player-facing promise (drink a Super Tonic, keep the debuff). |
 | **A1** | 7 | `post_damage_effect_ref` still in use (Drain Spirit ×5, Fling, Muleta). Still honored by the engine; migrating means moving to a reaction row + re-verifying. |
 | **F1** | 1 | `Centimare :: Poisoned Dagger` (weapon) still carries `reaction_config_table` + `effect_table` on its own props. The last of the three known non-PC weapons. |
+
+**Dragonslayer Pendant is NOT a violation — it works.** Proven 2026-08-04 with the
+fixed harness: equipped on a PC, vs `⭐️ Fafnir` (`subtype_list: DRAGON`) the row is
+accepted and damage goes 27 → **40** (27 × 1.5 = 40.5, floored); vs a GORGER control
+the `TARGET_SUBTYPE_IS_DRAGON` gate rejects it and damage stays 27. It had looked
+inert for two reasons, neither of them the data: the harness needed `acceptReactions`
+(I4), and the stash copy is `isEquipped: false` (F4).
 | **B1** | ~~1~~ **FIXED** | `Zarg :: See you later` — **confirmed** double-charge, now repaired. See the worked example below. |
 
 Re-run the audit by walking `_authored-export` for these four shapes; it needs no

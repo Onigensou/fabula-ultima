@@ -181,8 +181,14 @@ async function teardownBench(a) {
   const r = await evalGM(code, { timeoutSecs: 120 });
   if (!r || r.ok !== true) { console.error("✗ teardown failed: " + (r?.error || JSON.stringify(r))); return 2; }
   if (!r.removed) { say(`· ${r.note}`); return 0; }
-  if (r.stillPresent) { console.error(`✗ teardown reported success but scene ${r.sceneId} is still present`); return 2; }
-  say(`✓ torn down "${r.scene}" (${r.tokensRemoved} token(s)) — world holds no bench scaffolding`);
+  if (r.stillPresent) { console.error(`✗ teardown reported success but a "${r.scene}" scene is still present`); return 2; }
+  // Surface a duplicate sweep loudly — it means build-bench raced (see its
+  // header). Silent cleanup would hide a recurring leak.
+  const dupNote = r.duplicatesFound > 1
+    ? ` — ⚠ swept ${r.removed} DUPLICATE bench scenes (a concurrent \`bench\` race; they would have shipped as world data)`
+    : "";
+  say(`✓ torn down "${r.scene}" (${r.tokensRemoved} token(s)) — world holds no bench scaffolding${dupNote}`);
+  if (r.note) say(`  · ${r.note}`);
   return 0;
 }
 
@@ -253,6 +259,9 @@ async function main() {
     const r = await evalGM(code, { timeoutSecs: 285 });
     if (!r || r.ok !== true) { console.error("✗ bench build failed: " + (r?.error || JSON.stringify(r))); return 2; }
     console.log(`✓ Regression Bench "${r.scene}"${r.createdScene ? " (created)" : ""} — dummy target: ${r.dummy}`);
+    if (r.collapsedDuplicates?.length) {
+      console.log(`  ⚠ collapsed ${r.collapsedDuplicates.length} DUPLICATE bench scene(s) — a concurrent build raced; they would have shipped as world data`);
+    }
     console.log(`  backbone: ${r.backboneActors} actors / ${r.skillTotal} skills  (${Object.entries(r.roleCounts).map(([k, v]) => `${k}:${v}`).join(", ")})`);
     console.log(`  placed ${r.created.length} new token(s)${r.alreadyPlaced ? `, ${r.alreadyPlaced} already present` : ""}.`);
     if (a.json) console.log(JSON.stringify(r.roster, null, 2));

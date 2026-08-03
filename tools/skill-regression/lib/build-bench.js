@@ -63,7 +63,46 @@ const dummy = game.actors.get(DUMMY_ID);
 if (!dummy) return { ok: false, error: `target dummy actor ${DUMMY_ID} not found` };
 
 // Find or create the bench scene.
-let scene = game.scenes.find((s) => s.name === BENCH);
+//
+// ⚠ RACE: `find` then `await Scene.create` is a TOCTOU window. Two concurrent
+// builders (a manual `bench` racing the Stop-hook gate, or two gate runs) both
+// see no scene and both create one. Observed twice on 2026-08-02, each pair
+// ~200ms apart. That used to be permanent: teardown refused to act on duplicates
+// ("refusing to guess"), so the extra 67-token scene stayed in the world and
+// would ship to the co-dev in the next wholesale binary push — the exact harm
+// the teardown exists to prevent.
+//
+// Fix: collapse duplicates right after the create, using a rule both racers
+// compute identically — keep the OLDEST (createdTime, then id as tie-break),
+// delete the rest. Because the winner is deterministic, concurrent builders
+// agree on who survives instead of deleting each other; the redundant deletes
+// are guarded and idempotent. teardown-bench.js sweeps all of them anyway.
+// Canonical pick: OLDEST inactive bench (createdTime, then id). Every racer
+// computes the same winner, so concurrent builders converge instead of deleting
+// each other's scene. Runs BEFORE the create so a pre-existing pair (left by an
+// earlier race, or by a run that died before teardown) is healed too — not only
+// duplicates this process makes.
+const rank = (s) => [Number(s._stats?.createdTime ?? 0), String(s.id)];
+const collapseDuplicates = async () => {
+  const dupes = game.scenes
+    .filter((s) => s.name === BENCH && !s.active)
+    .sort((a, b) => {
+      const [at, ai] = rank(a), [bt, bi] = rank(b);
+      return at - bt || ai.localeCompare(bi);
+    });
+  const killed = [];
+  for (const extra of dupes.slice(1)) {
+    const id = extra.id;
+    try {
+      if (game.scenes.get(id)) { await game.scenes.get(id).delete(); killed.push(id); }
+    } catch (e) { /* another racer deleted it first — fine, it's gone */ }
+  }
+  return { survivor: dupes[0] ?? null, killed };
+};
+
+let collapsedDuplicates = (await collapseDuplicates()).killed;
+let scene = game.scenes.find((s) => s.name === BENCH && !s.active)
+  ?? game.scenes.find((s) => s.name === BENCH);
 let createdScene = false;
 if (!scene) {
   const src = game.scenes.find((s) => s.name === "Training Ground") || game.scenes.contents[0];
@@ -75,6 +114,11 @@ if (!scene) {
     tokens: [], notes: [], lights: [], sounds: [], templates: [], drawings: [], walls: [],
   });
   createdScene = true;
+  // Re-collapse: another builder may have created its own between our check and
+  // our create. Adopt the canonical survivor so both processes agree.
+  const after = await collapseDuplicates();
+  collapsedDuplicates = collapsedDuplicates.concat(after.killed);
+  if (after.survivor) scene = after.survivor;
 }
 
 // Assemble the backbone roster, sorted deterministically.
@@ -120,6 +164,7 @@ return {
   scene: scene.name,
   sceneId: scene.id,
   createdScene,
+  collapsedDuplicates,
   dummy: dummy.name,
   backboneActors: backbone.length,
   skillTotal,
