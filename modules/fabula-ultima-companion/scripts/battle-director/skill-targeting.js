@@ -188,11 +188,40 @@ function findTargetingRow(ctxOrSkill, label) {
 
 // ── Targeting row resolver ───────────────────────────────────────────────
 
+// How many targets this row wants. Numeric strings short-circuit (the common
+// case — no resolver build, no import); anything else goes through the skill
+// formula evaluator against the REACTOR (so SL is the carrier skill's level).
+async function resolveRowCount(row, ctx) {
+  const raw = row.count ?? 1;
+  const asNum = Number(raw);
+  if (Number.isFinite(asNum)) return Math.max(0, Math.floor(asNum) || 1);
+  const formula = String(raw).trim();
+  if (!formula) return 1;
+  try {
+    const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+    const resolver = buildSkillResolver({
+      actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill,
+      round: ctx.dCombat?.round ?? 0,
+    });
+    const n = Math.floor(Number(evaluateFormula(formula, resolver, 1)) || 0);
+    return Math.max(0, n) || 1;
+  } catch (e) {
+    warn(`skill-targeting: row "${row.effect_label}" count formula "${formula}" threw — using 1`, e);
+    return 1;
+  }
+}
+
 async function resolveTargetingRow(row, ctx) {
   const candidateSource = String(row.candidate_source ?? "combat").trim();
   const category = String(row.category ?? "").trim().toLowerCase();
   const mode = String(row.mode ?? "exact").trim().toLowerCase();
-  const count = Math.max(0, Math.floor(Number(row.count ?? 1) || 1));
+  // `count` is FORMULA-AWARE — a plain number still works ("2"), but an
+  // SL-scaled row can write `count: "SL"` instead of baking the author's
+  // current skill level into the data. That matters for a skill shared across
+  // copies at different levels (Linked Invocation: Blanche SL 1, Chiyo SL 2) —
+  // a literal would be wrong for one of them the moment either levels up.
+  // Falls back to 1 on an unparseable/zero formula, matching the old default.
+  const count = await resolveRowCount(row, ctx);
   const excludeSelf = !!row.exclude_self;
   const autoConfirm = row.auto_confirm_when_obvious !== false;       // default true
   const skipWhenPassive = row.skip_when_passive !== false;            // default true

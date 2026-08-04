@@ -19,7 +19,8 @@ export const SKILL_FORMULAS_SCHEMA = 8;
 //   Identifiers: SL, MAX_HP, CUR_HP, MAX_MP, CUR_MP, MAX_IP, CUR_IP,
 //                BOND_STRENGTH, BOND_COUNT, BOND_COUNT_<EMOTION>,
 //                STATUS_COUNT, DAMAGE_DEALT, HP_DEALT, MP_DEALT,
-//                SHIELD_DEALT, ROUND, ACTION_TARGET_COUNT.
+//                SHIELD_DEALT, ROUND, ACTION_TARGET_COUNT,
+//                ADDED_TARGET_COUNT.
 //                Unknown identifiers resolve to 0 (fail-open, matches legacy).
 //
 // No `eval` / `new Function`. Tokenizer + recursive-descent parser.
@@ -837,6 +838,22 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "ACTION_TARGET_COUNT": {
         const t = payload?.targets;
         return Array.isArray(t) ? t.length : 0;
+      }
+      // How many EXTRA targets an add_target purchase is adding — the multiplier
+      // for a "pay per extra target" surcharge (Linked Invocation: 10 MP each,
+      // up to SL). Read in two places, hence two sources:
+      //   • in-chain, right after add_target ran → the live `_preRoll` sink;
+      //   • at card-mutation Phase 2c, which resolves against `payloadAtFire`
+      //     → the count onAddTargetApply stamped there once the picks resolved.
+      // Before any pick exists (the pre-picker affordability gate) it means "one
+      // increment" — the gate's actual question is "can you afford to buy at
+      // least one?", so 1 is the right answer there, not 0.
+      case "ADDED_TARGET_COUNT": {
+        const stamped = Number(payload?._addedTargetCount);
+        if (Number.isFinite(stamped)) return Math.max(0, stamped);
+        const sink = payload?._preRoll?.addedTokenUuids;
+        if (Array.isArray(sink)) return sink.length;
+        return 1;
       }
       // Boolean (1/0) alias for ACTION_TARGET_COUNT == 1 — reads cleaner
       // in gates like Cheap Shot's "SINGLE_TARGET_ATTACK && ..." than

@@ -94,6 +94,16 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
   with a negative amount.)* Affordability for such a purchase is gated where the
   player commits to it, since no in-chain debit remains to abort on an empty pool.
 
+- **B3a — A surcharge that scales with how many extra targets were bought writes
+  `cost_amount: "<per-unit> * ADDED_TARGET_COUNT"`.** The token reads the live
+  `add_target` sink in-chain and the count stamped on the candidate at
+  card-mutation Phase 2c, so one row prices both the preview and the debit.
+  Before any pick exists it resolves to **1** — that is deliberate: the only
+  reader at that point is the pre-picker affordability gate, whose question is
+  "can you afford one increment?". The gate then re-prices once the picks are in
+  and bails (spending nothing) if the player over-bought.
+  *(Linked Invocation: `10 * ADDED_TARGET_COUNT`, up to SL extra creatures.)*
+
 ## C. Reactions & UI phase
 
 - **C1 — The trigger's phase picks the UI, not the author.** Pre-resolve
@@ -240,6 +250,14 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
 
 - **G2 — Two formula evaluators exist** (BD = `skill-formulas.js`; passive AE =
   `oni.ReactionFormula`). Authoring a formula on the wrong side silently yields 0.
+
+- **G3 — A targeting row's `count` is formula-aware; write `"SL"`, not a
+  literal.** The same skill is copied onto several actors at different levels
+  (Linked Invocation: Blanche SL 1, Chiyo SL 2, master SL 1), so a baked number
+  is wrong for someone the moment anyone levels. Numeric strings still
+  short-circuit, so existing literal rows are untouched — but new SL-scaled rows
+  should never hard-code the author's own level. *(Potion Rain's `count: "2"` is
+  the older baked style; it is correct only because SL is capped at 2.)*
 
 ## H. Engine philosophy
 

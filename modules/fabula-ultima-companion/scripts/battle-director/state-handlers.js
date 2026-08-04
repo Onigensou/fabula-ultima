@@ -5304,33 +5304,54 @@ const Confirm = {
             // RESOLVE), so there's no in-chain consume_resource left to abort on an
             // empty pool — check base + surcharge against the caster's pools here,
             // before the picker opens. Same composer the commit uses.
-            {
+            //
+            // Run TWICE for a per-target surcharge (Linked Invocation: 10 MP each,
+            // up to SL): once before the picker (`addedCount` null → the row's
+            // ADDED_TARGET_COUNT reads 1, i.e. "can you afford one increment?"),
+            // and again once the picks are in with the real count stamped on the
+            // candidate. Without the second pass a player could buy 3 extra
+            // targets holding MP for one and only discover it at RESOLVE. A flat
+            // surcharge (Barrage) prices identically both times, so this is a
+            // no-op there.
+            const gateAddTargetCost = async (addedCount) => {
               const arNow = director.ctx.actionResult ?? ar;
+              if (addedCount != null) {
+                cand.payloadAtFire = { ...(cand.payloadAtFire ?? {}), _addedTargetCount: addedCount };
+              }
               const { composeCostOverride } = await import("./card-mutations.js?cb=" + Date.now());
               const surcharge = await composeCostOverride(arNow, [cand]).catch((e) => {
                 warn("CONFIRM onAddTargetApply: surcharge compose threw", e); return null;
               });
-              if (surcharge) {
-                const effective = computeEffectiveCost(arNow.costSerialized, surcharge);
-                const gate = checkAffordable(attackerActor, new Map(Object.entries(effective)));
-                if (!gate.ok) {
-                  const missing = gate.missing.map((m) => `${m.need} ${m.label} (have ${m.has})`).join(", ");
-                  ui.notifications?.warn(`${cand?.carrierName ?? "Reaction"}: not enough ${missing}.`);
-                  log(`CONFIRM onAddTargetApply: unaffordable (${missing}) — pill stays pending`);
-                  return { ok: false };
-                }
-              }
-            }
-            // ── Heal-spread variant (Potion Rain) ───────────────────────────
-            // Item-use restore: fire the reaction chain (add_target picks ≤SL
-            // allies; adjust_grant declares the ×0.5 round-up), then REBUILD the
-            // heal rows for the full set via the SAME computeActionProfile/
-            // buildHealPerTarget the card used (single source) — so every target
-            // (original + extras) shows the scaled amount. Returns replaceRows so
-            // the card re-renders all rows (not just appends). Cancel / no pick →
-            // nothing applied (cost-last → nothing spent).
+              if (!surcharge) return true;
+              const effective = computeEffectiveCost(arNow.costSerialized, surcharge);
+              const gate = checkAffordable(attackerActor, new Map(Object.entries(effective)));
+              if (gate.ok) return true;
+              const missing = gate.missing.map((m) => `${m.need} ${m.label} (have ${m.has})`).join(", ");
+              ui.notifications?.warn(`${cand?.carrierName ?? "Reaction"}: not enough ${missing}.`);
+              log(`CONFIRM onAddTargetApply: unaffordable (${missing}) at ${addedCount ?? 1} extra target(s) — pill stays pending`);
+              return false;
+            };
+            if (!await gateAddTargetCost(null)) return { ok: false };
+            // ── No-roll spread (Potion Rain, Linked Invocation) ─────────────
+            // An action with NO accuracy roll whose amounts come from the skill's
+            // own effect rows: fire the reaction chain (add_target picks ≤ the
+            // row's count; adjust_grant/adjust_cost declare any scaling), then
+            // REBUILD every row for the full set via the SAME computeActionProfile
+            // the card used (single source) — so every target (original + extras)
+            // shows the right amount. Returns replaceRows so the card re-renders
+            // all rows rather than appending. Cancel / no pick → nothing applied.
+            //
+            // There is no roll to project here, which is exactly why this can't
+            // fall through to the attack branch below (it hard-requires ar.roll +
+            // a weapon and would silently return not-ok). Covers a damaging
+            // no-check Skill too — Invocation's Aero Blast has hasDamage with no
+            // roll, so Linked Invocation's extra target lands through this path.
+            // The item+healing clause is kept verbatim so an item that somehow
+            // carries a roll keeps its old branch.
             const baseArH = director.ctx.actionResult ?? ar;
-            const isHealSpread = String(baseArH.kind ?? "").toLowerCase() === "item" && !!baseArH.hasHealing;
+            const isHealSpread =
+              (String(baseArH.kind ?? "").toLowerCase() === "item" && !!baseArH.hasHealing)
+              || (!baseArH.roll && (!!baseArH.hasHealing || !!baseArH.hasDamage));
             if (isHealSpread) {
               const hSkill = baseArH.skillUuid ? await fromUuid(baseArH.skillUuid).catch(() => null) : null;
               const hAttacker = director.ctx.turnSnapshot;
@@ -5344,8 +5365,17 @@ const Confirm = {
                 sourceActorUuid: baseArH.attackerActorRef, subjectActorUuid: baseArH.attackerActorRef,
                 sourceTokenUuid: baseArH.attacker?.tokenUuid ?? null,
                 targets: [...existingH], targetTokenUuids: [...existingH],
-                actionIntent: "beneficial", actionKind: "Item",
+                // Derived, not hard-coded: this branch now also serves damaging
+                // no-check Skills, whose reaction rows gate on action kind/intent
+                // (Linked Invocation asks for SKILL_HAS_TAG_INVOCATION on a Skill).
+                actionIntent: baseArH.hasDamage ? "harmful" : "beneficial",
+                actionKind: baseArH.kind ?? "Item",
                 actionName: baseArH.skillName ?? "Item", _preRoll: sinkH,
+                // Forward the acting skill's tags so a chain row's own
+                // condition_formula can still read SKILL_HAS_TAG_<X> here — the
+                // reaction gate saw them at derive time, this probe payload is
+                // rebuilt from scratch and would otherwise lose them.
+                skillTags: hSkill.system?.props?.skill_tags ?? "",
               };
               const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
               let resH = null;
@@ -5372,6 +5402,10 @@ const Confirm = {
                 log(`CONFIRM onAddTargetApply(heal): no new targets resolved from picks [${sinkH.addedTokenUuids.join(", ")}] — pill stays pending`);
                 return { ok: false, cancelled: true };
               }
+              // Re-price now that the pick count is known (per-target surcharge).
+              // Nothing has been debited yet, so bailing here costs the player
+              // nothing but the re-pick.
+              if (!await gateAddTargetCost(newSnapsH.length)) return { ok: false };
               const allSnapsH = [...(baseArH.targets ?? []), ...newSnapsH];
               const grantAdjust = sinkH.grantAdjust ?? null;
               const scaledAr = { ...baseArH, grantAdjust };
@@ -5455,6 +5489,7 @@ const Confirm = {
                 log(`CONFIRM onAddTargetApply(buff): no new targets resolved from picks [${sinkB.addedTokenUuids.join(", ")}] — pill stays pending`);
                 return { ok: false, cancelled: true };
               }
+              if (!await gateAddTargetCost(newSnapsB.length)) return { ok: false };
               // Minimal auto-hit rows (no accuracy / no amount) so the card
               // appends target rows; RESOLVE applies the AE off ar.targets.
               const addedRowsB = newSnapsB.map((s) => ({
@@ -5503,6 +5538,7 @@ const Confirm = {
               if (snap && !newSnaps.includes(snap)) newSnaps.push(snap);
             }
             if (!newSnaps.length) return { ok: false, cancelled: true };
+            if (!await gateAddTargetCost(newSnaps.length)) return { ok: false };
 
             // Reconstruct the consumed grant (if any) so the recomputed check
             // total reproduces ar.roll.total exactly — the new target shares the

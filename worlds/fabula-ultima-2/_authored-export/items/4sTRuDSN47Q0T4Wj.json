@@ -60,7 +60,7 @@
           "auto_confirm_when_obvious": false,
           "candidate_source": "combat",
           "category": "ally",
-          "count": 2,
+          "count": "SL",
           "effect_kind": "targeting",
           "effect_label": "pr_pick",
           "exclude_action_targets": true,
@@ -84,6 +84,8 @@
       "optional_params": {},
       "reaction_config_table": {
         "0": {
+          "condition_formula": "ACTION_TARGET_COUNT == 1",
+          "reaction_action_intent": "aid",
           "reaction_action_kind": "Item",
           "reaction_damage_amount": "",
           "reaction_damage_type": "",

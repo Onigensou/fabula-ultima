@@ -1448,7 +1448,7 @@
               "candidate_source": "combat",
               "category": "ally",
               "consume_self": false,
-              "count": "2",
+              "count": "SL",
               "effect_kind": "targeting",
               "effect_label": "pr_pick",
               "exclude": "",
@@ -1483,8 +1483,8 @@
           "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
-              "condition_formula": "",
-              "reaction_action_intent": "",
+              "condition_formula": "ACTION_TARGET_COUNT == 1",
+              "reaction_action_intent": "aid",
               "reaction_action_kind": "Item",
               "reaction_action_target": "",
               "reaction_cause_filter": "",
