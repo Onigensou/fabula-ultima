@@ -1,0 +1,129 @@
+{
+  "_id": "Ba8hChhIwoB67MYO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785872667321,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Invisible_Air_X_%2528Sp.%2529_icon.webp",
+  "name": "Excaliblur (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "IPezvtbd25xqxmR8",
+    "props": {
+      "description": "<p>Equipped passive: When you attack with this weapon, both you and your targets are Blind until the end of the action.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "excal_self_on, excal_tgt_on",
+          "effect_kind": "chain",
+          "effect_label": "excal_on"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Blind",
+          "effect_kind": "apply_ae",
+          "effect_label": "excal_self_on",
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Blind",
+          "effect_kind": "apply_ae",
+          "effect_label": "excal_tgt_on",
+          "target_ref": "action_targets"
+        },
+        "3": {
+          "chain_steps": "excal_self_off, excal_tgt_off",
+          "effect_kind": "chain",
+          "effect_label": "excal_off"
+        },
+        "4": {
+          "ae_duplicate_mode": "remove_per_caster",
+          "ae_template_ref": "Blind",
+          "effect_kind": "apply_ae",
+          "effect_label": "excal_self_off",
+          "target_ref": "self"
+        },
+        "5": {
+          "ae_duplicate_mode": "remove_per_caster",
+          "ae_template_ref": "Blind",
+          "effect_kind": "apply_ae",
+          "effect_label": "excal_tgt_off",
+          "target_ref": "action_targets"
+        }
+      },
+      "max_level": "1",
+      "name": "Excaliblur (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "Attack",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "excal_on",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": true,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_performs_action",
+          "requires_skill": ""
+        },
+        "1": {
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "Attack",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "excal_off",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": true,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_completes_action",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false
+  },
+  "type": "equippableItem"
+}

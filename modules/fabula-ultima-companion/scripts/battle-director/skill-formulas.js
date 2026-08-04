@@ -1,9 +1,14 @@
 // Re-export sentinel — bumped whenever a new identifier ships so
 // reload-aware callers can verify they have a fresh enough module.
-// Currently 5 (added ALLY_COUNT / ANY_ALLY_IN_CRISIS identifiers for the Guest
-// system; prev: TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT; pow(); ALL_TARGETS_HIT).
+// Currently 9 (added three families for defender-/used-weapon-side gates that
+// had no expression at all: USED_WEAPON_CATEGORY_IS_<X> — "swung one" vs
+// HAS_WEAPON_CATEGORY_<X>'s "owns one"; SUBJECT_IS_ALLY/_ENEMY/_NEUTRAL — the
+// per-victim allegiance gate; ATTACKER_SPECIES_IS_<X>/ATTACKER_RANK_IS_<X> — the
+// incoming creature on creature_targeted_by_action, whose payload SUBJECT is the
+// reactor itself. Prev: ALLY_COUNT / ANY_ALLY_IN_CRISIS for the Guest system;
+// TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT; pow(); ALL_TARGETS_HIT).
 // Not load-bearing; diagnostic only.
-export const SKILL_FORMULAS_SCHEMA = 8;
+export const SKILL_FORMULAS_SCHEMA = 9;
 
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
@@ -1313,6 +1318,17 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const me = String(actor?.uuid ?? "").trim();
         return (by && me && by === me) ? 1 : 0;
       }
+      // Allegiance of the trigger SUBJECT relative to the reactor — the
+      // per-victim gate the vocabulary was missing. `reaction_source` scopes the
+      // event SOURCE and `reaction_action_target` asks about the whole target
+      // LIST, so neither can say "this particular creature I just hit was an
+      // ally". Mistress Mask ("heal when you hit an ALLY with a Flail") needs
+      // exactly that. Neutral (disposition 0) is NEITHER ally nor enemy, matching
+      // allyActorsOf / enemyActorsOf. Unresolvable subject → all three read 0, so
+      // any `== 1` gate fails closed.
+      case "SUBJECT_IS_ALLY":    return subjectDispositionVs(actor, payload) === "ally" ? 1 : 0;
+      case "SUBJECT_IS_ENEMY":   return subjectDispositionVs(actor, payload) === "enemy" ? 1 : 0;
+      case "SUBJECT_IS_NEUTRAL": return subjectDispositionVs(actor, payload) === "neutral" ? 1 : 0;
       default:
         // Dynamic VAR_<NAME> — a chain-local variable captured earlier in the
         // SAME effect chain. `prompt_number` stores the player's entered amount
@@ -1359,6 +1375,23 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .toLowerCase()
             .trim();
           return hasNamedSkill(actor, needle) ? 1 : 0;
+        }
+        // Dynamic USED_WEAPON_CATEGORY_IS_<X> — 1 if the weapon actually USED in
+        // this action is of family <X>, else 0. The used-weapon twin of
+        // HAS_WEAPON_CATEGORY_<X> below; reach for this one whenever the rule
+        // says "with a <family> weapon" (an act) rather than "while wielding
+        // one" (a state). Mistress Mask's "hit an ally with a Flail" needs it —
+        // the equipped-set check would also fire on a bow shot taken while a
+        // Flail is stowed in the other hand. Fails CLOSED on a spell (no weapon
+        // threaded). MUST precede the HAS_ branch only for readability; the two
+        // prefixes are disjoint.
+        if (name.startsWith("USED_WEAPON_CATEGORY_IS_")) {
+          const fam = name
+            .slice("USED_WEAPON_CATEGORY_IS_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          return usedWeaponIsOfType(payload, fam) ? 1 : 0;
         }
         // Dynamic HAS_WEAPON_CATEGORY_<X> — 1 if the actor has an EQUIPPED weapon
         // of family <X> (dagger, flail, sword, …), else 0. Generalizes the fixed
@@ -1696,6 +1729,38 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (name.startsWith("CREATURE_") && name.endsWith("_PRESENT")) {
           return creaturePresentOnScene(name.slice("CREATURE_".length, name.length - "_PRESENT".length));
         }
+        // Dynamic ATTACKER_SPECIES_IS_<X> / ATTACKER_RANK_IS_<X> — the same two
+        // questions as TARGET_SPECIES_IS_ / RANK_IS_ below, asked about the
+        // creature ACTING ON the reactor instead of the one being acted on.
+        //
+        // Needed because on `creature_targeted_by_action` the payload's SUBJECT is
+        // the reactor itself (see TARGETED_PAYLOAD_KEYS in reaction-derive.js) —
+        // the other party is `attackerActorUuid`. So a defender-side rule phrased
+        // about the incoming creature ("when a Humanoid Non-Champion targets you"
+        // — Pantie) has no subject-side identifier that can express it; without
+        // these it would silently read the WEARER's own species and never fire.
+        // Case-insensitive, underscores → spaces. Unresolvable attacker → 0, so a
+        // `== 1` gate fails closed and a `== 0` gate treats "unknown" as "not it"
+        // (matching TARGET_SPECIES_IS_'s documented behaviour for PCs).
+        if (name.startsWith("ATTACKER_SPECIES_IS_") || name.startsWith("ATTACKER_RANK_IS_")) {
+          const isRank = name.startsWith("ATTACKER_RANK_IS_");
+          const needle = name
+            .slice((isRank ? "ATTACKER_RANK_IS_" : "ATTACKER_SPECIES_IS_").length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const attackerUuid = String(
+            payload?.attackerActorUuid ?? payload?.causeActorUuid ?? ""
+          ).trim();
+          if (!attackerUuid) return 0;
+          const attacker = _resolveActorByUuidSync(attackerUuid);
+          if (!attacker) return 0;
+          const raw = isRank
+            ? attacker?.system?.props?.npc_rank
+            : attacker?.system?.props?.species;
+          const val = String(raw ?? "").replace(/_/g, " ").toLowerCase().trim();
+          return val && val === needle ? 1 : 0;
+        }
         // Dynamic TARGET_SPECIES_IS_<X> — 1 when the trigger SUBJECT's species
         // (enemy template `system.props.species`, e.g. "UNDEAD") matches <X>,
         // else 0. Case-insensitive; underscores → spaces. Players/PCs carry NO
@@ -1882,6 +1947,37 @@ function hasEquippedWeaponOfType(actor, weaponType) {
     if (cat === wanted || range === wanted) return true;
   }
   return false;
+}
+
+// True if the weapon ACTUALLY USED in the in-flight action is of family
+// `weaponType`. The used-weapon twin of hasEquippedWeaponOfType: that one asks
+// "do you OWN one", this asks "did you SWING one".
+//
+// The distinction matters whenever a rider is scoped to a weapon family but its
+// carrier is NOT that weapon — a Flail-scoped accessory (Mistress Mask) would
+// otherwise fire on a bow shot merely because a Flail sat in the other hand.
+// (`reaction_requires_weapon_used` can't cover this: it matches the carrier's
+// OWN weapon or its container, and an accessory has neither.)
+//
+// Resolves `payload.weaponUuid` — threaded by the attack pipeline, the same
+// field reactionWeaponUsedSatisfied matches on — then applies the SAME
+// family-or-range comparison as hasEquippedWeaponOfType so both identifiers
+// speak one vocabulary. Returns false when no weapon is threaded (a spell, a
+// non-weapon skill), so a `== 1` gate fails CLOSED.
+function usedWeaponIsOfType(payload, weaponType) {
+  const uuid = String(payload?.weaponUuid ?? "").trim();
+  if (!uuid) return false;
+  const wanted = String(weaponType ?? "").toLowerCase();
+  let item = null;
+  try {
+    item = foundry.utils.fromUuidSync?.(uuid) ?? fromUuidSync?.(uuid) ?? null;
+  } catch (_e) { return false; }
+  const p = item?.system?.props ?? null;
+  if (!p) return false;
+  if (String(p.item_type ?? "").toLowerCase() !== "weapon") return false;
+  const cat = String(p.category ?? p.weapon_type ?? p.type ?? "").toLowerCase();
+  const range = String(p.weapon_range ?? "").toLowerCase();
+  return cat === wanted || range === wanted;
 }
 
 // True if the actor has any EQUIPPED item with the given `item_type`
@@ -2285,6 +2381,34 @@ function enemyActorsOf(actor) {
     consider(t?.actor, t.document?.disposition ?? t.disposition);
   }
   return out;
+}
+
+// Disposition of the trigger SUBJECT relative to `actor`: "ally" | "enemy" |
+// "neutral" | null (unresolvable / no subject / the subject IS the actor).
+//
+// Fills a real gap in the vocabulary: SUBJECT_IS_SELF / _MY_SUMMON / _MY_PHANTASM
+// existed, but nothing asked the plain "was that an ally or an enemy I just hit".
+// `reaction_source` answers it for the event SOURCE only, and `reaction_action_
+// target` asks about the ACTION's target LIST — which on a multi-victim action
+// stays true for every victim, so it can't scope a per-victim rider.
+//
+// Sign rules are taken from allyActorsOf / enemyActorsOf verbatim (strict
+// same-sign = ally, opposite sign = enemy, 0 = neutral and neither) so the whole
+// file speaks ONE allegiance convention. Uses _combatDisposition for BOTH sides —
+// combat roster, then prototypeToken, then active tokens — which is deliberately
+// more forgiving than skill-effects' subjectMatchesSource (canvas placeables
+// only, no fallback); that narrower lookup is why an "enemy"-sourced row cannot
+// resolve at all in a headless page.
+function subjectDispositionVs(actor, payload) {
+  const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+  if (!actor || !subjectUuid) return null;
+  const subject = _resolveActorByUuidSync(subjectUuid);
+  if (!subject || subject === actor || subject.uuid === actor.uuid) return null;
+  const mine = _combatDisposition(actor);
+  const theirs = _combatDisposition(subject);
+  if (mine == null || theirs == null || !Number.isFinite(mine) || !Number.isFinite(theirs)) return null;
+  if (mine === 0 || theirs === 0) return "neutral";
+  return mine * theirs > 0 ? "ally" : "enemy";
 }
 
 function countEnemyDistinctStatuses(actor) {

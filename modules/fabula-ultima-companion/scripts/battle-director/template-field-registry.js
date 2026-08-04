@@ -386,7 +386,17 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
   // Per-round fire quota — bound how many times this reaction row may auto/ask-fire
   // within one BD round (counter resets each round, wiped at combat end). Wandering
   // Flame's Ignition caps Burn-triggered MP/ZP gains at 3/round.
-  textCol("reaction_max_per_round", "Max Per Round", { tooltip: "Limit how many times this reaction can fire within a single BD round (e.g. 3). The row is hidden/skipped once its quota is spent for the round; resets each round. Blank or 0 = unlimited." }),
+  textCol("reaction_max_per_round", "Max Fires", { tooltip: "Limit how many times this reaction can fire (e.g. 3). The row is hidden/skipped once its quota is spent. What the quota resets against is set by Max Scope. Blank or 0 = unlimited." }),
+  // Which bucket the Max Fires quota counts into. Was per-round only; the scope
+  // dimension is what lets "once per target" (Pantie) be plain config instead of
+  // a second bespoke ledger alongside Study's studyLog. See the cap block in
+  // skill-effects.js.
+  selectCol("reaction_max_scope", "Max Scope", [
+    { key: "round",        value: "Per round (default)" },
+    { key: "battle",       value: "Per battle" },
+    { key: "target",       value: "Per target, whole battle (once per creature)" },
+    { key: "target_round", value: "Per target, per round" },
+  ], { tooltip: "What the Max Fires quota resets against. Per round = the classic cap. Per battle = N times all fight. Per target = N times against EACH creature for the whole fight (\"this effect triggers once per target\"). Per target, per round = both. Ignored when Max Fires is blank/0.", defaultValue: "round" }),
   // Weapon-USED gate (the gear `_skill`-inside-a-WEAPON model). When CHECKED, this
   // row only fires if the weapon backing the carrier is the one ACTUALLY USED in the
   // triggering action (carrier-is-weapon, else the carrier's `system.container`

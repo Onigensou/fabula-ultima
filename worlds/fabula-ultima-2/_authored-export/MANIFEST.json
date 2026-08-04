@@ -5243,6 +5243,12 @@
         "effects": 0
       },
       {
+        "id": "Ba8hChhIwoB67MYO",
+        "name": "Excaliblur (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "iMFVHkxiflRK9L4K",
         "name": "Excalibur",
         "type": "equippableItem",
@@ -8117,6 +8123,12 @@
         "effects": 0
       },
       {
+        "id": "Bl4Vg8uFW6x9aV8Y",
+        "name": "Mistress Mask (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "878x4sTS0xBc75oZ",
         "name": "Mix",
         "type": "equippableItem",
@@ -8767,6 +8779,12 @@
       {
         "id": "8xmL5DAYFpSozzhz",
         "name": "Pantie",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "h0PragT8IWUf6AaH",
+        "name": "Pantie (Passive)",
         "type": "equippableItem",
         "effects": 0
       },

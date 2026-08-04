@@ -276,6 +276,45 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
   tokens: `any · study · stealth · strength · mobility · intimidation ·
   tracking · lockpick`.
 
+- **G6 — Pick the identifier that matches WHOSE side the trigger puts you on.**
+  Three families exist because the obvious-looking one reads the wrong creature
+  and returns a plausible 0 instead of erroring:
+  - *"with a `<family>` weapon"* (an act) = **`USED_WEAPON_CATEGORY_IS_<X>`**,
+    off `payload.weaponUuid`. `HAS_WEAPON_CATEGORY_<X>` is "owns one, equipped"
+    — it also fires on a bow shot taken while a Flail sits in the other hand.
+    *(Mistress Mask.)* `reaction_requires_weapon_used` can't substitute: it
+    matches the CARRIER's own/container weapon, and an accessory has neither.
+  - *"that victim was an ally/enemy"* = **`SUBJECT_IS_ALLY` / `_ENEMY` /
+    `_NEUTRAL`**. `reaction_source` scopes the event SOURCE, and
+    `reaction_action_target` asks about the whole target LIST — on a multi-victim
+    action it stays true for every victim, so neither can scope a per-victim
+    rider. Neutral (disposition 0) is neither ally nor enemy.
+  - *"the creature attacking me"* on **`creature_targeted_by_action`** =
+    **`ATTACKER_SPECIES_IS_<X>` / `ATTACKER_RANK_IS_<X>`**. On that trigger BOTH
+    `sourceActorUuid` and `subjectActorUuid` are the REACTOR (see
+    `TARGETED_PAYLOAD_KEYS`); the incoming creature is `attackerActorUuid`, and
+    `target_ref: "trigger_attacker"` is how an effect row reaches it.
+    `TARGET_SPECIES_IS_*` there reads the WEARER. *(Pantie.)*
+
+- **G7 — "Once per target" is `reaction_max_per_round` + `reaction_max_scope`,
+  not a bespoke ledger.** Scope selects the bucket the quota counts into:
+  `round` (default, the classic cap) · `battle` · `target` (N per creature for
+  the whole fight) · `target_round`. The counter keys on the OTHER party in the
+  interaction — the subject, or the attacker when the subject is the reactor
+  itself — so it behaves on both defender- and attacker-side triggers.
+  *(Pantie: `1` + `target`.)* Note the built-in **Study** action still uses its
+  own `studyLog` map on DirectorCombat; it needs the LIST of spent targets to
+  grey out picker entries, not just a yes/no, so it has not been migrated.
+
+- **G8 — "Until the end of the <window>" is an AE applied and removed on the two
+  matching triggers**, not a duration mode — the AE duration model ticks in TURNS
+  (`turnsRemaining`, at the applier's turn start) and cannot express a
+  sub-turn window. Pair `creature_performs_action` → `apply_ae` with
+  `creature_completes_action` → `apply_ae` + **`ae_duplicate_mode:
+  "remove_per_caster"`**. Use the `_per_caster` variant, never plain `remove`:
+  the plain one matches by NAME and would strip a same-named status some other
+  source applied. *(Excaliblur: Blind on self + `action_targets` for one action.)*
+
 ## H. Engine philosophy
 
 - **H1 — Prefer reusing / generalizing an existing primitive over a new narrow

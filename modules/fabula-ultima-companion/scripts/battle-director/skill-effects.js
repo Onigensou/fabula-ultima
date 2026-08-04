@@ -1654,43 +1654,115 @@ function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
   return false;
 }
 
-// ── Per-round reaction cap (reaction_max_per_round) ──────────────────────────
+// ── Reaction fire cap (reaction_max_per_round + reaction_max_scope) ──────────
 // A reaction row may carry `reaction_max_per_round: N` to bound how many times it
-// auto/ask-fires within a single BD round (Wandering Flame's Ignition: at most 3
-// Burn-triggered MP/ZP gains per round). The counter lives on the active director,
-// keyed by carrier+row+round, so it resets naturally each round and is wiped with
-// the director at combat end. 0/blank/non-finite = uncapped.
+// auto/ask-fires (Wandering Flame's Ignition: at most 3 Burn-triggered MP/ZP gains
+// per round). The counter lives on the active director, keyed by carrier+row+scope,
+// and is wiped with the director at combat end. 0/blank/non-finite = uncapped.
+//
+// `reaction_max_scope` picks WHAT the quota resets against. It was per-round only;
+// widening it to a scope dimension is what lets "once per target" be ordinary
+// config instead of a second bespoke ledger:
+//
+//   round         (default)  — N per BD round. Today's behaviour, unchanged.
+//   battle                   — N for the whole fight.
+//   target                   — N per SUBJECT creature, for the whole fight.
+//                              ("Each enemy suffers this from you only once.")
+//   target_round             — N per subject per round.
+//
+// Why here and not a new mechanism: Study's once-per-target rule already exists as
+// a hand-rolled `studyLog` Map on DirectorCombat (markStudied / hasStudied), which
+// only the Study picker consults — invisible to authored reactions, and a second
+// copy of the same idea. Keying THIS counter by subject covers both, so authored
+// gear and the built-in action can share one notion of "already did this to you".
+// (Study itself still uses studyLog; it needs the list of spent targets to grey
+// out picker entries, not just a yes/no, so migrating it is a separate job.)
+const REACTION_MAX_SCOPES = new Set(["round", "battle", "target", "target_round"]);
+// Player-facing reason on a capped pill — must name the scope, or "once per
+// target" reads as a bug ("why is this greyed out, it hasn't fired this round?").
+const CAP_REASONS = Object.freeze({
+  round:        "Per-round limit reached",
+  battle:       "Limit for this battle reached",
+  target:       "Already used against this target",
+  target_round: "Already used against this target this round",
+});
 function readReactionMaxPerRound(row) {
   const raw = row?.reaction_max_per_round;
   if (raw === undefined || raw === null || raw === "") return 0;
   const n = Number(raw);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
 }
-function reactionRoundCountKey(carrierUuid, rowKey, round) {
-  return `${carrierUuid}::${rowKey}::${round}`;
+function readReactionMaxScope(row) {
+  const raw = String(row?.reaction_max_scope ?? "").trim().toLowerCase();
+  return REACTION_MAX_SCOPES.has(raw) ? raw : "round";
+}
+// The creature a "target"-scoped quota is counted against: the OTHER party in
+// the interaction, whichever side of it the reactor is on.
+//
+// The trigger decides where that creature lives on the payload, and the two
+// families disagree — so a naive `subjectActorUuid` read is wrong half the time:
+//   creature_will_deal_damage / _deals_damage → subject IS the victim  ✔
+//   creature_targeted_by_action               → subject IS the reactor itself,
+//                                               and the other party is the
+//                                               ATTACKER (see TARGETED_PAYLOAD_KEYS)
+// Keying Pantie's "once per target" on the subject there would count every
+// attacker into ONE bucket and fire exactly once per battle.
+//
+// Rule: take the subject; if that IS the reactor, fall through to the attacker /
+// cause. Token uuid preferred over actor uuid so two tokens sharing a base actor
+// spend separate quotas — the same discriminator TARGET_GRAPPLED_BY_SELF and
+// actorHasNamedStatusFromApplier use.
+function capSubjectRef(payload, reactorUuid = null) {
+  const subjA = String(payload?.subjectActorUuid ?? "").trim();
+  const isSelf = reactorUuid && subjA && subjA === String(reactorUuid).trim();
+  if (!isSelf) {
+    const ref = String(payload?.subjectTokenUuid ?? subjA ?? "").trim();
+    if (ref) return ref;
+  }
+  return String(
+    payload?.attackerTokenUuid ?? payload?.attackerActorUuid
+    ?? payload?.causeTokenUuid ?? payload?.causeActorUuid ?? ""
+  ).trim();
+}
+// A target-scoped row with NO resolvable subject must not silently collapse every
+// creature into one shared bucket (that would cap the row globally after N fires).
+// Sentinel keeps it per-fire-safe: an unresolvable subject never blocks.
+const CAP_NO_SUBJECT = " nosubject";
+function reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef) {
+  const bucket = scope === "battle" ? "all"
+    : scope === "target" ? `t:${subjectRef}`
+    : scope === "target_round" ? `t:${subjectRef}@${round}`
+    : String(round);
+  return `${carrierUuid}::${rowKey}::${bucket}`;
 }
 function getActiveBdDirector() {
   return globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
 }
-function reactionRoundCount(director, carrierUuid, rowKey) {
+function reactionRoundCount(director, carrierUuid, rowKey, scope, subjectRef) {
   const m = director?._reactionRoundCounts;
   if (!(m instanceof Map)) return 0;
   const round = director?.dCombat?.round ?? 0;
-  return m.get(reactionRoundCountKey(carrierUuid, rowKey, round)) ?? 0;
+  return m.get(reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef)) ?? 0;
 }
-// Returns true if the row is at/over its per-round cap right now (so it should be
-// surfaced as unavailable / skipped). No cap or no director ⇒ never capped.
-function reactionRoundCapReached(row, carrierUuid, rowKey, director = getActiveBdDirector()) {
+// Returns true if the row is at/over its cap right now (so it should be surfaced
+// as unavailable / skipped). No cap or no director ⇒ never capped.
+function reactionRoundCapReached(row, carrierUuid, rowKey, payload, reactorUuid = null, director = getActiveBdDirector()) {
   const max = readReactionMaxPerRound(row);
   if (!max || !director) return false;
-  return reactionRoundCount(director, carrierUuid, rowKey) >= max;
+  const scope = readReactionMaxScope(row);
+  const subjectRef = capSubjectRef(payload, reactorUuid);
+  // Target-scoped with nothing to key on: never cap (see CAP_NO_SUBJECT).
+  if ((scope === "target" || scope === "target_round") && !subjectRef) return false;
+  return reactionRoundCount(director, carrierUuid, rowKey, scope, subjectRef) >= max;
 }
-// Increment the per-round fire count for a capped row after it actually fires.
-export function bumpReactionRoundCount(director, carrierUuid, rowKey) {
+// Increment the fire count for a capped row after it actually fires.
+export function bumpReactionRoundCount(director, carrierUuid, rowKey, row = null, payload = null, reactorUuid = null) {
   if (!director || !carrierUuid || rowKey == null) return;
   if (!(director._reactionRoundCounts instanceof Map)) director._reactionRoundCounts = new Map();
   const round = director?.dCombat?.round ?? 0;
-  const k = reactionRoundCountKey(carrierUuid, rowKey, round);
+  const scope = readReactionMaxScope(row);
+  const subjectRef = capSubjectRef(payload, reactorUuid) || CAP_NO_SUBJECT;
+  const k = reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef);
   director._reactionRoundCounts.set(k, (director._reactionRoundCounts.get(k) ?? 0) + 1);
 }
 
@@ -1781,8 +1853,9 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         await evaluateAvailability(row, effectTable, refLabel, item);
       // Per-round cap: hide the row (as "condition") once it's fired its quota
       // this round, so it doesn't auto-fire or surface as a dimmed pill.
-      if (available && reactionRoundCapReached(row, item.uuid, key)) {
-        available = false; unavailableKind = "condition"; unavailableReason = "Per-round limit reached";
+      if (available && reactionRoundCapReached(row, item.uuid, key, payload, casterActor?.uuid)) {
+        available = false; unavailableKind = "condition";
+        unavailableReason = CAP_REASONS[readReactionMaxScope(row)];
       }
       if (!includeUnavailable && !available) continue;
       const mode = modeFor(row);
@@ -1796,8 +1869,11 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         kind: kindForMode(mode),
         mode,
         ref: refLabel,
-        // Per-round fire quota (0 = uncapped); the fire path bumps the counter.
+        // Fire quota (0 = uncapped); the fire path bumps the counter. `maxScope`
+        // decides which bucket it counts into (round / battle / per-target) and
+        // MUST travel with the candidate — the fire path has no row in hand.
         maxPerRound: readReactionMaxPerRound(row),
+        maxScope: readReactionMaxScope(row),
         // The row's disposition scope (self/ally/enemy/all/""). Lets a dispatch
         // path distinguish self-riders from bystander reactions — the observer
         // creature_performs_action scan surfaces only explicit all/ally/enemy.
@@ -1835,9 +1911,10 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
       const refLabel = String(row.reaction_effect_ref ?? "").trim();
       let { available, unavailableKind, unavailableReason } =
         await evaluateAvailability(row, effectTable, refLabel, fakeItem);
-      // Per-round cap (see item path above).
-      if (available && reactionRoundCapReached(row, ae.uuid, key)) {
-        available = false; unavailableKind = "condition"; unavailableReason = "Per-round limit reached";
+      // Fire cap (see item path above).
+      if (available && reactionRoundCapReached(row, ae.uuid, key, payload, casterActor?.uuid)) {
+        available = false; unavailableKind = "condition";
+        unavailableReason = CAP_REASONS[readReactionMaxScope(row)];
       }
       if (!includeUnavailable && !available) continue;
       const mode = modeFor(row);
@@ -1851,8 +1928,9 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         kind: kindForMode(mode),
         mode,
         ref: refLabel,
-        // Per-round fire quota (0 = uncapped); see item path above.
+        // Fire quota + its bucket scope (0 = uncapped); see item path above.
         maxPerRound: readReactionMaxPerRound(row),
+        maxScope: readReactionMaxScope(row),
         // See item path above — disposition scope for observer-scan filtering.
         reactionSource: String(row.reaction_source ?? "").trim().toLowerCase(),
         usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
@@ -2042,11 +2120,17 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     catch (e) { warn("firePreAcceptedCandidate: pending animation await threw", e); }
   }
 
-  // Per-round cap bookkeeping: count this fire so reaction_max_per_round can
-  // hide the row once its quota is spent for the round. Only capped rows are
-  // counted (keeps the Map small); requires the live director for the round key.
+  // Fire-cap bookkeeping: count this fire so reaction_max_per_round can hide the
+  // row once its quota is spent for whatever reaction_max_scope selects. Only
+  // capped rows are counted (keeps the Map small); requires the live director for
+  // the bucket key. The scope + subject must match what reactionRoundCapReached
+  // read at scan time, so both derive from the SAME row and payloadAtFire.
   if (r?.ok && candidate?.maxPerRound > 0) {
-    bumpReactionRoundCount(director ?? getActiveBdDirector(), candidate.carrierUuid, candidate.rowKey);
+    bumpReactionRoundCount(
+      director ?? getActiveBdDirector(), candidate.carrierUuid, candidate.rowKey,
+      { reaction_max_scope: candidate.maxScope }, candidate.payloadAtFire,
+      candidate.reactorActorUuid ?? casterActor?.uuid ?? null,
+    );
   }
 
   // ── AE post-fire bookkeeping ─────────────────────────────────────────
