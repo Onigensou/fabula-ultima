@@ -9528,6 +9528,21 @@ async function resolveStealSourceItem(lootEntry) {
   }
 }
 
+// Hand the CSB sub-item tree off to ItemTransferCore's shared primitive.
+// Best-effort: loot that landed must not be un-landed because the copy of a
+// child failed, so this never throws — it warns and the parent still stands.
+async function copyLootSubItems(caster, sourceItem, createdItem, { onlyIfEmpty = false } = {}) {
+  const core = window["oni.ItemTransferCore"];
+  if (typeof core?.copySubItemTree !== "function") return;
+  try {
+    await core.copySubItemTree({
+      sourceItem, receiverActor: caster, receiverParent: createdItem, onlyIfEmpty,
+    });
+  } catch (e) {
+    warn(`transferLootToCaster: sub-item copy failed on ${caster.name} for "${sourceItem.name}"`, e);
+  }
+}
+
 // Transfer one source-item's contents onto the caster. Consumables and
 // materials stack on `system.uniqueId`; if the caster already has a
 // matching item, its `item_quantity` is incremented. Equipment always
@@ -9553,6 +9568,9 @@ async function transferLootToCaster(caster, sourceItem) {
       const curQty = Number(existing.system?.props?.item_quantity ?? 0) || 0;
       try {
         await existing.update({ "system.props.item_quantity": curQty + 1 });
+        // Repair a stack that has no children at all (one minted before
+        // sub-items were carried). Gated on empty, so it can't duplicate.
+        await copyLootSubItems(caster, sourceItem, existing, { onlyIfEmpty: true });
         return { item: existing, stacked: true };
       } catch (e) {
         warn(`transferLootToCaster: increment failed on ${caster.name}.${existing.name}`, e);
@@ -9581,6 +9599,11 @@ async function transferLootToCaster(caster, sourceItem) {
       warn(`transferLootToCaster: createEmbeddedDocuments returned empty on ${caster.name} for "${sourceItem.name}" — likely a preCreateItem hook rejection`);
       return null;
     }
+    // A bare embedded create yields a CHILDLESS parent — CSB only walks
+    // `data.items` in its own static create — so a looted gear shell would
+    // arrive without its linked `_skill`. Same primitive the shop/trade
+    // transfers use.
+    await copyLootSubItems(caster, sourceItem, created[0]);
     return { item: created[0], stacked: false };
   } catch (e) {
     warn(`transferLootToCaster: createEmbeddedDocuments threw on ${caster.name}`, e);

@@ -243,6 +243,7 @@ async function grantEquipment(actor, draft) {
 
   const martial = draftMartial(draft, resolveClass);
   const create = [];
+  const sources = [];
   for (const pick of list) {
     const source = await fromUuid(pick.uuid);
     if (!source) {
@@ -254,9 +255,26 @@ async function grantEquipment(actor, draft) {
     const need = martialNeed(pick);
     foundry.utils.setProperty(data, "system.props.isEquipped", !need || !!martial[need]);
     create.push(data);
+    sources.push(source);
   }
   if (!create.length) return 0;
-  await actor.createEmbeddedDocuments("Item", create);
+  const created = await actor.createEmbeddedDocuments("Item", create);
+
+  // A bare embedded create yields a CHILDLESS parent — CSB only walks
+  // `data.items` in its own static create — so starting gear would arrive
+  // without its linked `_skill`. Same primitive the shop/trade transfers use.
+  // Best-effort: a child that fails to copy must not fail the whole creation.
+  const core = window["oni.ItemTransferCore"];
+  if (typeof core?.copySubItemTree === "function") {
+    for (const [i, parent] of (created ?? []).entries()) {
+      if (!parent || !sources[i]) continue;
+      try {
+        await core.copySubItemTree({ sourceItem: sources[i], receiverActor: actor, receiverParent: parent });
+      } catch (e) {
+        warn(`equipment sub-item copy failed for ${parent.name}`, e);
+      }
+    }
+  }
   return create.length;
 }
 

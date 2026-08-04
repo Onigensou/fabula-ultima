@@ -45,6 +45,11 @@
 //        quantity is decreased, and if it reaches 0, the item is deleted.
 //
 // Notes:
+//   - Sub-items (CSB `system.container` children — a gear shell's linked
+//     `_skill`, an Elemental Shard's element variants, ...) travel with their
+//     parent, nesting included, on every mode that mints a receiver item —
+//     partial transfers as well as full ones. See the "Sub-item helpers"
+//     section for why a plain `createEmbeddedDocuments` loses them.
 //   - Quantity is stored at `system.props.item_quantity` (as in your demo).
 //   - Shop sheets that are Actors can use "actorToActor" mode directly.
 //   - This core is intentionally “dumb UI-wise”: it just manipulates data.
@@ -159,17 +164,20 @@
   // (e.g. `related_item_list` on the _Item Template) shows those children and
   // stores per-row column data at `parent.system.props.<containerKey>[childId]`.
   //
-  // When we clone a parent across actors, the children don't follow and the
-  // container rows on the new parent point at sender-side ids. The helpers
-  // below find the children, clone them onto the receiver with the
-  // container link rewritten to the new parent id, and re-key the parent's
-  // itemContainer prop dicts old-id → new-id.
+  // `Actor#createEmbeddedDocuments` does NOT understand that linkage: CSB only
+  // walks `data.items` in its own static `CustomItem.create`, so a plain
+  // embedded create silently produces a childless parent. The helpers below
+  // snapshot the whole container subtree, clone it onto the receiver with every
+  // `system.container` re-pointed at the corresponding new id, and re-key the
+  // parents' itemContainer prop dicts old-id → new-id.
+
+  // Matches CustomItem.MAX_DEPTH — how deep CSB lets containers nest.
+  const MAX_CHILD_DEPTH = 5;
 
   /**
    * Direct children of `parentItem` in whichever collection it lives in.
    * For an actor-owned parent that's `parent.parent.items`; for a world
-   * item it's `game.items`. We only handle one level of nesting — recursive
-   * containers can be added later if needed.
+   * item it's `game.items`.
    */
   function getSourceChildItems(parentItem) {
     if (!parentItem?.id) return [];
@@ -177,6 +185,25 @@
     if (!collection) return [];
     const list = collection.contents ?? Array.from(collection);
     return list.filter((i) => i?.system?.container === parentItem.id);
+  }
+
+  /**
+   * Snapshot the FULL container subtree under `parentItem` as
+   * `[{ doc, srcId, srcContainerId }]`, depth-first, capped at CSB's nesting
+   * limit. Must be called BEFORE any sender-side mutation: deleting the parent
+   * makes CSB cascade-delete the children (CustomItem#_preDelete), which
+   * removes them from the collection this walk reads.
+   */
+  function snapshotChildTree(parentItem, depth = 0, seen = new Set()) {
+    if (depth >= MAX_CHILD_DEPTH) return [];
+    const out = [];
+    for (const child of getSourceChildItems(parentItem)) {
+      if (!child?.id || seen.has(child.id)) continue; // cycle guard
+      seen.add(child.id);
+      out.push({ doc: child, srcId: child.id, srcContainerId: parentItem.id });
+      out.push(...snapshotChildTree(child, depth + 1, seen));
+    }
+    return out;
   }
 
   /**
@@ -210,36 +237,84 @@
   }
 
   /**
-   * Clone `childItems` onto `receiverActor`, rewriting `system.container` on
-   * each clone to point at `receiverParent.id`, then rekey the new parent's
-   * itemContainer prop dicts. Returns the old-id → new-id map.
+   * Clone a snapshotted subtree (from `snapshotChildTree`) onto
+   * `receiverActor` under `receiverParent`.
+   *
+   * New ids are minted up front so a nested child's `system.container` can be
+   * re-pointed at its own new parent id — the whole tree then goes in as ONE
+   * `keepId: true` create, the same trick CSB's `createWithContents` uses.
+   * Afterwards every container's itemContainer prop dicts are re-keyed
+   * old-id → new-id. Returns the old-id → new-id map.
    */
-  async function cloneChildrenToReceiver(childItems, receiverActor, receiverParent) {
-    if (!childItems.length || !receiverActor || !receiverParent?.id) return {};
-    const cloneData = childItems.map((c) => {
-      const data = c.toObject();
-      delete data._id;
+  async function cloneChildTreeToReceiver(nodes, receiverActor, receiverParent, sourceParentId) {
+    if (!nodes?.length || !receiverActor || !receiverParent?.id) return {};
+
+    const idMap = {};
+    if (sourceParentId) idMap[sourceParentId] = receiverParent.id;
+    for (const n of nodes) idMap[n.srcId] = foundry.utils.randomID();
+
+    const cloneData = nodes.map((n) => {
+      const data = n.doc.toObject();
+      // CSB's CustomItem#toObject() injects a `items` array of sub-item data.
+      // It is not part of the Item schema and the sub-items are already in
+      // `nodes` — leaving it in only produces validation noise.
+      delete data.items;
+      data._id = idMap[n.srcId];
       data.system = data.system ?? {};
-      data.system.container = receiverParent.id;
+      data.system.container = idMap[n.srcContainerId] ?? receiverParent.id;
       return data;
     });
-    const created = await receiverActor.createEmbeddedDocuments("Item", cloneData);
-    const idMap = {};
-    childItems.forEach((c, i) => {
-      const newId = created[i]?.id;
-      if (c.id && newId) idMap[c.id] = newId;
-    });
+
+    const created = await receiverActor.createEmbeddedDocuments("Item", cloneData, { keepId: true });
+
+    // Re-key the row dicts on the receiver parent and on every cloned child
+    // that is itself a container.
     await rekeyItemContainerProps(receiverParent, idMap);
+    for (const doc of created ?? []) {
+      await rekeyItemContainerProps(doc, idMap);
+    }
     return idMap;
   }
 
   /**
-   * Delete `childItems` from `senderActor` (only after a full transfer
-   * where the parent itself was deleted on the sender side).
+   * PUBLIC primitive — give a freshly-created item the sub-item tree its
+   * source had.
+   *
+   * Anything that copies an item onto an actor with a bare
+   * `createEmbeddedDocuments` produces a CHILDLESS parent: CSB only walks
+   * `data.items` inside its own static `CustomItem.create`. Loot drops,
+   * character-creation equipment, camp rewards — all hit that. They can call
+   * this straight after their create instead of re-deriving the linkage:
+   *
+   *   const [item] = await actor.createEmbeddedDocuments("Item", [data]);
+   *   await window["oni.ItemTransferCore"]
+   *     ?.copySubItemTree({ sourceItem, receiverActor: actor, receiverParent: item });
+   *
+   * `onlyIfEmpty` makes it safe to hand a STACK target: with it set, an item
+   * that already has children is left alone, so the call can't duplicate.
+   * Returns the old-id → new-id map ({} when there was nothing to copy).
    */
-  async function deleteChildrenFromSender(childItems, senderActor) {
-    if (!childItems.length || !senderActor) return;
-    const ids = childItems.map((i) => i.id).filter(Boolean);
+  async function copySubItemTree({ sourceItem, receiverActor, receiverParent, onlyIfEmpty = false } = {}) {
+    if (!sourceItem?.id || !receiverActor || !receiverParent?.id) return {};
+    if (onlyIfEmpty && getSourceChildItems(receiverParent).length) return {};
+
+    const nodes = snapshotChildTree(sourceItem);
+    if (!nodes.length) return {};
+
+    return await cloneChildTreeToReceiver(nodes, receiverActor, receiverParent, sourceItem.id);
+  }
+
+  /**
+   * Delete snapshotted sender-side children. CSB's `CustomItem#_preDelete`
+   * already cascade-deletes children when their parent goes, so this is a
+   * safety net for anything that survived — ids that are already gone are
+   * filtered out so the call can't throw.
+   */
+  async function deleteChildTreeFromSender(nodes, senderActor) {
+    if (!nodes?.length || !senderActor) return;
+    const ids = nodes
+      .map((n) => n.srcId)
+      .filter((id) => id && senderActor.items?.has?.(id));
     if (ids.length) await senderActor.deleteEmbeddedDocuments("Item", ids);
   }
 
@@ -515,12 +590,14 @@
     // 1) Update sender: decrease quantity or delete item
     const senderRemaining = senderCurrentQty - transferQty;
 
-    // Snapshot sender-side children BEFORE deleting the parent — once the
-    // parent is gone we'd lose the system.container linkage we use to find
-    // them. Only relevant for full transfers (senderRemaining === 0).
-    const childItemsToMove = senderRemaining <= 0
-      ? getSourceChildItems(sourceItem)
-      : [];
+    // Snapshot the sender-side sub-item tree BEFORE touching anything: on a
+    // full transfer the parent's deletion cascade-deletes the children, which
+    // destroys the system.container linkage the walk relies on.
+    //
+    // This runs for PARTIAL transfers too. Buying 1 of a stack of 100 mints a
+    // brand-new parent on the receiver, and that copy needs its OWN children —
+    // the sender keeping theirs is not the receiver getting any.
+    const childNodesToCopy = snapshotChildTree(sourceItem);
 
     if (senderRemaining > 0) {
       await sourceItem.update(makeQuantityUpdate(senderRemaining));
@@ -560,6 +637,7 @@
     } else {
       const itemData = sourceItem.toObject();
       delete itemData._id;
+      delete itemData.items; // CSB toObject() artifact — children are handled below
       itemData.system = itemData.system || {};
       itemData.system.props = itemData.system.props || {};
       itemData.system.props.item_quantity = transferQty;
@@ -576,20 +654,35 @@
       });
     }
 
-    // 3) Carry sub-items along on a full transfer that minted a fresh
-    // receiver item. Stacking onto an existing target is skipped — that
-    // target already has its own children. Partial transfers
-    // (senderRemaining > 0) are also skipped: the sender keeps the parent
-    // and its children, and we don't duplicate them on the receiver.
-    if (createdParent && childItemsToMove.length) {
-      const idMap = await cloneChildrenToReceiver(childItemsToMove, receiverActor, createdParent);
-      console.log("[ItemTransferCore] Cloned sub-items to receiver.", {
-        receiverActorUuid: receiverActor.uuid,
-        parentUuid: createdParent.uuid,
-        count: childItemsToMove.length,
-        idMap
-      });
-      await deleteChildrenFromSender(childItemsToMove, senderActor);
+    // 3) Carry the sub-item tree along.
+    //
+    //  - Fresh receiver item  -> always clone the tree onto it (full OR partial).
+    //  - Stacked onto an existing item -> that stack normally has its own
+    //    children already; only fill it in if it has NONE, which repairs copies
+    //    minted by the old partial-transfer path. Gating on "zero children"
+    //    means this can never duplicate.
+    if (childNodesToCopy.length) {
+      const target = createdParent
+        ?? (stackTarget && !getSourceChildItems(stackTarget).length ? stackTarget : null);
+
+      if (target) {
+        const idMap = await cloneChildTreeToReceiver(
+          childNodesToCopy, receiverActor, target, sourceItem.id
+        );
+        console.log("[ItemTransferCore] Cloned sub-item tree to receiver.", {
+          receiverActorUuid: receiverActor.uuid,
+          parentUuid: target.uuid,
+          repairedStack: !createdParent,
+          count: childNodesToCopy.length,
+          idMap
+        });
+      }
+    }
+
+    // Only prune the sender's children when the sender's parent itself went
+    // away. A partial transfer leaves the parent (and its children) in place.
+    if (senderRemaining <= 0) {
+      await deleteChildTreeFromSender(childNodesToCopy, senderActor);
     }
 
        const result = {
@@ -870,6 +963,7 @@
     } else {
       const itemData = templateItem.toObject();
       delete itemData._id;
+      delete itemData.items; // CSB toObject() artifact — children are handled below
       itemData.system = itemData.system || {};
       itemData.system.props = itemData.system.props || {};
       itemData.system.props.item_quantity = grantQty;
@@ -886,17 +980,24 @@
       });
     }
 
-    // Carry sub-items along — only when we minted a fresh receiver item.
-    // For gmToActor the source is not consumed, so we never delete from
-    // the source side; we just clone children onto the receiver.
-    if (createdParent) {
-      const childItemsToCopy = getSourceChildItems(templateItem);
-      if (childItemsToCopy.length) {
-        const idMap = await cloneChildrenToReceiver(childItemsToCopy, receiverActor, createdParent);
-        console.log("[ItemTransferCore] Cloned sub-items from template to receiver.", {
+    // Carry the sub-item tree along. For gmToActor the source is a template
+    // that is never consumed, so we only ever clone — nothing is deleted on
+    // the source side. As in actorToActor, a stack target with no children at
+    // all gets repaired rather than skipped.
+    const childNodesToCopy = snapshotChildTree(templateItem);
+    if (childNodesToCopy.length) {
+      const target = createdParent
+        ?? (stackTarget && !getSourceChildItems(stackTarget).length ? stackTarget : null);
+
+      if (target) {
+        const idMap = await cloneChildTreeToReceiver(
+          childNodesToCopy, receiverActor, target, templateItem.id
+        );
+        console.log("[ItemTransferCore] Cloned sub-item tree from template to receiver.", {
           receiverActorUuid: receiverActor.uuid,
-          parentUuid: createdParent.uuid,
-          count: childItemsToCopy.length,
+          parentUuid: target.uuid,
+          repairedStack: !createdParent,
+          count: childNodesToCopy.length,
           idMap
         });
       }
@@ -1003,19 +1104,19 @@
         newQty: senderRemaining
       });
     } else {
-      // Snapshot children before the parent's deletion breaks the
-      // system.container linkage we use to find them.
-      const childItemsToRemove = getSourceChildItems(sourceItem);
+      // Snapshot the tree before the parent's deletion breaks the
+      // system.container linkage we use to find it.
+      const childNodesToRemove = snapshotChildTree(sourceItem);
       await senderActor.deleteEmbeddedDocuments("Item", [sourceItem.id]);
       console.log("[ItemTransferCore] Deleted sender item (quantity reached 0) in actorToGm.", {
         actorUuid: senderActor.uuid,
         itemId: sourceItem.id
       });
-      if (childItemsToRemove.length) {
-        await deleteChildrenFromSender(childItemsToRemove, senderActor);
+      if (childNodesToRemove.length) {
+        await deleteChildTreeFromSender(childNodesToRemove, senderActor);
         console.log("[ItemTransferCore] Deleted sender sub-items along with parent (actorToGm).", {
           actorUuid: senderActor.uuid,
-          count: childItemsToRemove.length
+          count: childNodesToRemove.length
         });
       }
     }
@@ -1076,6 +1177,9 @@
     transferActorToActor,
     grantItemToActor,
     removeItemFromActor,
+
+    // Sub-item (CSB container) primitive, for any copier outside this module
+    copySubItemTree,
 
     // Zenit / currency API
     transferZenit: transferZenitBetweenActors,

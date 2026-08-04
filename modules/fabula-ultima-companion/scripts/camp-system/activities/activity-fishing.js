@@ -119,7 +119,19 @@
       }
       const data = worldItem.toObject();
       delete data._id;
-      await actor.createEmbeddedDocuments("Item", [data]);
+      const [created] = await actor.createEmbeddedDocuments("Item", [data]);
+
+      // A bare embedded create yields a CHILDLESS parent — CSB only walks
+      // `data.items` in its own static create. Same primitive the shop/trade
+      // transfers use. Best-effort: the fish still lands if a child fails.
+      const core = window["oni.ItemTransferCore"];
+      if (created && typeof core?.copySubItemTree === "function") {
+        try {
+          await core.copySubItemTree({ sourceItem: worldItem, receiverActor: actor, receiverParent: created });
+        } catch (e) {
+          console.warn(TAG, `sub-item copy failed for ${fishName}`, e);
+        }
+      }
       console.debug(TAG, `${actor.name} received: ${fishName}`);
     } else {
       console.warn(TAG, `No item id for "${fishName}" — FISH_TABLE and the UI's FISH_TIERS have drifted apart.`);
