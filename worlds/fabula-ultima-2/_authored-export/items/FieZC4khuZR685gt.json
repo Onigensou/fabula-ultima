@@ -1,0 +1,103 @@
+{
+  "_id": "FieZC4khuZR685gt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785869489004,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1228.gif",
+  "name": "Silver Knives (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "2qY1KhC6cpihpdZY",
+    "props": {
+      "description": "<p>Equipped passive: Deals 5 extra damage to Undead. When you reduce a hostile creature to 0 HP, gain 1 IP.</p>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "sknives_undead"
+        },
+        "1": {
+          "effect_kind": "grant",
+          "effect_label": "sknives_ip",
+          "grant_amount": "1",
+          "grant_resource": "ip",
+          "target_ref": "self"
+        }
+      },
+      "max_level": "1",
+      "name": "Silver Knives (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "TARGET_SPECIES_IS_UNDEAD == 1 && DAMAGE_IS_HP == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "sknives_undead",
+          "reaction_max_per_round": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": true,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_will_deal_damage",
+          "requires_skill": ""
+        },
+        "1": {
+          "condition_formula": "CAUSE_IS_SELF == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "sknives_ip",
+          "reaction_max_per_round": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "enemy",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_defeated",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false
+  },
+  "type": "equippableItem"
+}

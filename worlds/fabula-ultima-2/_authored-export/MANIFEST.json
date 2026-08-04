@@ -3575,6 +3575,12 @@
         "effects": 0
       },
       {
+        "id": "YoN1fOuvVvSJLGCd",
+        "name": "Blood Sword (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "FdaeAMUqgNTLjibv",
         "name": "Bloodied Coin",
         "type": "equippableItem",
@@ -4715,8 +4721,20 @@
         "effects": 0
       },
       {
+        "id": "ulv9vOb2Zp0NzHyc",
+        "name": "Dominatrix Whip (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "eCzSEIagUBh1JoRJ",
         "name": "Dorsal Fin",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "vNnH5DgzafIsUy7i",
+        "name": "Dorsal Fin (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7559,6 +7577,12 @@
         "effects": 0
       },
       {
+        "id": "NpyhqBvnjX0vvtM4",
+        "name": "Lucky Mallet (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "B0rR4DCijW1zC3SY",
         "name": "Lucky Seven",
         "type": "equippableItem",
@@ -10327,6 +10351,12 @@
       {
         "id": "2qY1KhC6cpihpdZY",
         "name": "Silver Knives",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FieZC4khuZR685gt",
+        "name": "Silver Knives (Passive)",
         "type": "equippableItem",
         "effects": 0
       },

@@ -1,0 +1,73 @@
+{
+  "_id": "ulv9vOb2Zp0NzHyc",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785869486832,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rope.gif",
+  "name": "Dominatrix Whip (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "2sLJqsT2XTEZtewC",
+    "props": {
+      "description": "<p>Equipped passive: +2 to Accuracy Checks and Magic Checks against Enraged targets.</p>",
+      "effect_table": {
+        "0": {
+          "accuracy_amount": "2",
+          "accuracy_operation": "add",
+          "effect_kind": "adjust_accuracy",
+          "effect_label": "dwhip_acc"
+        }
+      },
+      "max_level": "1",
+      "name": "Dominatrix Whip (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ANY_TARGET_HAS_ENRAGED == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "Attack,Spell,Skill",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "dwhip_acc",
+          "reaction_max_per_round": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_performs_action",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ulv9vOb2Zp0NzHyc"
+  },
+  "type": "equippableItem"
+}

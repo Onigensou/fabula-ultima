@@ -1,0 +1,84 @@
+{
+  "_id": "YoN1fOuvVvSJLGCd",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785869488447,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Blood%20Shield.png",
+  "name": "Blood Sword (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "kALWkUzVhaUPCQuG",
+    "props": {
+      "description": "<p>Equipped passive: While you are in Crisis, attacks with this weapon gain Drain and deal 200% damage.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "bsword_dmg, bsword_drain",
+          "effect_kind": "chain",
+          "effect_label": "bsword_crisis"
+        },
+        "1": {
+          "damage_amount": "2",
+          "damage_operation": "multiply",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "bsword_dmg"
+        },
+        "2": {
+          "action_keyword": "drain",
+          "effect_kind": "apply_action_keyword",
+          "effect_label": "bsword_drain"
+        }
+      },
+      "max_level": "1",
+      "name": "Blood Sword (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_STATUS_CRISIS == 1 && DAMAGE_IS_HP == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "bsword_crisis",
+          "reaction_max_per_round": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": true,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_will_deal_damage",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "YoN1fOuvVvSJLGCd"
+  },
+  "type": "equippableItem"
+}
