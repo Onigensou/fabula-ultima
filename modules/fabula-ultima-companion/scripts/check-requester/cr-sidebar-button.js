@@ -66,6 +66,8 @@ Hooks.once("ready", () => {
       { label: "Strength",     value: "strength" },
       { label: "Mobility",     value: "mobility" },
       { label: "Intimidation", value: "intimidation" },
+      { label: "Tracking",     value: "tracking" },
+      { label: "Lockpicking",  value: "lockpick" },
     ];
 
     // ── DB resolver ───────────────────────────────────────────────────────

@@ -68,6 +68,7 @@
     "props": {
       "description": "<ul>\n<li>When you are hit by an attack, you may create a <strong>Bond of Hatred&nbsp;</strong>towards the attacker.</li>\n<li>When you perform the&nbsp;<strong>Attack&nbsp;</strong>action, if you have a bond of&nbsp;<strong>Hatred&nbsp;</strong>towards your target, Gain +1 to your <strong>Accuracy Check.</strong></li>\n</ul>\n<p><strong>【Set Bonus】</strong></p>\n<p><strong>2-Piece</strong></p>\n<ul>\n<li>When you hit a creature with an attack, Gain <strong>10</strong><strong>&nbsp;HP</strong></li>\n</ul>\n<hr>\n<p><strong>3-Piece</strong></p>\n<ul>\n<li>????????</li>\n</ul>\n<hr>\n<p>&nbsp;</p>",
       "flavor_text": "<p><em>Those who wear its hear the whisper of vengeance....</em></p>",
+      "isSet": true,
       "item_baseDef": "0",
       "item_baseMdef": "0",
       "item_cost": "1500",

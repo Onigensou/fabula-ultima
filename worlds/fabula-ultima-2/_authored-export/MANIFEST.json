@@ -3551,6 +3551,12 @@
         "effects": 0
       },
       {
+        "id": "QPxTsK7pPYZBo2ZU",
+        "name": "Blood Helm (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "dMc6zPtiuBgAjvTA",
         "name": "Blood Mail",
         "type": "equippableItem",
@@ -5159,6 +5165,12 @@
         "effects": 0
       },
       {
+        "id": "ucZxmM1CLfMQasXI",
+        "name": "Enforcer Hat (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "2MAkZpclKVJH9Hvx",
         "name": "Enforcer Uniform",
         "type": "equippableItem",
@@ -6701,6 +6713,12 @@
         "effects": 0
       },
       {
+        "id": "b4WDIQiy7HB7caRW",
+        "name": "Hunter Boots (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "09KjioTnamwnRFv4",
         "name": "Hunter's Mantle",
         "type": "equippableItem",
@@ -7226,7 +7244,7 @@
         "id": "Z4juGssM2ArmX7Vq",
         "name": "Kindred Feather",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "aTVhiVRcHZpMinbg",
@@ -7291,6 +7309,12 @@
       {
         "id": "71Rxh6OREMP3D84z",
         "name": "Large Backpack",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "KfS3z6ctf3EDcOfL",
+        "name": "Last Hope — Equipment Set",
         "type": "equippableItem",
         "effects": 1
       },
@@ -7821,6 +7845,12 @@
         "name": "Master of Duality",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "XAeJzFOyCJ8H6Cau",
+        "name": "Master Thief — Equipment Set",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "MBbqLKpQZa3UiPtg",
@@ -10289,6 +10319,12 @@
         "effects": 0
       },
       {
+        "id": "JUuBEVyu4PgfMCol",
+        "name": "Silver Bolt (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "2qY1KhC6cpihpdZY",
         "name": "Silver Knives",
         "type": "equippableItem",
@@ -10844,7 +10880,7 @@
         "id": "8IUc1Fb4toLru5kk",
         "name": "Street Boots",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "8ULdiwfdgDOgtRex",
@@ -11312,6 +11348,12 @@
         "id": "Qzsa8k7cOe3Hnvt9",
         "name": "Thief Boot",
         "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "Qwl2Rs1LKasg8dNC",
+        "name": "Thief Boot (Passive)",
+        "type": "equippableItem",
         "effects": 0
       },
       {
@@ -11329,6 +11371,12 @@
       {
         "id": "etf0rw7s8rlcuXdd",
         "name": "Thief Dagger",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "PrzT7pj92iWEXO3F",
+        "name": "Thief Dagger (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -23103,7 +23151,7 @@
       {
         "id": "oVJkUYCxsiHW6guM",
         "name": "Fafnir Castle - Enemies",
-        "results": 0
+        "results": 7
       },
       {
         "id": "y7iU5LWEwxGwrGug",

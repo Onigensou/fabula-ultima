@@ -21,7 +21,8 @@ import {
   applyCritDamage, resolveIncomingReduction, applyHealReceiving, normalizeDamageType, applyAdjustOp,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense } from "./snapshot.js";
-import { applyClassAffinityAndMult, crushAffinity } from "./damage-ruleset.js";
+import { applyClassAffinityAndMult, crushAffinity,
+  bypassAffinity, affinityBypassRank } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck, decideHit } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
@@ -113,7 +114,10 @@ function makeStudiedGate(attacker) {
 // the `action_keywords` prop (comma/newline list). These are ALWAYS-on game
 // keywords — distinct from reaction-granted keywords (apply_action_keyword),
 // which are collected per-subject in computeSenderDamageBonuses. Both feed the
-// same damage-calc effects (pierce → Resistance treated as neutral).
+// same damage-calc effects. (Stale until 2026-08-04: this used to say
+// "pierce → Resistance treated as neutral". Pierce has been miss-for-half ONLY
+// since the 2026-08-02 keyword split; resistance-bypass is `ignore_resistance`
+// / `crush` — see bypassAffinity + crushAffinity in damage-ruleset.js.)
 function parseActionKeywords(view) {
   const raw = view?.source?.system?.props?.action_keywords ?? "";
   return String(raw).split(/[,\n]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
@@ -463,6 +467,11 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // Inherent Crush keyword: step affinity DOWN one level on NE < RS < IM < AB
       // (AB→IM, IM→RS, RS→NE; NE is the floor, VU untouched).
       if (primary.keywords?.includes("crush")) aff = crushAffinity(aff);
+      // "Damage dealt by this spell ignores Resistances" (Iceberg) — a CLAMP to
+      // NE for everything up to the named rung, unlike crush's one-rung step.
+      // Same helper the apply path uses (damage-ruleset), so the previewed
+      // number and the dealt number cannot drift.
+      aff = bypassAffinity(aff, affinityBypassRank(primary.keywords));
       return aff;
     };
 

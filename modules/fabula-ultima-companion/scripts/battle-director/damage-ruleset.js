@@ -89,11 +89,54 @@ export function crushAffinity(code) {
 // places (an item's own `action_keywords` prop, an `apply_action_keyword`
 // reaction, or a `deal_damage` row's `damage_keywords`), so normalise here.
 export function hasCrush(keywords) {
-  if (!keywords) return false;
-  const list = Array.isArray(keywords)
-    ? keywords
-    : String(keywords).split(/[,\n]/);
-  return list.some((k) => String(k).trim().toLowerCase() === "crush");
+  return normalizeKeywords(keywords).includes("crush");
+}
+
+// Shared normaliser for the three keyword sources above.
+function normalizeKeywords(keywords) {
+  if (!keywords) return [];
+  const list = Array.isArray(keywords) ? keywords : String(keywords).split(/[,\n]/);
+  return list.map((k) => String(k).trim().toLowerCase()).filter(Boolean);
+}
+
+// ── Affinity bypass (spell text: "damage dealt by this spell ignores
+//    Resistances", and Numen Attack's "…Resistances and Immunities") ─────────
+// DISTINCT FROM CRUSH. Crush steps down exactly one rung, so a Crush hit on an
+// Immune target is still Resistant. "Ignores Resistances" is a CLAMP, not a
+// step: any defence up to the named rung collapses straight to NE, and anything
+// above it is untouched (ignoring Resistance says nothing about Immunity).
+// Crush also skips DR; a bypass does not — it only speaks to affinity.
+//
+// Ladder NE(0) < RS(1) < IM(2) < AB(3); VU sits below NE and is never touched
+// (a bypass strips defence, it must not cancel a vulnerability).
+//
+// Authored as an inherent `action_keywords` entry, so it needs no new template
+// column and also works from a reaction's `apply_action_keyword` or a
+// deal_damage row's `damage_keywords`.
+const AFFINITY_RANK = Object.freeze({ NE: 0, RS: 1, IM: 2, AB: 3 });
+const BYPASS_KEYWORD_RANK = Object.freeze({
+  ignore_resistance: 1,   // RS -> NE
+  ignore_immunity: 2,     // RS, IM -> NE  (implies resistance)
+  ignore_absorption: 3,   // RS, IM, AB -> NE
+});
+
+// Highest bypass rank present in the list (0 = none).
+export function affinityBypassRank(keywords) {
+  let rank = 0;
+  for (const k of normalizeKeywords(keywords)) {
+    const r = BYPASS_KEYWORD_RANK[k];
+    if (r > rank) rank = r;
+  }
+  return rank;
+}
+
+// Collapse the target's affinity to NE when it sits at or below `rank`.
+export function bypassAffinity(code, rank) {
+  if (!rank) return code;
+  const c = String(code ?? "").toUpperCase();
+  const r = AFFINITY_RANK[c];
+  if (r === undefined || r === 0) return code;   // NE / VU / unknown untouched
+  return r <= rank ? "NE" : code;
 }
 
 export function computeIncomingDamage(actor, {
@@ -110,14 +153,17 @@ export function computeIncomingDamage(actor, {
   // Action keywords in play for this hit. Only `crush` affects the incoming
   // ruleset today — Keyword Repository: "Damage Dealt by this action cannot be
   // Reduce and ignore immunity". It therefore skips DR (flat + %), a reducing
-  // weapon-efficiency, and downgrades RS/IM to NE — while leaving VU/AB and any
-  // damage-INCREASING axis untouched. Shields are NOT bypassed: they are a
+  // weapon-efficiency, and steps the affinity down ONE rung (see crushAffinity —
+  // AB→IM→RS→NE, so Crush into Immune is still Resistant) — while leaving VU and
+  // any damage-INCREASING axis untouched. Shields are NOT bypassed: they are a
   // separate resource band consumed in applyDamageToTarget, not a reduction.
+  // For the CLAMP semantics of "ignores Resistances", see bypassAffinity.
   keywords = null,
 } = {}) {
   const breakdown = [];
   let v = Math.max(0, Math.ceil(_num(base)));
   const crush = hasCrush(keywords);
+  const bypassRank = affinityBypassRank(keywords);
 
   // 1) Damage reduction (flat + %).
   if (!ignoreDR && !crush) {
@@ -160,6 +206,9 @@ export function computeIncomingDamage(actor, {
   // Note AB→IM cancels the absorb, so `elementAbsorbed` below reads false and
   // the hit stops healing the target — but it lands as 0 (Immune), not full.
   if (crush) elementCode = crushAffinity(elementCode);
+  // Affinity bypass ("ignores Resistances"). AFTER crush so the two compose in
+  // the order the text implies: step down, then collapse what the bypass covers.
+  elementCode = bypassAffinity(elementCode, bypassRank);
   v = applyAffinityToDamage(v, elementCode);
 
   // 3) Damage-class affinity + 4) universal multiplier — via the shared helper so

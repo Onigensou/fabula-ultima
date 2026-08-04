@@ -373,6 +373,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "action_keywords": "ignore_resistance",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",

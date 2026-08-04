@@ -8,6 +8,69 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "Zf9aZLNiNI3AH3XP",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785863769815,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.check_mod_melee",
+          "mode": 2,
+          "priority": null,
+          "value": "${isEquipped ? 1 : 0}$"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.check_mod_ranged",
+          "mode": 2,
+          "priority": null,
+          "value": "${isEquipped ? 1 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Zf9aZLNiNI3AH3XP",
+          "originalParentId": "Z4juGssM2ArmX7Vq",
+          "originalUuid": "Item.Z4juGssM2ArmX7Vq.ActiveEffect.Zf9aZLNiNI3AH3XP"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2799.gif",
+      "name": "Attacks +1 Accuracy",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -67,6 +130,7 @@
     "container": null,
     "props": {
       "description": "<ul><li><p>Your attacks gain +1 Accuracy</p></li><li><p>You may perform the <strong>【💥 Protect】</strong>skill on an an ally @UUID[Actor.GnEmdc02BDDTmeaU] <em>(You may still perform Protect once per round)</em></p><hr contenteditable=\"false\"></li></ul><p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Ally @UUID[Actor.GnEmdc02BDDTmeaU]'s <strong>【🏹 Dive Strike】</strong>apply <strong>Hunter's Mark </strong>to the target</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Ally @UUID[Actor.GnEmdc02BDDTmeaU]'s <strong>Attacks </strong>gain +3 Accuracy</p><hr contenteditable=\"false\"></li></ul><p>&nbsp;<strong>4 Piece</strong></p><ul><li><p>Ally @UUID[Actor.GnEmdc02BDDTmeaU]'s <strong>【🏹 Dive Strike】</strong>gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Chain</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span><strong>2</strong>&nbsp;<em>(Both attack must target the same creature)</em></p></li></ul>",
+      "isSet": true,
       "item_baseDef": "0",
       "item_baseMdef": "0",
       "item_cost": "1200",

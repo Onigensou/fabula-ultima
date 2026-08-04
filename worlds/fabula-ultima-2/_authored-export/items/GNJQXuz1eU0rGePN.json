@@ -67,6 +67,7 @@
     "container": null,
     "props": {
       "description": "<ul>\n<li>Max IP +1<hr></li>\n<li>\n<ul>\n<li><strong>【Set Bonus】</strong></li>\n</ul>\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Hit Points, it restores 5 extra Hit Points.<hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Hit Points, it restores 5 extra Hit Points.<hr></li>\n</ul>\n</li>\n</ul>",
+      "isSet": true,
       "item_baseDef": "0",
       "item_baseMdef": "0",
       "item_cost": "0",

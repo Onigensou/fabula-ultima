@@ -8,6 +8,63 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "Y0gUzWOC6patqmcS",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785861699621,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.skill_level_bonus_dodge",
+          "mode": 2,
+          "priority": null,
+          "value": "${isEquipped ? 2 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Y0gUzWOC6patqmcS",
+          "originalParentId": "Qzsa8k7cOe3Hnvt9",
+          "originalUuid": "Item.Qzsa8k7cOe3Hnvt9.ActiveEffect.Y0gUzWOC6patqmcS"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Boot.png",
+      "name": "Dodge SL +2",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"

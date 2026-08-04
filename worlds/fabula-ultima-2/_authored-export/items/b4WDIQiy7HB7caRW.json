@@ -1,0 +1,48 @@
+{
+  "_id": "b4WDIQiy7HB7caRW",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785863770767,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2447.gif",
+  "name": "Hunter Boots (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "duaQp4cjNOboR9Gk",
+    "props": {
+      "description": "<p>Equipped passive: +2 to Checks that involve Tracking a Creature.</p>",
+      "effect_table": {
+        "0": {
+          "check_buff_action": "tracking",
+          "check_buff_amount": "2",
+          "effect_kind": "check_buff",
+          "effect_label": "tracking_buff_duaqp4"
+        }
+      },
+      "max_level": "1",
+      "name": "Hunter Boots (Passive)",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "b4WDIQiy7HB7caRW"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,88 @@
+{
+  "_id": "XAeJzFOyCJ8H6Cau",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785860548914,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "BJry7c66oqth7TaJ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.skill_level_bonus_dodge",
+          "mode": 2,
+          "priority": null,
+          "value": "2"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {},
+      "img": "icons/svg/aura.svg",
+      "name": "Dodge SL +2",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "V6fo91m4ATMoEWpi",
+  "img": "icons/svg/aura.svg",
+  "name": "Master Thief — Equipment Set",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "id": "XAeJzFOyCJ8H6Cau",
+      "img": "icons/svg/aura.svg",
+      "name": "Master Thief — Equipment Set",
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "Dodge SL +2",
+          "bonus_label": "Dodge SL +2",
+          "bonus_skill_ref": "",
+          "pieces": "3"
+        }
+      },
+      "set_name": "Master Thief",
+      "uuid": "Item.XAeJzFOyCJ8H6Cau"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "XAeJzFOyCJ8H6Cau"
+  },
+  "type": "equippableItem"
+}

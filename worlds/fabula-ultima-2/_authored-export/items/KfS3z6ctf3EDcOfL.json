@@ -1,0 +1,88 @@
+{
+  "_id": "KfS3z6ctf3EDcOfL",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785860549738,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "9k3wiwj7AgKqKjjg",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.skill_level_bonus_adrenaline",
+          "mode": 2,
+          "priority": null,
+          "value": "3"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {},
+      "img": "icons/svg/aura.svg",
+      "name": "Adrenaline SL +3",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "V6fo91m4ATMoEWpi",
+  "img": "icons/svg/aura.svg",
+  "name": "Last Hope — Equipment Set",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "id": "KfS3z6ctf3EDcOfL",
+      "img": "icons/svg/aura.svg",
+      "name": "Last Hope — Equipment Set",
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "Adrenaline SL +3",
+          "bonus_label": "Adrenaline SL +3",
+          "bonus_skill_ref": "",
+          "pieces": "2"
+        }
+      },
+      "set_name": "Last Hope",
+      "uuid": "Item.KfS3z6ctf3EDcOfL"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "KfS3z6ctf3EDcOfL"
+  },
+  "type": "equippableItem"
+}

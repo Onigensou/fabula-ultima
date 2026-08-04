@@ -317,6 +317,7 @@
     "props": {
       "description": "<ul><li><p>You absorb <strong>Bolt </strong>damage</p></li><li><p>Whenever you take <strong>Bolt </strong>damage, you gain <strong>Strong</strong></p><hr contenteditable=\"false\"></li></ul><ul><li><p><strong>【Set Bonus】</strong></p></li></ul><p><strong>2 Piece</strong></p><ul><li><p>At the start of your turn, deal <strong>5 Bolt </strong>damage to yourself</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Whenever a creature in the scene is targeted by an effect that deal <strong>Bolt </strong>damage, you may change its target to you instead</p></li></ul>",
       "isMartial": false,
+      "isSet": true,
       "item_baseDef": "0",
       "item_baseMdef": "0",
       "item_cost": "2500",

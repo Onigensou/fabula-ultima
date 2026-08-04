@@ -259,6 +259,23 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
   should never hard-code the author's own level. *(Potion Rain's `count: "2"` is
   the older baked style; it is correct only because SL is capped at 2.)*
 
+- **G4 — "ignores Resistances" is `ignore_resistance`, NOT `crush`.** Crush steps
+  affinity down exactly one rung (so it also weakens IM/AB) and skips DR; the
+  spell text grants neither. The bypass family is a CLAMP to NE for everything up
+  to the named rung, authored as an inherent `action_keywords` entry:
+  `ignore_resistance` (RS→NE) · `ignore_immunity` (RS,IM→NE — Numen Attack's
+  "…and Immunities") · `ignore_absorption`. VU is never touched. *(Iceberg. ~31
+  other docs still promise this in text without the keyword.)*
+
+- **G5 — A non-combat check bonus on gear is data, not a GM ruling.** "+1 to
+  Checks involving stealth" = a `check_buff` row on a linked PASSIVE `_skill`
+  (`system.container` = gear id), which the Check Requester folds into the roll.
+  🚨 `check_buff_action` must match a token in **`CHECK_BUFF_OPTIONS`
+  (`check-requester/cr-sidebar-button.js`)** EXACTLY — the join is a raw string
+  compare, so `intimidate` vs `intimidation` silently never fires. Current
+  tokens: `any · study · stealth · strength · mobility · intimidation ·
+  tracking · lockpick`.
+
 ## H. Engine philosophy
 
 - **H1 — Prefer reusing / generalizing an existing primitive over a new narrow

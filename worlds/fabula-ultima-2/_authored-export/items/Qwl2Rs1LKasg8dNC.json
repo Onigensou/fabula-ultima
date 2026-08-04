@@ -1,0 +1,48 @@
+{
+  "_id": "Qwl2Rs1LKasg8dNC",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785862381483,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Boot.png",
+  "name": "Thief Boot (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Qzsa8k7cOe3Hnvt9",
+    "props": {
+      "description": "<p>Equipped passive: +1 to Stealth Checks.</p>",
+      "effect_table": {
+        "0": {
+          "check_buff_action": "stealth",
+          "check_buff_amount": "1",
+          "effect_kind": "check_buff",
+          "effect_label": "thiefboot_stealth_buff"
+        }
+      },
+      "max_level": "1",
+      "name": "Thief Boot (Passive)",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Qwl2Rs1LKasg8dNC"
+  },
+  "type": "equippableItem"
+}

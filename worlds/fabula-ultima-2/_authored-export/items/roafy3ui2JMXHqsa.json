@@ -294,6 +294,7 @@
     "props": {
       "description": "<ul><li><p>You may perform one additional <strong>Dance</strong> per round, if you do, these <strong>Dance </strong>cost <strong>15 MP </strong>instead</p></li></ul><hr class=\"\" contenteditable=\"false\"><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>When you perform a <strong>Dance</strong>, if you had performed a different <strong>Dance</strong> during your <strong>last turn</strong>, gain +2 <strong>DEF</strong> and <strong>M.DEF </strong>until the <strong>start of your next turn</strong>.</p><hr contenteditable=\"false\"></li></ul><p><strong>3-Piece</strong></p><ul><li><p>When you perform a <strong>Dance</strong>, if you had performed a different <strong>Dance</strong> during your <strong>last turn, </strong>you gains <strong>Waltz Points: </strong>Each point increases your damage with <strong>Thrown</strong> weapons by <strong>3</strong>. You lose all your <strong>Waltz Points </strong>when you end your turn without performing <strong>Dance </strong>or you perform the same <strong>Dance </strong>as your previous turn.</p></li></ul>",
       "isMartial": false,
+      "isSet": true,
       "item_baseDef": "0",
       "item_baseMdef": "0",
       "item_cost": "2700",

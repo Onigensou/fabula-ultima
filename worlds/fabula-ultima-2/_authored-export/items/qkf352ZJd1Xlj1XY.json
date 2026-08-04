@@ -66,6 +66,7 @@
       "description": "<ul>\n<li>When you're perform the<strong>【Protect】</strong>skill<strong> </strong>on an ally. If the ally you're protecting is female, You may perform a <strong>free attack</strong> on the attacker, treat your High Roll as 0 when calculating damage dealt by this attack.<hr></li>\n</ul>\n<ul>\n<li style=\"list-style-type: none;\">\n<ul>\n<li><strong>【Set Bonus】</strong></li>\n</ul>\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Hit Points, it restores 5 extra Hit Points.<hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Hit Points, it restores 5 extra Hit Points.</li>\n</ul>\n</li>\n</ul>",
       "hand_slots": "One-handed",
       "isMartial": false,
+      "isSet": true,
       "item_cost": "800",
       "item_type": "weapon",
       "name": "Butler Gloves",

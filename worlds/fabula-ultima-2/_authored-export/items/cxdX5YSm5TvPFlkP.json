@@ -317,13 +317,14 @@
     "props": {
       "description": "<ul><li><p>After a creature deals damage to you, if you are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}, I</strong>nflicts <strong>@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed}&nbsp;</strong>to that creature.</p></li></ul><hr contenteditable=\"false\"><p>&nbsp;</p><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>Deals <strong>5</strong> extra damage if you are in <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a></p></li></ul><hr contenteditable=\"false\"><p><strong>3-Piece</strong></p><ul><li><p>Reduce damage dealt to you by <strong>5&nbsp;</strong>if you are in <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a></p></li></ul><hr contenteditable=\"false\"><p><strong>4-Piece</strong></p><ul><li><p>When your HP is reduce to 0. You may choose to persist at 1 HP, this ability can only trigger once per scene.</p><hr contenteditable=\"false\"></li></ul><p>&nbsp;</p>",
       "isMartial": true,
+      "isSet": true,
       "item_baseDef": "0",
       "item_baseMdef": "0",
       "item_cost": "2000",
       "item_def_bonus": "+2",
       "item_type": "armor",
       "name": "Blood Shield",
-      "set_name": ""
+      "set_name": "Bloodied Chivalry"
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

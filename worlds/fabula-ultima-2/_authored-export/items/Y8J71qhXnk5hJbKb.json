@@ -71,7 +71,7 @@
       "isMartial": true,
       "isModule": false,
       "isRelatedItem": false,
-      "isSet": false,
+      "isSet": true,
       "isUnique": false,
       "item_baseDef": "0",
       "item_baseMdef": "0",
