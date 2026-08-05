@@ -253,6 +253,131 @@
       "type": "equippableItem"
     },
     {
+      "_id": "4ddozgChSfuA8UNY",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785953757136,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Mega-Ether_from_Final_Fantasy_XIV_icon.webp",
+      "name": "Love Potion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "oTZBj8V64oJGD4nL",
+        "props": {
+          "cost": "-",
+          "description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "Charmed",
+              "effect_kind": "apply_ae",
+              "effect_label": "lovepotion_charm",
+              "target_ref": "action_targets"
+            }
+          },
+          "isCheck": false,
+          "name": "Love Potion",
+          "on_activate_effect_ref": "lovepotion_charm",
+          "skill_target": "One Enemy",
+          "skill_type": "Item",
+          "target_eligibility": "SPECIES_IS_HUMANOID == 1 && RANK_IS_CHAMPION == 0",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "TveSIs4RtZLvTtY0"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "53nOMeHhE6KY85tZ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785953756898,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Spicy%20Cocktail.gif",
+      "name": "Spicy Cocktail",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "47uHeXSs8KbF99pB",
+        "props": {
+          "cost": "-",
+          "description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "spicy_dmg,spicy_burn_chance",
+              "effect_kind": "chain",
+              "effect_label": "spicy_activate"
+            },
+            "1": {
+              "$deleted": false,
+              "damage_amount": "20",
+              "damage_element": "fire",
+              "effect_kind": "deal_damage",
+              "effect_label": "spicy_dmg",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "$deleted": false,
+              "chance_percent": "50",
+              "chance_then_ref": "spicy_burn",
+              "effect_kind": "chance",
+              "effect_label": "spicy_burn_chance"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "spicy_burn",
+              "target_ref": "action_targets"
+            }
+          },
+          "isCheck": false,
+          "on_activate_effect_ref": "spicy_activate",
+          "skill_target": "Each enemy you can see",
+          "skill_type": "Item",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "HnPrZDaSrXTKvkWv"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "C6kqhHTKsfHFVlhM",
       "_stats": {
         "compendiumSource": "Item.fOEeRwVzYy6YQuIN",
@@ -812,6 +937,73 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "rM2i8PvSSmXptVbC"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Ttmw4zro0oDcOmjH",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1785953756663,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "name": "Bread",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "container": "uRmOhZlUAH5YsoTM",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "20",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Target creature <strong>recovers 20 HP</strong></p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Bread",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "Heal",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "lll2QQdBLyZuKxxd"
       },
       "type": "equippableItem"
     },

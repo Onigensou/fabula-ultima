@@ -17,6 +17,141 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GoblinBandit_Standard.png",
   "items": [
     {
+      "_id": "60EzpYa3hdJgQAvS",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785953824670,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13039.gif",
+      "name": "Poisoned Dagger (gear skill)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "PCKNCmAamgkUqO0t",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Envenomed",
+              "effect_kind": "apply_ae",
+              "effect_label": "onhit_envenomed_p50",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13039.gif",
+          "isCheck": false,
+          "name": "Poisoned Dagger (gear skill)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "chance(50)",
+              "reaction_action_intent": "",
+              "reaction_action_target": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "onhit_envenomed_p50",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "NAhxhYpxpcmWXMn0"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DIQazD6ipX8fRdlI",
+      "_stats": {
+        "compendiumSource": "Item.P4dQ5Ms73YVs9gPv",
+        "coreVersion": "12.343",
+        "createdTime": 1785953824438,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Headgear/5180.gif",
+      "name": "Dodge",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": "eW8FaRLiblcw6TnH",
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Rogue",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Headgear/5180.gif",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Dodge",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Defense</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>+3</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "yHZ9soDXTvalWPGx"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "eW8FaRLiblcw6TnH",
       "_stats": {
         "compendiumSource": "Item.3jT3wIWyzV7sgAb6",

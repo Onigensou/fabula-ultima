@@ -12609,6 +12609,10 @@
             "name": "Cursed Sword"
           },
           {
+            "id": "oonpwtiJgJ5TNUT3",
+            "name": "Cursed Sword (gear skill)"
+          },
+          {
             "id": "bUu8h4C4kis0z3QL",
             "name": "Dark Bane"
           },
@@ -12749,6 +12753,10 @@
         "type": "character",
         "items": [
           {
+            "id": "00agcR7HijtnrFTF",
+            "name": "Cleaving Strike"
+          },
+          {
             "id": "Wsf5LZFHVpVN0btT",
             "name": "Cleaving Strike"
           },
@@ -12821,6 +12829,10 @@
             "name": "Rock your World"
           },
           {
+            "id": "rYO7fJOM58iqjZeA",
+            "name": "Rock your World"
+          },
+          {
             "id": "EvGcS4Bw6TgoV0Fw",
             "name": "Shout my Soul"
           },
@@ -12840,6 +12852,10 @@
         "name": "⭐️ Masked Girl",
         "type": "character",
         "items": [
+          {
+            "id": "NPfissAPpeINh1g8",
+            "name": "Draconic Roar"
+          },
           {
             "id": "AmcXC7n0jM0WujmT",
             "name": "Dragonfire Dive"
@@ -12914,6 +12930,10 @@
           },
           {
             "id": "89Jm94RRs9iUmBLJ",
+            "name": "Bandit Raid"
+          },
+          {
+            "id": "m5YKFb5oQ8wSUbLZ",
             "name": "Bandit Raid"
           },
           {
@@ -13336,6 +13356,10 @@
             "name": "Dodge"
           },
           {
+            "id": "XixYfDn3BWJcwKw3",
+            "name": "Dodge"
+          },
+          {
             "id": "ukJHC5GkdpCQzdml",
             "name": "Fast Hand"
           },
@@ -13374,6 +13398,10 @@
           {
             "id": "Ose5AQKL4nTQpIG7",
             "name": "Dagger"
+          },
+          {
+            "id": "oYAp6WtGlwUnxpEh",
+            "name": "Dodge"
           },
           {
             "id": "u9Opr8xbhegJpjz4",
@@ -13416,6 +13444,10 @@
             "name": "Bow"
           },
           {
+            "id": "bJlaohRt3fyO0B7j",
+            "name": "Dodge"
+          },
+          {
             "id": "VqfQk1IMEIUxoQs1",
             "name": "Dodge"
           },
@@ -13426,6 +13458,10 @@
           {
             "id": "hwXssUEArEaJbSiA",
             "name": "Looting Bow"
+          },
+          {
+            "id": "DE21iWihFYFDBiOa",
+            "name": "Looting Bow (Passive)"
           },
           {
             "id": "Z3aEOVEJb6pbh2Ep",
@@ -13466,6 +13502,10 @@
           {
             "id": "4tw3W8tJnLStGRdm",
             "name": "Heavy Axe"
+          },
+          {
+            "id": "74TVKHOvcBvzbdT1",
+            "name": "Love Potion"
           },
           {
             "id": "hHEi7hpYEM4GkG1C",
@@ -13518,6 +13558,10 @@
           {
             "id": "Lsw1lNJ1Nr99zt9I",
             "name": "Golem Punch"
+          },
+          {
+            "id": "HafxOPEtHF26jeNq",
+            "name": "Golem Soulstone"
           },
           {
             "id": "XOYJVXksaXNzWmGp",
@@ -13646,6 +13690,10 @@
           {
             "id": "Vzxh9XEOVmwRnRlE",
             "name": "Poison Lash"
+          },
+          {
+            "id": "4XJIwepBJaRsu66L",
+            "name": "Poison Lash (gear skill)"
           },
           {
             "id": "gzLycvtEwVcCup4y",
@@ -13859,6 +13907,10 @@
             "name": "Bandit King"
           },
           {
+            "id": "6btYlmbiZ4pRhdft",
+            "name": "Bandit Raid"
+          },
+          {
             "id": "eHZgjIMONjFv9B4d",
             "name": "Brave Glaive"
           },
@@ -14061,6 +14113,10 @@
           {
             "id": "0bJVBvEP9ESLcbxs",
             "name": "Protect"
+          },
+          {
+            "id": "KOSoc8vSzFwLQgiZ",
+            "name": "Provoke"
           },
           {
             "id": "RRAnoXKVQih8U1WX",
@@ -14500,8 +14556,16 @@
             "name": "Absorb MP"
           },
           {
+            "id": "kKYpm9pnHYc2Nw6l",
+            "name": "Adrenaline Endure"
+          },
+          {
             "id": "7DucZSzZFd7aY5X6",
             "name": "Adrenaline Potion"
+          },
+          {
+            "id": "ZiqOC3AnXPYsVLat",
+            "name": "Adrenaline Rush"
           },
           {
             "id": "4o81HbhR7ND4zM4y",
@@ -15267,6 +15331,10 @@
             "name": "(Empty)"
           },
           {
+            "id": "a72FyKpyROJ78IWO",
+            "name": "Charm"
+          },
+          {
             "id": "ZCN8sP4uCDOx71xY",
             "name": "Dead Branch"
           },
@@ -15712,11 +15780,23 @@
             "name": "+5 Runic Shield"
           },
           {
+            "id": "c9KB9tJAsydN3xnx",
+            "name": "Adrenaline Endure"
+          },
+          {
             "id": "JtHdr7yVmz1CC63W",
             "name": "Adrenaline Potion"
           },
           {
+            "id": "OoBqgmeURbTH7d5w",
+            "name": "Adrenaline Rush"
+          },
+          {
             "id": "dY7K6TBgeCBn6v96",
+            "name": "Apple"
+          },
+          {
+            "id": "Vn109KRGiH0xheRs",
             "name": "Apple"
           },
           {
@@ -15754,6 +15834,14 @@
           {
             "id": "ex3ZNA9wLrwNjDwI",
             "name": "Bread"
+          },
+          {
+            "id": "vwKEyclzvClHBJRY",
+            "name": "Bread"
+          },
+          {
+            "id": "LzSawvHFNBA5CdEa",
+            "name": "Café au Lait"
           },
           {
             "id": "vS9KOLFe1mIhiJBi",
@@ -15816,6 +15904,10 @@
             "name": "Golem Soulstone"
           },
           {
+            "id": "z0V9VVTbbrOFHs5Z",
+            "name": "Golem Soulstone"
+          },
+          {
             "id": "r6KwPxJKg4mxMyav",
             "name": "Gryphon Whistle"
           },
@@ -15856,12 +15948,24 @@
             "name": "Looting Bow"
           },
           {
+            "id": "rUMtX6xOMRYGvVvK",
+            "name": "Looting Bow (Passive)"
+          },
+          {
+            "id": "30aFFXoVM2lWFe7p",
+            "name": "Mega-Elixir"
+          },
+          {
             "id": "AHy1tE6vcMJBxBlN",
             "name": "Mega-Elixir"
           },
           {
             "id": "Ru86pRjYDJSJtQf9",
             "name": "Pepetein"
+          },
+          {
+            "id": "5hvxauKmmsfLAdnl",
+            "name": "Phoenix Feather"
           },
           {
             "id": "FW4tpwVEpjirTiJM",
@@ -15890,6 +15994,10 @@
           {
             "id": "VuEqfVKZJ3rU1ce9",
             "name": "Ring of the Pupil"
+          },
+          {
+            "id": "I39txF6Uze60y6eg",
+            "name": "Rock your World"
           },
           {
             "id": "pB5jPDL9EJDqFCTy",
@@ -16526,12 +16634,20 @@
             "name": "Cat Ears"
           },
           {
+            "id": "Q7hhRsAI1JCxHW83",
+            "name": "Cat Ears (Passive)"
+          },
+          {
             "id": "GkAU5LVf77rZyzfo",
             "name": "Scale Thresher"
           },
           {
             "id": "BklcNlF0xesmL8bj",
             "name": "Sneaker"
+          },
+          {
+            "id": "aFya5D8aDyy55IAm",
+            "name": "Sneaker (Passive)"
           }
         ],
         "effects": 0
@@ -16558,11 +16674,19 @@
             "name": "Decoy Doll"
           },
           {
+            "id": "Y5erAjFf5FNCGOZc",
+            "name": "Decoy Doll"
+          },
+          {
             "id": "6cTszJo67Yroy1oi",
             "name": "Life Charm"
           },
           {
             "id": "GKd2BpjsFRSDrOWB",
+            "name": "Mega-Remedy"
+          },
+          {
+            "id": "qPZT2J8stNlVqvHM",
             "name": "Mega-Remedy"
           },
           {
@@ -16588,6 +16712,10 @@
           {
             "id": "S8X4MqvaRqpL8Uro",
             "name": "Morrigan"
+          },
+          {
+            "id": "Du6GhucL4DsrOgPR",
+            "name": "Morrigan (Passive)"
           },
           {
             "id": "ZSk9eqfH9PPsMg5r",
@@ -16844,6 +16972,10 @@
             "name": "(Empty)"
           },
           {
+            "id": "DIQazD6ipX8fRdlI",
+            "name": "Dodge"
+          },
+          {
             "id": "fmoUwtD8zuzKpDqA",
             "name": "Dodge"
           },
@@ -16862,6 +16994,10 @@
           {
             "id": "PCKNCmAamgkUqO0t",
             "name": "Poisoned Dagger"
+          },
+          {
+            "id": "60EzpYa3hdJgQAvS",
+            "name": "Poisoned Dagger (gear skill)"
           },
           {
             "id": "eW8FaRLiblcw6TnH",
@@ -17082,12 +17218,24 @@
             "name": "Heal"
           },
           {
+            "id": "lvBPRueNCVnJZOcw",
+            "name": "Heal"
+          },
+          {
             "id": "TFlkSWMWp59Nqh9h",
             "name": "Heat HANDS Replica"
           },
           {
+            "id": "D7O7B977xdz6Mndg",
+            "name": "Mega-Elixir"
+          },
+          {
             "id": "GlBKvz5lDwGextqo",
             "name": "Mega-Elixir"
+          },
+          {
+            "id": "jfHjXIvIdtMlYDpi",
+            "name": "Mega-Remedy"
           },
           {
             "id": "LVwLI7slKbPofiP4",
@@ -17108,6 +17256,10 @@
           {
             "id": "q3NNHt8WIQVEcIEv",
             "name": "Orb"
+          },
+          {
+            "id": "6QxALpV0MFncqoF4",
+            "name": "Phoenix Feather"
           },
           {
             "id": "exVAwWwaIvNcyuwc",
@@ -17496,6 +17648,10 @@
             "name": "Cataclysm"
           },
           {
+            "id": "wMeI2yZpkygIEEcf",
+            "name": "Cataclysm"
+          },
+          {
             "id": "SzMEB4panlh7XBF6",
             "name": "Charred Bone"
           },
@@ -17820,6 +17976,10 @@
             "name": "Apple Juice"
           },
           {
+            "id": "8ffN2PB9whUufzQi",
+            "name": "Apple Juice"
+          },
+          {
             "id": "BGBKm7rItmmvzf31",
             "name": "Arc Wand"
           },
@@ -17840,6 +18000,10 @@
             "name": "Cataclysm"
           },
           {
+            "id": "64uQPGq8hfMmWHEb",
+            "name": "Cataclysm"
+          },
+          {
             "id": "KHWUWYvTzbYyHPs7",
             "name": "Dark Blood"
           },
@@ -17850,6 +18014,10 @@
           {
             "id": "FBWC6v9hhDqMlIaZ",
             "name": "Divination"
+          },
+          {
+            "id": "5l8AnYfYh6kwrgvo",
+            "name": "Draconic Roar"
           },
           {
             "id": "hxPlRSwOxHShzdRK",
@@ -17876,6 +18044,14 @@
             "name": "Encyclopedia"
           },
           {
+            "id": "VHTOKHGoGDqSioQU",
+            "name": "Encyclopedia (Passive)"
+          },
+          {
+            "id": "diFrvDPn1Hxrixhj",
+            "name": "Encyclopedia Strike"
+          },
+          {
             "id": "xmLeuCQNdswv14Zi",
             "name": "Entropic Magic"
           },
@@ -17896,8 +18072,16 @@
             "name": "Golden Apple"
           },
           {
+            "id": "01jpe2pMh25K2kmP",
+            "name": "Grape Juice"
+          },
+          {
             "id": "irzhS1BV9TsO7xlb",
             "name": "Grape Juice"
+          },
+          {
+            "id": "sshXVu5BJlH5WnsG",
+            "name": "Heal"
           },
           {
             "id": "Wtcdd42MQHwsOsSe",
@@ -17916,6 +18100,10 @@
             "name": "Love Potion"
           },
           {
+            "id": "KHWBKjwoiUYHWadi",
+            "name": "Love Potion"
+          },
+          {
             "id": "v56GvN63nvIYV4iJ",
             "name": "Lucky Seven"
           },
@@ -17930,6 +18118,10 @@
           {
             "id": "Pf1vhSjtOOTBXFkB",
             "name": "Morrigan"
+          },
+          {
+            "id": "U9yDaqLSZ3OkWBhj",
+            "name": "Morrigan (Passive)"
           },
           {
             "id": "qXvY2q2G2bjHFdu1",
@@ -17952,12 +18144,20 @@
             "name": "Sage Robe"
           },
           {
+            "id": "xc2RDF7rdYOxG8mG",
+            "name": "Starfall"
+          },
+          {
             "id": "z1GsqcJC8bh4TOAs",
             "name": "Stop"
           },
           {
             "id": "720wa4E0ldJEqXG4",
             "name": "Windpiercer"
+          },
+          {
+            "id": "y4YtYwvpdzKAWLxH",
+            "name": "Windpiercer (Passive)"
           },
           {
             "id": "oe3OP8VmjHJpWJ41",
@@ -18577,6 +18777,10 @@
         "type": "character",
         "items": [
           {
+            "id": "K5C19MLqfJjZvZAp",
+            "name": "Draconic Roar"
+          },
+          {
             "id": "uo5X0wsuKZv7dIVJ",
             "name": "Dragonfire Dive"
           },
@@ -18857,8 +19061,16 @@
         "type": "character",
         "items": [
           {
+            "id": "2P765IXlhgaKGAgf",
+            "name": "Adrenaline Endure"
+          },
+          {
             "id": "wfTXdE64mFWcPFXm",
             "name": "Adrenaline Potion"
+          },
+          {
+            "id": "3NeQLJfwKiQ2gvcx",
+            "name": "Adrenaline Rush"
           },
           {
             "id": "8T5Bs1oP1zrxtiQp",
@@ -20135,6 +20347,10 @@
         "type": "character",
         "items": [
           {
+            "id": "2wLFOVSX9REWyAPL",
+            "name": "Apple"
+          },
+          {
             "id": "QzvztoJvbcrRCTIG",
             "name": "Apple"
           },
@@ -20147,11 +20363,23 @@
             "name": "Apple Juice"
           },
           {
+            "id": "mgv1hi09aTjVyHHo",
+            "name": "Apple Juice"
+          },
+          {
+            "id": "P98CdaVOSyNbJVvP",
+            "name": "Apple Juice"
+          },
+          {
             "id": "UBEgeObQWBwY8ulC",
             "name": "Apple Juice"
           },
           {
             "id": "3WCmsvhEkWeyvNPs",
+            "name": "Apple o' Archer"
+          },
+          {
+            "id": "omBNslF4n66hzvPn",
             "name": "Apple o' Archer"
           },
           {
@@ -20364,6 +20592,10 @@
           {
             "id": "YHCGvnkjThr5rw1v",
             "name": "Morrigan"
+          },
+          {
+            "id": "gpdOsyY2nJYbFcxE",
+            "name": "Morrigan (Passive)"
           },
           {
             "id": "io6ZgOI4Hz3mvVlj",
@@ -20817,6 +21049,10 @@
         "type": "character",
         "items": [
           {
+            "id": "Ttmw4zro0oDcOmjH",
+            "name": "Bread"
+          },
+          {
             "id": "uRmOhZlUAH5YsoTM",
             "name": "Bread"
           },
@@ -20837,6 +21073,10 @@
             "name": "Grape Juice"
           },
           {
+            "id": "4ddozgChSfuA8UNY",
+            "name": "Love Potion"
+          },
+          {
             "id": "oTZBj8V64oJGD4nL",
             "name": "Love Potion"
           },
@@ -20846,6 +21086,10 @@
           },
           {
             "id": "47uHeXSs8KbF99pB",
+            "name": "Spicy Cocktail"
+          },
+          {
+            "id": "53nOMeHhE6KY85tZ",
             "name": "Spicy Cocktail"
           }
         ],
@@ -22103,6 +22347,10 @@
           },
           {
             "id": "LnD53Z0tYhywBniu",
+            "name": "Decoy Doll"
+          },
+          {
+            "id": "vpfWKmX36HzJ7KO0",
             "name": "Decoy Doll"
           },
           {

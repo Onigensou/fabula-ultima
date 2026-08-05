@@ -76,6 +76,145 @@
   "img": "https://scontent.fkkc3-1.fna.fbcdn.net/v/t39.30808-6/571211532_10231595727985478_4379735990672630606_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeFwaD_2JemBBBOiKDlPPT_PG8ALucZoeP0bwAu5xmh4_bhZwAeV2S5JQ21eCEOO9pHpc_Hp3jM_CrhS1J_8xEse&_nc_ohc=IQncNICFuNcQ7kNvwFJHvi3&_nc_oc=Adn_rw_sS9rvcugffwP6z9JhKPu_--GNKPWLAr5pEimCPp2EEHQRSUaVm6gyyVsHv2Y&_nc_zt=23&_nc_ht=scontent.fkkc3-1.fna&_nc_gid=03mTb5CijzYlk3M4SnkVaA&oh=00_Afnkr_BlDvtPs2x_PWNwDbh844V4SFI6Hz5-zXg2lleSKQ&oe=6937E606",
   "items": [
     {
+      "_id": "2P765IXlhgaKGAgf",
+      "_stats": {
+        "compendiumSource": "Item.hJwjk4PQQh3HInmV",
+        "coreVersion": "12.343",
+        "createdTime": 1785953829752,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "3U5fp5mjLDNIlaQb",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "damage_receiving_mod_all",
+              "mode": 2,
+              "priority": 1,
+              "value": "30"
+            }
+          ],
+          "description": "<p>Reduce the next instance of damage by 30</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "3U5fp5mjLDNIlaQb",
+              "originalParentId": "hJwjk4PQQh3HInmV",
+              "originalUuid": "Item.hJwjk4PQQh3HInmV.ActiveEffect.3U5fp5mjLDNIlaQb"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/aura.svg",
+          "name": "Damage Reduction",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/J/J1-4.webp",
+      "name": "Adrenaline Endure",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "wfTXdE64mFWcPFXm",
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "3U5fp5mjLDNIlaQb",
+              "active_effect_percent": "100",
+              "active_effect_target": "self",
+              "active_effect_trigger": "on_attack"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Reduce the next instance of damage by 30</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Adrenaline Endure",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "X2BkD1bUUyJHdUBq"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "35rXj9y8mLKB2MKD",
       "_stats": {
         "compendiumSource": "Item.tTLMqCkHSxjnTiDQ",
@@ -134,6 +273,144 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "pbbYxDzAyCe61xy6"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "3NeQLJfwKiQ2gvcx",
+      "_stats": {
+        "compendiumSource": "Item.LrjCCQm2QcBqTyXU",
+        "coreVersion": "12.343",
+        "createdTime": 1785953829752,
+        "duplicateSource": "Item.hJwjk4PQQh3HInmV",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "3U5fp5mjLDNIlaQb",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "damage_receiving_mod_all",
+              "mode": 2,
+              "priority": 1,
+              "value": "30"
+            }
+          ],
+          "description": "<p>Reduce the next instance of damage by 30</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "3U5fp5mjLDNIlaQb",
+              "originalParentId": "hJwjk4PQQh3HInmV",
+              "originalUuid": "Item.hJwjk4PQQh3HInmV.ActiveEffect.3U5fp5mjLDNIlaQb"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/aura.svg",
+          "name": "Damage Reduction",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/J/J1-4.webp",
+      "name": "Adrenaline Rush",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "wfTXdE64mFWcPFXm",
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "3U5fp5mjLDNIlaQb",
+              "active_effect_percent": "100",
+              "active_effect_target": "self",
+              "active_effect_trigger": "on_attack"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Reduce the next instance of damage by 30</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Adrenaline Rush",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "G2wJOMw7AgKtte1R"
       },
       "type": "equippableItem"
     },

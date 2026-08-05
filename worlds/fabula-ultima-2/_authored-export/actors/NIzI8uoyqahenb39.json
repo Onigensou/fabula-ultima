@@ -768,6 +768,71 @@
       "type": "equippableItem"
     },
     {
+      "_id": "gpdOsyY2nJYbFcxE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785953830044,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Morrigan (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "YHCGvnkjThr5rw1v",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "mor_recover",
+              "grant_amount": "10",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "isCheck": false,
+          "name": "Scouter (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_action_intent": "",
+              "reaction_effect_ref": "mor_recover",
+              "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_completes_attack"
+            }
+          },
+          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "AN5Vw7iyc7hSIXvH"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "io6ZgOI4Hz3mvVlj",
       "_stats": {
         "compendiumSource": "Item.UIdRwayw4g7chfU0",

@@ -43,6 +43,73 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Pomme_Standard.png",
   "items": [
     {
+      "_id": "2wLFOVSX9REWyAPL",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1785953755395,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "name": "Apple",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "container": "QzvztoJvbcrRCTIG",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "10",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Target creature <strong>recovers 10 HP</strong></p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Apple",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "Heal",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "bsfVbKLci479o9Up"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "3WCmsvhEkWeyvNPs",
       "_stats": {
         "compendiumSource": "Item.dhGCKitpetFxtw3o",
@@ -392,6 +459,322 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "mgLKRtSDNp2zAkbC"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "mgv1hi09aTjVyHHo",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785953755716,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/531.gif",
+      "name": "Apple Juice",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "UBEgeObQWBwY8ulC",
+        "props": {
+          "cost": "-",
+          "description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "applejuice_heal",
+              "grant_amount": "30",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
+          "isCheck": false,
+          "name": "Apple Juice",
+          "on_activate_effect_ref": "applejuice_heal",
+          "skill_tags": "potion",
+          "skill_target": "One Ally",
+          "skill_type": "Item",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "FgLDNOvQyYbNqlV8"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "omBNslF4n66hzvPn",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785953756009,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "L8bI5UjhFxkxDvhx",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "must_be_targeted_by",
+              "mode": 0,
+              "priority": 20,
+              "value": "ranged"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "sourceItemId": "dhGCKitpetFxtw3o"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Apple%20o%20Archer.gif",
+          "name": "Apple o' Archer Taunt",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "apple-taunt"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Apple%20o%20Archer.gif",
+      "name": "Apple o' Archer",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "3WCmsvhEkWeyvNPs",
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Gain +3 to your Accuracy check (while equipped).</p></li><li><p>The first <strong>ranged Attack</strong> each round against your party must include you as one of its targets.</p></li></ul>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Apple o' Archer Taunt",
+              "count": "1",
+              "effect_kind": "apply_ae",
+              "effect_label": "apple_arm",
+              "menu_description": "",
+              "menu_label": "",
+              "on_empty": "abort",
+              "target_ref": "apple_self"
+            },
+            "1": {
+              "count": "",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "apple_consume",
+              "filter_tag": "apple-taunt",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "apple_self"
+            },
+            "2": {
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "apple_self",
+              "exclude_self": false,
+              "iteration_mode": "together",
+              "menu_description": "",
+              "menu_label": "",
+              "mode": "exact",
+              "skip_when_passive": true,
+              "target_prompt": ""
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Apple o' Archer",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_effect_ref": "apple_arm",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "round_start",
+              "requires_skill": ""
+            },
+            "1": {
+              "condition_formula": "",
+              "reaction_effect_ref": "apple_arm",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start",
+              "requires_skill": ""
+            },
+            "2": {
+              "condition_formula": "ATTACK_IS_RANGED == 1",
+              "reaction_action_intent": "",
+              "reaction_action_target": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "apple_consume",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_targeted_by_action",
+              "requires_skill": ""
+            },
+            "3": {
+              "condition_formula": "",
+              "reaction_effect_ref": "apple_arm",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_equips_item",
+              "requires_skill": ""
+            },
+            "4": {
+              "condition_formula": "",
+              "reaction_effect_ref": "apple_consume",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_unequips_item",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "ykKEyw9o3OVdHwHY"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "P98CdaVOSyNbJVvP",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1785953756333,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/531.gif",
+      "name": "Apple Juice",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "87isKaee27uz2osu",
+        "props": {
+          "cost": "-",
+          "description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "applejuice_heal",
+              "grant_amount": "30",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
+          "isCheck": false,
+          "name": "Apple Juice",
+          "on_activate_effect_ref": "applejuice_heal",
+          "skill_tags": "potion",
+          "skill_target": "One Ally",
+          "skill_type": "Item",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "FgLDNOvQyYbNqlV8"
       },
       "type": "equippableItem"
     },
