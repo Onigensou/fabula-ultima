@@ -9664,8 +9664,17 @@ async function transferLootToCaster(caster, sourceItem) {
   }
 
   try {
-    const data = sourceItem.toObject();
-    delete data._id;
+    // Clear system.container. `resolveStealSourceItem` can hand us a CONTAINED
+    // item — its `game.items.get(uniqueId)` branch is unreliable because a
+    // toObject clone inherits the source's uniqueId, so a re-authored skill
+    // keeps the id of whatever it was cloned from. Copying such a source
+    // verbatim lands an item on the caster bound to a world item: invisible,
+    // and skipped by CustomItem#_preDelete's cascade forever after.
+    const core = window["oni.ItemTransferCore"];
+    const data = core?.prepareItemCopyData
+      ? core.prepareItemCopyData(sourceItem)
+      : (() => { const d = sourceItem.toObject(); delete d._id; delete d.items;
+                 d.system = d.system ?? {}; d.system.container = null; return d; })();
     // Make sure quantity starts at 1 for stackables (in case source has 0).
     if (isStackable) {
       const ip = data.system?.props ?? {};

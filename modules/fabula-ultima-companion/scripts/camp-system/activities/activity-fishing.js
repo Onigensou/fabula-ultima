@@ -117,14 +117,19 @@
         console.warn(TAG, `Fish item not found in world: ${entry.id} (${fishName})`);
         return;
       }
-      const data = worldItem.toObject();
-      delete data._id;
+      // prepareItemCopyData clears system.container: a copy inherits the
+      // source's parent link, which would land the fish on the actor pointing
+      // at a world item (an invisible, un-cascadable orphan).
+      const core = window["oni.ItemTransferCore"];
+      const data = core?.prepareItemCopyData
+        ? core.prepareItemCopyData(worldItem)
+        : (() => { const d = worldItem.toObject(); delete d._id; delete d.items;
+                   d.system = d.system ?? {}; d.system.container = null; return d; })();
       const [created] = await actor.createEmbeddedDocuments("Item", [data]);
 
       // A bare embedded create yields a CHILDLESS parent — CSB only walks
       // `data.items` in its own static create. Same primitive the shop/trade
       // transfers use. Best-effort: the fish still lands if a child fails.
-      const core = window["oni.ItemTransferCore"];
       if (created && typeof core?.copySubItemTree === "function") {
         try {
           await core.copySubItemTree({ sourceItem: worldItem, receiverActor: actor, receiverParent: created });

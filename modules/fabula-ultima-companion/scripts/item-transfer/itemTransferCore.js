@@ -277,6 +277,33 @@
   }
 
   /**
+   * PUBLIC primitive — build clean create-data for copying an item onto an
+   * actor. Use this instead of a bare `src.toObject(); delete data._id`.
+   *
+   * It clears **`system.container`**, and that is the whole point: a copy
+   * inherits the source's container, so copying an item that is ITSELF a
+   * contained child (a linked `_skill` living inside a gear/consumable shell)
+   * lands on the actor still pointing at the SOURCE WORLD item. CSB can't
+   * attach it to anything, so it renders nowhere — and it is effectively
+   * immortal, because `CustomItem#_preDelete` only cascades to children whose
+   * container matches the id being deleted. That is the orphan factory
+   * (reproduced 2026-08-06); moving items around merely *reveals* it, by
+   * deleting the correctly-linked siblings and leaving the mis-linked one.
+   *
+   * A copy's container is meaningless on the receiving actor anyway — the
+   * containing item did not come along — so top-level is always correct.
+   * `copySubItemTree` re-establishes real child links afterwards.
+   */
+  function prepareItemCopyData(sourceItem) {
+    const data = sourceItem.toObject();
+    delete data._id;
+    delete data.items;              // CSB toObject() artifact, not in the schema
+    data.system = data.system ?? {};
+    data.system.container = null;   // never inherit the source's parent link
+    return data;
+  }
+
+  /**
    * PUBLIC primitive — give a freshly-created item the sub-item tree its
    * source had.
    *
@@ -635,10 +662,7 @@
         newQty: receiverNewQty
       });
     } else {
-      const itemData = sourceItem.toObject();
-      delete itemData._id;
-      delete itemData.items; // CSB toObject() artifact — children are handled below
-      itemData.system = itemData.system || {};
+      const itemData = prepareItemCopyData(sourceItem);
       itemData.system.props = itemData.system.props || {};
       itemData.system.props.item_quantity = transferQty;
 
@@ -961,10 +985,7 @@
         newQty: receiverNewQty
       });
     } else {
-      const itemData = templateItem.toObject();
-      delete itemData._id;
-      delete itemData.items; // CSB toObject() artifact — children are handled below
-      itemData.system = itemData.system || {};
+      const itemData = prepareItemCopyData(templateItem);
       itemData.system.props = itemData.system.props || {};
       itemData.system.props.item_quantity = grantQty;
 
@@ -1178,7 +1199,8 @@
     grantItemToActor,
     removeItemFromActor,
 
-    // Sub-item (CSB container) primitive, for any copier outside this module
+    // Sub-item (CSB container) primitives, for any copier outside this module
+    prepareItemCopyData,
     copySubItemTree,
 
     // Zenit / currency API

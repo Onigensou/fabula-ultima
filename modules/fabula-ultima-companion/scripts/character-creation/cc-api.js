@@ -250,8 +250,14 @@ async function grantEquipment(actor, draft) {
       warn(`equipment source missing, skipping: ${pick.name} (${pick.uuid})`);
       continue;
     }
-    const data = source.toObject();
-    delete data._id;
+    // Clear system.container: a copy inherits the source's parent link, and a
+    // pick that points at a contained `_skill` would land on the actor bound to
+    // a world item — invisible, and immune to the delete cascade.
+    const core0 = window["oni.ItemTransferCore"];
+    const data = core0?.prepareItemCopyData
+      ? core0.prepareItemCopyData(source)
+      : (() => { const d = source.toObject(); delete d._id; delete d.items;
+                 d.system = d.system ?? {}; d.system.container = null; return d; })();
     const need = martialNeed(pick);
     foundry.utils.setProperty(data, "system.props.isEquipped", !need || !!martial[need]);
     create.push(data);
