@@ -1,0 +1,49 @@
+{
+  "_id": "crwsyuWDzJppRFoh",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785945500821,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2409.gif",
+  "name": "Happy Feet (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "cG0hXOFNc0NftvbM",
+    "props": {
+      "description": "<p>Equipped passive: +1 to Checks involving Dancing.</p>",
+      "effect_table": {
+        "0": {
+          "check_buff_action": "dancing",
+          "check_buff_amount": "1",
+          "effect_kind": "check_buff",
+          "effect_label": "hfeet_dance"
+        }
+      },
+      "max_level": "1",
+      "name": "Happy Feet (Passive)",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "crwsyuWDzJppRFoh"
+  },
+  "type": "equippableItem"
+}

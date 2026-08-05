@@ -3800,7 +3800,7 @@
         "id": "YNtiW1MEga31ENWa",
         "name": "Bunny Tail",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "c3UnjwSqKlkK9xKa",
@@ -5603,6 +5603,12 @@
         "effects": 0
       },
       {
+        "id": "ppwCoA4hBGjTP15q",
+        "name": "Forest Hatchet (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "fOEeRwVzYy6YQuIN",
         "name": "Forget me Nut",
         "type": "equippableItem",
@@ -6385,6 +6391,12 @@
       {
         "id": "cG0hXOFNc0NftvbM",
         "name": "Happy Feet",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "crwsyuWDzJppRFoh",
+        "name": "Happy Feet (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7397,6 +7409,12 @@
         "effects": 0
       },
       {
+        "id": "6QTyJylY01Anv4IV",
+        "name": "Lift off",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "IQaK3IzvfFp4I1xB",
         "name": "Light",
         "type": "equippableItem",
@@ -7525,6 +7543,12 @@
       {
         "id": "7rqRLdk9jF3m9xe2",
         "name": "Looting Bow",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "xvDqknzAmILCfCvc",
+        "name": "Looting Bow (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7813,6 +7837,12 @@
       {
         "id": "ZZG5sHvIc3GH26w7",
         "name": "Maid cap",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "uaGIN00QQ5WoJRmI",
+        "name": "Maid cap (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10025,6 +10055,12 @@
         "effects": 0
       },
       {
+        "id": "5HOZlsSWESTULS8w",
+        "name": "Rusty Pipe (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "zPWgRgkYSgm9Elib",
         "name": "Sadistic Whip",
         "type": "equippableItem",
@@ -11563,6 +11599,12 @@
       {
         "id": "Xl16aahsbiCGM6oW",
         "name": "Toxic Orb",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "RoK94mEVE3pGNRDb",
+        "name": "Toxic Orb (Passive)",
         "type": "equippableItem",
         "effects": 0
       },

@@ -1,0 +1,75 @@
+{
+  "_id": "RoK94mEVE3pGNRDb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785945499764,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/toxic-orb.png",
+  "name": "Toxic Orb (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Xl16aahsbiCGM6oW",
+    "props": {
+      "description": "<p>Equipped passive: When you are hit by a Melee Attack, the attacker suffers Envenomed.</p>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Envenomed",
+          "effect_kind": "apply_ae",
+          "effect_label": "torb_venom",
+          "target_ref": "trigger_attacker"
+        }
+      },
+      "max_level": "1",
+      "name": "Toxic Orb (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACK_IS_MELEE == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "Attack",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "torb_venom",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_hit_by_action",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "RoK94mEVE3pGNRDb"
+  },
+  "type": "equippableItem"
+}

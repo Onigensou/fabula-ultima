@@ -83,6 +83,16 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Common",
+      "item_skill_active": {
+        "6QTyJylY01Anv4IV": {
+          "id": "${item.id}",
+          "name": "Lift off",
+          "skill_cost": "1 IP",
+          "skill_description": "Spend 1 Inventory Point to gain Flying for three turns.",
+          "skill_maxLevel": "",
+          "uuid": "Item.6QTyJylY01Anv4IV"
+        }
+      },
       "item_type": "accessory",
       "mimic_ef": "100",
       "monster_ef": "100",

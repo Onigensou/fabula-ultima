@@ -61,6 +61,14 @@
       "demon_ef": "100",
       "description": "<blockquote>\n<ul>\n<li><em>Gain <strong>Clarity </strong>for the rest of the scene<strong>.( </strong>Increase your <strong>【WLP】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li>\n</ul>\n</blockquote>",
       "dragon_ef": "100",
+      "effect_table": {
+        "0": {
+          "ae_template_ref": "Clarity",
+          "effect_kind": "apply_ae",
+          "effect_label": "lipovitanz_clarity",
+          "target_ref": "self"
+        }
+      },
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",

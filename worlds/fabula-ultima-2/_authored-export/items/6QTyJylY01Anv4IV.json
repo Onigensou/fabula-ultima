@@ -1,0 +1,55 @@
+{
+  "_id": "6QTyJylY01Anv4IV",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785945058657,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://cdna.artstation.com/p/assets/images/images/024/014/374/large/marko-bubalo-jetpack-novi2.jpg?1581033568",
+  "name": "Lift off",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Ll5YDptyYjmwjuhW",
+    "props": {
+      "cost": "1 IP",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "3",
+          "ae_initial_charges_max": "3",
+          "ae_lifetime_mode": "target_turn_end",
+          "ae_template_ref": "Flying",
+          "effect_kind": "apply_ae",
+          "effect_label": "liftoff_fly",
+          "target_ref": "self"
+        }
+      },
+      "max_level": "1",
+      "name": "Lift off",
+      "on_activate_effect_ref": "liftoff_fly",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_description": "Spend 1 Inventory Point to gain Flying for three turns.",
+      "skill_target": "Self",
+      "skill_type": "Active"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "6QTyJylY01Anv4IV"
+  },
+  "type": "equippableItem"
+}
