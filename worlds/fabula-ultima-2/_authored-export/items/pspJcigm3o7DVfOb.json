@@ -1,0 +1,51 @@
+{
+  "_id": "pspJcigm3o7DVfOb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785938476517,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "V6fo91m4ATMoEWpi",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rope.gif",
+  "name": "Midnight Mistress — Equipment Set",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "id": "pspJcigm3o7DVfOb",
+      "name": "Midnight Mistress — Equipment Set",
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Flail mending (heal the ally 200%)",
+          "bonus_skill_ref": "Midnight Mending",
+          "pieces": "2"
+        },
+        "1": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Mistress' Mercy (Enraged -> Clarity)",
+          "bonus_skill_ref": "Mistress' Mercy",
+          "pieces": "3"
+        }
+      },
+      "set_name": "Midnight Mistress",
+      "uuid": "Item.pspJcigm3o7DVfOb"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "pspJcigm3o7DVfOb"
+  },
+  "type": "equippableItem"
+}

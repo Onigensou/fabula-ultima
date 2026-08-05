@@ -3245,6 +3245,12 @@
         "effects": 2
       },
       {
+        "id": "NYsZRGgjHTD4KsWJ",
+        "name": "BDSM Garment (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "OW0ZWEJNhBtMwdc9",
         "name": "Beaded Weapon",
         "type": "equippableItem",
@@ -8009,6 +8015,18 @@
         "effects": 0
       },
       {
+        "id": "MYMsCE7iuo7Wfn1k",
+        "name": "Midnight Mending",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "pspJcigm3o7DVfOb",
+        "name": "Midnight Mistress — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "2p8NT6NWuFcfHsAS",
         "name": "Milk",
         "type": "equippableItem",
@@ -8125,6 +8143,12 @@
       {
         "id": "Bl4Vg8uFW6x9aV8Y",
         "name": "Mistress Mask (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "iZByhhxBH5BNPj5z",
+        "name": "Mistress' Mercy",
         "type": "equippableItem",
         "effects": 0
       },

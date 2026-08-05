@@ -1,0 +1,75 @@
+{
+  "_id": "iZByhhxBH5BNPj5z",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1785938478123,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rope.gif",
+  "name": "Mistress' Mercy",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "pspJcigm3o7DVfOb",
+    "props": {
+      "cost": "-",
+      "description": "<p><strong>Midnight Mistress (3 pieces)</strong> — <em>Skill Action.</em> Remove Enraged from all allies; each ally who loses Enraged this way gains Clarity instead.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "mm3_pick, mm3_clarity, mm3_unrage",
+          "effect_kind": "chain",
+          "effect_label": "mm3_root"
+        },
+        "1": {
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "category": "ally",
+          "effect_kind": "targeting",
+          "effect_label": "mm3_pick",
+          "iteration_mode": "together",
+          "mode": "all",
+          "target_filter": "HAS_STATUS_ENRAGED == 1"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Clarity",
+          "effect_kind": "apply_ae",
+          "effect_label": "mm3_clarity",
+          "target_ref": "mm3_pick"
+        },
+        "3": {
+          "ae_duplicate_mode": "remove",
+          "ae_template_ref": "Enraged",
+          "effect_kind": "apply_ae",
+          "effect_label": "mm3_unrage",
+          "target_ref": "mm3_pick"
+        }
+      },
+      "isCheck": false,
+      "max_level": "1",
+      "name": "Mistress' Mercy",
+      "on_activate_effect_ref": "mm3_root",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_target": "Self",
+      "skill_type": "Active"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "iZByhhxBH5BNPj5z"
+  },
+  "type": "equippableItem"
+}
