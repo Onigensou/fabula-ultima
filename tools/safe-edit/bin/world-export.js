@@ -256,7 +256,14 @@ function snapshotBaseline(world) {
 
 // --- diff providers --------------------------------------------------------
 function git(args) {
-  return execFileSync("git", args, { cwd: REPO_ROOT, encoding: "utf8" });
+  // maxBuffer MUST be raised: Node's 1 MB default silently broke the loss
+  // tripwire. `prior.get()` reads a baseline doc via `git show`, and an actor
+  // export bigger than 1 MB threw ENOBUFS -> caught -> treated as "no baseline"
+  // -> zero removals reported. The actors that overflow are the ones with the
+  // MOST embedded content (Hina's export is ~1.1 MB), i.e. exactly the ones
+  // whose loss matters most. Measured 2026-08-06: 7 deleted items on Hina were
+  // reported as none.
+  return execFileSync("git", args, { cwd: REPO_ROOT, encoding: "utf8", maxBuffer: 512 * 1024 * 1024 });
 }
 
 function relFromRepo(abs) {
