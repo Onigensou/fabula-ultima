@@ -9584,10 +9584,45 @@ async function applyRollLootTableEffect(row, ctx) {
   return { ok: true, kind: "roll_loot_table", applied: results };
 }
 
+// A back-reference is only trustworthy if it lands on the SAME item, not merely
+// on one carrying the same id.
+//
+// `system.uniqueId` and `_stats.compendiumSource` are both copied verbatim by
+// `toObject()`, so an item authored by cloning another keeps whatever id its
+// source had — forever, and silently. Measured 2026-08-06: five unrelated gear
+// skills (Muscly Arm, The Tormentor, Dragontrap Bow, Morrigan, Windpiercer) all
+// carry "Scouter (Passive)"'s uniqueId. Following such an id hands back a
+// completely different item, so stealing one thing would award another.
+//
+// Name + CSB template is the cheap check that catches it. A deliberately
+// renamed instance ("+4 Shield of Rejuvenation" vs the base shield) also fails
+// this — correctly: the upgraded instance IS what should be stolen, so falling
+// back to the embedded item is the right answer there too.
+//
+// The template clause only disqualifies when BOTH template pointers still
+// resolve to live documents. Measured across the world: 221 actor items point
+// at RETIRED template ids while their world master sits on the current
+// `_Item Template` — a migration artifact, not a different item, and treating
+// it as a mismatch would reject the very masters worth resolving to. What the
+// clause is really for is the same-name shell-vs-skill pair (a "Decoy Doll"
+// consumable and the "Decoy Doll" `_skill` inside it), where both templates are
+// live and the two are genuinely different things.
+function isSameItemIdentity(candidate, embedded) {
+  if (!candidate || !embedded) return false;
+  if (candidate.documentName !== "Item") return false;
+  if (candidate.name !== embedded.name) return false;
+  const ct = candidate.system?.template ?? null;
+  const et = embedded.system?.template ?? null;
+  if (ct && et && ct !== et && game.items?.get(ct) && game.items?.get(et)) return false;
+  return true;
+}
+
 // Resolve a stealable_loot entry to its "source" Item document. Walks:
 //   (a) embedded item's compendiumSource if it points at a world Item
 //   (b) embedded item's system.uniqueId → game.items lookup
 //   (c) the embedded item itself (last resort)
+// Each back-reference is identity-checked before it is trusted; a mismatch
+// falls through rather than awarding an unrelated item.
 // Returns null if everything fails.
 async function resolveStealSourceItem(lootEntry) {
   const uuid = String(lootEntry?.uuid ?? "").trim();
@@ -9598,12 +9633,18 @@ async function resolveStealSourceItem(lootEntry) {
     const compendiumSource = String(embedded?._stats?.compendiumSource ?? "").trim();
     if (compendiumSource.startsWith("Item.")) {
       const fromCs = await fromUuid(compendiumSource).catch(() => null);
-      if (fromCs) return fromCs;
+      if (fromCs) {
+        if (isSameItemIdentity(fromCs, embedded)) return fromCs;
+        warn(`resolveStealSourceItem: compendiumSource on "${embedded.name}" points at "${fromCs.name}" — stale clone reference, ignoring`);
+      }
     }
     const uniqueId = String(embedded?.system?.uniqueId ?? "").trim();
     if (uniqueId) {
       const fromUid = game.items?.get(uniqueId) ?? null;
-      if (fromUid) return fromUid;
+      if (fromUid) {
+        if (isSameItemIdentity(fromUid, embedded)) return fromUid;
+        warn(`resolveStealSourceItem: uniqueId on "${embedded.name}" resolves to "${fromUid.name}" — stale clone reference, ignoring`);
+      }
     }
     return embedded;
   } catch (e) {

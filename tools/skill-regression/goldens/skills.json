@@ -71,7 +71,7 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 482,
+    "count": 491,
     "engineVersion": "1.0.423",
     "override": {
       "SL": 5,
@@ -279,6 +279,19 @@
       "skillType": "Active",
       "targets": 1
     },
+    "Blanche / Provoke": {
+      "caster": "Blanche",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Provoke",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Blanche / Tafallera": {
       "caster": "Blanche",
       "element": "physical",
@@ -403,6 +416,32 @@
       },
       "skill": "Zero Power: Teleport Slash",
       "skillType": "Spell",
+      "targets": 1
+    },
+    "Cherry / Adrenaline Endure": {
+      "caster": "Cherry",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Adrenaline Endure",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Cherry / Adrenaline Rush": {
+      "caster": "Cherry",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Adrenaline Rush",
+      "skillType": "Active",
       "targets": 1
     },
     "Cherry / Aura": {
@@ -2585,6 +2624,32 @@
       "skillType": "Spell",
       "targets": 1
     },
+    "Hina (Backup) / Draconic Roar": {
+      "caster": "Hina (Backup)",
+      "element": "null",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 19,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Draconic Roar",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Hina (Backup) / Drain Spirit": {
       "caster": "Hina (Backup)",
       "element": "mp",
@@ -2624,6 +2689,32 @@
       "reason": "skipped",
       "skill": "Elemental Weapon",
       "skillType": "Spell"
+    },
+    "Hina (Backup) / Encyclopedia Strike": {
+      "caster": "Hina (Backup)",
+      "element": "physical",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 23,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Encyclopedia Strike",
+      "skillType": "Active",
+      "targets": 1
     },
     "Hina (Backup) / Glacies": {
       "caster": "Hina (Backup)",
@@ -2696,6 +2787,28 @@
         "hr": 6
       },
       "skill": "Iceberg",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina (Backup) / Starfall": {
+      "caster": "Hina (Backup)",
+      "element": "light",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 15,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": null,
+      "skill": "Starfall",
       "skillType": "Spell",
       "targets": 1
     },
@@ -3884,6 +3997,32 @@
       "skillType": "Active",
       "targets": 1
     },
+    "Kalina / Draconic Roar": {
+      "caster": "Kalina",
+      "element": "null",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 19,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Draconic Roar",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Kalina / Dragonfire Dive": {
       "caster": "Kalina",
       "element": "physical",
@@ -4115,6 +4254,32 @@
       ],
       "roll": null,
       "skill": "Zero Power: Last Den of Cinders",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Kiki / Adrenaline Endure": {
+      "caster": "Kiki",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Adrenaline Endure",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Kiki / Adrenaline Rush": {
+      "caster": "Kiki",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Adrenaline Rush",
       "skillType": "Active",
       "targets": 1
     },
