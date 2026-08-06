@@ -385,6 +385,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "potion",
           "skill_target": "-",
           "skill_type": "Item",
           "type_damage": "mp",

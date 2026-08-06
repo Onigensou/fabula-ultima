@@ -38,6 +38,7 @@
       },
       "isCheck": false,
       "on_activate_effect_ref": "grapejuice_restore",
+      "skill_tags": "potion",
       "skill_target": "One Ally",
       "skill_type": "Item",
       "type_damage": ""
