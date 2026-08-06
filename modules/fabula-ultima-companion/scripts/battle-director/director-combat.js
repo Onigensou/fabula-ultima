@@ -237,6 +237,14 @@ export class DirectorCombat {
     // spellMpSpentThisTurn / resetSpellMpSpent and the MP_SPENT_THIS_TURN
     // formula identifier.
     this.mpSpentOnSpells = new Map();
+
+    // Per-turn, per-TARGET landed-hit tally (Champion Gloves / Hot Pants).
+    // `${actorId}::${targetTokenUuid}` → how many times that actor has hit that
+    // target during their CURRENT turn. Reset at the actor's TURN_START, same
+    // lifetime and trade-offs as mpSpentOnSpells (in-memory, not serialized).
+    // Read via HITS_ON_TARGET_THIS_TURN. Distinct from HIT_COUNT, which counts
+    // targets struck by the CURRENT action only.
+    this.hitsOnTargets = new Map();
   }
 
   // Record that `studierActorId` has Studied the token `targetTokenUuid` this
@@ -283,6 +291,36 @@ export class DirectorCombat {
   // budget only ever reflects the current turn.
   resetSpellMpSpent(actorId) {
     if (actorId) this.mpSpentOnSpells.delete(actorId);
+  }
+
+  // ── Per-turn, per-target landed-hit tally (Champion Gloves / Hot Pants) ──
+  // Recorded once per GENUINELY hit target as an attack resolves (a pierce-miss
+  // is a miss and is NOT counted). Keyed by actor + target token so "hit the
+  // target" means that specific creature, not any creature.
+  addHitOnTarget(actorId, targetTokenUuid) {
+    if (!actorId || !targetTokenUuid) return;
+    const k = `${actorId}::${targetTokenUuid}`;
+    this.hitsOnTargets.set(k, (this.hitsOnTargets.get(k) ?? 0) + 1);
+  }
+
+  // How many times `actorId` has already hit `targetTokenUuid` this turn.
+  // The tally is bumped AFTER an action resolves, so a bonus read during an
+  // action sees the hits that landed BEFORE it. That ordering is forced by Hot
+  // Pants: accuracy is consumed before the hit is known, so "times you hit this
+  // turn" can only mean prior hits. Champion Gloves uses the same reading so the
+  // pair stays consistent.
+  hitsOnTargetThisTurn(actorId, targetTokenUuid) {
+    if (!actorId || !targetTokenUuid) return 0;
+    return this.hitsOnTargets.get(`${actorId}::${targetTokenUuid}`) ?? 0;
+  }
+
+  // Drop every tally belonging to this actor — called at their TURN_START.
+  resetHitsOnTargets(actorId) {
+    if (!actorId) return;
+    const prefix = `${actorId}::`;
+    for (const k of [...this.hitsOnTargets.keys()]) {
+      if (k.startsWith(prefix)) this.hitsOnTargets.delete(k);
+    }
   }
 
   // Append a new Guard entry. Caller is responsible for the AE create on

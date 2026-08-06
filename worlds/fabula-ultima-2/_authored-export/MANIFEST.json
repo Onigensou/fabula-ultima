@@ -3239,6 +3239,12 @@
         "effects": 0
       },
       {
+        "id": "ISqkaovKt2NQMmDO",
+        "name": "Battle Wrench (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "E3pWg5IWc9mGcGOx",
         "name": "BDSM Garment",
         "type": "equippableItem",
@@ -4015,6 +4021,12 @@
       {
         "id": "QuzY0QG9S1RfjuUF",
         "name": "Champion Gloves",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "W6EHEoy4AwUu4FIu",
+        "name": "Champion Gloves (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5717,6 +5729,12 @@
         "effects": 0
       },
       {
+        "id": "sx1tBof2vJLVS3eV",
+        "name": "Frying Pan (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "AoKbPZ9iAHv7dIlE",
         "name": "Fuel Knuckle",
         "type": "equippableItem",
@@ -6235,6 +6253,12 @@
       {
         "id": "BIbreDnYgqPYJy6s",
         "name": "Gravedigger Shovel",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "2PBZPjsE6sXmG0DE",
+        "name": "Gravedigger Shovel (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6763,6 +6787,12 @@
       {
         "id": "Yn6en8A515u0Gd4c",
         "name": "Hot Pants",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "KccxJo2tiTOgWdKg",
+        "name": "Hot Pants (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7919,6 +7949,12 @@
         "effects": 0
       },
       {
+        "id": "BxnHeKLeI6eKZXf5",
+        "name": "Man Catcher (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "LJg3zdH2gbrOfw6D",
         "name": "Mana Catcher",
         "type": "equippableItem",
@@ -8947,6 +8983,12 @@
       {
         "id": "CtVrZqnTjAHvmYLG",
         "name": "Persuader",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "qnc83vG0OH8xwEsu",
+        "name": "Persuader (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12067,6 +12109,12 @@
       {
         "id": "HRKMErxra6n5K4yp",
         "name": "Viper Bone",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "47Y2qMXAidOuKU75",
+        "name": "Viper Bone (Passive)",
         "type": "equippableItem",
         "effects": 0
       },

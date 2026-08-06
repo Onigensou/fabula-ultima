@@ -1,0 +1,81 @@
+{
+  "_id": "qnc83vG0OH8xwEsu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786041883541,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13109.gif",
+  "name": "Persuader (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "CtVrZqnTjAHvmYLG",
+    "props": {
+      "description": "<p>Equipped passive: Snipe 20 — an Accuracy Check total of 20 or more inflicts Panic. +2 to Checks made to persuade someone.</p>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Panic",
+          "effect_kind": "apply_ae",
+          "effect_label": "persuader_snipe",
+          "target_ref": "trigger_subject"
+        },
+        "1": {
+          "check_buff_action": "persuade",
+          "check_buff_amount": "2",
+          "effect_kind": "check_buff",
+          "effect_label": "persuader_talk"
+        }
+      },
+      "max_level": "1",
+      "name": "Persuader (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACK_CHECK_RESULT >= 20",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "persuader_snipe",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": true,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_deals_damage",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "qnc83vG0OH8xwEsu"
+  },
+  "type": "equippableItem"
+}

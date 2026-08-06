@@ -31,10 +31,19 @@
       "check_bonus": "0",
       "class": "",
       "cost": "-",
-      "damage_bonus": "50",
+      "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "restore",
+          "grant_amount": "50",
+          "grant_resource": "mp",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
@@ -44,6 +53,7 @@
       "level": "1",
       "max_level": "1",
       "name": "Elixir",
+      "on_activate_effect_ref": "restore",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "-",
@@ -55,7 +65,7 @@
       "skill_tags": "potion",
       "skill_target": "One Creature",
       "skill_type": "Item",
-      "type_damage": "MP",
+      "type_damage": "",
       "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",

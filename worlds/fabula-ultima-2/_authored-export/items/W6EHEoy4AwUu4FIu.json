@@ -1,0 +1,75 @@
+{
+  "_id": "W6EHEoy4AwUu4FIu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786041882514,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Fist/Icon-Metal_Knuckles.webp",
+  "name": "Champion Gloves (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "QuzY0QG9S1RfjuUF",
+    "props": {
+      "description": "<p>Equipped passive: your Brawling attacks deal 5 extra damage for each time you have already hit that target this turn.</p>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "5 * HITS_ON_TARGET_THIS_TURN",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "champ_stack"
+        }
+      },
+      "max_level": "1",
+      "name": "Champion Gloves (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "USED_WEAPON_CATEGORY_IS_BRAWLING == 1 && HITS_ON_TARGET_THIS_TURN > 0",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "champ_stack",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_will_deal_damage",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "W6EHEoy4AwUu4FIu"
+  },
+  "type": "equippableItem"
+}

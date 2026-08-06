@@ -6844,12 +6844,20 @@
           "check_bonus": "0",
           "class": "",
           "cost": "-",
-          "damage_bonus": "50",
+          "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "restore",
+              "grant_amount": "50",
+              "grant_resource": "mp",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "id": "rEEtv35hOJCY48R4",
           "ignore_hr": false,
@@ -6863,7 +6871,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Elixir",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "restore",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -6875,7 +6883,7 @@
           "skill_tags": "potion",
           "skill_target": "One Creature",
           "skill_type": "Item",
-          "type_damage": "MP",
+          "type_damage": "",
           "use_optional_params": false,
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.rEEtv35hOJCY48R4"
         },
@@ -7680,12 +7688,20 @@
           "check_bonus": "0",
           "class": "",
           "cost": "-",
-          "damage_bonus": "50",
+          "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
           "details_roller": "Show",
           "duration": "Instnataneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "heal",
+              "grant_amount": "50",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "id": "tvHxQ2h9j1KuwlIO",
           "ignore_hr": false,
@@ -7699,7 +7715,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Remedy",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "heal",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -7711,7 +7727,7 @@
           "skill_tags": "potion",
           "skill_target": "One Creature",
           "skill_type": "Item",
-          "type_damage": "Heal",
+          "type_damage": "",
           "use_optional_params": false,
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.tvHxQ2h9j1KuwlIO"
         },

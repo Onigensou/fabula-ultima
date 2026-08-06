@@ -362,10 +362,19 @@
           "check_bonus": "0",
           "class": "",
           "cost": "-",
-          "damage_bonus": "20",
+          "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<ul><li><p>Target creature <strong>recovers 20 MP</strong></p></li></ul>",
           "duration": "-",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "grapejuice_restore",
+              "grant_amount": "20",
+              "grant_resource": "mp",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -377,6 +386,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Grape Juice",
+          "on_activate_effect_ref": "grapejuice_restore",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -388,7 +398,7 @@
           "skill_tags": "potion",
           "skill_target": "-",
           "skill_type": "Item",
-          "type_damage": "mp",
+          "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",

@@ -1,0 +1,83 @@
+{
+  "_id": "sx1tBof2vJLVS3eV",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786041881457,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Hammer/Icon-Frying_Pan.webp",
+  "name": "Frying Pan (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "tqx7YuLnGXgF2hWi",
+    "props": {
+      "description": "<p>Equipped passive: +1 to Checks involving Cooking, and consumables you use restore 5 additional HP and MP.</p>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "adjust_grant",
+          "effect_label": "pan_boost",
+          "grant_amount": "5",
+          "grant_operation": "add",
+          "grant_resource": "",
+          "grant_round": "up",
+          "grant_scope": "per_action"
+        },
+        "1": {
+          "check_buff_action": "cooking",
+          "check_buff_amount": "1",
+          "effect_kind": "check_buff",
+          "effect_label": "pan_cook"
+        }
+      },
+      "max_level": "1",
+      "name": "Frying Pan (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "pan_boost",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_uses_item",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "sx1tBof2vJLVS3eV"
+  },
+  "type": "equippableItem"
+}

@@ -8,7 +8,7 @@
 // reactor itself. Prev: ALLY_COUNT / ANY_ALLY_IN_CRISIS for the Guest system;
 // TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT; pow(); ALL_TARGETS_HIT).
 // Not load-bearing; diagnostic only.
-export const SKILL_FORMULAS_SCHEMA = 9;
+export const SKILL_FORMULAS_SCHEMA = 10;
 
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
@@ -539,6 +539,28 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // DirectorCombat.start / cleared on stop). 0 out of combat or pre-spend.
       case "MP_SPENT_THIS_TURN":
         return Number(globalThis.__fudActiveDCombat?.spellMpSpentThisTurn?.(actor?.id) ?? 0) || 0;
+      // 1 when it is currently THIS actor's turn, else 0. Reads the ambient
+      // dCombat's current combatant (same source as MP_SPENT_THIS_TURN). Powers
+      // off-turn bonuses — Viper Bone deals +5 "as long as it's not your turn",
+      // authored as `IS_MY_TURN == 0`. Returns 0 out of combat / between turns,
+      // so an off-turn gate reads as true there; a `== 1` gate fails closed.
+      case "IS_MY_TURN": {
+        const cur = globalThis.__fudActiveDCombat?.current ?? null;
+        const mine = String(actor?.id ?? "").trim();
+        if (!cur || !mine) return 0;
+        return String(cur.actorId ?? "").trim() === mine ? 1 : 0;
+      }
+      // How many times this actor has ALREADY hit the subject target during the
+      // current turn (Champion Gloves +5 damage each, Hot Pants +1 accuracy
+      // each). Turn-scoped and per-target; the tally is bumped after an action
+      // resolves, so this reads hits that landed BEFORE the in-flight one — the
+      // only reading accuracy can honor. Distinct from HIT_COUNT, which counts
+      // targets struck by the CURRENT action.
+      case "HITS_ON_TARGET_THIS_TURN": {
+        const tok = String(payload?.subjectTokenUuid ?? payload?.targetTokenUuid ?? "").trim();
+        if (!tok) return 0;
+        return Number(globalThis.__fudActiveDCombat?.hitsOnTargetThisTurn?.(actor?.id, tok) ?? 0) || 0;
+      }
       // Printed MP cost of the spell that just resolved — stamped on the
       // creature_completes_spell payload (Bimagus sizes its 2nd free cast off
       // this: "2nd spell ≤ ½ the first"). 0 when not in that reaction context.

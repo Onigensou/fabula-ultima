@@ -961,6 +961,16 @@ async function resolveAction(director, ar, opts = {}) {
     const struck = hits.filter((r) => r.hit || r.pierceMiss);
     const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
     const struckTokenUuids = struck.map((r) => r.tokenUuid);
+    // Champion Gloves / Hot Pants — record each GENUINELY hit target against the
+    // attacker's per-turn tally. `struck` includes pierce-misses (Pierce = miss
+    // for half), which are misses, so filter to real hits. Bumped here, AFTER
+    // this action's bonuses were computed, so the tally a bonus reads is "hits
+    // that landed before this attack" — see hitsOnTargetThisTurn.
+    if (director.dCombat && ar.attacker?.actorId) {
+      for (const r of hits) {
+        if (r.hit && r.tokenUuid) director.dCombat.addHitOnTarget(ar.attacker.actorId, r.tokenUuid);
+      }
+    }
     if (struck.length) {
 
       // Free-action grant ON-HIT riders — the granting skill's effect_table rows
@@ -1024,6 +1034,13 @@ async function resolveAction(director, ar, opts = {}) {
             // HIT_MARGIN = accuracy total − THIS target's defense (r.defense
             // already encodes DEF vs MDEF). Drives "Conquer N".
             hitMargin: (Number(ar.roll?.total ?? 0) || 0) - (Number(r.defense ?? 0) || 0),
+            // Canonical spelling of the Accuracy Check total. `total` above is
+            // the legacy key; ATTACK_CHECK_RESULT reads `checkTotal`, which was
+            // only ever stamped on the DEFENDER-side creature_targeted_by_action
+            // payload — so an attacker-side "my check result was N or more" gate
+            // silently read 0 here. Drives "Snipe N" (Persuader, Man Catcher),
+            // the check-total twin of HIT_MARGIN's "Conquer N".
+            checkTotal: Number(ar.roll?.total ?? 0) || 0,
           },
         });
       }
@@ -2156,6 +2173,9 @@ const TurnStart = {
     // Bimagus — a fresh turn starts the spell-MP tally at zero, so
     // MP_SPENT_THIS_TURN only ever reflects spells cast during THIS turn.
     if (director.dCombat && snap?.actorId) director.dCombat.resetSpellMpSpent(snap.actorId);
+    // Champion Gloves / Hot Pants — the per-target landed-hit tally is also
+    // turn-scoped, so HITS_ON_TARGET_THIS_TURN never carries across turns.
+    if (director.dCombat && snap?.actorId) director.dCombat.resetHitsOnTargets(snap.actorId);
     // Label describes what the GM lands at on rewind: this combatant's
     // DECLARE menu (TURN_START re-auto-picks the saved id and routes
     // through to DECLARE). Subtitle records the situational context.

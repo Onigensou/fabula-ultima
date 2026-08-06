@@ -31,10 +31,19 @@
       "check_bonus": "0",
       "class": "",
       "cost": "-",
-      "damage_bonus": "50",
+      "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
       "duration": "Instnataneous",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "heal",
+          "grant_amount": "50",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
@@ -44,6 +53,7 @@
       "level": "1",
       "max_level": "1",
       "name": "Remedy",
+      "on_activate_effect_ref": "heal",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "-",
@@ -55,7 +65,7 @@
       "skill_tags": "potion",
       "skill_target": "One Creature",
       "skill_type": "Item",
-      "type_damage": "Heal",
+      "type_damage": "",
       "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",

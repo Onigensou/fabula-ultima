@@ -1,0 +1,49 @@
+{
+  "_id": "2PBZPjsE6sXmG0DE",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786041885021,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/6381.gif",
+  "name": "Gravedigger Shovel (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "BIbreDnYgqPYJy6s",
+    "props": {
+      "description": "<p>Equipped passive: +2 to Checks involving Digging. You are always Cursed.</p>",
+      "effect_table": {
+        "0": {
+          "check_buff_action": "digging",
+          "check_buff_amount": "2",
+          "effect_kind": "check_buff",
+          "effect_label": "shovel_dig"
+        }
+      },
+      "max_level": "1",
+      "name": "Gravedigger Shovel (Passive)",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "2PBZPjsE6sXmG0DE"
+  },
+  "type": "equippableItem"
+}

@@ -8,6 +8,108 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "R3ZxZZdXr75SGTSh",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786041885563,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Losing <strong>MP </strong>at the start of your turn</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "R3ZxZZdXr75SGTSh",
+          "originalParentId": "BIbreDnYgqPYJy6s",
+          "originalUuid": "Item.BIbreDnYgqPYJy6s.ActiveEffect.R3ZxZZdXr75SGTSh"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-cursed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onTurnStart": {
+            "script": "// === Curse MP-Drain v1 (Effect Macro → On Combat Turn Starting) ============\n// Drains % Max MP using your Advance Damage macro, *without* UI targeting.\n//\n// • Default: 20% of max MP\n// • Champion rank (NPC): 10%\n// • PCs / no rank field: 20%\n// • Value type: \"mp\", Weapon type: \"none_ef\" (neutral), Element can be anything (not used for MP SFX)\n//\n// Requires: AdvanceDamage supports headless targets via __PAYLOAD.targetIds.\n// ===========================================================================\n\n(async () => {\n  const ADV_DMG_MACRO_NAME = \"AdvanceDamage\"; // rename if your macro differs\n\n  // --- Only act on the owner’s actual turn ---------------------------------\n  if (!actor || !game.combat) return;\n  const isOwnersTurn = game.combat?.combatant?.actor?.id === actor.id;\n  if (!isOwnersTurn) return;\n\n  // --- Resolve the correct token id for this actor on this turn ------------\n  function pickTokenIdForActor(a) {\n    const ct = game.combat?.combatant;\n    if (ct?.actor?.id === a.id && ct.token?.id) return ct.token.id;\n    if (token?.id) return token.id;\n    const t = a.getActiveTokens()?.[0];\n    return t?.id ?? t?.document?.id ?? null;\n  }\n  const tokenId = pickTokenIdForActor(actor);\n  if (!tokenId) return ui.notifications.warn(\"[Curse] No active token for effect owner.\");\n\n  // --- Determine % by NPC Rank (Champion halves it) ------------------------\n  // NPC sheet has system.props.npc_rank with options including \"cha\" (Champion).\n  const props = actor.system?.props ?? {};\n  const rank  = String(props.npc_rank ?? \"\").toLowerCase(); // e.g., \"cha\"\n  const percent = (rank === \"cha\") ? 10 : 20;  // PCs / missing field → 20%\n\n  // --- Build headless payload for AdvanceDamage ----------------------------\n  const payload = {\n    baseValue: String(percent),    // just the number, no '%' sign\n    valueType: \"mp\",               // drain MP\n    targetAffinity: \"percentMax\",  // % of target's max MP\n    elementType: \"dark\",           // thematic; MP SFX is driven by valueType anyway\n    weaponType: \"none_ef\",\n    ignoreDamageReduction: true,   // MP isn’t reduced by armor; set false if you prefer\n    ignoreShield: true,            // shields shouldn’t block MP drain\n\n    // Context strings for your logs/cards\n    attackerName: \"Curse\",\n    attackRange: \"DOT\",\n    sourceType : \"Effect: Curse\",\n\n    // Headless targets (prevents Foundry crosshair flashing)\n    targetIds: [tokenId]\n  };\n\n  const ADV = game.macros.getName(ADV_DMG_MACRO_NAME);\n  if (!ADV) return ui.notifications.error(`[Curse] Macro \"${ADV_DMG_MACRO_NAME}\" not found.`);\n\n  await ADV.execute({ __AUTO: true, __PAYLOAD: payload });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "cursed",
+          "charges": 3,
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "consume_amount": "ceil(MAX_MP * (0.2 - RANK_IS_CHAMPION * 0.1))",
+                "consume_resource": "mp",
+                "damage_amount": "ceil(MAX_MP * (0.2 - RANK_IS_CHAMPION * 0.1))",
+                "damage_resource": "mp",
+                "effect_kind": "deal_damage",
+                "effect_label": "curse_mp_drain",
+                "emit_status": "Cursed",
+                "emit_trigger": "creature_status_triggered",
+                "grant_amount": "0 - ceil(MAX_MP * (0.2 - RANK_IS_CHAMPION * 0.1))",
+                "grant_resource": "mp",
+                "on_empty": "skip",
+                "target_ref": "self"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "curse_mp_drain",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/doom.png",
+      "name": "Cursed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "3YZNX2X5rHYtL4L5"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
