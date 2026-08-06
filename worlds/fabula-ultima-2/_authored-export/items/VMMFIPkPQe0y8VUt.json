@@ -24,7 +24,7 @@
   "system": {
     "container": "9G7GfCYAFNV1ojkx",
     "props": {
-      "description": "<p>Equipped passive: Your attacks inflict Frightened on Beast creatures. (Conquer 5 not yet implemented.)</p>",
+      "description": "<p>Equipped passive: Conquer 5 — when you beat a Beast creature's Defense by 5 or more with this weapon, it suffers Frightened.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",
@@ -38,7 +38,7 @@
       "name": "Beast Tamer (Passive)",
       "reaction_config_table": {
         "0": {
-          "condition_formula": "TARGET_SPECIES_IS_BEAST == 1 && DAMAGE_IS_HP == 1",
+          "condition_formula": "HIT_MARGIN >= 5 && TARGET_SPECIES_IS_BEAST == 1 && DAMAGE_IS_HP == 1",
           "reaction_action_intent": "",
           "reaction_action_kind": "",
           "reaction_action_target": "",

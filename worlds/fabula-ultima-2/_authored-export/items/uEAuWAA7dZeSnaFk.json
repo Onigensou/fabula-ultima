@@ -27,7 +27,7 @@
       "description": "<p>Equipped passive: When you take Bolt damage, you may make a free Attack with this weapon, boosted by the damage taken.</p>",
       "effect_table": {
         "0": {
-          "action_ref": "Attack",
+          "action_ref": "Lightning Rod",
           "damage_bonus_formula": "DAMAGE_DEALT",
           "effect_kind": "free_action",
           "effect_label": "lrod_strike"

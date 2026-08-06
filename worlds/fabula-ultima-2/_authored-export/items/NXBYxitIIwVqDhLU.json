@@ -28,6 +28,9 @@
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "1",
+          "ae_lifetime_mode": "target_turn_end",
           "ae_template_ref": "Sleep",
           "condition_formula": "chance(50)",
           "effect_kind": "apply_ae",

@@ -986,6 +986,78 @@
           "isTemporary": false,
           "isViewable": true
         },
+        "fabula-ultima-companion": {
+          "charges": 1,
+          "chargesMax": 1,
+          "lifetimeMode": "target_turn_end",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "effect_kind": "modify_turns",
+                "effect_label": "sleep_skip",
+                "turns_delta": "-1",
+                "turns_floor": "0"
+              },
+              "1": {
+                "ae_duplicate_mode": "remove",
+                "ae_template_ref": "Sleep",
+                "effect_kind": "apply_ae",
+                "effect_label": "sleep_wake",
+                "target_ref": "self"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "",
+                "reaction_action_intent": "",
+                "reaction_action_kind": "",
+                "reaction_action_target": "",
+                "reaction_cause_filter": "",
+                "reaction_damage_source": "",
+                "reaction_effect_ref": "sleep_skip",
+                "reaction_max_per_round": "",
+                "reaction_max_scope": "",
+                "reaction_origin_filter": "",
+                "reaction_ownership": "",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "",
+                "reaction_requires_weapon_used": false,
+                "reaction_resource_filter": "",
+                "reaction_responder": "",
+                "reaction_source": "self",
+                "reaction_source_skill": "",
+                "reaction_status_filter": "",
+                "reaction_subject_kind": "",
+                "reaction_trigger": "turn_start",
+                "requires_skill": ""
+              },
+              "1": {
+                "condition_formula": "",
+                "reaction_action_intent": "",
+                "reaction_action_kind": "",
+                "reaction_action_target": "",
+                "reaction_cause_filter": "damage",
+                "reaction_damage_source": "",
+                "reaction_effect_ref": "sleep_wake",
+                "reaction_max_per_round": "",
+                "reaction_max_scope": "",
+                "reaction_origin_filter": "",
+                "reaction_ownership": "",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "",
+                "reaction_requires_weapon_used": false,
+                "reaction_resource_filter": "hp",
+                "reaction_responder": "",
+                "reaction_source": "self",
+                "reaction_source_skill": "",
+                "reaction_status_filter": "",
+                "reaction_subject_kind": "",
+                "reaction_trigger": "creature_lose_resource",
+                "requires_skill": ""
+              }
+            }
+          }
+        },
         "statuscounter": {
           "config": {
             "multiplyEffect": true,
