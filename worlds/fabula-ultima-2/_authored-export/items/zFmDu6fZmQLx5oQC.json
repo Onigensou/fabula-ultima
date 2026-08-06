@@ -315,7 +315,7 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul>\n<li>\n<ul>\n<li>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Hit Points, it restores 5 extra Hit Points<hr><strong>【Set Bonus】</strong></li>\n</ul>\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Hit Points, it restores 5 extra Hit Points.<hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Hit Points, it restores 5 extra Hit Points.<hr></li>\n</ul>\n</li>\n</ul>",
+      "description": "<p>When a potion or magisphere created with your Inventory Points restores Hit Points, it restores 5 extra Hit Points</p>",
       "isMartial": false,
       "isSet": true,
       "item_baseDef": "0",
@@ -325,6 +325,7 @@
       "item_mdef_bonus": "+2",
       "item_type": "armor",
       "name": "Butler Uniform",
+      "set_description": "<p>【Set Bonus】</p><p>2 Piece</p><p>When a potion or magisphere created with your Inventory Points restores Hit Points, it restores 5 extra Hit Points.</p><p>3 Piece</p><p>When a potion or magisphere created with your Inventory Points restores Hit Points, it restores 5 extra Hit Points.</p>",
       "set_name": "Royal Retainer"
     },
     "template": "ZoiV53VaLzeRsEps",

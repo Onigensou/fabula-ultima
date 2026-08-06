@@ -1,0 +1,77 @@
+{
+  "_id": "VBNSL2OC0prKRSp2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786035668239,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/suit.png",
+  "name": "Butler Uniform (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "zFmDu6fZmQLx5oQC",
+    "props": {
+      "description": "<p>Equipped passive: when a potion or magisphere created with your Inventory Points restores Hit Points, it restores 5 extra.</p>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "adjust_grant",
+          "effect_label": "butler_hp",
+          "grant_amount": "5",
+          "grant_operation": "add",
+          "grant_resource": "hp",
+          "grant_round": "up",
+          "grant_scope": "per_action"
+        }
+      },
+      "max_level": "1",
+      "name": "Butler Uniform (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "SKILL_HAS_TAG_POTION == 1 || SKILL_HAS_TAG_MAGISPHERE == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "butler_hp",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_uses_item",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "VBNSL2OC0prKRSp2"
+  },
+  "type": "equippableItem"
+}

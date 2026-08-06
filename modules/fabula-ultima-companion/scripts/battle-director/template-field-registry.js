@@ -75,6 +75,10 @@ const SET_CHECK_DIE_VIS = `equalText(sameRow("effect_kind",''), "set_check_die")
 // _skill, read at the action's COMPUTE by sumEquippedCheckBuffs (Encyclopedia +2
 // Study, Sneaker +2 Stealth, Cat Ears +1 Any). Its two fields were data-only.
 const CHECK_BUFF_VIS = `equalText(sameRow("effect_kind",''), "check_buff")`;
+// adjust_grant — the heal/restore twin of adjust_accuracy: boost an in-flight
+// action's PER-TARGET grant amount (Cognitive Focus, Potion Rain, the Retainer
+// uniforms' "+5 HP/MP from your potions").
+const ADJUST_GRANT_VIS = `equalText(sameRow("effect_kind",''), "adjust_grant")`;
 
 function textCol(key, colName, { tooltip = "", vis = "" } = {}) {
   return {
@@ -171,6 +175,34 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "subtract", value: "Subtract" },
     { key: "set",      value: "Set (e.g. Crossfire → 0 = miss)" },
   ], { tooltip: "adjust_accuracy: how Accuracy Amount combines with the in-flight accuracy total. Add raises the total (recomputes hit/miss); Set overrides it (Crossfire sets 0).", vis: ADJUST_ACC_VIS, defaultValue: "add" }),
+  // adjust_grant config — per-target heal/restore boost on the in-flight card.
+  // Same story as adjust_accuracy above: shipped with Cognitive Focus / Potion Rain
+  // and left data-only, so a sheet save could strip the operand. Registered here so
+  // boot self-heals the columns. See [[feedback_new_prop_needs_template_column]].
+  textCol("grant_amount", "Grant Amount", { tooltip: "adjust_grant: the operand (number or formula) combined with each target's restore amount. e.g. 5, SL * 2.", vis: ADJUST_GRANT_VIS }),
+  selectCol("grant_operation", "Grant Op", [
+    { key: "add",      value: "Add" },
+    { key: "subtract", value: "Subtract" },
+    { key: "multiply", value: "Multiply (Potion Rain × 0.5)" },
+    { key: "set",      value: "Set" },
+    { key: "cap",      value: "Cap (upper bound)" },
+    { key: "floor",    value: "Floor (lower bound)" },
+  ], { tooltip: "adjust_grant: how Grant Amount combines with the target's restore amount. Default Add.", vis: ADJUST_GRANT_VIS, defaultValue: "add" }),
+  selectCol("grant_scope", "Grant Scope", [
+    { key: "per_target", value: "Per target (gate each by Condition)" },
+    { key: "per_action", value: "Per action (every grant target)" },
+  ], { tooltip: "adjust_grant: per_target evaluates Condition Formula against each grant target (Cognitive Focus → my focus only); per_action boosts every grant target unconditionally.", vis: ADJUST_GRANT_VIS, defaultValue: "per_target" }),
+  selectCol("grant_resource", "Grant Resource", [
+    { key: "",    value: "(any)" },
+    { key: "hp",  value: "HP only" },
+    { key: "mp",  value: "MP only" },
+    { key: "ip",  value: "IP only" },
+    { key: "all", value: "All resources" },
+  ], { tooltip: "adjust_grant: only boost restores of this resource. Blank or All = any. Butler Uniform filters hp, Maid Uniform filters mp.", vis: ADJUST_GRANT_VIS }),
+  selectCol("grant_round", "Grant Rounding", [
+    { key: "up",   value: "Up (default)" },
+    { key: "down", value: "Down" },
+  ], { tooltip: "adjust_grant: rounding for a fractional Multiply result. Ignored by Add/Set.", vis: ADJUST_GRANT_VIS, defaultValue: "up" }),
   // modify_turns config — adjust a target's remaining actions (Stop = -1, min 0).
   // turns_delta lands this round; an unspendable reduction carries to the NEXT turn
   // (combatant.flags.pendingTurnDebt). Was data-only until registered here.

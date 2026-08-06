@@ -3833,6 +3833,12 @@
         "effects": 2
       },
       {
+        "id": "VBNSL2OC0prKRSp2",
+        "name": "Butler Uniform (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "tjtUM8dO3pfKbkdN",
         "name": "Butterfly Dream",
         "type": "equippableItem",
@@ -7871,6 +7877,12 @@
         "effects": 2
       },
       {
+        "id": "c4JpYv2ubs2WhclV",
+        "name": "Maid Uniform (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "PCoOu6WTIe1wGgpG",
         "name": "Maids Pocketwatch",
         "type": "equippableItem",
@@ -10323,6 +10335,12 @@
         "name": "Shark Hoodie",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "psBiOzCliFnjxJlC",
+        "name": "Shark Hoodie (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "8kYk4DuNB20Eb8Yg",
