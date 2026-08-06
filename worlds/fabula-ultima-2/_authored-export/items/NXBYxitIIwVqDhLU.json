@@ -1,0 +1,53 @@
+{
+  "_id": "NXBYxitIIwVqDhLU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786026257800,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2603.gif",
+  "name": "Sleep",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "nt0aSfqujhxInx6y",
+    "props": {
+      "cost": "15 MP",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Sleep",
+          "condition_formula": "chance(50)",
+          "effect_kind": "apply_ae",
+          "effect_label": "hypno_sleep",
+          "target_ref": "action_targets"
+        }
+      },
+      "max_level": "1",
+      "name": "Sleep",
+      "on_activate_effect_ref": "hypno_sleep",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_description": "Inflicts Sleep on a creature that can see you for 1 Round. 50% success rate.",
+      "skill_target": "One Creature",
+      "skill_type": "Spell"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "NXBYxitIIwVqDhLU"
+  },
+  "type": "equippableItem"
+}

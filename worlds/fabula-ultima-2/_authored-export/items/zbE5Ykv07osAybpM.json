@@ -1,0 +1,49 @@
+{
+  "_id": "zbE5Ykv07osAybpM",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786026256057,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Thief%20Cloths.gif",
+  "name": "Thief Clothes (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "XUMYmQYoS0onLkkF",
+    "props": {
+      "description": "<p>Equipped passive: +1 to Checks involving stealing.</p>",
+      "effect_table": {
+        "0": {
+          "check_buff_action": "stealing",
+          "check_buff_amount": "1",
+          "effect_kind": "check_buff",
+          "effect_label": "tclothes_steal"
+        }
+      },
+      "max_level": "1",
+      "name": "Thief Clothes (Passive)",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "zbE5Ykv07osAybpM"
+  },
+  "type": "equippableItem"
+}

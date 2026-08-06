@@ -3281,6 +3281,12 @@
         "effects": 0
       },
       {
+        "id": "VMMFIPkPQe0y8VUt",
+        "name": "Beast Tamer (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "SzqIrFxP8JxjsmIK",
         "name": "Behemoth Horn",
         "type": "equippableItem",
@@ -3573,6 +3579,12 @@
         "name": "Blood Shield",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "cyFoJiEh7gJIUzkk",
+        "name": "Blood Shield (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "kALWkUzVhaUPCQuG",
@@ -7445,6 +7457,12 @@
         "effects": 0
       },
       {
+        "id": "uEAuWAA7dZeSnaFk",
+        "name": "Lightning Rod (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "6y5mdxrHe6MpCMD8",
         "name": "Lightning Wand",
         "type": "equippableItem",
@@ -10499,6 +10517,12 @@
         "effects": 0
       },
       {
+        "id": "NXBYxitIIwVqDhLU",
+        "name": "Sleep",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "4egebSLnYIpksK1n",
         "name": "Sleep Potion",
         "type": "equippableItem",
@@ -11474,7 +11498,13 @@
         "id": "XUMYmQYoS0onLkkF",
         "name": "Thief Clothes",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
+      },
+      {
+        "id": "zbE5Ykv07osAybpM",
+        "name": "Thief Clothes (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "etf0rw7s8rlcuXdd",

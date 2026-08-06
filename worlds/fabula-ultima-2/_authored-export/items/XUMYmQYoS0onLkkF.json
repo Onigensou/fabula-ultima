@@ -84,6 +84,61 @@
       "type": "base"
     },
     {
+      "_id": "hM3q2gvRiHzRmDm8",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786026257156,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.skill_level_bonus_soul_steal",
+          "mode": 2,
+          "priority": 20,
+          "value": "${isEquipped ? 1 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "hM3q2gvRiHzRmDm8",
+          "originalParentId": "XUMYmQYoS0onLkkF",
+          "originalUuid": "Item.XUMYmQYoS0onLkkF.ActiveEffect.hM3q2gvRiHzRmDm8"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Soul Steal SL +1",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
       "_id": "meJBDSpIB5z1GRKx",
       "_stats": {
         "compendiumSource": null,

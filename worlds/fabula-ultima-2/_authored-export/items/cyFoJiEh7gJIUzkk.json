@@ -1,0 +1,75 @@
+{
+  "_id": "cyFoJiEh7gJIUzkk",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786026253115,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/DALL%C2%B7E%202024-11-04%2018.26.05%20-%20Create%20an%20anime-style%2C%20cel-shaded%20icon%20of%20a%20Bloodied%20Red%20Shield%20on%20a%20white%20background.%20The%20shield%20should%20have%20a%20bold%2C%20slightly%20menacing%20design%20with%20a%20.png",
+  "name": "Blood Shield (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "cxdX5YSm5TvPFlkP",
+    "props": {
+      "description": "<p>Equipped passive: While you are in Crisis, a creature that deals damage to you suffers Bleed.</p>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Bleed",
+          "effect_kind": "apply_ae",
+          "effect_label": "bshield_bleed",
+          "target_ref": "cause_actor"
+        }
+      },
+      "max_level": "1",
+      "name": "Blood Shield (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_STATUS_CRISIS == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "damage",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "bshield_bleed",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "hp",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_lose_resource",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "cyFoJiEh7gJIUzkk"
+  },
+  "type": "equippableItem"
+}

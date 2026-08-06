@@ -87,6 +87,16 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Uncommon",
+      "item_skill_active": {
+        "NXBYxitIIwVqDhLU": {
+          "id": "${item.id}",
+          "name": "Sleep",
+          "skill_cost": "15 MP",
+          "skill_description": "Inflicts Sleep on a creature that can see you for 1 Round. 50% success rate.",
+          "skill_maxLevel": "",
+          "uuid": "Item.NXBYxitIIwVqDhLU"
+        }
+      },
       "item_type": "accessory",
       "mimic_ef": "100",
       "monster_ef": "100",
