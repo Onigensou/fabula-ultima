@@ -788,6 +788,7 @@
       },
       "sort": 0,
       "system": {
+        "container": "wKogg4SVIY63cqLh",
         "props": {
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
