@@ -57,7 +57,7 @@
           "reaction_max_scope": "",
           "reaction_origin_filter": "",
           "reaction_ownership": "",
-          "reaction_passive_mode": "force",
+          "reaction_passive_mode": "on",
           "reaction_passive_target": "",
           "reaction_requires_weapon_used": false,
           "reaction_resource_filter": "",
