@@ -1,0 +1,108 @@
+{
+  "_id": "I0yxBBNQa7CvVvq5",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786043730916,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Blood%20Mail.png",
+  "name": "Blood Mail (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "dMc6zPtiuBgAjvTA",
+    "props": {
+      "description": "<p>Equipped passive: at the start of your turn you lose half your current Hit Points, and this loss cannot be reduced or prevented. While you are in Crisis you take half damage from every source.</p>",
+      "effect_table": {
+        "0": {
+          "consume_amount": "floor(CUR_HP * 0.5)",
+          "consume_resource": "hp",
+          "effect_kind": "consume_resource",
+          "effect_label": "bloodmail_toll",
+          "on_empty": "drain",
+          "target_ref": "self"
+        },
+        "1": {
+          "damage_amount": "0.5",
+          "damage_operation": "multiply",
+          "damage_round": "down",
+          "damage_stage": "incoming",
+          "effect_kind": "adjust_damage",
+          "effect_label": "bloodmail_resist"
+        }
+      },
+      "max_level": "1",
+      "name": "Blood Mail (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "bloodmail_toll",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "turn_start",
+          "requires_skill": ""
+        },
+        "1": {
+          "condition_formula": "HAS_STATUS_CRISIS == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "bloodmail_resist",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_targeted_by_action",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "I0yxBBNQa7CvVvq5"
+  },
+  "type": "equippableItem"
+}

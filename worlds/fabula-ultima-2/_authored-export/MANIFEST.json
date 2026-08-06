@@ -3581,6 +3581,12 @@
         "effects": 2
       },
       {
+        "id": "I0yxBBNQa7CvVvq5",
+        "name": "Blood Mail (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "cxdX5YSm5TvPFlkP",
         "name": "Blood Shield",
         "type": "equippableItem",
@@ -10301,6 +10307,12 @@
         "effects": 0
       },
       {
+        "id": "AO4nLf5Qa9sgn9CA",
+        "name": "Selachian Fang (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "B6PnJ12j2BYC0wwd",
         "name": "Self Destruct",
         "type": "equippableItem",
@@ -11037,6 +11049,12 @@
         "name": "Stitched-Up Jacket",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "NsEPkgoPjLnmTyjl",
+        "name": "Stitched-Up Jacket (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "vKxAyYVlL6604wsj",
