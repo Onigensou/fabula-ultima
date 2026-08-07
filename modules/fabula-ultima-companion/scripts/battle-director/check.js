@@ -203,8 +203,18 @@ export const checkVsThreshold = (r, dl) => ({
 // invariant that keeps a checkless action from ever being recomputed into a
 // miss) can never drift or be forgotten at one site. Callers own the ARITHMETIC
 // (compose the new total / new defense); this owns only the DECISION.
+//
+// `roll.invertHit` — the `Trick` keyword (Keyword Repository 1v5xrozP0fHlnjQj):
+// "an accuracy check result LOWER than the target's defense counts as a hit,
+// while a result HIGHER counts as a miss". Only the COMPARISON reverses: a
+// Critical still hits and a Fumble still misses (the databook reverses the
+// success condition, not the terminal outcomes). The flag rides on the ROLL
+// rather than arriving as an argument precisely so it cannot be forgotten at one
+// of the six call sites — every one of them already passes the roll, and both
+// reroll paths rebuild via `{ ...roll, ...derived }` so it survives an invoke.
 export const decideHit = (roll, total, defense) =>
   !roll ? true
   : roll.isCrit ? true
   : roll.isFumble ? false
+  : roll.invertHit ? Number(total) < Number(defense ?? 10)
   : Number(total) >= Number(defense ?? 10);

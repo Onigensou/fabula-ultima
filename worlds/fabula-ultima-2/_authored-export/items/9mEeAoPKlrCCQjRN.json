@@ -8,6 +8,117 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "EpInnBladqvbwcs0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786122262510,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "critical_damage_multiplier",
+          "mode": 5,
+          "priority": 20,
+          "value": "${isEquipped ? 1.5 : 1}$"
+        }
+      ],
+      "description": "<p>Critical Damage <strong>+50%</strong>.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "EpInnBladqvbwcs0",
+          "originalParentId": "9mEeAoPKlrCCQjRN",
+          "originalUuid": "Item.9mEeAoPKlrCCQjRN.ActiveEffect.EpInnBladqvbwcs0"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Critical Damage +50%",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "ZOYSv4Bp9gnF0zoY",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786122262230,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>You may perform <strong>Two-Weapon Fighting</strong> with this weapon alone.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ZOYSv4Bp9gnF0zoY",
+          "originalParentId": "9mEeAoPKlrCCQjRN",
+          "originalUuid": "Item.9mEeAoPKlrCCQjRN.ActiveEffect.ZOYSv4Bp9gnF0zoY"
+        },
+        "fabula-ultima-companion": {
+          "twoWeaponGrant": {
+            "category": "dagger",
+            "soloWeapon": true
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Twinfang.png",
+      "name": "Double Strike",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"

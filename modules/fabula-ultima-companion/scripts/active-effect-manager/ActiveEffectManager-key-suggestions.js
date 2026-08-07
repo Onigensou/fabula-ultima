@@ -89,6 +89,12 @@ skipPartyActors: true
     { key: "disable_action", label: "Disable Action(s)", category: "Action Gating", valueKind: "string" },
     { key: "enable_action_only", label: "Enable Action(s) Only", category: "Action Gating", valueKind: "string" },
 
+    // The `Trick` keyword — reverses this attack's success condition (a check
+    // total BELOW the target's defense hits). Carrier-scoped: on a GEAR carrier it
+    // inverts only attacks made with that weapon, so two same-category weapons
+    // don't bleed into each other. Read by attackerHitRuleInverted (snapshot.js).
+    { key: "invert_hit_rule", label: "Invert Hit Rule (Trick)", category: "Action Gating", valueKind: "string" },
+
     // Resources
     { key: "current_hp", label: "Current HP", category: "Resource", valueKind: "number" },
     { key: "current_mp", label: "Current MP", category: "Resource", valueKind: "number" },

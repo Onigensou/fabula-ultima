@@ -226,7 +226,11 @@ export async function gatherSkillsForActor(actor) {
   for (const item of items) {
     // isEquipped lives at system.props.isEquipped (CSB prop), NOT system.isEquipped.
     const isEquipped = item.system?.props?.isEquipped ?? false;
-    if (!isEquipped) continue;
+    // NOT an early `continue`: the `Versatile` keyword (Keyword Repository
+    // RJqcUnjSTQeMiA7Z, "this ability can be used even if you don't have this item
+    // equipped") is declared per GRANTED SKILL, so an unequipped item can still
+    // surface its Versatile grants. Resolve the grants and filter per-skill below;
+    // the equipped case is unchanged. Man Catcher's thrown Free Attack is the case.
     // item_skill_active is a KEYED map { <skillId>: { name, uuid, ... } }. The
     // KEY is the linked `_skill`'s id and is always present; the inner `uuid`
     // (and `id`) are DERIVED via a CSB template expression and can render empty
@@ -249,6 +253,8 @@ export async function gatherSkillsForActor(actor) {
       }
       if (!skill && skillId) skill = actor.items?.get?.(skillId) ?? null;
       if (!skill) continue;
+      // Equip gate, applied per GRANT so a Versatile ability survives it.
+      if (!isEquipped && skill.flags?.["fabula-ultima-companion"]?.versatile !== true) continue;
       if (seenUuids.has(skill.uuid)) continue;
       if (knownNames.has(String(skill.name ?? "").trim().toLowerCase())) continue;
       const cand = candidateFromSkill(skill, actor, { source: "item-granted", sourceItem: item });

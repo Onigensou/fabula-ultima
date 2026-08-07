@@ -8,6 +8,63 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "ab9oKTQDhtdJ5MVy",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786122263059,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "invert_hit_rule",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>This weapon's success condition is <strong>reversed</strong>: an Accuracy Check result <strong>lower</strong> than the target's Defense is a <strong>hit</strong>, and a result higher is a <strong>miss</strong>. A Critical still hits and a Fumble still misses.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ab9oKTQDhtdJ5MVy",
+          "originalParentId": "Qj7ruUSbcYUqO0uz",
+          "originalUuid": "Item.Qj7ruUSbcYUqO0uz.ActiveEffect.ab9oKTQDhtdJ5MVy"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/trick_attack.png",
+      "name": "Trick",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"

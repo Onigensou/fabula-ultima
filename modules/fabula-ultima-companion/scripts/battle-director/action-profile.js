@@ -20,7 +20,8 @@ import {
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
   applyCritDamage, resolveIncomingReduction, applyHealReceiving, normalizeDamageType, applyAdjustOp,
 } from "./skill-formulas.js";
-import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense } from "./snapshot.js";
+import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense,
+         attackerHitRuleInverted } from "./snapshot.js";
 import { applyClassAffinityAndMult, crushAffinity,
   bypassAffinity, affinityBypassRank } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
@@ -315,6 +316,17 @@ function computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice,
     thresholds, dl, blocked: false, blockedBy: null,
     grantHrAsZero,
   };
+
+  // `Trick` (Keyword Repository 1v5xrozP0fHlnjQj) — reverse the success condition
+  // for this action. Stamped on the CHECK (not passed to decideHit) so it reaches
+  // every hit decision, including the recompute mirrors, via the roll they already
+  // hold. Set before the early returns so a pre-roll card reads it too.
+  try {
+    check.invertHit = attackerHitRuleInverted(liveAttacker, weapon?.uuid ?? null);
+  } catch (e) {
+    warn("computeCheck: attackerHitRuleInverted threw", e);
+    check.invertHit = false;
+  }
 
   if (!required && kind !== "Hinder" && kind !== "Study") {
     // Auto-hit skill — no roll. Leave dice null.
@@ -1095,6 +1107,11 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
       checkBonusParts: check.bonusParts ?? [],
       total: check.total, hr: check.hr, isCrit: check.isCrit, isFumble: check.isFumble,
       opportunities: check.isCrit && !check.isFumble,
+      // Trick: this projection ENUMERATES roll fields rather than spreading the
+      // check, so the inverted-hit flag has to be carried explicitly or every
+      // recompute mirror (which reads ar.roll) would silently fall back to the
+      // normal rule and flip a Trick hit into a miss.
+      ...(check.invertHit ? { invertHit: true } : {}),
     };
   }
 

@@ -892,6 +892,61 @@ export function attackerCanMeleeFlying(actor, weaponType) {
   return false;
 }
 
+// True if an attack made with `weaponUuid` has its hit rule INVERTED — the
+// `Trick` keyword (Keyword Repository 1v5xrozP0fHlnjQj: "an accuracy check result
+// LOWER than the target's defense counts as a hit"). Reads `invert_hit_rule` AE
+// changes, the same AE-change-driven shape as can_target_flying_with above.
+//
+// SCOPING — by CARRIER UUID, not weapon category. Trick Dagger and Jur are both
+// Daggers and can be wielded together, so a category-scoped grant would silently
+// invert the OTHER dagger's attacks too. `ae.parent` is the carrier Item for a
+// transfer AE (see meleeFlyingCarrierDormant), so a GEAR carrier inverts only the
+// attacks actually made with ITSELF — which also makes the equip check redundant
+// (an unequipped weapon is never the used weapon). A NON-GEAR carrier (a class
+// skill granting Trick) has no weapon to match, so it applies to every attack.
+export function attackerHitRuleInverted(actor, weaponUuid) {
+  const used = String(weaponUuid ?? "").trim();
+  const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    if (!(ae.changes ?? []).some((ch) => ch?.key === "invert_hit_rule")) continue;
+    const item = ae?.parent?.documentName === "Item" ? ae.parent : null;
+    const itemType = String(item?.system?.props?.item_type ?? "").toLowerCase();
+    if (!_FLYING_EXCEPTION_GEAR_TYPES.has(itemType)) return true;  // non-gear → every attack
+    if (used && item?.uuid === used) return true;                  // gear → only its own swings
+  }
+  return false;
+}
+
+// Range-class attack gate — the Melee/Ranged axis, which `disable_action` cannot
+// express. GATEABLE_ACTION_LABELS below covers turn-action TYPES (Attack, Spell,
+// Guard…), but a melee Attack and a ranged Attack are both the *Attack* action, so
+// a range restriction is a separate dimension. Two hub conditions need exactly
+// this: Snared ("Prevents the use of 【Melee】actions") and Obscure ("Prevents the
+// uses of 【Range】action"), both of which shipped inert because there was nothing
+// to carry them.
+//
+// AE change key `disable_attack_range`, value = comma-list of melee|ranged (an
+// empty value blocks BOTH, i.e. no attacking at all). Returns the blocking AE's
+// NAME so the caller can say *why* the attack was refused, or null when allowed —
+// mirroring getBlockedActionLabels' reason strings.
+export function attackRangeBlockedBy(actor, range) {
+  const r = String(range ?? "").trim().toLowerCase();
+  // Mirrors the isMelee / isRanged classification in state-handlers' payload build.
+  const cls = /ranged|distance/.test(r) ? "ranged" : /melee/.test(r) ? "melee" : null;
+  if (!cls) return null;
+  const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae.changes ?? [])) {
+      if (ch?.key !== "disable_attack_range") continue;
+      const list = String(ch.value ?? "").split(/[\s,]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+      if (list.length === 0 || list.includes(cls)) return String(ae.name ?? "A condition");
+    }
+  }
+  return null;
+}
+
 // Canonical turn-action labels an action-gating debuff can block. Mirrors the
 // Octopath menu's action set (turn-ui-manager LEGACY_PAGES). "Switch" / "Passive"
 // are menu navigation, not real actions, so they're excluded — enable_action_only

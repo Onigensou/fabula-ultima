@@ -1569,6 +1569,14 @@ function containerReactionInPlay(item, casterActor, payload) {
   const itemType = String(container.system?.props?.item_type ?? "").toLowerCase();
   const GEAR = new Set(["accessory", "armor", "weapon", "shield"]);
   if (!GEAR.has(itemType)) return true;
+  // `Versatile` (Keyword Repository RJqcUnjSTQeMiA7Z): "This ability can be used
+  // even if you don't have this item equipped" — a declared opt-out of the equip
+  // gate. Declared as a DOCUMENT FLAG on the `_skill`, not a CSB prop, because the
+  // same declaration has to be readable by the skill-PICKER's separate equip gate
+  // (item_skill_active grants) and an activatable ability may own no reaction rows
+  // at all, so a reaction-table column could not carry it. Versatile is a property
+  // of the ability as a whole, so per-`_skill` is the right granularity.
+  if (item?.flags?.[FLAG_NS]?.versatile === true) return true;
   if (container.system?.props?.isEquipped === true) return true;
   // A WEAPON container that was actually USED in the triggering action counts as
   // "in play" even when it isn't flagged isEquipped — NPC weapons are almost never

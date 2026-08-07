@@ -234,7 +234,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "disable_attack_range",
+          "mode": 5,
+          "priority": 20,
+          "value": "melee"
+        }
+      ],
       "description": "<p>Prevents the use of <strong>【Melee】</strong>actions</p>",
       "disabled": false,
       "duration": {
@@ -592,7 +599,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "disable_attack_range",
+          "mode": 5,
+          "priority": 20,
+          "value": "ranged"
+        }
+      ],
       "description": "<p>Unable to perform <strong>Ranged </strong>actions</p>",
       "disabled": false,
       "duration": {
@@ -2691,7 +2705,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "disable_action",
+          "mode": 5,
+          "priority": 20,
+          "value": "Item"
+        }
+      ],
       "description": "<p>Disable the <strong>Inventory </strong>action</p>",
       "disabled": false,
       "duration": {
@@ -2754,7 +2775,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "disable_action",
+          "mode": 5,
+          "priority": 20,
+          "value": "Guard"
+        }
+      ],
       "description": "<p>Disable the <strong>Guard </strong>action</p>",
       "disabled": false,
       "duration": {

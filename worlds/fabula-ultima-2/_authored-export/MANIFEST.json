@@ -7304,7 +7304,7 @@
         "id": "9mEeAoPKlrCCQjRN",
         "name": "Jur",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "OleYEycqBLfRXdNn",
@@ -11858,7 +11858,7 @@
         "id": "Qj7ruUSbcYUqO0uz",
         "name": "Trick Dagger",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "LfGNQqeQN5ch9uko",

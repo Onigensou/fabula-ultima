@@ -48,7 +48,8 @@ import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
 import { buildUltimaMenuSpec } from "./domination.js";
 import { pickFromList } from "./list-picker.js";
-import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, snapshotEligibleTargetsFromDCombat } from "./snapshot.js";
+import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, snapshotEligibleTargetsFromDCombat,
+         attackRangeBlockedBy } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -454,6 +455,17 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     : (attackMode === "off" || attackMode === "two-weapon-off-first")
       ? snap.offWeapon
       : snap.weapon;
+  // Range-class gate (Snared blocks Melee, Obscure blocks Ranged). Checked BEFORE
+  // the Covered filter so a Snared player is told they're Snared rather than
+  // "all enemies are Covered", which would be a misleading reason.
+  {
+    let blockedBy = null;
+    try { blockedBy = attackRangeBlockedBy(token?.actor ?? null, currentWeapon?.range); } catch (_) {}
+    if (blockedBy) {
+      ui.notifications?.warn(`${blockedBy} prevents ${String(currentWeapon?.range ?? "").toLowerCase() === "melee" ? "melee" : "ranged"} attacks.`);
+      return { cancelled: true, reason: "attack-range-blocked" };
+    }
+  }
   const filtered = applyAttackRangeGate(enemies, currentWeapon);
   if (!filtered.length) {
     const isMelee = String(currentWeapon?.range ?? "").trim().toLowerCase() === "melee";
@@ -599,6 +611,16 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
   // unified helper preserves `.excluded` so AE-driven exclusions
   // (Vanish etc.) keep rendering their overlay.
   const range = String(attackItem.system?.props?.skill_range ?? "Melee");
+  // Range-class gate (Snared / Obscure) — same check as the PC path above, before
+  // the Covered filter so the refusal names the real reason.
+  {
+    let blockedBy = null;
+    try { blockedBy = attackRangeBlockedBy(actor, range); } catch (_) {}
+    if (blockedBy) {
+      ui.notifications?.warn(`${blockedBy} prevents ${range.trim().toLowerCase() === "melee" ? "melee" : "ranged"} attacks.`);
+      return { cancelled: true, reason: "attack-range-blocked" };
+    }
+  }
   const enemies = eligible?.enemies ?? [];
   const filtered = applyAttackRangeGate(enemies, { range });
   if (!filtered.length) {
