@@ -11,7 +11,7 @@
 
 import { log, warn } from "./logger.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
-import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, normalizeDamageType } from "./skill-formulas.js";
 import { analyzeChainCost, estimatePerformReactionCost, isMergedArcanumChild } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
@@ -495,11 +495,19 @@ function candidateToRow(c) {
   // (availability_formula false, e.g. "Numen already active"). Distinct from the
   // affordability dim, which keeps showing the cost badge.
   const hardBlock = c._intentDisabled || c._unavailable || c._mpBlocked || null;
+  // "No HR" corner tag — this action deals damage but adds no High Roll. For a
+  // Skill/Spell that is exactly "deals damage AND rolls no accuracy check": the
+  // profile sets `ignoreHR: !roll` for the non-Attack kinds, and a check-less
+  // skill has no roll to take an HR from. `normalizeDamageType` is the same
+  // predicate the damage path uses, so healing / "none" / blank never tag (and
+  // `mp` correctly does — MP damage is real damage).
+  const noHighRoll = !c.isCheck && !!normalizeDamageType(c.element);
   return {
     value: { skillUuid: c.uuid, sourceItemUuid: c.sourceItemUuid || null },
     imageUrl: safeImg,
     primary: `${sourceTag}${escapeHtml(c.name)}`,
     secondary,
+    ...(noHighRoll ? { cornerBadge: "No HR", cornerBadgeTone: "warn" } : {}),
     badge: hardBlock ? escapeHtml(hardBlock) : escapeHtml(costLabel),
     badgeTone: hardBlock ? "danger" : (isFree ? "free" : (c.affordable ? null : "danger")),
     disabled: !!hardBlock || !c.affordable,

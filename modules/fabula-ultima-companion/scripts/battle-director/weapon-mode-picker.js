@@ -53,6 +53,21 @@ function safeUrl(raw) {
 //
 // `virtualAttacks` is an array of frozen profiles from snapshot.resolveVirtualAttacks
 // — each becomes a pick option in a separate "Virtual" section.
+// Name an N-strike option by its COUNT rather than by the mechanism that grants
+// it: "Double Attack", "Triple Attack", … The old copy said "Attack twice",
+// which reads as an instruction and doesn't generalise past two. Falls back to
+// "N× Attack" beyond the named range so a future Chain 7 still renders sanely.
+const MULTI_ATTACK_WORD = [null, null, "Double", "Triple", "Quadruple", "Quintuple", "Sextuple"];
+function multiAttackLabel(n) {
+  const word = MULTI_ATTACK_WORD[n];
+  return word ? `${word} Attack` : `${n}× Attack`;
+}
+
+// Every multi-strike option resolves each strike with High Roll forced to 0
+// (see ignoreHR in action-profile). That is the real cost of taking one, so it
+// rides the option as a corner tag instead of being buried in a section hint.
+const NO_HR_TAG = "No HR";
+
 export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, twoWeaponSolo = false, virtualAttacks = [], externalCancel = null }) {
   const arrow = `<i class="fa-solid fa-arrow-right" style="opacity:0.55; font-size:10.5px;"></i>`;
   const sections = [];
@@ -88,24 +103,25 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
   if (singleHand.length) sections.push({ label: "Single Hand", hint: null, items: singleHand });
 
   if (soloDouble) {
-    // Lone-weapon double attack — one option, two separate attacks (HR 0).
+    // Lone-weapon multi-strike — one option, N separate attacks.
     sections.push({
-      label: "Two-Weapon",
-      hint: "Attack twice — HR 0",
+      label: multiAttackLabel(2),
+      hint: "One weapon, two separate rolls",
       items: [
         {
           value: "two-weapon",
           imageUrl: safeUrl(mainWeapon.imageUrl),
           fallbackIcon: `<i class="fa-solid fa-swords" aria-hidden="true"></i>`,
           primary: `${escapeHtml(mainWeapon.name)} ${arrow} ${escapeHtml(mainWeapon.name)}`,
-          secondary: `Attack twice (two separate rolls)`,
+          secondary: `${multiAttackLabel(2)} — two separate rolls`,
+          cornerBadge: NO_HR_TAG, cornerBadgeTone: "warn",
         },
       ],
     });
   } else if (allowTwoWeapon && mainWeapon && offWeapon) {
     sections.push({
-      label: "Two-Weapon",
-      hint: "Both attack — HR 0",
+      label: multiAttackLabel(2),
+      hint: "Both weapons strike",
       items: [
         {
           value: "two-weapon",
@@ -113,6 +129,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           fallbackIcon: `<i class="fa-solid fa-swords" aria-hidden="true"></i>`,
           primary: `${escapeHtml(mainWeapon.name)} ${arrow} ${escapeHtml(offWeapon.name)}`,
           secondary: `Main fires first`,
+          cornerBadge: NO_HR_TAG, cornerBadgeTone: "warn",
         },
         {
           value: "two-weapon-off-first",
@@ -120,6 +137,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           fallbackIcon: `<i class="fa-solid fa-swords" aria-hidden="true"></i>`,
           primary: `${escapeHtml(offWeapon.name)} ${arrow} ${escapeHtml(mainWeapon.name)}`,
           secondary: `Off fires first`,
+          cornerBadge: NO_HR_TAG, cornerBadgeTone: "warn",
         },
       ],
     });

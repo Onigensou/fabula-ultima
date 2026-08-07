@@ -48,6 +48,12 @@
 //     fallbackIcon?,         // HTML (e.g. FA <i>) shown when no imageUrl
 //     badge?,                // right-aligned HTML chip (e.g. a cost badge)
 //     badgeTone?,            // "free" (green) | "danger" (red) | undefined (neutral)
+//     cornerBadge?,          // HTML chip pinned to the row's TOP-RIGHT CORNER —
+//                            // a property of the option itself rather than a
+//                            // value in the trailing column, so it composes with
+//                            // `badge` (a row can show a cost AND a corner tag).
+//                            // Used for "NO HR" (this action adds no High Roll).
+//     cornerBadgeTone?,      // "warn" (amber) | undefined (neutral)
 //     disabled?,             // greyed + non-clickable + skipped by keyboard
 //     color?,                // left accent color (CSS)
 //     tooltip?,              // dwell-hover popup: { name?, cost?, missing?, body? }
@@ -158,6 +164,8 @@ function ensureStyles() {
     .fud-lp-card .fud-lp-option {
       display: grid; grid-template-columns: 40px 1fr auto;
       gap: 10px; align-items: center;
+      /* Anchor for .fud-lp-corner (the top-right option tag). */
+      position: relative;
       padding: 8px 12px;
       border-radius: 9px;
       border: 2px solid rgba(90, 62, 28, 0.5);
@@ -233,6 +241,24 @@ function ensureStyles() {
     .fud-lp-card .fud-lp-option .fud-lp-badge.is-danger {
       background: rgba(110, 30, 30, 0.18); border-color: rgba(110, 30, 30, 0.32); color: #6b1e1e;
     }
+    /* Corner tag — pinned to the option's top-right, riding the border so it
+       reads as a property OF the option rather than another column of data.
+       Sits above the row's inset highlight; never intercepts the row click. */
+    .fud-lp-card .fud-lp-option .fud-lp-corner {
+      position: absolute; top: -7px; right: 8px; z-index: 2;
+      font-size: 9px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; white-space: nowrap;
+      padding: 1px 6px; border-radius: 5px;
+      border: 1px solid var(--fud-stroke, #7a6a55);
+      background: linear-gradient(180deg, #fffdf5, #efe6d2);
+      color: #4a3208; pointer-events: none;
+      box-shadow: 0 1px 0 rgba(41, 33, 24, 0.22);
+    }
+    .fud-lp-card .fud-lp-option .fud-lp-corner.is-warn {
+      background: linear-gradient(180deg, #f6e2b8, #e8cf92);
+      border-color: #9a7b3a; color: #5a3f0c;
+    }
+    .fud-lp-card .fud-lp-option.is-disabled .fud-lp-corner { opacity: 0.55; }
     .fud-lp-card .fud-lp-cancel {
       margin-top: 8px;
       padding: 6px 10px; border-radius: 8px;
@@ -462,8 +488,11 @@ export async function pickFromList({
     const secHTML = row.secondary ? `<div class="secondary${row.secondaryNoWrap ? " is-nowrap" : ""}">${row.secondary}</div>` : "";
     const accent = row.color ? ` style="border-left: 4px solid ${row.color};"` : "";
     const tipAttr = row.tooltip ? ` data-fud-lp-tip="${encodeURIComponent(JSON.stringify(row.tooltip))}"` : "";
+    const cornerTone = row.cornerBadgeTone === "warn" ? " is-warn" : "";
+    const cornerHTML = row.cornerBadge ? `<div class="fud-lp-corner${cornerTone}">${row.cornerBadge}</div>` : "";
     return `
       <div class="fud-lp-option${disabled ? " is-disabled" : ""}" data-fud-lp-idx="${idx}" role="button" tabindex="0"${accent}${tipAttr}>
+        ${cornerHTML}
         <div class="icon">${iconInner}</div>
         <div class="info">
           <div class="primary">${row.primary ?? ""}</div>
