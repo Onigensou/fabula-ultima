@@ -27,7 +27,7 @@ import { promptNumberDialog } from "./number-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
-import { readPropNum, resolveAffinity } from "./snapshot.js";
+import { readPropNum, resolveAffinity, skillDeclaresVersatile } from "./snapshot.js";
 import { isActorDefeated } from "./defeat-reactor.js";
 import { computeIncomingDamage } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
@@ -1571,12 +1571,12 @@ function containerReactionInPlay(item, casterActor, payload) {
   if (!GEAR.has(itemType)) return true;
   // `Versatile` (Keyword Repository RJqcUnjSTQeMiA7Z): "This ability can be used
   // even if you don't have this item equipped" — a declared opt-out of the equip
-  // gate. Declared as a DOCUMENT FLAG on the `_skill`, not a CSB prop, because the
-  // same declaration has to be readable by the skill-PICKER's separate equip gate
-  // (item_skill_active grants) and an activatable ability may own no reaction rows
-  // at all, so a reaction-table column could not carry it. Versatile is a property
-  // of the ability as a whole, so per-`_skill` is the right granularity.
-  if (item?.flags?.[FLAG_NS]?.versatile === true) return true;
+  // gate, declared on the `_skill` (checkbox prop or the durable flag — see
+  // skillDeclaresVersatile). Per-`_skill` rather than per reaction row because
+  // Versatile is a property of the ABILITY, and because the skill PICKER has its
+  // own separate equip gate that must read the same declaration (an activatable
+  // ability may own no reaction rows at all).
+  if (skillDeclaresVersatile(item)) return true;
   if (container.system?.props?.isEquipped === true) return true;
   // A WEAPON container that was actually USED in the triggering action counts as
   // "in play" even when it isn't flagged isEquipped — NPC weapons are almost never

@@ -48,12 +48,13 @@
 //     fallbackIcon?,         // HTML (e.g. FA <i>) shown when no imageUrl
 //     badge?,                // right-aligned HTML chip (e.g. a cost badge)
 //     badgeTone?,            // "free" (green) | "danger" (red) | undefined (neutral)
-//     cornerBadge?,          // HTML chip pinned to the row's TOP-RIGHT CORNER —
-//                            // a property of the option itself rather than a
-//                            // value in the trailing column, so it composes with
-//                            // `badge` (a row can show a cost AND a corner tag).
-//                            // Used for "NO HR" (this action adds no High Roll).
-//     cornerBadgeTone?,      // "warn" (amber) | undefined (neutral)
+//     badges?,               // Array<{ text, tone? }> — the trailing cell is a
+//                            // LIST of chips, all on one baseline at equal
+//                            // height, laid out with a gap so they can never
+//                            // overlap. Use when a row carries more than one
+//                            // fact ("No HR" + "Free", or a block reason + cost).
+//                            // `badge`/`badgeTone` above is the single-chip
+//                            // shorthand and is folded into this list.
 //     disabled?,             // greyed + non-clickable + skipped by keyboard
 //     color?,                // left accent color (CSS)
 //     tooltip?,              // dwell-hover popup: { name?, cost?, missing?, body? }
@@ -241,24 +242,23 @@ function ensureStyles() {
     .fud-lp-card .fud-lp-option .fud-lp-badge.is-danger {
       background: rgba(110, 30, 30, 0.18); border-color: rgba(110, 30, 30, 0.32); color: #6b1e1e;
     }
-    /* Corner tag — pinned to the option's top-right, riding the border so it
-       reads as a property OF the option rather than another column of data.
-       Sits above the row's inset highlight; never intercepts the row click. */
-    .fud-lp-card .fud-lp-option .fud-lp-corner {
-      position: absolute; top: -7px; right: 8px; z-index: 2;
-      font-size: 9px; font-weight: 800; letter-spacing: 0.06em;
-      text-transform: uppercase; white-space: nowrap;
-      padding: 1px 6px; border-radius: 5px;
-      border: 1px solid var(--fud-stroke, #7a6a55);
-      background: linear-gradient(180deg, #fffdf5, #efe6d2);
-      color: #4a3208; pointer-events: none;
-      box-shadow: 0 1px 0 rgba(41, 33, 24, 0.22);
+    /* Trailing chip LIST. Every chip is a .fud-lp-badge, so a "No HR" tag and a
+       cost badge share one baseline and one height; the gap keeps them from ever
+       colliding as either grows. */
+    .fud-lp-card .fud-lp-option .fud-lp-badges {
+      display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+      justify-content: flex-end;
     }
-    .fud-lp-card .fud-lp-option .fud-lp-corner.is-warn {
-      background: linear-gradient(180deg, #f6e2b8, #e8cf92);
-      border-color: #9a7b3a; color: #5a3f0c;
+    /* A block REASON on a disabled row has to stay loud — it is the answer to
+       "why can't I pick this?", and the row's grayscale+opacity would otherwise
+       mute it into the furniture. A parent's opacity can't be undone by a child, so
+       this leans on a solid fill + white text + a saturate boost to punch back
+       through, matching the red Stagger/Panic blade stamps. */
+    .fud-lp-card .fud-lp-option.is-disabled .fud-lp-badge.is-danger {
+      background: #9c2320; border-color: #631513; color: #fff;
+      filter: saturate(2.6) contrast(1.12);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
     }
-    .fud-lp-card .fud-lp-option.is-disabled .fud-lp-corner { opacity: 0.55; }
     .fud-lp-card .fud-lp-cancel {
       margin-top: 8px;
       padding: 6px 10px; border-radius: 8px;
@@ -481,18 +481,23 @@ export async function pickFromList({
   const renderRow = (row, idx) => {
     const disabled = !!row.disabled;
     const iconInner = row.imageUrl ? `<img src="${row.imageUrl}" alt="">` : (row.fallbackIcon ?? "");
-    const toneClass = row.badgeTone === "free" ? " is-free" : row.badgeTone === "danger" ? " is-danger" : "";
-    const badgeHTML = row.badge ? `<div class="fud-lp-badge${toneClass}">${row.badge}</div>` : `<div></div>`;
+    // Normalise the single-chip shorthand and the list into ONE list, so the
+    // trailing cell has a single rendering path and chips can't overlap.
+    const chips = [
+      ...(Array.isArray(row.badges) ? row.badges : []).filter((b) => b && b.text),
+      ...(row.badge ? [{ text: row.badge, tone: row.badgeTone }] : []),
+    ];
+    const chipCls = (tone) => tone === "free" ? " is-free" : tone === "danger" ? " is-danger" : "";
+    const badgeHTML = chips.length
+      ? `<div class="fud-lp-badges">${chips.map((c) => `<div class="fud-lp-badge${chipCls(c.tone)}">${c.text}</div>`).join("")}</div>`
+      : `<div></div>`;
     // In multi-select the trailing cell is a checkbox instead of the badge.
     const trailingHTML = multiSelect ? `<div class="fud-lp-check" aria-hidden="true">✓</div>` : badgeHTML;
     const secHTML = row.secondary ? `<div class="secondary${row.secondaryNoWrap ? " is-nowrap" : ""}">${row.secondary}</div>` : "";
     const accent = row.color ? ` style="border-left: 4px solid ${row.color};"` : "";
     const tipAttr = row.tooltip ? ` data-fud-lp-tip="${encodeURIComponent(JSON.stringify(row.tooltip))}"` : "";
-    const cornerTone = row.cornerBadgeTone === "warn" ? " is-warn" : "";
-    const cornerHTML = row.cornerBadge ? `<div class="fud-lp-corner${cornerTone}">${row.cornerBadge}</div>` : "";
     return `
       <div class="fud-lp-option${disabled ? " is-disabled" : ""}" data-fud-lp-idx="${idx}" role="button" tabindex="0"${accent}${tipAttr}>
-        ${cornerHTML}
         <div class="icon">${iconInner}</div>
         <div class="info">
           <div class="primary">${row.primary ?? ""}</div>

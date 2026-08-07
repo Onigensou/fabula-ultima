@@ -12,7 +12,7 @@ import { log, warn, err } from "./logger.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, getMaxActionTargets } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, getMaxActionTargets, attackRangeBlockedBy } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -3724,6 +3724,9 @@ const Target = {
         const totalRealOptions = (hasMain ? 1 : 0) + (hasOff ? 1 : 0);
         const needsPicker = totalRealOptions + virtualAttacks.length > 1;
         if (needsPicker) {
+          // Live actor for the range-lockout read (the snapshot carries no AEs).
+          let liveActorForBlock = null;
+          try { liveActorForBlock = attacker.actorUuid ? await fromUuid(attacker.actorUuid) : null; } catch (_) {}
           const picked = await pickWeaponMode({
             director,
             mainWeapon: attacker.weapon,
@@ -3731,6 +3734,12 @@ const Target = {
             allowTwoWeapon: !!attacker.canTwoWeaponFight,
             twoWeaponSolo: !!attacker.twoWeaponSolo,
             virtualAttacks,
+            // Snared / Obscure — shown as disabled, red-tagged rows rather than
+            // refusing the attack after the pick (mirrors composeAttack).
+            rangeBlock: {
+              melee: attackRangeBlockedBy(liveActorForBlock, "Melee"),
+              ranged: attackRangeBlockedBy(liveActorForBlock, "Ranged"),
+            },
           });
           if (!picked) {
             director.enqueue({ type: INTENTS.TARGET_BACK });

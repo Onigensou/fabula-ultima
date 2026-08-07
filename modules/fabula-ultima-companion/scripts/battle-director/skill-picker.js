@@ -15,7 +15,7 @@ import { buildSkillResolver, evaluateFormula, normalizeDamageType } from "./skil
 import { analyzeChainCost, estimatePerformReactionCost, isMergedArcanumChild } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
-import { getMaxActionTargets, skillTargetIsMulti, skillTargetIsUpTo } from "./snapshot.js";
+import { getMaxActionTargets, skillTargetIsMulti, skillTargetIsUpTo, skillDeclaresVersatile } from "./snapshot.js";
 
 // Cost badge labels for the config-derived (effect-chain) cost map.
 const COST_RES_LABEL = { hp: "HP", mp: "MP", ip: "IP", fp: "FP", zenit: "Zenit", zero_power: "ZP", enmity: "Enmity" };
@@ -254,7 +254,7 @@ export async function gatherSkillsForActor(actor) {
       if (!skill && skillId) skill = actor.items?.get?.(skillId) ?? null;
       if (!skill) continue;
       // Equip gate, applied per GRANT so a Versatile ability survives it.
-      if (!isEquipped && skill.flags?.["fabula-ultima-companion"]?.versatile !== true) continue;
+      if (!isEquipped && !skillDeclaresVersatile(skill)) continue;
       if (seenUuids.has(skill.uuid)) continue;
       if (knownNames.has(String(skill.name ?? "").trim().toLowerCase())) continue;
       const cand = candidateFromSkill(skill, actor, { source: "item-granted", sourceItem: item });
@@ -507,7 +507,9 @@ function candidateToRow(c) {
     imageUrl: safeImg,
     primary: `${sourceTag}${escapeHtml(c.name)}`,
     secondary,
-    ...(noHighRoll ? { cornerBadge: "No HR", cornerBadgeTone: "warn" } : {}),
+    // Sits in the trailing chip list ALONGSIDE the cost badge below (they share a
+    // baseline and can't collide), rather than as a separate corner tag.
+    ...(noHighRoll ? { badges: [{ text: "No HR", tone: "danger" }] } : {}),
     badge: hardBlock ? escapeHtml(hardBlock) : escapeHtml(costLabel),
     badgeTone: hardBlock ? "danger" : (isFree ? "free" : (c.affordable ? null : "danger")),
     disabled: !!hardBlock || !c.affordable,

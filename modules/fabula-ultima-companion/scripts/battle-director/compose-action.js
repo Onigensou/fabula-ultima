@@ -432,6 +432,14 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
       allowTwoWeapon: !!snap.canTwoWeaponFight,
       twoWeaponSolo: !!snap.twoWeaponSolo,
       virtualAttacks,
+      // Range-class lockouts (Snared / Obscure). Passed in so the picker can
+      // OPEN with those weapons visible-but-disabled and red-tagged, instead of
+      // the action being refused after the pick — the player needs to see WHICH
+      // weapon is locked and by what, the same way Stagger/Panic stamp a blade.
+      rangeBlock: {
+        melee: attackRangeBlockedBy(token?.actor ?? null, "Melee"),
+        ranged: attackRangeBlockedBy(token?.actor ?? null, "Ranged"),
+      },
       // Forward the cancel sentinel so the picker overlay tears
       // itself down if the race resolves against us.
       externalCancel: cancelSentinel,
@@ -455,9 +463,12 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     : (attackMode === "off" || attackMode === "two-weapon-off-first")
       ? snap.offWeapon
       : snap.weapon;
-  // Range-class gate (Snared blocks Melee, Obscure blocks Ranged). Checked BEFORE
-  // the Covered filter so a Snared player is told they're Snared rather than
-  // "all enemies are Covered", which would be a misleading reason.
+  // Range-class lockout (Snared blocks melee, Obscure blocks ranged) is now shown
+  // INSIDE the weapon picker as a disabled, red-tagged row (see the rangeBlock
+  // argument above) rather than refusing the action after the pick. A blocked row
+  // can't be chosen, so reaching here means the pick was legal — this is only the
+  // belt-and-braces guard for a mode that bypassed the picker (single-option
+  // auto-select paths).
   {
     let blockedBy = null;
     try { blockedBy = attackRangeBlockedBy(token?.actor ?? null, currentWeapon?.range); } catch (_) {}

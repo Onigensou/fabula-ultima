@@ -917,13 +917,33 @@ export function attackerCanMeleeFlying(actor, weaponType) {
 // what lets weaponReactionInPlay attribute on-hit rows and lets Trick's
 // carrier-scoped inversion recognise the swing.
 //
-// Versatile is declared as a document FLAG on the linked `_skill` (flags
-// .fabula-ultima-companion.versatile), so no CSB template column is involved.
+// Versatile is declared on the linked `_skill`, and BOTH forms count:
+//
+//   system.props.versatile   — the sheet checkbox. Preferred for authoring, but
+//                              it only exists once `versatile` is a registered
+//                              template FIELD, which cannot be added by script
+//                              (CSB registers raw-added dynamic-table COLUMNS but
+//                              not raw-added top-level fields — verified, the
+//                              input never renders). It has to be added through
+//                              the in-game CSB template editor.
+//   flags.<ns>.versatile     — the durable form. A prop the template does not
+//                              define as a field is STRIPPED by reloadTemplate
+//                              (reference_csb_reload_template_after_column_surgery),
+//                              so until the checkbox is registered the flag is
+//                              what actually survives a template reload.
+//
+// Reading both means authoring can move to the checkbox the moment it exists
+// without a migration, and nothing silently goes dead in the meantime.
+export function skillDeclaresVersatile(skillItem) {
+  return skillItem?.system?.props?.versatile === true
+      || skillItem?.flags?.[FLAG_NS]?.versatile === true;
+}
+
 export function actorHasVersatileSkillFor(actor, weaponItem) {
   if (!actor || !weaponItem) return false;
   for (const it of (actor.items?.contents ?? [])) {
     if (String(it.system?.container ?? "") !== weaponItem.id) continue;
-    if (it.flags?.[FLAG_NS]?.versatile === true) return true;
+    if (skillDeclaresVersatile(it)) return true;
   }
   return false;
 }

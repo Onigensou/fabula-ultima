@@ -65,10 +65,24 @@ function multiAttackLabel(n) {
 
 // Every multi-strike option resolves each strike with High Roll forced to 0
 // (see ignoreHR in action-profile). That is the real cost of taking one, so it
-// rides the option as a corner tag instead of being buried in a section hint.
-const NO_HR_TAG = "No HR";
+// rides the option as a chip beside the cost instead of being buried in a
+// section hint. Red, because it is a penalty.
+const NO_HR_CHIP = { text: "No HR", tone: "danger" };
 
-export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, twoWeaponSolo = false, virtualAttacks = [], externalCancel = null }) {
+// Range-class lockouts (Snared blocks melee, Obscure blocks ranged). The picker
+// still OPENS with these weapons listed — a player needs to see WHY a weapon is
+// unavailable, not just find it missing — but the rows are disabled and carry a
+// red chip naming the condition, mirroring the Stagger / Panic blade stamps.
+// `rangeBlock` is plain data: { melee: reason|null, ranged: reason|null }.
+function blockReasonFor(weapon, rangeBlock) {
+  if (!weapon || !rangeBlock) return null;
+  const r = String(weapon.range ?? "").trim().toLowerCase();
+  if (/ranged|distance/.test(r)) return rangeBlock.ranged ?? null;
+  if (/melee/.test(r)) return rangeBlock.melee ?? null;
+  return null;
+}
+
+export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, twoWeaponSolo = false, virtualAttacks = [], rangeBlock = null, externalCancel = null }) {
   const arrow = `<i class="fa-solid fa-arrow-right" style="opacity:0.55; font-size:10.5px;"></i>`;
   const sections = [];
 
@@ -81,23 +95,35 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
 
   // Primary visual = weapon image (or weapon-type FA icon); the Main/Off/Two-
   // Weapon role sits on the secondary line so the eye lands on the weapon.
+  // A row is blocked when ANY weapon it would swing is range-locked out.
+  const blockChips = (...weapons) => {
+    const reasons = [...new Set(weapons.map((w) => blockReasonFor(w, rangeBlock)).filter(Boolean))];
+    return reasons.length
+      ? { disabled: true, badges: reasons.map((r) => ({ text: escapeHtml(r.toUpperCase()), tone: "danger" })) }
+      : null;
+  };
+
   const singleHand = [];
   if (mainWeapon) {
+    const blk = blockChips(mainWeapon);
     singleHand.push({
       value: "main",
       imageUrl: safeUrl(mainWeapon.imageUrl),
       fallbackIcon: weaponIcon(mainWeapon.weaponType),
       primary: escapeHtml(mainWeapon.name),
       secondary: `${soloDouble ? "Single Shot" : "Main Hand"}<span class="dot">•</span>${escapeHtml(mainWeapon.A1)} + ${escapeHtml(mainWeapon.A2)}`,
+      ...(blk ?? {}),
     });
   }
   if (hasRealOffhand) {
+    const blk = blockChips(offWeapon);
     singleHand.push({
       value: "off",
       imageUrl: safeUrl(offWeapon.imageUrl),
       fallbackIcon: weaponIcon(offWeapon.weaponType),
       primary: escapeHtml(offWeapon.name),
       secondary: `Off-Hand<span class="dot">•</span>${escapeHtml(offWeapon.A1)} + ${escapeHtml(offWeapon.A2)}`,
+      ...(blk ?? {}),
     });
   }
   if (singleHand.length) sections.push({ label: "Single Hand", hint: null, items: singleHand });
@@ -114,7 +140,10 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           fallbackIcon: `<i class="fa-solid fa-swords" aria-hidden="true"></i>`,
           primary: `${escapeHtml(mainWeapon.name)} ${arrow} ${escapeHtml(mainWeapon.name)}`,
           secondary: `${multiAttackLabel(2)} — two separate rolls`,
-          cornerBadge: NO_HR_TAG, cornerBadgeTone: "warn",
+          // Block reason first (it decides whether the row is usable at all),
+          // then the standing HR penalty. Merged rather than spread-overwritten.
+          badges: [...(blockChips(mainWeapon)?.badges ?? []), NO_HR_CHIP],
+          disabled: !!blockChips(mainWeapon),
         },
       ],
     });
@@ -129,7 +158,9 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           fallbackIcon: `<i class="fa-solid fa-swords" aria-hidden="true"></i>`,
           primary: `${escapeHtml(mainWeapon.name)} ${arrow} ${escapeHtml(offWeapon.name)}`,
           secondary: `Main fires first`,
-          cornerBadge: NO_HR_TAG, cornerBadgeTone: "warn",
+          // Either hand being locked out kills the pair, so both weapons are tested.
+          badges: [...(blockChips(mainWeapon, offWeapon)?.badges ?? []), NO_HR_CHIP],
+          disabled: !!blockChips(mainWeapon, offWeapon),
         },
         {
           value: "two-weapon-off-first",
@@ -137,7 +168,8 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           fallbackIcon: `<i class="fa-solid fa-swords" aria-hidden="true"></i>`,
           primary: `${escapeHtml(offWeapon.name)} ${arrow} ${escapeHtml(mainWeapon.name)}`,
           secondary: `Off fires first`,
-          cornerBadge: NO_HR_TAG, cornerBadgeTone: "warn",
+          badges: [...(blockChips(mainWeapon, offWeapon)?.badges ?? []), NO_HR_CHIP],
+          disabled: !!blockChips(mainWeapon, offWeapon),
         },
       ],
     });
@@ -158,6 +190,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
       fallbackIcon: weaponIcon(va.weaponType),
       primary: escapeHtml(va.name),
       secondary: `${escapeHtml(va.weaponType || "Brawling")}<span class="dot">•</span>${escapeHtml(va.A1)} + ${escapeHtml(va.A2)}`,
+      ...(blockChips(va) ?? {}),
     });
     const indexed = virtualAttacks.map((va, i) => [va, i]);
     const synthesised = indexed.filter(([va]) => va?.hand !== "versatile");
