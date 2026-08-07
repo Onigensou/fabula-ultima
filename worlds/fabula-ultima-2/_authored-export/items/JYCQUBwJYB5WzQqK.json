@@ -1,0 +1,49 @@
+{
+  "_id": "JYCQUBwJYB5WzQqK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786070012501,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/item-bag.svg",
+  "name": "Royal Retainer — Equipment Set",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "name": "Royal Retainer — Equipment Set",
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Potions restore +5 more HP (2pc)",
+          "bonus_skill_ref": "Butler's Care",
+          "pieces": "2"
+        },
+        "1": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Potions restore +5 more HP (3pc)",
+          "bonus_skill_ref": "Butler's Devotion",
+          "pieces": "3"
+        }
+      },
+      "set_name": "Royal Retainer"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "JYCQUBwJYB5WzQqK"
+  },
+  "type": "equippableItem"
+}

@@ -24,7 +24,7 @@
   "system": {
     "container": "1RLyAV6Hx7n1PmBb",
     "props": {
-      "description": "<p>Equipped passive: whenever you take Bolt damage, you gain Strong.</p>",
+      "description": "<p>Equipped passive: whenever Bolt damage is directed at you — whether it lands or you absorb it — you gain Strong.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",
@@ -59,6 +59,30 @@
           "reaction_status_filter": "",
           "reaction_subject_kind": "",
           "reaction_trigger": "creature_takes_damage",
+          "requires_skill": ""
+        },
+        "1": {
+          "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "jacket_strong",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "hp",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_gain_resource",
           "requires_skill": ""
         }
       },

@@ -3851,6 +3851,18 @@
         "effects": 0
       },
       {
+        "id": "VnrndvCsBUe2ZrYD",
+        "name": "Butler's Care",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "nc3cFJrRDxj4bFWV",
+        "name": "Butler's Devotion",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "tjtUM8dO3pfKbkdN",
         "name": "Butterfly Dream",
         "type": "equippableItem",
@@ -7637,6 +7649,12 @@
         "effects": 0
       },
       {
+        "id": "bcHCmYEtCtAYXPKR",
+        "name": "Lovely Retainer — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "r0dthPszZhHz2SVH",
         "name": "Luchador Gloves",
         "type": "equippableItem",
@@ -9797,6 +9815,18 @@
         "effects": 0
       },
       {
+        "id": "27Jn6EkSRTRbh1Ld",
+        "name": "Retainer's Care",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "X5wb4066ug6nQtbf",
+        "name": "Retainer's Devotion",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "NEYXyZxAVaXptL1u",
         "name": "Retaliation",
         "type": "equippableItem",
@@ -10063,6 +10093,12 @@
       {
         "id": "GMDYwBixoJdM5yaU",
         "name": "Rough Gloves",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "JYCQUBwJYB5WzQqK",
+        "name": "Royal Retainer — Equipment Set",
         "type": "equippableItem",
         "effects": 0
       },
