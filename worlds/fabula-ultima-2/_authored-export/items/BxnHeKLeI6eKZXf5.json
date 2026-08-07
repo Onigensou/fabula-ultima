@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "versatile": true
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
@@ -24,7 +27,7 @@
   "system": {
     "container": "5E2jOUDbpFlIkySU",
     "props": {
-      "description": "<p>Equipped passive: on hit, inflicts Snared on a Humanoid target.</p>",
+      "description": "<p><strong>Versatile.</strong> This weapon can be thrown even while it is not equipped — it always appears in your Attack weapon list.</p><ul><li><p><strong>Equipped:</strong> on hit, inflicts <strong>Snared</strong> on a <strong>Humanoid</strong> target.</p></li><li><p><strong>Thrown (not equipped):</strong> inflicts <strong>Snared</strong> on a <strong>Humanoid</strong> target only on <strong>Snipe 15</strong> (Accuracy Check total 15 or more).</p></li></ul>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",
@@ -38,7 +41,31 @@
       "name": "Man Catcher (Passive)",
       "reaction_config_table": {
         "0": {
-          "condition_formula": "TARGET_SPECIES_IS_HUMANOID == 1",
+          "condition_formula": "USED_WEAPON_IS_EQUIPPED == 1 && TARGET_SPECIES_IS_HUMANOID == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "catcher_snare",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": true,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_deals_damage",
+          "requires_skill": ""
+        },
+        "1": {
+          "condition_formula": "USED_WEAPON_IS_EQUIPPED == 0 && ATTACK_CHECK_RESULT >= 15 && TARGET_SPECIES_IS_HUMANOID == 1",
           "reaction_action_intent": "",
           "reaction_action_kind": "",
           "reaction_action_target": "",

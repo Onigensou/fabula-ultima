@@ -8,7 +8,7 @@
 // reactor itself. Prev: ALLY_COUNT / ANY_ALLY_IN_CRISIS for the Guest system;
 // TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT; pow(); ALL_TARGETS_HIT).
 // Not load-bearing; diagnostic only.
-export const SKILL_FORMULAS_SCHEMA = 10;
+export const SKILL_FORMULAS_SCHEMA = 11;
 
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
@@ -1407,6 +1407,22 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // Flail is stowed in the other hand. Fails CLOSED on a spell (no weapon
         // threaded). MUST precede the HAS_ branch only for readability; the two
         // prefixes are disjoint.
+        // USED_WEAPON_IS_EQUIPPED — 1 when the weapon actually swung in this
+        // action is currently WORN, 0 when it isn't. The Versatile keyword makes
+        // this distinction real: a Versatile weapon can be attacked with straight
+        // out of the bag (resolveVersatileWeapons puts it in the weapon list), so
+        // its linked `_skill` needs to branch — Man Catcher snares outright when
+        // worn, but only on Snipe 15 when thrown. Fails CLOSED (0) with no weapon
+        // threaded, e.g. on a spell, which is the safe side for a "when equipped"
+        // bonus clause.
+        if (name === "USED_WEAPON_IS_EQUIPPED") {
+          const uuid = String(payload?.weaponUuid ?? "").trim();
+          if (!uuid) return 0;
+          let item = null;
+          try { item = foundry.utils.fromUuidSync?.(uuid) ?? fromUuidSync?.(uuid) ?? null; }
+          catch (_e) { return 0; }
+          return item?.system?.props?.isEquipped === true ? 1 : 0;
+        }
         if (name.startsWith("USED_WEAPON_CATEGORY_IS_")) {
           const fam = name
             .slice("USED_WEAPON_CATEGORY_IS_".length)

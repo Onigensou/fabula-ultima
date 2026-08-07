@@ -128,18 +128,36 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
   // Virtual attacks — synthesised profiles exposed by AEs (Dual Shieldbearer's
   // Twin Shields, future "X+Y unlocks Z"). Author label per profile so multiple
   // exposures are distinguishable.
+  // Versatile entries are REAL weapons sitting in the bag, not synthesised
+  // profiles, so they get their own section and their own "not equipped" hint —
+  // "Virtual" would read as a phantom attack. Both kinds still emit `virtual:<i>`
+  // against the SHARED index (see buildWeaponBundle), so the row's position in
+  // its section is irrelevant; only the global index is used.
   if (Array.isArray(virtualAttacks) && virtualAttacks.length) {
-    sections.push({
-      label: "Virtual",
-      hint: virtualAttacks.length === 1 ? null : `${virtualAttacks.length} options`,
-      items: virtualAttacks.map((va, i) => ({
-        value: `virtual:${i}`,
-        imageUrl: safeUrl(va.imageUrl),
-        fallbackIcon: weaponIcon(va.weaponType),
-        primary: escapeHtml(va.name),
-        secondary: `${escapeHtml(va.weaponType || "Brawling")}<span class="dot">•</span>${escapeHtml(va.A1)} + ${escapeHtml(va.A2)}`,
-      })),
+    const row = (va, i) => ({
+      value: `virtual:${i}`,
+      imageUrl: safeUrl(va.imageUrl),
+      fallbackIcon: weaponIcon(va.weaponType),
+      primary: escapeHtml(va.name),
+      secondary: `${escapeHtml(va.weaponType || "Brawling")}<span class="dot">•</span>${escapeHtml(va.A1)} + ${escapeHtml(va.A2)}`,
     });
+    const indexed = virtualAttacks.map((va, i) => [va, i]);
+    const synthesised = indexed.filter(([va]) => va?.hand !== "versatile");
+    const versatile = indexed.filter(([va]) => va?.hand === "versatile");
+    if (synthesised.length) {
+      sections.push({
+        label: "Virtual",
+        hint: synthesised.length === 1 ? null : `${synthesised.length} options`,
+        items: synthesised.map(([va, i]) => row(va, i)),
+      });
+    }
+    if (versatile.length) {
+      sections.push({
+        label: "Versatile",
+        hint: "Not equipped — usable anyway",
+        items: versatile.map(([va, i]) => row(va, i)),
+      });
+    }
   }
 
   if (!sections.length) { warn("pickWeaponMode: no weapon options to show"); return null; }

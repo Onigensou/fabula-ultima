@@ -613,9 +613,17 @@ function buildWeaponBundle(actor) {
     if (ev.ok && ev.off) offWeapon = ev.off;
   } catch (e) { warn("buildWeaponBundle: canTwoWeaponFight threw", e); }
 
+  // Virtual (AE-synthesised) attacks and Versatile (real, unequipped weapon)
+  // attacks share ONE array, because `virtual:<i>` is the established weapon-mode
+  // token and both compose-action and the TARGET handler index straight into it.
+  // Keeping a single list means the index can't drift between picker and handler;
+  // the picker splits them into separate SECTIONS on `hand === "versatile"` while
+  // still emitting the shared index.
   let virtualAttacks = Object.freeze([]);
-  try { virtualAttacks = resolveVirtualAttacks(actor); }
-  catch (e) { warn("buildWeaponBundle: resolveVirtualAttacks threw", e); }
+  try {
+    const merged = [...resolveVirtualAttacks(actor), ...resolveVersatileWeapons(actor)];
+    virtualAttacks = Object.freeze(merged.map((v, i) => Object.freeze({ ...v, virtualIndex: i })));
+  } catch (e) { warn("buildWeaponBundle: virtual/versatile resolve threw", e); }
 
   return { actorKind: kind, weapon, offWeapon, canTwoWeaponFight, twoWeaponSolo, npcAttackItems: Object.freeze([]), virtualAttacks };
 }
@@ -890,6 +898,70 @@ export function attackerCanMeleeFlying(actor, weaponType) {
     }
   }
   return false;
+}
+
+// ── Versatile weapons ────────────────────────────────────────────────────────
+// The `Versatile` keyword (Keyword Repository RJqcUnjSTQeMiA7Z): "This ability can
+// be used even if you don't have this item equipped." Realised as its OWN system
+// rather than as a free-action grant: a Versatile weapon simply always appears in
+// the Attack weapon list, equipped or not, and the weapon's linked `_skill` then
+// branches on USED_WEAPON_IS_EQUIPPED to pick which version of its rider applies
+// (Man Catcher: guaranteed Snared when worn, Snipe 15 when thrown from the bag).
+//
+// Only UNEQUIPPED ones are synthesised here — an equipped Versatile weapon is
+// already the main/off hand and would otherwise be listed twice.
+//
+// The profile is built from the ITEM'S OWN props, not the actor's per-hand CSB
+// derivations (weapon1_mod & co. exist only for a worn weapon), so it mirrors
+// buildPseudoWeaponFromNpcAttack — including carrying the real `uuid`, which is
+// what lets weaponReactionInPlay attribute on-hit rows and lets Trick's
+// carrier-scoped inversion recognise the swing.
+//
+// Versatile is declared as a document FLAG on the linked `_skill` (flags
+// .fabula-ultima-companion.versatile), so no CSB template column is involved.
+export function actorHasVersatileSkillFor(actor, weaponItem) {
+  if (!actor || !weaponItem) return false;
+  for (const it of (actor.items?.contents ?? [])) {
+    if (String(it.system?.container ?? "") !== weaponItem.id) continue;
+    if (it.flags?.[FLAG_NS]?.versatile === true) return true;
+  }
+  return false;
+}
+
+export function resolveVersatileWeapons(actor) {
+  if (!actor) return Object.freeze([]);
+  const out = [];
+  try {
+    for (const item of (actor.items?.contents ?? [])) {
+      const p = item.system?.props ?? {};
+      if (String(p.item_type ?? "").toLowerCase() !== "weapon") continue;
+      if (p.isEquipped === true) continue;                       // already a hand
+      if (!actorHasVersatileSkillFor(actor, item)) continue;
+      const A1 = String(p.rolled_atr1 ?? "").toUpperCase().trim();
+      const A2 = String(p.rolled_atr2 ?? "").toUpperCase().trim();
+      if (!A1 || !A2) continue;                                  // unusable profile
+      const weaponType = String(p.weapon_type ?? p.category ?? "");
+      out.push(Object.freeze({
+        hand: "versatile",
+        virtualIndex: -1,                 // assigned by buildWeaponBundle
+        name: String(item.name ?? "Weapon"),
+        A1, A2,
+        checkBonus: Number(p.check_bonus ?? 0) || 0,
+        damageBonus: Number(p.damage_bonus ?? 0) || 0,
+        damageType: String(p.type_damage ?? "Physical"),
+        range: String(p.weapon_range ?? p.skill_range ?? "Melee"),
+        weaponType,
+        canMeleeFlying: attackerCanMeleeFlying(actor, weaponType),
+        imageUrl: item.img ?? null,
+        uuid: item.uuid ?? null,
+        skillTarget: String(p.skill_target ?? "").trim().toLowerCase(),
+        descriptionHtml: String(p.description ?? ""),
+        actionKeywords: String(p.action_keywords ?? ""),
+        defenseTargetType: String(p.defense_target_type ?? "").trim().toLowerCase(),
+      }));
+    }
+  } catch (e) { warn("resolveVersatileWeapons threw", e); }
+  return Object.freeze(out);
 }
 
 // True if an attack made with `weaponUuid` has its hit rule INVERTED — the
