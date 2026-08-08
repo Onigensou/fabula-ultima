@@ -464,12 +464,15 @@ function candidateToRow(c) {
   if (c.skillTarget) subtitleParts.push(escapeHtml(c.skillTarget));
   const a1 = c.rolledA1 && c.rolledA1 !== "-" ? c.rolledA1 : null;
   const a2 = c.rolledA2 && c.rolledA2 !== "-" ? c.rolledA2 : null;
-  if (c.isCheck && a1 && a2) {
-    subtitleParts.push(`<span class="check-attr">${escapeHtml(a1)} + ${escapeHtml(a2)}</span>`);
-  }
-  const secondary = subtitleParts
+  // The dice pill is appended AFTER the dot-joined facts, not joined into them:
+  // it is a chip rather than another word, and dot-joining it stranded a "•" at
+  // the end of the line whenever the pill wrapped. Matches weapon-mode-picker's
+  // metaLine so a weapon row and a skill row read identically.
+  const line = subtitleParts
     .map((b) => `<span class="bullet">${b}</span>`)
     .join(` <span class="dot">•</span> `);
+  const dice = c.isCheck && a1 && a2 ? `${escapeHtml(a1)} + ${escapeHtml(a2)}` : null;
+  const secondary = dice ? `${line} <span class="check-attr">${dice}</span>` : line;
 
   // Cost badge = the string cost (formatted exactly as before, preserving
   // up-to / % / ×T) + the config-chain cost appended. "Varied" when the real
@@ -495,6 +498,10 @@ function candidateToRow(c) {
   // (availability_formula false, e.g. "Numen already active"). Distinct from the
   // affordability dim, which keeps showing the cost badge.
   const hardBlock = c._intentDisabled || c._unavailable || c._mpBlocked || null;
+  // A range-class lockout is a STATUS taking the option away, not a fact about
+  // the option, so it gets the rubber-stamp rather than a trailing chip — the
+  // same visual the turn menu uses for a Stagger/Panic-blocked action.
+  const rangeBlocked = c._rangeBlocked || null;
   // "No HR" corner tag — this action deals damage but adds no High Roll. For a
   // Skill/Spell that is exactly "deals damage AND rolls no accuracy check": the
   // profile sets `ignoreHR: !roll` for the non-Attack kinds, and a check-less
@@ -512,7 +519,8 @@ function candidateToRow(c) {
     ...(noHighRoll ? { badges: [{ text: "No HR", tone: "danger" }] } : {}),
     badge: hardBlock ? escapeHtml(hardBlock) : escapeHtml(costLabel),
     badgeTone: hardBlock ? "danger" : (isFree ? "free" : (c.affordable ? null : "danger")),
-    disabled: !!hardBlock || !c.affordable,
+    ...(rangeBlocked ? { stamp: rangeBlocked } : {}),
+    disabled: !!hardBlock || !!rangeBlocked || !c.affordable,
     tooltip: {
       name: c.name,
       body: stripHtml(c.descriptionHtml || "(no description)"),
@@ -547,6 +555,13 @@ export async function pickSkill({
   // off-limits. Variable-cost spells gate on their MINIMUM mp (resolveCost at
   // variableAmount=0); the player can still keep the paid amount under the cap.
   maxMpCost = null,
+  // Range-class lockout (Snared blocks melee, Obscure blocks ranged), as plain
+  // data: { melee: reason|null, ranged: reason|null }. Used by the NPC Attack
+  // picker, whose rows ARE the attacks — a blocked one is shown disabled and
+  // struck with the condition's rubber-stamp rather than the menu opening
+  // normally and refusing after the pick, which is the same treatment the PC
+  // weapon picker gives and the same object as a Stagger/Panic blade stamp.
+  rangeBlock = null,
 }) {
   const all = await gatherSkillsForActor(actor);
   // Drop reaction-only items: they carry a skill_type label ("Active"/"Spell")
@@ -601,6 +616,17 @@ export async function pickSkill({
     for (const c of candidates) {
       const mp = Number(c.costMap?.get?.("mp") ?? 0) || 0;
       if (mp > mpCap) c._mpBlocked = `Max ${mpCap} MP`;
+    }
+  }
+  // Range-class lockout. `c.range` is the skill's own `skill_range` text, the
+  // same field the post-pick gate reads, so the row and the gate can't disagree.
+  if (rangeBlock && (rangeBlock.melee || rangeBlock.ranged)) {
+    for (const c of candidates) {
+      const r = String(c.range ?? "").trim().toLowerCase();
+      const reason = /ranged|distance/.test(r) ? rangeBlock.ranged
+        : /melee/.test(r) ? rangeBlock.melee
+        : null;
+      if (reason) c._rangeBlocked = reason;
     }
   }
   if (!candidates.length) {

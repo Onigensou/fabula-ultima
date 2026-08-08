@@ -603,6 +603,13 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
         titleText: `Choose ${snap.name}'s Attack`,
         emptyMessage: `${snap.name} has no attack items.`,
         externalCancel: cancelSentinel,
+        // Show a Snared/Obscured attack disabled + rubber-stamped INSIDE the
+        // menu instead of letting it be picked and then refused. The post-pick
+        // gate below stays as the enforcement point — this is the explanation.
+        rangeBlock: {
+          melee: attackRangeBlockedBy(actor, "Melee"),
+          ranged: attackRangeBlockedBy(actor, "Ranged"),
+        },
       }),
       cancelSentinel,
     );

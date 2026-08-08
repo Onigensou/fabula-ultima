@@ -56,6 +56,14 @@
 //                            // `badge`/`badgeTone` above is the single-chip
 //                            // shorthand and is folded into this list.
 //     disabled?,             // greyed + non-clickable + skipped by keyboard
+//     stamp?,                // string — red rubber-stamp struck across the row,
+//                            // the same object as the octopath blade stamp. Use
+//                            // for a STATUS that locks the row out (Snared,
+//                            // Obscured), so it reads the same as a blocked
+//                            // action in the turn menu. Pair with `disabled`.
+//                            // A trailing chip is for facts you still want read
+//                            // alongside the row (a cost, "No HR"); the stamp is
+//                            // for "this one is off the table".
 //     color?,                // left accent color (CSS)
 //     tooltip?,              // dwell-hover popup: { name?, cost?, missing?, body? }
 //   }
@@ -188,11 +196,41 @@ function ensureStyles() {
       box-shadow: 0 3px 0 rgba(41, 33, 24, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.8) inset, inset 3px 0 0 var(--fud-gold-2, #b7935a);
       transform: translateY(-1px);
     }
+    /* Disabled dims the row's CONTENT, not the row itself. A filter or opacity on
+       .fud-lp-option would apply to the stamp too, and no child can climb back out
+       of a parent's opacity — the same trap that made the block-reason chip need a
+       saturate hack. Muting the background directly (rather than filtering it)
+       keeps the row visibly out of play while leaving the stamp full strength,
+       which is exactly how the octopath blade stamp works. */
     .fud-lp-card .fud-lp-option.is-disabled {
-      cursor: not-allowed; filter: grayscale(0.5); opacity: 0.55;
+      cursor: not-allowed;
+      background: linear-gradient(180deg, #efe9de, #e2d9c7);
+      border-color: rgba(90, 62, 28, 0.32);
       box-shadow: 0 1px 0 rgba(41, 33, 24, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
     }
-    .fud-lp-card .fud-lp-option.is-disabled:hover { filter: grayscale(0.5); transform: none; }
+    .fud-lp-card .fud-lp-option.is-disabled > .icon,
+    .fud-lp-card .fud-lp-option.is-disabled > .info,
+    .fud-lp-card .fud-lp-option.is-disabled > .fud-lp-badges,
+    .fud-lp-card .fud-lp-option.is-disabled > .fud-lp-check {
+      filter: grayscale(0.6); opacity: 0.5;
+    }
+    .fud-lp-card .fud-lp-option.is-disabled:hover { filter: none; transform: none; }
+    /* Red rubber-stamp across a blocked row — the same object as the octopath
+       blade stamp (Stagger / Panic), so "this action is locked out by a status"
+       reads identically wherever it appears. Lives as a direct child so the
+       content dim above never touches it. */
+    .fud-lp-card .fud-lp-option > .fud-lp-stamp {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotate(-8deg); transform-origin: center center;
+      font-family: "Cinzel", "Georgia", serif; font-weight: 900; font-size: 12px;
+      letter-spacing: 1.4px; text-transform: uppercase; white-space: nowrap;
+      max-width: calc(100% - 18px); overflow: hidden; text-overflow: ellipsis;
+      color: rgba(200, 16, 16, 1);
+      text-shadow: 0 1px 0 rgba(255, 255, 255, .7), 0 0 1px rgba(120, 0, 0, .9);
+      padding: 2px 10px; border: 2px solid rgba(200, 16, 16, .95);
+      border-radius: 4px; background: rgba(255, 238, 228, .92);
+      pointer-events: none; z-index: 3;
+    }
     .fud-lp-card .fud-lp-option .icon {
       display: flex; align-items: center; justify-content: center;
       width: 36px; height: 36px;
@@ -494,6 +532,7 @@ export async function pickFromList({
     // In multi-select the trailing cell is a checkbox instead of the badge.
     const trailingHTML = multiSelect ? `<div class="fud-lp-check" aria-hidden="true">✓</div>` : badgeHTML;
     const secHTML = row.secondary ? `<div class="secondary${row.secondaryNoWrap ? " is-nowrap" : ""}">${row.secondary}</div>` : "";
+    const stampHTML = row.stamp ? `<span class="fud-lp-stamp">${escapeHtml(row.stamp)}</span>` : "";
     const accent = row.color ? ` style="border-left: 4px solid ${row.color};"` : "";
     const tipAttr = row.tooltip ? ` data-fud-lp-tip="${encodeURIComponent(JSON.stringify(row.tooltip))}"` : "";
     return `
@@ -504,6 +543,7 @@ export async function pickFromList({
           ${secHTML}
         </div>
         ${trailingHTML}
+        ${stampHTML}
       </div>
     `;
   };
