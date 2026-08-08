@@ -1,0 +1,43 @@
+{
+  "_id": "r7zX4Y5zESztrGMt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786150796576,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/item-bag.svg",
+  "name": "Arm of the Law — Equipment Set",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "isSet": false,
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "+10 damage vs lower-level creatures",
+          "bonus_skill_ref": "Weight of the Law",
+          "pieces": "2"
+        }
+      },
+      "set_name": "Arm of the Law"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "r7zX4Y5zESztrGMt"
+  },
+  "type": "equippableItem"
+}

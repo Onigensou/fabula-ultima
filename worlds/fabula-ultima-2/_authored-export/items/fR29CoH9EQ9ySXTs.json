@@ -1,9 +1,9 @@
 {
-  "_id": "nc3cFJrRDxj4bFWV",
+  "_id": "fR29CoH9EQ9ySXTs",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1786070013630,
+    "createdTime": 1786151256806,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -11,51 +11,48 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
-    },
-    "fabula-ultima-companion": {
-      "helperSkill": true
     }
   },
   "folder": null,
   "img": "icons/svg/item-bag.svg",
-  "name": "Butler's Devotion",
+  "name": "Ready Pack",
   "ownership": {
     "WQGFvLStTZeWGpak": 3,
     "default": 0
   },
   "sort": 0,
   "system": {
-    "container": "JYCQUBwJYB5WzQqK",
+    "container": "SDyXwtWF0CgO7hIe",
     "props": {
-      "description": "<p>Royal Retainer 3-piece bonus: potions and magispheres you use restore 5 additional Hit Points.</p>",
+      "description": "<p><strong>Eternal Traveler (3 pieces)</strong> — once during your turn, you may perform the <strong>Item</strong> action as a Free Action.</p>",
+      "details_roller": "Show",
       "effect_table": {
         "0": {
-          "effect_kind": "adjust_grant",
-          "effect_label": "set_hp_3",
-          "grant_amount": "5",
-          "grant_operation": "add",
-          "grant_resource": "hp",
-          "grant_round": "up",
-          "grant_scope": "per_action"
+          "action_ref": "item",
+          "effect_kind": "free_action",
+          "effect_label": "et3_free",
+          "menu_description": "Eternal Traveler (3pc) — perform the Item action as a Free Action.",
+          "menu_label": "Ready Pack"
         }
       },
+      "id": "fR29CoH9EQ9ySXTs",
       "isReaction": true,
       "max_level": "1",
-      "name": "Butler's Devotion",
+      "name": "Ready Pack",
       "reaction_config_table": {
         "0": {
-          "condition_formula": "SKILL_HAS_TAG_POTION == 1 || SKILL_HAS_TAG_MAGISPHERE == 1",
+          "condition_formula": "",
           "reaction_action_intent": "",
           "reaction_action_kind": "",
           "reaction_action_target": "",
           "reaction_cause_filter": "",
           "reaction_damage_source": "",
-          "reaction_effect_ref": "set_hp_3",
-          "reaction_max_per_round": "",
-          "reaction_max_scope": "",
+          "reaction_effect_ref": "et3_free",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "round",
           "reaction_origin_filter": "",
           "reaction_ownership": "",
-          "reaction_passive_mode": "on",
+          "reaction_passive_mode": "ask",
           "reaction_passive_target": "",
           "reaction_requires_weapon_used": false,
           "reaction_resource_filter": "",
@@ -64,18 +61,19 @@
           "reaction_source_skill": "",
           "reaction_status_filter": "",
           "reaction_subject_kind": "",
-          "reaction_trigger": "creature_uses_item",
+          "reaction_trigger": "turn_start",
           "requires_skill": ""
         }
       },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
-      "skill_type": "Passive"
+      "skill_type": "Passive",
+      "uuid": "Item.fR29CoH9EQ9ySXTs"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2788278387,
     "unique": false,
-    "uniqueId": "nc3cFJrRDxj4bFWV"
+    "uniqueId": "fR29CoH9EQ9ySXTs"
   },
   "type": "equippableItem"
 }

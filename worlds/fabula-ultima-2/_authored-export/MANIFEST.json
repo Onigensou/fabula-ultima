@@ -2873,6 +2873,12 @@
         "effects": 0
       },
       {
+        "id": "r7zX4Y5zESztrGMt",
+        "name": "Arm of the Law — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "eSAFGyccW3pweDdx",
         "name": "Armor of Heroes",
         "type": "equippableItem",
@@ -3587,6 +3593,12 @@
         "effects": 0
       },
       {
+        "id": "CK038F8YVxknDkKo",
+        "name": "Blood Price",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "cxdX5YSm5TvPFlkP",
         "name": "Blood Shield",
         "type": "equippableItem",
@@ -3607,6 +3619,12 @@
       {
         "id": "YoN1fOuvVvSJLGCd",
         "name": "Blood Sword (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "CQ6Pq61KaMixQAjw",
+        "name": "Bloodied Chivalry — Equipment Set",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4357,6 +4375,18 @@
       {
         "id": "tQu0n4qZRcPcQBlo",
         "name": "Crested Helm",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "LhKeJaeNKyD9TBal",
+        "name": "Crimson Bulwark",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "XOz6Gn5rPqYn5R3M",
+        "name": "Crimson Fervor",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5291,6 +5321,12 @@
         "effects": 0
       },
       {
+        "id": "SDyXwtWF0CgO7hIe",
+        "name": "Eternal Traveler — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "IPezvtbd25xqxmR8",
         "name": "Excaliblur",
         "type": "equippableItem",
@@ -5809,6 +5845,12 @@
       {
         "id": "ECl1enqhqXqS5Gls",
         "name": "Gale Cutter",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "qKDhWuKfcffBKyAF",
+        "name": "Galvanic Feedback",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8531,6 +8573,12 @@
         "effects": 0
       },
       {
+        "id": "2Z502E09PMrRdWat",
+        "name": "Monster of Frankensteiner — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "nJXcfE31UpQ0rGJI",
         "name": "Moon Dancer Chakram",
         "type": "equippableItem",
@@ -9575,6 +9623,12 @@
         "effects": 0
       },
       {
+        "id": "5kGlE1KMcq80I7dM",
+        "name": "Quick Change",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "fA7YEzmNiDO4EOWG",
         "name": "Quick Draw",
         "type": "equippableItem",
@@ -9649,6 +9703,12 @@
       {
         "id": "0tB41nCN31SxrxlO",
         "name": "Razor Whip",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "fR29CoH9EQ9ySXTs",
+        "name": "Ready Pack",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10931,6 +10991,12 @@
         "effects": 0
       },
       {
+        "id": "q8OIO3xkkHeUKWNI",
+        "name": "Spirit of Vengeance — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "LF8FnALVLZaAVek3",
         "name": "Spirit Orb",
         "type": "equippableItem",
@@ -12005,6 +12071,12 @@
         "effects": 0
       },
       {
+        "id": "wJL20Bp0Ih0WbkYc",
+        "name": "Unordinary Adventurer — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "f3xNhYYzpCiYcKc3",
         "name": "Unstable Bomb",
         "type": "equippableItem",
@@ -12291,6 +12363,12 @@
         "name": "Weapon Break",
         "type": "equippableItem",
         "effects": 1
+      },
+      {
+        "id": "B4v2XyaNmlFESs2r",
+        "name": "Weight of the Law",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "E1dOu3pYQKL60blD",

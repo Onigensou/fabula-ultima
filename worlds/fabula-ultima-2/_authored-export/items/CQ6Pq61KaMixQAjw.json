@@ -1,0 +1,49 @@
+{
+  "_id": "CQ6Pq61KaMixQAjw",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786150794452,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/item-bag.svg",
+  "name": "Bloodied Chivalry — Equipment Set",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "isSet": false,
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Crisis: +5 damage",
+          "bonus_skill_ref": "Crimson Fervor",
+          "pieces": "2"
+        },
+        "1": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Crisis: -5 damage taken",
+          "bonus_skill_ref": "Crimson Bulwark",
+          "pieces": "3"
+        }
+      },
+      "set_name": "Bloodied Chivalry"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "CQ6Pq61KaMixQAjw"
+  },
+  "type": "equippableItem"
+}

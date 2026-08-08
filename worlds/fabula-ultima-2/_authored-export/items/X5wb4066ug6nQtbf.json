@@ -39,6 +39,7 @@
           "grant_scope": "per_action"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Retainer's Devotion",
       "reaction_config_table": {

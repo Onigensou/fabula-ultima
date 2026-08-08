@@ -1,9 +1,9 @@
 {
-  "_id": "nc3cFJrRDxj4bFWV",
+  "_id": "B4v2XyaNmlFESs2r",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1786070013630,
+    "createdTime": 1786150797101,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -11,46 +11,43 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
-    },
-    "fabula-ultima-companion": {
-      "helperSkill": true
     }
   },
   "folder": null,
   "img": "icons/svg/item-bag.svg",
-  "name": "Butler's Devotion",
+  "name": "Weight of the Law",
   "ownership": {
     "WQGFvLStTZeWGpak": 3,
     "default": 0
   },
   "sort": 0,
   "system": {
-    "container": "JYCQUBwJYB5WzQqK",
+    "container": "r7zX4Y5zESztrGMt",
     "props": {
-      "description": "<p>Royal Retainer 3-piece bonus: potions and magispheres you use restore 5 additional Hit Points.</p>",
+      "description": "<p><strong>Arm of the Law (2 pieces)</strong> — you deal 10 bonus damage to creatures whose level is lower than yours.</p>",
+      "details_roller": "Show",
       "effect_table": {
         "0": {
-          "effect_kind": "adjust_grant",
-          "effect_label": "set_hp_3",
-          "grant_amount": "5",
-          "grant_operation": "add",
-          "grant_resource": "hp",
-          "grant_round": "up",
-          "grant_scope": "per_action"
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "aotl2_dmg"
         }
       },
+      "id": "B4v2XyaNmlFESs2r",
       "isReaction": true,
       "max_level": "1",
-      "name": "Butler's Devotion",
+      "name": "Weight of the Law",
       "reaction_config_table": {
         "0": {
-          "condition_formula": "SKILL_HAS_TAG_POTION == 1 || SKILL_HAS_TAG_MAGISPHERE == 1",
+          "condition_formula": "TARGET_LEVEL < CHAR_LEVEL && DAMAGE_IS_HP == 1",
           "reaction_action_intent": "",
           "reaction_action_kind": "",
           "reaction_action_target": "",
           "reaction_cause_filter": "",
           "reaction_damage_source": "",
-          "reaction_effect_ref": "set_hp_3",
+          "reaction_effect_ref": "aotl2_dmg",
           "reaction_max_per_round": "",
           "reaction_max_scope": "",
           "reaction_origin_filter": "",
@@ -64,18 +61,19 @@
           "reaction_source_skill": "",
           "reaction_status_filter": "",
           "reaction_subject_kind": "",
-          "reaction_trigger": "creature_uses_item",
+          "reaction_trigger": "creature_will_deal_damage",
           "requires_skill": ""
         }
       },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
-      "skill_type": "Passive"
+      "skill_type": "Passive",
+      "uuid": "Item.B4v2XyaNmlFESs2r"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2788278387,
     "unique": false,
-    "uniqueId": "nc3cFJrRDxj4bFWV"
+    "uniqueId": "B4v2XyaNmlFESs2r"
   },
   "type": "equippableItem"
 }

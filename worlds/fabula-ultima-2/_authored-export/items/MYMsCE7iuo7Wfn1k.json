@@ -37,6 +37,7 @@
           "target_ref": "trigger_subject"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Midnight Mending",
       "reaction_config_table": {

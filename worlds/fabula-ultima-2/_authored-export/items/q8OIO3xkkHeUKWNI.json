@@ -1,0 +1,43 @@
+{
+  "_id": "q8OIO3xkkHeUKWNI",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786150797818,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/item-bag.svg",
+  "name": "Spirit of Vengeance — Equipment Set",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "isSet": false,
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Attacks that hit restore 10 HP",
+          "bonus_skill_ref": "Blood Price",
+          "pieces": "2"
+        }
+      },
+      "set_name": "Spirit of Vengeance"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "q8OIO3xkkHeUKWNI"
+  },
+  "type": "equippableItem"
+}
