@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "d39Iv1LLnGaTlOLc",
+      "_id": "LFLIawVMCObU6i68",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1786232258460,
+        "createdTime": 1786233106423,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -24,7 +24,7 @@
           "key": "condition_hypothermia",
           "mode": 5,
           "priority": 20,
-          "value": "${\"RS\"}$"
+          "value": "aeAffinityFloor(\"RS\")"
         }
       ],
       "description": "",
@@ -41,9 +41,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "d39Iv1LLnGaTlOLc",
+          "originalId": "LFLIawVMCObU6i68",
           "originalParentId": "PpWqnC8fvuYFfjCx",
-          "originalUuid": "Item.PpWqnC8fvuYFfjCx.ActiveEffect.d39Iv1LLnGaTlOLc"
+          "originalUuid": "Item.PpWqnC8fvuYFfjCx.ActiveEffect.LFLIawVMCObU6i68"
         },
         "fabula-ultima-companion": {
           "category": "buff"

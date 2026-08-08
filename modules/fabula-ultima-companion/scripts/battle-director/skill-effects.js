@@ -5969,7 +5969,20 @@ async function applyApplyAeEffect(row, ctx) {
         // corrupt e.g. Oil/Wet's affinity_N "VU" → "0". These are never numeric
         // formulas; never bake them (the per-target affinity-override filter
         // further down owns affinity_N handling).
-        if (/^(?:system\.props\.)?affinity_\d+$/.test(String(ch.key ?? ""))) continue;
+        //
+        // `condition_<slug>` (condition affinity — condition_hypothermia,
+        // condition_slow, …) carries the SAME codes and was missing from this
+        // guard: a bare "RS" baked to "0" and silently set the affinity to zero
+        // instead of Resistant. Hot Chocolate.
+        const chKey = String(ch.key ?? "");
+        if (/^(?:system\.props\.)?affinity_\d+$/.test(chKey)) continue;
+        if (/^(?:system\.props\.)?condition_[a-z0-9_]+$/i.test(chKey)) continue;
+        // Conditional-change-gate directives (aeWhen / aeAffinityFloor / …) are
+        // CSB syntax evaluated at DERIVATION by syntaxExtender-conditionalChangeGate.
+        // They are function calls, so `looksLikeNumericFormula` says yes and the
+        // bake would fold the whole directive to "0" — the same corruption, one
+        // level up. Leave them verbatim for the gate to interpret.
+        if (/\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor)\s*\(/i.test(ch.value)) continue;
         if (!isFormulaString(ch.value)) continue;
         // Only bake values that actually LOOK like a numeric formula. A bare
         // word string-literal change ("melee", "Light", "ranged" — used by
