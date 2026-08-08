@@ -1,0 +1,121 @@
+{
+  "_id": "KhiQCNyZ9Q9FrcCZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786231870471,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "UEtKk2v9ATVX4bOz",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786232258040,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "condition_hypothermia",
+          "mode": 5,
+          "priority": 20,
+          "value": "${\"RS\"}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "UEtKk2v9ATVX4bOz",
+          "originalParentId": "KhiQCNyZ9Q9FrcCZ",
+          "originalUuid": "Item.KhiQCNyZ9Q9FrcCZ.ActiveEffect.UEtKk2v9ATVX4bOz"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "name": "Warmed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Hot Chocolate",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "HmA1EX3UupBePME4",
+    "props": {
+      "description": "<ul><li><p><em>Cures <strong>Hypothermia</strong>, and you gain <strong>Resistance to Hypothermia</strong> for the rest of the scene (Hypothermia only lasts 1 round against you).</em></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "hotchoc_cure,hotchoc_resist",
+          "effect_kind": "chain",
+          "effect_label": "hotchoc_use"
+        },
+        "1": {
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "hotchoc_cure",
+          "filter_tag": "hypothermia",
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Warmed",
+          "effect_kind": "apply_ae",
+          "effect_label": "hotchoc_resist",
+          "target_ref": "self"
+        }
+      },
+      "name": "Hot Chocolate",
+      "on_activate_effect_ref": "hotchoc_use",
+      "skill_description": "<ul><li><p><em>Cures <strong>Hypothermia</strong>, and you gain <strong>Resistance to Hypothermia</strong> for the rest of the scene (Hypothermia only lasts 1 round against you).</em></p></li></ul>",
+      "skill_type": "Item"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "KhiQCNyZ9Q9FrcCZ"
+  },
+  "type": "equippableItem"
+}

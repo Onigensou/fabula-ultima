@@ -303,6 +303,10 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // Data-only without a column → strippable on a sheet save; register so
   // boot-3b self-heals it. See Elemental Shroud / Elemental Weapon (Hina).
   textCol("ae_family", "AE Family", { tooltip: "apply_ae replace_family: group id for the 'one of its kind per creature' rule (e.g. elemental-shroud). Blank = use the AE template's aeFamily flag.", vis: APPLY_AE_VIS }),
+  // Random-pool mode. `ae_name_pool` (hand-listed) was data-only and therefore
+  // strippable on a sheet save; register both so boot-3b self-heals them.
+  textCol("ae_name_pool", "AE Name Pool", { tooltip: "apply_ae: comma/semicolon/pipe-separated AE names; ONE is picked at random per target instead of Template Ref (Draconic Roar). Prefer AE Pool Tag when you mean \"any status of this kind\".", vis: APPLY_AE_VIS }),
+  textCol("ae_pool_tag", "AE Pool Tag", { tooltip: "apply_ae: build the random pool LIVE from every curated status carrying this tag (e.g. \"debuff\"), instead of hand-listing names — so the roll keeps covering the whole library as it grows. Untagged statuses (KO/Death) can never be rolled. Takes precedence over AE Name Pool. Backs Magic Mushroom.", vis: APPLY_AE_VIS }),
   // Per-application duration override. Without it, "for the rest of the scene"
   // could only be expressed by giving the item its own COPY of a shared status,
   // which splits the definition (Blue Bovine vs Milk both grant Strong).

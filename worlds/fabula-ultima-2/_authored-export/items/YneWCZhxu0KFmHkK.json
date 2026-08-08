@@ -40,10 +40,18 @@
     "container": null,
     "props": {
       "description": "<ul>\n<li>Learned how to create <strong>Magic Mushroom</strong> with <strong>1</strong><strong>&nbsp;IP</strong></li>\n</ul>",
-      "ip_cost": "0",
+      "ip_cost": "1",
       "item_cost": "1000",
-      "item_type": "consumable",
-      "name": "Magic Mushroom Recipe"
+      "item_type": "recipe",
+      "name": "Magic Mushroom Recipe",
+      "related_item_list": {
+        "nQQITYZ7zc3TBGI4": {
+          "id": "${item.id}",
+          "name": "Magic Mushroom",
+          "related_item_description": "<ul><li><p><em>Inflicts a <strong>random status effect</strong> on yourself (drawn from every status in the game).</em></p></li></ul>",
+          "uuid": "Item.nQQITYZ7zc3TBGI4"
+        }
+      }
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

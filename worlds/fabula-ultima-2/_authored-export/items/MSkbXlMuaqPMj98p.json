@@ -1,9 +1,9 @@
 {
-  "_id": "JXezG8T9yiKaJ3jd",
+  "_id": "MSkbXlMuaqPMj98p",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1739815543696,
+    "createdTime": 1786231873203,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -14,8 +14,8 @@
     }
   },
   "folder": "VzpCG9mySsd9sQSL",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pngmush.png",
-  "name": "Magic Mushroom",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Hot Chocolate",
   "ownership": {
     "2vy7wrEUqBy0kzsU": 3,
     "6DmgigM5jq76r0Gd": 3,
@@ -43,9 +43,9 @@
     "yL2PQxh3R9ddt0te": 3,
     "yUfwoVmEPVdFG3AY": 3
   },
-  "sort": 4900000,
+  "sort": 4200000,
   "system": {
-    "container": null,
+    "container": "D9p5ccfG93b8zlO8",
     "props": {
       "active_effect_config_table": {},
       "aquatic_ef": "100",
@@ -54,20 +54,32 @@
       "beast_ef": "100",
       "category": "Arcane",
       "celestial_ef": "100",
-      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><em>Inflicts a <strong>random status effect</strong> on yourself (drawn from every status in the game).</em></p></li></ul>",
+      "description": "<ul><li><p><em>Cures <strong>Hypothermia</strong>, and you gain <strong>Resistance to Hypothermia</strong> for the rest of the scene (Hypothermia only lasts 1 round against you).</em></p></li></ul>",
       "dragon_ef": "100",
       "effect_table": {
         "0": {
+          "chain_steps": "hotchoc_cure,hotchoc_resist",
+          "effect_kind": "chain",
+          "effect_label": "hotchoc_use"
+        },
+        "1": {
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "hotchoc_cure",
+          "filter_tag": "hypothermia",
+          "target_ref": "self"
+        },
+        "2": {
           "ae_duplicate_mode": "replace",
-          "ae_pool_tag": "debuff",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Warmed",
           "effect_kind": "apply_ae",
-          "effect_label": "mushroom_random",
+          "effect_label": "hotchoc_resist",
           "target_ref": "self"
         }
       },
@@ -81,8 +93,6 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "id": "JXezG8T9yiKaJ3jd",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pngmush.png",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
@@ -94,35 +104,33 @@
       "isUnique": false,
       "item_baseDef": "0",
       "item_baseMdef": "0",
-      "item_cost": "20",
+      "item_cost": "50",
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Common",
       "item_skill_active": {
-        "kVni5Jai936UimAS": {
+        "PpWqnC8fvuYFfjCx": {
           "id": "${item.id}",
-          "name": "Magic Mushroom",
+          "name": "Hot Chocolate",
           "skill_cost": "-",
-          "skill_description": "<ul><li><p><em>Inflicts a <strong>random status effect</strong> on yourself (drawn from every status in the game).</em></p></li></ul>",
+          "skill_description": "<ul><li><p><em>Cures <strong>Hypothermia</strong>, and you gain <strong>Resistance to Hypothermia</strong> for the rest of the scene (Hypothermia only lasts 1 round against you).</em></p></li></ul>",
           "skill_maxLevel": 1,
-          "uuid": "Item.kVni5Jai936UimAS"
+          "uuid": "Item.PpWqnC8fvuYFfjCx"
         }
       },
       "item_type": "consumable",
       "mimic_ef": "100",
       "monster_ef": "100",
-      "name": "Magic Mushroom",
+      "name": "Hot Chocolate",
       "optional_params": {},
       "plant_ef": "100",
-      "refine_count": "0",
-      "refine_level": "0",
       "related_item_list": {
-        "kVni5Jai936UimAS": {
+        "PpWqnC8fvuYFfjCx": {
           "id": "${item.id}",
-          "name": "Magic Mushroom",
-          "related_item_description": "<ul><li><p><em>Inflicts a <strong>random status effect</strong> on yourself (drawn from every status in the game).</em></p></li></ul>",
-          "uuid": "Item.kVni5Jai936UimAS"
+          "name": "Hot Chocolate",
+          "related_item_description": "<ul><li><p><em>Cures <strong>Hypothermia</strong>, and you gain <strong>Resistance to Hypothermia</strong> for the rest of the scene (Hypothermia only lasts 1 round against you).</em></p></li></ul>",
+          "uuid": "Item.PpWqnC8fvuYFfjCx"
         }
       },
       "reptilian_ef": "100",
@@ -133,14 +141,13 @@
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
-      "uuid": "Item.JXezG8T9yiKaJ3jd",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,
     "unique": false,
-    "uniqueId": "JXezG8T9yiKaJ3jd"
+    "uniqueId": "MSkbXlMuaqPMj98p"
   },
   "type": "equippableItem"
 }

@@ -5614,8 +5614,18 @@ async function applyApplyAeEffect(row, ctx) {
   // Generic "inflict a random debuff, a stronger one on weaker foes" primitive
   // (Draconic Roar; reusable by any roar/breath skill). Per-target template
   // resolution happens inside the loop; cached so each distinct name resolves once.
+  // `ae_pool_tag` is the LIVE counterpart to a hand-listed `ae_name_pool`: it
+  // builds the pool from every curated status carrying that tag, so "inflict a
+  // random debuff" keeps meaning the whole debuff library as the library grows
+  // (Magic Mushroom). Symmetric with remove_tagged_ae's `filter_tag`. It also
+  // inherits the tag's own safety: KO/Death are deliberately UNTAGGED, so a
+  // tag-driven roll can never inflict them.
   const splitNames = (s) => String(s ?? "").split(/[,;|]/).map((x) => x.trim()).filter(Boolean);
-  const poolMain = splitNames(row.ae_name_pool);
+  const poolTag = String(row.ae_pool_tag ?? "").trim().toLowerCase();
+  const poolMain = poolTag ? collectTaggedAeNames(poolTag) : splitNames(row.ae_name_pool);
+  if (poolTag && !poolMain.length) {
+    warn(`skill-effects.apply_ae: ae_pool_tag "${poolTag}" matched no curated AE on "${row.effect_label}"`);
+  }
   const poolAlt  = splitNames(row.ae_name_pool_alt);
   const poolAltCond = String(row.ae_pool_alt_condition ?? "").trim();
   const poolMode = poolMain.length > 0;
@@ -6250,6 +6260,25 @@ async function applyApplyAeEffect(row, ctx) {
   }
   log(`skill-effects.apply_ae: row "${row.effect_label}" applied "${sharedTemplate?.name ?? row.ae_template_ref ?? "AE"}" to ${applied.length} actor(s)`);
   return { ok: true, kind: "apply_ae", applied };
+}
+
+// Every curated status name carrying `tag` on its `system.tags`, across the
+// `activeEffectContainer` library Items (Debuff / Buff / …) — the same source
+// resolveAeTemplate falls back to. Powers apply_ae's `ae_pool_tag`.
+function collectTaggedAeNames(tag) {
+  const want = String(tag ?? "").trim().toLowerCase();
+  if (!want) return [];
+  const names = new Set();
+  for (const it of game.items ?? []) {
+    if (it.type !== "activeEffectContainer") continue;
+    for (const eff of it.effects ?? []) {
+      const raw = eff.system?.tags;
+      const list = Array.isArray(raw) ? raw
+        : (raw && typeof raw.has === "function" ? Array.from(raw) : []);
+      if (list.some((t) => String(t).trim().toLowerCase() === want)) names.add(eff.name);
+    }
+  }
+  return Array.from(names);
 }
 
 async function resolveAeTemplate(aeRef, ctx) {

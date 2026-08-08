@@ -1,0 +1,48 @@
+{
+  "_id": "Y4ztiEjbkFrS6VcA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786231878463,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pngmush.png",
+  "name": "Magic Mushroom",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "nQQITYZ7zc3TBGI4",
+    "props": {
+      "description": "<ul><li><p><em>Inflicts a <strong>random status effect</strong> on yourself (drawn from every status in the game).</em></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_pool_tag": "debuff",
+          "effect_kind": "apply_ae",
+          "effect_label": "mushroom_random",
+          "target_ref": "self"
+        }
+      },
+      "name": "Magic Mushroom",
+      "on_activate_effect_ref": "mushroom_random",
+      "skill_description": "<ul><li><p><em>Inflicts a <strong>random status effect</strong> on yourself (drawn from every status in the game).</em></p></li></ul>",
+      "skill_type": "Item"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "Y4ztiEjbkFrS6VcA"
+  },
+  "type": "equippableItem"
+}

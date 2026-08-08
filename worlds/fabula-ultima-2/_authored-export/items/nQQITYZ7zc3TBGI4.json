@@ -1,9 +1,9 @@
 {
-  "_id": "JXezG8T9yiKaJ3jd",
+  "_id": "nQQITYZ7zc3TBGI4",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1739815543696,
+    "createdTime": 1786231877830,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -45,7 +45,7 @@
   },
   "sort": 4900000,
   "system": {
-    "container": null,
+    "container": "YneWCZhxu0KFmHkK",
     "props": {
       "active_effect_config_table": {},
       "aquatic_ef": "100",
@@ -100,13 +100,13 @@
       "item_quantity": "1",
       "item_rarity": "Common",
       "item_skill_active": {
-        "kVni5Jai936UimAS": {
+        "Y4ztiEjbkFrS6VcA": {
           "id": "${item.id}",
           "name": "Magic Mushroom",
           "skill_cost": "-",
           "skill_description": "<ul><li><p><em>Inflicts a <strong>random status effect</strong> on yourself (drawn from every status in the game).</em></p></li></ul>",
           "skill_maxLevel": 1,
-          "uuid": "Item.kVni5Jai936UimAS"
+          "uuid": "Item.Y4ztiEjbkFrS6VcA"
         }
       },
       "item_type": "consumable",
@@ -118,11 +118,11 @@
       "refine_count": "0",
       "refine_level": "0",
       "related_item_list": {
-        "kVni5Jai936UimAS": {
+        "Y4ztiEjbkFrS6VcA": {
           "id": "${item.id}",
           "name": "Magic Mushroom",
           "related_item_description": "<ul><li><p><em>Inflicts a <strong>random status effect</strong> on yourself (drawn from every status in the game).</em></p></li></ul>",
-          "uuid": "Item.kVni5Jai936UimAS"
+          "uuid": "Item.Y4ztiEjbkFrS6VcA"
         }
       },
       "reptilian_ef": "100",
@@ -140,7 +140,7 @@
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,
     "unique": false,
-    "uniqueId": "JXezG8T9yiKaJ3jd"
+    "uniqueId": "nQQITYZ7zc3TBGI4"
   },
   "type": "equippableItem"
 }

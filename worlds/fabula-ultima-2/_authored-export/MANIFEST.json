@@ -6899,6 +6899,24 @@
         "effects": 0
       },
       {
+        "id": "KhiQCNyZ9Q9FrcCZ",
+        "name": "Hot Chocolate",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "MSkbXlMuaqPMj98p",
+        "name": "Hot Chocolate",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "PpWqnC8fvuYFfjCx",
+        "name": "Hot Chocolate",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "r8F9u4sWQC5d0fgv",
         "name": "Hot Chocolate",
         "type": "equippableItem",
@@ -7926,6 +7944,24 @@
       },
       {
         "id": "JgAHGewfef49F7tx",
+        "name": "Magic Mushroom",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Y4ztiEjbkFrS6VcA",
+        "name": "Magic Mushroom",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "kVni5Jai936UimAS",
+        "name": "Magic Mushroom",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "nQQITYZ7zc3TBGI4",
         "name": "Magic Mushroom",
         "type": "equippableItem",
         "effects": 0

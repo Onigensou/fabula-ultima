@@ -40,10 +40,18 @@
     "container": null,
     "props": {
       "description": "<ul>\n<li>Learned how to create&nbsp;<strong>Hot Chocolate&nbsp;</strong>with <strong>2 </strong><strong>IP</strong></li>\n</ul>",
-      "ip_cost": "0",
+      "ip_cost": "2",
       "item_cost": "500",
-      "item_type": "consumable",
-      "name": "Hot Chocolate Recipe"
+      "item_type": "recipe",
+      "name": "Hot Chocolate Recipe",
+      "related_item_list": {
+        "MSkbXlMuaqPMj98p": {
+          "id": "${item.id}",
+          "name": "Hot Chocolate",
+          "related_item_description": "<ul><li><p><em>Cures <strong>Hypothermia</strong>, and you gain <strong>Resistance to Hypothermia</strong> for the rest of the scene (Hypothermia only lasts 1 round against you).</em></p></li></ul>",
+          "uuid": "Item.MSkbXlMuaqPMj98p"
+        }
+      }
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,
