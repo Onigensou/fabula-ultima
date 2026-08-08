@@ -2063,7 +2063,7 @@
                 "effect_table": {
                   "0": {
                     "ae_duplicate_mode": "replace_same_status",
-                    "ae_template_ref": "Flying",
+                    "ae_template_ref": "Actor.dafTLBUscCDNgq8H.Item.7S9f0RR7IfYa0lIv.ActiveEffect.nfyTB7h842rjR4BU",
                     "effect_kind": "apply_ae",
                     "effect_label": "iw_fly",
                     "target_ref": "self"
@@ -2094,10 +2094,7 @@
                     "reaction_trigger": "creature_lose_resource"
                   }
                 }
-              },
-              "tags": [
-                "buff"
-              ]
+              }
             },
             "statuscounter": {
               "config": {

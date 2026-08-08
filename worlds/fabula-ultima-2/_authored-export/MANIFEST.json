@@ -3080,7 +3080,7 @@
         "id": "aTdfmfmApSbbJ2c4",
         "name": "Bamboo Copter",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 2
       },
       {
         "id": "e4FHRBZ0ba0fROnw",
@@ -6932,7 +6932,7 @@
         "id": "KtD7PgidI510dvHa",
         "name": "Icarus Wing",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "Osq3NN3QCtiW7otU",
@@ -7148,7 +7148,7 @@
         "id": "cSynFyjRWqRbgrZx",
         "name": "Invisibility Cloak",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "FXRrLrmoHtcMN5s6",

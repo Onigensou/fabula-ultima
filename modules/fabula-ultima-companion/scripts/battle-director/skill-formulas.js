@@ -908,6 +908,34 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         }
         return 0;
       }
+      // 1 when the action that fired this trigger targets at least one ENEMY of
+      // `actor` — "when you perform an action that targets an enemy"
+      // (Invisibility Cloak: acting against a foe breaks the stealth it granted).
+      // Reads the same payload target list as ACTION_TARGETS_SELF, then classifies
+      // each target by combat DISPOSITION exactly as enemyActorsOf does
+      // (opposing sign, guests excluded), so ally-only and self-only actions
+      // correctly read 0. Distinct from reaction_source: "enemy", which asks who
+      // the REACTOR is relative to the actor — this asks who the ACTION hits.
+      // Returns 0 when no target list is threaded, so an untargeted action never
+      // trips an "acted against a foe" gate.
+      case "ACTION_TARGETS_ENEMY": {
+        if (!actor) return 0;
+        const list = payload?.targetActorUuids ?? payload?.targets
+          ?? payload?.targetTokenUuids ?? payload?.actionTargetUuids
+          ?? (payload?.targetUuid ? [payload.targetUuid] : []);
+        if (!Array.isArray(list) || !list.length) return 0;
+        const myDisp = _combatDisposition(actor);
+        if (myDisp == null) return 0;
+        for (const ref of list) {
+          const a = _resolveActorByUuidSync(String(ref));
+          if (!a || a === actor || a.uuid === actor.uuid) continue;
+          if (_isGuestActor(a)) continue;          // guest is inert — never a foe
+          const d = Number(_combatDisposition(a));
+          if (!Number.isFinite(d)) continue;
+          if (d * myDisp < 0) return 1;            // opposing sign => enemy
+        }
+        return 0;
+      }
       // Status (debuff) count on the trigger's SUBJECT creature — the
       // target of the action that fired the trigger. Used by per-target
       // damage reactions like Cheap Shot's "deal +X if target is statused".

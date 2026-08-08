@@ -8,6 +8,146 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "6RheOQ9qOk3Vg0XP",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786216624881,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "6RheOQ9qOk3Vg0XP",
+          "originalParentId": "cSynFyjRWqRbgrZx",
+          "originalUuid": "Item.cSynFyjRWqRbgrZx.ActiveEffect.6RheOQ9qOk3Vg0XP"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "name": "Hidden",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "GJ0cbbj60lr4zaHm"
+      ],
+      "system": {
+        "tags": [
+          "cloak-hidden"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Xs5qbr4zwuDpD6iq",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786216625079,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Xs5qbr4zwuDpD6iq",
+          "originalParentId": "cSynFyjRWqRbgrZx",
+          "originalUuid": "Item.cSynFyjRWqRbgrZx.ActiveEffect.Xs5qbr4zwuDpD6iq"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "ae_duplicate_mode": "replace_same_status",
+                "ae_template_ref": "Item.cSynFyjRWqRbgrZx.ActiveEffect.6RheOQ9qOk3Vg0XP",
+                "effect_kind": "apply_ae",
+                "effect_label": "ic_hide",
+                "target_ref": "self"
+              },
+              "1": {
+                "count": "all",
+                "effect_kind": "remove_tagged_ae",
+                "effect_label": "ic_reveal",
+                "filter_tag": "cloak-hidden",
+                "target_ref": "self"
+              }
+            },
+            "name": "Invisibility Cloak",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "ic_hide",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "conflict_start"
+              },
+              "1": {
+                "condition_formula": "ACTION_TARGETS_ENEMY == 1",
+                "reaction_effect_ref": "ic_reveal",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "name": "Invisibility Cloak",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"

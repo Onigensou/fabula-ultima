@@ -3480,6 +3480,146 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "eVnFoUgnYplFTeCa",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786216626679,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "eVnFoUgnYplFTeCa",
+              "originalParentId": "G0bzxh7zKGOsiHuI",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.G0bzxh7zKGOsiHuI.ActiveEffect.eVnFoUgnYplFTeCa"
+            },
+            "fabula-ultima-companion": {
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "ae_duplicate_mode": "replace_same_status",
+                    "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.G0bzxh7zKGOsiHuI.ActiveEffect.N4F08sX6VHY6Dq5s",
+                    "effect_kind": "apply_ae",
+                    "effect_label": "ic_hide",
+                    "target_ref": "self"
+                  },
+                  "1": {
+                    "count": "all",
+                    "effect_kind": "remove_tagged_ae",
+                    "effect_label": "ic_reveal",
+                    "filter_tag": "cloak-hidden",
+                    "target_ref": "self"
+                  }
+                },
+                "name": "Invisibility Cloak",
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "ic_hide",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "conflict_start"
+                  },
+                  "1": {
+                    "condition_formula": "ACTION_TARGETS_ENEMY == 1",
+                    "reaction_effect_ref": "ic_reveal",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_performs_action"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "name": "Invisibility Cloak",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "N4F08sX6VHY6Dq5s",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786216626092,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "N4F08sX6VHY6Dq5s",
+              "originalParentId": "G0bzxh7zKGOsiHuI",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.G0bzxh7zKGOsiHuI.ActiveEffect.N4F08sX6VHY6Dq5s"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "name": "Hidden",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "GJ0cbbj60lr4zaHm"
+          ],
+          "system": {
+            "tags": [
+              "cloak-hidden"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
@@ -6409,7 +6549,7 @@
           },
           "changes": [],
           "description": "",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -6468,7 +6608,7 @@
           },
           "changes": [],
           "description": "",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -6490,7 +6630,7 @@
                 "effect_table": {
                   "0": {
                     "ae_duplicate_mode": "replace_same_status",
-                    "ae_template_ref": "Flying",
+                    "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.QcFLkPkYOROiqpLz.ActiveEffect.nfyTB7h842rjR4BU",
                     "effect_kind": "apply_ae",
                     "effect_label": "iw_fly",
                     "target_ref": "self"
@@ -6521,10 +6661,7 @@
                     "reaction_trigger": "creature_lose_resource"
                   }
                 }
-              },
-              "tags": [
-                "buff"
-              ]
+              }
             },
             "statuscounter": {
               "config": {
@@ -7726,6 +7863,146 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "ElvTnjcU10cJhszI",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786216625323,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ElvTnjcU10cJhszI",
+              "originalParentId": "Tpuby64dnU76C0b9",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.Tpuby64dnU76C0b9.ActiveEffect.ElvTnjcU10cJhszI"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "name": "Hidden",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "GJ0cbbj60lr4zaHm"
+          ],
+          "system": {
+            "tags": [
+              "cloak-hidden"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "ONaNSIKHIkgGRVJY",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786216625707,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ONaNSIKHIkgGRVJY",
+              "originalParentId": "Tpuby64dnU76C0b9",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.Tpuby64dnU76C0b9.ActiveEffect.ONaNSIKHIkgGRVJY"
+            },
+            "fabula-ultima-companion": {
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "ae_duplicate_mode": "replace_same_status",
+                    "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.Tpuby64dnU76C0b9.ActiveEffect.ElvTnjcU10cJhszI",
+                    "effect_kind": "apply_ae",
+                    "effect_label": "ic_hide",
+                    "target_ref": "self"
+                  },
+                  "1": {
+                    "count": "all",
+                    "effect_kind": "remove_tagged_ae",
+                    "effect_label": "ic_reveal",
+                    "filter_tag": "cloak-hidden",
+                    "target_ref": "self"
+                  }
+                },
+                "name": "Invisibility Cloak",
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "ic_hide",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "conflict_start"
+                  },
+                  "1": {
+                    "condition_formula": "ACTION_TARGETS_ENEMY == 1",
+                    "reaction_effect_ref": "ic_reveal",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_performs_action"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "name": "Invisibility Cloak",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"

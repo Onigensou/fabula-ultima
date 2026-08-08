@@ -10,6 +10,92 @@
   },
   "effects": [
     {
+      "_id": "yeYEQoILDgCLdz41",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786216624691,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "yeYEQoILDgCLdz41",
+          "originalParentId": "aTdfmfmApSbbJ2c4",
+          "originalUuid": "Item.aTdfmfmApSbbJ2c4.ActiveEffect.yeYEQoILDgCLdz41"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "ae_duplicate_mode": "replace_same_status",
+                "ae_template_ref": "Item.aTdfmfmApSbbJ2c4.ActiveEffect.ynNkXKkVvgYEPHBS",
+                "effect_kind": "apply_ae",
+                "effect_label": "bc_fly",
+                "target_ref": "self"
+              },
+              "1": {
+                "count": "all",
+                "effect_kind": "remove_tagged_ae",
+                "effect_label": "bc_ground",
+                "filter_tag": "copter-flying",
+                "target_ref": "self"
+              }
+            },
+            "name": "Bamboo Copter",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "bc_fly",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "conflict_start"
+              },
+              "1": {
+                "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
+                "reaction_cause_filter": "damage",
+                "reaction_effect_ref": "bc_ground",
+                "reaction_passive_mode": "force",
+                "reaction_resource_filter": "hp",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_lose_resource"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bamboo%20Copter.webp",
+      "name": "Bamboo Copter",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
       "_id": "ynNkXKkVvgYEPHBS",
       "_stats": {
         "compendiumSource": null,
@@ -59,7 +145,7 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bamboo%20Copter.webp",
       "name": "Flying",
       "origin": null,
       "sort": 0,
@@ -67,10 +153,12 @@
         "CVxHWmDb0gQsob1q"
       ],
       "system": {
-        "tags": []
+        "tags": [
+          "copter-flying"
+        ]
       },
       "tint": "#ffffff",
-      "transfer": true,
+      "transfer": false,
       "type": "base"
     }
   ],
