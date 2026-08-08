@@ -3836,7 +3836,7 @@
         "id": "Dht0Ta8s63d3qTXo",
         "name": "Bunny Band",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "YNtiW1MEga31ENWa",
@@ -8150,13 +8150,13 @@
         "id": "7VndzEXMV5F56Cpg",
         "name": "Merchant Cart",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "QZszZdnsM2k8i9FR",
         "name": "Merchant Robe",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "1B4DL1K7xYaEdhPu",
@@ -10166,7 +10166,7 @@
         "id": "arnuPVqayNC3fcXE",
         "name": "Royal Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "mZK0uklB8ACEsM2e",

@@ -21,13 +21,13 @@
       },
       "changes": [
         {
-          "key": "flags.fabula-ultima-companion.check_mod_melee",
+          "key": "check_mod_melee",
           "mode": 2,
           "priority": null,
           "value": "${isEquipped ? 1 : 0}$"
         },
         {
-          "key": "flags.fabula-ultima-companion.check_mod_ranged",
+          "key": "check_mod_ranged",
           "mode": 2,
           "priority": null,
           "value": "${isEquipped ? 1 : 0}$"

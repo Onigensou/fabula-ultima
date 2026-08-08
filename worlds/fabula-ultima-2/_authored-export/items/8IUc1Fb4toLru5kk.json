@@ -21,7 +21,7 @@
       },
       "changes": [
         {
-          "key": "flags.fabula-ultima-companion.extra_damage_mod_brawling",
+          "key": "extra_damage_mod_brawling",
           "mode": 2,
           "priority": null,
           "value": "${isEquipped ? 5 : 0}$"

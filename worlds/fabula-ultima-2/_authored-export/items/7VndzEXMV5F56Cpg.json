@@ -8,6 +8,69 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "HehLVoiEhzzsvPXl",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786189977922,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "max_ip",
+          "mode": 2,
+          "priority": null,
+          "value": "${isEquipped ? 2 : 0}$"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.skill_level_bonus_potion_rain",
+          "mode": 2,
+          "priority": null,
+          "value": "${isEquipped ? 1 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "HehLVoiEhzzsvPXl",
+          "originalParentId": "7VndzEXMV5F56Cpg",
+          "originalUuid": "Item.7VndzEXMV5F56Cpg.ActiveEffect.HehLVoiEhzzsvPXl"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pushcart.png",
+      "name": "Merchant Cart",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"

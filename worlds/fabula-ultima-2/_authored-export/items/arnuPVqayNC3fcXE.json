@@ -144,6 +144,67 @@
       "tint": "#ffffff",
       "transfer": true,
       "type": "base"
+    },
+    {
+      "_id": "mYaInkQsmWV5v2PK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786189978425,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.skill_level_bonus_defensive_mastery",
+          "mode": 2,
+          "priority": null,
+          "value": "${isEquipped ? 1 : 0}$"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.skill_level_bonus_fortress",
+          "mode": 2,
+          "priority": null,
+          "value": "${isEquipped ? 2 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "mYaInkQsmWV5v2PK",
+          "originalParentId": "arnuPVqayNC3fcXE",
+          "originalUuid": "Item.arnuPVqayNC3fcXE.ActiveEffect.mYaInkQsmWV5v2PK"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2137.gif",
+      "name": "Guardian skills empowered",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
     }
   ],
   "flags": {

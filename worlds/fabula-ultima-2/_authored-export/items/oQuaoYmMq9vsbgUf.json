@@ -97,12 +97,12 @@
         {
           "key": "affinity_4",
           "mode": 5,
-          "priority": 20,
-          "value": "RS"
+          "priority": null,
+          "value": "${isEquipped ? 'RS' : 'NA'}$"
         }
       ],
       "description": "",
-      "disabled": true,
+      "disabled": false,
       "duration": {
         "combat": null,
         "rounds": null,
