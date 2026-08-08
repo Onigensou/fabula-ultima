@@ -6,9 +6,33 @@
 // - Fix Foundry V12 round/turn ActiveEffect counters for effects applied
 //   outside combat.
 // - Outside combat: no custom counter is shown.
-// - When combat starts: round-based effects are recreated with combat timing,
-//   allowing Foundry's native counter to appear.
-// - Uses a temporary status-icon snapshot fade to hide the create/delete flicker.
+// - When combat starts: round-based effects get combat timing stamped onto
+//   their duration, so Foundry's native counter reads correctly.
+// - Uses a temporary status-icon snapshot fade to smooth the transition.
+//
+// ⚡ Stamped by in-place UPDATE, not by recreating the effect (perf)
+//   This used to create a replacement effect, delete the original, and then
+//   call actor.prepareData() explicitly -- THREE full actor re-derivations per
+//   effect, serialized per effect per actor. Under CSB each of those is a
+//   ~360 ms synchronous main-thread block, so a five-combatant fight with a few
+//   round-based effects each froze the canvas for many seconds at the exact
+//   moment combat opened.
+//
+//   The recreate was never necessary. Foundry's ActiveEffect#_prepareDuration
+//   derives the counter on every data prep purely from the STORED
+//   duration.startRound / startTurn plus the live game.combat -- there is no
+//   creation-time snapshot. So writing those two fields onto the existing
+//   effect produces an identical result. Measured 2026-08-08 on a live effect:
+//   unstamped under a round-3 combat read `label:"None", remaining:0` (i.e.
+//   already expired -- the actual bug); after a plain update() with
+//   startRound:2 it read `label:"2 Rounds", remaining:2`, in ONE cycle, with
+//   the effect id unchanged.
+//
+//   Updates are additionally BATCHED per actor, so an actor costs one cycle no
+//   matter how many effects it carries (Foundry batches per parent document,
+//   which is the floor). Preserving effect ids is also a correctness win: the
+//   old recreate invalidated every outstanding reference to the effect, which
+//   is why it had to record `oldEffectId` at all.
 // ============================================================================
 
 Hooks.once("ready", () => {
@@ -66,13 +90,6 @@ Hooks.once("ready", () => {
       } catch (_e) {
         return fallback;
       }
-    }
-
-    function setProperty(obj, path, value) {
-      try {
-        foundry.utils.setProperty(obj, path, value);
-      } catch (_e) {}
-      return obj;
     }
 
     function isPrimaryActiveGM() {
@@ -163,17 +180,6 @@ Hooks.once("ready", () => {
         .filter(token => token?.actor?.uuid === actor.uuid);
     }
 
-    function cleanCreateData(data) {
-      delete data._id;
-      delete data.id;
-      delete data.folder;
-      delete data.sort;
-      delete data.ownership;
-      delete data._stats;
-
-      return data;
-    }
-
     function makeCombatDuration(oldDuration, combat) {
       const round = Number(combat.round ?? 1) || 1;
 
@@ -185,6 +191,12 @@ Hooks.once("ready", () => {
 
       const out = clone(oldDuration ?? {}, {});
 
+      // `combat` is for THIS module's own idempotence check
+      // (isReadyForCurrentCombat); Foundry's counter math ignores it entirely
+      // and works off startRound/startTurn alone -- verified 2026-08-08.
+      // ⚠ It is a foreign-key field: an id with no matching Combat fails
+      // validation and the whole duration write is silently dropped (cost one
+      // debugging round). Only ever assign a real combat.id here.
       out.combat = combat.id;
       out.startRound = round;
       out.startTurn = turn;
@@ -389,60 +401,21 @@ Hooks.once("ready", () => {
       };
     }
 
-    async function recreateEffectForCombatCounter(actor, effect, combat) {
+    // One entry in a batched updateEmbeddedDocuments payload. The duration and
+    // the bookkeeping flag go in the SAME entry deliberately -- splitting them
+    // would be a second write and put the third re-derivation straight back.
+    function buildCounterRefreshUpdate(effect, combat) {
       const oldRaw = getRawEffectData(effect);
-      const oldId = effect.id;
-      const oldName = effect.name;
 
-      const createData = cleanCreateData(clone(oldRaw, {}));
-      createData.duration = makeCombatDuration(oldRaw.duration ?? {}, combat);
-
-      createData.flags = createData.flags || {};
-      createData.flags[MODULE_ID] = createData.flags[MODULE_ID] || {};
-      createData.flags[MODULE_ID].activeEffectManager =
-        createData.flags[MODULE_ID].activeEffectManager || {};
-
-      setProperty(
-        createData,
-        `flags.${MODULE_ID}.activeEffectManager.nativeCounterRefresh`,
-        {
+      return {
+        _id: effect.id,
+        duration: makeCombatDuration(oldRaw.duration ?? {}, combat),
+        [`flags.${MODULE_ID}.activeEffectManager.nativeCounterRefresh`]: {
           combatId: combat.id,
-          oldEffectId: oldId,
-          recreatedAt: new Date().toISOString(),
+          refreshedAt: new Date().toISOString(),
           reason: "effect-existed-before-combat-start"
         }
-      );
-
-      log("Recreating effect for native combat counter.", {
-        actor: actor.name,
-        before: summarizeEffect(effect),
-        createDuration: createData.duration
-      });
-
-      // Create-before-delete is safer. The visual layer is hidden during this,
-      // so players should not see the duplicate icon moment.
-      const [created] = await actor.createEmbeddedDocuments("ActiveEffect", [createData], {
-        render: false
-      });
-
-      if (!created) {
-        throw new Error(`Failed to recreate effect: ${oldName}`);
-      }
-
-      await actor.deleteEmbeddedDocuments("ActiveEffect", [oldId], {
-        render: false
-      });
-
-      await actor.prepareData?.();
-
-      const fresh = actor.effects.get(created.id) ?? created;
-
-      log("Recreated effect result.", {
-        actor: actor.name,
-        after: summarizeEffect(fresh)
-      });
-
-      return fresh;
+      };
     }
 
     async function processActor(actor, combat) {
@@ -450,7 +423,7 @@ Hooks.once("ready", () => {
         actor: actor.name,
         candidates: 0,
         skippedAlreadyProcessed: 0,
-        recreated: 0
+        refreshed: 0
       };
 
       const candidates = Array.from(actor.effects ?? [])
@@ -460,25 +433,39 @@ Hooks.once("ready", () => {
 
       if (!candidates.length) return report;
 
+      // Decide everything BEFORE writing, then issue a single call. One actor
+      // costs one re-derivation regardless of how many effects it carries.
+      const updates = [];
+
+      for (const effect of candidates) {
+        if (wasAlreadyProcessedForCombat(effect, combat)) {
+          report.skippedAlreadyProcessed++;
+          continue;
+        }
+
+        updates.push(buildCounterRefreshUpdate(effect, combat));
+      }
+
+      if (!updates.length) return report;
+
+      log("Stamping combat timing onto round-based effects.", {
+        actor: actor.name,
+        count: updates.length,
+        before: candidates.map(summarizeEffect)
+      });
+
       const thaw = freezeActorStatusIcons(actor);
 
       try {
         await nextFrame();
 
-        for (const effect of candidates) {
-          if (wasAlreadyProcessedForCombat(effect, combat)) {
-            report.skippedAlreadyProcessed++;
-            continue;
-          }
+        await actor.updateEmbeddedDocuments("ActiveEffect", updates);
+        report.refreshed = updates.length;
 
-          await recreateEffectForCombatCounter(actor, effect, combat);
-          report.recreated++;
-        }
-
-        if (report.recreated > 0) {
-          await redrawActorTokens(actor);
-          await wait(40);
-        }
+        // Effect ids are preserved now, so the icon row does not churn -- but
+        // the counter badge still needs to repaint with its new value.
+        await redrawActorTokens(actor);
+        await wait(40);
       } finally {
         await thaw();
       }
@@ -509,7 +496,7 @@ Hooks.once("ready", () => {
         }
 
         const totalCandidates = report.reduce((sum, row) => sum + row.candidates, 0);
-        const totalRecreated = report.reduce((sum, row) => sum + row.recreated, 0);
+        const totalRecreated = report.reduce((sum, row) => sum + row.refreshed, 0);
 
         log("Result.", {
           reason,
