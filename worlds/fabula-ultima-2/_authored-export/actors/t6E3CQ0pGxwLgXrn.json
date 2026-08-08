@@ -523,7 +523,7 @@
       "system": {
         "container": "G0bzxh7zKGOsiHuI",
         "props": {
-          "description": "<p>You begin the battle with <strong>Hidden</strong>. When you perform an action that targets an enemy, you lose the Hidden granted by this accessory.</p>",
+          "description": "<p>You begin the battle with <strong>Hidden</strong>. You lose it when you perform an action that targets an enemy, or when you remove this accessory — either way it does not return for the rest of the scene.</p>",
           "details_roller": "Show",
           "effect_table": {
             "0": {
@@ -574,7 +574,7 @@
               "reaction_trigger": "creature_equips_item"
             },
             "2": {
-              "reaction_effect_ref": "gs_drop",
+              "reaction_effect_ref": "gs_spend",
               "reaction_passive_mode": "force",
               "reaction_passive_target": "self",
               "reaction_source": "",
@@ -5933,7 +5933,7 @@
       "system": {
         "container": "Tpuby64dnU76C0b9",
         "props": {
-          "description": "<p>You begin the battle with <strong>Hidden</strong>. When you perform an action that targets an enemy, you lose the Hidden granted by this accessory.</p>",
+          "description": "<p>You begin the battle with <strong>Hidden</strong>. You lose it when you perform an action that targets an enemy, or when you remove this accessory — either way it does not return for the rest of the scene.</p>",
           "details_roller": "Show",
           "effect_table": {
             "0": {
@@ -5984,7 +5984,7 @@
               "reaction_trigger": "creature_equips_item"
             },
             "2": {
-              "reaction_effect_ref": "gs_drop",
+              "reaction_effect_ref": "gs_spend",
               "reaction_passive_mode": "force",
               "reaction_passive_target": "self",
               "reaction_source": "",
