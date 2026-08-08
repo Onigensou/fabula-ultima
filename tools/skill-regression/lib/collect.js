@@ -201,6 +201,16 @@ const timings = [];
 let n = 0;
 const started = Date.now();
 const runFn = mode === "simulate" ? api.runDirectorSkillSimulate : api.runDirectorSkillCompute;
+// The harness cache-busts ~1.5 MB of module source on every call so interactive
+// use always sees the latest disk state. Across a batch that is pure tax —
+// measured 925 ms/skill, 39% of the run — and pointless, because the disk cannot
+// change inside one bridge call. One token per PAGE: the first skill loads
+// fresh, the other 29 reuse. Freshness is preserved at page granularity, since
+// every page is a new bridge call with a new token.
+// `--no-deps-reuse` restores the old per-skill bust — an escape hatch if module
+// reuse is ever suspected of leaking state between skills, and the control arm
+// for A/B-ing the two paths against one golden.
+const depsToken = opts.noDepsReuse ? null : `sweep-${Date.now()}-${offset}`;
 
 for (const { cTok, skill } of window) {
   const actor = cTok.actor;
@@ -219,7 +229,7 @@ for (const { cTok, skill } of window) {
   const t0 = Date.now();
   const r = await guardedRun(runFn, {
     skillUuid: skill.uuid, casterTokenUuid: cTok.uuid, targetTokenUuids: targets,
-    force, override, ...(Array.isArray(opts.picks) ? { picks: opts.picks } : {}),
+    force, override, depsToken, ...(Array.isArray(opts.picks) ? { picks: opts.picks } : {}),
   });
   timings.push({ key, ms: Date.now() - t0 });
   skills[key] = fingerprint(skill, actor, offensive, targets, r);

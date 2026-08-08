@@ -11,14 +11,14 @@
 // ───────────────────────────────────────────────────────────────────────────
 const fs = require("fs");
 const path = require("path");
+// Paths whose edits can regress OTHER skills. The list lives in the fingerprint
+// lib so the trigger and the "did it actually change" hash can never disagree
+// about what counts as engine code.
+const { isEngineFile } = require(path.resolve(__dirname, "..", "lib", "engine-fingerprint.js"));
 
 const STATE_DIR = path.resolve(__dirname, "..", ".state");
 const MARKER = path.join(STATE_DIR, "pending.json");
 
-// Paths whose edits can regress OTHER skills. Kept in sync with the plan's
-// matcher list; the last few engine files do NOT match a skill-*/reaction glob
-// so they're named explicitly.
-const ENGINE_RE = /[\\/]scripts[\\/]battle-director[\\/](skill-[^\\/]+\.js|[^\\/]*reaction[^\\/]*\.js|[^\\/]*reactor[^\\/]*\.js|state-handlers\.js|states\.js|damage-ruleset\.js|card-mutations\.js|template-field-registry\.js)$/i;
 const DATA_RE = /[\\/]worlds[\\/]fabula-ultima-2[\\/]data[\\/]actors[\\/]/i;
 
 function readStdin() {
@@ -41,7 +41,7 @@ function readStdin() {
   if (!filePath) process.exit(0);
 
   const norm = String(filePath).replace(/\\/g, "/");
-  const isEngine = ENGINE_RE.test(filePath) || ENGINE_RE.test(norm);
+  const isEngine = isEngineFile(filePath);
   const isData = DATA_RE.test(filePath) || DATA_RE.test(norm);
   if (!isEngine && !isData) process.exit(0);
 

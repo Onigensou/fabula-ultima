@@ -5,6 +5,22 @@
 // re-run the compute-mode regression check and surface any drift.
 //
 //   • marker absent            → exit 0 (nothing changed this turn).
+//   • engine code semantically
+//     unchanged since the last
+//     completed check           → clear marker, one-line note, exit 0. The sweep
+//                                is ~22 min (measured 2026-08-08: 491 skills,
+//                                compute, 1294 s), and a path-match trigger fired
+//                                it for comment rewrites, re-indents and
+//                                edit-then-revert turns too. lib/engine-
+//                                fingerprint.js hashes the engine with comments
+//                                and formatting removed; an exact match with the
+//                                hash recorded at the last check means the check
+//                                can only reproduce its previous verdict.
+//                                Never taken when world DATA also changed (the
+//                                hash covers code only), and any stripper trouble
+//                                changes the hash rather than preserving it — so
+//                                the failure direction is a redundant run, never
+//                                a missed regression.
 //   • bridge (game) not alive  → keep the marker, print a one-line reminder,
 //                                exit 0. The check runs on a later turn once
 //                                Foundry is open. bridgeAlive() is a quick stat,
@@ -22,6 +38,7 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 const ROOT = path.resolve(__dirname, "..");
 const { bridgeAlive } = require(path.join(ROOT, "lib", "bridge.js"));
+const { engineFingerprint, readVerified, recordVerified } = require(path.join(ROOT, "lib", "engine-fingerprint.js"));
 
 const MARKER = path.join(ROOT, ".state", "pending.json");
 const clearMarker = () => { try { fs.unlinkSync(MARKER); } catch {} };
@@ -34,6 +51,27 @@ if (!fs.existsSync(MARKER)) process.exit(0);
 let marker = {};
 try { marker = JSON.parse(fs.readFileSync(MARKER, "utf8")); } catch {}
 const kinds = Object.keys(marker.kinds || {}).join("+") || "skill";
+
+// ── cheap semantic gate, before anything that costs time ────────────────────
+// Only safe when the marker is engine-ONLY: the hash covers battle-director
+// source, so a world-data edit must always fall through to the real check.
+const fp = engineFingerprint();
+const verified = readVerified();
+
+if (fp.hash && !marker.kinds?.data && verified && verified.hash === fp.hash) {
+  const when = verified.at ? ` (checked ${verified.at})` : "";
+  const unchanged = `engine code is semantically unchanged since the last check${when} — comments/formatting only, sweep skipped`;
+  // The skip carries forward the LAST verdict, and that verdict may have been
+  // drift — recordVerified writes on drift too, deliberately, so a re-run only
+  // reprints the same summary at full cost. But then a bare ✓ would report the
+  // outstanding drift as clean. Carry the verdict, not just the skip.
+  const drift = Number(verified.drift) || 0;
+  process.stderr.write(drift
+    ? `⚠ skill-regression: ${unchanged}. That check reported ${drift} skill${drift === 1 ? "" : "s"} of drift, still unreviewed — re-run \`check\` for the detail, or re-baseline with \`check --update\`.\n`
+    : `✓ skill-regression: ${unchanged}.\n`);
+  clearMarker();
+  process.exit(0);
+}
 
 if (!bridgeAlive()) {
   process.stderr.write(`⏳ skill-regression: ${kinds} changed this turn but Foundry is closed — regression check deferred until the world is open (marker kept).\n`);
@@ -69,8 +107,16 @@ if (!env) {
   }
 }
 
+// Kill-timer sized off a MEASURED full run, not a guess: 2026-08-08, 491 skills
+// in compute mode take 109 s (down from 1294 s — see the module-reuse fix in the
+// README). The old 6-minute cap killed every whole-catalog run a third of the way
+// through, so the gate paid the time and still reported "could not evaluate
+// drift". 12 min is ~6× the real run: enough for a slow machine or the
+// --no-deps-reuse path, without letting a wedged bridge hold turn-end for half an
+// hour. The Stop-hook timeout in .claude/settings.json has to stay above this or
+// the outer kill lands first.
 const args = ["bin/skill-regression.js", "check", "--mode", "compute", "--json", ...extra];
-const run = spawnSync("node", args, { cwd: ROOT, encoding: "utf8", timeout: 6 * 60 * 1000, maxBuffer: 32 * 1024 * 1024 });
+const run = spawnSync("node", args, { cwd: ROOT, encoding: "utf8", timeout: 12 * 60 * 1000, maxBuffer: 32 * 1024 * 1024 });
 
 // Tear down UNCONDITIONALLY — not via the check's own --teardown flag. The check
 // runs under a kill-timer so turn-end can't hang, and a killed process never
@@ -96,6 +142,11 @@ if (!verdict || !verdict.counts) {
 
 const { added, removed, changed, counts } = verdict;
 clearMarker();
+// Record the fingerprint the verdict belongs to — on drift as well as on clean.
+// The check DID evaluate this exact code; re-running it next turn would only
+// reprint the same 12 lines at a 22-minute cost. Deliberately NOT recorded when
+// the run failed to produce a verdict (above), so that case retries.
+recordVerified({ total: counts.total, drift: counts.added + counts.removed + counts.changed, by: "stop-hook" }, fp);
 
 if (!counts.added && !counts.removed && !counts.changed) {
   process.stderr.write(`✓ skill-regression: ${counts.total} skills checked after ${kinds} edit — no behavioral drift.\n`);

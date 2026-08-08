@@ -21,6 +21,7 @@
 const fs = require("fs");
 const path = require("path");
 const { evalGM, bridgeAlive } = require("../lib/bridge");
+const { recordVerified } = require("../lib/engine-fingerprint");
 
 const ROOT = path.resolve(__dirname, "..");
 const COLLECT_SRC = fs.readFileSync(path.join(ROOT, "lib", "collect.js"), "utf8");
@@ -38,6 +39,13 @@ function parseArgs(argv) {
     else if (t === "--json") a.json = true;
     else if (t === "--no-skip") a["no-skip"] = true;
     else if (t === "--teardown") a.teardown = true;
+    else if (t === "--no-deps-reuse") a["no-deps-reuse"] = true;
+    // Generic boolean fallback. Without it an unregistered flag swallows the
+    // NEXT argument as its value — which is how a `--no-deps-reuse --goldens
+    // <path>` run silently ate the --goldens and wrote a simulate capture over
+    // the compute golden. A flag followed by another flag, or by nothing, is a
+    // boolean whatever the list above says.
+    else if (t.startsWith("--") && (i + 1 >= argv.length || String(argv[i + 1]).startsWith("--"))) a[t.slice(2)] = true;
     else if (t.startsWith("--")) a[t.slice(2)] = argv[++i];
     else a._.push(t);
   }
@@ -52,6 +60,7 @@ function optsFrom(a) {
   if (a.scene) o.sceneName = a.scene;
   if (a.dummy) o.dummy = a.dummy;
   if (a.forceSimulate) o.forceSimulate = true;
+  if (a["no-deps-reuse"]) o.noDepsReuse = true;
   // Auto-load the committed skip list (interactive skills that only ever
   // time out at COMPUTE) so capture + check stay fast AND identical. --no-skip
   // disables it (e.g. to re-measure which skills still time out).
@@ -113,7 +122,15 @@ function stable(v) {
 }
 
 function goldenPath(a) {
-  return path.resolve(a.goldens ? a.goldens : path.join(ROOT, "goldens", "skills.json"));
+  if (a.goldens) return path.resolve(a.goldens);
+  // The two modes have SEPARATE goldens, and the default has to follow the mode.
+  // It used to be skills.json unconditionally, so `capture --mode simulate` with
+  // the documented `--goldens goldens/skills-simulate.json` merely forgotten (or
+  // eaten by a mis-parsed flag) overwrote the compute golden with a simulate
+  // capture — silently, and the compute baseline is the one the Stop-hook gate
+  // and every `check` depend on.
+  const name = a.mode === "simulate" ? "skills-simulate.json" : "skills.json";
+  return path.resolve(path.join(ROOT, "goldens", name));
 }
 
 function writeGoldens(file, result) {
@@ -208,6 +225,10 @@ async function main() {
     if (onProgress) process.stderr.write("\r" + " ".repeat(40) + "\r");
     if (a.teardown) await teardownBench(a);
     writeGoldens(file, result);
+    // A full capture makes current == golden by definition, so it establishes a
+    // verdict for this engine source just as a clean check does — tell the
+    // Stop-hook gate, or it re-sweeps 22 min for a state we just baselined.
+    if (!a.caster && !a.limit) recordVerified({ total: result.count, drift: 0, by: "capture" });
     console.log(`✓ captured ${result.count} skills (${result.mode} mode, scene "${result.scene}", casters: ${result.casters.join(", ")}) in ${(result.tookMs / 1000).toFixed(1)}s`);
     console.log(`  engine ${result.engineVersion} · errors: ${result.errorCount} · wrote ${path.relative(process.cwd(), file)}`);
     if (result.errorCount) console.log(`  (errored skills are recorded as fingerprints too — a change in error is still a regression signal)`);
@@ -221,6 +242,7 @@ async function main() {
     if (a.teardown) await teardownBench(a);
     if (a.update) {
       writeGoldens(file, result);
+      if (!a.caster && !a.limit) recordVerified({ total: result.count, drift: 0, by: "check --update" });
       console.log(`✓ goldens updated to current behavior (${result.count} skills).`);
       return 0;
     }
@@ -242,6 +264,9 @@ async function main() {
       const d = diffFp(golden[k], current[k]);
       if (d.length) changed.push({ key: k, diffs: d });
     }
+    // Only a FULL run licenses the gate's skip — a --caster/--limit subset says
+    // nothing about the rest of the catalog.
+    if (!partial) recordVerified({ total: result.count, drift: added.length + removed.length + changed.length, by: "check" });
     if (a.json) {
       console.log(JSON.stringify({ partial, added, removed, changed, counts: { added: added.length, removed: removed.length, changed: changed.length, total: result.count } }, null, 2));
     } else {

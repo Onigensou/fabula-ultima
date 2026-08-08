@@ -51,7 +51,24 @@
 // tool is to validate edits without forcing the user to hard-refresh. Foundry's
 // soft reload doesn't bust the browser ESM cache, so static imports here would
 // read whatever was loaded at boot.
-async function loadDeps() {
+// Opt-in reuse cache for BATCH callers (the regression sweep). The per-call
+// cache-bust below re-fetches, re-parses and re-evaluates ~1.5 MB of module
+// source EVERY call — measured 925 ms, which is 39% of a sweep's per-skill cost
+// and pure waste when 30 skills run back-to-back against a disk that cannot
+// change mid-batch. A caller that owns such a batch passes its own `depsToken`;
+// the FIRST call under a token loads fresh, the rest reuse. Omit it and nothing
+// changes — interactive/iterative use keeps picking up single-file edits with no
+// reload, which is the whole point of the per-call bust.
+let _depsCache = null;   // { token, deps }
+
+async function loadDeps(reuseToken = null) {
+  if (reuseToken != null && _depsCache && _depsCache.token === reuseToken) {
+    // The freshly-imported state-handlers resolves SE() through this global, and
+    // an interleaved un-tokened call may have moved it — repoint it at the
+    // instance our cached deps actually came from.
+    globalThis.__FU_CB = reuseToken;
+    return _depsCache.deps;
+  }
   // Single token per call drives BOTH the harness's own re-imports AND the
   // hot-reload registry (state-handlers' internal skill-effects edge). We set
   // globalThis.__FU_CB to this token so the freshly-imported state-handlers,
@@ -59,7 +76,7 @@ async function loadDeps() {
   // we import here (matching `?cb=<token>` URL → one cached module, no double
   // instance / no module-state split). refreshHotModules() (awaited below)
   // performs that re-import after state-handlers has registered its edge.
-  const token = Date.now();
+  const token = reuseToken != null ? reuseToken : Date.now();
   globalThis.__FU_CB = token;
   const bust = `?harness=${token}`;
   const cb = `?cb=${token}`;  // MUST match hot-reload.js's loader query
@@ -77,7 +94,7 @@ async function loadDeps() {
   // state-handlers registered its skill-effects hot edge during the import
   // above; refresh it now so its internal SE() calls use the fresh instance.
   await hot.refreshHotModules();
-  return {
+  const deps = {
     STATE_HANDLERS: stateHandlers.STATE_HANDLERS,
     STATES: states.STATES,
     INTENTS: intents.INTENTS,
@@ -99,6 +116,8 @@ async function loadDeps() {
     composeActionCardRenderPayload: actionCard.composeActionCardRenderPayload,
     stripHtmlForDesc: actionCard.stripHtmlForDesc,
   };
+  if (reuseToken != null) _depsCache = { token: reuseToken, deps };
+  return deps;
 }
 
 // Pre-pass simulator — runs the CONFIRM-stage `creature_will_deal_damage`
@@ -443,6 +462,9 @@ function summarize(ar) {
 async function runDirectorSkillCompute({
   skillUuid, casterTokenUuid, targetTokenUuids, force = null,
   picks = null, harnessNumbers = null, override = null,
+  // Batch callers pass a stable token to reuse the loaded module graph across a
+  // run of calls (see loadDeps). Omitted = per-call cache-bust, as before.
+  depsToken = null,
 } = {}) {
   if (!game.user?.isGM) {
     return { ok: false, reason: "gm_only" };
@@ -463,7 +485,7 @@ async function runDirectorSkillCompute({
     targetTokens.push(t);
   }
 
-  const deps = await loadDeps();
+  const deps = await loadDeps(depsToken);
   const { STATE_HANDLERS, STATES, INTENTS } = deps;
   const attackerSnap = buildAttackerSnapshot(casterToken, deps);
   const targetSnaps  = targetTokens.map((t) => buildTargetSnapshot(t, deps));
@@ -1081,7 +1103,9 @@ async function runDirectorSkillSimulate(args = {}) {
   // (state-handlers.js line ~325) without needing to drive TARGET's
   // alt-cost Dialog. Have to re-freeze — freezeActionResult emits a
   // sealed object.
-  const deps = await loadDeps();
+  // Same token as the COMPUTE above (args flows straight through), so a batched
+  // simulate reuses one module graph for both halves of the call.
+  const deps = await loadDeps(args.depsToken ?? null);
   const { STATE_HANDLERS, STATES, INTENTS, freezeActionResult } = deps;
   const arPatch = {};
   if (Array.isArray(args.picks)) arPatch._harnessPicks = [...args.picks];
@@ -1209,6 +1233,7 @@ async function runDirectorSkillSimulate(args = {}) {
 async function runDirectorAttackCompute({
   attackerTokenUuid, targetTokenUuids, mode = "main", force = null,
   pendingPasses = null, passIndex = 0, totalPasses = null,
+  depsToken = null,   // batch reuse — see loadDeps
 } = {}) {
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
   if (!attackerTokenUuid || !Array.isArray(targetTokenUuids) || !targetTokenUuids.length) {
@@ -1224,7 +1249,7 @@ async function runDirectorAttackCompute({
     targetTokens.push(t);
   }
 
-  const deps = await loadDeps();
+  const deps = await loadDeps(depsToken);
   const { STATE_HANDLERS, STATES, INTENTS, resolveAttackerWeapon } = deps;
   const attackerSnap = buildAttackerSnapshot(attackerToken, deps);
   const targetSnaps  = targetTokens.map((t) => buildTargetSnapshot(t, deps));
@@ -1308,7 +1333,7 @@ async function runDirectorAttackSimulate(args = {}) {
   const formulaOverrides = installFormulaOverrides(args.override);
   const preApplied = await installPreAppliedAEs(args.preApply);
 
-  const deps = await loadDeps();
+  const deps = await loadDeps(args.depsToken ?? null);
   const { STATE_HANDLERS, STATES, INTENTS } = deps;
   const round = Number.isFinite(args.round) ? args.round : 1;
 

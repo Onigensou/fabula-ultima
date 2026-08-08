@@ -60,11 +60,29 @@ skill that errors on a bare template actor fingerprints as a stable `ok:false` �
 still a valid diffable baseline. Without `--dummy` the classic
 ally=caster / first-enemy=target behaviour is unchanged.
 
-Runtime: **~1 min** for the full 482-skill compute pass (simulate slower). The
-speed comes from `skip.json` — a committed list of interactive `open_action_menu`
-skills that only ever record `reason:"timeout"` at COMPUTE (a 12s guard each);
-they're recorded as `reason:"skipped"` instead, which drops the run from ~5.5 min
-to ~1 min with no loss of real compute signal. `capture` and `check` both
+Runtime: **~110 s** for the full 491-skill compute pass (`bench` 2 s + `check`
+**109 s** + `teardown` 3 s; measured 2026-08-08, reproduced at 108 s).
+
+It was **1294 s** until the module-reuse fix below. The old cost was ~2.6 s/skill,
+and the dominant term was not the engine work — it was the test harness's
+per-call cache-bust re-fetching, re-parsing and re-evaluating **1.5 MB of module
+source on every single skill** (measured 925 ms of raw `import()` per call, plus
+the cold-module cost downstream: ~713 MB of module churn per sweep).
+`loadDeps()` now takes an optional `depsToken`; the collector issues **one token
+per bridge page**, so the first skill in a page loads fresh and the other 29
+reuse it. Freshness is preserved at page granularity — every page is a new bridge
+call with a new token — and callers that pass no token (all interactive use) keep
+the per-call bust that makes single-file edits take effect without a reload.
+Verified by re-running the whole catalog against the unchanged golden: **491/491
+identical**. `--no-deps-reuse` restores the old path.
+
+⚠ An earlier "~1 min" figure here was wrong by 20× and is what sized the Stop
+hook's old 420 s cap — which silently killed every whole-catalog run a third of
+the way through. Re-measure before changing any timeout; use `--caster` /
+`--limit` for a fast subset. `skip.json` is a committed list of interactive
+`open_action_menu` skills that only ever record `reason:"timeout"` at COMPUTE (a
+12s guard each); they're recorded as `reason:"skipped"` instead, which removes
+that dead time with no loss of real compute signal. `capture` and `check` both
 auto-load it (so they stay consistent); `--no-skip` disables it (e.g. to
 re-measure which skills still time out — add any new ones to `skip.json`). Paging
 handles the bridge's 5-min cap; use `--caster` / `--limit` for fast subsets.
@@ -92,12 +110,41 @@ can't cover this because it runs game-*closed* and this check needs the game
   `template-field-registry.js`) or `worlds/fabula-ultima-2/data/actors/**`,
   writes a session marker (`.state/pending.json`, gitignored). Cheap; never blocks.
 - **Stop** (`hooks/regression-gate.js`) — at end of a turn that set the marker:
+  engine code **semantically unchanged** since the last completed check → clear
+  the marker, one-line note, **skip the sweep** (see below);
   game **closed** → keep the marker + print a one-line "deferred" reminder;
   game **open**, drift → clear marker, surface a concise NEW/CHANGED/REMOVED
   summary once (advisory — review; re-baseline with `check --update` if
   intended); game open, clean → clear marker. A kill-timer caps the run so a
   wedged bridge can't freeze turn-end. Override scene/mode via
   `SKILL_REGRESSION_CHECK_ARGS` (e.g. `--scene "Regression Bench" --dummy "Test Target Enemy"`).
+
+#### The semantic gate — why most engine turns cost nothing
+
+The trigger above is a **path** match, so it used to fire the full ~22 min sweep
+for a comment rewrite, a re-indent, or a turn that edited an engine file and then
+reverted it. `lib/engine-fingerprint.js` hashes the engine source with comments
+stripped and formatting normalized (**54% of those 1.6 MB is comments and
+indentation**), and the hash of the code a verdict was reached on is recorded in
+`.state/verified.json`. When the marker is engine-only and the hash still
+matches, the sweep is skipped — the check could only reproduce its previous
+verdict.
+
+- The hash is written by the Stop hook **and** by a manual full `check` /
+  `check --update` / `capture`, so re-baselining by hand doesn't cost a re-sweep.
+- It is **never** written for a `--caster` / `--limit` run: a subset proves
+  nothing about the rest of the catalog.
+- The skip is **never** taken when world actor data also changed — the hash
+  covers code only.
+- Recorded on drift as well as on clean: the check *did* evaluate that code, and
+  re-running it next turn would only reprint the same summary at full cost. The
+  skip line then **carries that verdict forward** — `⚠ … reported N skills of
+  drift, still unreviewed` rather than a `✓`, so unreviewed drift can't read as
+  clean just because the sweep was skipped.
+- The comment stripper is string/template/regex-aware (all 23 engine files still
+  `node --check`-parse after stripping). Any confusion in it changes the hash
+  rather than preserving it, so the failure direction is a **redundant run**,
+  never a missed regression.
 
 Typical loop: `capture` once on a known-good engine → refactor → `check`. A clean
 run prints `✓ no behavioral changes`; a dirty run lists NEW / REMOVED / CHANGED
@@ -121,6 +168,17 @@ skills with the exact fields that moved, e.g.
 | `--scene <SceneName>` | Roster scene (default: active / Training Ground). |
 | `--goldens <path>` | Golden file (default `goldens/skills.json`). |
 | `--json` | Machine-readable `check` output (for CI/piping). |
+| `--no-deps-reuse` | Cache-bust the harness modules per skill (pre-2026-08-08 path, ~12× slower). Escape hatch if module reuse is ever suspected of leaking state between skills. |
+
+⚠ `--goldens` defaults **per mode** (`skills.json` for compute,
+`skills-simulate.json` for simulate). It used to default to `skills.json`
+regardless, so a `capture --mode simulate` that omitted `--goldens` overwrote the
+compute baseline — the one every `check` and the Stop-hook gate depend on.
+
+⚠ The **simulate** golden is not fully deterministic: skills that pick a random
+status (e.g. `Hina / Draconic Roar`, Enraged vs Poisoned) differ between two runs
+of the *same* code. Forced dice pin the attack roll, not that pick. Compute mode —
+what the gate uses — is stable.
 
 ## How it works
 
