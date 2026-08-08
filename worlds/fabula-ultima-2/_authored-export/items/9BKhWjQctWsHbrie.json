@@ -8,6 +8,63 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "J6mCNcQJVFan1ic6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786213938004,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "condition_hypothermia",
+          "mode": 5,
+          "priority": null,
+          "value": "${isEquipped ? \"IM\" : \"NA\"}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "J6mCNcQJVFan1ic6",
+          "originalParentId": "9BKhWjQctWsHbrie",
+          "originalUuid": "Item.9BKhWjQctWsHbrie.ActiveEffect.J6mCNcQJVFan1ic6"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "name": "Winter Kolossus — Hypothermia Immunity",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
@@ -69,6 +126,7 @@
       "celestial_ef": "100",
       "check": "Check",
       "check_bonus": "0",
+      "condition_hypothermia": "",
       "construct_ef": "100",
       "damage_bonus": "18",
       "demiHuman_ef": "100",
@@ -99,8 +157,8 @@
       "item_baseDef": "0",
       "item_baseMdef": "0",
       "item_cost": "2550",
-      "item_def_bonus": "0",
-      "item_mdef_bonus": "0",
+      "item_def_bonus": "1",
+      "item_mdef_bonus": "1",
       "item_quantity": "1",
       "item_rarity": "Rare",
       "item_type": "weapon",

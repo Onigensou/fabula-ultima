@@ -5204,7 +5204,7 @@
         "id": "999BdRk7rsWKxGJr",
         "name": "Enchanted Delayed Blast Remote",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "PjTYcvt9L33XCWZG",
@@ -12500,7 +12500,7 @@
         "id": "9BKhWjQctWsHbrie",
         "name": "Winter Kolossus",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "oGop1MLCHPzdpdR5",

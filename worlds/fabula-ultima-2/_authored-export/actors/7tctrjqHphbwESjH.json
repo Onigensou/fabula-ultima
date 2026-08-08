@@ -1716,6 +1716,63 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "ZnRi5pIAURXhfFQw",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786213832078,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_brawling",
+              "mode": 2,
+              "priority": null,
+              "value": "${isEquipped ? 5 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ZnRi5pIAURXhfFQw",
+              "originalParentId": "GhYdiyt6lqlWnjU7",
+              "originalUuid": "Actor.7tctrjqHphbwESjH.Item.GhYdiyt6lqlWnjU7.ActiveEffect.ZnRi5pIAURXhfFQw"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bel.png",
+          "name": "Black Belt",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
@@ -3247,6 +3304,63 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "vU5EzoinUzqZhOxg",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786213939518,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "condition_hypothermia",
+              "mode": 5,
+              "priority": null,
+              "value": "${isEquipped ? \"IM\" : \"NA\"}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "vU5EzoinUzqZhOxg",
+              "originalParentId": "pJ8JzhqwwjLLht9x",
+              "originalUuid": "Actor.7tctrjqHphbwESjH.Item.pJ8JzhqwwjLLht9x.ActiveEffect.vU5EzoinUzqZhOxg"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+          "name": "Winter Kolossus — Hypothermia Immunity",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "core": {
           "sourceId": "Item.9BKhWjQctWsHbrie"
@@ -3269,10 +3383,13 @@
           "category": "Heavy",
           "check": "Check",
           "check_bonus": "0",
+          "condition_hypothermia": "",
           "cost": "2550",
           "damage_bonus": "18",
           "description": "<ul>\n<li>You gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong></li>\n<li>You have <strong>immunity</strong> to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/northerlies.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia}&nbsp;</strong></li>\n</ul>",
           "hand_slots": "Two-handed",
+          "item_def_bonus": "1",
+          "item_mdef_bonus": "1",
           "martial": true,
           "name": "Winter Kolossus",
           "rolled_atr1": "MIG",

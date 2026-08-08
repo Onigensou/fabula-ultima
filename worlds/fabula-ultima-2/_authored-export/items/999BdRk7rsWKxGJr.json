@@ -8,6 +8,81 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "CZ3H3uUO0hhEjSYv",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786213833739,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "CZ3H3uUO0hhEjSYv",
+          "originalParentId": "999BdRk7rsWKxGJr",
+          "originalUuid": "Item.999BdRk7rsWKxGJr.ActiveEffect.CZ3H3uUO0hhEjSYv"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "consume_amount": "5",
+                "consume_resource": "hp",
+                "effect_kind": "consume_resource",
+                "effect_label": "edbr_bleed",
+                "on_empty": "drain",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "name": "Enchanted Delayed Blast Remote",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "IS_MY_TURN == 0",
+                "reaction_effect_ref": "edbr_bleed",
+                "reaction_passive_mode": "on",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_deals_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/commodities/tech/detonator-radio.webp",
+      "name": "Enchanted Delayed Blast Remote",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.4.2"
