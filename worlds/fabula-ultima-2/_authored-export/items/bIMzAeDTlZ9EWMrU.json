@@ -41,10 +41,18 @@
     "container": null,
     "props": {
       "description": "<ul><li>Learned how to create <strong>Blue Bovine</strong> with <strong>2 IP</strong></li></ul>",
-      "ip_cost": "0",
+      "ip_cost": "2",
       "item_cost": "450",
-      "item_type": "consumable",
-      "name": "Blue Bovine Recipe"
+      "item_type": "recipe",
+      "name": "Blue Bovine Recipe",
+      "related_item_list": {
+        "prSMefjNTAYuT2Md": {
+          "id": "${item.id}",
+          "name": "Blue Bovine",
+          "related_item_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12).</em></p></li></ul>",
+          "uuid": "Item.prSMefjNTAYuT2Md"
+        }
+      }
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

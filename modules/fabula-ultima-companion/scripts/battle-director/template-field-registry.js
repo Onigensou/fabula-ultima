@@ -33,6 +33,9 @@ const TGT_VIS = `equalText(sameRow("effect_kind",''), "targeting")`;
 const APPLY_AE_VIS = `equalText(sameRow("effect_kind",''), "apply_ae")`;
 const KEYWORD_VIS = `equalText(sameRow("effect_kind",''), "apply_action_keyword")`;
 const CONSUME_RES_VIS = `equalText(sameRow("effect_kind",''), "consume_resource")`;
+// consume_item — spend one unit of a carried consumable (Life Charm spends
+// itself when its death-save fires). The permanent twin of hide_item.
+const CONSUME_ITEM_VIS = `equalText(sameRow("effect_kind",''), "consume_item")`;
 // adjust_charges — charge arithmetic on a target's named charge-AE.
 const ADJUST_CHARGES_VIS = `equalText(sameRow("effect_kind",''), "adjust_charges")`;
 // trigger_status — fire a charge-based status's own tick N× on the target(s).
@@ -137,6 +140,12 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   checkboxCol("damage_ignore_affinity", "Ignore Affinity", { tooltip: "deal_damage lands flat — skips RS/VU/IM/AB + condition-forced VU (for fixed/'true' damage like an opposed-check consequence). DR/shield still apply.", vis: DEAL_VIS }),
   textCol("damage_keywords", "Damage Keywords", { tooltip: "Comma-separated action keywords carried by THIS damage instance (the effect-damage counterpart of a weapon's action_keywords). Currently read: crush = damage cannot be reduced (skips flat + % DR, a reducing weapon-efficiency, and a <1 damage_taken_mult) and ignores Immunity (RS and IM read as NE). VU/AB and damage-increasing axes still apply; shields still absorb.", vis: DEAL_VIS }),
   checkboxCol("consume_can_defeat", "Can Defeat Target", { tooltip: "consume_resource: report an HP debit from this row to the battle director so the settle's Crisis and Defeat reactors fire — i.e. this loss can knock the target out. A plain consume writes HP silently, so it can empty the HP bar without ever KO-ing (Crisis still lands via the standing updateActor hook; Defeat does not, because auto-defeat is NPC-only). Turn ON for 'you lose X HP' curses (Cursed Sword); leave OFF for ordinary costs, which should never defeat their payer. To also let the debit take the LAST points instead of refusing when the target is short, set On Empty = drain — that is a separate control.", vis: CONSUME_RES_VIS }),
+  // consume_item config — which carried item gets spent. Default subject is the
+  // firing skill's container (a gear's linked _skill consumes its own gear), but
+  // an AE-carried reaction has no firing skill (resolveDamageReactions runs
+  // follow-ups with skill:null), so those MUST name their item. Life Charm.
+  textCol("consume_item_name", "Consume Item Name", { tooltip: "consume_item: name of the carried item to spend one unit of (case-insensitive). Required when the row fires from an AE, which has no firing skill to infer a container from. Blank = fall back to Consume Item Id, then the firing skill's container item.", vis: CONSUME_ITEM_VIS }),
+  textCol("consume_item_id", "Consume Item Id", { tooltip: "consume_item: exact item id to spend, when a name would be ambiguous. Takes precedence over Consume Item Name.", vis: CONSUME_ITEM_VIS }),
   selectCol("damage_cause", "Damage Cause", [
     { key: "hazard", value: "Hazard (Burn/Poison/environment — not an attack)" },
     { key: "damage", value: "Damage (creature-inflicted — counts as an attack)" },

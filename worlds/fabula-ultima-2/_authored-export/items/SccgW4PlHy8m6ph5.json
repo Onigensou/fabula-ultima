@@ -8,6 +8,99 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "NRGrqxKBhfKDmNK5",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786223250908,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "NRGrqxKBhfKDmNK5",
+          "originalParentId": "SccgW4PlHy8m6ph5",
+          "originalUuid": "Item.SccgW4PlHy8m6ph5.ActiveEffect.NRGrqxKBhfKDmNK5"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "lifecharm_cap,lifecharm_heal,lifecharm_spend",
+                "effect_kind": "chain",
+                "effect_label": "lifecharm_save"
+              },
+              "1": {
+                "damage_amount": "CUR_HP - 1",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "lifecharm_cap",
+                "modify_mode": "set_hp_floor",
+                "modify_value": 1
+              },
+              "2": {
+                "effect_kind": "grant",
+                "effect_label": "lifecharm_heal",
+                "grant_amount": "floor(MAX_HP / 2) - 1",
+                "grant_resource": "hp",
+                "target_ref": "self"
+              },
+              "3": {
+                "consume_item_name": "Life Charm",
+                "effect_kind": "consume_item",
+                "effect_label": "lifecharm_spend"
+              }
+            },
+            "name": "Life Charm",
+            "reaction_config_table": {
+              "0": {
+                "reaction_damage_outcome": "would_reduce_to_zero",
+                "reaction_effect_ref": "lifecharm_save",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "name": "Life Charm",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"

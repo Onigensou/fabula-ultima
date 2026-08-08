@@ -8,6 +8,72 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "0U9leEVT1SvQnDvg",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786222892754,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "${isEquipped ? (((equalText(fetchFromParent('emotion_1_1'),'admiration') or equalText(fetchFromParent('emotion_1_2'),'admiration') or equalText(fetchFromParent('emotion_1_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_2_1'),'admiration') or equalText(fetchFromParent('emotion_2_2'),'admiration') or equalText(fetchFromParent('emotion_2_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_3_1'),'admiration') or equalText(fetchFromParent('emotion_3_2'),'admiration') or equalText(fetchFromParent('emotion_3_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_4_1'),'admiration') or equalText(fetchFromParent('emotion_4_2'),'admiration') or equalText(fetchFromParent('emotion_4_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_5_1'),'admiration') or equalText(fetchFromParent('emotion_5_2'),'admiration') or equalText(fetchFromParent('emotion_5_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_6_1'),'admiration') or equalText(fetchFromParent('emotion_6_2'),'admiration') or equalText(fetchFromParent('emotion_6_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_temp_1'),'admiration') or equalText(fetchFromParent('emotion_temp_2'),'admiration') or equalText(fetchFromParent('emotion_temp_3'),'admiration') ? 1 : 0)) >= 2 ? 1 : 0) : 0}$"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "${isEquipped ? (((equalText(fetchFromParent('emotion_1_1'),'admiration') or equalText(fetchFromParent('emotion_1_2'),'admiration') or equalText(fetchFromParent('emotion_1_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_2_1'),'admiration') or equalText(fetchFromParent('emotion_2_2'),'admiration') or equalText(fetchFromParent('emotion_2_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_3_1'),'admiration') or equalText(fetchFromParent('emotion_3_2'),'admiration') or equalText(fetchFromParent('emotion_3_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_4_1'),'admiration') or equalText(fetchFromParent('emotion_4_2'),'admiration') or equalText(fetchFromParent('emotion_4_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_5_1'),'admiration') or equalText(fetchFromParent('emotion_5_2'),'admiration') or equalText(fetchFromParent('emotion_5_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_6_1'),'admiration') or equalText(fetchFromParent('emotion_6_2'),'admiration') or equalText(fetchFromParent('emotion_6_3'),'admiration') ? 1 : 0) + (equalText(fetchFromParent('emotion_temp_1'),'admiration') or equalText(fetchFromParent('emotion_temp_2'),'admiration') or equalText(fetchFromParent('emotion_temp_3'),'admiration') ? 1 : 0)) >= 2 ? 1 : 0) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "0U9leEVT1SvQnDvg",
+          "originalParentId": "y8noOLFXVNhH9Ubp",
+          "originalUuid": "Item.y8noOLFXVNhH9Ubp.ActiveEffect.0U9leEVT1SvQnDvg"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
+      "name": "Ring of the Pupil",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"

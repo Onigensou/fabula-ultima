@@ -3858,6 +3858,7 @@ const EFFECT_KIND_DISPATCH = {
   deal_damage:         dealDamageRun,        // UNIFIED (see dealDamageRun)
   equip_swap:          applyEquipSwapEffect,
   hide_item:           applyHideItemEffect,
+  consume_item:        applyConsumeItemEffect,
   encyclopedia_record: applyEncyclopediaRecordEffect,
   notify:              applyNotifyEffect,
   adjust_damage:       (row) => ({ ok: true, kind: "adjust_damage", applied: [], reason: "data-only" }),
@@ -3984,6 +3985,7 @@ export const EFFECT_KIND_LABELS = {
   deal_damage:         "Deal Damage",
   equip_swap:          "Equip Swap",
   hide_item:           "Hide Item (unequip + vanish from inventory until battle end — Encyclopedia)",
+  consume_item:        "Consume Item (spend one unit of a carried consumable — Life Charm)",
   encyclopedia_record: "Encyclopedia Record",
   notify:              "Notify (show a message — stub / info)",
   adjust_damage:       "Adjust Damage",
@@ -6623,6 +6625,58 @@ async function applyHideItemEffect(row, ctx) {
 
   log(`skill-effects.hide_item: ${actor.name} — "${item.name}" unequipped + hidden until battle end`);
   return { ok: true, kind: "hide_item", applied: [{ actor: actor.uuid, itemId: item.id, itemName: item.name }] };
+}
+
+// consume_item — spend ONE unit of a carried consumable. The permanent twin of
+// hide_item: where hide_item vanishes an item until battle end, this uses it up.
+//
+// Delegates the actual spend to item-resource.consumeOne, the same routine the
+// normal "drink a potion" flow uses, so the three rules stay in one place:
+// isUnique is never consumed, qty > 1 decrements, qty <= 1 deletes the item.
+//
+// Item resolution mirrors hide_item (explicit id → explicit name → the firing
+// skill's container). ⚠ An AE-CARRIED reaction has no firing skill —
+// resolveDamageReactions runs its follow-ups with `skill: null` — so those rows
+// must carry consume_item_name. Life Charm is the canonical use: a trinket that
+// saves you from a killing blow and is spent doing it.
+async function applyConsumeItemEffect(row, ctx) {
+  const actor = ctx.reactorActor;
+  if (!actor) return { ok: false, kind: "consume_item", reason: "no-actor" };
+
+  let item = null;
+  const explicitId = String(row.consume_item_id ?? "").trim();
+  const explicitName = String(row.consume_item_name ?? "").trim().toLowerCase();
+  if (explicitId) item = actor.items?.get?.(explicitId) ?? null;
+  if (!item && explicitName) {
+    item = actor.items?.find?.((i) => String(i.name ?? "").trim().toLowerCase() === explicitName) ?? null;
+  }
+  if (!item) {
+    const containerId = String(ctx.skill?.system?.container ?? "").trim();
+    if (containerId) item = actor.items?.get?.(containerId) ?? null;
+  }
+  if (!item) {
+    warn(`skill-effects.consume_item: no item to consume on ${actor.name}`);
+    return { ok: false, kind: "consume_item", reason: "no-item" };
+  }
+
+  try {
+    const { consumeOne } = await import("./item-resource.js");
+    const res = await consumeOne(actor, item);
+    if (!res?.ok) {
+      warn(`skill-effects.consume_item: consumeOne refused "${item.name}" on ${actor.name} (${res?.reason})`);
+      return { ok: false, kind: "consume_item", reason: res?.reason ?? "consume-failed" };
+    }
+    log(`skill-effects.consume_item: ${actor.name} spent "${item.name}"`
+      + (res.skipped ? ` (${res.reason})` : ` — ${res.before} → ${res.after}${res.deleted ? " (removed)" : ""}`));
+    return {
+      ok: true, kind: "consume_item",
+      applied: [{ actor: actor.uuid, itemId: item.id, itemName: item.name,
+        before: res.before ?? null, after: res.after ?? null, deleted: !!res.deleted, skipped: !!res.skipped }],
+    };
+  } catch (e) {
+    warn("skill-effects.consume_item: threw", e);
+    return { ok: false, kind: "consume_item", reason: "threw" };
+  }
 }
 
 // Counterpart to hide_item: bring back every item flagged `hiddenUntilBattleEnd`

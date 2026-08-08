@@ -3647,7 +3647,25 @@
         "effects": 0
       },
       {
+        "id": "6bkrtQQmXtzbAshK",
+        "name": "Blue Bovine",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "8X7a9arLtE8PNC73",
+        "name": "Blue Bovine",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "ZYHVemO7N3YJ5HZG",
+        "name": "Blue Bovine",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "prSMefjNTAYuT2Md",
         "name": "Blue Bovine",
         "type": "equippableItem",
         "effects": 0
@@ -7526,7 +7544,7 @@
         "id": "SccgW4PlHy8m6ph5",
         "name": "Life Charm",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "jp5JDPhrhjBsFbYf",
@@ -10034,7 +10052,7 @@
         "id": "y8noOLFXVNhH9Ubp",
         "name": "Ring of the Pupil",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "MMW1CZcffq2u75Jm",
