@@ -3351,7 +3351,32 @@
           "isViewable": true
         },
         "fabula-ultima-companion": {
-          "charges": 1
+          "chargeKey": "envenomed",
+          "charges": 3,
+          "lifetimeMode": "target_turn_end",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "15",
+                "damage_element": "poison",
+                "damage_verbosity": "full",
+                "effect_kind": "deal_damage",
+                "effect_label": "envenomed_dmg",
+                "emit_status": "Envenomed",
+                "emit_trigger": "creature_status_triggered",
+                "target_ref": "self"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "envenomed_dmg",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
         },
         "statuscounter": {
           "config": {
