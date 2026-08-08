@@ -4328,7 +4328,7 @@
         "id": "fQHMX9fj319zUzBo",
         "name": "Cow Headband",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "SVGScNYCwihUiCwt",
@@ -4340,7 +4340,7 @@
         "id": "7YiTpUTatrTKFyjO",
         "name": "Cow Tail",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "PdMEWL0xZ4Hqg1D5",
@@ -8189,19 +8189,19 @@
         "effects": 0
       },
       {
-        "id": "2p8NT6NWuFcfHsAS",
-        "name": "Milk",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "3n2Y4FEZx1wQgGdn",
         "name": "Milk",
         "type": "equippableItem",
         "effects": 0
       },
       {
-        "id": "KjtlTV9wda3DR3Kx",
+        "id": "9oUa4nQDBiwVU4PS",
+        "name": "Milk",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "EJcblwkRuzPBWccl",
         "name": "Milk",
         "type": "equippableItem",
         "effects": 0
@@ -8219,19 +8219,13 @@
         "effects": 0
       },
       {
-        "id": "eUgvLkrkhHpztN2w",
+        "id": "dZyFjTWZu15QdVMW",
         "name": "Milk",
         "type": "equippableItem",
         "effects": 0
       },
       {
-        "id": "gjtG88U4boGSY4CQ",
-        "name": "Milk",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "rXreTFuqguf7ZiW2",
+        "id": "galm7gzpDviwDQjE",
         "name": "Milk",
         "type": "equippableItem",
         "effects": 0
@@ -8243,8 +8237,8 @@
         "effects": 0
       },
       {
-        "id": "wn5NRP955txSJhYm",
-        "name": "Milk",
+        "id": "HoYNx4FuvfSypstS",
+        "name": "Milk Recipe",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8263,6 +8257,12 @@
       {
         "id": "seumBxHYbWkD4puo",
         "name": "Minotaurus Axe",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "A7pZnKkWvw9WRd0C",
+        "name": "Minotaurus Axe (Passive)",
         "type": "equippableItem",
         "effects": 0
       },

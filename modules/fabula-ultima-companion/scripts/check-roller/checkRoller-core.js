@@ -179,8 +179,11 @@
     // Ensure result object exists
     p.result = typeof p.result === "object" && p.result ? p.result : {};
 
-    // Inject actor check modifiers (check_mod_all + context-specific)
-    const _actorMods = globalThis.ONI?.CheckModifiers?.resolve?.(actor, p?.check?.context ?? null) ?? [];
+    // Inject actor check modifiers (check_mod_all + context-specific + the
+    // rolled attribute pair, which `check.attrs` already carries as [A, B])
+    const _actorMods = globalThis.ONI?.CheckModifiers?.resolve?.(
+      actor, p?.check?.context ?? null, { attributes: p?.check?.attrs ?? null },
+    ) ?? [];
     if (_actorMods.length) {
       p.check = p.check ?? {};
       p.check.modifier = p.check.modifier ?? {};

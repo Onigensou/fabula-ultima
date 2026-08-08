@@ -4717,6 +4717,19 @@ const Confirm = {
             weaponType: ar.weapon?.weaponType ?? null,
             weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
             affinity: entry.affinity,
+            // HIT_MARGIN at the PRE-damage window, same computation as the
+            // post-damage `creature_deals_damage` payload. Without it, "Conquer
+            // N" could only ever apply a STATUS: the margin arrived after the
+            // damage was already dealt, so a Conquer-gated DAMAGE rider had
+            // nothing to gate on and every such item was filed as blocked
+            // (Minotaurus Axe: "Conquer 5 — deals 10% of your Max HP as bonus
+            // damage"). The accuracy total and this target's defense are both
+            // known here; only the plumbing was missing.
+            hitMargin: (Number(ar.roll?.total ?? 0) || 0) - (Number(entry.defense ?? 0) || 0),
+            // Same rationale for the check total — ATTACK_CHECK_RESULT ("Snipe N")
+            // reads `checkTotal`, which was stamped on the post-damage payload
+            // only, so a Snipe-gated damage rider read 0 here.
+            checkTotal: Number(ar.roll?.total ?? 0) || 0,
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
             sourceActorUuid: ar.attackerActorRef,
             actionIntent: ar.actionIntent,

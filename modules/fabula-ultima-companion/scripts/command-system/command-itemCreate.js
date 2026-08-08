@@ -380,6 +380,24 @@
     return entries;
   }
 
+  // A recipe that lives INSIDE a piece of gear (`system.container` → a sibling
+  // item) is knowledge the gear confers, so it is only known while that gear is
+  // EQUIPPED — "you can create 【Milk】 with 1 IP" on the Cow Print Bikini stops
+  // being true the moment you take the bikini off. This is the recipe-side
+  // equivalent of the equip-toggled transfer AE that gates every other gear
+  // effect, and it keeps the behaviour off the gear's own props.
+  //
+  // Fails OPEN: a free-standing recipe (no container) and a recipe whose
+  // container can't be resolved both stay known, so this can only ever hide a
+  // recipe that is provably inside gear that is provably off.
+  function recipeIsUnlocked(recipeItem, actor) {
+    const containerId = safeString(recipeItem?.system?.container);
+    if (!containerId) return true;
+    const gear = actor?.items?.get?.(containerId);
+    if (!gear) return true;
+    return getProps(gear).isEquipped === true;
+  }
+
   async function collectRecipeDocsFromActor(actor, sourceLabel = "actor") {
     const out = [];
 
@@ -388,6 +406,7 @@
     // A) Embedded recipe items directly owned by the actor.
     for (const item of Array.from(actor.items ?? [])) {
       if (!isRecipeItem(item)) continue;
+      if (!recipeIsUnlocked(item, actor)) continue;
 
       out.push({
         recipe: item,

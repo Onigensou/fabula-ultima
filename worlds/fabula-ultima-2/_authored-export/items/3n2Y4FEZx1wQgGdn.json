@@ -66,21 +66,13 @@
       "item_quantity": "1",
       "item_rarity": "Common",
       "item_skill_active": {
-        "2p8NT6NWuFcfHsAS": {
+        "dZyFjTWZu15QdVMW": {
           "id": "${item.id}",
           "name": "Milk",
           "skill_cost": "-",
-          "skill_description": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
+          "skill_description": "<ul><li><p>Target creature recovers <strong>30 HP</strong> and gains <strong>Strong</strong></p></li></ul>",
           "skill_maxLevel": 1,
-          "uuid": "Item.2p8NT6NWuFcfHsAS"
-        },
-        "rXreTFuqguf7ZiW2": {
-          "id": "${item.id}",
-          "name": "Milk",
-          "skill_cost": "-",
-          "skill_description": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
-          "skill_maxLevel": 1,
-          "uuid": ""
+          "uuid": "Item.dZyFjTWZu15QdVMW"
         }
       },
       "item_type": "consumable",

@@ -295,7 +295,7 @@ function computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice,
   // don't fold these today (parity).
   if (kind === "Attack" || kind === "Skill" || kind === "Spell" || (kind !== "Hinder" && kind !== "Study" && required)) {
     if (kind === "Attack" || accKind != null || required) {
-      const accParts = resolveAccuracyParts({ actor: liveAttacker, props, kind: accKind });
+      const accParts = resolveAccuracyParts({ actor: liveAttacker, props, kind: accKind, attrs: [A1, A2] });
       for (const p of accParts) { baseBonus += p.amount; bonusParts.push(p); }
     }
   }

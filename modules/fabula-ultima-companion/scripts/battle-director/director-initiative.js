@@ -66,30 +66,19 @@ function pcInitiativeProxy(actor) {
   return dex + ins + readPcInitiativeModifier(actor) + checkModInit;
 }
 
-// Tagged-check bonuses for the two ATTRIBUTES this check rolls: check_mod_dex +
-// check_mod_ins. Reuses the canonical ONI.CheckModifiers resolver so labels/logic
-// stay identical to every other check, but drops its check_mod_all part — the
-// Check Requester's silent path already adds check_mod_all once (via the "init"
-// checkContext below), so re-adding it here would double-count.
-function initiativeAttributeCheckMods(actor) {
-  const CM = globalThis.ONI?.CheckModifiers;
-  if (!CM?.resolve) return [];
-  const parts = [];
-  for (const ctx of ["dex", "ins"]) {
-    for (const p of (CM.resolve(actor, ctx) ?? [])) {
-      if (p?.label === "Check Bonus") continue; // the check_mod_all part (added once by CR)
-      if (p?.value) parts.push(p);
-    }
-  }
-  return parts;
-}
+// NOTE: the check_mod_dex / check_mod_ins pair used to be assembled here by
+// hand, because the resolver only understood a single context key. It now takes
+// the rolled attributes directly and the Check Requester's silent path passes
+// them, so this local helper was deleted — keeping it would double-count every
+// attribute-scoped bonus on the initiative roll.
 
 // Roll ONE silent DEX+INS check for `actor` at `dl`. Even though it runs backend,
 // this is a real CHECK, so it honours the full tagged-modifier stack:
 //   • RAW Initiative modifier   — armor penalty (-init_penalty), added here.
 //   • check_mod_all + check_mod_init — resolved by the CR silent path via
 //     context.checkContext = "init" (matches the actor's check_mod_init prop).
-//   • check_mod_dex + check_mod_ins  — the rolled attributes, added here.
+//   • check_mod_dex + check_mod_ins  — the rolled attributes; the CR silent
+//     path adds these from the attrA/attrB pair below.
 //   • equipped-gear check_buff       — via checkBuffActions:["initiative"].
 //   • attribute die-size buffs/debuffs — already baked into dex_current/ins_current.
 // Plus any `extraMods` (e.g. the leader's helper bonus). Returns the CheckResult
@@ -100,7 +89,6 @@ async function rollInitiativeCheck(actor, dl, extraMods = []) {
   const modifiers = [];
   const initMod = readPcInitiativeModifier(actor);
   if (initMod !== 0) modifiers.push({ label: "Initiative", value: initMod });
-  modifiers.push(...initiativeAttributeCheckMods(actor));
   for (const m of extraMods) if (m && m.value) modifiers.push(m);
   const results = await CR.request([actor], {
     attrA: "DEX", attrB: "INS",

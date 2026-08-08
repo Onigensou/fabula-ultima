@@ -264,6 +264,12 @@ function ensureStyles() {
       font-weight: 800; letter-spacing: 0.4px;
       padding: 1px 5px; border-radius: 4px;
       background: rgba(40, 30, 18, 0.14); color: #4a3208;
+      /* The pill is one token. Without this it breaks at the "+" and renders as
+         "MIG" on one line and "+ MIG" on the next, which reads as two separate
+         values — and the extra line is what pushed a blocked row's stamp down
+         onto its own meta text. */
+      white-space: nowrap;
+      display: inline-block;
     }
     .fud-lp-card .fud-lp-option .primary .source-tag { font-size: 10px; opacity: 0.8; }
     .fud-lp-card .fud-lp-option .fud-lp-badge {

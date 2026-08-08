@@ -349,7 +349,12 @@
       const dieB     = singleDie ? dieA : getDieSize(actor, attrB);
       const rollA    = await rollDie(dieA);
       const rollB    = singleDie ? rollA : await rollDie(dieB);
-      const actorMods = globalThis.ONI?.CheckModifiers?.resolve?.(actor, context?.checkContext ?? null) ?? [];
+      // `attributes` = the dice this check actually rolls, so attribute-scoped
+      // gear ("+1 to checks that require the MIG die") applies. singleDie rolls
+      // attrA twice; resolve() dedupes either way.
+      const actorMods = globalThis.ONI?.CheckModifiers?.resolve?.(
+        actor, context?.checkContext ?? null, { attributes: singleDie ? [attrA] : [attrA, attrB] },
+      ) ?? [];
       const buffMods  = await resolveEquippedCheckBuffMods(actor, opts.checkBuffActions);
       const modParts = [...actorMods, ...buffMods, ...(modifiers ?? [])];
       const computed = computeCheck(rollA, rollB, modParts, dl, singleDie);
@@ -1241,7 +1246,10 @@
     if (!st) return;
     const actor = await resolveActor(st.actorUuid);
     if (!actor || !_session || _session.sessionId !== ses.sessionId) return;
-    const mods = globalThis.ONI?.CheckModifiers?.resolve?.(actor, ses.opts?.context?.checkContext ?? null) ?? [];
+    const mods = globalThis.ONI?.CheckModifiers?.resolve?.(
+      actor, ses.opts?.context?.checkContext ?? null,
+      { attributes: st.singleDie ? [st.attrA] : [st.attrA, st.attrB] },
+    ) ?? [];
     if (!mods.length) return;
     st.modifierParts = [...mods, ...(st.modifierParts ?? [])];
     syncPanel(slot);

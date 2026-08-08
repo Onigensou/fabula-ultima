@@ -1,0 +1,78 @@
+{
+  "_id": "A7pZnKkWvw9WRd0C",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786194618550,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/MinotaurAxe.png",
+  "name": "Minotaurus Axe (Passive)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "seumBxHYbWkD4puo",
+    "props": {
+      "active_effect_config_table": {},
+      "description": "<p>Equipped passive: when an attack with this weapon beats the target's Defense by <strong>5</strong> or more (<strong>Conquer 5</strong>), it deals bonus damage equal to <strong>10% of your Max HP</strong>.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "damage_amount": "floor(MAX_HP * 0.1)",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "minotaur_conquer"
+        }
+      },
+      "max_level": "1",
+      "name": "Minotaurus Axe (Passive)",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HIT_MARGIN >= 5 && DAMAGE_IS_HP == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "minotaur_conquer",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": true,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_will_deal_damage",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "MIG",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2788278387,
+    "unique": false,
+    "uniqueId": "A7pZnKkWvw9WRd0C"
+  },
+  "type": "equippableItem"
+}

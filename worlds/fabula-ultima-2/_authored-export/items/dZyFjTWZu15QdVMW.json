@@ -1,0 +1,78 @@
+{
+  "_id": "dZyFjTWZu15QdVMW",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786194611962,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/CowHeadband.png",
+  "name": "Milk",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "3n2Y4FEZx1wQgGdn",
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>Target creature recovers <strong>30 HP</strong> and gains <strong>Strong</strong></p></li></ul>",
+      "details_roller": "Show",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "milk_heal,milk_strong",
+          "effect_kind": "chain",
+          "effect_label": "milk_use"
+        },
+        "1": {
+          "effect_kind": "grant",
+          "effect_label": "milk_heal",
+          "grant_amount": "30",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Strong",
+          "effect_kind": "apply_ae",
+          "effect_label": "milk_strong",
+          "target_ref": "action_targets"
+        }
+      },
+      "level": "1",
+      "max_level": "1",
+      "name": "Milk",
+      "on_activate_effect_ref": "milk_use",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_tags": "potion",
+      "skill_target": "One Creature",
+      "skill_type": "Item"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2788278387,
+    "unique": false,
+    "uniqueId": "dZyFjTWZu15QdVMW"
+  },
+  "type": "equippableItem"
+}

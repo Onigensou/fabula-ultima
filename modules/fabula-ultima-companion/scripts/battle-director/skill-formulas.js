@@ -2819,14 +2819,30 @@ export function attributeModParts({ actor, key, total, label, sign = 1 } = {}) {
 //                         every attack kind below. Use this for "+N Accuracy"
 //                         gear (Spectacles, Diver Goggle) — NOT check_mod_all.
 //   check_mod_melee/ranged/magic → per-range refinement of attacks of that kind.
+//   check_mod_<attr>    → the ATTRIBUTE DICE this attack rolls (mig/dex/ins/wlp),
+//                         passed in as `attrs`. An accuracy check IS a check, so
+//                         "+1 to all checks that require the 【MIG】 die" (Cow
+//                         Headband) has to reach a MIG weapon's attack too — not
+//                         just Check-Requester rolls. Mirrors the same option on
+//                         ONI.CheckModifiers.resolve. ⚠ Read from actor FLAGS,
+//                         not props, unlike every other key here — the four
+//                         attribute keys are not declared on the CSB actor
+//                         template, and CSB drops an AE that targets an
+//                         undeclared prop. See checkModifiers.js for the full
+//                         rationale; keep the two readers in step.
 // `skill_accuracy` is intentionally absent (already in weapon.checkBonus,
 // see header). Pass `actor` to get per-skill source names; `props` alone
 // falls back to the generic label.
-export function resolveAccuracyParts({ actor = null, props = null, kind = null } = {}) {
+const _CHECK_ATTRS = new Set(["mig", "dex", "ins", "wlp"]);
+
+export function resolveAccuracyParts({ actor = null, props = null, kind = null, attrs = null } = {}) {
   const p = props ?? actor?.system?.props ?? null;
   if (!p) return [];
   const parts = [];
+  const seen = new Set();
   const add = (key, label) => {
+    if (seen.has(key)) return;   // a MIG+MIG weapon must not add check_mod_mig twice
+    seen.add(key);
     const total = _mnum(p[key]);
     if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label }));
   };
@@ -2835,6 +2851,15 @@ export function resolveAccuracyParts({ actor = null, props = null, kind = null }
   if (kind === "melee")  add("check_mod_melee",  "Check (Melee)");
   if (kind === "ranged") add("check_mod_ranged", "Check (Ranged)");
   if (kind === "magic")  add("check_mod_magic",  "Check (Magic)");
+  for (const raw of attrs ?? []) {
+    const a = String(raw ?? "").trim().toLowerCase();
+    if (!_CHECK_ATTRS.has(a)) continue;
+    const key = `check_mod_${a}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const total = _mnum(actor?.flags?.["fabula-ultima-companion"]?.[key]);
+    if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label: `Check (${a.toUpperCase()})` }));
+  }
   return parts;
 }
 
