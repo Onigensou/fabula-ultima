@@ -48,8 +48,7 @@
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
             "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.b6sdLfSJCpnMFPGJ",
-            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
-            "turnsRemaining": null
+            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM"
           },
           "directorPermanent": true
         },
@@ -110,8 +109,7 @@
             "effectLabel": "dance_apply",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
             "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.b6sdLfSJCpnMFPGJ",
-            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
-            "turnsRemaining": null
+            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5"
           },
           "directorPermanent": true
         },

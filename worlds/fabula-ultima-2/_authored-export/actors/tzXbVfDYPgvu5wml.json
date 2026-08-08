@@ -45,8 +45,7 @@
           "directorAppliedBy": {
             "reactorActorUuid": "Actor.tzXbVfDYPgvu5wml",
             "reactorTokenUuid": null,
-            "skillUuid": "Actor.tzXbVfDYPgvu5wml.Item.v56GvN63nvIYV4iJ",
-            "turnsRemaining": null
+            "skillUuid": "Actor.tzXbVfDYPgvu5wml.Item.v56GvN63nvIYV4iJ"
           },
           "directorPermanent": true,
           "lifetimeMode": "persistent_counter",
@@ -2849,7 +2848,8 @@
             "fabula-ultima-companion": {
               "chargeKey": "prophecy",
               "charges": 1,
-              "chargesMax": 1
+              "chargesMax": 1,
+              "lifetimeMode": "persistent_counter"
             },
             "statuscounter": {
               "config": {
@@ -6204,7 +6204,8 @@
             "fabula-ultima-companion": {
               "chargeKey": "lucky_seven",
               "charges": 1,
-              "chargesMax": 1
+              "chargesMax": 1,
+              "lifetimeMode": "persistent_counter"
             },
             "statuscounter": {
               "config": {

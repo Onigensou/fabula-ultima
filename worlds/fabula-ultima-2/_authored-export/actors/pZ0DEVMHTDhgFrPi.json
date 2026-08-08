@@ -994,7 +994,8 @@
             "fabula-ultima-companion": {
               "chargeKey": "protect",
               "charges": 1,
-              "chargesMax": 1
+              "chargesMax": 1,
+              "lifetimeMode": "persistent_counter"
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",

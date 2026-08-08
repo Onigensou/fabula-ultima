@@ -465,7 +465,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "chargesMax": 1,
-              "crossScene": false
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
             },
             "statuscounter": {
               "config": {

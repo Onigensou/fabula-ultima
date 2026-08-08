@@ -172,8 +172,7 @@
           "directorAppliedBy": {
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
             "reactorTokenUuid": null,
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
-            "turnsRemaining": null
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ"
           },
           "directorPermanent": true,
           "hudResourceColor": "#ff6a00",
@@ -425,8 +424,7 @@
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
             "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.dMVPDtC1ouX0KF31",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-            "turnsRemaining": null
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF"
           },
           "directorPermanent": true
         },
@@ -13092,7 +13090,8 @@
             "fabula-ultima-companion": {
               "chargeKey": "lucky_seven",
               "charges": 1,
-              "chargesMax": 1
+              "chargesMax": 1,
+              "lifetimeMode": "persistent_counter"
             },
             "statuscounter": {
               "config": {

@@ -3065,6 +3065,7 @@
         "fabula-ultima-companion": {
           "charges": 1,
           "chargesMax": 1,
+          "lifetimeMode": "persistent_counter",
           "reciprocalAe": "Grappling"
         },
         "statuscounter": {

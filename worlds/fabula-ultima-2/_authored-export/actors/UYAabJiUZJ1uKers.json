@@ -693,6 +693,7 @@
               "chargeKey": "shadowbringers",
               "charges": 1,
               "chargesMax": 3,
+              "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {
                   "0": {
@@ -1198,6 +1199,7 @@
               "chargeKey": "shadow_strike",
               "charges": 1,
               "chargesMax": 12,
+              "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {
                   "0": {

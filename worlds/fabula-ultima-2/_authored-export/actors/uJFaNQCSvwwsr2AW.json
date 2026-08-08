@@ -292,7 +292,8 @@
             "fabula-ultima-companion": {
               "chargeKey": "protect",
               "charges": 1,
-              "chargesMax": 1
+              "chargesMax": 1,
+              "lifetimeMode": "persistent_counter"
             },
             "statuscounter": {
               "config": {

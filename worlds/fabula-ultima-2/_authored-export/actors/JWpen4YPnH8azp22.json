@@ -45,8 +45,7 @@
           "directorAppliedBy": {
             "reactorActorUuid": "Actor.JWpen4YPnH8azp22",
             "reactorTokenUuid": null,
-            "skillUuid": "Actor.JWpen4YPnH8azp22.Item.hadpzctVFubNf69B",
-            "turnsRemaining": null
+            "skillUuid": "Actor.JWpen4YPnH8azp22.Item.hadpzctVFubNf69B"
           },
           "directorPermanent": true,
           "lifetimeMode": "persistent_counter",
@@ -1884,7 +1883,8 @@
             "fabula-ultima-companion": {
               "chargeKey": "lucky_seven",
               "charges": 1,
-              "chargesMax": 1
+              "chargesMax": 1,
+              "lifetimeMode": "persistent_counter"
             },
             "statuscounter": {
               "config": {

@@ -2773,18 +2773,18 @@ export async function tickDirectorAEsAtRoundEnd({ extraActors = [] } = {}) {
   return { swept, names };
 }
 
-// Tick down `turnsRemaining` on every AE in the world whose
+// Tick down the `charges` counter on every AE in the world whose
 // `directorAppliedBy.reactorActorUuid` matches the given applier. Called
 // from TurnStart.onEnter when the applier's next turn begins
 // (homebrew rule [[ae-default-3-turn-duration]]). AEs that reach 0 are
-// deleted in batch per owning actor. AEs with `turnsRemaining === null`
-// are explicit opt-outs (permanent) and are skipped.
+// deleted in batch per owning actor. AEs with NO charges counter are
+// scene-long (the sweep ends them) and are skipped.
 //
 // Returns `{ ticked: <number>, expired: [<aeName>] }` for logging.
 export async function tickDirectorAEsForApplier(applierActorUuid) {
   if (!applierActorUuid) return { ticked: 0, expired: [] };
   const deleteByActor = new Map();    // actorUuid -> Set<aeId>
-  const updateByActor = new Map();    // actorUuid -> [{_id, flags.fabula-ultima-companion.directorAppliedBy.turnsRemaining}]
+  const updateByActor = new Map();    // actorUuid -> [{_id, flags.fabula-ultima-companion.charges}]
   const expiredNames = [];
   let ticked = 0;
   for (const actor of collectDirectorAEBearers()) {
@@ -2792,13 +2792,18 @@ export async function tickDirectorAEsForApplier(applierActorUuid) {
       const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
       if (!stamp) continue;
       if (stamp.reactorActorUuid !== applierActorUuid) continue;
-      if (stamp.turnsRemaining == null) continue;  // explicit opt-out
-      // "target_turn_end" / "target_turn_start" AEs are owned by the bearer
-      // ticks, not the applier-turn-start tick — skip so they're not double-counted.
-      if (stamp.lifetimeMode === "target_turn_end" || stamp.lifetimeMode === "target_turn_start") continue;
-      const next = Number(stamp.turnsRemaining) - 1;
+      const mode = String(stamp.lifetimeMode ?? "").trim().toLowerCase();
+      // Bearer-keyed AEs belong to the bearer ticks, not this one — skip so
+      // they're not double-counted.
+      if (mode === "target_turn_end" || mode === "target_turn_start") continue;
+      // Modes that are not turn-ticked at all (charge pools, round-end, DoTs
+      // spent on activation, and the once-per-X gates now authored as
+      // persistent_counter) keep their charges until consumed or swept.
+      if (UNTICKED_LIFETIME_MODES.has(mode)) continue;
+      const upd = chargeTickFor(eff);
+      if (!upd) continue;              // no counter → permanent for this scene
       ticked += 1;
-      if (next <= 0) {
+      if (upd.__delete) {
         let set = deleteByActor.get(actor.uuid);
         if (!set) { set = new Set(); deleteByActor.set(actor.uuid, set); }
         set.add(eff.id);
@@ -2806,7 +2811,7 @@ export async function tickDirectorAEsForApplier(applierActorUuid) {
       } else {
         let arr = updateByActor.get(actor.uuid);
         if (!arr) { arr = []; updateByActor.set(actor.uuid, arr); }
-        arr.push({ _id: eff.id, [`flags.${FLAG_NS}.directorAppliedBy.turnsRemaining`]: next });
+        arr.push(upd);
       }
     }
   }
@@ -2831,7 +2836,7 @@ export async function tickDirectorAEsForApplier(applierActorUuid) {
   return { ticked, expired: expiredNames };
 }
 
-// Tick down `turnsRemaining` on every AE OWNED BY the given bearer whose
+// Tick down the `charges` counter on every AE OWNED BY the given bearer whose
 // lifetimeMode is "target_turn_end" — called from TURN_END for the actor whose
 // turn just ended. This is the "lasts N of the AFFECTED creature's turns,
 // decrement at the END of each of their turns" model used by the homebrew
@@ -2851,24 +2856,15 @@ export async function tickDirectorAEsForBearerTurnEnd(bearerActorUuid) {
     const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
     if (!stamp) continue;
     if (stamp.lifetimeMode !== "target_turn_end") continue;
-    // Charge-bearing target_turn_end AEs (Bleed): the VISIBLE charge IS the
-    // lifetime. Tick the token-badge count down at the END of each of the
+    // The charge IS the lifetime: tick it down at the END of each of the
     // bearer's turns and delete at 0, so the player watches 3 → 2 → 1 → gone.
-    // Re-application (ae_duplicate_mode "replace") resets the count to the
-    // template's charges. Action-gating Advanced Debuffs (Frightened/Silence/
-    // Confused/Disarmed/Berserk) carry no charges flag → fall through to the
-    // invisible turnsRemaining counter below.
-    const curCharges = eff.flags?.[FLAG_NS]?.charges;
-    if (curCharges != null) {
-      const next = Number(curCharges) - 1;
-      if (next <= 0) { deletes.push(eff.id); expiredNames.push(eff.name); }
-      else updates.push({ _id: eff.id, [`flags.${FLAG_NS}.charges`]: next });
-      continue;
-    }
-    if (stamp.turnsRemaining == null) continue;
-    const next = Number(stamp.turnsRemaining) - 1;
-    if (next <= 0) { deletes.push(eff.id); expiredNames.push(eff.name); }
-    else updates.push({ _id: eff.id, [`flags.${FLAG_NS}.directorAppliedBy.turnsRemaining`]: next });
+    // Re-application (ae_duplicate_mode "replace") resets it to the template's
+    // charges. A charge-less template (Confused/Disarmed) was seeded from its
+    // duration at apply time, so it ticks here too — same one counter.
+    const upd = chargeTickFor(eff);
+    if (!upd) continue;
+    if (upd.__delete) { deletes.push(eff.id); expiredNames.push(eff.name); }
+    else updates.push(upd);
   }
   try {
     if (updates.length) await actor.updateEmbeddedDocuments("ActiveEffect", updates);
@@ -2884,8 +2880,8 @@ export async function tickDirectorAEsForBearerTurnEnd(bearerActorUuid) {
 // TURN_START for the actor whose turn just began, BEFORE the turn_start reaction
 // window dispatches. Placement matters: a mark that expires this turn must be
 // gone before its own turn_start "transfer" prompt would appear (Searing Brand).
-// Charge-driven AEs decrement the visible charge (3 → 2 → 1 → gone) and re-apply
-// resets it; charge-less AEs fall back to the invisible turnsRemaining counter.
+// The charge IS the lifetime (3 → 2 → 1 → gone); re-apply resets it. A template
+// with no charges was seeded from its duration at apply time — same one counter.
 // AEs reaching 0 are deleted. Returns `{ ticked, expired: [names] }`.
 export async function tickDirectorAEsForBearerTurnStart(bearerActorUuid) {
   if (!bearerActorUuid) return { ticked: 0, expired: [] };
@@ -2898,17 +2894,10 @@ export async function tickDirectorAEsForBearerTurnStart(bearerActorUuid) {
     const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
     if (!stamp) continue;
     if (stamp.lifetimeMode !== "target_turn_start") continue;
-    const curCharges = eff.flags?.[FLAG_NS]?.charges;
-    if (curCharges != null) {
-      const next = Number(curCharges) - 1;
-      if (next <= 0) { deletes.push(eff.id); expiredNames.push(eff.name); }
-      else updates.push({ _id: eff.id, [`flags.${FLAG_NS}.charges`]: next });
-      continue;
-    }
-    if (stamp.turnsRemaining == null) continue;
-    const next = Number(stamp.turnsRemaining) - 1;
-    if (next <= 0) { deletes.push(eff.id); expiredNames.push(eff.name); }
-    else updates.push({ _id: eff.id, [`flags.${FLAG_NS}.directorAppliedBy.turnsRemaining`]: next });
+    const upd = chargeTickFor(eff);
+    if (!upd) continue;
+    if (upd.__delete) { deletes.push(eff.id); expiredNames.push(eff.name); }
+    else updates.push(upd);
   }
   try {
     if (updates.length) await actor.updateEmbeddedDocuments("ActiveEffect", updates);
@@ -2925,13 +2914,14 @@ export async function tickDirectorAEsForBearerTurnStart(bearerActorUuid) {
 // never gets another turn, the AE is stranded on the bearer until the conflict-
 // end sweep. This reaps exactly that stuck set: director-applied AEs whose
 // `directorAppliedBy.reactorActorUuid` is the departing actor AND that are
-// applier-turn-tied (default mode: turnsRemaining set + no explicit lifetimeMode).
+// applier-turn-tied (default mode: a charge counter + no explicit lifetimeMode).
 //
 // Deliberately NARROW — leaves alone everything that does NOT depend on the
 // applier's turns, so they're never wrongly dropped when the applier dies:
 //   - bearer-tied AEs (lifetimeMode "target_turn_end") — keyed to the victim;
-//   - round-end / charge-governed (lifetimeMode "round_end" / "on_activation");
-//   - permanent AEs (turnsRemaining == null).
+//   - round-end / charge-governed / once-per-X gates (lifetimeMode
+//     "round_end" / "on_activation" / "persistent_counter");
+//   - counter-less AEs (no `charges` — scene-long until the sweep).
 // Target-resident DoTs (Burn = charge/on_activation, etc.) are therefore NOT reaped.
 //
 // GM-authoritative (driven by the director, which is GM-only). Returns
@@ -2945,7 +2935,8 @@ export async function reapApplierTiedAEs(applierActorUuid) {
       const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
       if (!stamp) continue;
       if (stamp.reactorActorUuid !== applierActorUuid) continue;
-      if (stamp.turnsRemaining == null) continue;   // permanent / charge / round-end → not applier-tied
+      if (eff.flags?.[FLAG_NS]?.charges == null) continue;  // no counter → not applier-tied
+      if (eff.flags?.[FLAG_NS]?.directorPermanent === true) continue;
       if (stamp.lifetimeMode) continue;              // only the DEFAULT mode is applier-turn-start
       let set = deleteByActor.get(actor.uuid);
       if (!set) { set = new Set(); deleteByActor.set(actor.uuid, set); }
@@ -5516,7 +5507,7 @@ async function writeResourceDelta(actor, resourceDef, delta) {
 // shared resolver (scripts/shared/condition-affinity.js), which owns the
 // status-id → CONFIG.statusEffects name → `condition_<slug>` prop resolution
 // plus the name/slug alias map (Doomed→doom, Cursed→curse, …). apply_ae uses
-// IM to refuse the AE entirely and RS to clamp charges/turnsRemaining to 1.
+// IM to refuse the AE entirely and RS to clamp the charges counter to 1.
 //
 // Custom non-status ids ("fud-bodyguard", "reinforced-slow", …) resolve to no
 // `condition_*` prop, so the lookup returns null and no gate triggers.
@@ -5726,8 +5717,8 @@ async function applyApplyAeEffect(row, ctx) {
     // Rampart's "cannot suffer status effects" lands, via IM AE writes).
     //   IM — skip the entire AE for this target + float the status-immune cue
     //        (otherwise the refusal is invisible on the battlefield).
-    //   RS — the AE lands, but clamped: at most 1 charge per application /
-    //        turnsRemaining 1 (see the clamp sites below).
+    //   RS — the AE lands, but clamped: at most 1 charge per application
+    //        (see the clamp sites below).
     // Only fires when the prop EXISTS — non-status template ids like
     // "fud-bodyguard" have no matching prop so they pass through.
     const conditionAffinity = getConditionAffinityFor(actor, { statuses: template.statuses, name: template.name });
@@ -5862,8 +5853,8 @@ async function applyApplyAeEffect(row, ctx) {
       }
       // RS (resist): a fresh application lands with at most 1 charge (row
       // override or template default, whichever ended up on the clone).
-      // Chargeless AEs stay chargeless — never stamp a charges flag here;
-      // their duration is handled by the turnsRemaining clamp below.
+      // Chargeless AEs are seeded from their duration further below
+      // (computeConditionCharges), which applies its own RS clamp.
       if (conditionAffinity === "RS") {
         const cur = Number(data.flags?.[FLAG_NS]?.charges);
         if (Number.isFinite(cur) && cur > 1) {
@@ -5873,8 +5864,7 @@ async function applyApplyAeEffect(row, ctx) {
       }
     }
     // Clear Foundry core duration fields so the core AE-expiry system never
-    // touches director-applied AEs. BD uses directorAppliedBy.turnsRemaining
-    // instead. Without this, world-template AEs that carry duration.rounds
+    // touches director-applied AEs. BD uses the `charges` counter instead. Without this, world-template AEs that carry duration.rounds
     // (e.g. the Debuff-container Burn has duration.rounds=3) expire via
     // Foundry core mid-turn when the BD advances the combat turn for a free
     // action — causing the AE to be deleted before the second sweep can find it.
@@ -6088,12 +6078,27 @@ async function applyApplyAeEffect(row, ctx) {
     // as a bearer-turn charge countdown (`target_turn_end` + `ae_initial_charges`)
     // so the BD charge badge shows N → … → 1 on the token, without a per-skill copy.
     const lifetimeMode = String(row.ae_lifetime_mode ?? flagsNS.lifetimeMode ?? "").trim().toLowerCase();
-    // Per-AE lifecycle mode → invisible turn counter. Shared with the condition-
-    // adoption path (buildAdoptedConditionData) so "how long does a BD condition
-    // last" has exactly ONE definition. RS clamps a >1 counter to 1.
-    const turnsRemaining = computeConditionTurnsRemaining({
+    // ONE counter. Precedence for the count, highest first:
+    //   1. `ae_duration_rounds` on the row — an explicit per-application
+    //      override, so it BEATS a template's own charges (Charm's "inflict
+    //      Charmed for 1 Round" must win over the Charmed template's 3).
+    //      `scene`/0 means no counter at all.
+    //   2. charges already on the clone (`ae_initial_charges` row, else the
+    //      template's own `charges`) — an authored counter is never reseeded.
+    //   3. seeded from the template's `duration.rounds`, else the 3-turn default.
+    const rowCount = (!sceneLong && Number.isFinite(Number(rowDuration)) && Number(rowDuration) > 0)
+      ? Number(rowDuration) : null;
+    const seededCharges = rowCount ?? computeConditionCharges({
       flagsNS, explicitRounds: explicit, lifetimeMode, affinity: conditionAffinity, sceneLong,
+      existingCharges: data.flags[FLAG_NS].charges,
     });
+    if (seededCharges != null) {
+      data.flags[FLAG_NS].charges = seededCharges;
+      if (data.flags?.statuscounter?.visible === true) data.flags.statuscounter.value = seededCharges;
+    } else if (sceneLong) {
+      // "rest of the scene" — strip any inherited counter so nothing ticks it.
+      delete data.flags[FLAG_NS].charges;
+    }
     data.flags[FLAG_NS].directorAppliedBy = {
       skillUuid: ctx.skill?.uuid ?? null,
       reactorActorUuid: ctx.reactorActor?.uuid ?? null,
@@ -6104,7 +6109,6 @@ async function applyApplyAeEffect(row, ctx) {
       reactorTokenUuid: ctx.reactorToken?.uuid ?? null,
       effectLabel: row.effect_label,
       appliedAtRound: ctx.dCombat?.round ?? 0,
-      turnsRemaining,
       ...(lifetimeMode ? { lifetimeMode } : {}),
     };
     // Guard-cover marker (Grappled rule #2 — [[project_grappled_advanced_debuff]]).
@@ -6310,31 +6314,57 @@ export function resolveCanonicalConditionTemplate(statuses) {
   return null;
 }
 
-// The ONE definition of "how many turns does a BD-applied condition last".
-// Shared by apply_ae and the adoption path. Null lifecycle modes (permanent /
-// round_end / on_activation / persistent_counter) return null — those AEs
-// aren't turn-ticked (they're charge- or round-governed). Everything else
-// defaults to `explicitRounds` (template `duration.rounds`) or 3. RS (resist)
-// clamps a >1 counter to 1 so a resisted chargeless condition falls off after
-// ~1 round.
-// `sceneLong` — "for the rest of the scene". No turn counter at all; the AE is
-// still transient (it carries `directorAppliedBy`), so the scene-end sweep is
-// what removes it. This is the ONLY way to say "until the battle ends" for a
-// chargeless buff, because a blank/0 duration falls back to the 3-turn default.
-export function computeConditionTurnsRemaining({ flagsNS = {}, explicitRounds, lifetimeMode = "", affinity = null, sceneLong = false } = {}) {
+// ─── ONE counter: charges ───────────────────────────────────────────────
+//
+// An AE carries exactly ONE number — `flags[FLAG_NS].charges` — and
+// `lifetimeMode` says WHEN it moves. There is no second counter: the old
+// `directorAppliedBy.turnsRemaining` is gone. It existed in parallel with
+// charges and the two disagreed about which was authoritative — the applier
+// tick read turnsRemaining and ignored charges (Charmed's charges sat frozen at
+// 3 forever), while the bearer ticks read charges and ignored turnsRemaining
+// (Bleed's turnsRemaining sat frozen at 3). Whichever number a formula or badge
+// happened to read, it was right half the time. See `AE_CHARGES_*`.
+//
+// Modes that are NOT turn-ticked return null (nothing to seed):
+//   directorPermanent / round_end / on_activation / persistent_counter,
+// plus `sceneLong` ("for the rest of the scene" — no counter; the scene-end
+// sweep removes it, since the AE is transient via `directorAppliedBy`).
+//
+// A template that DECLARES its own charges already has its counter; we never
+// overwrite it (returns null = "leave what's there"). Only a charge-less AE is
+// seeded, from `explicitRounds` (template `duration.rounds`) or the 3-turn
+// homebrew default. RS (resist) clamps a fresh seed >1 down to 1.
+export function computeConditionCharges({ flagsNS = {}, explicitRounds, lifetimeMode = "", affinity = null, sceneLong = false, existingCharges = null } = {}) {
   if (sceneLong) return null;
+  if (flagsNS.directorPermanent === true) return null;
+  if (lifetimeMode === "round_end") return null;
+  if (lifetimeMode === "on_activation") return null;
+  if (lifetimeMode === "persistent_counter") return null;
+  // Authored charges ARE the counter — never reseed over them.
+  if (existingCharges != null) return null;
   const explicit = Number(explicitRounds);
-  let turnsRemaining;
-  if (flagsNS.directorPermanent === true) turnsRemaining = null;
-  else if (lifetimeMode === "round_end") turnsRemaining = null;
-  else if (lifetimeMode === "on_activation") turnsRemaining = null;
-  else if (lifetimeMode === "persistent_counter") turnsRemaining = null;
-  else if (lifetimeMode === "target_turn_end" || lifetimeMode === "target_turn_start")
-    turnsRemaining = Number.isFinite(explicit) && explicit > 0 ? explicit : 3;
-  else if (Number.isFinite(explicit) && explicit > 0) turnsRemaining = explicit;
-  else turnsRemaining = 3;
-  if (affinity === "RS" && Number.isFinite(turnsRemaining) && turnsRemaining > 1) turnsRemaining = 1;
-  return turnsRemaining;
+  let n = Number.isFinite(explicit) && explicit > 0 ? explicit : 3;
+  if (affinity === "RS" && n > 1) n = 1;
+  return n;
+}
+
+// Which lifetimeModes are turn-ticked at all. Anything else keeps its charges
+// until something consumes them or the scene-end sweep runs.
+const UNTICKED_LIFETIME_MODES = new Set(["round_end", "on_activation", "persistent_counter"]);
+
+// Decrement the single counter on one AE. Returns null when this AE is not
+// turn-ticked, else `{ _id, ... }` update or `{ _id, __delete: true }`.
+function chargeTickFor(eff) {
+  const f = eff.flags?.[FLAG_NS] ?? {};
+  if (f.directorPermanent === true) return null;
+  const cur = f.charges;
+  if (cur == null) return null;                    // no counter → never expires by turns
+  const next = Number(cur) - 1;
+  if (next <= 0) return { _id: eff.id, __delete: true };
+  const upd = { _id: eff.id, [`flags.${FLAG_NS}.charges`]: next };
+  // Keep an opted-in statuscounter badge in step with the counter.
+  if (eff.flags?.statuscounter?.visible === true) upd["flags.statuscounter.value"] = next;
+  return upd;
 }
 
 // Turn a canonical condition template into AE-creation data shaped exactly like
@@ -6362,12 +6392,18 @@ export function buildAdoptedConditionData(template, { affinity = null } = {}) {
   // applier-turn-start tick (default mode) would never fire. Fall back to
   // target_turn_end so it ticks on the victim's own turns.
   const lifetimeMode = String(flagsNS.lifetimeMode ?? "").trim().toLowerCase() || "target_turn_end";
-  // RS: charge-governed conditions land with at most 1 charge; chargeless stay
-  // chargeless (their duration is handled by the turn counter below).
+  // RS: charge-governed conditions land with at most 1 charge.
   if (affinity === "RS" && Number(ns.charges) > 1) ns.charges = 1;
-  const turnsRemaining = computeConditionTurnsRemaining({
+  // ONE counter: seed `charges` from the template's duration only when the
+  // condition doesn't already declare its own.
+  const seededCharges = computeConditionCharges({
     flagsNS, explicitRounds: template.duration?.rounds, lifetimeMode, affinity,
+    existingCharges: ns.charges,
   });
+  if (seededCharges != null) {
+    ns.charges = seededCharges;
+    if (data.flags?.statuscounter?.visible === true) data.flags.statuscounter.value = seededCharges;
+  }
   ns.bdAdopted = true;   // recursion guard — the adoption hook skips AEs carrying this
   ns.directorAppliedBy = {
     skillUuid: null,
@@ -6375,7 +6411,6 @@ export function buildAdoptedConditionData(template, { affinity = null } = {}) {
     reactorTokenUuid: null,
     effectLabel: `adopted:${data.name ?? "condition"}`,
     appliedAtRound: game.combat?.round ?? 0,
-    turnsRemaining,
     ...(lifetimeMode ? { lifetimeMode } : {}),
   };
   return data;
@@ -8385,7 +8420,7 @@ function recordCapturedRemovals(ctx, label, names) {
 
 // ── transfer_ae ──────────────────────────────────────────────────────────
 // MOVE an existing AE from a source creature to a destination, PRESERVING its
-// remaining charges / turnsRemaining / directorAppliedBy stamp. Unlike apply_ae
+// remaining charges + directorAppliedBy stamp. Unlike apply_ae
 // (which clones a fresh template and resets the charge to the template default),
 // transfer_ae carries the live instance over — so a 2-charge mark stays a
 // 2-charge mark on its new bearer. A target_ref resolving to MULTIPLE tokens
@@ -8532,7 +8567,7 @@ async function applyTransferAeEffect(row, ctx) {
       effs = matches.slice(0, maxCount);
     }
     for (const eff of effs) {
-      // Snapshot the LIVE instance (charges, turnsRemaining, directorAppliedBy,
+      // Snapshot the LIVE instance (charges, directorAppliedBy,
       // reactionConfig all ride along). Drop _id so it can re-key on the dest.
       const data = eff.toObject();
       delete data._id;
@@ -9169,7 +9204,7 @@ async function applyModifyTurnsEffect(row, ctx) {
 // what plain apply_ae can't express. Falls back to a minimal inline AE when no
 // template is given (`bond_emotion`, default "hatred").
 //
-// Duration: stamps `directorAppliedBy` with `turnsRemaining: null` → no 3-turn
+// Duration: stamps `directorAppliedBy` with NO `charges` counter → no 3-turn
 // tick; the scene-end sweep clears it UNLESS the template opts into
 // `directorPermanent`/`crossScene` (so duration stays author-configurable). RAW
 // guard: skips a target already bonded (real prop OR existing bondAE), by name.
@@ -9278,7 +9313,8 @@ async function applyCreateBondEffect(row, ctx) {
       reactorActorUuid: caster.uuid ?? null,
       effectLabel: row.effect_label ?? null,
       appliedAtRound: ctx.dCombat?.round ?? 0,
-      turnsRemaining: null,   // no 3-turn tick; scene-end sweep clears it
+      // No `charges` is stamped → no counter → no turn tick; the scene-end
+      // sweep clears it (unless the template opts into directorPermanent).
     };
     toCreate.push(data);
     applied.push({ name, emotions });

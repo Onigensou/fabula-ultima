@@ -11,7 +11,7 @@
 // DB actor, the same source used by the camp and rest systems.
 //
 // Two AE categories handled:
-//   Director-stamped  — has `directorAppliedBy` with `turnsRemaining`.
+//   Director-stamped  — has `directorAppliedBy` and a `charges` counter.
 //                       Decrement that field so the AE stays consistent
 //                       if the member re-enters battle.
 //   Non-stamped       — no `directorAppliedBy` (manual, camp, tile effects).
@@ -58,11 +58,13 @@
       let turnsRemaining;
       let updatePath;
 
-      if (stamp && stamp.turnsRemaining != null) {
-        // Director-stamped: reuse the existing counter so battle + dungeon
-        // remain consistent if the actor transitions between modes.
-        turnsRemaining = Number(stamp.turnsRemaining);
-        updatePath = `flags.${FLAG_NS}.directorAppliedBy.turnsRemaining`;
+      if (stamp && flags.charges != null) {
+        // Director-stamped: reuse the AE's single counter (`charges`) so battle
+        // + dungeon stay consistent if the actor transitions between modes.
+        // BD retired the parallel `directorAppliedBy.turnsRemaining` — charges
+        // is now the only number an AE carries.
+        turnsRemaining = Number(flags.charges);
+        updatePath = `flags.${FLAG_NS}.charges`;
       } else {
         // Non-stamped: lazy-init our dungeon-specific counter.
         if (flags.dungeonTurnsRemaining != null) {

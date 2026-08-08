@@ -8238,8 +8238,8 @@
             },
             "fabula-ultima-companion": {
               "chargeKey": "charmed",
-              "charges": 3,
-              "chargesMax": 3,
+              "charges": 1,
+              "chargesMax": 1,
               "lifetimeMode": ""
             },
             "statuscounter": {
