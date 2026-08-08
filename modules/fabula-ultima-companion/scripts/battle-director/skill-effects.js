@@ -6072,7 +6072,17 @@ async function applyApplyAeEffect(row, ctx) {
     // the template's `flags.fabula-ultima-companion`) opts out of
     // ticking entirely.
     const flagsNS = template.flags?.[FLAG_NS] ?? {};
-    const explicit = Number(template.duration?.rounds);
+    // `ae_duration_rounds` lets a row override the template's duration for THIS
+    // application (mirrors `ae_initial_charges` / `ae_lifetime_mode`), so a
+    // "for the rest of the scene" item does NOT need its own copy of a shared
+    // status — Blue Bovine grants the canonical Strong scene-long while Milk
+    // still grants the same Strong for the default 3 turns.
+    // "scene" (or "0") = no turn counter; anything else = that many turns.
+    const rowDuration = String(row.ae_duration_rounds ?? "").trim().toLowerCase();
+    const sceneLong = rowDuration === "scene" || rowDuration === "0";
+    const explicit = rowDuration && !sceneLong
+      ? Number(rowDuration)
+      : Number(template.duration?.rounds);
     // `ae_lifetime_mode` lets a row override the template's lifecycle for THIS
     // application (mirrors `ae_initial_charges`) — e.g. apply the canonical Flying
     // as a bearer-turn charge countdown (`target_turn_end` + `ae_initial_charges`)
@@ -6082,7 +6092,7 @@ async function applyApplyAeEffect(row, ctx) {
     // adoption path (buildAdoptedConditionData) so "how long does a BD condition
     // last" has exactly ONE definition. RS clamps a >1 counter to 1.
     const turnsRemaining = computeConditionTurnsRemaining({
-      flagsNS, explicitRounds: explicit, lifetimeMode, affinity: conditionAffinity,
+      flagsNS, explicitRounds: explicit, lifetimeMode, affinity: conditionAffinity, sceneLong,
     });
     data.flags[FLAG_NS].directorAppliedBy = {
       skillUuid: ctx.skill?.uuid ?? null,
@@ -6307,7 +6317,12 @@ export function resolveCanonicalConditionTemplate(statuses) {
 // defaults to `explicitRounds` (template `duration.rounds`) or 3. RS (resist)
 // clamps a >1 counter to 1 so a resisted chargeless condition falls off after
 // ~1 round.
-export function computeConditionTurnsRemaining({ flagsNS = {}, explicitRounds, lifetimeMode = "", affinity = null } = {}) {
+// `sceneLong` — "for the rest of the scene". No turn counter at all; the AE is
+// still transient (it carries `directorAppliedBy`), so the scene-end sweep is
+// what removes it. This is the ONLY way to say "until the battle ends" for a
+// chargeless buff, because a blank/0 duration falls back to the 3-turn default.
+export function computeConditionTurnsRemaining({ flagsNS = {}, explicitRounds, lifetimeMode = "", affinity = null, sceneLong = false } = {}) {
+  if (sceneLong) return null;
   const explicit = Number(explicitRounds);
   let turnsRemaining;
   if (flagsNS.directorPermanent === true) turnsRemaining = null;

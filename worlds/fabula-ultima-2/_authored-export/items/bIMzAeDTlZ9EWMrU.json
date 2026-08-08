@@ -49,7 +49,7 @@
         "prSMefjNTAYuT2Md": {
           "id": "${item.id}",
           "name": "Blue Bovine",
-          "related_item_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12).</em></p></li></ul>",
+          "related_item_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "uuid": "Item.prSMefjNTAYuT2Md"
         }
       }

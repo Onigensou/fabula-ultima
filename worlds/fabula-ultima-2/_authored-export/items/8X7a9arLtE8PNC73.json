@@ -24,10 +24,11 @@
   "system": {
     "container": "prSMefjNTAYuT2Md",
     "props": {
-      "description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12).</em></p></li></ul>",
+      "description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
           "ae_template_ref": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.SNtz75qDr9oLQmLI",
           "effect_kind": "apply_ae",
           "effect_label": "bluebovine_strong",
@@ -36,7 +37,7 @@
       },
       "name": "Blue Bovine",
       "on_activate_effect_ref": "bluebovine_strong",
-      "skill_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12).</em></p></li></ul>",
+      "skill_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
       "skill_type": "Item"
     },
     "template": "j0F5Msw5RZ8aIB3j",

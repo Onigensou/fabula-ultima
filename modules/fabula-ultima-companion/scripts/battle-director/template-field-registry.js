@@ -303,6 +303,10 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // Data-only without a column → strippable on a sheet save; register so
   // boot-3b self-heals it. See Elemental Shroud / Elemental Weapon (Hina).
   textCol("ae_family", "AE Family", { tooltip: "apply_ae replace_family: group id for the 'one of its kind per creature' rule (e.g. elemental-shroud). Blank = use the AE template's aeFamily flag.", vis: APPLY_AE_VIS }),
+  // Per-application duration override. Without it, "for the rest of the scene"
+  // could only be expressed by giving the item its own COPY of a shared status,
+  // which splits the definition (Blue Bovine vs Milk both grant Strong).
+  textCol("ae_duration_rounds", "Duration (turns)", { tooltip: "apply_ae: how long THIS application lasts, overriding the AE template's duration.rounds. \"scene\" (or 0) = lasts until the battle ends (no turn counter; the scene-end sweep removes it). A number = that many turns. Blank = the template's duration.rounds, else the 3-turn default.", vis: APPLY_AE_VIS }),
   selectCol("auto_target", "Auto-target", [
     { key: "auto",    value: "Auto — GM skips, player confirms (default)" },
     { key: "skip",    value: "Always skip (no prompt)" },

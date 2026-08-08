@@ -64,6 +64,7 @@
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
           "ae_template_ref": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.SNtz75qDr9oLQmLI",
           "effect_kind": "apply_ae",
           "effect_label": "bluebovine_strong",
@@ -101,7 +102,7 @@
           "id": "${item.id}",
           "name": "Blue Bovine",
           "skill_cost": "-",
-          "skill_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12).</em></p></li></ul>",
+          "skill_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "skill_maxLevel": 1,
           "uuid": "Item.8X7a9arLtE8PNC73"
         }
@@ -116,7 +117,7 @@
         "8X7a9arLtE8PNC73": {
           "id": "${item.id}",
           "name": "Blue Bovine",
-          "related_item_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12).</em></p></li></ul>",
+          "related_item_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "uuid": "Item.8X7a9arLtE8PNC73"
         }
       },
