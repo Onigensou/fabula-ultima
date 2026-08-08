@@ -38,44 +38,7 @@
           "originalParentId": "aTdfmfmApSbbJ2c4",
           "originalUuid": "Item.aTdfmfmApSbbJ2c4.ActiveEffect.yeYEQoILDgCLdz41"
         },
-        "fabula-ultima-companion": {
-          "reactionConfig": {
-            "effect_table": {
-              "0": {
-                "ae_duplicate_mode": "replace_same_status",
-                "ae_template_ref": "Item.aTdfmfmApSbbJ2c4.ActiveEffect.ynNkXKkVvgYEPHBS",
-                "effect_kind": "apply_ae",
-                "effect_label": "bc_fly",
-                "target_ref": "self"
-              },
-              "1": {
-                "count": "all",
-                "effect_kind": "remove_tagged_ae",
-                "effect_label": "bc_ground",
-                "filter_tag": "copter-flying",
-                "target_ref": "self"
-              }
-            },
-            "name": "Bamboo Copter",
-            "reaction_config_table": {
-              "0": {
-                "reaction_effect_ref": "bc_fly",
-                "reaction_passive_mode": "force",
-                "reaction_source": "self",
-                "reaction_trigger": "conflict_start"
-              },
-              "1": {
-                "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
-                "reaction_cause_filter": "damage",
-                "reaction_effect_ref": "bc_ground",
-                "reaction_passive_mode": "force",
-                "reaction_resource_filter": "hp",
-                "reaction_source": "self",
-                "reaction_trigger": "creature_lose_resource"
-              }
-            }
-          }
-        },
+        "fabula-ultima-companion": {},
         "statuscounter": {
           "config": {
             "multiplyEffect": true,

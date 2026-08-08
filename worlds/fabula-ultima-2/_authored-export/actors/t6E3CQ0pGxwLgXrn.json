@@ -387,6 +387,218 @@
       "type": "equippableItem"
     },
     {
+      "_id": "2BDHKKnYm27y4NFi",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786217481562,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "4hpjtydgLV1O1lpE",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786217482092,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "4hpjtydgLV1O1lpE",
+              "originalParentId": "2BDHKKnYm27y4NFi",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.2BDHKKnYm27y4NFi.ActiveEffect.4hpjtydgLV1O1lpE"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "name": "Hidden",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "GJ0cbbj60lr4zaHm"
+          ],
+          "system": {
+            "tags": [
+              "cloak-hidden"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "lxi4eq2VfQPz4P9q",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786217482542,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "lxi4eq2VfQPz4P9q",
+              "originalParentId": "2BDHKKnYm27y4NFi",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.2BDHKKnYm27y4NFi.ActiveEffect.lxi4eq2VfQPz4P9q"
+            },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "persistent_counter"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "name": "Cloak Revealed",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "cloak-hidden-spent"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "name": "Invisibility Cloak (gear skill)",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "G0bzxh7zKGOsiHuI",
+        "props": {
+          "description": "<p>You begin the battle with <strong>Hidden</strong>. When you perform an action that targets an enemy, you lose the Hidden granted by this accessory.</p>",
+          "details_roller": "Show",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.2BDHKKnYm27y4NFi.ActiveEffect.4hpjtydgLV1O1lpE",
+              "effect_kind": "apply_ae",
+              "effect_label": "gs_grant",
+              "target_ref": "self"
+            },
+            "1": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "gs_drop",
+              "filter_tag": "cloak-hidden",
+              "target_ref": "self"
+            },
+            "2": {
+              "chain_steps": "gs_drop,gs_mark",
+              "effect_kind": "chain",
+              "effect_label": "gs_spend"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.2BDHKKnYm27y4NFi.ActiveEffect.lxi4eq2VfQPz4P9q",
+              "effect_kind": "apply_ae",
+              "effect_label": "gs_mark",
+              "target_ref": "self"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "isReaction": true,
+          "name": "Invisibility Cloak (gear skill)",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "HAS_STATUS_CLOAK_REVEALED == 0",
+              "reaction_effect_ref": "gs_grant",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            },
+            "1": {
+              "condition_formula": "HAS_STATUS_CLOAK_REVEALED == 0",
+              "reaction_effect_ref": "gs_grant",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "creature_equips_item"
+            },
+            "2": {
+              "reaction_effect_ref": "gs_drop",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "creature_unequips_item"
+            },
+            "3": {
+              "condition_formula": "ACTION_TARGETS_ENEMY == 1",
+              "reaction_effect_ref": "gs_spend",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": null,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "30aFFXoVM2lWFe7p",
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
@@ -3510,42 +3722,7 @@
               "originalParentId": "G0bzxh7zKGOsiHuI",
               "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.G0bzxh7zKGOsiHuI.ActiveEffect.eVnFoUgnYplFTeCa"
             },
-            "fabula-ultima-companion": {
-              "reactionConfig": {
-                "effect_table": {
-                  "0": {
-                    "ae_duplicate_mode": "replace_same_status",
-                    "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.G0bzxh7zKGOsiHuI.ActiveEffect.N4F08sX6VHY6Dq5s",
-                    "effect_kind": "apply_ae",
-                    "effect_label": "ic_hide",
-                    "target_ref": "self"
-                  },
-                  "1": {
-                    "count": "all",
-                    "effect_kind": "remove_tagged_ae",
-                    "effect_label": "ic_reveal",
-                    "filter_tag": "cloak-hidden",
-                    "target_ref": "self"
-                  }
-                },
-                "name": "Invisibility Cloak",
-                "reaction_config_table": {
-                  "0": {
-                    "reaction_effect_ref": "ic_hide",
-                    "reaction_passive_mode": "force",
-                    "reaction_source": "self",
-                    "reaction_trigger": "conflict_start"
-                  },
-                  "1": {
-                    "condition_formula": "ACTION_TARGETS_ENEMY == 1",
-                    "reaction_effect_ref": "ic_reveal",
-                    "reaction_passive_mode": "force",
-                    "reaction_source": "self",
-                    "reaction_trigger": "creature_performs_action"
-                  }
-                }
-              }
-            },
+            "fabula-ultima-companion": {},
             "statuscounter": {
               "config": {
                 "multiplyEffect": true,
@@ -5620,6 +5797,218 @@
       "type": "equippableItem"
     },
     {
+      "_id": "nPgMwe5tQprUeYFP",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786217479270,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "dHhYM1gcXu34QjIn",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786217479928,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "dHhYM1gcXu34QjIn",
+              "originalParentId": "nPgMwe5tQprUeYFP",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.nPgMwe5tQprUeYFP.ActiveEffect.dHhYM1gcXu34QjIn"
+            },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "persistent_counter"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "name": "Cloak Revealed",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "cloak-hidden-spent"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "i5REByNKNAMNZEbX",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786217479511,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "i5REByNKNAMNZEbX",
+              "originalParentId": "nPgMwe5tQprUeYFP",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.nPgMwe5tQprUeYFP.ActiveEffect.i5REByNKNAMNZEbX"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "name": "Hidden",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "GJ0cbbj60lr4zaHm"
+          ],
+          "system": {
+            "tags": [
+              "cloak-hidden"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "name": "Invisibility Cloak (gear skill)",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "Tpuby64dnU76C0b9",
+        "props": {
+          "description": "<p>You begin the battle with <strong>Hidden</strong>. When you perform an action that targets an enemy, you lose the Hidden granted by this accessory.</p>",
+          "details_roller": "Show",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.nPgMwe5tQprUeYFP.ActiveEffect.i5REByNKNAMNZEbX",
+              "effect_kind": "apply_ae",
+              "effect_label": "gs_grant",
+              "target_ref": "self"
+            },
+            "1": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "gs_drop",
+              "filter_tag": "cloak-hidden",
+              "target_ref": "self"
+            },
+            "2": {
+              "chain_steps": "gs_drop,gs_mark",
+              "effect_kind": "chain",
+              "effect_label": "gs_spend"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.nPgMwe5tQprUeYFP.ActiveEffect.dHhYM1gcXu34QjIn",
+              "effect_kind": "apply_ae",
+              "effect_label": "gs_mark",
+              "target_ref": "self"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "isReaction": true,
+          "name": "Invisibility Cloak (gear skill)",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "HAS_STATUS_CLOAK_REVEALED == 0",
+              "reaction_effect_ref": "gs_grant",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            },
+            "1": {
+              "condition_formula": "HAS_STATUS_CLOAK_REVEALED == 0",
+              "reaction_effect_ref": "gs_grant",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "creature_equips_item"
+            },
+            "2": {
+              "reaction_effect_ref": "gs_drop",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "creature_unequips_item"
+            },
+            "3": {
+              "condition_formula": "ACTION_TARGETS_ENEMY == 1",
+              "reaction_effect_ref": "gs_spend",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": null,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "NxXbRDaJ9x6qYtly",
       "_stats": {
         "compendiumSource": null,
@@ -5886,6 +6275,220 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "G2wJOMw7AgKtte1R"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ozQ4YJCvDSGB1EBU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786217474180,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "kRTxvw5Y0Arugt5r",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786217475068,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "kRTxvw5Y0Arugt5r",
+              "originalParentId": "ozQ4YJCvDSGB1EBU",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.kRTxvw5Y0Arugt5r"
+            },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "persistent_counter"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "name": "Icarus Grounded",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "icarus-flying-spent"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "UPlyslcARePzFe6k",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786217474482,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "UPlyslcARePzFe6k",
+              "originalParentId": "ozQ4YJCvDSGB1EBU",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.UPlyslcARePzFe6k"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "name": "Flying",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
+          "system": {
+            "tags": [
+              "icarus-flying"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+      "name": "Icarus Wing (gear skill)",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "QcFLkPkYOROiqpLz",
+        "props": {
+          "description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <strong>Fire</strong> damage.</p>",
+          "details_roller": "Show",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.UPlyslcARePzFe6k",
+              "effect_kind": "apply_ae",
+              "effect_label": "gs_grant",
+              "target_ref": "self"
+            },
+            "1": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "gs_drop",
+              "filter_tag": "icarus-flying",
+              "target_ref": "self"
+            },
+            "2": {
+              "chain_steps": "gs_drop,gs_mark",
+              "effect_kind": "chain",
+              "effect_label": "gs_spend"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.kRTxvw5Y0Arugt5r",
+              "effect_kind": "apply_ae",
+              "effect_label": "gs_mark",
+              "target_ref": "self"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "isReaction": true,
+          "name": "Icarus Wing (gear skill)",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "HAS_STATUS_ICARUS_GROUNDED == 0",
+              "reaction_effect_ref": "gs_grant",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            },
+            "1": {
+              "condition_formula": "HAS_STATUS_ICARUS_GROUNDED == 0",
+              "reaction_effect_ref": "gs_grant",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "creature_equips_item"
+            },
+            "2": {
+              "reaction_effect_ref": "gs_drop",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "creature_unequips_item"
+            },
+            "3": {
+              "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
+              "reaction_cause_filter": "damage",
+              "reaction_effect_ref": "gs_spend",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_lose_resource"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": null,
+        "unique": false
       },
       "type": "equippableItem"
     },
@@ -6625,44 +7228,7 @@
               "originalParentId": "2rMxW49Y5ZoD5jiY",
               "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.Z4n4fsHHfLGvldLf"
             },
-            "fabula-ultima-companion": {
-              "reactionConfig": {
-                "effect_table": {
-                  "0": {
-                    "ae_duplicate_mode": "replace_same_status",
-                    "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.QcFLkPkYOROiqpLz.ActiveEffect.nfyTB7h842rjR4BU",
-                    "effect_kind": "apply_ae",
-                    "effect_label": "iw_fly",
-                    "target_ref": "self"
-                  },
-                  "1": {
-                    "count": "all",
-                    "effect_kind": "remove_tagged_ae",
-                    "effect_label": "iw_ground",
-                    "filter_tag": "icarus-flying",
-                    "target_ref": "self"
-                  }
-                },
-                "name": "Icarus Wing",
-                "reaction_config_table": {
-                  "0": {
-                    "reaction_effect_ref": "iw_fly",
-                    "reaction_passive_mode": "force",
-                    "reaction_source": "self",
-                    "reaction_trigger": "conflict_start"
-                  },
-                  "1": {
-                    "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
-                    "reaction_cause_filter": "damage",
-                    "reaction_effect_ref": "iw_ground",
-                    "reaction_passive_mode": "force",
-                    "reaction_resource_filter": "hp",
-                    "reaction_source": "self",
-                    "reaction_trigger": "creature_lose_resource"
-                  }
-                }
-              }
-            },
+            "fabula-ultima-companion": {},
             "statuscounter": {
               "config": {
                 "multiplyEffect": true,
@@ -7947,42 +8513,7 @@
               "originalParentId": "Tpuby64dnU76C0b9",
               "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.Tpuby64dnU76C0b9.ActiveEffect.ONaNSIKHIkgGRVJY"
             },
-            "fabula-ultima-companion": {
-              "reactionConfig": {
-                "effect_table": {
-                  "0": {
-                    "ae_duplicate_mode": "replace_same_status",
-                    "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.Tpuby64dnU76C0b9.ActiveEffect.ElvTnjcU10cJhszI",
-                    "effect_kind": "apply_ae",
-                    "effect_label": "ic_hide",
-                    "target_ref": "self"
-                  },
-                  "1": {
-                    "count": "all",
-                    "effect_kind": "remove_tagged_ae",
-                    "effect_label": "ic_reveal",
-                    "filter_tag": "cloak-hidden",
-                    "target_ref": "self"
-                  }
-                },
-                "name": "Invisibility Cloak",
-                "reaction_config_table": {
-                  "0": {
-                    "reaction_effect_ref": "ic_hide",
-                    "reaction_passive_mode": "force",
-                    "reaction_source": "self",
-                    "reaction_trigger": "conflict_start"
-                  },
-                  "1": {
-                    "condition_formula": "ACTION_TARGETS_ENEMY == 1",
-                    "reaction_effect_ref": "ic_reveal",
-                    "reaction_passive_mode": "force",
-                    "reaction_source": "self",
-                    "reaction_trigger": "creature_performs_action"
-                  }
-                }
-              }
-            },
+            "fabula-ultima-companion": {},
             "statuscounter": {
               "config": {
                 "multiplyEffect": true,

@@ -1,0 +1,213 @@
+{
+  "_id": "OpYfRpjj6aJRqhAr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786217478676,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "kzZLwqIbhuz2o3A5",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786217478991,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "kzZLwqIbhuz2o3A5",
+          "originalParentId": "OpYfRpjj6aJRqhAr",
+          "originalUuid": "Item.OpYfRpjj6aJRqhAr.ActiveEffect.kzZLwqIbhuz2o3A5"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "name": "Cloak Revealed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "cloak-hidden-spent"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "ngxFQVyVp1IvvG7g",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786217478973,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ngxFQVyVp1IvvG7g",
+          "originalParentId": "OpYfRpjj6aJRqhAr",
+          "originalUuid": "Item.OpYfRpjj6aJRqhAr.ActiveEffect.ngxFQVyVp1IvvG7g"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "name": "Hidden",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "GJ0cbbj60lr4zaHm"
+      ],
+      "system": {
+        "tags": [
+          "cloak-hidden"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+  "name": "Invisibility Cloak (gear skill)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "cSynFyjRWqRbgrZx",
+    "props": {
+      "description": "<p>You begin the battle with <strong>Hidden</strong>. When you perform an action that targets an enemy, you lose the Hidden granted by this accessory.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Item.OpYfRpjj6aJRqhAr.ActiveEffect.ngxFQVyVp1IvvG7g",
+          "effect_kind": "apply_ae",
+          "effect_label": "gs_grant",
+          "target_ref": "self"
+        },
+        "1": {
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "gs_drop",
+          "filter_tag": "cloak-hidden",
+          "target_ref": "self"
+        },
+        "2": {
+          "chain_steps": "gs_drop,gs_mark",
+          "effect_kind": "chain",
+          "effect_label": "gs_spend"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.OpYfRpjj6aJRqhAr.ActiveEffect.kzZLwqIbhuz2o3A5",
+          "effect_kind": "apply_ae",
+          "effect_label": "gs_mark",
+          "target_ref": "self"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "isReaction": true,
+      "name": "Invisibility Cloak (gear skill)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_STATUS_CLOAK_REVEALED == 0",
+          "reaction_effect_ref": "gs_grant",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "condition_formula": "HAS_STATUS_CLOAK_REVEALED == 0",
+          "reaction_effect_ref": "gs_grant",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_equips_item"
+        },
+        "2": {
+          "reaction_effect_ref": "gs_drop",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_unequips_item"
+        },
+        "3": {
+          "condition_formula": "ACTION_TARGETS_ENEMY == 1",
+          "reaction_effect_ref": "gs_spend",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "OpYfRpjj6aJRqhAr"
+  },
+  "type": "equippableItem"
+}

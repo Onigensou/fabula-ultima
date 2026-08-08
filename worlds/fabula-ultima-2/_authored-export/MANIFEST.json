@@ -3083,6 +3083,12 @@
         "effects": 2
       },
       {
+        "id": "Yw9PHbIjnnrrWkkb",
+        "name": "Bamboo Copter (gear skill)",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
         "id": "e4FHRBZ0ba0fROnw",
         "name": "Bandaid",
         "type": "equippableItem",
@@ -6935,6 +6941,12 @@
         "effects": 2
       },
       {
+        "id": "awSX2ZLNSFzmQtGo",
+        "name": "Icarus Wing (gear skill)",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
         "id": "Osq3NN3QCtiW7otU",
         "name": "Ice",
         "type": "equippableItem",
@@ -7147,6 +7159,12 @@
       {
         "id": "cSynFyjRWqRbgrZx",
         "name": "Invisibility Cloak",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
+        "id": "OpYfRpjj6aJRqhAr",
+        "name": "Invisibility Cloak (gear skill)",
         "type": "equippableItem",
         "effects": 2
       },
@@ -16162,12 +16180,24 @@
             "name": "Icarus Wing"
           },
           {
+            "id": "ozQ4YJCvDSGB1EBU",
+            "name": "Icarus Wing (gear skill)"
+          },
+          {
             "id": "G0bzxh7zKGOsiHuI",
             "name": "Invisibility Cloak"
           },
           {
             "id": "Tpuby64dnU76C0b9",
             "name": "Invisibility Cloak"
+          },
+          {
+            "id": "2BDHKKnYm27y4NFi",
+            "name": "Invisibility Cloak (gear skill)"
+          },
+          {
+            "id": "nPgMwe5tQprUeYFP",
+            "name": "Invisibility Cloak (gear skill)"
           },
           {
             "id": "P4rafgBSVz3IuBL7",
@@ -18004,6 +18034,10 @@
           {
             "id": "7S9f0RR7IfYa0lIv",
             "name": "Icarus Wing"
+          },
+          {
+            "id": "ukD53QXnKt78M3rv",
+            "name": "Icarus Wing (gear skill)"
           },
           {
             "id": "pcCBP65FqbsMOF0h",

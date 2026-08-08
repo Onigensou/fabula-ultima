@@ -1,0 +1,215 @@
+{
+  "_id": "Yw9PHbIjnnrrWkkb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786217478287,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "Eu3OuKp7j90OruBs",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786217478640,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Eu3OuKp7j90OruBs",
+          "originalParentId": "Yw9PHbIjnnrrWkkb",
+          "originalUuid": "Item.Yw9PHbIjnnrrWkkb.ActiveEffect.Eu3OuKp7j90OruBs"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bamboo%20Copter.webp",
+      "name": "Copter Grounded",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "copter-flying-spent"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "RCkZbq6Yf7a2Sd5m",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786217478620,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "RCkZbq6Yf7a2Sd5m",
+          "originalParentId": "Yw9PHbIjnnrrWkkb",
+          "originalUuid": "Item.Yw9PHbIjnnrrWkkb.ActiveEffect.RCkZbq6Yf7a2Sd5m"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bamboo%20Copter.webp",
+      "name": "Flying",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "CVxHWmDb0gQsob1q"
+      ],
+      "system": {
+        "tags": [
+          "copter-flying"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bamboo%20Copter.webp",
+  "name": "Bamboo Copter (gear skill)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "aTdfmfmApSbbJ2c4",
+    "props": {
+      "description": "<p>Gain <strong>Flying</strong>. You lose this Flying for the rest of the scene when you take <strong>Bolt</strong> damage.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Item.Yw9PHbIjnnrrWkkb.ActiveEffect.RCkZbq6Yf7a2Sd5m",
+          "effect_kind": "apply_ae",
+          "effect_label": "gs_grant",
+          "target_ref": "self"
+        },
+        "1": {
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "gs_drop",
+          "filter_tag": "copter-flying",
+          "target_ref": "self"
+        },
+        "2": {
+          "chain_steps": "gs_drop,gs_mark",
+          "effect_kind": "chain",
+          "effect_label": "gs_spend"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Item.Yw9PHbIjnnrrWkkb.ActiveEffect.Eu3OuKp7j90OruBs",
+          "effect_kind": "apply_ae",
+          "effect_label": "gs_mark",
+          "target_ref": "self"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Bamboo%20Copter.webp",
+      "isReaction": true,
+      "name": "Bamboo Copter (gear skill)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_STATUS_COPTER_GROUNDED == 0",
+          "reaction_effect_ref": "gs_grant",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "condition_formula": "HAS_STATUS_COPTER_GROUNDED == 0",
+          "reaction_effect_ref": "gs_grant",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_equips_item"
+        },
+        "2": {
+          "reaction_effect_ref": "gs_drop",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_unequips_item"
+        },
+        "3": {
+          "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "gs_spend",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "Yw9PHbIjnnrrWkkb"
+  },
+  "type": "equippableItem"
+}

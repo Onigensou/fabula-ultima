@@ -92,44 +92,7 @@
           "originalParentId": "KtD7PgidI510dvHa",
           "originalUuid": "Item.KtD7PgidI510dvHa.ActiveEffect.VlrnaPUuUa1z26jm"
         },
-        "fabula-ultima-companion": {
-          "reactionConfig": {
-            "effect_table": {
-              "0": {
-                "ae_duplicate_mode": "replace_same_status",
-                "ae_template_ref": "Item.KtD7PgidI510dvHa.ActiveEffect.arO0xVAzYoiAd7m2",
-                "effect_kind": "apply_ae",
-                "effect_label": "iw_fly",
-                "target_ref": "self"
-              },
-              "1": {
-                "count": "all",
-                "effect_kind": "remove_tagged_ae",
-                "effect_label": "iw_ground",
-                "filter_tag": "icarus-flying",
-                "target_ref": "self"
-              }
-            },
-            "name": "Icarus Wing",
-            "reaction_config_table": {
-              "0": {
-                "reaction_effect_ref": "iw_fly",
-                "reaction_passive_mode": "force",
-                "reaction_source": "self",
-                "reaction_trigger": "conflict_start"
-              },
-              "1": {
-                "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
-                "reaction_cause_filter": "damage",
-                "reaction_effect_ref": "iw_ground",
-                "reaction_passive_mode": "force",
-                "reaction_resource_filter": "hp",
-                "reaction_source": "self",
-                "reaction_trigger": "creature_lose_resource"
-              }
-            }
-          }
-        },
+        "fabula-ultima-companion": {},
         "statuscounter": {
           "config": {
             "multiplyEffect": true,
