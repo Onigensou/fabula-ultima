@@ -1405,6 +1405,7 @@
           },
           "isCheck": false,
           "isHeroic": true,
+          "isReaction": true,
           "level": "1",
           "max_level": 1,
           "name": "Bimagus",

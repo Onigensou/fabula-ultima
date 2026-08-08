@@ -91,6 +91,7 @@
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "3",
       "name": "Linked Invocation",

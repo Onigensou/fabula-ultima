@@ -33,6 +33,7 @@
           "effect_label": "dwhip_acc"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Dominatrix Whip (Passive)",
       "reaction_config_table": {

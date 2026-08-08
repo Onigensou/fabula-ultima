@@ -2851,14 +2851,32 @@ export function resolveAccuracyParts({ actor = null, props = null, kind = null, 
   if (kind === "melee")  add("check_mod_melee",  "Check (Melee)");
   if (kind === "ranged") add("check_mod_ranged", "Check (Ranged)");
   if (kind === "magic")  add("check_mod_magic",  "Check (Magic)");
+  const rolled = new Set();
   for (const raw of attrs ?? []) {
     const a = String(raw ?? "").trim().toLowerCase();
     if (!_CHECK_ATTRS.has(a)) continue;
+    rolled.add(a);
     const key = `check_mod_${a}`;
     if (seen.has(key)) continue;
     seen.add(key);
     const total = _mnum(actor?.flags?.["fabula-ultima-companion"]?.[key]);
     if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label: `Check (${a.toUpperCase()})` }));
+  }
+  // `check_mod_anyof_<a>_<b>…` — pays ONCE when the attack rolls any listed die.
+  // Twin of the same branch in checkModifiers.js; keep the two in step.
+  const modFlags = actor?.flags?.["fabula-ultima-companion"];
+  if (rolled.size && modFlags && typeof modFlags === "object") {
+    for (const key of Object.keys(modFlags)) {
+      const m = /^check_mod_anyof_([a-z_]+)$/.exec(key);
+      if (!m || seen.has(key)) continue;
+      const listed = m[1].split("_").filter((a) => _CHECK_ATTRS.has(a));
+      if (!listed.length || !listed.some((a) => rolled.has(a))) continue;
+      seen.add(key);
+      const total = _mnum(modFlags[key]);
+      if (total !== 0) {
+        parts.push(...attributeModParts({ actor, key, total, label: `Check (${listed.map((a) => a.toUpperCase()).join("/")})` }));
+      }
+    }
   }
   return parts;
 }

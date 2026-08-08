@@ -34,6 +34,7 @@
           "target_ref": "trigger_subject"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Rusty Pipe (Passive)",
       "reaction_config_table": {

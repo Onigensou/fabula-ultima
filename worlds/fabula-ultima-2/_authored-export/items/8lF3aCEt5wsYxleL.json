@@ -189,6 +189,7 @@
           "target_ref": "self"
         }
       },
+      "isReaction": true,
       "level": "1",
       "max_level": "10",
       "name": "Dance",

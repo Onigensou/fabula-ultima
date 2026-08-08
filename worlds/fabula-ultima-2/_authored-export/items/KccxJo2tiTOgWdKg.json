@@ -33,6 +33,7 @@
           "effect_label": "hotpants_acc"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Hot Pants (Passive)",
       "reaction_config_table": {

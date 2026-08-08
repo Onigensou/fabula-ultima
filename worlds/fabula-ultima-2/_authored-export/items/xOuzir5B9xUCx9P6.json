@@ -69,6 +69,7 @@
       "id": "nhBGa2yqnaY3bavM",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Great%20Sword/Icon-Force_Stealer.webp",
       "isCheck": false,
+      "isReaction": true,
       "name": "Cursed Sword (gear skill)",
       "on_activate_effect_ref": "",
       "reaction_config_table": {

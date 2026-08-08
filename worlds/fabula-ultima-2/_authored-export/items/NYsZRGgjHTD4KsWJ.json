@@ -41,6 +41,7 @@
           "target_ref": "trigger_subject"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "BDSM Garment (Passive)",
       "reaction_config_table": {

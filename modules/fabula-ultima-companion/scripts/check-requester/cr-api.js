@@ -134,8 +134,12 @@
   };
 
   // ── Actor utilities ───────────────────────────────────────────────────────
+  // Capped at d12 — the RAW top of the attribute ladder. A +2 buff on someone
+  // already at d12 would otherwise roll a d14, which is not a Fabula die.
+  // Twin of the clamp in snapshot.js attrDieSize; keep the two in step.
+  const MAX_ATTR_DIE = 12;
   const getDieSize = (actor, attr) =>
-    safeInt(actor?.system?.props?.[`${attr.toLowerCase()}_current`], 8);
+    Math.min(safeInt(actor?.system?.props?.[`${attr.toLowerCase()}_current`], 8), MAX_ATTR_DIE);
 
   const getFP = actor => safeInt(actor?.system?.props?.fabula_point, 0);
 

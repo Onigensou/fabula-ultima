@@ -66,6 +66,7 @@
       "id": "jiM9FZ5IomG2Tife",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Bandit_Gloves.webp",
       "isCheck": false,
+      "isReaction": true,
       "name": "Bandit Gloves (gear skill)",
       "on_activate_effect_ref": "",
       "reaction_config_table": {

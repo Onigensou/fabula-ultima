@@ -4796,6 +4796,7 @@
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Tiger_Claw.webp",
           "isCheck": false,
+          "isReaction": true,
           "name": "Dragonslayer Pendant (gear skill)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
@@ -5084,6 +5085,7 @@
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
           "isCheck": false,
+          "isReaction": true,
           "name": "The Tormentor (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
@@ -7167,6 +7169,7 @@
               "target_ref": "self"
             }
           },
+          "isReaction": true,
           "max_level": "1",
           "name": "Looting Bow (Passive)",
           "reaction_config_table": {

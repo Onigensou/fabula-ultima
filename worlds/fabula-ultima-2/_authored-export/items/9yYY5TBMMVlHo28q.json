@@ -55,6 +55,7 @@
         }
       },
       "isCheck": false,
+      "isReaction": true,
       "name": "Create Phantasm: Numen",
       "on_activate_effect_ref": "numen_do",
       "reaction_config_table": {

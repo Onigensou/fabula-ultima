@@ -49,6 +49,7 @@
         }
       },
       "isCheck": false,
+      "isReaction": true,
       "reaction_config_table": {
         "0": {
           "$deleted": false,

@@ -1148,6 +1148,7 @@
           "isKey": false,
           "isMartial": false,
           "isModule": false,
+          "isReaction": true,
           "isRelatedItem": false,
           "isSet": false,
           "isUnique": false,
@@ -1372,6 +1373,7 @@
             }
           },
           "isCheck": false,
+          "isReaction": true,
           "name": "Poisoned Dagger (gear skill)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {

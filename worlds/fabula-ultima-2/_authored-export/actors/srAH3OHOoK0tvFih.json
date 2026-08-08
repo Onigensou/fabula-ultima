@@ -1868,6 +1868,7 @@
             }
           },
           "isCheck": false,
+          "isReaction": true,
           "name": "Morrigan (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
@@ -4591,6 +4592,7 @@
             }
           },
           "isCheck": false,
+          "isReaction": true,
           "name": "Dragontrap Bow (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {

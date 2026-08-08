@@ -33,6 +33,7 @@
           "free_hr_as_zero": true
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Shark Hoodie (Passive)",
       "reaction_config_table": {

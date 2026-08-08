@@ -141,6 +141,61 @@
       "type": "base"
     },
     {
+      "_id": "OkXyMjAoPdl7wcYn",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786201533679,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.check_mod_dex",
+          "mode": 2,
+          "priority": null,
+          "value": "${and(isEquipped, ae(\"Wet\")) ? 2 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "OkXyMjAoPdl7wcYn",
+          "originalParentId": "lRk4pXxACoezIlOD",
+          "originalUuid": "Item.lRk4pXxACoezIlOD.ActiveEffect.OkXyMjAoPdl7wcYn"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/Custom%20Icon/Swimsuit.png",
+      "name": "Swimsuit — DEX Checks",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
       "_id": "yqAZR8ZbEG6SWp9E",
       "_stats": {
         "compendiumSource": null,

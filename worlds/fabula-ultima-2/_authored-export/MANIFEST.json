@@ -3986,13 +3986,7 @@
         "id": "FsAN2KEgFrmQnp0g",
         "name": "Cat Ears",
         "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "tgcZ9aHO4LzlcxA2",
-        "name": "Cat Ears (Passive)",
-        "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "5su5PxiW5lwGHx70",
@@ -6482,7 +6476,7 @@
         "id": "gmnCyBBh5qJNb8HM",
         "name": "Handy Knives",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "4sRQe37ayG9OebW3",
@@ -6655,6 +6649,12 @@
       {
         "id": "yo62fJfnUWRMWfc5",
         "name": "Hellfist",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "VfwzD91EZjnRnkHE",
+        "name": "Herd's Vigil",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7334,7 +7334,7 @@
         "id": "VxlBjTtpZgMiMU1q",
         "name": "Joyeuse",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "yOJKXAQJq4R2mzCa",
@@ -7622,7 +7622,7 @@
         "id": "OSaOzEBWrArAvd3a",
         "name": "Lobster Claw",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "4E3auFhcWT06tIn5",
@@ -8239,6 +8239,12 @@
       {
         "id": "HoYNx4FuvfSypstS",
         "name": "Milk Recipe",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "ykiMgQjWE6X92oc1",
+        "name": "Milky Holstein — Equipment Set",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9392,7 +9398,7 @@
         "id": "PlgoUNdOtjWsTNtO",
         "name": "Power Gloves",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "iOyodA5kN67TFUMk",
@@ -9931,6 +9937,12 @@
       {
         "id": "lpM8id6fJzB7JP0A",
         "name": "Rewinder",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "tzr1OjK6tqygYWxw",
+        "name": "Rich Cream",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10811,6 +10823,12 @@
         "effects": 0
       },
       {
+        "id": "Me3zQvIEF8Qs1rJh",
+        "name": "Soothing Cream",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "fRGcZSraJ5IznPgU",
         "name": "Soul Conversion",
         "type": "equippableItem",
@@ -11312,7 +11330,7 @@
         "id": "lRk4pXxACoezIlOD",
         "name": "Swimsuit",
         "type": "equippableItem",
-        "effects": 3
+        "effects": 4
       },
       {
         "id": "CMlqLVtpSDNDyfvS",
@@ -16850,10 +16868,6 @@
             "name": "Cat Ears"
           },
           {
-            "id": "Q7hhRsAI1JCxHW83",
-            "name": "Cat Ears (Passive)"
-          },
-          {
             "id": "GkAU5LVf77rZyzfo",
             "name": "Scale Thresher"
           },
@@ -19047,10 +19061,6 @@
           {
             "id": "BMk7ey9etLgHOrnI",
             "name": "Cat Ears"
-          },
-          {
-            "id": "7WC6heFnxC7s3Zqr",
-            "name": "Cat Ears (Passive)"
           },
           {
             "id": "rs7BtA731yHZPcDn",
@@ -21758,10 +21768,6 @@
             "name": "Cat Ears"
           },
           {
-            "id": "SCwltDHCSmP9fPuW",
-            "name": "Cat Ears (Passive)"
-          },
-          {
             "id": "XIQeu3LXXwMA7XY6",
             "name": "Cursed Sword"
           },
@@ -22986,10 +22992,6 @@
           {
             "id": "MW9Qma1EzFN4gnNY",
             "name": "Cat Ears"
-          },
-          {
-            "id": "ksZwRP9of370emug",
-            "name": "Cat Ears (Passive)"
           },
           {
             "id": "JbFsdpWdRActLGRB",

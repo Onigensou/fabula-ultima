@@ -65,7 +65,7 @@
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_range": "Any",
-      "skill_tags": "potion",
+      "skill_tags": "potion,milk",
       "skill_target": "One Creature",
       "skill_type": "Item"
     },

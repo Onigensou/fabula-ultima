@@ -36,6 +36,7 @@
           "grant_scope": "per_action"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Butler Uniform (Passive)",
       "reaction_config_table": {

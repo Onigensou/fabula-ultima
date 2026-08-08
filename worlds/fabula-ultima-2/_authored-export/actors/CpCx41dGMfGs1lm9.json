@@ -243,6 +243,7 @@
           },
           "isCheck": false,
           "isFacet": false,
+          "isReaction": true,
           "level": "1",
           "name": "Create Phantasm: Numen",
           "on_activate_effect_ref": "numen_do",
@@ -1164,6 +1165,7 @@
               "target_ref": "pe_self"
             }
           },
+          "isReaction": true,
           "level": "1",
           "name": "Phantasmal Echo",
           "reaction_config_table": {

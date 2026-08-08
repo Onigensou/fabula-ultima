@@ -1,0 +1,81 @@
+{
+  "_id": "tzr1OjK6tqygYWxw",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786201495167,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/item-bag.svg",
+  "name": "Rich Cream",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "ykiMgQjWE6X92oc1",
+    "props": {
+      "description": "<p><strong>Milky Holstein (3 pieces)</strong> — 【Milk】 you create restores additional Hit Points equal to <strong>10% of your Max HP</strong>.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "effect_kind": "adjust_grant",
+          "effect_label": "cow3_hp",
+          "grant_amount": "floor(MAX_HP * 0.1)",
+          "grant_operation": "add",
+          "grant_resource": "hp",
+          "grant_round": "up",
+          "grant_scope": "per_action"
+        }
+      },
+      "id": "tzr1OjK6tqygYWxw",
+      "isReaction": true,
+      "max_level": "1",
+      "name": "Rich Cream",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "SKILL_HAS_TAG_MILK == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "cow3_hp",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_uses_item",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive",
+      "uuid": "Item.tzr1OjK6tqygYWxw"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2788278387,
+    "unique": false,
+    "uniqueId": "tzr1OjK6tqygYWxw"
+  },
+  "type": "equippableItem"
+}

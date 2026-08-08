@@ -46,6 +46,7 @@
           "target_ref": "self"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Blood Helm (Passive)",
       "reaction_config_table": {

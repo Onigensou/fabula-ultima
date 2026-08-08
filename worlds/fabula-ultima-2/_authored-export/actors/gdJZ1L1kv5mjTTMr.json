@@ -687,6 +687,7 @@
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1724.gif",
           "isCheck": false,
+          "isReaction": true,
           "name": "Frozen Envy (gear skill)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
@@ -1877,62 +1878,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "7WC6heFnxC7s3Zqr",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783717321807,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        },
-        "fabula-ultima-companion": {
-          "coreAction": "study"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
-      "name": "Cat Ears (Passive)",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "BMk7ey9etLgHOrnI",
-        "props": {
-          "cost": "",
-          "description": "<p>Equipped passive: +2 to Study Checks.</p>",
-          "effect_table": {
-            "0": {
-              "check_buff_action": "any",
-              "check_buff_amount": "1",
-              "effect_kind": "check_buff",
-              "effect_label": "catears_any_buff"
-            }
-          },
-          "isCheck": false,
-          "isReaction": false,
-          "max_level": "1",
-          "name": "Cat Ears (Passive)",
-          "on_activate_effect_ref": "",
-          "rolled_atr1": "INS",
-          "rolled_atr2": "INS",
-          "skill_target": "",
-          "skill_type": "Passive"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": true,
-        "uniqueId": "tgcZ9aHO4LzlcxA2"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "7wfcJjtOohmga8n0",
       "_stats": {
         "compendiumSource": null,
@@ -2082,6 +2027,7 @@
             }
           },
           "isCheck": false,
+          "isReaction": true,
           "name": "Zero Trigger: Shattered Phantasm",
           "reaction_config_table": {
             "0": {
@@ -2466,6 +2412,7 @@
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1724.gif",
           "isCheck": false,
+          "isReaction": true,
           "name": "Psychic Dagger (gear skill)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
@@ -2541,6 +2488,118 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "9qN54aC5g319eBwH",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786201535720,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.check_mod_dex",
+              "mode": 2,
+              "priority": null,
+              "value": "${isEquipped ? 1 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "9qN54aC5g319eBwH",
+              "originalParentId": "BMk7ey9etLgHOrnI",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.BMk7ey9etLgHOrnI.ActiveEffect.9qN54aC5g319eBwH"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
+          "name": "Cat Ears — DEX Checks",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "WYhNKiMjRFLr7v5T",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786204420217,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "enmity",
+              "mode": 1,
+              "priority": null,
+              "value": "${isEquipped ? 0.5 : 1}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "WYhNKiMjRFLr7v5T",
+              "originalParentId": "BMk7ey9etLgHOrnI",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.BMk7ey9etLgHOrnI.ActiveEffect.WYhNKiMjRFLr7v5T"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
+          "name": "Cat Ears — Halved Enmity",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
@@ -2714,6 +2773,61 @@
           "system": {
             "tags": []
           },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "aPB7EyFTQRiEkGr5",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786201533959,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.check_mod_dex",
+              "mode": 2,
+              "priority": null,
+              "value": "${and(isEquipped, ae(\"Wet\")) ? 2 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "aPB7EyFTQRiEkGr5",
+              "originalParentId": "BRNmLkWm9FSqbXRK",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.BRNmLkWm9FSqbXRK.ActiveEffect.aPB7EyFTQRiEkGr5"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/Custom%20Icon/Swimsuit.png",
+          "name": "Swimsuit — DEX Checks",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
           "tint": "#ffffff",
           "transfer": true,
           "type": "base"
@@ -5749,7 +5863,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "2",
           "max_level": "5",
@@ -5856,7 +5970,7 @@
           "isFacet": false,
           "isHeroic": true,
           "isOffensiveSpell": true,
-          "isReaction": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Create Phantasm: Numen",

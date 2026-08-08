@@ -32,6 +32,7 @@
           "effect_label": "hc_discount"
         }
       },
+      "isReaction": true,
       "passive_logic_action": "<p>[{\"id\":\"hyper-crit-ramp\",\"label\":\"Hypercognition\",\"when\":{\"all\":[{\"actor\":{\"flagCompare\":{\"ns\":\"oni\",\"key\":\"focus.stacks\",\"op\":\">=\",\"value\":3}}}]},\"effects\":[{\"type\":\"critMult\",\"amount\":1.5},{\"type\":\"flat\",\"scope\":\"outgoing\",\"element\":\"ice\",\"amount\":250}]}]</p>",
       "reaction_config_table": {
         "0": {

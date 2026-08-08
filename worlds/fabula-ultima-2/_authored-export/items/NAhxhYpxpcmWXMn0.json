@@ -37,6 +37,7 @@
       },
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13039.gif",
       "isCheck": false,
+      "isReaction": true,
       "name": "Poisoned Dagger (gear skill)",
       "on_activate_effect_ref": "",
       "reaction_config_table": {

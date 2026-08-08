@@ -65,6 +65,7 @@
           "target_ref": "action_targets"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Excaliblur (Passive)",
       "reaction_config_table": {

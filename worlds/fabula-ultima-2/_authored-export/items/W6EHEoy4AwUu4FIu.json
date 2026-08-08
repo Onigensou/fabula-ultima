@@ -34,6 +34,7 @@
           "effect_label": "champ_stack"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Champion Gloves (Passive)",
       "reaction_config_table": {

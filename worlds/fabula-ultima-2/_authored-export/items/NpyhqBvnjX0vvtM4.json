@@ -44,6 +44,7 @@
           "effect_label": "lmallet_crush"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Lucky Mallet (Passive)",
       "reaction_config_table": {

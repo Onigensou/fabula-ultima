@@ -1678,62 +1678,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "ksZwRP9of370emug",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782624788152,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        },
-        "fabula-ultima-companion": {
-          "coreAction": "study"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
-      "name": "Cat Ears (Passive)",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "MW9Qma1EzFN4gnNY",
-        "props": {
-          "cost": "",
-          "description": "<p>Equipped passive: +2 to Study Checks.</p>",
-          "effect_table": {
-            "0": {
-              "check_buff_action": "any",
-              "check_buff_amount": "1",
-              "effect_kind": "check_buff",
-              "effect_label": "catears_any_buff"
-            }
-          },
-          "isCheck": false,
-          "isReaction": false,
-          "max_level": "1",
-          "name": "Cat Ears (Passive)",
-          "on_activate_effect_ref": "",
-          "rolled_atr1": "INS",
-          "rolled_atr2": "INS",
-          "skill_target": "",
-          "skill_type": "Passive"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": true,
-        "uniqueId": "tgcZ9aHO4LzlcxA2"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "MW9Qma1EzFN4gnNY",
       "_stats": {
         "compendiumSource": "Item.FsAN2KEgFrmQnp0g",
@@ -1743,6 +1687,118 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "ej7hDNbSsDV2aGWq",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786204421057,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "enmity",
+              "mode": 1,
+              "priority": null,
+              "value": "${isEquipped ? 0.5 : 1}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ej7hDNbSsDV2aGWq",
+              "originalParentId": "MW9Qma1EzFN4gnNY",
+              "originalUuid": "Actor.WPwExs9j90I3q2bm.Item.MW9Qma1EzFN4gnNY.ActiveEffect.ej7hDNbSsDV2aGWq"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
+          "name": "Cat Ears — Halved Enmity",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "W6gC6KQQjxzdmoGB",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786201584089,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.check_mod_dex",
+              "mode": 2,
+              "priority": null,
+              "value": "${isEquipped ? 1 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "W6gC6KQQjxzdmoGB",
+              "originalParentId": "MW9Qma1EzFN4gnNY",
+              "originalUuid": "Actor.WPwExs9j90I3q2bm.Item.MW9Qma1EzFN4gnNY.ActiveEffect.W6gC6KQQjxzdmoGB"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
+          "name": "Cat Ears — DEX Checks",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "core": {
           "sourceId": "Item.FsAN2KEgFrmQnp0g"

@@ -33,6 +33,7 @@
           "effect_label": "dfin_acc"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Dorsal Fin (Passive)",
       "reaction_config_table": {

@@ -488,6 +488,7 @@
               "effect_label": "hc_discount"
             }
           },
+          "isReaction": true,
           "level": "1",
           "name": "Hypercognition",
           "passive_logic_action": "<p>[{\"id\":\"hyper-crit-ramp\",\"label\":\"Hypercognition\",\"when\":{\"all\":[{\"actor\":{\"flagCompare\":{\"ns\":\"oni\",\"key\":\"focus.stacks\",\"op\":\">=\",\"value\":3}}}]},\"effects\":[{\"type\":\"critMult\",\"amount\":1.5},{\"type\":\"flat\",\"scope\":\"outgoing\",\"element\":\"ice\",\"amount\":250}]}]</p>",
@@ -1013,6 +1014,7 @@
               "target_ref": "lt_pick"
             }
           },
+          "isReaction": true,
           "level": "1",
           "name": "Life Transference",
           "reaction_config_table": {
@@ -1907,6 +1909,7 @@
               "target_ref": "pg_self"
             }
           },
+          "isReaction": true,
           "level": "1",
           "name": "Psychic Gifts",
           "reaction_config_table": {

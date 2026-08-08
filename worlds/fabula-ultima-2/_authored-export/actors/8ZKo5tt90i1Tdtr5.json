@@ -2280,6 +2280,7 @@
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/asan.png",
           "isCheck": false,
+          "isReaction": true,
           "name": "Muscly Arm (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {

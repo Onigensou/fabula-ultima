@@ -114,7 +114,7 @@
       },
       "isCheck": false,
       "isHeroic": false,
-      "isReaction": false,
+      "isReaction": true,
       "level": 1,
       "max_level": "1",
       "reaction_config_table": {

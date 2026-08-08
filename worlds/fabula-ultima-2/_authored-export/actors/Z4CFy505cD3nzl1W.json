@@ -475,7 +475,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
@@ -1473,7 +1473,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "2",
           "max_level": "2",
@@ -3292,7 +3292,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": 7,
           "max_level": "10",
@@ -4592,7 +4592,7 @@
           "isFacet": false,
           "isHeroic": true,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
@@ -4990,7 +4990,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
@@ -5157,7 +5157,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": 1,
           "max_level": "1",
@@ -5259,6 +5259,7 @@
             }
           },
           "isCheck": false,
+          "isReaction": true,
           "name": "Bandit Gloves (gear skill)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
@@ -7008,6 +7009,7 @@
             }
           },
           "isCheck": false,
+          "isReaction": true,
           "name": "Cursed Sword (gear skill)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
@@ -8370,6 +8372,7 @@
             }
           },
           "isCheck": false,
+          "isReaction": true,
           "name": "Skull Orb",
           "on_activate_effect_ref": "",
           "reaction_config_table": {

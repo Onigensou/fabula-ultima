@@ -130,7 +130,7 @@
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "level": "3",
       "max_level": "3",
       "name": "Cataclysm",

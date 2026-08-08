@@ -144,6 +144,7 @@
       },
       "id": "UoFV3k6ELMKMLhRB",
       "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "menu_hidden": true,

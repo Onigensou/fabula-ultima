@@ -39,6 +39,7 @@
           "target_ref": "pe_self"
         }
       },
+      "isReaction": true,
       "reaction_config_table": {
         "0": {
           "$deleted": false,

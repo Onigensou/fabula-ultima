@@ -185,6 +185,7 @@
               "target_ref": "self"
             }
           },
+          "isReaction": true,
           "max_level": "1",
           "name": "Looting Bow (Passive)",
           "reaction_config_table": {

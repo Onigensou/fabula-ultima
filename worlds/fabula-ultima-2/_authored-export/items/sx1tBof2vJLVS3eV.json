@@ -42,6 +42,7 @@
           "effect_label": "pan_cook"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Frying Pan (Passive)",
       "reaction_config_table": {

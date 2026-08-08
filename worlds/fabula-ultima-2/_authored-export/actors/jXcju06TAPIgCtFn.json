@@ -719,6 +719,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Follow my lead",
@@ -1020,6 +1021,7 @@
               "target_ref": "self"
             }
           },
+          "isReaction": true,
           "level": "4",
           "max_level": "10",
           "name": "Dance",
@@ -2198,6 +2200,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "2",
           "max_level": "3",
           "name": "Linked Invocation",

@@ -43,6 +43,7 @@
           "effect_label": "bloodmail_resist"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Blood Mail (Passive)",
       "reaction_config_table": {

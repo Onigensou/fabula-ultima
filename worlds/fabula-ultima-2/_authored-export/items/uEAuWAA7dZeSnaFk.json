@@ -33,6 +33,7 @@
           "effect_label": "lrod_strike"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Lightning Rod (Passive)",
       "reaction_config_table": {

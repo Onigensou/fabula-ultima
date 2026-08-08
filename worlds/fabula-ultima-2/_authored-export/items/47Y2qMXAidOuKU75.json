@@ -34,6 +34,7 @@
           "effect_label": "viper_offturn"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Viper Bone (Passive)",
       "reaction_config_table": {

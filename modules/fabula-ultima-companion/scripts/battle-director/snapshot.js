@@ -138,6 +138,18 @@ export function readPropNum(actor, keys, fallback = 0) {
 }
 
 // Look up a CSB attribute die size for an actor. Default to d8.
+// RAW: the attribute die ladder tops out at d12 — "increase by one die size"
+// is explicitly capped there (Blue Bovine's own text says "to a maximum of
+// D12"). Nothing enforced that: a +2 `mig_current` buff on someone already at
+// d12 produced a d14, which is not a Fabula die at all. Measured 2026-08-08 —
+// no actor in the world stores a value above 12, so this clamp is a no-op on
+// existing data and only stops a BUFF from overshooting.
+//
+// Clamped at the READ, not in each buff's formula: the cap has to apply to the
+// TOTAL of however many buffs stack, which no single AE can see. Twin of the
+// clamp in cr-api's getDieSize — keep the two in step.
+const MAX_ATTR_DIE = 12;
+
 export function attrDieSize(actor, key) {
   if (!actor) return 8;
   const A = String(key || "").toUpperCase();
@@ -160,7 +172,7 @@ export function attrDieSize(actor, key) {
   for (const c of candidates) {
     const s = String(c ?? "").replace(/[^0-9]/g, "");
     const n = Number(s);
-    if (Number.isFinite(n) && n >= 4) return n;
+    if (Number.isFinite(n) && n >= 4) return Math.min(n, MAX_ATTR_DIE);
   }
   return 8;
 }

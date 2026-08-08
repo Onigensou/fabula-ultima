@@ -1,0 +1,55 @@
+{
+  "_id": "ykiMgQjWE6X92oc1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786201493860,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/item-bag.svg",
+  "name": "Milky Holstein — Equipment Set",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "isSet": false,
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Milk also cures 1 condition",
+          "bonus_skill_ref": "Soothing Cream",
+          "pieces": "2"
+        },
+        "1": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Milk restores +10% Max HP",
+          "bonus_skill_ref": "Rich Cream",
+          "pieces": "3"
+        },
+        "2": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Turn start: heal party 10% Max HP",
+          "bonus_skill_ref": "Herd's Vigil",
+          "pieces": "4"
+        }
+      },
+      "set_name": "Milky Holstein"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "ykiMgQjWE6X92oc1"
+  },
+  "type": "equippableItem"
+}

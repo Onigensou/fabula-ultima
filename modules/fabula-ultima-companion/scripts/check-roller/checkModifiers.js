@@ -91,9 +91,11 @@
       }
     }
 
+    const rolled = new Set();
     for (const raw of attributes ?? []) {
       const attr = String(raw ?? "").trim().toLowerCase();
       if (!ATTRS.has(attr)) continue;
+      rolled.add(attr);
       const key = `check_mod_${attr}`;
       if (spent.has(key)) continue;
       spent.add(key);
@@ -101,7 +103,33 @@
       if (val !== 0) parts.push({ label: `Check Bonus (${attr.toUpperCase()})`, value: val });
     }
 
+    for (const p of anyOfParts(actor, rolled)) parts.push(p);
+
     return parts;
+  }
+
+  // `check_mod_anyof_<a>_<b>…` — ONE bonus that pays ONCE when the check rolls
+  // ANY of the listed dice. Handy Knives ("+2 to checks that require 【DEX】 or
+  // 【INS】") is why this exists: expressed as two separate check_mod_dex /
+  // check_mod_ins keys, a DEX+INS check collects both and pays +4, which the
+  // item does not say. One key can only be counted once, so the cap is
+  // structural rather than a special case in the reader.
+  function anyOfParts(actor, rolled) {
+    if (!rolled?.size) return [];
+    const flags = actor?.flags?.[MODULE_ID];
+    if (!flags || typeof flags !== "object") return [];
+    const out = [];
+    for (const key of Object.keys(flags)) {
+      const m = /^check_mod_anyof_([a-z_]+)$/.exec(key);
+      if (!m) continue;
+      const listed = m[1].split("_").filter((a) => ATTRS.has(a));
+      if (!listed.length || !listed.some((a) => rolled.has(a))) continue;
+      const val = safeNum(flags[key]);
+      if (val !== 0) {
+        out.push({ label: `Check Bonus (${listed.map((a) => a.toUpperCase()).join("/")})`, value: val });
+      }
+    }
+    return out;
   }
 
   ROOT.ONI.CheckModifiers = { resolve };

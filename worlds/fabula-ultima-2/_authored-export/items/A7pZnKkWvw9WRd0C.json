@@ -36,6 +36,7 @@
           "effect_label": "minotaur_conquer"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Minotaurus Axe (Passive)",
       "optional_params": {},

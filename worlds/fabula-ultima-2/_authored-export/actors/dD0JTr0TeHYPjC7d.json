@@ -333,6 +333,7 @@
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Counterattack",

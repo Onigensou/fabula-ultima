@@ -40,6 +40,7 @@
           "effect_label": "persuader_talk"
         }
       },
+      "isReaction": true,
       "max_level": "1",
       "name": "Persuader (Passive)",
       "reaction_config_table": {
