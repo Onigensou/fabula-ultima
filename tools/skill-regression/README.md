@@ -107,9 +107,12 @@ can't cover this because it runs game-*closed* and this check needs the game
 - **PostToolUse** (`hooks/on-skill-edit.js`) — on an Edit/Write to a Battle-
   Director skill-engine file (`skill-*.js`, `*reaction*`/`*reactor*`,
   `state-handlers.js`, `states.js`, `damage-ruleset.js`, `card-mutations.js`,
-  `template-field-registry.js`) or `worlds/fabula-ultima-2/data/actors/**`,
-  writes a session marker (`.state/pending.json`, gitignored). Cheap; never blocks.
-- **Stop** (`hooks/regression-gate.js`) — at end of a turn that set the marker:
+  `template-field-registry.js`), writes a session marker
+  (`.state/pending.json`, gitignored). Cheap; never blocks. Its
+  `worlds/.../data/actors/**` branch is a **backstop only** — see the data
+  witness below for why it can never fire on its own.
+- **Stop** (`hooks/regression-gate.js`) — at end of a turn that set the marker
+  **or in which actor data changed**:
   engine code **semantically unchanged** since the last completed check → clear
   the marker, one-line note, **skip the sweep** (see below);
   game **closed** → keep the marker + print a one-line "deferred" reminder;
@@ -145,6 +148,47 @@ verdict.
   `node --check`-parse after stripping). Any confusion in it changes the hash
   rather than preserving it, so the failure direction is a **redundant run**,
   never a missed regression.
+
+#### The data witness — why authoring now schedules a check at all
+
+The PostToolUse trigger can only see `Edit|Write|MultiEdit`, and world actor data
+is never written that way: game-open writes go through the test-bridge (evalGM,
+invoked from Bash) and game-closed writes go through safe-edit (a Node script,
+also Bash). So its `worlds/.../data/actors/**` branch **never fired once** —
+authoring a skill scheduled no regression check, and the golden went stale until
+someone ran `check` by hand. Matching `Bash` instead would mean sniffing
+arbitrary command strings for "did this write actor data", which fails silently
+in the wrong direction.
+
+`lib/data-witness.js` has the **writers report** instead, each from the one
+chokepoint it owns:
+
+| when | who reports | how |
+|---|---|---|
+| game OPEN | `_test-bridge.js` | Foundry's own document hooks → a monotonic counter in the heartbeat (`state.json`) |
+| game CLOSED | `tools/safe-edit/lib/db.js` | first write to the `actors` collection bumps `.state/data-writes.json` |
+| game CLOSED | `world-pack install` | announces the wholesale collection swap by hand (it moves shard files, bypassing `db.js`) |
+
+Because the open-game half rides Foundry's hooks, it covers **sheet edits and
+other modules**, not just our own scripts. The two counters combine into one key
+stored beside the engine hash in `.state/verified.json`; the gate skips only when
+**both** still match, and it now runs on a data change even with no marker at all.
+
+- **Play churn is deliberately excluded**, or a live session would sweep every
+  turn: `updateActor` is not watched (that is where hp/mp/resources live), an
+  item update must touch `name`/`system.props`/a CSB or companion flag, and an
+  ActiveEffect must be a `transfer` AE or carry a `reactionConfig` — a plain
+  combat status is play, not authoring.
+- **Counter unavailable ⇒ fall back, don't sweep.** An older module still loaded
+  in the browser, or a boot that could not seed its counter from the previous
+  heartbeat, reports `seeded:false`; the gate then decides on the engine hash
+  alone — exactly the behavior that existed before this — rather than sweeping
+  every turn until someone reloads.
+- The counter **survives a reload** (seeded from the previous heartbeat), so an
+  ordinary F5 does not cost a sweep. Flushing is leading-edge plus a 2 s trailing
+  edge, so the first write of a burst reaches disk in milliseconds — a
+  trailing-only debounce would lose the bump entirely if the page reloaded inside
+  the window, and authoring-then-reloading is routine here.
 
 Typical loop: `capture` once on a known-good engine → refactor → `check`. A clean
 run prints `✓ no behavioral changes`; a dirty run lists NEW / REMOVED / CHANGED

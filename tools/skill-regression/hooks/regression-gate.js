@@ -4,7 +4,15 @@
 // skill-engine code or world skill data (marker written by on-skill-edit.js),
 // re-run the compute-mode regression check and surface any drift.
 //
-//   • marker absent            → exit 0 (nothing changed this turn).
+//   • marker absent AND actor
+//     data unchanged            → exit 0 (nothing changed this turn).
+//   • actor data changed        → run, even with no marker. The PostToolUse
+//                                trigger only sees Edit/Write, and world data is
+//                                written through the bridge or safe-edit (both
+//                                Bash), so its `data/actors/**` branch never
+//                                fired once and authoring scheduled no check at
+//                                all. lib/data-witness.js reads the counter the
+//                                WRITERS publish instead.
 //   • engine code semantically
 //     unchanged since the last
 //     completed check           → clear marker, one-line note, exit 0. The sweep
@@ -39,6 +47,7 @@ const { spawnSync } = require("child_process");
 const ROOT = path.resolve(__dirname, "..");
 const { bridgeAlive } = require(path.join(ROOT, "lib", "bridge.js"));
 const { engineFingerprint, readVerified, recordVerified } = require(path.join(ROOT, "lib", "engine-fingerprint.js"));
+const { dataWitness } = require(path.join(ROOT, "lib", "data-witness.js"));
 
 const MARKER = path.join(ROOT, ".state", "pending.json");
 const clearMarker = () => { try { fs.unlinkSync(MARKER); } catch {} };
@@ -46,19 +55,31 @@ const clearMarker = () => { try { fs.unlinkSync(MARKER); } catch {} };
 // Consume (and ignore) stdin so the parent isn't left writing to a closed pipe.
 try { fs.readFileSync(0, "utf8"); } catch {}
 
-if (!fs.existsSync(MARKER)) process.exit(0);
-
-let marker = {};
-try { marker = JSON.parse(fs.readFileSync(MARKER, "utf8")); } catch {}
-const kinds = Object.keys(marker.kinds || {}).join("+") || "skill";
-
-// ── cheap semantic gate, before anything that costs time ────────────────────
-// Only safe when the marker is engine-ONLY: the hash covers battle-director
-// source, so a world-data edit must always fall through to the real check.
 const fp = engineFingerprint();
 const verified = readVerified();
 
-if (fp.hash && !marker.kinds?.data && verified && verified.hash === fp.hash) {
+// ── did actor data change since the verdict we're holding? ──────────────────
+// `supported:false` = the in-page watcher isn't reporting (old module still
+// loaded in the browser, or a boot that couldn't seed its counter). Then the
+// data half is simply unavailable and we decide on the engine hash alone —
+// the state everything was in before this existed — rather than sweeping every
+// turn until someone reloads Foundry.
+const witness = dataWitness();
+const dataChanged = witness.supported && (!verified || verified.dataKey !== witness.key);
+
+const hasMarker = fs.existsSync(MARKER);
+if (!hasMarker && !dataChanged) process.exit(0);
+
+let marker = {};
+if (hasMarker) { try { marker = JSON.parse(fs.readFileSync(MARKER, "utf8")); } catch {} }
+const kindList = Object.keys(marker.kinds || {});
+if (dataChanged && !kindList.includes("data")) kindList.push("data");
+const kinds = kindList.join("+") || "skill";
+
+// ── cheap semantic gate, before anything that costs time ────────────────────
+// Only safe when NOTHING on the data side moved: the hash covers battle-director
+// source, so an actor-data change must always fall through to the real check.
+if (fp.hash && !dataChanged && !marker.kinds?.data && verified && verified.hash === fp.hash) {
   const when = verified.at ? ` (checked ${verified.at})` : "";
   const unchanged = `engine code is semantically unchanged since the last check${when} — comments/formatting only, sweep skipped`;
   // The skip carries forward the LAST verdict, and that verdict may have been
@@ -74,7 +95,12 @@ if (fp.hash && !marker.kinds?.data && verified && verified.hash === fp.hash) {
 }
 
 if (!bridgeAlive()) {
-  process.stderr.write(`⏳ skill-regression: ${kinds} changed this turn but Foundry is closed — regression check deferred until the world is open (marker kept).\n`);
+  // A data-only trigger needs no marker to survive: `dataChanged` is derived by
+  // comparing against the verdict we're still holding, so it stays true on every
+  // later turn until a check actually runs. The marker is only what carries an
+  // ENGINE edit forward.
+  const kept = hasMarker ? " (marker kept)" : "";
+  process.stderr.write(`⏳ skill-regression: ${kinds} changed this turn but Foundry is closed — regression check deferred until the world is open${kept}.\n`);
   process.exit(0);
 }
 
@@ -146,7 +172,15 @@ clearMarker();
 // The check DID evaluate this exact code; re-running it next turn would only
 // reprint the same 12 lines at a 22-minute cost. Deliberately NOT recorded when
 // the run failed to produce a verdict (above), so that case retries.
-recordVerified({ total: counts.total, drift: counts.added + counts.removed + counts.changed, by: "stop-hook" }, fp);
+// `witness` was sampled BEFORE the run, deliberately: recording the post-run
+// value would swallow any actor write that landed while the check was in
+// flight. Sampling first means such a write still reads as "changed" next turn.
+recordVerified({
+  total: counts.total,
+  drift: counts.added + counts.removed + counts.changed,
+  by: "stop-hook",
+  dataKey: witness.key,
+}, fp);
 
 if (!counts.added && !counts.removed && !counts.changed) {
   process.stderr.write(`✓ skill-regression: ${counts.total} skills checked after ${kinds} edit — no behavioral drift.\n`);

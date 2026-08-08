@@ -163,6 +163,13 @@ async function main() {
     try {
       const liveKeys = await dbKeyCount(live);
       if (liveKeys !== srcKeys) throw new Error(`post-install key count ${liveKeys} != ${srcKeys}`);
+      // A wholesale collection swap bypasses lib/db.js entirely (it moves shard
+      // FILES), so announce it by hand or the regression gate would never learn
+      // that every actor just changed. After the rollback branch, not before —
+      // a rolled-back install changed nothing.
+      if (collection === "actors") {
+        try { require("../../skill-regression/lib/data-witness").bumpLocal("world-pack install actors"); } catch {}
+      }
       console.log(`\n✓ installed ${collection} (${liveKeys} keys). Backup: ${path.relative(REPO_ROOT, backup)}`);
       console.log(`  Re-open Foundry to confirm, then close + \`world-export report\` before committing.`);
     } catch (e) {

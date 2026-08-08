@@ -19,6 +19,11 @@ const { isEngineFile } = require(path.resolve(__dirname, "..", "lib", "engine-fi
 const STATE_DIR = path.resolve(__dirname, "..", ".state");
 const MARKER = path.join(STATE_DIR, "pending.json");
 
+// Backstop only. World actor data is binary LevelDB written through the bridge
+// or safe-edit — both Bash — and this hook's matcher is Edit|Write|MultiEdit, so
+// this branch has never actually fired. Real coverage comes from the writers
+// themselves via lib/data-witness.js, which the Stop-hook gate reads directly.
+// Kept because it costs nothing and stays correct if a path ever IS hand-edited.
 const DATA_RE = /[\\/]worlds[\\/]fabula-ultima-2[\\/]data[\\/]actors[\\/]/i;
 
 function readStdin() {

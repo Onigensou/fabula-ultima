@@ -104,6 +104,24 @@
   // oblivion by Electron/Chromium background suspension.
   let lastPollTickAt = 0;
   let watchdogTimer = null;
+  // ── skill-surface witness ─────────────────────────────────────────────────
+  // A monotonic counter of changes that could move a skill-regression
+  // fingerprint, published in the heartbeat so the Stop-hook gate can tell
+  // "actor data changed" from "only engine code changed". Foundry's own
+  // document hooks are the source of truth, so this covers sheet edits and
+  // other modules, not just bridge-driven authoring.
+  //
+  // `seeded` says the counter continues the previous boot's value (read back
+  // from state.json). Unseeded it restarts at 0, which is NOT comparable with a
+  // key recorded before the reload — the gate treats that as "unknown" and
+  // falls back to the engine-hash decision rather than trusting a false match.
+  let skillSurface = { seq: 0, at: null, last: null, seeded: false };
+  let surfaceFlushTimer = null;
+  let surfaceFlushAt = 0;
+  let surfaceHooked = false;
+  // Burst window for the flush. Authoring writes arrive in bursts (one skill =
+  // several item/AE writes); this coalesces a burst into one extra upload.
+  const SURFACE_FLUSH_MS = 2000;
   // Watchdog cadence + the staleness threshold that triggers re-arming.
   // 60s = 30× the idle poll interval, so we only re-arm on genuine breakage,
   // never on normal cadence variation.
@@ -321,13 +339,108 @@
       worldId: game.world.id,
       pollIntervalActiveMs: POLL_INTERVAL_ACTIVE_MS,
       pollIntervalIdleMs: POLL_INTERVAL_IDLE_MS,
-      processedThisSession: processed.size
+      processedThisSession: processed.size,
+      skillSurface: { ...skillSurface }
     };
     try {
       await uploadJson(worldDir(), "state.json", state);
     } catch (e) {
       // Heartbeat failures are non-fatal; the next tick retries.
     }
+  }
+
+  // ------------------------------------------------------------------------
+  // Skill-surface watcher — see the `skillSurface` declaration above.
+  // ------------------------------------------------------------------------
+
+  // Continue the previous boot's count so the gate can compare across reloads.
+  // A missing/blank previous heartbeat leaves `seeded:false`, which the reader
+  // treats as "unknown" rather than "unchanged".
+  async function seedSkillSurface() {
+    try {
+      const prev = await fetchJson(`/${worldDir()}/state.json?ts=${Date.now()}`);
+      const seq = Number(prev?.skillSurface?.seq);
+      if (Number.isFinite(seq) && seq >= 0) {
+        skillSurface = { seq, at: prev.skillSurface.at ?? null, last: prev.skillSurface.last ?? null, seeded: true };
+        return;
+      }
+      // A heartbeat that predates this field is a legitimate first run, not a
+      // lost count — start clean and comparable.
+      skillSurface = { seq: 0, at: null, last: null, seeded: true };
+    } catch {
+      skillSurface = { seq: 0, at: null, last: null, seeded: false };
+      console.warn(`${TAG} could not seed the skill-surface counter — the regression gate will not skip on data this boot.`);
+    }
+  }
+
+  // LEADING edge + trailing edge, deliberately. A trailing-only debounce loses
+  // the bump entirely if the page reloads inside the window — and authoring
+  // then reloading is a routine move here, so "seq never reached disk" would
+  // leave the gate comparing two stale-but-equal keys and skipping a sweep it
+  // owed. Flushing the first bump of a burst immediately keeps that window at
+  // milliseconds; the trailing flush then folds in the rest of the burst.
+  function flushSkillSurfaceSoon() {
+    const now = Date.now();
+    const since = now - surfaceFlushAt;
+    const write = async () => {
+      surfaceFlushAt = Date.now();
+      try { await writeHeartbeat(); lastHeartbeatAt = Date.now(); } catch {}
+    };
+    if (since >= SURFACE_FLUSH_MS) { void write(); return; }
+    if (surfaceFlushTimer) return;
+    surfaceFlushTimer = setTimeout(() => { surfaceFlushTimer = null; void write(); }, SURFACE_FLUSH_MS - since);
+  }
+
+  function noteSkillSurfaceChange(what) {
+    skillSurface = {
+      seq: skillSurface.seq + 1,
+      at: new Date().toISOString(),
+      last: String(what).slice(0, 160),
+      seeded: skillSurface.seeded,
+    };
+    flushSkillSurfaceSoon();
+  }
+
+  // Does this update payload touch AUTHORED content? Play writes hp/mp/ip and
+  // battle logs constantly; treating those as authoring would sweep on every
+  // turn of a live session. flattenObject normalizes both nested and dotted
+  // update forms, so `{system:{props:{x:1}}}` and `{"system.props.x":1}` match.
+  function touchesAuthoring(changes) {
+    let keys;
+    try { keys = Object.keys(foundry.utils.flattenObject(changes || {})); }
+    catch { return true; }   // unparseable → assume it mattered
+    return keys.some((k) =>
+      k === "name" ||
+      k.startsWith("system.props") ||
+      k.startsWith("flags.custom-system-builder") ||
+      k.startsWith("flags.fabula-ultima-companion"));
+  }
+
+  const onActor = (doc) =>
+    doc?.parent?.documentName === "Actor" || doc?.parent?.parent?.documentName === "Actor";
+
+  // Only AEs that can change a compute result: a transfer AE (gear/passive
+  // grants, including the equip toggle that flips `disabled`) or one carrying a
+  // reaction config. A plain combat status is play, not authoring.
+  const aeMatters = (ae) =>
+    ae?.transfer === true || !!ae?.flags?.["fabula-ultima-companion"]?.reactionConfig;
+
+  function watchSkillSurface() {
+    if (surfaceHooked) return;
+    surfaceHooked = true;
+    Hooks.on("createItem", (doc) => { if (onActor(doc)) noteSkillSurfaceChange(`+item ${doc.name}`); });
+    Hooks.on("deleteItem", (doc) => { if (onActor(doc)) noteSkillSurfaceChange(`-item ${doc.name}`); });
+    Hooks.on("updateItem", (doc, changes) => {
+      if (onActor(doc) && touchesAuthoring(changes)) noteSkillSurfaceChange(`~item ${doc.name}`);
+    });
+    Hooks.on("createActiveEffect", (ae) => { if (onActor(ae) && aeMatters(ae)) noteSkillSurfaceChange(`+ae ${ae.name}`); });
+    Hooks.on("deleteActiveEffect", (ae) => { if (onActor(ae) && aeMatters(ae)) noteSkillSurfaceChange(`-ae ${ae.name}`); });
+    Hooks.on("updateActiveEffect", (ae) => { if (onActor(ae) && aeMatters(ae)) noteSkillSurfaceChange(`~ae ${ae.name}`); });
+    // The bench roster is a live predicate over the actor list, so the roster
+    // itself changing is a surface change. `updateActor` is deliberately NOT
+    // watched — that is where resource churn lives.
+    Hooks.on("createActor", (doc) => noteSkillSurfaceChange(`+actor ${doc.name}`));
+    Hooks.on("deleteActor", (doc) => noteSkillSurfaceChange(`-actor ${doc.name}`));
   }
 
   // Re-entrancy guard. `pollInbox` awaits `handleRequest`, so one long request
@@ -839,6 +952,11 @@
     // leftovers up and re-executes them.
     await quarantineStaleInbox();
 
+    // Seed BEFORE the first heartbeat, or that heartbeat publishes seq 0 and
+    // overwrites the previous boot's count we are trying to continue from.
+    await seedSkillSurface();
+    watchSkillSurface();
+
     await writeHeartbeat();
 
     scheduleNextPoll();
@@ -927,6 +1045,11 @@
   window.addEventListener("pagehide", () => {
     if (pollTimer) { try { clearTimeout(pollTimer); } catch {} pollTimer = null; }
     if (watchdogTimer) { try { clearInterval(watchdogTimer); } catch {} watchdogTimer = null; }
+    // A pending TRAILING flush can't complete during the close handshake; drop
+    // it rather than let it race the teardown. Safe because the burst's leading
+    // flush already put a bumped seq on disk — what is lost is at most the tail
+    // of a burst that already registered as "changed".
+    if (surfaceFlushTimer) { try { clearTimeout(surfaceFlushTimer); } catch {} surfaceFlushTimer = null; }
   }, { capture: true });
 
   // Expose a tiny inspection API for the console / other modules.

@@ -22,6 +22,10 @@ const fs = require("fs");
 const path = require("path");
 const { evalGM, bridgeAlive } = require("../lib/bridge");
 const { recordVerified } = require("../lib/engine-fingerprint");
+// Sampled at process start, BEFORE anything runs, so an actor write that lands
+// mid-run still reads as "changed" on the next gate evaluation.
+const { dataWitness } = require("../lib/data-witness");
+const DATA_KEY = dataWitness().key;
 
 const ROOT = path.resolve(__dirname, "..");
 const COLLECT_SRC = fs.readFileSync(path.join(ROOT, "lib", "collect.js"), "utf8");
@@ -228,7 +232,7 @@ async function main() {
     // A full capture makes current == golden by definition, so it establishes a
     // verdict for this engine source just as a clean check does — tell the
     // Stop-hook gate, or it re-sweeps 22 min for a state we just baselined.
-    if (!a.caster && !a.limit) recordVerified({ total: result.count, drift: 0, by: "capture" });
+    if (!a.caster && !a.limit) recordVerified({ total: result.count, drift: 0, by: "capture", dataKey: DATA_KEY });
     console.log(`✓ captured ${result.count} skills (${result.mode} mode, scene "${result.scene}", casters: ${result.casters.join(", ")}) in ${(result.tookMs / 1000).toFixed(1)}s`);
     console.log(`  engine ${result.engineVersion} · errors: ${result.errorCount} · wrote ${path.relative(process.cwd(), file)}`);
     if (result.errorCount) console.log(`  (errored skills are recorded as fingerprints too — a change in error is still a regression signal)`);
@@ -242,7 +246,7 @@ async function main() {
     if (a.teardown) await teardownBench(a);
     if (a.update) {
       writeGoldens(file, result);
-      if (!a.caster && !a.limit) recordVerified({ total: result.count, drift: 0, by: "check --update" });
+      if (!a.caster && !a.limit) recordVerified({ total: result.count, drift: 0, by: "check --update", dataKey: DATA_KEY });
       console.log(`✓ goldens updated to current behavior (${result.count} skills).`);
       return 0;
     }
@@ -266,7 +270,7 @@ async function main() {
     }
     // Only a FULL run licenses the gate's skip — a --caster/--limit subset says
     // nothing about the rest of the catalog.
-    if (!partial) recordVerified({ total: result.count, drift: added.length + removed.length + changed.length, by: "check" });
+    if (!partial) recordVerified({ total: result.count, drift: added.length + removed.length + changed.length, by: "check", dataKey: DATA_KEY });
     if (a.json) {
       console.log(JSON.stringify({ partial, added, removed, changed, counts: { added: added.length, removed: removed.length, changed: changed.length, total: result.count } }, null, 2));
     } else {
