@@ -128,9 +128,11 @@
         const existing = targetActor.effects.find(
           e => e.flags?.[MODULE_ID]?.combatLessonBonus != null
         );
-        if (existing) await existing.delete();
-
-        await targetActor.createEmbeddedDocuments("ActiveEffect", [{
+        // Refresh in place rather than delete+create: under CSB every document
+        // write forces a full actor re-derivation, so replacing cost two cycles.
+        // Equivalent because this payload fully specifies the effect and writes
+        // the same flag key set the stale one carries.
+        const effectData = {
           name:        "Combat Lesson",
           img:         LESSON_ICON,
           description: `Once before the next rest, after making an Accuracy Check or a Magic Check for an offensive spell, you may add +${bonus} to the Result of the Check.`,
@@ -145,7 +147,9 @@
               combatLessonTeacherId: actor.id,
             },
           },
-        }]);
+        };
+        if (existing) await existing.update(effectData);
+        else await targetActor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
         // 9 — Chat announcement
         await _postChatResult(actor, targetActor, teacherTotal, targetTotal, bonus);

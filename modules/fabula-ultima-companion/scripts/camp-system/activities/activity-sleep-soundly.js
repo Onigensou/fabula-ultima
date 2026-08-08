@@ -141,10 +141,12 @@
         const existing = actor.effects.find(
           e => e.flags?.[MODULE_ID]?.sleepSoundlyActive === true
         );
-        if (existing) await existing.delete();
-
         const chargesWord = charges === 1 ? "once" : charges === 2 ? "twice" : "three times";
-        await actor.createEmbeddedDocuments("ActiveEffect", [{
+        // Refresh in place rather than delete+create: under CSB every document
+        // write forces a full actor re-derivation, so replacing cost two cycles.
+        // Equivalent because this payload fully specifies the effect and writes
+        // the same flag key set the stale one carries.
+        const effectData = {
           name:        "Sleep Soundly",
           img:         SLEEP_SOUNDLY_ICON,
           description: `${chargesWord.charAt(0).toUpperCase() + chargesWord.slice(1)} before the next rest, you may perform an additional Equipment, Hinder, or Inventory action during a conflict scene.`,
@@ -159,7 +161,9 @@
               sleepSoundlyCharges: charges,
             },
           },
-        }]);
+        };
+        if (existing) await existing.update(effectData);
+        else await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
         // 4 — Broadcast full result to all clients
         CAMP.Socket.broadcast(CAMP.MSG.SLEEP_SOUNDLY_RESULT, {

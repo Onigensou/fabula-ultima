@@ -93,9 +93,11 @@
         const existing = targetActor.effects.find(
           e => e.flags?.[MODULE_ID]?.massageReduction != null
         );
-        if (existing) await existing.delete();
-
-        await targetActor.createEmbeddedDocuments("ActiveEffect", [{
+        // Refresh in place rather than delete+create: under CSB every document
+        // write forces a full actor re-derivation, so replacing cost two cycles.
+        // Equivalent because this payload fully specifies the effect and writes
+        // the same flag key set the stale one carries.
+        const effectData = {
           name:        "Massage",
           img:         MASSAGE_ICON,
           description: `Once before the next rest, when you are about to pay an MP cost, you may reduce that cost by ${reduction}% (minimum 0). Cannot apply to a Ritual's MP cost.`,
@@ -110,7 +112,9 @@
               massageCasterId:  actor.id,
             },
           },
-        }]);
+        };
+        if (existing) await existing.update(effectData);
+        else await targetActor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
         // 9 — Broadcast result to all clients
         CAMP.Socket.broadcast(CAMP.MSG.MASSAGE_RESULT, {

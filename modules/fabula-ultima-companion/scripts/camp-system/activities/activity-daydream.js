@@ -62,9 +62,11 @@
         const existing = actor.effects.find(
           e => e.flags?.[MODULE_ID]?.daydreamReduction != null
         );
-        if (existing) await existing.delete();
-
-        await actor.createEmbeddedDocuments("ActiveEffect", [{
+        // Refresh in place rather than delete+create: under CSB every document
+        // write forces a full actor re-derivation, so replacing cost two cycles.
+        // Equivalent because this payload fully specifies the effect and writes
+        // the same flag key set the stale one carries.
+        const effectData = {
           name:        "Daydream",
           img:         DAYDREAM_ICON,
           description: `Once before the next rest, when you lose HP for any reason, you may choose to reduce that HP loss by ${reduction}%.`,
@@ -78,7 +80,9 @@
               daydreamReduction: reduction,
             },
           },
-        }]);
+        };
+        if (existing) await existing.update(effectData);
+        else await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
         // 6 — Broadcast full result to all clients (triggers reveal stage in UI)
         CAMP.Socket.broadcast(CAMP.MSG.DAYDREAM_RESULT, {

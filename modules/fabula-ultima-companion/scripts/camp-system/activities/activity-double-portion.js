@@ -103,8 +103,6 @@
         const existing = targetActor.effects.find(
           e => e.flags?.[MODULE_ID]?.doublePortionMultiplier != null
         );
-        if (existing) await existing.delete();
-
         const effectDesc =
           multiplier === 3
             ? `Once before the next rest, if you are about to recover Hit Points, you may triple the amount recovered.`
@@ -112,7 +110,11 @@
             ? `Once before the next rest, if you are about to recover Hit Points, you may double the amount recovered.`
             : `Once before the next rest, when you recover Hit Points, you gain a small additional bonus (+5 HP).`;
 
-        await targetActor.createEmbeddedDocuments("ActiveEffect", [{
+        // Refresh in place rather than delete+create: under CSB every document
+        // write forces a full actor re-derivation, so replacing cost two cycles.
+        // Equivalent because this payload fully specifies the effect and writes
+        // the same flag key set the stale one carries.
+        const effectData = {
           name:        "Double Portion",
           img:         DP_ICON,
           description: effectDesc,
@@ -128,7 +130,9 @@
               doublePortionCasterId:   actor.id,
             },
           },
-        }]);
+        };
+        if (existing) await existing.update(effectData);
+        else await targetActor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
         // 8 — Broadcast full result; GM applies reveal directly
         CAMP.Socket.broadcast(CAMP.MSG.DOUBLE_PORTION_RESULT, {

@@ -150,10 +150,12 @@
         const existing = targetActor.effects.find(
           e => e.flags?.[MODULE_ID]?.pepTalkGrade != null
         );
-        if (existing) await existing.delete();
-
         const multiplier = _gradeMultiplier(grade);
-        await targetActor.createEmbeddedDocuments("ActiveEffect", [{
+        // Refresh in place rather than delete+create: under CSB every document
+        // write forces a full actor re-derivation, so replacing cost two cycles.
+        // Equivalent because this payload fully specifies the effect and writes
+        // the same flag key set the stale one carries.
+        const effectData = {
           name:        "Pep Talk",
           img:         PEP_TALK_ICON,
           description: `Once before the next rest, when you recover Mind Points, you may multiply the amount recovered by ${multiplier === 1.5 ? "1.5" : multiplier}.`,
@@ -168,7 +170,9 @@
               pepTalkCasterId: actor.id,
             },
           },
-        }]);
+        };
+        if (existing) await existing.update(effectData);
+        else await targetActor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
         // 10 — Broadcast final result to all clients
         CAMP.Socket.broadcast(CAMP.MSG.PEP_TALK_RESULT, {

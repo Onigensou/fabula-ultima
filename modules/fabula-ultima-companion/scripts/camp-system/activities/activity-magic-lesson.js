@@ -178,9 +178,12 @@
           e => e.flags?.[MODULE_ID]?.magicLessonSpell === true &&
                e.flags?.[MODULE_ID]?.spellUuid === spellUuid
         );
-        if (existing) await existing.delete();
-
-        await targetActor.createEmbeddedDocuments("ActiveEffect", [{
+        // Refresh in place rather than delete+create: under CSB every document
+        // write forces a full actor re-derivation, so replacing cost two cycles.
+        // Equivalent because this payload fully specifies the effect and writes
+        // the same flag key set the stale one carries (including usagesLeft,
+        // which a refresh is meant to reset).
+        const effectData = {
           name:        `Magic Lesson — ${spellName}`,
           img:         LESSON_ICON,
           description: `Once before the next rest, ${targetActor.name} may cast ${spellName} (up to ${usages} time${usages > 1 ? "s" : ""}).`,
@@ -200,7 +203,9 @@
               magicLessonTeacherId:     actor.id,
             },
           },
-        }]);
+        };
+        if (existing) await existing.update(effectData);
+        else await targetActor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
         // 11 — Chat announcement
         await _postChatResult(actor, targetActor, spellName, spellImg, teacherTotal, targetTotal, usages);

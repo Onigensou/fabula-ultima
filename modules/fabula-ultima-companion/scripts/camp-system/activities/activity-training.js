@@ -192,10 +192,12 @@
         const existing = actor.effects.find(
           e => e.flags?.[MODULE_ID]?.trainingShieldActive === true
         );
-        if (existing) await existing.delete();
-
         const chargesLabel = charges === 1 ? "once" : charges === 2 ? "twice" : "three times";
-        await actor.createEmbeddedDocuments("ActiveEffect", [{
+        // Refresh in place rather than delete+create: under CSB every document
+        // write forces a full actor re-derivation, so replacing cost two cycles.
+        // Equivalent because this payload fully specifies the effect and writes
+        // the same flag key set the stale one carries.
+        const effectData = {
           name:        "Training",
           img:         TRAINING_ICON,
           description: `${chargesLabel.charAt(0).toUpperCase() + chargesLabel.slice(1)} before the next rest, if you are about to suffer one or more status effects from the same source, you may instead choose not to suffer any of them.`,
@@ -210,7 +212,9 @@
               trainingShieldActive: true,
             },
           },
-        }]);
+        };
+        if (existing) await existing.update(effectData);
+        else await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
         // 6 — Broadcast full result to all clients
         CAMP.Socket.broadcast(CAMP.MSG.TRAINING_RESULT, {

@@ -188,9 +188,11 @@
         const existing = targetActor.effects.find(
           e => e.flags?.[MODULE_ID]?.planningBonus != null
         );
-        if (existing) await existing.delete();
-
-        await targetActor.createEmbeddedDocuments("ActiveEffect", [{
+        // Refresh in place rather than delete+create: under CSB every document
+        // write forces a full actor re-derivation, so replacing cost two cycles.
+        // Equivalent because this payload fully specifies the effect and writes
+        // the same flag key set the stale one carries.
+        const effectData = {
           name:        "Planning",
           img:         PLANNING_ICON,
           description: `Once before the next rest, after you perform a Group Check as leader or a Check to examine someone/something, you may add +${bonus} to the Result.`,
@@ -205,7 +207,9 @@
               planningCasterId: actor.id,
             },
           },
-        }]);
+        };
+        if (existing) await existing.update(effectData);
+        else await targetActor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
         // 11 — Broadcast final result; GM shows directly
         CAMP.Socket.broadcast(CAMP.MSG.PLANNING_RESULT, {

@@ -136,9 +136,11 @@
         const existing = actor.effects.find(
           e => e.flags?.[MODULE_ID]?.martialPracticeActive === true
         );
-        if (existing) await existing.delete();
-
-        await actor.createEmbeddedDocuments("ActiveEffect", [{
+        // Refresh in place rather than delete+create: under CSB every document
+        // write forces a full actor re-derivation, so replacing cost two cycles.
+        // Equivalent because this payload fully specifies the effect and writes
+        // the same flag key set the stale one carries.
+        const effectData = {
           name:        "Martial Practice",
           img:         ICON,
           description: `Once before the next rest, when you perform an attack you may grant that attack multi (${multiValue}) or increase its multi property to ${multiValue}.`,
@@ -153,7 +155,9 @@
               martialPracticeMulti:  multiValue,
             },
           },
-        }]);
+        };
+        if (existing) await existing.update(effectData);
+        else await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
         // 4 — Broadcast full result to all clients
         CAMP.Socket.broadcast(CAMP.MSG.MARTIAL_PRACTICE_RESULT, {
