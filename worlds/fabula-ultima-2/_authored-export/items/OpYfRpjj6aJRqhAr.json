@@ -135,7 +135,7 @@
   "system": {
     "container": "cSynFyjRWqRbgrZx",
     "props": {
-      "description": "<p>You begin the battle with <strong>Hidden</strong>. You lose it when you perform an action that targets an enemy, or when you remove this accessory — either way it does not return for the rest of the scene.</p>",
+      "description": "<p>You begin the battle with <strong>Hidden</strong>. You lose it when you perform an action that targets an enemy, or when you remove this accessory.</p>",
       "details_roller": "Show",
       "effect_table": {
         "0": {
