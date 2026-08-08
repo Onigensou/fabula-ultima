@@ -1,21 +1,21 @@
 {
-  "_id": "9vM7Xu5q3cj7EFQt",
+  "_id": "vz3tqJwPprB8hpR1",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1751456466353,
+    "createdTime": 1786229846281,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
   "flags": {
     "custom-system-builder": {
-      "version": "4.6.4"
+      "version": "3.2.4"
     }
   },
   "folder": "VzpCG9mySsd9sQSL",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
-  "name": "Mega-Remedy",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Café au Lait",
   "ownership": {
     "2vy7wrEUqBy0kzsU": 3,
     "6DmgigM5jq76r0Gd": 3,
@@ -43,9 +43,9 @@
     "yL2PQxh3R9ddt0te": 3,
     "yUfwoVmEPVdFG3AY": 3
   },
-  "sort": 3100000,
+  "sort": 3800000,
   "system": {
-    "container": null,
+    "container": "y9SdhluPlSnrKBTP",
     "props": {
       "active_effect_config_table": {},
       "aquatic_ef": "100",
@@ -60,15 +60,16 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+      "description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
       "dragon_ef": "100",
       "effect_table": {
         "0": {
-          "effect_kind": "grant",
-          "effect_label": "megaremedy_heal",
-          "grant_amount": "100",
-          "grant_resource": "hp",
-          "target_ref": "action_targets"
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.foMQpdHKjia9gJ03",
+          "effect_kind": "apply_ae",
+          "effect_label": "cafeaulait_swift",
+          "target_ref": "self"
         }
       },
       "elemental_ef": "100",
@@ -81,10 +82,10 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "id": "9vM7Xu5q3cj7EFQt",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+      "id": "aITJntRz2m10Rgeo",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
       "insect_ef": "100",
-      "ip_cost": "6",
+      "ip_cost": "2",
       "isEquipped": false,
       "isKey": false,
       "isMartial": false,
@@ -94,51 +95,52 @@
       "isUnique": false,
       "item_baseDef": "0",
       "item_baseMdef": "0",
-      "item_cost": "600",
+      "item_cost": "25",
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Rare",
+      "item_rarity": "Common",
       "item_skill_active": {
-        "0gi0e6XOfjVr2S0d": {
+        "WH4J0fJGXJqwkpfV": {
           "id": "${item.id}",
-          "name": "Mega-Remedy",
+          "name": "Café au Lait",
           "skill_cost": "-",
-          "skill_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
+          "skill_description": "<ul><li><p><em>Gain <strong>Swift</strong> (increase your <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "skill_maxLevel": 1,
-          "uuid": "Item.0gi0e6XOfjVr2S0d"
+          "uuid": "Item.WH4J0fJGXJqwkpfV"
         }
       },
       "item_type": "consumable",
       "mimic_ef": "100",
       "monster_ef": "100",
-      "name": "Mega-Remedy",
+      "name": "Café au Lait",
       "optional_params": {},
       "plant_ef": "100",
       "related_item_list": {
-        "0gi0e6XOfjVr2S0d": {
+        "WH4J0fJGXJqwkpfV": {
           "id": "${item.id}",
-          "name": "Mega-Remedy",
-          "related_item_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
-          "uuid": "Item.0gi0e6XOfjVr2S0d"
+          "name": "Café au Lait",
+          "related_item_description": "<ul><li><p><em>Gain <strong>Swift</strong> (increase your <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+          "uuid": "Item.WH4J0fJGXJqwkpfV"
         }
       },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
       "set_name": "",
+      "skill_target": "Self",
       "soldier_ef": "100",
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
-      "uuid": "Item.9vM7Xu5q3cj7EFQt",
+      "uuid": "Item.aITJntRz2m10Rgeo",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,
     "unique": false,
-    "uniqueId": "9vM7Xu5q3cj7EFQt"
+    "uniqueId": "vz3tqJwPprB8hpR1"
   },
   "type": "equippableItem"
 }

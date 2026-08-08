@@ -3935,7 +3935,19 @@
         "effects": 0
       },
       {
+        "id": "WH4J0fJGXJqwkpfV",
+        "name": "Café au Lait",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "aITJntRz2m10Rgeo",
+        "name": "Café au Lait",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "vz3tqJwPprB8hpR1",
         "name": "Café au Lait",
         "type": "equippableItem",
         "effects": 0
@@ -6149,6 +6161,12 @@
         "effects": 0
       },
       {
+        "id": "1RxNaClqkIwooJJE",
+        "name": "Golem Fragment",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "pJGT7NB0fQhri3Ji",
         "name": "Golem Fragment",
         "type": "equippableItem",
@@ -6156,6 +6174,18 @@
       },
       {
         "id": "urmUwVqxwm3jXENi",
+        "name": "Golem Fragment",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "yUVYbl0jMLMH730y",
+        "name": "Golem Fragment",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "zF5H6P553x8T5duB",
         "name": "Golem Fragment",
         "type": "equippableItem",
         "effects": 0
@@ -6185,6 +6215,12 @@
         "effects": 0
       },
       {
+        "id": "AWTMIjnZBlofs3ta",
+        "name": "Golem Soulstone",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "B1s2K9VLjc4XF4GB",
         "name": "Golem Soulstone",
         "type": "equippableItem",
@@ -6192,6 +6228,12 @@
       },
       {
         "id": "HBZ3kC5M0froQyCl",
+        "name": "Golem Soulstone",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "PBkjZQ6C7Khmaz5M",
         "name": "Golem Soulstone",
         "type": "equippableItem",
         "effects": 0
@@ -8159,7 +8201,19 @@
         "effects": 0
       },
       {
+        "id": "RBNbFK6bfPTqojzH",
+        "name": "Mega-Remedy",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "RfkkVnz0B3JsTaDt",
+        "name": "Mega-Remedy",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "U8LaWX8VcCxielEq",
         "name": "Mega-Remedy",
         "type": "equippableItem",
         "effects": 0
@@ -8363,7 +8417,31 @@
         "effects": 0
       },
       {
+        "id": "IEE1BT8rggOVnwfO",
+        "name": "Mixed Juice",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "OLHlThT9J5Epu7GA",
+        "name": "Mixed Juice",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "POaW4RjRIguvQpqU",
+        "name": "Mixed Juice",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "onmuivNybiyMhtvo",
+        "name": "Mixed Juice",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "z5ToyWoJtzTaboW6",
         "name": "Mixed Juice",
         "type": "equippableItem",
         "effects": 0
@@ -11333,6 +11411,12 @@
         "effects": 0
       },
       {
+        "id": "FTxwTUZVmLFmzJ7w",
+        "name": "Suspicious Potion",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "JvssvWr6WN0dN5HJ",
         "name": "Suspicious Potion",
         "type": "equippableItem",
@@ -11340,6 +11424,18 @@
       },
       {
         "id": "j2HdJRtznwU5nZuQ",
+        "name": "Suspicious Potion",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "oPArvDPR78Doo2jl",
+        "name": "Suspicious Potion",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "uc8XODkLHZ6KX4JR",
         "name": "Suspicious Potion",
         "type": "equippableItem",
         "effects": 0
@@ -12001,6 +12097,30 @@
       {
         "id": "QGGHt3z4bRGaJH0F",
         "name": "Triumphal Salute",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "5iEQw0ZjgLYLcdcA",
+        "name": "Turbo Remedy",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "K15fwnjgY9lNwZfL",
+        "name": "Turbo Remedy",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "jgDpBT4kH5BbO8Cv",
+        "name": "Turbo Remedy",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "jwexX699IchAonpS",
+        "name": "Turbo Remedy",
         "type": "equippableItem",
         "effects": 0
       },

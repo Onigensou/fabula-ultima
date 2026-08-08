@@ -40,9 +40,18 @@
     "container": null,
     "props": {
       "description": "<ul><li>Learned how to create  with <strong>@UUID[Item.OLHlThT9J5Epu7GA]{Mixed Juice}</strong> <strong>5 IP</strong></li></ul>",
+      "ip_cost": "5",
       "item_cost": "2500",
-      "item_type": "consumable",
-      "name": "Mixed Juice Recipe"
+      "item_type": "recipe",
+      "name": "Mixed Juice Recipe",
+      "related_item_list": {
+        "onmuivNybiyMhtvo": {
+          "id": "${item.id}",
+          "name": "Mixed Juice",
+          "related_item_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+          "uuid": "Item.onmuivNybiyMhtvo"
+        }
+      }
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

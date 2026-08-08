@@ -1,9 +1,9 @@
 {
-  "_id": "pJGT7NB0fQhri3Ji",
+  "_id": "yUVYbl0jMLMH730y",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1746440550810,
+    "createdTime": 1786229851035,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -45,7 +45,7 @@
   },
   "sort": 900000,
   "system": {
-    "container": null,
+    "container": "qscJsRiMVxxot7sJ",
     "props": {
       "active_effect_config_table": {},
       "aquatic_ef": "100",
@@ -100,13 +100,13 @@
       "item_quantity": "1",
       "item_rarity": "Common",
       "item_skill_active": {
-        "zF5H6P553x8T5duB": {
+        "1RxNaClqkIwooJJE": {
           "id": "${item.id}",
           "name": "Golem Fragment",
           "skill_cost": "-",
           "skill_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
           "skill_maxLevel": 1,
-          "uuid": "Item.zF5H6P553x8T5duB"
+          "uuid": "Item.1RxNaClqkIwooJJE"
         }
       },
       "item_type": "consumable",
@@ -118,11 +118,11 @@
       "refine_count": "0",
       "refine_level": "0",
       "related_item_list": {
-        "zF5H6P553x8T5duB": {
+        "1RxNaClqkIwooJJE": {
           "id": "${item.id}",
           "name": "Golem Fragment",
           "related_item_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
-          "uuid": "Item.zF5H6P553x8T5duB"
+          "uuid": "Item.1RxNaClqkIwooJJE"
         }
       },
       "reptilian_ef": "100",
@@ -140,7 +140,7 @@
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,
     "unique": false,
-    "uniqueId": "pJGT7NB0fQhri3Ji"
+    "uniqueId": "yUVYbl0jMLMH730y"
   },
   "type": "equippableItem"
 }

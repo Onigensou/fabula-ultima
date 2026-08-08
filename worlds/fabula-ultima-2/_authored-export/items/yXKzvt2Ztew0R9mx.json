@@ -40,9 +40,18 @@
     "container": null,
     "props": {
       "description": "<ul><li>Learned how to create <strong>Golem Soulstone</strong> with <strong>2 IP</strong></li></ul>",
+      "ip_cost": "2",
       "item_cost": "1500",
-      "item_type": "consumable",
-      "name": "Golem Soulstone Recipe"
+      "item_type": "recipe",
+      "name": "Golem Soulstone Recipe",
+      "related_item_list": {
+        "AWTMIjnZBlofs3ta": {
+          "id": "${item.id}",
+          "name": "Golem Soulstone",
+          "related_item_description": "<ul><li><p><em>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by 10 instead.</em></p></li></ul>",
+          "uuid": "Item.AWTMIjnZBlofs3ta"
+        }
+      }
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

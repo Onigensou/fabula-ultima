@@ -1,9 +1,9 @@
 {
-  "_id": "HBZ3kC5M0froQyCl",
+  "_id": "PBkjZQ6C7Khmaz5M",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1781933810558,
+    "createdTime": 1786229855797,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -18,11 +18,12 @@
   "name": "Golem Soulstone",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
     "default": 0
   },
   "sort": 0,
   "system": {
-    "container": "B1s2K9VLjc4XF4GB",
+    "container": "AWTMIjnZBlofs3ta",
     "props": {
       "cost": "-",
       "description": "<ul><li><p><em>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by 10 instead.</em></p></li></ul>",
@@ -45,7 +46,7 @@
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2788278387,
     "unique": false,
-    "uniqueId": "HBZ3kC5M0froQyCl"
+    "uniqueId": "PBkjZQ6C7Khmaz5M"
   },
   "type": "equippableItem"
 }

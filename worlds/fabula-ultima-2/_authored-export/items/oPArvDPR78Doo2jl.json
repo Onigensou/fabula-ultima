@@ -1,0 +1,63 @@
+{
+  "_id": "oPArvDPR78Doo2jl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786229874353,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Suspicious%20Potion.png",
+  "name": "Suspicious Potion",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "uc8XODkLHZ6KX4JR",
+    "props": {
+      "description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 fire damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "suspot_charm,suspot_burn",
+          "effect_kind": "chain",
+          "effect_label": "suspot_use"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Item.XVOWOq9oUmEECGrU.ActiveEffect.jbXGFAky9kNXeW5R",
+          "effect_kind": "apply_ae",
+          "effect_label": "suspot_charm",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "damage_amount": "5",
+          "damage_element": "fire",
+          "effect_kind": "deal_damage",
+          "effect_label": "suspot_burn",
+          "target_ref": "action_targets"
+        }
+      },
+      "name": "Suspicious Potion",
+      "on_activate_effect_ref": "suspot_use",
+      "skill_description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 fire damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
+      "skill_target": "One Enemy",
+      "skill_type": "Item",
+      "target_eligibility": "SPECIES_IS_HUMANOID == 1"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "oPArvDPR78Doo2jl"
+  },
+  "type": "equippableItem"
+}

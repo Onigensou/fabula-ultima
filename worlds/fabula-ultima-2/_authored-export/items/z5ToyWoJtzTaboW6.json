@@ -1,0 +1,60 @@
+{
+  "_id": "z5ToyWoJtzTaboW6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786229861865,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Mixed Juice",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "POaW4RjRIguvQpqU",
+    "props": {
+      "description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "mixedjuice_hp,mixedjuice_mp",
+          "effect_kind": "chain",
+          "effect_label": "mixedjuice_use"
+        },
+        "1": {
+          "effect_kind": "grant",
+          "effect_label": "mixedjuice_hp",
+          "grant_amount": "50",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "effect_kind": "grant",
+          "effect_label": "mixedjuice_mp",
+          "grant_amount": "50",
+          "grant_resource": "mp",
+          "target_ref": "action_targets"
+        }
+      },
+      "name": "Mixed Juice",
+      "on_activate_effect_ref": "mixedjuice_use",
+      "skill_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+      "skill_type": "Item"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "z5ToyWoJtzTaboW6"
+  },
+  "type": "equippableItem"
+}

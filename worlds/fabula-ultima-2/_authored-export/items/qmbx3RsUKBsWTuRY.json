@@ -40,6 +40,7 @@
     "container": null,
     "props": {
       "description": "<ul><li><p>All ally recovers <strong>50</strong> Hit Points.</p></li></ul>",
+      "effect_table": null,
       "ip_cost": "6",
       "item_type": "recipe",
       "name": "Turbo Remedy"

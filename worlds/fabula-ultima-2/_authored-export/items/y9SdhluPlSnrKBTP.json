@@ -40,10 +40,18 @@
     "container": null,
     "props": {
       "description": "<ul>\n<li>Learned how to create <strong>Caf&eacute; au Lait</strong> with <strong>2 IP</strong></li>\n</ul>",
-      "ip_cost": "0",
+      "ip_cost": "2",
       "item_cost": "450",
-      "item_type": "consumable",
-      "name": "Café au Lait Recipe"
+      "item_type": "recipe",
+      "name": "Café au Lait Recipe",
+      "related_item_list": {
+        "vz3tqJwPprB8hpR1": {
+          "id": "${item.id}",
+          "name": "Café au Lait",
+          "related_item_description": "<ul><li><p><em>Gain <strong>Swift</strong> (increase your <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+          "uuid": "Item.vz3tqJwPprB8hpR1"
+        }
+      }
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

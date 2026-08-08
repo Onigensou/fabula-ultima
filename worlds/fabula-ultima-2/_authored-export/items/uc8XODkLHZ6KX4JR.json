@@ -1,9 +1,9 @@
 {
-  "_id": "JvssvWr6WN0dN5HJ",
+  "_id": "uc8XODkLHZ6KX4JR",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1746795171124,
+    "createdTime": 1786229873882,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -45,7 +45,7 @@
   },
   "sort": 2000000,
   "system": {
-    "container": null,
+    "container": "v63nz5loWIh5hsAS",
     "props": {
       "active_effect_config_table": {},
       "aquatic_ef": "100",
@@ -111,13 +111,13 @@
       "item_quantity": "1",
       "item_rarity": "Uncommon",
       "item_skill_active": {
-        "FTxwTUZVmLFmzJ7w": {
+        "oPArvDPR78Doo2jl": {
           "id": "${item.id}",
           "name": "Suspicious Potion",
           "skill_cost": "-",
           "skill_description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 fire damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
           "skill_maxLevel": 1,
-          "uuid": "Item.FTxwTUZVmLFmzJ7w"
+          "uuid": "Item.oPArvDPR78Doo2jl"
         }
       },
       "item_type": "consumable",
@@ -127,11 +127,11 @@
       "optional_params": {},
       "plant_ef": "100",
       "related_item_list": {
-        "FTxwTUZVmLFmzJ7w": {
+        "oPArvDPR78Doo2jl": {
           "id": "${item.id}",
           "name": "Suspicious Potion",
           "related_item_description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 fire damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
-          "uuid": "Item.FTxwTUZVmLFmzJ7w"
+          "uuid": "Item.oPArvDPR78Doo2jl"
         }
       },
       "reptilian_ef": "100",
@@ -150,7 +150,7 @@
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,
     "unique": false,
-    "uniqueId": "JvssvWr6WN0dN5HJ"
+    "uniqueId": "uc8XODkLHZ6KX4JR"
   },
   "type": "equippableItem"
 }

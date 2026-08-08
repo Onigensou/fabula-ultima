@@ -1,9 +1,9 @@
 {
-  "_id": "B1s2K9VLjc4XF4GB",
+  "_id": "AWTMIjnZBlofs3ta",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1751657427492,
+    "createdTime": 1786229855296,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -45,7 +45,7 @@
   },
   "sort": 1000000,
   "system": {
-    "container": null,
+    "container": "yXKzvt2Ztew0R9mx",
     "props": {
       "active_effect_config_table": {},
       "aquatic_ef": "100",
@@ -97,13 +97,13 @@
       "item_quantity": "1",
       "item_rarity": "Common",
       "item_skill_active": {
-        "HBZ3kC5M0froQyCl": {
+        "PBkjZQ6C7Khmaz5M": {
           "id": "${item.id}",
           "name": "Golem Soulstone",
           "skill_cost": "-",
           "skill_description": "<ul><li><p><em>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by 10 instead.</em></p></li></ul>",
           "skill_maxLevel": 1,
-          "uuid": "Item.HBZ3kC5M0froQyCl"
+          "uuid": "Item.PBkjZQ6C7Khmaz5M"
         }
       },
       "item_type": "consumable",
@@ -113,11 +113,11 @@
       "optional_params": {},
       "plant_ef": "100",
       "related_item_list": {
-        "HBZ3kC5M0froQyCl": {
+        "PBkjZQ6C7Khmaz5M": {
           "id": "${item.id}",
           "name": "Golem Soulstone",
           "related_item_description": "<ul><li><p><em>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by 10 instead.</em></p></li></ul>",
-          "uuid": "Item.HBZ3kC5M0froQyCl"
+          "uuid": "Item.PBkjZQ6C7Khmaz5M"
         }
       },
       "reptilian_ef": "100",
@@ -135,7 +135,7 @@
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,
     "unique": false,
-    "uniqueId": "B1s2K9VLjc4XF4GB"
+    "uniqueId": "AWTMIjnZBlofs3ta"
   },
   "type": "equippableItem"
 }

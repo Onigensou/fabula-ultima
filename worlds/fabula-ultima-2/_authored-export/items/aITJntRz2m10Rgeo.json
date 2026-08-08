@@ -64,7 +64,9 @@
       "dragon_ef": "100",
       "effect_table": {
         "0": {
-          "ae_template_ref": "Swift",
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.foMQpdHKjia9gJ03",
           "effect_kind": "apply_ae",
           "effect_label": "cafeaulait_swift",
           "target_ref": "self"
@@ -103,8 +105,8 @@
           "id": "${item.id}",
           "name": "Café au Lait",
           "skill_cost": "-",
-          "skill_description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
-          "skill_maxLevel": "",
+          "skill_description": "<ul><li><p><em>Gain <strong>Swift</strong> (increase your <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+          "skill_maxLevel": 1,
           "uuid": "Item.VNg8JKR5sUjqgdNb"
         }
       },
@@ -118,7 +120,7 @@
         "VNg8JKR5sUjqgdNb": {
           "id": "${item.id}",
           "name": "Café au Lait",
-          "related_item_description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+          "related_item_description": "<ul><li><p><em>Gain <strong>Swift</strong> (increase your <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "uuid": "Item.VNg8JKR5sUjqgdNb"
         }
       },

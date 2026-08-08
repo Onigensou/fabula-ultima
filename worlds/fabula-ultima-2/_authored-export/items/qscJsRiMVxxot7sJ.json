@@ -40,10 +40,18 @@
     "container": null,
     "props": {
       "description": "<ul><li>Learned how to create <strong>Golem Fragment</strong> with <strong>1 IP</strong></li></ul>",
-      "ip_cost": "0",
+      "ip_cost": "1",
       "item_cost": "450",
-      "item_type": "consumable",
-      "name": "Golem Fragment Recipe"
+      "item_type": "recipe",
+      "name": "Golem Fragment Recipe",
+      "related_item_list": {
+        "yUVYbl0jMLMH730y": {
+          "id": "${item.id}",
+          "name": "Golem Fragment",
+          "related_item_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
+          "uuid": "Item.yUVYbl0jMLMH730y"
+        }
+      }
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

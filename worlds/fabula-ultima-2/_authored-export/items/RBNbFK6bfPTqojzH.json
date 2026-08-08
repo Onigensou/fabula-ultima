@@ -1,9 +1,9 @@
 {
-  "_id": "QQLDvULYVzMymAVN",
+  "_id": "RBNbFK6bfPTqojzH",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1751456644682,
+    "createdTime": 1786229859366,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -11,33 +11,41 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
-    },
-    "fucompanion": {
-      "itemMigratorBackup": {
-        "detectedType": "consumable",
-        "fromTemplate": "xdZPhVF8AnmwQEPM",
-        "itemId": "QQLDvULYVzMymAVN",
-        "itemName": "Mega-Remedy Recipe",
-        "pickedOldProps": {
-          "consumable_cost": "2800",
-          "consumable_description": "<ul><li>Learned how to create <strong>@UUID[Item.RfkkVnz0B3JsTaDt]{Mega-Remedy}</strong> with <strong>5 IP</strong></li></ul>",
-          "consumable_ip": "0",
-          "consumable_label": ""
-        },
-        "ts": 1769647436007
-      }
     }
   },
-  "folder": "3xHGNagIXPyzukcU",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
-  "name": "Mega-Remedy Recipe",
+  "folder": "VzpCG9mySsd9sQSL",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+  "name": "Mega-Remedy",
   "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
     "JQGNzKpDPHJmcUIW": 3,
-    "default": 3
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
   },
-  "sort": 700000,
+  "sort": 3100000,
   "system": {
-    "container": null,
+    "container": "QQLDvULYVzMymAVN",
     "props": {
       "active_effect_config_table": {},
       "aquatic_ef": "100",
@@ -52,8 +60,17 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>Learned how to create&nbsp;<strong>@UUID[Item.RfkkVnz0B3JsTaDt]{Mega-Remedy}</strong> with <strong>6 IP</strong></li></ul>",
+      "description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
       "dragon_ef": "100",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "megaremedy_heal",
+          "grant_amount": "100",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        }
+      },
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",
@@ -64,8 +81,8 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "id": "QQLDvULYVzMymAVN",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "id": "9vM7Xu5q3cj7EFQt",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
       "insect_ef": "100",
       "ip_cost": "6",
       "isEquipped": false,
@@ -77,43 +94,51 @@
       "isUnique": false,
       "item_baseDef": "0",
       "item_baseMdef": "0",
-      "item_cost": "2800",
+      "item_cost": "600",
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Common",
-      "item_type": "recipe",
+      "item_rarity": "Rare",
+      "item_skill_active": {
+        "U8LaWX8VcCxielEq": {
+          "id": "${item.id}",
+          "name": "Mega-Remedy",
+          "skill_cost": "-",
+          "skill_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
+          "skill_maxLevel": 1,
+          "uuid": "Item.U8LaWX8VcCxielEq"
+        }
+      },
+      "item_type": "consumable",
       "mimic_ef": "100",
       "monster_ef": "100",
-      "name": "Mega-Remedy Recipe",
+      "name": "Mega-Remedy",
       "optional_params": {},
       "plant_ef": "100",
-      "refine_count": "0",
-      "refine_level": "0",
       "related_item_list": {
-        "RBNbFK6bfPTqojzH": {
+        "U8LaWX8VcCxielEq": {
           "id": "${item.id}",
           "name": "Mega-Remedy",
           "related_item_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
-          "uuid": "Item.RBNbFK6bfPTqojzH"
+          "uuid": "Item.U8LaWX8VcCxielEq"
         }
       },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
-      "set_name": "<Set Name>",
+      "set_name": "",
       "soldier_ef": "100",
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
-      "uuid": "Item.QQLDvULYVzMymAVN",
+      "uuid": "Item.9vM7Xu5q3cj7EFQt",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,
     "unique": false,
-    "uniqueId": "QQLDvULYVzMymAVN"
+    "uniqueId": "RBNbFK6bfPTqojzH"
   },
   "type": "equippableItem"
 }

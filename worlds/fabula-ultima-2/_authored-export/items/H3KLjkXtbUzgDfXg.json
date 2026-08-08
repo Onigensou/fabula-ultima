@@ -42,8 +42,16 @@
       "description": "<ul><li>Learned how to create <strong>Turbo Remedy</strong> with <strong>6 IP</strong></li></ul>",
       "ip_cost": "6",
       "item_cost": "2800",
-      "item_type": "consumable",
-      "name": "Turbo Remedy Recipe"
+      "item_type": "recipe",
+      "name": "Turbo Remedy Recipe",
+      "related_item_list": {
+        "5iEQw0ZjgLYLcdcA": {
+          "id": "${item.id}",
+          "name": "Turbo Remedy",
+          "related_item_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+          "uuid": "Item.5iEQw0ZjgLYLcdcA"
+        }
+      }
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

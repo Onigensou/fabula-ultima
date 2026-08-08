@@ -1,9 +1,9 @@
 {
-  "_id": "0gi0e6XOfjVr2S0d",
+  "_id": "U8LaWX8VcCxielEq",
   "_stats": {
     "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
     "coreVersion": "12.343",
-    "createdTime": 1769593267249,
+    "createdTime": 1786229859839,
     "duplicateSource": "Item.cneU6dfTzI13k0U2",
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -18,11 +18,12 @@
   "name": "Mega-Remedy",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
     "default": 0
   },
   "sort": 100000,
   "system": {
-    "container": "9vM7Xu5q3cj7EFQt",
+    "container": "RBNbFK6bfPTqojzH",
     "props": {
       "active_effect_config_table": {},
       "animation_damage_timing_offset": "0",
@@ -72,7 +73,7 @@
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2788278387,
     "unique": false,
-    "uniqueId": "0gi0e6XOfjVr2S0d"
+    "uniqueId": "U8LaWX8VcCxielEq"
   },
   "type": "equippableItem"
 }

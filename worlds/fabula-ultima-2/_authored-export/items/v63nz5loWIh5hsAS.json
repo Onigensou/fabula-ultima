@@ -40,9 +40,18 @@
     "container": null,
     "props": {
       "description": "<ul><li>Learned how to create <strong>Suspicious Potion</strong> with <strong>2 IP</strong></li></ul>",
+      "ip_cost": "2",
       "item_cost": "800",
-      "item_type": "consumable",
-      "name": "Suspicious Potion Recipe"
+      "item_type": "recipe",
+      "name": "Suspicious Potion Recipe",
+      "related_item_list": {
+        "uc8XODkLHZ6KX4JR": {
+          "id": "${item.id}",
+          "name": "Suspicious Potion",
+          "related_item_description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 fire damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
+          "uuid": "Item.uc8XODkLHZ6KX4JR"
+        }
+      }
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

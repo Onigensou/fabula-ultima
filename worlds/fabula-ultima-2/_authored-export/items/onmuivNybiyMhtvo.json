@@ -1,0 +1,81 @@
+{
+  "_id": "onmuivNybiyMhtvo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786229864240,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "VzpCG9mySsd9sQSL",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Mixed Juice",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "iaX49tQdDzBjBAYr",
+    "props": {
+      "description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "mixedjuice_hp,mixedjuice_mp",
+          "effect_kind": "chain",
+          "effect_label": "mixedjuice_use"
+        },
+        "1": {
+          "effect_kind": "grant",
+          "effect_label": "mixedjuice_hp",
+          "grant_amount": "50",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "effect_kind": "grant",
+          "effect_label": "mixedjuice_mp",
+          "grant_amount": "50",
+          "grant_resource": "mp",
+          "target_ref": "action_targets"
+        }
+      },
+      "ip_cost": "5",
+      "isEquipped": false,
+      "isUnique": false,
+      "item_quantity": "1",
+      "item_rarity": "Common",
+      "item_skill_active": {
+        "IEE1BT8rggOVnwfO": {
+          "id": "${item.id}",
+          "name": "Mixed Juice",
+          "skill_cost": "-",
+          "skill_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+          "skill_maxLevel": 1,
+          "uuid": "Item.IEE1BT8rggOVnwfO"
+        }
+      },
+      "item_type": "consumable",
+      "name": "Mixed Juice",
+      "related_item_list": {
+        "IEE1BT8rggOVnwfO": {
+          "id": "${item.id}",
+          "name": "Mixed Juice",
+          "related_item_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+          "uuid": "Item.IEE1BT8rggOVnwfO"
+        }
+      }
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "onmuivNybiyMhtvo"
+  },
+  "type": "equippableItem"
+}

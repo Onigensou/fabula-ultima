@@ -1,0 +1,48 @@
+{
+  "_id": "1RxNaClqkIwooJJE",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786229851505,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral.png",
+  "name": "Golem Fragment",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "yUVYbl0jMLMH730y",
+    "props": {
+      "description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "golemfrag_shield",
+          "grant_amount": "5",
+          "grant_resource": "shield",
+          "target_ref": "action_targets"
+        }
+      },
+      "name": "Golem Fragment",
+      "on_activate_effect_ref": "golemfrag_shield",
+      "skill_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
+      "skill_type": "Item"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "1RxNaClqkIwooJJE"
+  },
+  "type": "equippableItem"
+}

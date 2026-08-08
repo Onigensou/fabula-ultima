@@ -1,0 +1,83 @@
+{
+  "_id": "5iEQw0ZjgLYLcdcA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786229869079,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "VzpCG9mySsd9sQSL",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Turbo Remedy",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "H3KLjkXtbUzgDfXg",
+    "props": {
+      "description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "turboremedy_targets,turboremedy_heal",
+          "effect_kind": "chain",
+          "effect_label": "turboremedy_use"
+        },
+        "1": {
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "category": "ally",
+          "effect_kind": "targeting",
+          "effect_label": "turboremedy_targets",
+          "exclude_self": false,
+          "mode": "all"
+        },
+        "2": {
+          "effect_kind": "grant",
+          "effect_label": "turboremedy_heal",
+          "grant_amount": "50",
+          "grant_resource": "hp",
+          "target_ref": "turboremedy_targets"
+        }
+      },
+      "ip_cost": "6",
+      "isEquipped": false,
+      "isUnique": false,
+      "item_quantity": "1",
+      "item_rarity": "Common",
+      "item_skill_active": {
+        "jwexX699IchAonpS": {
+          "id": "${item.id}",
+          "name": "Turbo Remedy",
+          "skill_cost": "-",
+          "skill_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+          "skill_maxLevel": 1,
+          "uuid": "Item.jwexX699IchAonpS"
+        }
+      },
+      "item_type": "consumable",
+      "name": "Turbo Remedy",
+      "related_item_list": {
+        "jwexX699IchAonpS": {
+          "id": "${item.id}",
+          "name": "Turbo Remedy",
+          "related_item_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+          "uuid": "Item.jwexX699IchAonpS"
+        }
+      }
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "5iEQw0ZjgLYLcdcA"
+  },
+  "type": "equippableItem"
+}
