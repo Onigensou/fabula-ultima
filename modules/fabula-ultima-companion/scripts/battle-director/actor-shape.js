@@ -99,7 +99,16 @@ export function buildPseudoWeaponFromNpcAttack(item) {
   const checkBonus = Number(p.check_bonus ?? 0) || 0;
   const damageBonus = Number(p.damage_bonus ?? 0) || 0;
   const damageType = String(p.type_damage ?? "Physical");
-  const range = String(p.skill_range ?? "Melee");
+  // `??` only catches null/undefined, but the common blank on a monster attack
+  // sheet is an EMPTY STRING (10 of 97 authored attacks) or "-". Those fell
+  // through as the range, so `weaponRange` arrived blank and every melee gate
+  // reading it (ATTACK_IS_MELEE — Aura of Decay, Thread the Horns, Throwing
+  // Tantrum) evaluated 0 and the reaction silently never fired. Proven live
+  // 2026-08-09: Wolf's Bite (`skill_range: ""`) vs an Aura of Decay bearer —
+  // "condition_formula ATTACK_IS_MELEE == 1 → 0 (falsy)". Melee is the
+  // documented default the `??` was already reaching for; make it mean it.
+  const rangeRaw = String(p.skill_range ?? "").trim();
+  const range = (!rangeRaw || rangeRaw === "-") ? "Melee" : rangeRaw;
 
   return Object.freeze({
     // hand: NPC has no concept of main/off; flag the source kind so

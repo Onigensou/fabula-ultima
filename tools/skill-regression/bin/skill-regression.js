@@ -25,6 +25,8 @@ const { recordVerified } = require("../lib/engine-fingerprint");
 // Sampled at process start, BEFORE anything runs, so an actor write that lands
 // mid-run still reads as "changed" on the next gate evaluation.
 const { dataWitness } = require("../lib/data-witness");
+const { collectStructure } = require("../lib/collect-structure");
+const { diffStructure } = require("../lib/structure-fingerprint");
 const DATA_KEY = dataWitness().key;
 
 const ROOT = path.resolve(__dirname, "..");
@@ -279,6 +281,53 @@ async function main() {
     return (added.length || removed.length || changed.length) ? 1 : 0;
   }
 
+  // ── structure ────────────────────────────────────────────────────────────
+  // The CONFIG half. Diffs the authored shape of every skill-shaped doc, so a
+  // change COMPUTE cannot observe (a lost `skill_tags`, an ungated AE change
+  // value, a dropped `target_eligibility`) is still a regression signal — and
+  // so docs the behavioral roster drops (Passive skills, skip.json entries)
+  // stay watched instead of silently leaving coverage.
+  if (cmd === "structure") {
+    const sFile = path.resolve(path.join(ROOT, "goldens", "structure.json"));
+    const t0 = Date.now();
+    const result = await collectStructure({});
+    const took = ((Date.now() - t0) / 1000).toFixed(1);
+    if (a.update || !fs.existsSync(sFile)) {
+      const fresh = !fs.existsSync(sFile);
+      fs.mkdirSync(path.dirname(sFile), { recursive: true });
+      fs.writeFileSync(sFile, JSON.stringify({ capturedAt: new Date().toISOString(), count: result.count, structure: result.structure }, null, 1));
+      console.log(`${fresh && !a.update ? "✓ no structure golden existed — captured" : "✓ structure golden updated"}: ${result.count} configured doc(s) of ${result.docs} scanned, ${took}s`);
+      console.log(`  wrote ${path.relative(process.cwd(), sFile)}`);
+      return 0;
+    }
+    const golden = JSON.parse(fs.readFileSync(sFile, "utf8")).structure || {};
+    const cur = result.structure;
+    const gK = new Set(Object.keys(golden)), cK = new Set(Object.keys(cur));
+    const added = [...cK].filter((k) => !gK.has(k));
+    const removed = [...gK].filter((k) => !cK.has(k));
+    const changed = [];
+    for (const k of [...cK].filter((x) => gK.has(x))) {
+      const d = diffStructure(golden[k], cur[k]);
+      if (d.length) changed.push({ key: k, diffs: d });
+    }
+    if (a.json) {
+      console.log(JSON.stringify({ added, removed, changed, counts: { added: added.length, removed: removed.length, changed: changed.length, total: result.count } }, null, 2));
+    } else if (!added.length && !removed.length && !changed.length) {
+      console.log(`✓ structure unchanged — ${result.count} configured doc(s), ${took}s`);
+    } else {
+      console.log(`Structure drift (${changed.length} changed, ${added.length} new, ${removed.length} removed) of ${result.count} doc(s):`);
+      for (const c of changed) {
+        console.log(`    ~ ${c.key}`);
+        for (const d of c.diffs.slice(0, 12)) console.log(`        ${d}`);
+        if (c.diffs.length > 12) console.log(`        …and ${c.diffs.length - 12} more`);
+      }
+      for (const k of added) console.log(`    + NEW ${k}`);
+      for (const k of removed) console.log(`    - REMOVED ${k}`);
+      console.log(`If intended, re-baseline:  node ${path.relative(process.cwd(), __filename)} structure --update`);
+    }
+    return (added.length || removed.length || changed.length) ? 1 : 0;
+  }
+
   if (cmd === "bench") {
     if (!bridgeAlive()) { console.error("✗ test-bridge is not alive (open the Foundry world first)."); return 2; }
     const bopts = {};
@@ -371,6 +420,8 @@ async function main() {
   node bin/skill-regression.js bench   [opts]   build/refresh the local Regression Bench scene (game open)
   node bin/skill-regression.js capture [opts]   write goldens from current behavior
   node bin/skill-regression.js check   [opts]   diff current vs goldens (exit 1 on change)
+  node bin/skill-regression.js structure       diff authored CONFIG vs goldens/structure.json
+  node bin/skill-regression.js structure --update   re-baseline the config golden
   node bin/skill-regression.js check --update    accept current as new goldens
   node bin/skill-regression.js verify  [opts]   assert expected-value scenarios (exit 1 on mismatch)
   node bin/skill-regression.js teardown [opts]  delete the bench scene (game open; no-op if absent)

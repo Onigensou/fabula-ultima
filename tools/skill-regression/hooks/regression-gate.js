@@ -121,6 +121,36 @@ const extra = env ? (env.match(/"[^"]*"|'[^']*'|\S+/g) || []).map((s) => s.repla
 // are keyed "<Actor> / <Skill>", never by scene or token id, so a rebuilt bench
 // still diffs against the same golden. Skipped when the caller overrode the args
 // (their scene is their business).
+// ── the CONFIG half ────────────────────────────────────────────────────────
+// The behavioral check can only see what COMPUTE exercises, so a change to
+// config it never reads — `skill_tags` (the Dance framework's match key),
+// `target_eligibility`, an AE change VALUE — passes it green. It also drops any
+// doc that stops being a usable skill, so flipping one to Passive removes it
+// from coverage entirely. `structure` diffs the authored shape of every
+// skill-shaped doc instead, needs no bench, and costs well under a second, so
+// the gate always runs it. Never fatal on its own error: a missing golden or a
+// closed bridge must not turn into a false "drift".
+function structureVerdict() {
+  const r = spawnSync("node", ["bin/skill-regression.js", "structure", "--json"], {
+    cwd: ROOT, encoding: "utf8", timeout: 90 * 1000, maxBuffer: 32 * 1024 * 1024,
+  });
+  if (r.error || r.status == null || r.status > 1) return { drifted: false, note: "", text: "" };
+  let out = null;
+  try { out = JSON.parse(r.stdout || "{}"); } catch { return { drifted: false, note: "", text: "" }; }
+  const c = out.counts || {};
+  const n = (c.changed || 0) + (c.added || 0) + (c.removed || 0);
+  if (!n) return { drifted: false, note: ` (config golden clean, ${c.total || 0} docs)`, text: "" };
+  const lines = [`⚠ skill-regression CONFIG drift (${c.changed || 0} changed, ${c.added || 0} new, ${c.removed || 0} removed) — a change COMPUTE cannot see:`];
+  for (const ch of (out.changed || []).slice(0, 10)) {
+    lines.push(`  ~ ${ch.key}`);
+    for (const d of (ch.diffs || []).slice(0, 4)) lines.push(`      ${d}`);
+  }
+  for (const k of (out.removed || []).slice(0, 6)) lines.push(`  - REMOVED ${k}`);
+  for (const k of (out.added || []).slice(0, 6)) lines.push(`  + NEW ${k}`);
+  lines.push(`If intended: node tools/skill-regression/bin/skill-regression.js structure --update`);
+  return { drifted: true, note: "", text: lines.join("\n") + "\n" };
+}
+
 if (!env) {
   const build = spawnSync("node", ["bin/skill-regression.js", "bench"], {
     cwd: ROOT, encoding: "utf8", timeout: 5 * 60 * 1000, maxBuffer: 8 * 1024 * 1024,
@@ -183,7 +213,12 @@ recordVerified({
 }, fp);
 
 if (!counts.added && !counts.removed && !counts.changed) {
-  process.stderr.write(`✓ skill-regression: ${counts.total} skills checked after ${kinds} edit — no behavioral drift.\n`);
+  const s = structureVerdict();
+  if (s.drifted) {
+    process.stderr.write(`✓ skill-regression: ${counts.total} skills checked after ${kinds} edit — no behavioral drift.\n${s.text}`);
+    process.exit(2);
+  }
+  process.stderr.write(`✓ skill-regression: ${counts.total} skills checked after ${kinds} edit — no behavioral drift${s.note}.\n`);
   process.exit(0);
 }
 
@@ -198,5 +233,7 @@ if ((changed || []).length > 12) lines.push(`  … +${changed.length - 12} more 
 for (const k of (removed || []).slice(0, 8)) lines.push(`  - REMOVED ${k}`);
 for (const k of (added || []).slice(0, 8)) lines.push(`  + NEW ${k}`);
 lines.push(`Review whether this is intended. If it is, re-baseline: node tools/skill-regression/bin/skill-regression.js check --update`);
+const sv = structureVerdict();
+if (sv.drifted) lines.push(sv.text.replace(/\n$/, ""));
 process.stderr.write(lines.join("\n") + "\n");
 process.exit(2);

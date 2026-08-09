@@ -87,6 +87,47 @@ auto-load it (so they stay consistent); `--no-skip` disables it (e.g. to
 re-measure which skills still time out — add any new ones to `skip.json`). Paging
 handles the bridge's 5-min cap; use `--caster` / `--limit` for fast subsets.
 
+## Config coverage: `structure`
+
+The behavioral golden only records what COMPUTE *does*. Three whole classes of
+change are invisible to it, and each shipped a real defect on 2026-08-09 while
+`check` stayed green:
+
+1. **Config COMPUTE never reads.** `skill_tags: "dance, managed"` is the key the
+   Dance framework matches on to bill the MP and set the `Dancing` marker. 26
+   wired dances lost it in a sync; the golden did not move. Same for
+   `target_eligibility` (the action-picker filter) and for an AE change VALUE —
+   Wardancer's `+SL` was ungated and nothing noticed.
+2. **Skipped skills.** A `skip.json` entry records `reason:"skipped"` and
+   nothing else, so an interactive skill has no content coverage at all.
+3. **Skills that leave the roster.** The collector only walks *usable* skills,
+   so flipping `skill_type` to Passive drops a doc out — it reports `REMOVED`
+   once and is then unwatched forever.
+
+`structure` fingerprints the **document** instead of the run: every skill-shaped
+doc in the world, usable or not, skipped or not. No bench, no COMPUTE, no target.
+
+```
+node bin/skill-regression.js structure            # diff vs goldens/structure.json (exit 1 on drift)
+node bin/skill-regression.js structure --update   # re-baseline
+```
+
+**1184 docs in under a second** — versus 491 skills in ~5 minutes for `check`,
+and 2.4x the coverage. The Stop-hook gate runs it on every evaluation for that
+reason; it is never fatal on its own error (a missing golden or a closed bridge
+must not read as drift).
+
+What it watches: the behaviour-bearing props (`skill_type`, `cost`,
+`skill_target`, `target_eligibility`, `skill_tags`, the activate refs, keywords),
+every `effect_table` / `reaction_config_table` row, and every AE's
+`transfer` / `statuses` / `tags` / flags / **change values** plus any
+`reactionConfig` it carries. Deliberately ignored as churn: descriptions, images,
+ids, `level` / `max_level` (legitimately per-copy), battle logs, animation timing,
+and menu label/description text.
+
+Self-tested by injecting the three real defects above and confirming each is
+reported, then reverting.
+
 ## Correctness invariants: `verify`
 
 The golden answers "did behaviour **change**"; `verify` answers "is it

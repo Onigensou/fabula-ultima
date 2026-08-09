@@ -71,7 +71,7 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 496,
+    "count": 490,
     "engineVersion": "1.0.423",
     "override": {
       "SL": 5,
@@ -784,16 +784,10 @@
     },
     "Chiyo / Phoenix Dance": {
       "caster": "Chiyo",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "skipped",
       "skill": "Phoenix Dance",
-      "skillType": "Active",
-      "targets": 1
+      "skillType": "Active"
     },
     "Chiyo / Pyro Blast": {
       "caster": "Chiyo",
@@ -821,31 +815,12 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Chiyo / Ripples": {
-      "caster": "Chiyo",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Ripples",
-      "skillType": "Active",
-      "targets": 1
-    },
     "Chiyo / Yeti Dance": {
       "caster": "Chiyo",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "skipped",
       "skill": "Yeti Dance",
-      "skillType": "Active",
-      "targets": 1
+      "skillType": "Active"
     },
     "Commander / Bishop's Edict": {
       "caster": "Commander",
@@ -937,7 +912,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
@@ -971,7 +946,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
@@ -984,7 +959,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
@@ -1010,7 +985,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
@@ -1030,7 +1005,7 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
@@ -1066,23 +1041,17 @@
     },
     "Dancer / Phoenix Dance": {
       "caster": "Dancer",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "skipped",
       "skill": "Phoenix Dance",
-      "skillType": "Active",
-      "targets": 1
+      "skillType": "Active"
     },
     "Dancer / Satyr Dance": {
       "caster": "Dancer",
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
@@ -1092,12 +1061,21 @@
     },
     "Dancer / Unicorn Dance": {
       "caster": "Dancer",
-      "element": "",
+      "element": "hp",
       "hasDamage": false,
-      "hasHealing": false,
+      "hasHealing": true,
       "offensive": true,
       "ok": true,
-      "perTarget": [],
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 10,
+          "grantRes": "hp",
+          "hit": true,
+          "resource": null
+        }
+      ],
       "roll": null,
       "skill": "Unicorn Dance",
       "skillType": "Active",
@@ -1105,16 +1083,10 @@
     },
     "Dancer / Yeti Dance": {
       "caster": "Dancer",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "skipped",
       "skill": "Yeti Dance",
-      "skillType": "Active",
-      "targets": 1
+      "skillType": "Active"
     },
     "Darkblade / Shadow Strike": {
       "caster": "Darkblade",
@@ -1906,19 +1878,6 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Fjord / Bone Crusher": {
-      "caster": "Fjord",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Bone Crusher",
-      "skillType": "Active",
-      "targets": 1
-    },
     "Fjord / Breach": {
       "caster": "Fjord",
       "element": "",
@@ -2401,12 +2360,12 @@
       "element": "",
       "hasDamage": false,
       "hasHealing": false,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [],
       "roll": null,
       "skill": "Aura of Decay",
-      "skillType": "Active",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hexer / Blind": {
@@ -2489,29 +2448,10 @@
     },
     "Hexer / Plague": {
       "caster": "Hexer",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 0,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
+      "ok": false,
+      "reason": "skipped",
       "skill": "Plague",
-      "skillType": "Active",
-      "targets": 1
+      "skillType": "Spell"
     },
     "Hexer / Pressure": {
       "caster": "Hexer",
@@ -2541,29 +2481,10 @@
     },
     "Hexer / Seething Blight": {
       "caster": "Hexer",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 0,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
+      "ok": false,
+      "reason": "skipped",
       "skill": "Seething Blight",
-      "skillType": "Active",
-      "targets": 1
+      "skillType": "Spell"
     },
     "Hexer / Shadow Mask": {
       "caster": "Hexer",
@@ -4036,19 +3957,6 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Invoker / Ripples": {
-      "caster": "Invoker",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Ripples",
-      "skillType": "Active",
-      "targets": 1
-    },
     "Kalina / Draconic Roar": {
       "caster": "Kalina",
       "element": "null",
@@ -4345,19 +4253,6 @@
       "perTarget": [],
       "roll": null,
       "skill": "Bladestorm",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Kiki / Bone Crusher": {
-      "caster": "Kiki",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Bone Crusher",
       "skillType": "Active",
       "targets": 1
     },
@@ -4979,19 +4874,6 @@
       "perTarget": [],
       "roll": null,
       "skill": "Bladestorm",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Oki (Copy) / Bone Crusher": {
-      "caster": "Oki (Copy)",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Bone Crusher",
       "skillType": "Active",
       "targets": 1
     },
@@ -6718,19 +6600,6 @@
       "perTarget": [],
       "roll": null,
       "skill": "Bladestorm",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Weaponmaster / Bone Crusher": {
-      "caster": "Weaponmaster",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Bone Crusher",
       "skillType": "Active",
       "targets": 1
     },

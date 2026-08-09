@@ -132,7 +132,7 @@ async function loadDeps(reuseToken = null) {
 //   - undefined / falsy              → accept nothing; the ar comes back untouched
 //   - true                           → accept EVERY matching card-reaction (rare; risky if multiple match)
 //   - ["Cheap Shot", "Vanish", ...]  → accept only candidates whose carrierName matches one of these
-async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept, dCombat, deps }) {
+async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept, dCombat, deps, picks = null }) {
   if (!accept) return ar;
   if (!Array.isArray(ar?.perTargetResults) || !ar.perTargetResults.length) return ar;
   if (!ar.hasDamage && ar.kind !== "Attack") return ar;
@@ -207,6 +207,15 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
     }
   }
   for (const c of byKey.values()) delete c._payloadFromHit;
+  // Live play caches the player's option-menu choices onto the candidate at
+  // Apply-click (previewReactionMenu -> chosenMenuPicks) and RESOLVE replays
+  // them via ctx.menuPicks. The harness never runs that click, so a reaction
+  // whose chain opens an `open_action_menu` would prompt for real and hang the
+  // pass. Stamping the caller's `picks` into the SAME field is what makes the
+  // Warning Shot / Bone Crusher family testable at all.
+  if (Array.isArray(picks) && picks.length) {
+    for (const c of byKey.values()) c.chosenMenuPicks = [...picks];
+  }
   const applied = [...byKey.values()];
   if (!applied.length) return ar;
   let recomputed = ar.perTargetResults;
@@ -1137,7 +1146,7 @@ async function runDirectorSkillSimulate(args = {}) {
       const attackerActor = await fromUuid(args.casterTokenUuid).then((d) => d?.actor ?? null).catch(() => null);
       if (attackerActor) {
         ar = await applyAcceptedReactionsToActionResult({
-          ar, attackerActor, accept: args.acceptReactions,
+          ar, attackerActor, accept: args.acceptReactions, picks: Array.isArray(args.picks) ? args.picks : null,
           dCombat: { round: round0, currentTurnResolved: false },
           deps,
         });
@@ -1347,7 +1356,7 @@ async function runDirectorAttackSimulate(args = {}) {
   const preApplied = await installPreAppliedAEs(args.preApply);
 
   const deps = await loadDeps(args.depsToken ?? null);
-  const { STATE_HANDLERS, STATES, INTENTS } = deps;
+  const { STATE_HANDLERS, STATES, INTENTS, freezeActionResult } = deps;
   const round = Number.isFinite(args.round) ? args.round : 1;
 
   // Captures accumulate ACROSS passes for two-weapon. The acceptor + write
@@ -1383,7 +1392,20 @@ async function runDirectorAttackSimulate(args = {}) {
         return compute;
       }
 
-      let ar = compute.actionResult;
+      // Stamp the harness-only fields RESOLVE / makeChainContext consume — the
+      // same patch `runDirectorSkillSimulate` applies. Without `_harnessPicks`
+      // an accepted reaction whose chain opens an `open_action_menu` (the
+      // Warning Shot / Bone Crusher "the attack deals no damage — choose an
+      // effect" family) blocks on a real prompt and the pass dies on the
+      // 60s harness timeout, which reads exactly like "the row never fired".
+      const arPatch = {};
+      if (Array.isArray(args.picks)) arPatch._harnessPicks = [...args.picks];
+      if (args.harnessNumbers && typeof args.harnessNumbers === "object") {
+        arPatch._harnessNumbers = { ...args.harnessNumbers };
+      }
+      let ar = Object.keys(arPatch).length
+        ? freezeActionResult({ ...compute.actionResult, ...arPatch })
+        : compute.actionResult;
       // Pre-pass aggregator — the `acceptReactions` arg simulates CONFIRM-stage
       // pill-accepts for `creature_will_deal_damage` reactions (Cheap Shot
       // family). Bonus damage is baked into perTargetResults before RESOLVE.
@@ -1392,7 +1414,7 @@ async function runDirectorAttackSimulate(args = {}) {
           const attackerActor = await fromUuid(args.attackerTokenUuid).then((d) => d?.actor ?? null).catch(() => null);
           if (attackerActor) {
             ar = await applyAcceptedReactionsToActionResult({
-              ar, attackerActor, accept: args.acceptReactions,
+              ar, attackerActor, accept: args.acceptReactions, picks: Array.isArray(args.picks) ? args.picks : null,
               dCombat: { round, currentTurnResolved: false },
               deps,
             });
