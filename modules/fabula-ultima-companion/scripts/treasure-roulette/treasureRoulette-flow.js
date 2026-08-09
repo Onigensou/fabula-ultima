@@ -222,6 +222,20 @@
     }
   }
 
+  // The winner's stat block, for the recipient screen's card. Only items have
+  // one — Zenit and IP resolve to null and the screen falls back to the small
+  // reward panel.
+  async function describeWinner(packet) {
+    const uuid = packet?.winner?.uuid;
+    if (!uuid || !String(uuid).startsWith("Item.")) return null;
+    try {
+      const doc = await fromUuid(uuid);
+      return doc ? await describeGear(doc) : null;
+    } catch {
+      return null;
+    }
+  }
+
   function itemTypeOf(item) {
     return String(item?.system?.props?.item_type ?? "").trim().toLowerCase();
   }
@@ -475,6 +489,10 @@
               img: packet?.winner?.img ?? "icons/svg/chest.svg",
               kind,
             },
+            // The full stat block, so the player can see what the item DOES
+            // before deciding who should carry it. Null for Zenit/IP, which
+            // have no card to show.
+            incoming: await describeWinner(packet),
             // IP can never be stored on the Party Inventory actor (game rule).
             allowParty: !isIp,
             partyInventory: dbUuid ? { actorUuid: dbUuid, name: db?.name ?? "Party Inventory" } : null,
