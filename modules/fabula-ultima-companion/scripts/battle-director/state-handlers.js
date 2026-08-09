@@ -36,7 +36,7 @@ import { ListPicker } from "./list-picker.js";
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { getInvokeCapability } from "./invoke/invoke-core.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
-import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTargetCount, mpCapTargetCount, computeEffectiveCost } from "./skill-cost.js";
+import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTargetCount, mpCapTargetCount, computeEffectiveCost, mergeCostOverrides, formatCostMap } from "./skill-cost.js";
 // COMPUTE-side damage/accuracy helpers (resolveAccuracyParts, resolveOutgoingDamageParts,
 // isCriticalHit, applyCritDamage, resolveIncomingReduction, buildDamageBonusParts,
 // resolveDamageElementOverride) moved to action-profile.js (single-source COMPUTE).
@@ -4255,6 +4255,30 @@ const Compute = {
         } catch (e) { warn("Skill COMPUTE: pre_activate capture threw", e); }
       }
 
+      // The capture may have resolved the very values this skill's own
+      // `adjust_cost` rows are written against (Bimagus: the spend picked at
+      // pre_activate drives `VAR_BIMAGUS - 20`). Fold them in NOW so the card
+      // prints the real price instead of the printed floor, and so RESOLVE §1
+      // debits the whole thing in one go. The chain re-composes the same rows at
+      // RESOLVE and dedups against these by (skill name, effect_label), so
+      // nothing is billed twice; see precomposeChainCostAdjustments for why only
+      // unconditional chain steps qualify.
+      let preCostOverride = null;
+      if (preActivateVars && Object.keys(preActivateVars).length) {
+        try {
+          const onActivateRef = String(view?.fire_points?.on_activate_effect_ref
+            ?? skill?.system?.props?.on_activate_effect_ref ?? "").trim();
+          if (onActivateRef) {
+            const casterActorForCost = await fromUuid(attacker.actorUuid).catch(() => null);
+            preCostOverride = await SE().precomposeChainCostAdjustments({
+              skill, effectTable: view.effect_table, startLabel: onActivateRef,
+              actor: casterActorForCost, chainVars: preActivateVars,
+              round: director.dCombat?.round ?? 0,
+            });
+          }
+        } catch (e) { warn("Skill COMPUTE: pre-compose of chain adjust_cost threw", e); }
+      }
+
       // Roll the Check dice here (the RNG); computeActionProfile derives total /
       // hr / crit / fumble + per-target outcomes from them. No roll = no Check.
       let dice = null;
@@ -4339,6 +4363,21 @@ const Compute = {
         descriptionHtml,
         // Persist the captured pre_activate picks so RESOLVE replays them.
         preActivateVars, preActivateMenuPicks, preActivateTargets, preActivateDone: true,
+        // Pre-composed own-chain cost (above). Merged, not assigned: an override
+        // could already be present, and CONFIRM will merge its reaction channel
+        // on top of this one.
+        ...(preCostOverride
+          ? { costOverride: mergeCostOverrides(arForProfile.costOverride ?? null, preCostOverride) }
+          : {}),
+        // Repaint the printed cost so the card shows what will actually be
+        // debited. Skipped when Vismagus already rewrote the subtitle to name the
+        // resource that got substituted ("20 HP · Vismagus") — that label is more
+        // informative than a bare figure.
+        ...(preCostOverride && !arForProfile.vismagusHpPaid
+          ? { rawCost: formatCostMap(computeEffectiveCost(
+              arForProfile.costSerialized,
+              mergeCostOverrides(arForProfile.costOverride ?? null, preCostOverride))) }
+          : {}),
       });
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
@@ -6011,7 +6050,10 @@ const Confirm = {
         acceptedCardReactions: applied,
         evaluatedCardReactions: evaluated,
         accuracyOverride,
-        costOverride,
+        // MERGE, not assign: COMPUTE may have pre-composed this skill's own
+        // chain adjustments (a pre_activate-captured spend). Overwriting here
+        // silently dropped them, so §1 would debit the printed floor again.
+        costOverride: mergeCostOverrides(liveAr?.costOverride ?? ar?.costOverride ?? null, costOverride),
         // negate_action (Shadow Possession) — RESOLVE skips outcome + effect/
         // reaction firing; the per-target hits are already zeroed + Blocked above.
         negated,

@@ -3048,6 +3048,74 @@ export async function applyEffectByLabel(effectLabel, ctx) {
 // (+ optional `charge_max`), then write the result back — consolidating into one
 // AE (deletes the rest). No-op if the target has no such AE (can't multiply a
 // nonexistent stack). Used by Enkindle ("double the target's Burn": Burn ×2).
+// ── adjust_cost, previewed at COMPUTE ─────────────────────────────────────
+//
+// A skill that captures a value BEFORE its card is built (a `pre_activate`
+// prompt_number — Bimagus's "spend 20–50 MP") already knows what its own
+// `adjust_cost` rows will come to. Evaluating them here lets the card print the
+// real price instead of the printed floor, and lets §1 debit it in ONE go.
+//
+// Safe to double-run: the deltas are composed through skill-cost.composeCostDelta
+// with this skill's name + the row's effect_label, and the RESOLVE-time handler
+// composes with the SAME pair — so the chain step dedups against this preview
+// rather than billing again. Anything missed here still lands at RESOLVE and is
+// reconciled by the settlement pass; the preview is an optimisation for the
+// DISPLAY, never the source of truth.
+//
+// Deliberately conservative — only rows that are certain now:
+//   - `chain_steps` only. A `menu_option_refs` / `confirm_button_refs` branch is
+//     a choice not yet made; pre-billing an unpicked branch would overcharge.
+//   - rows with a `condition_formula` are SKIPPED. A gate can read true now and
+//     false at RESOLVE (or the reverse), and a preview that guessed wrong would
+//     be locked in by its own dedup.
+export async function precomposeChainCostAdjustments({ skill, effectTable, startLabel, actor, chainVars, round = 0 }) {
+  const start = String(startLabel ?? "").trim();
+  if (!effectTable || !start) return null;
+  const byLabel = new Map();
+  for (const r of Object.values(effectTable)) {
+    if (!r || r.$deleted) continue;
+    const l = String(r.effect_label ?? "").trim();
+    if (l) byLabel.set(l, r);
+  }
+  const seen = new Set();
+  const reachable = [];
+  const walk = (lbl) => {
+    if (!lbl || seen.has(lbl)) return;
+    seen.add(lbl);
+    const r = byLabel.get(lbl);
+    if (!r) return;
+    reachable.push(r);
+    for (const n of parseEffectRefList(r.chain_steps)) walk(n);
+  };
+  walk(start);
+
+  const rows = reachable.filter((r) =>
+    String(r.effect_kind ?? "").trim().toLowerCase() === "adjust_cost"
+    && !String(r.condition_formula ?? "").trim());
+  if (!rows.length) return null;
+
+  const { readAdjustment, buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+  const { composeCostDelta } = await import("./skill-cost.js");
+  const resolver = buildSkillResolver({
+    actor, skill, round,
+    payload: { _chainVars: { ...(chainVars ?? {}) } },
+  });
+  const source = skill?.name ?? "chain";
+  let override = null;
+  for (const row of rows) {
+    const { op, amountFormula } = readAdjustment(row, "cost");
+    let delta = 0;
+    try { delta = Number(evaluateFormula(amountFormula, resolver, 0)) || 0; } catch { delta = 0; }
+    if (op === "subtract") delta = -Math.abs(delta);
+    if (!delta) continue;
+    override = composeCostDelta(override, {
+      resource: String(row.cost_resource ?? "mp").trim().toLowerCase(),
+      delta, source, label: String(row.effect_label ?? "").trim() || null,
+    });
+  }
+  return override;
+}
+
 // ── adjust_cost (resolve-time chain path) ─────────────────────────────────
 //
 // The chain-step twin of card-mutations.applyAdjustCostMutation. Same fields,

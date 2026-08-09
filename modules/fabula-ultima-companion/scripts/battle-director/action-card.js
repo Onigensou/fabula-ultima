@@ -30,7 +30,7 @@ import { INTENTS } from "./intents.js";
 import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
 import { resourceLabel } from "./resources.js";
-import { computeEffectiveCost } from "./skill-cost.js";
+import { computeEffectiveCost, formatCostMap } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
@@ -2534,12 +2534,10 @@ export function rerenderCardTargetSurfaces(rootEl, { attacker, targets, perTarge
 // previous local copy was a deliberate near-duplicate and drifted the moment
 // surcharge-seeding landed on one side only.
 // Format a resolved cost map like the CSB cost string ("6 MP", "3 HP · 2 MP", "Free").
-function formatCardCost(costMap) {
-  const parts = Object.entries(costMap || {})
-    .filter(([, amt]) => Number(amt) > 0)
-    .map(([res, amt]) => `${amt} ${String(res).toUpperCase()}`);
-  return parts.length ? parts.join(" · ") : "Free";
-}
+// Delegates to skill-cost.formatCostMap — the cost bullet, the COMPUTE-side
+// repaint and any future readout must render a cost map the same way, and this
+// was a second copy of that rule.
+const formatCardCost = formatCostMap;
 
 // ── Wire-safety for the structured card delta ────────────────────────────────
 // The delta now carries ROW DATA to player mirrors instead of a rendered

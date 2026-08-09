@@ -282,6 +282,50 @@ export function composeCostDelta(override, { resource, delta, source = "reaction
   return ov;
 }
 
+// Render an effective-cost map as the card's cost bullet ("50 MP", "10 MP · 2 IP",
+// "Free"). Lives here so the bullet, the picker badge and any future cost readout
+// can't drift — action-card's formatCardCost delegates to this.
+export function formatCostMap(costMap) {
+  const parts = Object.entries(costMap || {})
+    .filter(([, amt]) => Number(amt) > 0)
+    .map(([res, amt]) => `${amt} ${(RESOURCES[res]?.label ?? String(res).toUpperCase())}`);
+  return parts.length ? parts.join(" · ") : "Free";
+}
+
+// Fold one override map into another. Overrides now arrive from more than one
+// place — COMPUTE can pre-compose a skill's OWN chain adjustments once a
+// pre_activate capture has resolved them, and CONFIRM composes the reaction
+// channel on top. The CONFIRM stamp used to overwrite, which silently dropped
+// the earlier set; merging through the one composer keeps `_parts` provenance
+// AND its (source,label) dedup, so nothing can be billed twice.
+export function mergeCostOverrides(base, extra) {
+  if (!extra) return base ?? null;
+  if (!base) return extra;
+  // ⚠ COPY before composing. `base` is usually `ar.costOverride`, and the
+  // actionResult is run through freezeActionResult — composeCostDelta writes to
+  // the map in place, so merging onto the frozen original THROWS (module scope
+  // is strict mode), which took CONFIRM down with it. Symptom was silent: the
+  // action simply stopped after the cost reaction, no budget, no card.
+  let out = { ...base, _parts: [...(Array.isArray(base._parts) ? base._parts : [])] };
+  const parts = Array.isArray(extra._parts) ? extra._parts : [];
+  if (parts.length) {
+    for (const p of parts) {
+      out = composeCostDelta(out, {
+        resource: p?.resource, delta: p?.amount, source: p?.source, label: p?.label ?? null,
+      });
+    }
+  } else {
+    // Defensive: an override with sums but no provenance (nothing writes this
+    // today) still has to survive the merge rather than vanish.
+    for (const [res, amt] of Object.entries(extra)) {
+      if (res.startsWith("_")) continue;
+      out = composeCostDelta(out, { resource: res, delta: amt, source: "unlabelled", label: null });
+    }
+  }
+  if (extra._mult) out._mult = { ...(out._mult ?? {}), ...extra._mult };
+  return out;
+}
+
 // Sum the `_parts` a resolve-time chain ADDED, per resource. The settlement in
 // resolveAction can't just recompute from the running totals: an in-chain
 // `consume_resource` DECREMENTS the override as it spends a discount, so the
