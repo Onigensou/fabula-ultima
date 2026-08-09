@@ -25,6 +25,7 @@
 
 import { log, warn } from "./logger.js";
 import { reconcileSetBonuses, withManagedEquip } from "./set-bonus.js";
+import { getRegistry } from "../levelup-system/class-registry.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
 
 const UNARM_STRIKE_ITEM_ID = "bwqZvS4NXw7bCrmV";
@@ -60,6 +61,137 @@ function actorOwnsDualShieldbearer(actor) {
 // applyEquipmentSwap. The flag is cleared at battle end (battle-end-cleanup).
 function isHiddenItem(it) {
   return !!it?.flags?.["fabula-ultima-companion"]?.hiddenUntilBattleEnd;
+}
+
+// ─── Equip legality ─────────────────────────────────────────────────────
+//
+// Three separate rules, three separate sources — collected here so there is ONE
+// definition of "can this actor wear this, in this slot":
+//
+//   martial weapons/shields → granted by CLASSES (class_list → class registry's
+//                             martial*_equippable flags). There is no actor-level
+//                             flag for these.
+//   martial armor          → actor prop `is_martialarmor`
+//   hand slots             → a two-handed weapon occupies both hands
+//   shield in main hand    → Dual Shieldbearer (enforced authoritatively below
+//                            in _applyEquipmentSwap; surfaced here for the UI)
+//
+// This is a PREDICATE, not a gate: applyEquipmentSwap does not reject on martial
+// grounds, because adding a new rejection to the combat path would change
+// behaviour that works today. Callers use it to disable options and explain why.
+// Wiring BD's Equipment card to honour it is a deliberate, separate change.
+
+/** Which martial proficiency an item requires, or null. Mirrors CC's martialNeed. */
+export function martialNeedOf(item) {
+  const p = item?.system?.props ?? {};
+  if (!p.isMartial) return null;
+  const type = String(p.item_type ?? "").toLowerCase();
+  if (type === ITEM_TYPE_ARMOR) return "armor";
+  if (type === ITEM_TYPE_SHIELD) return "shield";
+  return String(p.weapon_range ?? "").toLowerCase() === "ranged" ? "ranged" : "melee";
+}
+
+/**
+ * What martial proficiencies this actor actually has.
+ * Weapons/shields come from the classes they own; armor is its own actor flag.
+ * Fails OPEN on a registry miss — a missing class definition must not silently
+ * tell a player they can't use gear they can.
+ */
+export function martialGrants(actor) {
+  const out = { melee: false, ranged: false, armor: false, shield: false, resolved: true };
+  if (!actor) return out;
+
+  out.armor = !!actor.system?.props?.is_martialarmor;
+
+  // Direct import — getRegistry() is synchronous and cached per boot, and is NOT
+  // exposed on FUCompanion.api (a global lookup would just fail open forever).
+  // class-registry only imports levelup-const, so there is no cycle back here.
+  let registry = null;
+  try {
+    registry = getRegistry() ?? null;
+  } catch { /* fall through — treated as unresolved below */ }
+
+  const rows = Object.values(actor.system?.props?.class_list ?? {})
+    .filter((r) => r && !r.$deleted);
+
+  if (!registry) {
+    // No registry available — we cannot prove a class grant either way.
+    out.resolved = false;
+    return out;
+  }
+
+  const byName = new Map(
+    (Array.isArray(registry) ? registry : Object.values(registry))
+      .map((c) => [String(c?.name ?? c?.label ?? "").toLowerCase().trim(), c])
+  );
+
+  for (const row of rows) {
+    const cls = byName.get(String(row.class_name ?? "").toLowerCase().trim());
+    const free = cls?.free ?? {};
+    if (free.martialMelee) out.melee = true;
+    if (free.martialRanged) out.ranged = true;
+    if (free.martialArmor) out.armor = true;
+    if (free.martialShield) out.shield = true;
+  }
+  return out;
+}
+
+/**
+ * Can `item` go in `slotKey` on `actor` right now?
+ * @returns {{ok:boolean, reason:string|null}} reason is player-facing text.
+ */
+export function canEquip(actor, item, slotKey) {
+  const ok = { ok: true, reason: null };
+  if (!actor || !item || !slotKey) return ok;
+
+  const p = item.system?.props ?? {};
+  const type = String(p.item_type ?? "").toLowerCase();
+
+  // ── slot/type sanity ────────────────────────────────────────────────────
+  const handSlot = slotKey === "main" || slotKey === "off";
+  if (handSlot && !(type === ITEM_TYPE_WEAPON || type === ITEM_TYPE_SHIELD)) {
+    return { ok: false, reason: "Not a hand-slot item" };
+  }
+  if (slotKey.startsWith("accessory") && type !== ITEM_TYPE_ACCESSORY) {
+    return { ok: false, reason: "Not an accessory" };
+  }
+  if (slotKey === "armor" && type !== ITEM_TYPE_ARMOR) {
+    return { ok: false, reason: "Not armor" };
+  }
+
+  // ── hand-slot rules ─────────────────────────────────────────────────────
+  const isTwoHanded = type !== ITEM_TYPE_SHIELD
+    && String(p.hand_slots ?? "").toLowerCase().includes("two");
+
+  if (isTwoHanded && slotKey === "off") {
+    return { ok: false, reason: "Two-handed — main hand only" };
+  }
+  if (isTwoHanded && slotKey === "main") {
+    // Legal, but it costs the other hand. Callers surface this as a warning.
+    ok.reason = "Two-handed — frees the off hand";
+  }
+  if (type === ITEM_TYPE_SHIELD && slotKey === "main" && !actorOwnsDualShieldbearer(actor)) {
+    return { ok: false, reason: "Shields need Dual Shieldbearer for the main hand" };
+  }
+  // A two-handed weapon already worn in the main hand blocks the off hand.
+  if (slotKey === "off") {
+    const worn = equippedWeaponInSlot(actor, "main");
+    const wornTwoH = worn && String(worn.system?.props?.hand_slots ?? "").toLowerCase().includes("two");
+    if (wornTwoH) return { ok: false, reason: `${worn.name} is two-handed` };
+  }
+
+  // ── martial proficiency ─────────────────────────────────────────────────
+  const need = martialNeedOf(item);
+  if (need) {
+    const grants = martialGrants(actor);
+    // Unresolved registry → don't block; the player knows their own classes.
+    if (grants.resolved && !grants[need]) {
+      const label = { melee: "martial melee", ranged: "martial ranged", armor: "martial armor", shield: "martial shields" }[need];
+      return { ok: false, reason: `Requires ${label} proficiency` };
+    }
+  }
+
+  return ok;
 }
 
 // Pull every equipment-relevant item off the actor, grouped by category.
