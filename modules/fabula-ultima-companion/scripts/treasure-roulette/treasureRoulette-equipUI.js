@@ -287,6 +287,13 @@
     ensureStyles();
     document.getElementById(OVL_ID)?.remove();
 
+    // The reward panel travelled from the reveal and anchored screen 2, but
+    // screen 3 is the two cards and the wearer — the parked panel has no place
+    // in this composition and would sit on top of the left card. Fade it out as
+    // this screen comes in. The flow's own stage.clear() at the end is then a
+    // no-op, so ownership is unchanged.
+    try { kit()?.stage?.clear?.({ immediate: true }); } catch { /* nothing parked */ }
+
     const slots = payload?.slots ?? [];
     const activeKey = payload?.preferredSlotKey ?? slots.find((s) => s.legal !== false)?.key ?? slots[0]?.key ?? null;
     const active = slots.find((s) => s.key === activeKey) ?? slots[0] ?? null;
