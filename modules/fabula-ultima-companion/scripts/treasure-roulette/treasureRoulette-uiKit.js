@@ -281,6 +281,53 @@
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       }
 
+      /* ── Item stat card ───────────────────────────────────────────────
+         UNSCOPED on purpose: the card is transplanted between screens, and
+         overlay-scoped rules would vanish the moment it moved. */
+      .tr-eq-card {
+        position: relative;
+        width: 420px; height: 520px;
+        padding: 18px 20px 16px;
+        display: flex; flex-direction: column;
+        border-radius: 12px;
+        background: linear-gradient(178deg, #f3e5c4 0%, #e7d7b7 55%, #dcc9a4 100%);
+        border: 2px solid #8B6914;
+        box-shadow: 0 0 0 1px #c9973a, 0 18px 40px rgba(0,0,0,.55),
+                    inset 0 1px 0 rgba(255,255,255,.5);
+        color: #3b2314;
+        font-family: "Signika", "Palatino Linotype", Palatino, Georgia, serif;
+        box-sizing: border-box;
+      }
+      .tr-eq-card * { box-sizing: border-box; }
+      .tr-eq-head { display:flex; align-items:center; gap:10px; }
+      .tr-eq-name { font-size: 27px; font-weight: 800; line-height: 1.1; }
+      .tr-eq-sub {
+        margin-top: 2px; font-size: 13px; letter-spacing: .5px;
+        border-bottom: 2px solid rgba(60,35,20,.45);
+        padding-bottom: 7px; margin-bottom: 12px; opacity: .85;
+      }
+      .tr-eq-rows { display: flex; flex-direction: column; gap: 9px; }
+      .tr-eq-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        font-size: 17px; font-weight: 700;
+      }
+      .tr-eq-row .tr-eq-val { font-size: 20px; font-weight: 800; }
+      .tr-eq-label { display: inline-flex; align-items: center; gap: 8px; }
+      .tr-eq-label i {
+        width: 18px; text-align: center; font-size: 15px; color: rgba(59,35,20,.55);
+      }
+      .tr-eq-delta { font-size: 14px; margin-left: 6px; font-weight: 800; }
+      .tr-eq-desc {
+        margin-top: 12px; padding-top: 10px; flex: 1; min-height: 0;
+        border-top: 2px solid rgba(60,35,20,.28);
+      }
+      .tr-eq-stamp {
+        position: absolute; right: 16px; bottom: 12px;
+        font-size: 22px; font-weight: 800; letter-spacing: 1px;
+        color: #6b4a22; opacity: .55; transform: rotate(-4deg);
+        text-shadow: 0 1px 0 rgba(255,255,255,.45);
+      }
+
       /* Fixed-height description well: long text SCROLLS, the panel never grows. */
       .tr-desc-scroll {
         overflow-y: auto;
@@ -296,6 +343,125 @@
       .tr-desc-scroll::-webkit-scrollbar-thumb:hover { background: rgba(120,85,40,0.8); }
     `;
     document.head.appendChild(s);
+  }
+
+  // ── The item stat card ────────────────────────────────────────────────────
+  // Lives here, not in the equip screen, because BOTH screens draw it: screen 2
+  // shows the player what they are handing out before they choose a recipient,
+  // and screen 3 shows the same card again beside what is currently worn.
+  //
+  // Its CSS is deliberately UNSCOPED (no `#overlay` prefix). The card gets
+  // transplanted between screens, and overlay-scoped rules would evaporate the
+  // moment it moved — the exact failure the parked reward panel already had.
+
+  // Label icons. Chosen to agree with the battle-director action card where it
+  // has an opinion — fa-shield-halved is exactly what the card uses for defence.
+  const LABEL_ICON = Object.freeze({
+    Attribute: "fa-dice-d20",
+    Accuracy:  "fa-crosshairs",
+    Damage:    "fa-burst",
+    Type:      "fa-fire-flame-curved",
+    DEF:       "fa-shield-halved",
+    MDEF:      "fa-wand-magic-sparkles",
+  });
+
+  // Candidates expose defence as one string ("DEF +1 • MDEF +0"); the design
+  // wants a row each, so pull the two numbers back out.
+  function defParts(cand) {
+    const s = String(cand?.defenseLine ?? "");
+    const def  = s.match(/(?:^|[^M])DEF\s*([+-]?\d+)/i);
+    const mdef = s.match(/MDEF\s*([+-]?\d+)/i);
+    return { def: def ? Number(def[1]) : null, mdef: mdef ? Number(mdef[1]) : null };
+  }
+
+  function rowsFor(cand) {
+    const cat = String(cand?.category ?? "weapon").toLowerCase();
+    if (cat === "shield" || cat === "armor") {
+      return [
+        { label: "DEF",  icon: LABEL_ICON.DEF,  get: (c) => defParts(c).def,  kind: "num" },
+        { label: "MDEF", icon: LABEL_ICON.MDEF, get: (c) => defParts(c).mdef, kind: "num" },
+      ];
+    }
+    if (cat === "accessory") return [];
+    return [
+      { label: "Attribute", icon: LABEL_ICON.Attribute, get: (c) => c?.attackStat,  kind: "attr" },
+      { label: "Accuracy",  icon: LABEL_ICON.Accuracy,  get: (c) => c?.checkBonus,  kind: "num" },
+      { label: "Damage",    icon: LABEL_ICON.Damage,    get: (c) => c?.damageBonus, kind: "num" },
+      { label: "Type",      icon: LABEL_ICON.Type,      get: (c) => c?.element,     kind: "element" },
+    ];
+  }
+
+  function subtitleFor(cand) {
+    if (!cand) return "";
+    const cat = String(cand.category ?? "").toLowerCase();
+    const bits = cat === "shield" ? ["Shield", cand.handSlots]
+      : cat === "armor" ? ["Armor"]
+      : cat === "accessory" ? ["Accessory"]
+      : [cand.weaponType, cand.weaponRange, cand.handSlots];
+    return bits.filter(Boolean).join(" · ");
+  }
+
+  /**
+   * @param {object|null} cand      the item, or null to render the empty slot
+   * @param {object}  opts
+   * @param {string}  opts.side     "current" | "new" | "solo"
+   * @param {object}  [opts.compareTo]  previous item — deltas render ONLY when
+   *   this is supplied, which is what keeps screen 2 (no comparison yet) to
+   *   bare values and screen 3 showing the change.
+   * @param {boolean} [opts.stamp]  draw the "Equipped" mark
+   */
+  async function renderItemCard(cand, { side = "solo", compareTo = null, stamp = false } = {}) {
+    const isEmpty = !cand;
+    const nameColor = isEmpty ? "rgba(59,35,20,.45)" : rarityColor(cand.rarity);
+    const nameGlow  = isEmpty ? "none" : rarityGlow(cand.rarity);
+    const nameText  = isEmpty ? "(Empty)" : (cand.name ?? "—");
+    const icon = isEmpty ? "" : imgHTML(cand.img, { size: 34, alt: nameText });
+
+    const rows = rowsFor(cand ?? compareTo ?? {});
+    const rowsHTML = rows.map(({ label, icon: ic, get, kind }) => {
+      const raw = cand ? get(cand) : null;
+      const labelHTML =
+        `<span class="tr-eq-label"><i class="fa-solid ${esc(ic ?? "fa-circle")}"></i>${esc(label)}</span>`;
+
+      if (raw === null || raw === undefined || raw === "") {
+        return `<div class="tr-eq-row">${labelHTML}<span class="tr-eq-val" style="opacity:.35">—</span></div>`;
+      }
+
+      let valHTML;
+      if (kind === "attr")         valHTML = attrPairHTML(raw, 26);
+      else if (kind === "element") valHTML = damageTypeHTML(raw);
+      else if (kind === "num") {
+        const n = Number(raw) || 0;
+        valHTML = `${n >= 0 ? "+" : ""}${n}`;
+        if (compareTo) {
+          const prev = Number(get(compareTo) ?? 0) || 0;
+          const d = n - prev;
+          if (d !== 0) {
+            const c = d > 0 ? DELTA_UP : DELTA_DOWN;
+            valHTML += `<span class="tr-eq-delta" style="color:${c}">(${d > 0 ? "+" : ""}${d})</span>`;
+          }
+        }
+      } else valHTML = esc(raw);
+
+      return `<div class="tr-eq-row">${labelHTML}<span class="tr-eq-val">${valHTML}</span></div>`;
+    }).join("");
+
+    const desc = isEmpty ? "" : await describeHTML(cand.description);
+    const descBlock = desc
+      ? `<div class="tr-eq-desc tr-desc-scroll">${desc}</div>`
+      : `<div class="tr-eq-desc" style="opacity:.4;font-size:12px;font-style:italic;">No effect</div>`;
+
+    return `
+      <div class="tr-eq-card" data-side="${esc(side)}">
+        <div class="tr-eq-head">
+          ${icon}
+          <div class="tr-eq-name" style="color:${nameColor};text-shadow:${nameGlow};">${esc(nameText)}</div>
+        </div>
+        <div class="tr-eq-sub">${esc(subtitleFor(cand)) || "&nbsp;"}</div>
+        <div class="tr-eq-rows">${rowsHTML}</div>
+        ${descBlock}
+        ${stamp && !isEmpty ? `<div class="tr-eq-stamp">Equipped</div>` : ""}
+      </div>`;
   }
 
   // ── The loot stage ────────────────────────────────────────────────────────
@@ -471,7 +637,7 @@
     // media
     imgHTML, attrIconHTML, attrPairHTML, IMG_RESET, ATTR_ICON,
     // content
-    describeHTML,
+    describeHTML, renderItemCard, rowsFor, defParts, subtitleFor, LABEL_ICON,
     // motion
     staggerIn, staggerOut, ensureKitStyles, STAGGER_MS, ENTER_MS, EXIT_MS,
     // the travelling reward panel

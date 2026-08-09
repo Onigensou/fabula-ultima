@@ -66,54 +66,8 @@
         gap: 26px; margin-top: 4vh;
       }
 
-      /* ── Parchment card ── */
-      #${OVL_ID} .tr-eq-card {
-        position: relative;
-        width: 420px; height: 520px;
-        padding: 18px 20px 16px;
-        display: flex; flex-direction: column;
-        border-radius: 12px;
-        background: linear-gradient(178deg, #f3e5c4 0%, #e7d7b7 55%, #dcc9a4 100%);
-        border: 2px solid #8B6914;
-        box-shadow: 0 0 0 1px #c9973a, 0 18px 40px rgba(0,0,0,.55),
-                    inset 0 1px 0 rgba(255,255,255,.5);
-        color: #3b2314;
-      }
-
-      #${OVL_ID} .tr-eq-head { display:flex; align-items:center; gap:10px; }
-      #${OVL_ID} .tr-eq-name {
-        font-size: 27px; font-weight: 800; line-height: 1.1;
-      }
-      #${OVL_ID} .tr-eq-sub {
-        margin-top: 2px; font-size: 13px; letter-spacing: .5px;
-        border-bottom: 2px solid rgba(60,35,20,.45);
-        padding-bottom: 7px; margin-bottom: 12px; opacity: .85;
-      }
-
-      #${OVL_ID} .tr-eq-rows { display: flex; flex-direction: column; gap: 9px; }
-      #${OVL_ID} .tr-eq-row {
-        display: flex; align-items: center; justify-content: space-between; gap: 10px;
-        font-size: 17px; font-weight: 700;
-      }
-      #${OVL_ID} .tr-eq-row .tr-eq-val { font-size: 20px; font-weight: 800; }
-      #${OVL_ID} .tr-eq-label { display: inline-flex; align-items: center; gap: 8px; }
-      #${OVL_ID} .tr-eq-label i {
-        width: 18px; text-align: center; font-size: 15px;
-        color: rgba(59,35,20,.55);
-      }
-      #${OVL_ID} .tr-eq-delta { font-size: 14px; margin-left: 6px; font-weight: 800; }
-
-      #${OVL_ID} .tr-eq-desc {
-        margin-top: 12px; padding-top: 10px; flex: 1; min-height: 0;
-        border-top: 2px solid rgba(60,35,20,.28);
-      }
-
-      #${OVL_ID} .tr-eq-stamp {
-        position: absolute; right: 16px; bottom: 12px;
-        font-size: 22px; font-weight: 800; letter-spacing: 1px;
-        color: #6b4a22; opacity: .55; transform: rotate(-4deg);
-        text-shadow: 0 1px 0 rgba(255,255,255,.45);
-      }
+      /* Card visuals live UNSCOPED in the UI Kit — the card is transplanted
+         between screens and scoped rules would not survive the move. */
 
       /* ── Middle column: wearer, arrow, choices ── */
       #${OVL_ID} .tr-eq-mid {
@@ -206,125 +160,10 @@
   // ── Row model ─────────────────────────────────────────────────────────────
   // Only the rows that mean something for the category, so a shield isn't padded
   // with blank weapon rows.
-  // Label icons. Chosen to agree with the battle-director action card where it
-  // has an opinion — fa-shield-halved is exactly what the card uses for defence
-  // — and kept neutral elsewhere. Attribute VALUES stay as art icons.
-  const LABEL_ICON = Object.freeze({
-    Attribute: "fa-dice-d20",
-    Accuracy:  "fa-crosshairs",
-    Damage:    "fa-burst",
-    Type:      "fa-fire-flame-curved",
-    DEF:       "fa-shield-halved",
-    MDEF:      "fa-wand-magic-sparkles",
-    Rarity:    "fa-gem",
-  });
-
-  // Candidates expose defence as one string ("DEF +1 • MDEF +0"); the mockup
-  // wants a row each, so pull the two numbers back out.
-  function defParts(cand) {
-    const s = String(cand?.defenseLine ?? "");
-    const def  = s.match(/DEF\s*([+-]?\d+)/i);
-    const mdef = s.match(/MDEF\s*([+-]?\d+)/i);
-    return {
-      def:  def  ? Number(def[1])  : null,
-      // "MDEF" also matches the DEF pattern, so a missing MDEF must not inherit it.
-      mdef: mdef ? Number(mdef[1]) : null,
-    };
-  }
-
-  function rowsFor(cand) {
-    const cat = String(cand?.category ?? "weapon").toLowerCase();
-    if (cat === "shield" || cat === "armor") {
-      return [
-        { label: "DEF",  icon: LABEL_ICON.DEF,  get: (c) => defParts(c).def,  kind: "num" },
-        { label: "MDEF", icon: LABEL_ICON.MDEF, get: (c) => defParts(c).mdef, kind: "num" },
-      ];
-    }
-    if (cat === "accessory") return [];
-    return [
-      { label: "Attribute", icon: LABEL_ICON.Attribute, get: (c) => c?.attackStat,  kind: "attr" },
-      { label: "Accuracy",  icon: LABEL_ICON.Accuracy,  get: (c) => c?.checkBonus,  kind: "num" },
-      { label: "Damage",    icon: LABEL_ICON.Damage,    get: (c) => c?.damageBonus, kind: "num" },
-      { label: "Type",      icon: LABEL_ICON.Type,      get: (c) => c?.element,     kind: "element" },
-    ];
-  }
-
-  function subtitleFor(cand) {
-    if (!cand) return "";
-    const cat = String(cand.category ?? "").toLowerCase();
-    const bits = cat === "shield"
-      ? ["Shield", cand.handSlots]
-      : cat === "armor"
-        ? ["Armor"]
-        : cat === "accessory"
-          ? ["Accessory"]
-          : [cand.weaponType, cand.weaponRange, cand.handSlots];
-    return bits.filter(Boolean).join(" · ");
-  }
-
-  // ── Card render ───────────────────────────────────────────────────────────
-  async function cardHTML(cand, { side, compareTo = null }) {
-    const K = kit();
-    const isEmpty = !cand;
-
-    const nameColor = isEmpty ? "rgba(59,35,20,.45)" : K.rarityColor(cand.rarity);
-    const nameGlow  = isEmpty ? "none" : K.rarityGlow(cand.rarity);
-    const nameText  = isEmpty ? "(Empty)" : (cand.name ?? "—");
-
-    const icon = isEmpty ? "" : K.imgHTML(cand.img, { size: 34, alt: nameText });
-
-    const rows = rowsFor(cand ?? compareTo ?? {});
-    const rowsHTML = rows.map(({ label, icon, get, kind }) => {
-      const raw = cand ? get(cand) : null;
-      const labelHTML =
-        `<span class="tr-eq-label"><i class="fa-solid ${esc(icon ?? "fa-circle")}"></i>${esc(label)}</span>`;
-
-      if (raw === null || raw === undefined || raw === "") {
-        return `<div class="tr-eq-row">${labelHTML}
-          <span class="tr-eq-val" style="opacity:.35">—</span></div>`;
-      }
-
-      let valHTML;
-      if (kind === "attr")         valHTML = K.attrPairHTML(raw, 26);
-      else if (kind === "element") valHTML = K.damageTypeHTML(raw);
-      else if (kind === "num") {
-        const n = Number(raw) || 0;
-        valHTML = `${n >= 0 ? "+" : ""}${n}`;
-        // Delta only on the NEW side, only against a real comparison.
-        if (side === "new" && compareTo) {
-          const prev = Number(get(compareTo) ?? 0) || 0;
-          const d = n - prev;
-          if (d !== 0) {
-            const c = d > 0 ? K.DELTA_UP : K.DELTA_DOWN;
-            valHTML += `<span class="tr-eq-delta" style="color:${c}">(${d > 0 ? "+" : ""}${d})</span>`;
-          }
-        }
-      } else valHTML = esc(raw);
-
-      return `<div class="tr-eq-row">${labelHTML}
-        <span class="tr-eq-val">${valHTML}</span></div>`;
-    }).join("");
-
-    const desc = isEmpty ? "" : await K.describeHTML(cand.description);
-    const descBlock = desc
-      ? `<div class="tr-eq-desc tr-desc-scroll">${desc}</div>`
-      : `<div class="tr-eq-desc" style="opacity:.4;font-size:12px;font-style:italic;">No effect</div>`;
-
-    const stamp = side === "current" && !isEmpty
-      ? `<div class="tr-eq-stamp">Equipped</div>` : "";
-
-    return `
-      <div class="tr-eq-card" data-side="${side}">
-        <div class="tr-eq-head">
-          ${icon}
-          <div class="tr-eq-name" style="color:${nameColor};text-shadow:${nameGlow};">${esc(nameText)}</div>
-        </div>
-        <div class="tr-eq-sub">${esc(subtitleFor(cand)) || "&nbsp;"}</div>
-        <div class="tr-eq-rows">${rowsHTML}</div>
-        ${descBlock}
-        ${stamp}
-      </div>`;
-  }
+  // Card rendering lives in the UI Kit so screen 2 and screen 3 draw the SAME
+  // element. Deltas appear only when a comparison is supplied — screen 2 has
+  // none, so it shows bare values.
+  const cardHTML = (cand, opts) => kit().renderItemCard(cand, opts);
 
   function slotTabsHTML(slots, activeKey) {
     if (!slots?.length) return "";
@@ -360,7 +199,7 @@
     if (!interactive) overlay.classList.add("tr-eq-spectator");
 
     const [leftCard, rightCard] = await Promise.all([
-      cardHTML(active?.current ?? null, { side: "current" }),
+      cardHTML(active?.current ?? null, { side: "current", stamp: true }),
       cardHTML(payload?.incoming ?? null, { side: "new", compareTo: active?.current ?? null }),
     ]);
 
@@ -466,7 +305,7 @@
             // Re-render both cards for the newly selected slot.
             const s = slots.find((x) => x.key === activeKey);
             const [l, r] = await Promise.all([
-              cardHTML(s?.current ?? null, { side: "current" }),
+              cardHTML(s?.current ?? null, { side: "current", stamp: true }),
               cardHTML(payload?.incoming ?? null, { side: "new", compareTo: s?.current ?? null }),
             ]);
             stage.querySelector('.tr-eq-card[data-side="current"]').outerHTML = l;

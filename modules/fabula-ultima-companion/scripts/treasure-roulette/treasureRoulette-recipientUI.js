@@ -133,6 +133,20 @@
 
       #${OVL_ID}.tr-rc-spectator .tr-rc-card { cursor: default; pointer-events: none; }
 
+      /* The item card's slot on the left. Scaled down a touch so a 520px card
+         doesn't dominate the screen next to the candidate list. */
+      .tr-rc-cardslot {
+        position: fixed; left: 22vw; top: 50vh;
+        transform: translate(-50%, -50%) scale(.78);
+        opacity: 0;
+        transition: opacity 320ms cubic-bezier(.2,.9,.2,1),
+                    transform 320ms cubic-bezier(.2,.9,.2,1);
+      }
+      .tr-rc-cardslot.tr-rc-cardslot-in {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(.82);
+      }
+
       /* Stand-in reward panel — only drawn when nothing is parked (bench use).
          Mirrors the roulette panel so the bench looks like the real flow. */
       .tr-rc-standin {
@@ -194,9 +208,30 @@
     }
     const defaultId = cards[0]?.id ?? null;
 
-    // Only draw a reward panel if the spin didn't already park one.
+    // The item's own stat card, in the left slot. Choosing a recipient without
+    // knowing what the item DOES is a blind question, so the card the equip
+    // screen uses is shown here too — with no comparison yet, so bare values
+    // and no deltas. The spin's little reward panel cross-fades out beneath it.
     _ownsStage = false;
-    if (!K.stage.hasParked()) {
+    if (payload?.incoming) {
+      const stage = K.stage.ensure();
+      const holder = document.createElement("div");
+      holder.className = "tr-rc-cardslot";
+      stage.appendChild(holder);
+      K.renderItemCard(payload.incoming, { side: "solo" }).then((html) => {
+        holder.innerHTML = html;
+        requestAnimationFrame(() => holder.classList.add("tr-rc-cardslot-in"));
+        // Retire the small panel the spin parked — the card replaces it.
+        const parked = stage.querySelector(".oni-roulette-panel");
+        if (parked) {
+          parked.style.transition = "opacity 260ms ease, transform 260ms ease";
+          parked.style.opacity = "0";
+          parked.style.transform = "translate(-50%, -50%) scale(.9)";
+          setTimeout(() => parked.remove(), 280);
+        }
+      });
+      _ownsStage = true;
+    } else if (!K.stage.hasParked()) {
       const stage = K.stage.ensure();
       const standin = document.createElement("div");
       standin.className = "tr-rc-standin";
