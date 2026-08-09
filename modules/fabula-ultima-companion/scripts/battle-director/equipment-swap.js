@@ -255,7 +255,10 @@ export function planEquipmentActionCost(actor, { equipmentSelections, weaponForm
 //     ],
 //     hasUnarmed: bool,
 //   }
-function buildHandCandidate(it) {
+// Exported so the Treasure Roulette equip-comparison window can describe a
+// not-yet-owned template item with the SAME field set the Equipment card shows.
+// Pure read-only projection — no behaviour change for BD.
+export function buildHandCandidate(it) {
   const p = it.system?.props ?? {};
   const isShield = p.item_type === ITEM_TYPE_SHIELD;
   // `hand_slots` is a string ("One-handed" / "Two-handed") per the
@@ -306,7 +309,7 @@ function buildHandCandidate(it) {
   }
   return base;
 }
-function buildAccCandidate(it) {
+export function buildAccCandidate(it) {
   const p = it.system?.props ?? {};
   return {
     id: it.id,
@@ -322,7 +325,7 @@ function buildAccCandidate(it) {
     description: String(p.description ?? ""),
   };
 }
-function buildArmorCandidate(it) {
+export function buildArmorCandidate(it) {
   const p = it.system?.props ?? {};
   const def  = Number(p.item_def_bonus ?? 0)  || 0;
   const mdef = Number(p.item_mdef_bonus ?? 0) || 0;

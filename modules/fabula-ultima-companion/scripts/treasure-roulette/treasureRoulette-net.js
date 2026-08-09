@@ -121,10 +121,15 @@ Hooks.once("ready", () => {
       waiters: []
     };
 
-    // Hard failsafe so nothing can hang forever (2 minutes max)
+    // Hard failsafe so nothing can hang forever.
+    // 20s, not the old 120s: in the v2 tile flow the Dungeon Pathing controller
+    // AWAITS this barrier, so a client that never acks (closed tab, stalled
+    // render) now freezes the whole dungeon turn rather than just delaying an
+    // award. 20s comfortably covers a 6s spin + reveal even on a throttled
+    // background tab, and failing open is far better than a frozen party.
     rec.hardTimer = setTimeout(() => {
       tryResolve(rec, "hardTimeout");
-    }, 120000);
+    }, 20000);
 
     _records.set(requestId, rec);
 

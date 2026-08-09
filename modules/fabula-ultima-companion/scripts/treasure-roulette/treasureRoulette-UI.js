@@ -79,6 +79,13 @@
   const SCREEN_MARGIN_PX = 18;
   const CLOSE_DELAY_MS = 250;
 
+  // Reveal beat — after the wheel stops, the winning panel pulls to centre and a
+  // banner names the prize. This replaces the old chat announcement, so it has to
+  // read clearly on its own. Every client runs it from the same broadcast packet,
+  // so it stays in step across the table.
+  const REVEAL_MOVE_MS = 520;
+  const REVEAL_HOLD_MS = 1500;
+
   // --------------------------------------------------------------------------
   // Helpers
   // --------------------------------------------------------------------------
@@ -272,6 +279,70 @@
 
       .oni-treasure-roulette-overlay, .oni-treasure-roulette-overlay * {
         user-select: none;
+      }
+
+      /* ── Reveal beat ──────────────────────────────────────────────────── */
+      .oni-treasure-roulette-overlay.oni-revealing .oni-roulette-panel {
+        opacity: 0;
+        transition:
+          opacity 320ms ease,
+          left ${REVEAL_MOVE_MS}ms cubic-bezier(.2,.9,.2,1),
+          top ${REVEAL_MOVE_MS}ms cubic-bezier(.2,.9,.2,1),
+          transform ${REVEAL_MOVE_MS}ms cubic-bezier(.2,.9,.2,1);
+      }
+
+      .oni-treasure-roulette-overlay.oni-revealing .oni-roulette-panel.oni-winner {
+        opacity: 1;
+        z-index: 3;
+        transform: translate(-50%, -50%) scale(1.32);
+        box-shadow:
+          0 18px 34px rgba(0,0,0,0.45),
+          0 0 0 3px rgba(255, 235, 185, 0.75),
+          0 0 26px 6px rgba(255, 214, 130, 0.35),
+          inset 0 0 0 2px rgba(60,35,20,0.25);
+      }
+
+      /* The loot-type icon steps aside so the prize owns the centre. */
+      .oni-treasure-roulette-overlay.oni-revealing .oni-roulette-center-wrap {
+        opacity: 0;
+        transition: opacity 300ms ease;
+      }
+
+      .oni-treasure-roulette-overlay .oni-roulette-banner {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: calc(var(--oni-panel-h, 66px) * 1.15);
+        transform: translate(-50%, 8px);
+        opacity: 0;
+        text-align: center;
+        pointer-events: none;
+        transition: opacity 320ms ease, transform 320ms cubic-bezier(.2,.9,.2,1);
+      }
+      .oni-treasure-roulette-overlay .oni-roulette-banner.oni-in {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      .oni-treasure-roulette-overlay .oni-roulette-banner-label {
+        font-family: "Signika", "Palatino Linotype", serif;
+        font-size: 14px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: rgba(255, 233, 190, 0.75);
+        text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+        margin-bottom: 4px;
+      }
+
+      .oni-treasure-roulette-overlay .oni-roulette-banner-name {
+        font-family: "Signika", "Modesto Condensed", "Palatino Linotype", serif;
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        color: #ffeec2;
+        text-shadow:
+          0 2px 0 rgba(0,0,0,0.45),
+          0 0 18px rgba(255, 200, 110, 0.55);
       }
     `;
     document.head.appendChild(style);
@@ -541,6 +612,38 @@
     return finalIndex;
   }
 
+  // Pull the winning panel to centre, fade everything else, name the prize.
+  async function revealWinner(overlayEl, panels, finalIndex, entry) {
+    const winner = panels[finalIndex];
+    if (!winner) return;
+
+    const stage = overlayEl.querySelector(".oni-roulette-stage") ?? overlayEl;
+
+    const banner = document.createElement("div");
+    banner.className = "oni-roulette-banner";
+
+    const label = document.createElement("div");
+    label.className = "oni-roulette-banner-label";
+    label.textContent = "Obtained";
+
+    const name = document.createElement("div");
+    name.className = "oni-roulette-banner-name";
+    name.textContent = entry?.name || "Reward";
+
+    banner.appendChild(label);
+    banner.appendChild(name);
+    stage.appendChild(banner);
+
+    overlayEl.classList.add("oni-revealing");
+    winner.classList.add("oni-winner");
+    winner.style.left = "50%";
+    winner.style.top = "50%";
+
+    await sleep(REVEAL_MOVE_MS);
+    banner.classList.add("oni-in");
+    await sleep(REVEAL_HOLD_MS);
+  }
+
   async function easeIn(overlayEl) {
     overlayEl.classList.add("oni-in");
     await sleep(EASE_IN_MS + 40);
@@ -626,6 +729,9 @@
     const panels = createPanels(ring, entries);
 
     const doLayout = () => {
+      // Once the reveal has taken over, the winner's left/top are pinned to the
+      // centre — re-running the ring solver here would snap it back mid-animation.
+      if (overlay.classList.contains("oni-revealing")) return;
       const { radius, panelW, panelH, scatterMul, solverPasses } = applyResponsiveSizing(overlay, panels.length);
       const positions = createStaggeredPositions(panels.length, radius, scatterMul);
       solveOverlaps(positions, panelW, panelH, solverPasses);
@@ -658,6 +764,10 @@
         anticipationStartPct,
         anticipationMaxMult
       );
+
+      // Announce on screen. This is the reward announcement now — the chat line
+      // that used to carry it is bookkeeping only.
+      await revealWinner(overlay, panels, winnerIndex, entries[winnerIndex]);
 
       await sleep(CLOSE_DELAY_MS);
     } finally {
