@@ -77,6 +77,12 @@
 #      a local baseline before trusting `check`.
 #   2. hooks/ arrives inert: the PostToolUse/Stop wiring lives in
 #      .claude/settings.json, which is NOT tracked. Opt in deliberately.
+# carrier-scan answers "is this content actually implemented?" against the
+# authored export. Shared: it reads the same _authored-export the co-dev already
+# reviews, needs no local state, and its whole point is that the nine-carrier
+# rule stops living in one person's head.
+!/tools/carrier-scan/
+!/tools/carrier-scan/**
 !/tools/hot-reload-map/
 !/tools/hot-reload-map/**
 !/tools/bug-report/

@@ -115,17 +115,25 @@ const ENTRIES = [
 // ── Families that already have their OWN registry ───────────────────────────
 // Declared here for DISCOVERY only — the authoritative data stays in the owning
 // module, so there is exactly one place to edit. Do not copy their contents.
+// `namesFrom` lets a consumer (tools/carrier-scan) enumerate the covered names
+// WITHOUT this file importing the owning module — the data stays in one place
+// and this file stays import-free. Pure function of the symbol's value.
 const DELEGATED = [
   {
     what: "Cleanse consumables (Tonic, Super Tonic, Turbo Tonic, Cleanse)",
     module: "scripts/healing-system/healing-cleanse.js", symbol: "CLEANSE_REGISTRY",
     note: "uuid + name -> { scope: one|all debuffs, target: single|all allies }.",
+    namesFrom: (reg) => [...(reg?.values?.() ?? [])].map((d) => d?.name).filter(Boolean),
   },
   {
     what: "Ritual disciplines (Arcanism, Chimerism, Elementalism, Entropism, "
         + "Illusionism, Spiritism, Ritualism)",
     module: "scripts/ritual-system/ritual-const.js", symbol: "DISCIPLINE",
     note: "itemIds + itemNames -> check attributes, icon, blurb for the ritual window.",
+    // 🪤 The matcher strips a trailing parenthetical (ritual-actor.js
+    // `normaliseName`), so "Ritual Arcanism (variant)" DOES resolve — do not
+    // "fix" a variant-named skill that looks unmatched here.
+    namesFrom: (d) => Object.values(d ?? {}).flatMap((x) => x?.itemNames ?? []),
   },
 ];
 
