@@ -71,7 +71,7 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 491,
+    "count": 496,
     "engineVersion": "1.0.423",
     "override": {
       "SL": 5,
@@ -1129,6 +1129,19 @@
       "skillType": "Active",
       "targets": 1
     },
+    "Elementalist / Bimagus": {
+      "caster": "Elementalist",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Bimagus",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Elementalist / Elemental Shroud": {
       "caster": "Elementalist",
       "ok": false,
@@ -1465,6 +1478,19 @@
       "perTarget": [],
       "roll": null,
       "skill": "Anomaly",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Entropist / Bimagus": {
+      "caster": "Entropist",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Bimagus",
       "skillType": "Active",
       "targets": 1
     },
@@ -2598,6 +2624,19 @@
       "skillType": "Spell",
       "targets": 1
     },
+    "Hina (Backup) / Bimagus": {
+      "caster": "Hina (Backup)",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Bimagus",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Hina (Backup) / Dispel": {
       "caster": "Hina (Backup)",
       "element": "",
@@ -2896,6 +2935,19 @@
       "perTarget": [],
       "roll": null,
       "skill": "Avatar of Vengeance: Pulse",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Hina / Bimagus": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Bimagus",
       "skillType": "Active",
       "targets": 1
     },
@@ -5793,6 +5845,19 @@
       "roll": null,
       "skill": "Barrier",
       "skillType": "Spell",
+      "targets": 1
+    },
+    "Spiritist / Bimagus": {
+      "caster": "Spiritist",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Bimagus",
+      "skillType": "Active",
       "targets": 1
     },
     "Spiritist / Cleanse": {

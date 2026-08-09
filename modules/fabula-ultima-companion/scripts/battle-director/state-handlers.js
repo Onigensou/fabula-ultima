@@ -864,12 +864,24 @@ async function resolveAction(director, ar, opts = {}) {
     // creature_completes_spell reaction can gate to "spell with a check" (e.g.
     // Opportunity Advantage's self-consume only spends on an offensive spell).
     actionCanMiss: !!ar.canMiss,
-    // Printed MP cost of the spell/skill that just resolved — read by the
+    // TOTAL MP cost of the spell/skill that just resolved — read by the
     // LAST_SPELL_MP formula identifier so a `creature_completes_spell` reaction
     // can size a follow-up off the cast's cost (Bimagus's "2nd spell ≤ ½ the
-    // first"). The PRINTED cost (costSerialized), so it's correct even for a
-    // free cast that paid nothing (skipCost).
-    lastSpellMp: Number(ar.costSerialized?.mp ?? 0) || 0,
+    // first", and its combined-budget decrement).
+    //
+    // "Total" is the databook's own word, and it is what both Bimagus and
+    // Cataclysm are written against — Cataclysm says it "increases the spell's
+    // TOTAL MP cost". So this folds `adjust_cost` overrides in: a 10 MP spell
+    // overcharged by +10 reports 20, and spends 20 of Bimagus's budget. Printed
+    // cost alone silently let an overcharged spell cost the budget nothing
+    // (user ruling 2026-08-09: "10 spell + 10 Cataclysm is the same as casting
+    // 20"). Widened from printed-only; no content read it at the time.
+    //
+    // Still correct for a FREE cast: `free_of_cost` skips the debit via
+    // skipCost, it is NOT a cost override, so costSerialized + overrides survive
+    // and the budget sees the real number. (A Fugitive-style `waive`, which IS
+    // an override, legitimately reports 0 — nothing was assessed.)
+    lastSpellMp: Number(computeEffectiveCost(ar.costSerialized, ar.costOverride)?.mp ?? 0) || 0,
     // Acting skill/weapon name for `reaction_source_skill` self-scoping
     // (replaces the removed skill_type item-gate).
     sourceSkillName: skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,

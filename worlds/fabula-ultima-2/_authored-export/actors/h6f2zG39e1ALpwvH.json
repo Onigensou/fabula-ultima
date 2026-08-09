@@ -1148,6 +1148,118 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "HDhIURmXfwtxZ4rx",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786247830620,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "HDhIURmXfwtxZ4rx",
+              "originalParentId": "kTtOSMlEQUvylPxP",
+              "originalUuid": "Actor.h6f2zG39e1ALpwvH.Item.kTtOSMlEQUvylPxP.ActiveEffect.HDhIURmXfwtxZ4rx"
+            },
+            "fabula-ultima-companion": {
+              "directorPermanent": false,
+              "lifetimeMode": "persistent_counter",
+              "tags": [
+                "bimagus"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Bimagus Encore",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "Z8mEqI30Gl0Z9vws",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786247830620,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Z8mEqI30Gl0Z9vws",
+              "originalParentId": "kTtOSMlEQUvylPxP",
+              "originalUuid": "Actor.h6f2zG39e1ALpwvH.Item.kTtOSMlEQUvylPxP.ActiveEffect.Z8mEqI30Gl0Z9vws"
+            },
+            "fabula-ultima-companion": {
+              "directorPermanent": false,
+              "lifetimeMode": "persistent_counter",
+              "tags": [
+                "bimagus"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Bimagus",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.5"
@@ -1164,17 +1276,69 @@
       "system": {
         "props": {
           "class": "Spiritist",
-          "cost": "",
+          "cost": "20 MP",
           "damage_bonus": "0",
           "description": "<p>Once per turn during a conflict, if you have an <strong>arcane</strong> weapon equipped, you may use an action and spend <strong>20 to 50 Mind Points</strong> to perform the <strong>【📕Spell】</strong> action for free <strong>twice</strong>, casting two spells without needing to pay their MP costs. If you do, the two spells must have a combined total MP cost equal to or lower than <strong>【20 + the amount of MP you spent to use this Skill】</strong>, and the second spell must have a total MP cost that is equal to or lower than half the total MP cost of the first spell.</p>",
           "effect_table": {
             "0": {
-              "$deleted": false,
+              "chain_steps": "bim_prompt, bim_cost, bim_ae, bim_cast1",
+              "effect_kind": "chain",
+              "effect_label": "bim_root"
+            },
+            "1": {
+              "effect_kind": "prompt_number",
+              "effect_label": "bim_prompt",
+              "prompt_label": "Bimagus — spend Mind Points (spell budget = 20 + spend)",
+              "prompt_max": "min(50, CUR_MP)",
+              "prompt_min": "20",
+              "prompt_step": "5",
+              "prompt_var": "bimagus"
+            },
+            "2": {
+              "cost_amount": "VAR_BIMAGUS - 20",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "bim_cost"
+            },
+            "3": {
+              "ae_initial_charges": "20 + VAR_BIMAGUS",
+              "ae_template_ref": "Bimagus",
+              "effect_kind": "apply_ae",
+              "effect_label": "bim_ae",
+              "target_ref": "self"
+            },
+            "4": {
               "action_ref": "Spell",
               "effect_kind": "free_action",
-              "effect_label": "bim_free",
+              "effect_label": "bim_cast1",
               "free_of_cost": true,
-              "max_mp_cost": "min(70 - MP_SPENT_THIS_TURN, floor(MP_SPENT_THIS_TURN / 2))"
+              "max_mp_cost": "AE_CHARGES_BIMAGUS"
+            },
+            "5": {
+              "chain_steps": "bim_enc, bim_cast2",
+              "effect_kind": "chain",
+              "effect_label": "bim_follow"
+            },
+            "6": {
+              "ae_initial_charges": "max(0, min(AE_CHARGES_BIMAGUS - LAST_SPELL_MP, floor(LAST_SPELL_MP / 2)))",
+              "ae_template_ref": "Bimagus Encore",
+              "effect_kind": "apply_ae",
+              "effect_label": "bim_enc",
+              "target_ref": "self"
+            },
+            "7": {
+              "action_ref": "Spell",
+              "effect_kind": "free_action",
+              "effect_label": "bim_cast2",
+              "free_of_cost": true,
+              "max_mp_cost": "AE_CHARGES_BIMAGUS_ENCORE"
+            },
+            "8": {
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "bim_sweep",
+              "filter_tag": "bimagus",
+              "target_ref": "self"
             }
           },
           "isCheck": false,
@@ -1183,13 +1347,19 @@
           "level": "1",
           "max_level": 1,
           "name": "Bimagus",
+          "on_activate_effect_ref": "bim_root",
           "reaction_config_table": {
             "0": {
-              "$deleted": false,
-              "condition_formula": "HAS_ARCANE_WEAPON == 1 && MP_SPENT_THIS_TURN > 0",
-              "reaction_effect_ref": "bim_free",
-              "reaction_passive_mode": "ask",
-              "reaction_passive_target": "self",
+              "condition_formula": "ACTION_IS_FREE_CAST == 1 && AE_COUNT_BIMAGUS > 0 && AE_COUNT_BIMAGUS_ENCORE == 0",
+              "reaction_effect_ref": "bim_follow",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_completes_spell"
+            },
+            "1": {
+              "condition_formula": "AE_COUNT_BIMAGUS > 0 || AE_COUNT_BIMAGUS_ENCORE > 0",
+              "reaction_effect_ref": "bim_sweep",
+              "reaction_passive_mode": "force",
               "reaction_source": "self",
               "reaction_trigger": "turn_end"
             }
@@ -1197,8 +1367,8 @@
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "-",
-          "skill_target": "-",
-          "skill_type": "Passive",
+          "skill_target": "Self",
+          "skill_type": "Active",
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",

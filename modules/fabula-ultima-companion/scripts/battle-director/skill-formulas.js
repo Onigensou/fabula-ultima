@@ -561,9 +561,13 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (!tok) return 0;
         return Number(globalThis.__fudActiveDCombat?.hitsOnTargetThisTurn?.(actor?.id, tok) ?? 0) || 0;
       }
-      // Printed MP cost of the spell that just resolved — stamped on the
+      // TOTAL MP cost of the spell that just resolved — stamped on the
       // creature_completes_spell payload (Bimagus sizes its 2nd free cast off
       // this: "2nd spell ≤ ½ the first"). 0 when not in that reaction context.
+      // "Total" is RAW's word: printed cost FOLDED with adjust_cost overrides,
+      // so a Cataclysm overcharge counts (a 10 MP spell raised +10 reports 20).
+      // Correct for a free cast too — free_of_cost skips the DEBIT, it is not a
+      // cost override. See the stamp site in state-handlers for the full rule.
       case "LAST_SPELL_MP":
         return Number(payload?.lastSpellMp ?? 0) || 0;
       // Predicted damage THIS reactor is about to take from the in-flight action,
