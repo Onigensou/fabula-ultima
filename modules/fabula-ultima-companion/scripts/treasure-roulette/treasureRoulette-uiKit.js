@@ -353,9 +353,17 @@
 
   const hasParked = () => document.getElementById(STAGE_ID)?.dataset.parked === "1";
 
-  function clearStage() {
+  /**
+   * @param {boolean} [immediate] remove the node synchronously instead of
+   *   fading it. The fade path depends on a setTimeout, and a throttled tab
+   *   (Foundry in the background) can stretch that to seconds — long enough for
+   *   the parked reward to still be sitting there while the next screen draws
+   *   over it. Hand-offs use immediate; end-of-sequence teardown can fade.
+   */
+  function clearStage({ immediate = false } = {}) {
     const st = document.getElementById(STAGE_ID);
     if (!st) return;
+    if (immediate) { st.remove(); return; }
     st.style.transition = "opacity 260ms ease";
     st.style.opacity = "0";
     setTimeout(() => st.remove(), 280);
