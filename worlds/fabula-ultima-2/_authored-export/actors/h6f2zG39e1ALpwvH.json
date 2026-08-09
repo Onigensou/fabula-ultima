@@ -1275,6 +1275,8 @@
       "sort": 0,
       "system": {
         "props": {
+          "availability_formula": "HAS_ARCANE_WEAPON == 1",
+          "availability_reason": "Requires an arcane weapon",
           "class": "Spiritist",
           "cost": "20 MP",
           "damage_bonus": "0",

@@ -277,7 +277,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10))",
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10))",
               "reaction_effect_ref": "cat_root",
               "reaction_passive_mode": "ask",
               "reaction_source": "self",
@@ -2039,6 +2039,8 @@
       "sort": 0,
       "system": {
         "props": {
+          "availability_formula": "HAS_ARCANE_WEAPON == 1",
+          "availability_reason": "Requires an arcane weapon",
           "class": "Spiritist",
           "cost": "20 MP",
           "damage_bonus": "0",
