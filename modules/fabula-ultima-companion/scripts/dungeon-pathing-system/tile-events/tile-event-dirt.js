@@ -19,8 +19,8 @@
 //   Every outcome ends the same way — once resolved the mound collapses to a
 //   Blank tile (type + texture):
 //        BANE / WORST → cleared to blank right after the effect fires.
-//        BEST         → the Treasure roulette blanks the tile when the party
-//                       claims it (its own clearTileVisualAndDisable).
+//        BEST         → TR.Flow blanks the tile once the winner is locked
+//                       (DP.TileState.clearTile, from inside the loot flow).
 //
 // Defaults below are overridable per-tile via flags under
 //   flags.<MODULE_ID>.dungeonPathing.dirt.*

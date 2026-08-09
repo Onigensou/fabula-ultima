@@ -550,11 +550,18 @@
     try {
       if (DP?.TileState?.clearTile) {
         await DP.TileState.clearTile(scene, tileId);
-        return;
+      } else {
+        warn("DP.TileState.clearTile unavailable — tile not cleared.");
       }
-      warn("DP.TileState.clearTile unavailable — tile not cleared.");
     } catch (e) {
       warn("clearTile failed:", e);
+    }
+
+    // Keep the smoke puff + door sound the tile has always played when consumed.
+    try {
+      window["oni.TreasureRoulette.TileFrontEnd"]?.playClearFx?.(scene?.id, tileId);
+    } catch (e) {
+      warn("clear FX failed:", e);
     }
   }
 
