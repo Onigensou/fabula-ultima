@@ -111,22 +111,106 @@
           "class": "Hexer",
           "cost": "15 MP",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>You cause the target’s condition to worsen into a debilitating infection. The target recovers from one of the following (choose one if it has both):</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li></ul><p>and it becomes <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "plague_menu,plague_inflict",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "plague_root",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "1": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "plague_menu",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Recover from Weak|Recover from Shaken",
+              "menu_option_refs": "plague_rm_a,plague_rm_b",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Choose the affliction to consume.",
+              "menu_title": "Plague",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_template_ref": "Weak",
+              "consume_self": false,
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "plague_rm_a",
+              "filter_tag": "",
+              "from_resource": "",
+              "include_persistent": false,
+              "menu_description": "The target recovers from Weak.",
+              "menu_label": "Recover from Weak",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "3": {
+              "ae_template_ref": "Shaken",
+              "consume_self": false,
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "plague_rm_b",
+              "filter_tag": "",
+              "from_resource": "",
+              "include_persistent": false,
+              "menu_description": "The target recovers from Shaken.",
+              "menu_label": "Recover from Shaken",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Poisoned",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "plague_inflict",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": true,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Plague",
+          "on_activate_effect_ref": "plague_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "plague_menu",
+          "reaction_config_table": null,
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_range": "Range",
           "skill_target": "One weak or shaken creature",
-          "skill_type": "Active",
+          "skill_type": "Spell",
+          "target_eligibility": "AE_COUNT_WEAK > 0 || AE_COUNT_SHAKEN > 0",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -777,22 +861,106 @@
           "class": "Hexer",
           "cost": "15 MP",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>You magnify the target’s distress into blinding rage. The target recovers from one of the following (choose one if it has both):</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span></li></ul><p>and it becomes <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "blight_menu,blight_inflict",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "blight_root",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "1": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "blight_menu",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Recover from Slow|Recover from Dazed",
+              "menu_option_refs": "blight_rm_a,blight_rm_b",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Choose the affliction to consume.",
+              "menu_title": "Seething Blight",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_template_ref": "Slow",
+              "consume_self": false,
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "blight_rm_a",
+              "filter_tag": "",
+              "from_resource": "",
+              "include_persistent": false,
+              "menu_description": "The target recovers from Slow.",
+              "menu_label": "Recover from Slow",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "3": {
+              "ae_template_ref": "Dazed",
+              "consume_self": false,
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "blight_rm_b",
+              "filter_tag": "",
+              "from_resource": "",
+              "include_persistent": false,
+              "menu_description": "The target recovers from Dazed.",
+              "menu_label": "Recover from Dazed",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Enraged",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "blight_inflict",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": true,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Seething Blight",
+          "on_activate_effect_ref": "blight_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "blight_menu",
+          "reaction_config_table": null,
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_range": "Range",
           "skill_target": "One slow or dazed creature",
-          "skill_type": "Active",
+          "skill_type": "Spell",
+          "target_eligibility": "AE_COUNT_SLOW > 0 || AE_COUNT_DAZED > 0",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -1093,6 +1261,102 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "tPzR5K5EghzIjn5X",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786284154874,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Aura of Decay:</em> any creature that makes a melee attack against the bearer takes <strong>10</strong> Poison damage, hit or miss.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "tPzR5K5EghzIjn5X",
+              "originalParentId": "Vj3ji4eeqJKkLD57",
+              "originalUuid": "Actor.UwEys8l4AuitEI8z.Item.Vj3ji4eeqJKkLD57.ActiveEffect.tPzR5K5EghzIjn5X"
+            },
+            "fabula-ultima-companion": {
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "consume_self": false,
+                    "damage_amount": "10",
+                    "damage_cause": "damage",
+                    "damage_element": "poison",
+                    "damage_resource": "hp",
+                    "effect_kind": "deal_damage",
+                    "effect_label": "aod_bite",
+                    "from_resource": "",
+                    "menu_label": "",
+                    "target_ref": "trigger_attacker",
+                    "to_resource": ""
+                  }
+                },
+                "name": "Aura of Decay",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "ATTACK_IS_MELEE == 1",
+                    "reaction_action_kind": "",
+                    "reaction_cause_filter": "",
+                    "reaction_effect_ref": "aod_bite",
+                    "reaction_origin_filter": "",
+                    "reaction_passive_mode": "force",
+                    "reaction_resource_filter": "",
+                    "reaction_responder": "",
+                    "reaction_source": "self",
+                    "reaction_source_skill": "",
+                    "reaction_status_filter": "",
+                    "reaction_trigger": "creature_targeted_by_action",
+                    "requires_skill": ""
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Aura of Decay",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-aura-of-decay"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1113,22 +1377,43 @@
           "class": "Hexer",
           "cost": "10 MP",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>You cloak the target in a veil of magic that is toxic to enemies. Until this spell ends, any creature that performs a melee attack against the target takes <strong>10</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage. The attacker takes this damage <strong>even if the attack misses</strong>.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage becomes <strong>15</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; border: none !important;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage becomes <strong>20</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; border: none !important;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p>",
           "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Aura of Decay",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "aod_apply",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Aura of Decay",
+          "on_activate_effect_ref": "aod_apply",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Range",
           "skill_target": "One creature",
-          "skill_type": "Active",
+          "skill_type": "Spell",
           "type_damage": "",
           "use_optional_params": false
         },

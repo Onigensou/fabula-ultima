@@ -645,6 +645,75 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "W2ddxtw83Ow3fHMu",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283835618,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_thrown",
+              "mode": 2,
+              "priority": 1,
+              "value": "${momentum_point}$"
+            },
+            {
+              "key": "defense",
+              "mode": 2,
+              "priority": 1,
+              "value": "${momentum_point}$"
+            }
+          ],
+          "description": "<p>You may never have more than <strong>5 Momentum Points</strong>.</p><p>Your <strong>ranged</strong> attacks using weapons that belong to the <strong>thrown</strong> Category deal extra damage equal to your current <strong>Momentum Points</strong>.</p><p>When a creature hits you with an attack targeting your <strong>Defense</strong>, you <strong>must</strong> spend all your accumulated <strong>Momentum Points</strong> and increase your Defense score by an equal amount against that attack (this may turn the hit into a miss).</p><p>You also lose all <strong>Momentum Points</strong> at the end of each scene.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "W2ddxtw83Ow3fHMu",
+              "originalParentId": "Rhqcg83vcVm9QWLB",
+              "originalUuid": "Actor.cBDhTXQcItSRZZpu.Item.Rhqcg83vcVm9QWLB.ActiveEffect.W2ddxtw83Ow3fHMu"
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/death_blossom.png",
+          "name": "Momentum Points",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "heroic_skill"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -665,17 +734,22 @@
           "class": "Dancer",
           "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>When you perform a <strong>ranged</strong> attack using a weapon that belongs to the <strong>thrown</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Momentum Point</strong>. You may never have more than <strong>5 Momentum Points</strong>.</p>\n<p>Your <strong>ranged</strong> attacks using weapons that belong to the <strong>thrown</strong> Category deal extra damage equal to your current <strong>Momentum Points</strong>.</p>\n<p>When a creature hits you with an attack targeting your <strong>Defense</strong>, you must spend all your accumulated <strong>Momentum Points</strong> and increase your <strong>Defense</strong> score by an equal amount against that attack (this may turn the hit into a miss).</p>\n<p>You also lose all <strong>Momentum Points</strong> at the end of each scene.</p>\n",
           "duration": "",
+          "effect_table": {},
           "heroic_requirement": "you must have mastered one or more Classes among Dancer, Fury, and Sharpshooter.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Swirling Swarm",
+          "on_activate_effect_ref": "",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "",

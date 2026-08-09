@@ -2984,7 +2984,7 @@
         "id": "ZWUn6A7lzpZaXLbB",
         "name": "Aura of Decay",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "7ywxRYdvYmDk94bL",
@@ -6980,7 +6980,7 @@
         "id": "ck8W9NE1D32WtSI3",
         "name": "Hydra Dance",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "CcblPDSXzgYOsfug",
@@ -8864,7 +8864,7 @@
         "id": "kuqfrsAnzpRaR3ac",
         "name": "Myrmidon Dance",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "spYAfHOWI0OG5M9X",
@@ -9260,7 +9260,7 @@
         "id": "1MKMX1WMuNV4WCBx",
         "name": "Phoenix Dance",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "QXgHt7VEXEaVdPz1",
@@ -9560,13 +9560,13 @@
         "id": "TPxgsBNWQ3vA3fgu",
         "name": "Powerful Spell",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "x4bzOjIZqfj8ybfq",
         "name": "Powerful Strike",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "JlK4V1yKLDi6cAqh",
@@ -10184,7 +10184,7 @@
         "id": "OFaq1NASo4uD8huP",
         "name": "Ripples",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "XhrZl2gJnOTmOT15",
@@ -12764,7 +12764,7 @@
         "id": "3B3c21t2TeqpWc09",
         "name": "Yeti Dance",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "V7uO3wNcBLzhsilq",

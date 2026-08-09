@@ -26,6 +26,75 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "BwNPdMDaOGONWFin",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283834971,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_thrown",
+              "mode": 2,
+              "priority": 1,
+              "value": "${momentum_point}$"
+            },
+            {
+              "key": "defense",
+              "mode": 2,
+              "priority": 1,
+              "value": "${momentum_point}$"
+            }
+          ],
+          "description": "<p>You may never have more than <strong>5 Momentum Points</strong>.</p><p>Your <strong>ranged</strong> attacks using weapons that belong to the <strong>thrown</strong> Category deal extra damage equal to your current <strong>Momentum Points</strong>.</p><p>When a creature hits you with an attack targeting your <strong>Defense</strong>, you <strong>must</strong> spend all your accumulated <strong>Momentum Points</strong> and increase your Defense score by an equal amount against that attack (this may turn the hit into a miss).</p><p>You also lose all <strong>Momentum Points</strong> at the end of each scene.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "BwNPdMDaOGONWFin",
+              "originalParentId": "3hC6S9ONpo5q6vkM",
+              "originalUuid": "Actor.RTx2b68mGqAXebwh.Item.3hC6S9ONpo5q6vkM.ActiveEffect.BwNPdMDaOGONWFin"
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/death_blossom.png",
+          "name": "Momentum Points",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "heroic_skill"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -46,17 +115,22 @@
           "class": "Dancer",
           "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>When you perform a <strong>ranged</strong> attack using a weapon that belongs to the <strong>thrown</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Momentum Point</strong>. You may never have more than <strong>5 Momentum Points</strong>.</p>\n<p>Your <strong>ranged</strong> attacks using weapons that belong to the <strong>thrown</strong> Category deal extra damage equal to your current <strong>Momentum Points</strong>.</p>\n<p>When a creature hits you with an attack targeting your <strong>Defense</strong>, you must spend all your accumulated <strong>Momentum Points</strong> and increase your <strong>Defense</strong> score by an equal amount against that attack (this may turn the hit into a miss).</p>\n<p>You also lose all <strong>Momentum Points</strong> at the end of each scene.</p>\n",
           "duration": "",
+          "effect_table": {},
           "heroic_requirement": "you must have mastered one or more Classes among Dancer, Fury, and Sharpshooter.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Swirling Swarm",
+          "on_activate_effect_ref": "",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "",
@@ -645,6 +719,70 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "Tpy6OVU6qU6B6lBs",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786280919044,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_melee",
+              "mode": 2,
+              "priority": 20,
+              "value": "propAtLeast(\"level\", 40, 10, 5)"
+            }
+          ],
+          "description": "<p><em>Powerful Strike:</em> melee attacks deal +5 damage (10 at level 40+).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Tpy6OVU6qU6B6lBs",
+              "originalParentId": "wsf0XX5Nz2s31zyM",
+              "originalUuid": "Actor.RTx2b68mGqAXebwh.Item.wsf0XX5Nz2s31zyM.ActiveEffect.Tpy6OVU6qU6B6lBs"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/MagicResistanceMasteryR.png",
+          "name": "Powerful Strike",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -665,17 +803,22 @@
           "class": "Weaponmaster",
           "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>When you hit one or more creatures with a melee attack, that attack deals <strong>5</strong> extra damage to each creature.</p><p> The amount of extra damage increases to <strong>10</strong> if you are level 40 or higher.</p>",
           "duration": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
+          "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Powerful Strike",
+          "on_activate_effect_ref": "",
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_range": "",
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",

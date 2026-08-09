@@ -4567,7 +4567,7 @@
         "container": "9GquE1k7ZaVvMLfS",
         "props": {
           "cost": "",
-          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "description": "<p>At the start of your turn, you recover Hit Points equal to 10% of your maximum Hit Points.</p>",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -13489,7 +13489,7 @@
         "container": "5S2EaoKlYMGW2WMw",
         "props": {
           "cost": "",
-          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "description": "<p>When you hit one or more creatures with this weapon, you may have the attack deal 0 damage. If you do, choose an ally other than yourself who has the Chanter or Dancer class; that ally immediately performs a Magichant or Dance as a free action.</p>",
           "effect_table": {
             "0": {
               "$deleted": false,

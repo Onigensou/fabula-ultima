@@ -8,6 +8,154 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "gNgc4KOR5VVohmR0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786293373043,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "Until the start of your next turn, all damage from your attacks and spells becomes ice.",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "gNgc4KOR5VVohmR0",
+          "originalParentId": "3B3c21t2TeqpWc09",
+          "originalUuid": "Item.3B3c21t2TeqpWc09.ActiveEffect.gNgc4KOR5VVohmR0"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "dance",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "change_element": "ice",
+                "effect_kind": "change_damage_element",
+                "effect_label": "yeti_ice_override"
+              }
+            },
+            "name": "Yeti Dance (Ice)",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                "reaction_effect_ref": "yeti_ice_override",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          },
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/holy/ice-beam-explosion-yellow.webp",
+      "name": "Yeti Dance (Ice Element)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-yeti-dance-ice"
+      ],
+      "system": {
+        "tags": [
+          "dance-effect"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "GTEMJ4zONQe7Epwe",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786293373043,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_7",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "Until the start of your next turn, you have Resistance to ice damage.",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "GTEMJ4zONQe7Epwe",
+          "originalParentId": "3B3c21t2TeqpWc09",
+          "originalUuid": "Item.3B3c21t2TeqpWc09.ActiveEffect.GTEMJ4zONQe7Epwe"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "dance",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/holy/barrier-shield-winged-blue.webp",
+      "name": "Yeti Dance (Ice Resist)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-yeti-dance-ice"
+      ],
+      "system": {
+        "tags": [
+          "dance-effect"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -27,13 +175,67 @@
       "active_effect_config_table": {},
       "check_bonus": "0",
       "class": "Dancer",
-      "cost": "10 MP",
+      "cost": "",
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></li></ul>",
       "details_roller": "Show",
       "duration": "Until the start of your next turn",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "allowed_types": "",
+          "check_bonus_formula": "",
+          "consume_self": false,
+          "damage_bonus_formula": "",
+          "effect_kind": "open_action_menu",
+          "effect_label": "yeti_pick",
+          "free_hr_as_zero": false,
+          "free_mode": false,
+          "free_of_cost": false,
+          "from_resource": "",
+          "max_mp_cost": "",
+          "menu_hide_disabled": false,
+          "menu_label": "",
+          "menu_option_colors": "",
+          "menu_option_descriptions": "",
+          "menu_option_icons": "",
+          "menu_option_labels": "Gain Resistance to Ice|All your damage becomes Ice",
+          "menu_option_refs": "yeti_resist, yeti_element",
+          "menu_pick_count": "",
+          "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+          "menu_title": "Yeti Dance",
+          "target_ref": "",
+          "to_resource": ""
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "dance",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Yeti Dance (Ice Resist)",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "yeti_resist",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "dance",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Yeti Dance (Ice Element)",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "yeti_element",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        }
+      },
       "heroic_requirement": "",
       "id": "3B3c21t2TeqpWc09",
       "ignore_hr": false,
@@ -42,19 +244,21 @@
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "isZeroPower": false,
       "level": "1",
       "max_level": "1",
       "name": "Yeti Dance",
-      "on_activate_effect_ref": "",
+      "on_activate_effect_ref": "yeti_pick",
       "optional_params": {},
-      "reaction_config_table": {},
+      "pre_activate_effect_ref": "yeti_pick",
+      "reaction_config_table": null,
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Any",
+      "skill_tags": "dance, managed",
       "skill_target": "Self",
       "skill_type": "Active",
       "type_damage": "",

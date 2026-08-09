@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "nCpsnpblZxxYw1gM",
+      "_id": "27jD9M5xg5MmENbC",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784481289645,
+        "createdTime": 1786284751105,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -47,9 +47,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "nCpsnpblZxxYw1gM",
+          "originalId": "27jD9M5xg5MmENbC",
           "originalParentId": "1eFbdLi3qXUczO6Z",
-          "originalUuid": "Item.1eFbdLi3qXUczO6Z.ActiveEffect.nCpsnpblZxxYw1gM"
+          "originalUuid": "Item.1eFbdLi3qXUczO6Z.ActiveEffect.27jD9M5xg5MmENbC"
         },
         "fabula-ultima-companion": {
           "bdGraveToll": true,

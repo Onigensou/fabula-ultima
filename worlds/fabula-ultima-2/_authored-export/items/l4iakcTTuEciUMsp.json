@@ -25,7 +25,7 @@
     "container": "W8cC2u8sBR5DSRWg",
     "props": {
       "cost": "",
-      "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+      "description": "<p>While you are suffering from one or more status effects, your Attack, Spell and Skill actions gain a bonus to Accuracy equal to the number of status effects you are suffering from (up to a maximum of +3), and deal bonus HP damage equal to twice that number (up to a maximum of 6).</p>",
       "effect_table": {
         "0": {
           "$deleted": false,

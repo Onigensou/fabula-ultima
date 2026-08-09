@@ -8,6 +8,138 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "oRtJAYHxQaWgX1BT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786283629345,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Hydra Dance:</em> after you suffer damage, you may recover 5 Hit Points or 5 Mind Points.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "oRtJAYHxQaWgX1BT",
+          "originalParentId": "ck8W9NE1D32WtSI3",
+          "originalUuid": "Item.ck8W9NE1D32WtSI3.ActiveEffect.oRtJAYHxQaWgX1BT"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "dance",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "allowed_types": "",
+                "check_bonus_formula": "",
+                "consume_self": false,
+                "damage_bonus_formula": "",
+                "effect_kind": "open_action_menu",
+                "effect_label": "hydra_menu",
+                "free_hr_as_zero": false,
+                "free_mode": false,
+                "free_of_cost": false,
+                "from_resource": "",
+                "max_mp_cost": "",
+                "menu_label": "",
+                "menu_option_colors": "",
+                "menu_option_descriptions": "",
+                "menu_option_icons": "",
+                "menu_option_labels": "Recover 5 Hit Points|Recover 5 Mind Points",
+                "menu_option_refs": "hydra_hp,hydra_mp",
+                "menu_pick_count": "1",
+                "menu_subtitle": "You reel from the blow and surge back.",
+                "menu_title": "Hydra Dance",
+                "target_ref": "",
+                "to_resource": ""
+              },
+              "1": {
+                "consume_self": false,
+                "effect_kind": "grant",
+                "effect_label": "hydra_hp",
+                "from_resource": "",
+                "grant_amount": "5",
+                "grant_resource": "hp",
+                "menu_description": "You recover 5 Hit Points.",
+                "menu_label": "Recover 5 Hit Points",
+                "target_ref": "self",
+                "to_resource": ""
+              },
+              "2": {
+                "consume_self": false,
+                "effect_kind": "grant",
+                "effect_label": "hydra_mp",
+                "from_resource": "",
+                "grant_amount": "5",
+                "grant_resource": "mp",
+                "menu_description": "You recover 5 Mind Points.",
+                "menu_label": "Recover 5 Mind Points",
+                "target_ref": "self",
+                "to_resource": ""
+              }
+            },
+            "name": "Hydra Dance",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "",
+                "reaction_action_kind": "",
+                "reaction_cause_filter": "",
+                "reaction_effect_ref": "hydra_menu",
+                "reaction_origin_filter": "",
+                "reaction_passive_mode": "ask",
+                "reaction_resource_filter": "",
+                "reaction_responder": "",
+                "reaction_source": "self",
+                "reaction_source_skill": "",
+                "reaction_status_filter": "",
+                "reaction_trigger": "creature_takes_damage",
+                "requires_skill": ""
+              }
+            }
+          },
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Hydra Dance",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-hydra-dance"
+      ],
+      "system": {
+        "tags": [
+          "dance-effect"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -27,13 +159,29 @@
       "active_effect_config_table": {},
       "check_bonus": "0",
       "class": "Dancer",
-      "cost": "10 MP",
+      "cost": "",
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>After you suffer damage, <strong>Choose one option:</strong></p><ul><li>You recover 5 Hit Points</li><li>You recover 5 Mind Points</li></ul>",
       "details_roller": "Show",
       "duration": "Until the start of your next turn",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "dance",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Hydra Dance",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "hydra_arm",
+          "from_resource": "",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        }
+      },
       "heroic_requirement": "",
       "id": "ck8W9NE1D32WtSI3",
       "ignore_hr": false,
@@ -42,19 +190,20 @@
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "isZeroPower": false,
       "level": "1",
       "max_level": "1",
       "name": "Hydra Dance",
-      "on_activate_effect_ref": "",
+      "on_activate_effect_ref": "hydra_arm",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": null,
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Any",
+      "skill_tags": "dance, managed",
       "skill_target": "Self",
       "skill_type": "Active",
       "type_damage": "",

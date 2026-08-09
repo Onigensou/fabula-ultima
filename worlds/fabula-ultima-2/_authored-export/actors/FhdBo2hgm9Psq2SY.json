@@ -82,6 +82,154 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "J3G5ZW8FmYxdQUif",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283830821,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_5",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "Until the start of your next turn, you have Resistance to earth damage.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "J3G5ZW8FmYxdQUif",
+              "originalParentId": "2bAU0PFLqXo3z35U",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.2bAU0PFLqXo3z35U.ActiveEffect.J3G5ZW8FmYxdQUif"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+          "name": "Myrmidon Dance (Earth Resist)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-myrmidon-dance-earth"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "X9TpUeIoVrr8Fwfp",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283830821,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "Until the start of your next turn, all damage from your attacks and spells becomes earth.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "X9TpUeIoVrr8Fwfp",
+              "originalParentId": "2bAU0PFLqXo3z35U",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.2bAU0PFLqXo3z35U.ActiveEffect.X9TpUeIoVrr8Fwfp"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "change_element": "earth",
+                    "effect_kind": "change_damage_element",
+                    "effect_label": "myrmidon_earth_override"
+                  }
+                },
+                "name": "Myrmidon Dance (Earth)",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                    "reaction_effect_ref": "myrmidon_earth_override",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+          "name": "Myrmidon Dance (Earth Element)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-myrmidon-dance-earth"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -100,22 +248,83 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></li></ul>",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "myrmidon_pick",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Gain Resistance to Earth|All your damage becomes Earth",
+              "menu_option_refs": "myrmidon_resist, myrmidon_element",
+              "menu_pick_count": "",
+              "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+              "menu_title": "Myrmidon Dance",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "1": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Myrmidon Dance (Earth Resist)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "myrmidon_resist",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Myrmidon Dance (Earth Element)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "myrmidon_element",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Myrmidon Dance",
+          "on_activate_effect_ref": "myrmidon_pick",
           "optional_params": {},
+          "pre_activate_effect_ref": "myrmidon_pick",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
@@ -138,6 +347,75 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "QxEcUdYH1Z2g7KRq",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283834345,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_thrown",
+              "mode": 2,
+              "priority": 1,
+              "value": "${momentum_point}$"
+            },
+            {
+              "key": "defense",
+              "mode": 2,
+              "priority": 1,
+              "value": "${momentum_point}$"
+            }
+          ],
+          "description": "<p>You may never have more than <strong>5 Momentum Points</strong>.</p><p>Your <strong>ranged</strong> attacks using weapons that belong to the <strong>thrown</strong> Category deal extra damage equal to your current <strong>Momentum Points</strong>.</p><p>When a creature hits you with an attack targeting your <strong>Defense</strong>, you <strong>must</strong> spend all your accumulated <strong>Momentum Points</strong> and increase your Defense score by an equal amount against that attack (this may turn the hit into a miss).</p><p>You also lose all <strong>Momentum Points</strong> at the end of each scene.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "QxEcUdYH1Z2g7KRq",
+              "originalParentId": "37q8yMbqwqFizJEQ",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.37q8yMbqwqFizJEQ.ActiveEffect.QxEcUdYH1Z2g7KRq"
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/death_blossom.png",
+          "name": "Momentum Points",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "heroic_skill"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -158,17 +436,22 @@
           "class": "Dancer",
           "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>When you perform a <strong>ranged</strong> attack using a weapon that belongs to the <strong>thrown</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Momentum Point</strong>. You may never have more than <strong>5 Momentum Points</strong>.</p>\n<p>Your <strong>ranged</strong> attacks using weapons that belong to the <strong>thrown</strong> Category deal extra damage equal to your current <strong>Momentum Points</strong>.</p>\n<p>When a creature hits you with an attack targeting your <strong>Defense</strong>, you must spend all your accumulated <strong>Momentum Points</strong> and increase your <strong>Defense</strong> score by an equal amount against that attack (this may turn the hit into a miss).</p>\n<p>You also lose all <strong>Momentum Points</strong> at the end of each scene.</p>\n",
           "duration": "",
+          "effect_table": {},
           "heroic_requirement": "you must have mastered one or more Classes among Dancer, Fury, and Sharpshooter.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Swirling Swarm",
+          "on_activate_effect_ref": "",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "",
@@ -212,24 +495,47 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>Choose another creature that is able to see you. If that creature is already <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span>, they immediately suffer <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span>.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Slow",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "kraken_apply",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Kraken Dance",
+          "on_activate_effect_ref": "kraken_apply",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "One creature",
           "skill_type": "Active",
+          "target_eligibility": "AE_COUNT_DAZED > 0",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -250,6 +556,154 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "18xIpdxn06iRva2u",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283825958,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "Until the start of your next turn, all damage from your attacks and spells becomes light.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "18xIpdxn06iRva2u",
+              "originalParentId": "7Mfvgp6peAS2MvXi",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.7Mfvgp6peAS2MvXi.ActiveEffect.18xIpdxn06iRva2u"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "change_element": "light",
+                    "effect_kind": "change_damage_element",
+                    "effect_label": "angel_light_override"
+                  }
+                },
+                "name": "Angel Dance (Light)",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                    "reaction_effect_ref": "angel_light_override",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/holy/light-beam-explosion-yellow.webp",
+          "name": "Angel Dance (Light Element)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-angel-dance-light"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "dyrGOtp1b6zhZdUe",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283825958,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_8",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "Until the start of your next turn, you have Resistance to light damage.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "dyrGOtp1b6zhZdUe",
+              "originalParentId": "7Mfvgp6peAS2MvXi",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.7Mfvgp6peAS2MvXi.ActiveEffect.dyrGOtp1b6zhZdUe"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/holy/barrier-shield-winged-blue.webp",
+          "name": "Angel Dance (Light Resist)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-angel-dance-light"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -268,22 +722,83 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></li></ul>",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "angel_pick",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Gain Resistance to Light|All your damage becomes Light",
+              "menu_option_refs": "angel_resist, angel_element",
+              "menu_pick_count": "",
+              "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+              "menu_title": "Angel Dance",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "1": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Angel Dance (Light Resist)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "angel_resist",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Angel Dance (Light Element)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "angel_element",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Angel Dance",
+          "on_activate_effect_ref": "angel_pick",
           "optional_params": {},
+          "pre_activate_effect_ref": "angel_pick",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
@@ -363,6 +878,154 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "740tmhpvGqBukLr8",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786282902499,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "Until the start of your next turn, you have Resistance to fire damage.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "740tmhpvGqBukLr8",
+              "originalParentId": "9Xfr4rRcBUYMBCLX",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.9Xfr4rRcBUYMBCLX.ActiveEffect.740tmhpvGqBukLr8"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/holy/barrier-shield-winged-blue.webp",
+          "name": "Phoenix Dance (Fire Resist)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-phoenix-dance-fire"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "H7JfWaH4XSFsvc8R",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786282902499,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "Until the start of your next turn, all damage from your attacks and spells becomes fire.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "H7JfWaH4XSFsvc8R",
+              "originalParentId": "9Xfr4rRcBUYMBCLX",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.9Xfr4rRcBUYMBCLX.ActiveEffect.H7JfWaH4XSFsvc8R"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "change_element": "fire",
+                    "effect_kind": "change_damage_element",
+                    "effect_label": "phoenix_fire_override"
+                  }
+                },
+                "name": "Phoenix Dance (Fire)",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                    "reaction_effect_ref": "phoenix_fire_override",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/holy/fire-beam-explosion-yellow.webp",
+          "name": "Phoenix Dance (Fire Element)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-phoenix-dance-fire"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -381,22 +1044,83 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></li></ul>",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "phoenix_pick",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Gain Resistance to Fire|All your damage becomes Fire",
+              "menu_option_refs": "phoenix_resist, phoenix_element",
+              "menu_pick_count": "",
+              "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+              "menu_title": "Phoenix Dance",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "1": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Phoenix Dance (Fire Resist)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "phoenix_resist",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Phoenix Dance (Fire Element)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "phoenix_element",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Phoenix Dance",
+          "on_activate_effect_ref": "phoenix_pick",
           "optional_params": {},
+          "pre_activate_effect_ref": "phoenix_pick",
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
@@ -437,22 +1161,42 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>Choose another creature that is able to see you. That creature loses an amount of Mind Points equal to your current <strong>Dexterity</strong> die size.</p>\n",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "consume_amount": "DEX_CURRENT_DIE",
+              "consume_resource": "mp",
+              "consume_self": false,
+              "effect_kind": "consume_resource",
+              "effect_label": "meanad_drain",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "on_empty": "skip",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Meanad Dance",
+          "on_activate_effect_ref": "meanad_drain",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "One creature",
           "skill_type": "Active",
           "type_damage": "",
@@ -526,6 +1270,61 @@
           "system": {
             "tags": [
               "dance-token"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "qx0W88TigCsHWTUu",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786294584527,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "qx0W88TigCsHWTUu",
+              "originalParentId": "dgsPiN7B7eLxwWjV",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.dgsPiN7B7eLxwWjV.ActiveEffect.qx0W88TigCsHWTUu"
+            },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/aura.svg",
+          "name": "Dancing",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "dance-effect"
             ]
           },
           "tint": "#ffffff",
@@ -838,7 +1637,7 @@
           "name": "Lion Dance",
           "on_activate_effect_ref": "d_root",
           "reaction_config_table": {},
-          "skill_tags": "dance",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active"
         },
@@ -859,6 +1658,146 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "FeuKaJclq7GClxXg",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283829941,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "Until the start of your next turn, all damage from your attacks and spells becomes air.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "FeuKaJclq7GClxXg",
+              "originalParentId": "GoYE7sfoeYnBgjGA",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.GoYE7sfoeYnBgjGA.ActiveEffect.FeuKaJclq7GClxXg"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "change_element": "air",
+                    "effect_kind": "change_damage_element",
+                    "effect_label": "griffin_air_override"
+                  }
+                },
+                "name": "Griffin Dance (Air)",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                    "reaction_effect_ref": "griffin_air_override",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+          "name": "Griffin Dance (Air Element)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-griffin-dance-air"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "ozsdYPWtlttpFb8z",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283829941,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_2",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "Until the start of your next turn, you have Resistance to air damage.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ozsdYPWtlttpFb8z",
+              "originalParentId": "GoYE7sfoeYnBgjGA",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.GoYE7sfoeYnBgjGA.ActiveEffect.ozsdYPWtlttpFb8z"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+          "name": "Griffin Dance (Air Resist)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-griffin-dance-air"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -877,22 +1816,83 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></li></ul>",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "griffin_pick",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Gain Resistance to Air|All your damage becomes Air",
+              "menu_option_refs": "griffin_resist, griffin_element",
+              "menu_pick_count": "",
+              "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+              "menu_title": "Griffin Dance",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "1": {
+              "ae_duplicate_mode": "replace",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Griffin Dance (Air Resist)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "griffin_resist",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Griffin Dance (Air Element)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "griffin_element",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Griffin Dance",
+          "on_activate_effect_ref": "griffin_pick",
           "optional_params": {},
+          "pre_activate_effect_ref": "griffin_pick",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
@@ -1190,12 +2190,32 @@
           "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Choose an ally that is able to see you and has a Bond towards you: you and that ally both recover an amount of Hit Points equal to your current <strong>Dexterity</strong> die size.</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The restored amount increases by 5 Hit Points.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The restored amount increases by 10 Hit Points.</p>\n",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "chain_steps": "uni_heal_ally, uni_heal_self",
+              "effect_kind": "chain",
+              "effect_label": "d_root"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "uni_heal_ally",
+              "grant_amount": "DEX_CURRENT_DIE + 5 * (CHAR_LEVEL >= 20) + 5 * (CHAR_LEVEL >= 40)",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "uni_heal_self",
+              "grant_amount": "DEX_CURRENT_DIE + 5 * (CHAR_LEVEL >= 20) + 5 * (CHAR_LEVEL >= 40)",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -1207,15 +2227,18 @@
           "level": "1",
           "max_level": "1",
           "name": "Unicorn Dance",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "d_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "One ally",
           "skill_type": "Active",
+          "target_eligibility": "BONDED_TO_SOURCE >= 1",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -1254,24 +2277,47 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>Choose another creature that is able to see you. If that creature is already <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span>, they immediately suffer <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span>.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Weak",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "nightmare_apply",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Nightmare Dance",
+          "on_activate_effect_ref": "nightmare_apply",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "One creature",
           "skill_type": "Active",
+          "target_eligibility": "AE_COUNT_SHAKEN > 0",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -1348,6 +2394,138 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "UmkYdowpvHf0OFHJ",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283630236,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Hydra Dance:</em> after you suffer damage, you may recover 5 Hit Points or 5 Mind Points.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "UmkYdowpvHf0OFHJ",
+              "originalParentId": "sSgAIkHSvtKAJXjL",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.sSgAIkHSvtKAJXjL.ActiveEffect.UmkYdowpvHf0OFHJ"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "allowed_types": "",
+                    "check_bonus_formula": "",
+                    "consume_self": false,
+                    "damage_bonus_formula": "",
+                    "effect_kind": "open_action_menu",
+                    "effect_label": "hydra_menu",
+                    "free_hr_as_zero": false,
+                    "free_mode": false,
+                    "free_of_cost": false,
+                    "from_resource": "",
+                    "max_mp_cost": "",
+                    "menu_label": "",
+                    "menu_option_colors": "",
+                    "menu_option_descriptions": "",
+                    "menu_option_icons": "",
+                    "menu_option_labels": "Recover 5 Hit Points|Recover 5 Mind Points",
+                    "menu_option_refs": "hydra_hp,hydra_mp",
+                    "menu_pick_count": "1",
+                    "menu_subtitle": "You reel from the blow and surge back.",
+                    "menu_title": "Hydra Dance",
+                    "target_ref": "",
+                    "to_resource": ""
+                  },
+                  "1": {
+                    "consume_self": false,
+                    "effect_kind": "grant",
+                    "effect_label": "hydra_hp",
+                    "from_resource": "",
+                    "grant_amount": "5",
+                    "grant_resource": "hp",
+                    "menu_description": "You recover 5 Hit Points.",
+                    "menu_label": "Recover 5 Hit Points",
+                    "target_ref": "self",
+                    "to_resource": ""
+                  },
+                  "2": {
+                    "consume_self": false,
+                    "effect_kind": "grant",
+                    "effect_label": "hydra_mp",
+                    "from_resource": "",
+                    "grant_amount": "5",
+                    "grant_resource": "mp",
+                    "menu_description": "You recover 5 Mind Points.",
+                    "menu_label": "Recover 5 Mind Points",
+                    "target_ref": "self",
+                    "to_resource": ""
+                  }
+                },
+                "name": "Hydra Dance",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "",
+                    "reaction_action_kind": "",
+                    "reaction_cause_filter": "",
+                    "reaction_effect_ref": "hydra_menu",
+                    "reaction_origin_filter": "",
+                    "reaction_passive_mode": "ask",
+                    "reaction_resource_filter": "",
+                    "reaction_responder": "",
+                    "reaction_source": "self",
+                    "reaction_source_skill": "",
+                    "reaction_status_filter": "",
+                    "reaction_trigger": "creature_takes_damage",
+                    "requires_skill": ""
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Hydra Dance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-hydra-dance"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1366,22 +2544,44 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>After you suffer damage, <strong>Choose one option:</strong></p><ul><li>You recover 5 Hit Points</li><li>You recover 5 Mind Points</li></ul>",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Hydra Dance",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "hydra_arm",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Hydra Dance",
+          "on_activate_effect_ref": "hydra_arm",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
@@ -1584,7 +2784,7 @@
           "name": "Ouroboros Dance",
           "on_activate_effect_ref": "d_root",
           "reaction_config_table": {},
-          "skill_tags": "dance",
+          "skill_tags": "dance, managed",
           "skill_target": "One ally",
           "skill_type": "Active"
         },
@@ -1623,24 +2823,47 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>Choose another creature that is able to see you. If that creature is already <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span>, they immediately suffer <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span>.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Dazed",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "satyr_apply",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Satyr Dance",
+          "on_activate_effect_ref": "satyr_apply",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "One creature",
           "skill_type": "Active",
+          "target_eligibility": "AE_COUNT_WEAK > 0",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -1661,6 +2884,154 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "EW3eVWQfOMGwHOzp",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786282904700,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "Until the start of your next turn, all damage from your attacks and spells becomes ice.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "EW3eVWQfOMGwHOzp",
+              "originalParentId": "WLcEXigdzhPzVne8",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.WLcEXigdzhPzVne8.ActiveEffect.EW3eVWQfOMGwHOzp"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "change_element": "ice",
+                    "effect_kind": "change_damage_element",
+                    "effect_label": "yeti_ice_override"
+                  }
+                },
+                "name": "Yeti Dance (Ice)",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                    "reaction_effect_ref": "yeti_ice_override",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/holy/ice-beam-explosion-yellow.webp",
+          "name": "Yeti Dance (Ice Element)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-yeti-dance-ice"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "jQz9TzZ1yfK3yXmh",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786282904700,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_7",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "Until the start of your next turn, you have Resistance to ice damage.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "jQz9TzZ1yfK3yXmh",
+              "originalParentId": "WLcEXigdzhPzVne8",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.WLcEXigdzhPzVne8.ActiveEffect.jQz9TzZ1yfK3yXmh"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/holy/barrier-shield-winged-blue.webp",
+          "name": "Yeti Dance (Ice Resist)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-yeti-dance-ice"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1679,22 +3050,83 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></li></ul>",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "yeti_pick",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Gain Resistance to Ice|All your damage becomes Ice",
+              "menu_option_refs": "yeti_resist, yeti_element",
+              "menu_pick_count": "",
+              "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+              "menu_title": "Yeti Dance",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "1": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Yeti Dance (Ice Resist)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "yeti_resist",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Yeti Dance (Ice Element)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "yeti_element",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Yeti Dance",
+          "on_activate_effect_ref": "yeti_pick",
           "optional_params": {},
+          "pre_activate_effect_ref": "yeti_pick",
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
@@ -1717,6 +3149,146 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "izMZsMUBJzn2yLPi",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283827088,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_4",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "Until the start of your next turn, you have Resistance to dark damage.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "izMZsMUBJzn2yLPi",
+              "originalParentId": "WP01tHbSFNEjKwFI",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.WP01tHbSFNEjKwFI.ActiveEffect.izMZsMUBJzn2yLPi"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+          "name": "Bat Dance (Dark Resist)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-bat-dance-dark"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "kKmFz2JEPwwoBAmX",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283827088,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "Until the start of your next turn, all damage from your attacks and spells becomes dark.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "kKmFz2JEPwwoBAmX",
+              "originalParentId": "WP01tHbSFNEjKwFI",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.WP01tHbSFNEjKwFI.ActiveEffect.kKmFz2JEPwwoBAmX"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "change_element": "dark",
+                    "effect_kind": "change_damage_element",
+                    "effect_label": "bat_dark_override"
+                  }
+                },
+                "name": "Bat Dance (Dark)",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                    "reaction_effect_ref": "bat_dark_override",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+          "name": "Bat Dance (Dark Element)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-bat-dance-dark"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1735,22 +3307,83 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p><strong>Choose one option:</strong></p>\n<ul>\n    <li>You gain Resistance to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li>\n    <li>All damage dealt by your attacks and spells becomes <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li>\n</ul>",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "bat_pick",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Gain Resistance to Dark|All your damage becomes Dark",
+              "menu_option_refs": "bat_resist, bat_element",
+              "menu_pick_count": "",
+              "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+              "menu_title": "Bat Dance",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "1": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Bat Dance (Dark Resist)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "bat_resist",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Bat Dance (Dark Element)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "bat_element",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Bat Dance",
+          "on_activate_effect_ref": "bat_pick",
           "optional_params": {},
+          "pre_activate_effect_ref": "bat_pick",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
@@ -1773,6 +3406,92 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "1sPHFNPYonSva3v3",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283832660,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_brawling",
+              "mode": 2,
+              "priority": 1,
+              "value": "aeWhen(\"Dancing\", \"${level}$\")"
+            },
+            {
+              "key": "extra_damage_mod_dagger",
+              "mode": 2,
+              "priority": 1,
+              "value": "aeWhen(\"Dancing\", \"${level}$\")"
+            },
+            {
+              "key": "extra_damage_mod_flail",
+              "mode": 2,
+              "priority": 1,
+              "value": "aeWhen(\"Dancing\", \"${level}$\")"
+            },
+            {
+              "key": "extra_damage_mod_thrown",
+              "mode": 2,
+              "priority": 1,
+              "value": "aeWhen(\"Dancing\", \"${level}$\")"
+            },
+            {
+              "key": "extra_damage_mod_spell",
+              "mode": 2,
+              "priority": 1,
+              "value": "aeWhen(\"Dancing\", \"${hasWeapon('arcane') ? level : 0}$\")"
+            }
+          ],
+          "description": "<p>Your attacks with <strong>brawling, dagger, flail</strong> and <strong>thrown</strong> weapons deal <strong>【SL】</strong> extra damage until the start of your next turn. If you have an arcane weapon equipped, offensive spells you cast also deal <strong>【SL】</strong> extra damage until the start of your next turn.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "1sPHFNPYonSva3v3",
+              "originalParentId": "XbcI9oNJQJfFiPhl",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.XbcI9oNJQJfFiPhl.ActiveEffect.1sPHFNPYonSva3v3"
+            },
+            "statuscounter": {
+              "config": {
+                "dataSource": "flags.statuscounter.value",
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/saber_dance.png",
+          "name": "Wardancer",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1793,17 +3512,22 @@
           "class": "Dancer",
           "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>After you perform a <strong>dance</strong>, your attacks with <strong>brawling, dagger, flail</strong> and <strong>thrown</strong> weapons deal <strong>【SL】</strong> extra damage until the start of your next turn. If you have an arcane weapon equipped, offensive spells you cast also deal <strong>【SL】</strong> extra damage until the start of your next turn.</p>\n",
           "duration": "",
+          "effect_table": null,
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "5",
           "name": "Wardancer",
+          "on_activate_effect_ref": "",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Weapon Damage</strong></p></td><td><p><strong>Extra Spell Damage (Arcane Weapon)</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td><td><p>+5</p></td></tr></tbody></table>",
@@ -1830,6 +3554,154 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "3nyNcK6c1qHARDSO",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283828044,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "Until the start of your next turn, you have Resistance to bolt damage.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "3nyNcK6c1qHARDSO",
+              "originalParentId": "XBDma30uzImPOaHA",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.XBDma30uzImPOaHA.ActiveEffect.3nyNcK6c1qHARDSO"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Golem Dance (Bolt Resist)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-golem-dance-bolt"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "DWXK5Fu2cjjG8TdG",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786283828044,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "Until the start of your next turn, all damage from your attacks and spells becomes bolt.",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "DWXK5Fu2cjjG8TdG",
+              "originalParentId": "XBDma30uzImPOaHA",
+              "originalUuid": "Actor.FhdBo2hgm9Psq2SY.Item.XBDma30uzImPOaHA.ActiveEffect.DWXK5Fu2cjjG8TdG"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "dance",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "change_element": "bolt",
+                    "effect_kind": "change_damage_element",
+                    "effect_label": "golem_bolt_override"
+                  }
+                },
+                "name": "Golem Dance (Bolt)",
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "max(ACTION_IS_ATTACK, ACTION_IS_SPELL)",
+                    "reaction_effect_ref": "golem_bolt_override",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              },
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-sparks-blue.webp",
+          "name": "Golem Dance (Bolt Element)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-golem-dance-bolt"
+          ],
+          "system": {
+            "tags": [
+              "dance-effect"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1848,24 +3720,86 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li></ul>",
           "duration": "Until the start of your next turn",
+          "effect_table": {
+            "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "golem_pick",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_hide_disabled": false,
+              "menu_label": "",
+              "menu_option_colors": "",
+              "menu_option_descriptions": "",
+              "menu_option_icons": "",
+              "menu_option_labels": "Gain Resistance to Bolt|All your damage becomes Bolt",
+              "menu_option_refs": "golem_resist, golem_element",
+              "menu_pick_count": "",
+              "menu_subtitle": "Choose one benefit (until the start of your next turn).",
+              "menu_title": "Golem Dance",
+              "target_ref": "",
+              "to_resource": ""
+            },
+            "1": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Golem Dance (Bolt Resist)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "golem_resist",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "dance",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Golem Dance (Bolt Element)",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "golem_element",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Golem Dance",
+          "on_activate_effect_ref": "golem_pick",
           "optional_params": {},
+          "pre_activate_effect_ref": "golem_pick",
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "Self",
           "skill_type": "Active",
+          "target_eligibility": "",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -1904,24 +3838,47 @@
         "props": {
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
+          "defense_target_type": "def",
           "description": "<p>Choose another creature that is able to see you. If that creature is already <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span>, they immediately suffer <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span>.</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_template_ref": "Shaken",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "banshee_apply",
+              "from_resource": "",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Banshee Dance",
+          "on_activate_effect_ref": "banshee_apply",
           "optional_params": {},
+          "reaction_config_table": null,
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
+          "skill_tags": "dance, managed",
           "skill_target": "One creature",
           "skill_type": "Active",
+          "target_eligibility": "AE_COUNT_SLOW > 0",
           "type_damage": "",
           "use_optional_params": false
         },

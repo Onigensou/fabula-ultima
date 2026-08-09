@@ -8,6 +8,102 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "KGzZzRIDYT4WXHHv",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786284154208,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Aura of Decay:</em> any creature that makes a melee attack against the bearer takes <strong>10</strong> Poison damage, hit or miss.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "KGzZzRIDYT4WXHHv",
+          "originalParentId": "ZWUn6A7lzpZaXLbB",
+          "originalUuid": "Item.ZWUn6A7lzpZaXLbB.ActiveEffect.KGzZzRIDYT4WXHHv"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "consume_self": false,
+                "damage_amount": "10",
+                "damage_cause": "damage",
+                "damage_element": "poison",
+                "damage_resource": "hp",
+                "effect_kind": "deal_damage",
+                "effect_label": "aod_bite",
+                "from_resource": "",
+                "menu_label": "",
+                "target_ref": "trigger_attacker",
+                "to_resource": ""
+              }
+            },
+            "name": "Aura of Decay",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ATTACK_IS_MELEE == 1",
+                "reaction_action_kind": "",
+                "reaction_cause_filter": "",
+                "reaction_effect_ref": "aod_bite",
+                "reaction_origin_filter": "",
+                "reaction_passive_mode": "force",
+                "reaction_resource_filter": "",
+                "reaction_responder": "",
+                "reaction_source": "self",
+                "reaction_source_skill": "",
+                "reaction_status_filter": "",
+                "reaction_trigger": "creature_targeted_by_action",
+                "requires_skill": ""
+              }
+            }
+          },
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Aura of Decay",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-aura-of-decay"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -32,16 +128,35 @@
       "defense_target_type": "def",
       "description": "<p>You cloak the target in a veil of magic that is toxic to enemies. Until this spell ends, any creature that performs a melee attack against the target takes <strong>10</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage. The attacker takes this damage <strong>even if the attack misses</strong>.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage becomes <strong>15</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; border: none !important;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage becomes <strong>20</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; border: none !important;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p>",
       "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Aura of Decay",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "aod_apply",
+          "from_resource": "",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Aura of Decay",
+      "on_activate_effect_ref": "aod_apply",
       "optional_params": {},
+      "reaction_config_table": null,
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

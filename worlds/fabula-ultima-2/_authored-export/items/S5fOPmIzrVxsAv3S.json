@@ -25,7 +25,7 @@
     "container": "GyArIXzGOCwQzDYY",
     "props": {
       "cost": "",
-      "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+      "description": "<p>When you hit a creature with this weapon, there is a 25% chance to inflict Envenomed on that target.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",

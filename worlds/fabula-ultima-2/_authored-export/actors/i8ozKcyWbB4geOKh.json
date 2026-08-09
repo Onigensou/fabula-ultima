@@ -763,6 +763,70 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "fRcf75tCOjM9xBwm",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1786280920416,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_spell",
+              "mode": 2,
+              "priority": 20,
+              "value": "propAtLeast(\"level\", 40, 10, 5)"
+            }
+          ],
+          "description": "<p><em>Powerful Spell:</em> damaging spells deal +5 damage (10 at level 40+).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "fRcf75tCOjM9xBwm",
+              "originalParentId": "IlJhQTkYgz4spGYK",
+              "originalUuid": "Actor.i8ozKcyWbB4geOKh.Item.IlJhQTkYgz4spGYK.ActiveEffect.fRcf75tCOjM9xBwm"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans5.png",
+          "name": "Powerful Spell",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -790,11 +854,12 @@
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
-          "isOffensiveSpell": true,
+          "isOffensiveSpell": false,
           "isReaction": false,
           "level": "1",
           "max_level": "1",
           "name": "Powerful Spell",
+          "on_activate_effect_ref": "",
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
