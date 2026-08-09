@@ -774,11 +774,25 @@ function buildRewardDescriptor(req, winnerRow) {
     // Broadcast to audience (UI listener will run it on OTHER clients)
 emitSocket(MSG_TR_PLAY_UI, packet);
 
-// Play locally (authority client might not receive its own socket)
+// Play locally (authority client does NOT receive its own socket emit).
+//
+// The local play must ACK too. Remote clients ack from the UI listener when the
+// socket message arrives; the authority never gets that message, so without an
+// explicit ack here NOBODY acks for this client and Net.waitBarrier can only
+// resolve on its hard timeout. Measured: a 3s spin stalled the barrier for
+// 20.2s ("hardTimeout", zero acks) — every reward would hang after the reveal.
 try {
   const uiApi = window["oni.TreasureRoulette.UI"];
   if (uiApi && typeof uiApi.play === "function") {
-    uiApi.play(packet);
+    Promise.resolve(uiApi.play(packet))
+      .catch((e) => console.warn("[TreasureRoulette][Core] local UI play failed:", e))
+      .finally(() => {
+        try {
+          window["oni.TreasureRoulette.Net"]?.sendUiFinished?.(packet);
+        } catch (e) {
+          console.warn("[TreasureRoulette][Core] local UI ack failed:", e);
+        }
+      });
   }
 } catch (e) {
   // ignore

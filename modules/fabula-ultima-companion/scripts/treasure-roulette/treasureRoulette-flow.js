@@ -602,9 +602,27 @@
       return;
     }
 
+    // applyEquipmentSwap reads `selections` as the COMPLETE desired loadout —
+    // any slot it doesn't find an id for is treated as "nothing equipped". BD's
+    // Equipment card always submits all four slots, so submitting only the
+    // target slot silently STRIPS the others (measured: equipping a main-hand
+    // weapon cleared Keren's off-hand shield). Send the current loadout with
+    // just the one slot overridden.
+    const selections = {};
+    for (const s of payload.slots ?? []) selections[s.key] = s.current?.id ?? null;
     try {
-      await mod.applyEquipmentSwap(actor, { [slotKey]: granted.id }, { allowArmor: true });
-      log(`equipped ${granted.name} to ${actor.name} (${slotKey}).`);
+      const gathered = mod.gatherEquipmentSlots(actor, { includeArmor: true });
+      for (const s of gathered?.slots ?? []) {
+        if (!(s.key in selections)) selections[s.key] = s.currentItemId ?? null;
+      }
+    } catch (e) {
+      warn("could not read current loadout; equipping conservatively:", e);
+    }
+    selections[slotKey] = granted.id;
+
+    try {
+      await mod.applyEquipmentSwap(actor, selections, { allowArmor: true });
+      log(`equipped ${granted.name} to ${actor.name} (${slotKey}).`, selections);
     } catch (e) {
       warn("applyEquipmentSwap failed:", e);
       ui.notifications?.warn?.(`[TreasureRoulette] Could not equip ${granted.name}.`);
