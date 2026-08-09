@@ -3200,7 +3200,7 @@
               "effect_kind": "prompt_number",
               "effect_label": "bim_prompt",
               "prompt_label": "Bimagus — spend Mind Points (spell budget = 20 + spend)",
-              "prompt_max": "min(50, 20 + CUR_MP)",
+              "prompt_max": "min(50, CUR_MP)",
               "prompt_min": "20",
               "prompt_step": "5",
               "prompt_var": "bimagus"
@@ -3290,6 +3290,7 @@
           "name": "Bimagus",
           "on_activate_effect_ref": "bim_root",
           "optional_params": {},
+          "pre_activate_effect_ref": "bim_prompt",
           "reaction_config_table": {
             "0": {
               "condition_formula": "ACTION_IS_FREE_CAST == 1 && AE_COUNT_BIMAGUS > 0 && AE_COUNT_BIMAGUS_ENCORE == 0",

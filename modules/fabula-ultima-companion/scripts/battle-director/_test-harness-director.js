@@ -552,6 +552,18 @@ async function runDirectorSkillCompute({
   // callers (the skill-regression harness) silently ran with real actor state and
   // their goldens drifted whenever a caster leveled. Mirrors runDirectorSkillSimulate.
   const formulaOverrides = installFormulaOverrides(override);
+  // Same headless gating the simulate/passive entry points install. COMPUTE runs
+  // the `pre_activate` capture pass, and a `prompt_number` there has no auto
+  // answer without either an explicit `harnessNumbers` entry or this flag — so it
+  // opened a real Dialog nobody could click and the call hung to timeout. Found
+  // when Bimagus's spend prompt moved to pre_activate: 5 goldens flipped to
+  // `ok:false / reason:"timeout"` in one run.
+  // Narrow by construction: __FU_HARNESS_HEADLESS__ is read by noHumanToAsk
+  // (prompt_number / prompt_element) and promptDefenderOptIn only. list-picker
+  // gates on SimMode, NOT this flag, so `open_action_menu` skills still fall to
+  // the collector's 12s guard and stay baselined as `skipped` — the 31 golden
+  // fingerprints that note warns about are untouched.
+  const headlessGates = installHeadlessGates();
   try {
     await computeHandler.onEnter(synthDirector, {
       triggerIntent: { type: INTENTS.TARGET_PICKED,
@@ -560,6 +572,7 @@ async function runDirectorSkillCompute({
   } finally {
     rollOverride.restore();
     formulaOverrides.restore();
+    headlessGates.restore();
   }
 
   const finalAr = synthDirector.ctx.actionResult;
