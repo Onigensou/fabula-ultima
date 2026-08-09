@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-08-09T21:26:40.620Z",
+ "capturedAt": "2026-08-09T21:38:05.819Z",
  "count": 1184,
  "structure": {
   "(world) / Absorb MP": {
@@ -14,7 +14,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=absorb_mp_recover grant_amount=SL * 2 grant_resource=mp target_ref=amp_self",
@@ -35,7 +36,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Acceleration effect_kind=apply_ae effect_label=accel_apply target_ref=action_targets"
@@ -298,7 +300,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -327,7 +330,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -356,7 +360,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -385,7 +390,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -603,7 +609,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=angel_pick menu_option_refs=angel_resist, angel_element",
@@ -775,7 +782,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Apple o' Archer Taunt count=1 effect_kind=apply_ae effect_label=apple_arm on_empty=abort target_ref=apple_self",
@@ -970,7 +978,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -1062,7 +1071,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Aura of Decay effect_kind=apply_ae effect_label=aod_apply target_ref=action_targets"
@@ -1185,7 +1195,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "count=all effect_kind=remove_tagged_ae effect_label=aov_dismiss_unmerge filter_tag=arcanum-merge target_ref=self",
@@ -1489,7 +1500,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Shaken effect_kind=apply_ae effect_label=banshee_apply target_ref=action_targets"
@@ -1507,7 +1519,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=barrage_add,barrage_cost effect_kind=chain effect_label=barrage_do",
@@ -1531,7 +1544,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Barrier effect_kind=apply_ae effect_label=barrier_apply target_ref=action_targets"
@@ -1571,7 +1585,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=bat_pick menu_option_refs=bat_resist, bat_element",
@@ -2324,7 +2339,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Bodyguard effect_kind=apply_ae effect_label=bodyguard_apply target_ref=action_targets"
@@ -2368,7 +2384,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=bc_nullify,bc_menu effect_kind=chain effect_label=bone_crusher",
@@ -2718,7 +2735,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "action_ref=Attack effect_kind=free_action effect_label=bullet_break_do free_hr_as_zero=true target_ref=trigger_attacker"
@@ -3005,7 +3023,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=cap_menu, cap_cost effect_kind=chain effect_label=cap_root",
@@ -3028,7 +3047,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=cas_cost,cas_bane effect_kind=chain effect_label=cas_root",
@@ -3101,7 +3121,7 @@
     "damage_amount=15 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=cat_30_dmg"
    ],
    "reactions": [
-    "condition_formula=HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10)) reaction_effect_ref=cat_root reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
+    "condition_formula=HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10)) reaction_effect_ref=cat_root reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
    ],
    "aes": []
   },
@@ -3319,7 +3339,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "auto_confirm_when_obvious=true auto_target=true candidate_source=self count=1 effect_kind=targeting effect_label=cs_self iteration_mode=together mode=exact skip_when_passive=true",
@@ -3341,7 +3362,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Counter Pass effect_kind=apply_ae effect_label=cp_refresh target_ref=self",
@@ -3592,7 +3614,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=crossfire_block,crossfire_cost effect_kind=chain effect_label=crossfire_do",
@@ -4820,7 +4843,8 @@
     "defense_target_type": "def",
     "rolled_atr1": "MIG",
     "rolled_atr2": "MIG",
-    "ignore_hr": "true"
+    "ignore_hr": "true",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_key=adoration count=5 effect_kind=consume_charge effect_label=des_cost on_empty=abort target_ref=self"
@@ -4932,7 +4956,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=1 effect_kind=remove_tagged_ae effect_label=dispel_cleanse filter_tag=dispellable target_ref=action_targets"
@@ -4978,7 +5003,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Divination effect_kind=apply_ae effect_label=div_apply target_ref=action_targets"
@@ -5016,7 +5042,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -5046,7 +5073,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Domination State effect_kind=apply_ae effect_label=domination_activate target_ref=self"
@@ -5224,7 +5252,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=drain_recover grant_amount=MP_DEALT / 2 grant_resource=mp target_ref=ds_self",
@@ -5242,7 +5271,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -5292,7 +5322,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=prompt_element effect_label=esh_pick element_options=air|bolt|earth|fire|ice prompt_var=element"
@@ -5311,7 +5342,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=shroud_pick menu_option_refs=shroud_air, shroud_bolt, shroud_earth, shroud_fire, shroud_ice",
@@ -5426,7 +5458,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=ew_menu menu_option_refs=ew_air, ew_bolt, ew_earth, ew_fire, ew_ice",
@@ -5543,7 +5576,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=restore grant_amount=50 grant_resource=mp target_ref=action_targets"
@@ -5563,7 +5597,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=restore grant_amount=50 grant_resource=mp target_ref=action_targets"
@@ -5834,7 +5869,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Enraged effect_kind=apply_ae effect_label=enrage_apply target_ref=hit_action_targets"
@@ -5862,7 +5898,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=leave_combat effect_label=escape_activate target_ref=self"
@@ -6088,7 +6125,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=fwtbt_offer menu_option_refs=fwtbt_dmg_opt,fwtbt_shaken_opt menu_pick_count=1",
@@ -6342,7 +6380,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=inf_offer menu_option_refs=inf_cryo,inf_pyro,inf_volt,inf_cyclone,inf_exorcism,inf_seismic,inf_shadow,inf_venom,inf_vampire menu_pick_count=1",
@@ -6591,7 +6630,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Slow condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=glacies_opportunity target_ref=hit_action_targets"
@@ -6613,7 +6653,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Fatigue condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=gfinis_opportunity target_ref=hit_action_targets"
@@ -6635,7 +6676,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Fatigue condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=gfinis_opportunity target_ref=hit_action_targets"
@@ -6742,7 +6784,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=golem_pick menu_option_refs=golem_resist, golem_element",
@@ -7105,7 +7148,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=grapejuice_restore grant_amount=20 grant_resource=mp target_ref=action_targets"
@@ -7202,7 +7246,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -7250,7 +7295,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=griffin_pick menu_option_refs=griffin_resist, griffin_element",
@@ -7303,7 +7349,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=guard_self,guard_cover effect_kind=chain effect_label=guard_activate",
@@ -7369,7 +7416,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=hallu_pick menu_option_refs=hallu_dazed, hallu_shaken",
@@ -7454,7 +7502,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=hawkeye_choose menu_option_refs=hawkeye_opt_aim, hawkeye_opt_attack",
@@ -7503,7 +7552,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=heal_hp grant_amount=40 + 10 * floor(min(CHAR_LEVEL, 40) / 20) grant_resource=hp target_ref=action_targets"
@@ -8030,7 +8080,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "ae_duplicate_mode=replace_family ae_family=dance ae_template_ref=Hydra Dance effect_kind=apply_ae effect_label=hydra_arm target_ref=action_targets"
@@ -8623,7 +8674,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Slow effect_kind=apply_ae effect_label=kraken_apply target_ref=action_targets"
@@ -8815,7 +8867,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "auto_confirm_when_obvious=true auto_target=confirm candidate_source=self_or_my_focus count=1 effect_kind=targeting effect_label=lt_pick iteration_mode=together mode=exact target_filter=HAS_STATUS_CRISIS",
@@ -8921,7 +8974,8 @@
     "skill_type": "Active",
     "skill_target": "Self",
     "skill_tags": "dance, managed",
-    "on_activate_effect_ref": "d_root"
+    "on_activate_effect_ref": "d_root",
+    "duration": "instantaneous"
    },
    "effects": [
     "candidate_source=self chain_steps=lion_cleanse effect_kind=chain effect_label=d_root",
@@ -9367,7 +9421,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Snared effect_kind=apply_ae effect_label=catcher_snare target_ref=trigger_subject"
@@ -9517,7 +9572,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "consume_amount=DEX_CURRENT_DIE consume_resource=mp effect_kind=consume_resource effect_label=meanad_drain on_empty=skip target_ref=action_targets"
@@ -9580,7 +9636,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instnataneous"
    },
    "effects": [
     "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
@@ -9631,7 +9688,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instnataneous"
    },
    "effects": [
     "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
@@ -9764,7 +9822,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Mercy effect_kind=apply_ae effect_label=mercy_apply target_ref=action_targets"
@@ -9862,7 +9921,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=milk_heal,milk_strong effect_kind=chain effect_label=milk_use",
@@ -9884,7 +9944,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=milk_heal,milk_strong effect_kind=chain effect_label=milk_use",
@@ -9906,7 +9967,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=milk_heal,milk_strong effect_kind=chain effect_label=milk_use",
@@ -9928,7 +9990,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=milk_heal,milk_strong effect_kind=chain effect_label=milk_use",
@@ -10385,7 +10448,8 @@
     "check_bonus": "1",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "DEX"
+    "rolled_atr2": "DEX",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_key=adoration count=1 effect_kind=consume_charge effect_label=mul_cost on_empty=abort target_ref=self",
@@ -10467,7 +10531,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=myrmidon_pick menu_option_refs=myrmidon_resist, myrmidon_element",
@@ -10528,7 +10593,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Weak effect_kind=apply_ae effect_label=nightmare_apply target_ref=action_targets"
@@ -10665,7 +10731,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=nw_menu menu_option_refs=nw_light, nw_dark",
@@ -10745,7 +10812,8 @@
     "skill_type": "Active",
     "skill_target": "One ally",
     "skill_tags": "dance, managed",
-    "on_activate_effect_ref": "d_root"
+    "on_activate_effect_ref": "d_root",
+    "duration": "Instantaneous"
    },
    "effects": [
     "candidate_source=self chain_steps=ouro_turn effect_kind=chain effect_label=d_root",
@@ -10963,7 +11031,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=phoenix_pick menu_option_refs=phoenix_resist, phoenix_element",
@@ -11049,7 +11118,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -11121,7 +11191,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=plague_menu,plague_inflict effect_kind=chain effect_label=plague_root",
@@ -11273,7 +11344,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -11471,7 +11543,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
@@ -11510,7 +11583,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [
@@ -11575,7 +11649,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -11609,7 +11684,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=check_die_swap effect_label=pk_swap swap_mode=ask swap_to_attribute=WLP"
@@ -11748,7 +11824,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Rampart Ready effect_kind=apply_ae effect_label=rampart_arm target_ref=self",
@@ -11850,7 +11927,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -11897,7 +11975,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=recovery_cleanse,recovery_mp effect_kind=chain effect_label=recovery_activate",
@@ -11960,7 +12039,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=reinforce_pick menu_option_refs=reinforce_dazed, reinforce_shaken, reinforce_slow, reinforce_weak menu_options={\"0\":{\"label\":\"Dazed\",\"description\":\"Penalises INS Opposed Checks. Affects mental focus.\",\"effect_kind\":\"apply_ae\",\"ae_template_ref\":\"Reinforced (Dazed)\",\"target_ref\":\"action_targets\",\"ae_duplicate_mode\":\"replace_per_caster\"},\"1\":{\"label\":\"Shaken\",\"description\":\"Penalises WLP Opposed Checks. Affects resolve.\",\"effect_kind\":\"apply_ae\",\"ae_template_ref\":\"Reinforced (Shaken)\",\"target_ref\":\"action_targets\",\"ae_duplicate_mode\":\"replace_per_caster\"},\"2\":{\"label\":\"Slow\",\"description\":\"Penalises DEX Opposed Checks. Affects agility.\",\"effect_kind\":\"apply_ae\",\"ae_template_ref\":\"Reinforced (Slow)\",\"target_ref\":\"action_targets\",\"ae_duplicate_mode\":\"replace_per_caster\"},\"3\":{\"label\":\"Weak\",\"description\":\"Penalises MIG Opposed Checks. Affects might.\",\"effect_kind\":\"apply_ae\",\"ae_template_ref\":\"Reinforced (Weak)\",\"target_ref\":\"action_targets\",\"ae_duplicate_mode\":\"replace_per_caster\"}} menu_options_view=<p>{ \"0\": { \"label\": \"Dazed\", \"description\": \"Penalises INS Opposed Checks. Affects mental focus.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Dazed)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"1\": { \"label\": \"Shaken\", \"description\": \"Penalises WLP Opposed Checks. Affects resolve.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Shaken)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"2\": { \"label\": \"Slow\", \"description\": \"Penalises DEX Opposed Checks. Affects agility.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Slow)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"3\": { \"label\": \"Weak\", \"description\": \"Penalises MIG Opposed Checks. Affects might.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Weak)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" } }</p>",
@@ -12045,7 +12125,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=heal grant_amount=50 grant_resource=hp target_ref=action_targets"
@@ -12065,7 +12146,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instnataneous"
    },
    "effects": [
     "effect_kind=grant effect_label=heal grant_amount=50 grant_resource=hp target_ref=action_targets"
@@ -12322,7 +12404,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantanious"
    },
    "effects": [
     "action_ref=Attack check_bonus_formula=SL effect_kind=free_action effect_label=ripple_strike element_override=trigger_element on_hit_effect_refs=ripple_end_hex target_ref=trigger_subject",
@@ -12745,7 +12828,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [
@@ -12819,7 +12903,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Dazed effect_kind=apply_ae effect_label=satyr_apply target_ref=action_targets"
@@ -12930,7 +13015,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=blight_menu,blight_inflict effect_kind=chain effect_label=blight_root",
@@ -13273,7 +13359,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "damage_amount=5 damage_cause=hazard damage_element=dark effect_kind=deal_damage effect_label=skullorb_dmg target_ref=trigger_subject"
@@ -13378,7 +13465,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "-"
    },
    "effects": [
     "condition_formula=HIT_COUNT > 0 effect_kind=grant effect_label=soul_steal_grant_ip grant_amount=SL * HIT_COUNT grant_resource=ip grant_target=self target_ref=self",
@@ -13399,7 +13487,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Soul Weapon effect_kind=apply_ae effect_label=soul_weapon_apply target_ref=action_targets"
@@ -13631,7 +13720,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -13785,7 +13875,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -13841,7 +13932,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=encyclopedia_record effect_label=study_record"
@@ -14102,7 +14194,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "candidate_source=combat count=1 effect_kind=targeting effect_label=ss_dest mode=exact",
@@ -14123,7 +14216,8 @@
     "damage_bonus": "10 + (CHAR_LEVEL>=20)*10 + (CHAR_LEVEL>=40)*10",
     "check_bonus": "0",
     "defense_target_type": "def",
-    "rolled_atr1": "WEAPON"
+    "rolled_atr1": "WEAPON",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_key=adoration count=3 effect_kind=consume_charge effect_label=taf_cost on_empty=abort target_ref=self"
@@ -14329,7 +14423,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=therm_offer menu_option_refs=therm_fire,therm_ice menu_pick_count=1",
@@ -14577,7 +14672,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=1 effect_kind=remove_tagged_ae effect_label=cure filter_tag=debuff target_ref=action_targets"
@@ -14625,7 +14721,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=torpor_pick menu_option_refs=torpor_slow, torpor_weak",
@@ -14989,7 +15086,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=uni_heal_ally, uni_heal_self effect_kind=chain effect_label=d_root",
@@ -15053,7 +15151,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=vanish_cost,vanish_apply_ae effect_kind=chain effect_label=vanish_apply",
@@ -15212,7 +15311,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=ver_cost, ver_def effect_kind=chain effect_label=ver_do",
@@ -15298,7 +15398,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=ws_nullify,ws_menu effect_kind=chain effect_label=warning_shot",
@@ -15324,7 +15425,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "3 Rounds"
    },
    "effects": [
     "ae_template_ref=Bane effect_kind=apply_ae effect_label=wb_bane target_ref=hit_action_targets"
@@ -15521,7 +15623,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=yeti_pick menu_option_refs=yeti_resist, yeti_element",
@@ -15581,7 +15684,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=3 distinct=true effect_kind=trigger_opportunity effect_label=million_opp opportunity_title=A Million Possibility"
@@ -15602,7 +15706,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=gmt_cleanse,gmt_heal effect_kind=chain effect_label=gmt_root",
@@ -15638,7 +15743,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -15683,7 +15789,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=ms_pick_type,ms_pick_status effect_kind=chain effect_label=ms_pre",
@@ -15710,7 +15817,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [],
    "reactions": [],
@@ -15742,7 +15850,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "3 Rounds"
    },
    "effects": [],
    "reactions": [],
@@ -15792,7 +15901,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=ZP on Flip grant_amount=1 grant_resource=zero_power target_ref=ztf_self",
@@ -15812,7 +15922,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=ZP refill grant_amount=6 grant_resource=zero_power target_ref=ztm_self",
@@ -15940,7 +16051,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -15970,7 +16082,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -16002,7 +16115,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -16051,7 +16165,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -16083,7 +16198,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -16132,7 +16248,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -16179,7 +16296,8 @@
     "check_bonus": "4",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -16251,7 +16369,8 @@
     "check_bonus": "5",
     "defense_target_type": "def",
     "rolled_atr1": "MIG",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -16350,7 +16469,8 @@
     "check_bonus": "5",
     "defense_target_type": "def",
     "rolled_atr1": "MIG",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -16396,7 +16516,8 @@
     "check_bonus": "6",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=drain_recover grant_amount=ceil(MP_DEALT / 2) grant_resource=mp target_ref=ds_self",
@@ -16415,7 +16536,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [
@@ -16446,7 +16568,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -16463,7 +16586,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "3 Rounds"
    },
    "effects": [],
    "reactions": [],
@@ -16493,7 +16617,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -16512,7 +16637,8 @@
     "check_bonus": "5",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -16556,7 +16682,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=bsk_strong, bsk_escalate, bsk_enrage effect_kind=chain effect_label=bsk_root",
@@ -16577,7 +16704,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=bshow_mine1, bshow_mine2, bshow_theirs1, bshow_theirs2 effect_kind=chain effect_label=bshow_root",
@@ -17075,7 +17203,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=cap_menu, cap_cost effect_kind=chain effect_label=cap_root",
@@ -17098,7 +17227,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=cas_cost,cas_bane effect_kind=chain effect_label=cas_root",
@@ -17119,7 +17249,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Counter Pass effect_kind=apply_ae effect_label=cp_refresh target_ref=self",
@@ -17190,7 +17321,8 @@
     "defense_target_type": "def",
     "rolled_atr1": "MIG",
     "rolled_atr2": "MIG",
-    "ignore_hr": "true"
+    "ignore_hr": "true",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_key=adoration count=5 effect_kind=consume_charge effect_label=des_cost on_empty=abort target_ref=self"
@@ -17207,7 +17339,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -17329,7 +17462,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=heal_hp grant_amount=40 + 10 * floor(min(CHAR_LEVEL, 40) / 20) grant_resource=hp target_ref=action_targets"
@@ -17624,7 +17758,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instnataneous"
    },
    "effects": [
     "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
@@ -17645,7 +17780,8 @@
     "check_bonus": "1",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "DEX"
+    "rolled_atr2": "DEX",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_key=adoration count=1 effect_kind=consume_charge effect_label=mul_cost on_empty=abort target_ref=self",
@@ -17701,7 +17837,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
@@ -17742,7 +17879,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantanious"
    },
    "effects": [
     "action_ref=Attack check_bonus_formula=SL effect_kind=free_action effect_label=ripple_strike element_override=trigger_element on_hit_effect_refs=ripple_end_hex target_ref=trigger_subject",
@@ -17845,7 +17983,8 @@
     "damage_bonus": "10 + (CHAR_LEVEL>=20)*10 + (CHAR_LEVEL>=40)*10",
     "check_bonus": "0",
     "defense_target_type": "def",
-    "rolled_atr1": "WEAPON"
+    "rolled_atr1": "WEAPON",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_key=adoration count=3 effect_kind=consume_charge effect_label=taf_cost on_empty=abort target_ref=self"
@@ -17907,7 +18046,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=ver_cost, ver_def effect_kind=chain effect_label=ver_do",
@@ -17932,7 +18072,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=gmt_cleanse,gmt_heal effect_kind=chain effect_label=gmt_root",
@@ -17951,7 +18092,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=ZP refill grant_amount=6 grant_resource=zero_power target_ref=ztm_self",
@@ -17971,7 +18113,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=grasp_apply_burn effect_kind=chain effect_label=grasp_burn_chain",
@@ -17994,7 +18137,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=exploder_fire_damage,exploder_consume_burn,exploder_remove_grappled effect_kind=chain effect_label=exploder_chain",
@@ -18020,7 +18164,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=fling_dup_damage,fling_remove_grappled effect_kind=chain effect_label=fling_chain",
@@ -18042,7 +18187,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=skip ae_template_ref=Grappled effect_kind=apply_ae effect_label=grabby_grapple target_ref=hit_action_targets"
@@ -18128,7 +18274,8 @@
     "damage_bonus": "20",
     "check_bonus": "0",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=drain_recover grant_amount=ceil(MP_DEALT / 2) grant_resource=mp target_ref=ds_self",
@@ -18145,7 +18292,8 @@
     "damage_bonus": "20",
     "check_bonus": "0",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=drain_recover grant_amount=ceil(MP_DEALT / 2) grant_resource=mp target_ref=ds_self",
@@ -18168,7 +18316,8 @@
     "check_bonus": "5",
     "defense_target_type": "mdef",
     "rolled_atr1": "MIG",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_initial_charges=3 ae_template_ref=Burn effect_kind=apply_ae effect_label=apply_burn target_ref=hit_action_targets"
@@ -18205,7 +18354,8 @@
     "check_bonus": "3",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_initial_charges=1 ae_template_ref=Envenomed effect_kind=apply_ae effect_label=apply_envenomed target_ref=trigger_subject",
@@ -18230,7 +18380,8 @@
     "check_bonus": "3",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=scythe_env_dot,scythe_env_consume effect_kind=chain effect_label=scythe_env_chain",
@@ -18279,7 +18430,8 @@
     "check_bonus": "3",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Oil effect_kind=apply_ae effect_label=apply_oil target_ref=hit_action_targets"
@@ -18320,7 +18472,8 @@
     "check_bonus": "5",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_initial_charges=3 ae_initial_charges_max=99 ae_template_ref=Burn effect_kind=apply_ae effect_label=burn_apply target_ref=hit_action_targets",
@@ -18363,7 +18516,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=blaze_consume effect_kind=chain effect_label=blaze_chain",
@@ -18385,7 +18539,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=pc_apply_swift,pc_remove_slow,pc_charge effect_kind=chain effect_label=pc_chain",
@@ -18489,7 +18644,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=absorb_mp_recover grant_amount=SL * 2 grant_resource=mp target_ref=amp_self",
@@ -18509,7 +18665,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -18538,7 +18695,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -18625,7 +18783,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Barrier effect_kind=apply_ae effect_label=barrier_apply target_ref=action_targets"
@@ -18710,7 +18869,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=heal_hp grant_amount=40 + 10 * floor(min(CHAR_LEVEL, 40) / 20) grant_resource=hp target_ref=action_targets"
@@ -18749,7 +18909,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Mercy effect_kind=apply_ae effect_label=mercy_apply target_ref=action_targets"
@@ -18789,7 +18950,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
@@ -18914,7 +19076,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [
@@ -18959,7 +19122,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [
@@ -19060,7 +19224,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "candidate_source=self count=1 effect_kind=targeting effect_label=cs_self mode=exact skip_when_passive=true",
@@ -19183,7 +19348,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=golem_pick menu_option_refs=golem_resist, golem_element",
@@ -19392,7 +19558,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=myrmidon_pick menu_option_refs=myrmidon_resist, myrmidon_element",
@@ -19454,7 +19621,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=phoenix_pick menu_option_refs=phoenix_resist, phoenix_element",
@@ -19513,7 +19681,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantanious"
    },
    "effects": [
     "action_ref=Attack check_bonus_formula=SL effect_kind=free_action effect_label=ripple_strike element_override=trigger_element on_hit_effect_refs=ripple_end_hex target_ref=trigger_subject",
@@ -19599,7 +19768,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=yeti_pick menu_option_refs=yeti_resist, yeti_element",
@@ -19688,7 +19858,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instnataneous"
    },
    "effects": [
     "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
@@ -19906,7 +20077,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_template_ref=Cursed effect_kind=apply_ae effect_label=curse_inflict target_ref=cause_actor"
@@ -19926,7 +20098,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "One Round"
    },
    "effects": [
     "chain_steps=creep_possessed,creep_rest,creep_apply_block,creep_apply_buff effect_kind=chain effect_label=creep_chain",
@@ -20038,7 +20211,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=angel_pick menu_option_refs=angel_resist, angel_element",
@@ -20099,7 +20273,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Shaken effect_kind=apply_ae effect_label=banshee_apply target_ref=action_targets"
@@ -20120,7 +20295,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=bat_pick menu_option_refs=bat_resist, bat_element",
@@ -20247,7 +20423,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=golem_pick menu_option_refs=golem_resist, golem_element",
@@ -20309,7 +20486,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=griffin_pick menu_option_refs=griffin_resist, griffin_element",
@@ -20366,7 +20544,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "ae_duplicate_mode=replace_family ae_family=dance ae_template_ref=Hydra Dance effect_kind=apply_ae effect_label=hydra_arm target_ref=action_targets"
@@ -20410,7 +20589,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Slow effect_kind=apply_ae effect_label=kraken_apply target_ref=action_targets"
@@ -20423,7 +20603,8 @@
     "skill_type": "Active",
     "skill_target": "Self",
     "skill_tags": "dance, managed",
-    "on_activate_effect_ref": "d_root"
+    "on_activate_effect_ref": "d_root",
+    "duration": "instantaneous"
    },
    "effects": [
     "candidate_source=self effect_kind=targeting effect_label=d_self",
@@ -20471,7 +20652,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "consume_amount=DEX_CURRENT_DIE consume_resource=mp effect_kind=consume_resource effect_label=meanad_drain on_empty=skip target_ref=action_targets"
@@ -20492,7 +20674,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=myrmidon_pick menu_option_refs=myrmidon_resist, myrmidon_element",
@@ -20553,7 +20736,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Weak effect_kind=apply_ae effect_label=nightmare_apply target_ref=action_targets"
@@ -20566,7 +20750,8 @@
     "skill_type": "Active",
     "skill_target": "One ally",
     "skill_tags": "dance, managed",
-    "on_activate_effect_ref": "d_root"
+    "on_activate_effect_ref": "d_root",
+    "duration": "Instantaneous"
    },
    "effects": [
     "candidate_source=self effect_kind=targeting effect_label=d_self",
@@ -20616,7 +20801,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=phoenix_pick menu_option_refs=phoenix_resist, phoenix_element",
@@ -20690,7 +20876,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Dazed effect_kind=apply_ae effect_label=satyr_apply target_ref=action_targets"
@@ -20741,7 +20928,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=uni_heal_ally, uni_heal_self effect_kind=chain effect_label=d_root",
@@ -20795,7 +20983,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=yeti_pick menu_option_refs=yeti_resist, yeti_element",
@@ -20852,7 +21041,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -20881,7 +21071,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "charge_ae_name=Half-Life charge_amount=1 charge_operation=subtract effect_kind=adjust_charges effect_label=ls_tick target_ref=self",
@@ -21084,7 +21275,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=1 effect_kind=remove_tagged_ae effect_label=dispel_cleanse filter_tag=dispellable target_ref=action_targets"
@@ -21105,7 +21297,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=enkindle_double_burn effect_kind=chain effect_label=enkindle_chain",
@@ -21130,7 +21323,8 @@
     "check_bonus": "3",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_initial_charges=3 ae_template_ref=Burn effect_kind=apply_ae effect_label=ignis_opportunity_burn target_ref=hit_action_targets"
@@ -21153,7 +21347,8 @@
     "check_bonus": "3",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Oil effect_kind=apply_ae effect_label=apply_oil target_ref=hit_action_targets"
@@ -21298,7 +21493,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -21362,7 +21558,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -21578,7 +21775,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=prompt_element effect_label=esh_pick element_options=air|bolt|earth|fire|ice prompt_var=element"
@@ -21598,7 +21796,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=restore grant_amount=50 grant_resource=mp target_ref=action_targets"
@@ -21967,7 +22166,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instnataneous"
    },
    "effects": [
     "effect_kind=grant effect_label=heal grant_amount=50 grant_resource=hp target_ref=action_targets"
@@ -22079,7 +22279,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=1 effect_kind=remove_tagged_ae effect_label=cure filter_tag=debuff target_ref=action_targets"
@@ -22098,7 +22299,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "3 Rounds"
    },
    "effects": [
     "ae_template_ref=Bane effect_kind=apply_ae effect_label=wb_bane target_ref=hit_action_targets"
@@ -22160,7 +22362,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "damage_amount=30 damage_element=bolt damage_verbosity=full effect_kind=deal_damage effect_label=electro_burst target_ref=burst_targets",
@@ -22184,7 +22387,8 @@
     "check_bonus": "5",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "DEX"
+    "rolled_atr2": "DEX",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_template_ref=Paralyzed effect_kind=apply_ae effect_label=apply_paralyzed target_ref=hit_action_targets"
@@ -22275,7 +22479,7 @@
     "damage_amount=15 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=cat_30_dmg"
    ],
    "reactions": [
-    "condition_formula=HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10)) reaction_effect_ref=cat_root reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
+    "condition_formula=HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10)) reaction_effect_ref=cat_root reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
    ],
    "aes": []
   },
@@ -22290,7 +22494,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=shroud_pick menu_option_refs=shroud_air, shroud_bolt, shroud_earth, shroud_fire, shroud_ice",
@@ -22405,7 +22610,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=ew_menu menu_option_refs=ew_air, ew_bolt, ew_earth, ew_fire, ew_ice",
@@ -22524,7 +22730,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Slow condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=glacies_opportunity target_ref=hit_action_targets"
@@ -22600,7 +22807,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=absorb_mp_recover grant_amount=SL * 2 grant_resource=mp target_ref=amp_self",
@@ -22621,7 +22829,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Acceleration effect_kind=apply_ae effect_label=accel_apply target_ref=action_targets"
@@ -22721,7 +22930,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=1 effect_kind=remove_tagged_ae effect_label=dispel_cleanse filter_tag=dispellable target_ref=action_targets"
@@ -22739,7 +22949,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Divination effect_kind=apply_ae effect_label=div_apply target_ref=action_targets"
@@ -22782,7 +22993,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=drain_recover grant_amount=MP_DEALT / 2 grant_resource=mp target_ref=ds_self",
@@ -22832,7 +23044,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -22861,7 +23074,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -22984,7 +23198,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -23055,7 +23270,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -23131,7 +23347,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -23165,7 +23382,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=check_die_swap effect_label=pk_swap swap_mode=ask swap_to_attribute=WLP"
@@ -23197,7 +23415,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=therm_offer menu_option_refs=therm_fire,therm_ice menu_pick_count=1",
@@ -23245,7 +23464,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=absorb_mp_recover grant_amount=SL * 2 grant_resource=mp target_ref=amp_self",
@@ -23336,7 +23556,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=drain_recover grant_amount=MP_DEALT / 2 grant_resource=mp target_ref=ds_self",
@@ -23415,7 +23636,8 @@
     "check_bonus": "5",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "DEX"
+    "rolled_atr2": "DEX",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_template_ref=Burn effect_kind=apply_ae effect_label=apply_burn target_ref=hit_action_targets"
@@ -23434,7 +23656,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "damage_amount=TARGET_AE_CHARGES_BURN * 5 damage_element=fire damage_verbosity=full effect_kind=grant effect_label=death_burst target_ref=burst_targets",
@@ -23454,7 +23677,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Burn effect_kind=apply_ae effect_label=heat_up_apply_burn target_ref=self",
@@ -23576,7 +23800,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=bc_nullify,bc_menu effect_kind=chain effect_label=bone_crusher",
@@ -23863,7 +24088,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -23892,7 +24118,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -23937,7 +24164,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instnataneous"
    },
    "effects": [
     "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
@@ -24090,7 +24318,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "3 Rounds"
    },
    "effects": [],
    "reactions": [],
@@ -24119,7 +24348,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
@@ -24158,7 +24388,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -24204,7 +24435,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Bodyguard effect_kind=apply_ae effect_label=bodyguard_apply target_ref=action_targets"
@@ -24335,7 +24567,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
@@ -24377,7 +24610,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Rampart Ready effect_kind=apply_ae effect_label=rampart_arm target_ref=self",
@@ -24703,7 +24937,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=heal_hp grant_amount=40 + 10 * floor(min(CHAR_LEVEL, 40) / 20) grant_resource=hp target_ref=action_targets"
@@ -24723,7 +24958,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instnataneous"
    },
    "effects": [
     "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
@@ -24786,7 +25022,8 @@
     "check_bonus": "6",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "damage_amount=round((HR + 40) * 0.5) damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=bite_grappled_bonus"
@@ -24810,7 +25047,8 @@
     "check_bonus": "5",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_template_ref=Burn effect_kind=apply_ae effect_label=apply_burn target_ref=hit_action_targets"
@@ -24829,7 +25067,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "allowed_types=Attack effect_kind=open_action_menu effect_label=hunt_free_attack free_hr_as_zero=true free_mode=true"
@@ -24849,7 +25088,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=pounce_damage,pounce_grapple effect_kind=chain effect_label=pounce_chain",
@@ -24872,7 +25112,8 @@
     "check_bonus": "6",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "damage_amount=round((HR + 40) * 0.5) damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=bite_grappled_bonus"
@@ -24896,7 +25137,8 @@
     "check_bonus": "5",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_template_ref=Burn effect_kind=apply_ae effect_label=apply_burn target_ref=hit_action_targets"
@@ -24915,7 +25157,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "allowed_types=Attack effect_kind=open_action_menu effect_label=hunt_free_attack free_hr_as_zero=true free_mode=true"
@@ -24935,7 +25178,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=pounce_damage,pounce_grapple effect_kind=chain effect_label=pounce_chain",
@@ -24957,7 +25201,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Aura of Decay effect_kind=apply_ae effect_label=aod_apply target_ref=action_targets"
@@ -25002,7 +25247,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=plague_menu,plague_inflict effect_kind=chain effect_label=plague_root",
@@ -25029,7 +25275,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=blight_menu,blight_inflict effect_kind=chain effect_label=blight_root",
@@ -25053,7 +25300,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "candidate_source=combat count=1 effect_kind=targeting effect_label=ss_dest mode=exact",
@@ -25074,7 +25322,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=absorb_mp_recover grant_amount=SL * 2 grant_resource=mp target_ref=amp_self",
@@ -25095,7 +25344,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Acceleration effect_kind=apply_ae effect_label=accel_apply target_ref=action_targets"
@@ -25271,7 +25521,7 @@
     "damage_amount=15 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=cat_30_dmg"
    ],
    "reactions": [
-    "condition_formula=HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10)) reaction_effect_ref=cat_root reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
+    "condition_formula=HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10)) reaction_effect_ref=cat_root reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
    ],
    "aes": []
   },
@@ -25315,7 +25565,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=1 effect_kind=remove_tagged_ae effect_label=dispel_cleanse filter_tag=dispellable target_ref=action_targets"
@@ -25333,7 +25584,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Divination effect_kind=apply_ae effect_label=div_apply target_ref=action_targets"
@@ -25416,7 +25668,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=drain_recover grant_amount=ceil(MP_DEALT / 2) grant_resource=mp target_ref=ds_self",
@@ -25435,7 +25688,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=shroud_pick menu_option_refs=shroud_air, shroud_bolt, shroud_earth, shroud_fire, shroud_ice",
@@ -25533,7 +25787,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [],
    "reactions": [],
@@ -25727,7 +25982,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Slow condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=glacies_opportunity target_ref=hit_action_targets"
@@ -25775,7 +26031,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=grapejuice_restore grant_amount=20 grant_resource=mp target_ref=action_targets"
@@ -25809,7 +26066,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=heal_hp grant_amount=40 + 10 * floor(min(CHAR_LEVEL, 40) / 20) grant_resource=hp target_ref=action_targets"
@@ -26056,7 +26314,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -26101,7 +26360,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=3 distinct=true effect_kind=trigger_opportunity effect_label=million_opp opportunity_title=A Million Possibility"
@@ -26118,7 +26378,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=ZP on Flip grant_amount=1 grant_resource=zero_power target_ref=ztf_self",
@@ -26238,7 +26499,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=absorb_mp_recover grant_amount=SL * 2 grant_resource=mp target_ref=amp_self",
@@ -26259,7 +26521,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Acceleration effect_kind=apply_ae effect_label=accel_apply target_ref=action_targets"
@@ -26433,7 +26696,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "count=all effect_kind=remove_tagged_ae effect_label=aov_dismiss_unmerge filter_tag=arcanum-merge target_ref=self",
@@ -26610,7 +26874,7 @@
     "damage_amount=15 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=cat_30_dmg"
    ],
    "reactions": [
-    "condition_formula=HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10)) reaction_effect_ref=cat_root reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
+    "condition_formula=HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10)) reaction_effect_ref=cat_root reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
    ],
    "aes": []
   },
@@ -26626,7 +26890,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=1 effect_kind=remove_tagged_ae effect_label=cleanse_pick filter_tag=debuff target_ref=action_targets"
@@ -26674,7 +26939,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=1 effect_kind=remove_tagged_ae effect_label=dispel_cleanse filter_tag=dispellable target_ref=action_targets"
@@ -26692,7 +26958,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Divination effect_kind=apply_ae effect_label=div_apply target_ref=action_targets"
@@ -26792,7 +27059,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=drain_recover grant_amount=MP_DEALT / 2 grant_resource=mp target_ref=ds_self",
@@ -26812,7 +27080,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=shroud_pick menu_option_refs=shroud_air, shroud_bolt, shroud_earth, shroud_fire, shroud_ice",
@@ -26927,7 +27196,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=ew_menu menu_option_refs=ew_air, ew_bolt, ew_earth, ew_fire, ew_ice",
@@ -27126,7 +27396,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Slow condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=glacies_opportunity target_ref=hit_action_targets"
@@ -27148,7 +27419,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Fatigue condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=gfinis_opportunity target_ref=hit_action_targets"
@@ -27170,7 +27442,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Fatigue condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=gfinis_opportunity target_ref=hit_action_targets"
@@ -27264,7 +27537,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=heal_hp grant_amount=40 + 10 * floor(min(CHAR_LEVEL, 40) / 20) grant_resource=hp target_ref=action_targets"
@@ -27481,7 +27755,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instnataneous"
    },
    "effects": [
     "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
@@ -27587,7 +27862,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [
@@ -27722,7 +27998,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=modify_turns effect_label=stop_slow target_ref=hit_action_targets turns_delta=-1 turns_floor=0"
@@ -27783,7 +28060,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "candidate_source=combat count=1 effect_kind=targeting effect_label=ss_dest mode=exact",
@@ -27894,7 +28172,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "count=3 distinct=true effect_kind=trigger_opportunity effect_label=million_opp opportunity_title=A Million Possibility"
@@ -27911,7 +28190,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=ZP on Flip grant_amount=1 grant_resource=zero_power target_ref=ztf_self",
@@ -28044,7 +28324,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=nw_menu menu_option_refs=nw_light, nw_dark",
@@ -28119,7 +28400,8 @@
     "check_bonus": "6",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=blaze_damage,blaze_consume effect_kind=chain effect_label=blaze_chain",
@@ -28144,7 +28426,8 @@
     "check_bonus": "6",
     "defense_target_type": "def",
     "rolled_atr1": "MIG",
-    "rolled_atr2": "DEX"
+    "rolled_atr2": "DEX",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_initial_charges=1 ae_template_ref=Kill Frenzy effect_kind=apply_ae effect_label=chomp_kill_apply target_ref=self",
@@ -28181,7 +28464,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Zombie effect_kind=apply_ae effect_label=undead_zombie target_ref=self"
@@ -28216,7 +28500,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=voracious_gate_ae,voracious_free_attack effect_kind=chain effect_label=voracious_chain",
@@ -28255,7 +28540,8 @@
     "check_bonus": "6",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=blaze_damage,blaze_consume effect_kind=chain effect_label=blaze_chain",
@@ -28280,7 +28566,8 @@
     "check_bonus": "6",
     "defense_target_type": "def",
     "rolled_atr1": "MIG",
-    "rolled_atr2": "DEX"
+    "rolled_atr2": "DEX",
+    "duration": "Instantaneous"
    },
    "effects": [
     "action_keyword=pierce condition_formula=FINAL_DAMAGE >= 100 effect_kind=grant effect_label=chomp_pierce",
@@ -28304,7 +28591,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Zombie effect_kind=apply_ae effect_label=undead_zombie target_ref=self"
@@ -28339,7 +28627,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=voracious_gate_ae,voracious_free_attack effect_kind=chain effect_label=voracious_chain",
@@ -28586,7 +28875,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantanious"
    },
    "effects": [
     "action_ref=Attack check_bonus_formula=SL effect_kind=free_action effect_label=ripple_strike element_override=trigger_element on_hit_effect_refs=ripple_end_hex target_ref=trigger_subject",
@@ -28606,7 +28896,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "allow_empty=true auto_confirm_when_obvious=true auto_target=skip candidate_source=combat category=ally count=1 effect_kind=targeting effect_label=g_crisis_ally exclude_self=true focus_max_formula=MAX_HP - CUR_HP iteration_mode=together mode=exact skip_when_passive=true target_filter=CUR_HP * 2 <= MAX_HP",
@@ -28909,7 +29200,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=bd_erase,bd_dmg effect_kind=chain effect_label=bd_root",
@@ -29021,7 +29313,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "auto_target=confirm candidate_source=combat count=1 effect_kind=targeting effect_label=cf_pick exclude_self=true menu_option_refs=cf_ally, cf_enemy mode=exact target_filter=IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED + HAS_STATUS_SHAKEN)",
@@ -29060,7 +29353,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "candidate_source=self count=1 effect_kind=targeting effect_label=cs_self mode=exact skip_when_passive=true",
@@ -29083,7 +29377,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Scene"
    },
    "effects": [
     "chain_steps=dread_cx, dread_status effect_kind=chain effect_label=dread_pre",
@@ -29114,7 +29409,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=numen_summon, numen_act_next effect_kind=chain effect_label=numen_do summon_actor=ZPPCxB0eOJPulEHv summon_count=1",
@@ -29141,7 +29437,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=cps_menu menu_option_refs=cps_create, cps_existing",
@@ -29169,7 +29466,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=dp_phantasm, dp_element effect_kind=chain effect_label=dp_pre",
@@ -29283,7 +29581,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=fwtbt_offer menu_option_refs=fwtbt_dmg_opt,fwtbt_shaken_opt menu_pick_count=1",
@@ -29341,7 +29640,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=is_shield, is_cost effect_kind=chain effect_label=is_react",
@@ -29368,7 +29668,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "auto_confirm_when_obvious=true auto_target=true candidate_source=self_or_my_focus count=1 effect_kind=targeting effect_label=lt_pick iteration_mode=together mode=exact target_filter=HAS_STATUS_CRISIS",
@@ -29390,7 +29691,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=nw_menu menu_option_refs=nw_light, nw_dark",
@@ -29449,7 +29751,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "candidate_source=self effect_kind=targeting effect_label=pe_self",
@@ -29611,7 +29914,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=syl_confirm,syl_cost,syl_leave effect_kind=chain effect_label=syl_root",
@@ -29687,7 +29991,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "-"
    },
    "effects": [
     "condition_formula=HIT_COUNT > 0 effect_kind=grant effect_label=soul_steal_grant_ip grant_amount=SL * HIT_COUNT grant_resource=ip grant_target=self target_ref=self",
@@ -29737,7 +30042,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=therm_offer menu_option_refs=therm_fire,therm_ice menu_pick_count=1",
@@ -29813,7 +30119,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=zp_cost, zp_shatter effect_kind=chain effect_label=zp_root",
@@ -29849,7 +30156,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -29878,7 +30186,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -29907,7 +30216,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=bc_nullify,bc_menu effect_kind=chain effect_label=bone_crusher",
@@ -29949,7 +30259,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=shroud_pick menu_option_refs=shroud_air, shroud_bolt, shroud_earth, shroud_fire, shroud_ice",
@@ -30122,7 +30433,8 @@
     "damage_bonus": "20",
     "check_bonus": "0",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=drain_recover grant_amount=ceil(MP_DEALT / 2) grant_resource=mp target_ref=ds_self",
@@ -30140,7 +30452,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=plague_menu,plague_inflict effect_kind=chain effect_label=plague_root",
@@ -30161,7 +30474,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=blight_menu,blight_inflict effect_kind=chain effect_label=blight_root",
@@ -30183,7 +30497,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "action_ref=Fulgur Finis damage_bonus_formula=10 effect_kind=free_action effect_label=overcharge_cast"
@@ -30206,7 +30521,8 @@
     "check_bonus": "7",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Bane effect_kind=apply_ae effect_label=darkbane_apply target_ref=hit_action_targets"
@@ -30229,7 +30545,8 @@
     "check_bonus": "8",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=transfer_ae effect_label=soul_share_to_target filter_tag=debuff from_ref=self keep_source=true target_ref=hit_action_targets",
@@ -30254,7 +30571,8 @@
     "check_bonus": "6",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_name_pool=Slow,Dazed,Weak,Shaken,Enraged,Poisoned effect_kind=apply_ae effect_label=torcleaver_debuff target_ref=hit_action_targets"
@@ -30274,7 +30592,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "auto_target=confirm candidate_source=combat count=1 effect_kind=targeting effect_label=tether_giver mode=exact target_filter=AE_CHARGES_BURN >= 1",
@@ -30302,7 +30621,8 @@
     "check_bonus": "3",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_initial_charges=3 ae_template_ref=Burn effect_kind=apply_ae effect_label=ignis_opportunity_burn target_ref=hit_action_targets"
@@ -30323,7 +30643,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=cap_menu, cap_cost effect_kind=chain effect_label=cap_root",
@@ -30346,7 +30667,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=cas_cost,cas_bane effect_kind=chain effect_label=cas_root",
@@ -30367,7 +30689,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Counter Pass effect_kind=apply_ae effect_label=cp_refresh target_ref=self",
@@ -30409,7 +30732,8 @@
     "defense_target_type": "def",
     "rolled_atr1": "MIG",
     "rolled_atr2": "MIG",
-    "ignore_hr": "true"
+    "ignore_hr": "true",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_key=adoration count=5 effect_kind=consume_charge effect_label=des_cost on_empty=abort target_ref=self"
@@ -30469,7 +30793,8 @@
     "check_bonus": "1",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "DEX"
+    "rolled_atr2": "DEX",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_key=adoration count=1 effect_kind=consume_charge effect_label=mul_cost on_empty=abort target_ref=self",
@@ -30525,7 +30850,8 @@
     "damage_bonus": "10 + (CHAR_LEVEL>=20)*10 + (CHAR_LEVEL>=40)*10",
     "check_bonus": "0",
     "defense_target_type": "def",
-    "rolled_atr1": "WEAPON"
+    "rolled_atr1": "WEAPON",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_key=adoration count=3 effect_kind=consume_charge effect_label=taf_cost on_empty=abort target_ref=self"
@@ -30585,7 +30911,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=ver_cost, ver_def effect_kind=chain effect_label=ver_do",
@@ -30654,7 +30981,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=ew_menu menu_option_refs=ew_air, ew_bolt, ew_earth, ew_fire, ew_ice",
@@ -30771,7 +31099,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instnataneous"
    },
    "effects": [
     "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
@@ -30966,7 +31295,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=fwtbt_offer menu_option_refs=fwtbt_dmg_opt,fwtbt_shaken_opt menu_pick_count=1",
@@ -30992,7 +31322,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=shroud_pick menu_option_refs=shroud_air, shroud_bolt, shroud_earth, shroud_fire, shroud_ice",
@@ -31110,7 +31441,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Slow condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=glacies_opportunity target_ref=hit_action_targets"
@@ -31159,7 +31491,8 @@
     "check_bonus": "7",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_template_ref=Burn effect_kind=apply_ae effect_label=laser_burn target_ref=hit_action_targets"
@@ -31179,7 +31512,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "attacker_name=Shatter damage_amount=(AE_CHARGES_PETRIFY > 0) * CUR_HP damage_cause=damage damage_element=elementless damage_ignore_affinity=true effect_kind=deal_damage effect_label=shatter_exec target_ref=action_targets"
@@ -31197,7 +31531,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "3 Rounds"
    },
    "effects": [
     "chain_steps=stone_gaze_save,stone_gaze_petrify effect_kind=chain effect_label=stone_gaze_chain",
@@ -31262,7 +31597,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Special"
    },
    "effects": [
     "ae_duplicate_mode=skip ae_template_ref=Flying effect_kind=apply_ae effect_label=jump_fly target_ref=self"
@@ -31303,7 +31639,8 @@
     "check_bonus": "10",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "damage_amount=2 damage_operation=multiply damage_stage=outgoing effect_kind=adjust_damage effect_label=dive_double",
@@ -31322,7 +31659,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=bc_nullify,bc_menu effect_kind=chain effect_label=bone_crusher",
@@ -31421,7 +31759,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "3 turns"
    },
    "effects": [],
    "reactions": [
@@ -31508,7 +31847,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Apple o' Archer Taunt count=1 effect_kind=apply_ae effect_label=apple_arm on_empty=abort target_ref=apple_self",
@@ -31554,7 +31894,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "damage_amount=TARGET_AE_CHARGES_BURN * TARGET_MAX_HP * 0.1 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=pyre_bonus",
@@ -31581,7 +31922,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_initial_charges=randint(1,10) ae_template_ref=Burn effect_kind=apply_ae effect_label=gb_apply target_ref=action_targets"
@@ -31599,7 +31941,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=charge_horn grant_amount=15 grant_resource=mp target_ref=self"
@@ -31635,7 +31978,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=ew_menu menu_option_refs=ew_air, ew_bolt, ew_earth, ew_fire, ew_ice",
@@ -31810,7 +32154,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -31883,7 +32228,8 @@
     "check_bonus": "0",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "-"
    },
    "effects": [
     "condition_formula=HIT_COUNT > 0 effect_kind=grant effect_label=soul_steal_grant_ip grant_amount=SL * HIT_COUNT grant_resource=ip grant_target=self target_ref=self",
@@ -31905,7 +32251,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=vanish_cost,vanish_apply_ae effect_kind=chain effect_label=vanish_apply",
@@ -31958,7 +32305,7 @@
     "damage_amount=15 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=cat_30_dmg"
    ],
    "reactions": [
-    "condition_formula=HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10)) reaction_effect_ref=cat_root reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
+    "condition_formula=HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10)) reaction_effect_ref=cat_root reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
    ],
    "aes": []
   },
@@ -31973,7 +32320,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=shroud_pick menu_option_refs=shroud_air, shroud_bolt, shroud_earth, shroud_fire, shroud_ice",
@@ -32088,7 +32436,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=ew_menu menu_option_refs=ew_air, ew_bolt, ew_earth, ew_fire, ew_ice",
@@ -32207,7 +32556,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Slow condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=glacies_opportunity target_ref=hit_action_targets"
@@ -32269,7 +32619,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=grapejuice_restore grant_amount=20 grant_resource=mp target_ref=action_targets"
@@ -32331,7 +32682,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Burn effect_kind=apply_ae effect_label=heat_up_apply_burn target_ref=self",
@@ -32353,7 +32705,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=pyrophagy_heal,pyrophagy_consume effect_kind=chain effect_label=pyrophagy_chain",
@@ -32377,7 +32730,8 @@
     "check_bonus": "5",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=blaze_damage,blaze_consume effect_kind=chain effect_label=blaze_chain",
@@ -32415,7 +32769,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=barrage_add,barrage_cost effect_kind=chain effect_label=barrage_do",
@@ -32439,7 +32794,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "action_ref=Attack effect_kind=free_action effect_label=bullet_break_do free_hr_as_zero=true target_ref=trigger_attacker"
@@ -32459,7 +32815,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=crossfire_block,crossfire_cost effect_kind=chain effect_label=crossfire_do",
@@ -32479,7 +32836,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=hawkeye_choose menu_option_refs=hawkeye_opt_aim, hawkeye_opt_attack",
@@ -32552,7 +32910,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -32616,7 +32975,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=ws_nullify,ws_menu effect_kind=chain effect_label=warning_shot",
@@ -32641,7 +33001,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "action_ref=Thunder Strike effect_kind=free_action effect_label=chain_strike"
@@ -32718,7 +33079,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Barrier effect_kind=apply_ae effect_label=barrier_apply target_ref=action_targets"
@@ -32834,7 +33196,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Enraged effect_kind=apply_ae effect_label=enrage_apply target_ref=hit_action_targets"
@@ -32855,7 +33218,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=hallu_pick menu_option_refs=hallu_dazed, hallu_shaken",
@@ -32876,7 +33240,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=heal_hp grant_amount=40 + 10 * floor(min(CHAR_LEVEL, 40) / 20) grant_resource=hp target_ref=action_targets"
@@ -32915,7 +33280,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Mercy effect_kind=apply_ae effect_label=mercy_apply target_ref=action_targets"
@@ -32987,7 +33353,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=reinforce_pick menu_option_refs=reinforce_dazed, reinforce_shaken, reinforce_slow, reinforce_weak menu_options={\"0\":{\"ae_duplicate_mode\":\"replace_per_caster\",\"ae_template_ref\":\"Reinforced (Dazed)\",\"description\":\"Penalises INS Opposed Checks. Affects mental focus.\",\"effect_kind\":\"apply_ae\",\"label\":\"Dazed\",\"target_ref\":\"action_targets\"},\"1\":{\"ae_duplicate_mode\":\"replace_per_caster\",\"ae_template_ref\":\"Reinforced (Shaken)\",\"description\":\"Penalises WLP Opposed Checks. Affects resolve.\",\"effect_kind\":\"apply_ae\",\"label\":\"Shaken\",\"target_ref\":\"action_targets\"},\"2\":{\"ae_duplicate_mode\":\"replace_per_caster\",\"ae_template_ref\":\"Reinforced (Slow)\",\"description\":\"Penalises DEX Opposed Checks. Affects agility.\",\"effect_kind\":\"apply_ae\",\"label\":\"Slow\",\"target_ref\":\"action_targets\"},\"3\":{\"ae_duplicate_mode\":\"replace_per_caster\",\"ae_template_ref\":\"Reinforced (Weak)\",\"description\":\"Penalises MIG Opposed Checks. Affects might.\",\"effect_kind\":\"apply_ae\",\"label\":\"Weak\",\"target_ref\":\"action_targets\"}} menu_options_view=<p>{ \"0\": { \"label\": \"Dazed\", \"description\": \"Penalises INS Opposed Checks. Affects mental focus.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Dazed)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"1\": { \"label\": \"Shaken\", \"description\": \"Penalises WLP Opposed Checks. Affects resolve.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Shaken)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"2\": { \"label\": \"Slow\", \"description\": \"Penalises DEX Opposed Checks. Affects agility.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Slow)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"3\": { \"label\": \"Weak\", \"description\": \"Penalises MIG Opposed Checks. Affects might.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Weak)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" } }</p>",
@@ -33071,7 +33438,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Soul Weapon effect_kind=apply_ae effect_label=soul_weapon_apply target_ref=action_targets"
@@ -33151,7 +33519,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=torpor_pick menu_option_refs=torpor_slow, torpor_weak",
@@ -33448,7 +33817,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -33515,7 +33885,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=inf_offer menu_option_refs=inf_cryo,inf_pyro,inf_volt,inf_cyclone,inf_exorcism,inf_seismic,inf_shadow,inf_venom,inf_vampire menu_pick_count=1",
@@ -33607,7 +33978,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -33636,7 +34008,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -33708,7 +34081,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=ew_menu menu_option_refs=ew_air, ew_bolt, ew_earth, ew_fire, ew_ice",
@@ -33827,7 +34201,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Slow condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=glacies_opportunity target_ref=hit_action_targets"
@@ -33844,7 +34219,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -33873,7 +34249,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -33901,7 +34278,8 @@
     "damage_bonus": "0",
     "check_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=bc_nullify,bc_menu effect_kind=chain effect_label=bone_crusher",
@@ -34013,7 +34391,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=barrage_add,barrage_cost effect_kind=chain effect_label=barrage_do",
@@ -34071,7 +34450,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=crossfire_block,crossfire_cost effect_kind=chain effect_label=crossfire_do",
@@ -34091,7 +34471,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -34124,7 +34505,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=ws_nullify,ws_menu effect_kind=chain effect_label=warning_shot",
@@ -34224,7 +34606,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=angel_pick menu_option_refs=angel_resist, angel_element",
@@ -34352,7 +34735,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Apple o' Archer Taunt count=1 effect_kind=apply_ae effect_label=apple_arm on_empty=abort target_ref=apple_self",
@@ -34407,7 +34791,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=barrage_add,barrage_cost effect_kind=chain effect_label=barrage_do",
@@ -34433,7 +34818,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=bat_pick menu_option_refs=bat_resist, bat_element",
@@ -34751,7 +35137,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=inf_offer menu_option_refs=inf_cryo,inf_pyro,inf_volt,inf_cyclone,inf_exorcism,inf_seismic,inf_shadow,inf_venom,inf_vampire menu_pick_count=1",
@@ -34798,7 +35185,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=golem_pick menu_option_refs=golem_resist, golem_element",
@@ -34888,7 +35276,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=griffin_pick menu_option_refs=griffin_resist, griffin_element",
@@ -34990,7 +35379,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=hs_self iteration_mode=together mode=exact skip_when_passive=true",
@@ -35043,7 +35433,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "instantaneous"
    },
    "effects": [
     "candidate_source=self chain_steps=lion_cleanse effect_kind=chain effect_label=d_root",
@@ -35135,7 +35526,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Until the start of your next turn"
    },
    "effects": [
     "effect_kind=open_action_menu effect_label=myrmidon_pick menu_option_refs=myrmidon_resist, myrmidon_element",
@@ -35228,7 +35620,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "candidate_source=self chain_steps=ouro_turn effect_kind=chain effect_label=d_root",
@@ -35381,7 +35774,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=syl_leave effect_kind=chain effect_label=syl_root",
@@ -35415,7 +35809,8 @@
     "check_bonus": "3",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "condition_formula=HIT_COUNT > 0 effect_kind=grant effect_label=soul_steal_grant_ip grant_amount=SL * HIT_COUNT grant_resource=ip grant_target=self target_ref=self",
@@ -35491,7 +35886,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=uni_heal_ally, uni_heal_self effect_kind=chain effect_label=d_root",
@@ -35509,7 +35905,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=ws_nullify,ws_menu effect_kind=chain effect_label=warning_shot",
@@ -35537,7 +35934,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=ms_pick_type,ms_pick_status effect_kind=chain effect_label=ms_pre",
@@ -35563,7 +35961,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=ZP Strategy grant_amount=1 grant_resource=zero_power target_ref=zts_self",
@@ -35587,7 +35986,8 @@
     "check_bonus": "7",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "destination_ref=condemn_pick effect_kind=redirect_target effect_label=condemn_redirect",
@@ -35608,7 +36008,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "3 Rounds"
    },
    "effects": [
     "chain_steps=dom_save,dom_charm,dom_dominate effect_kind=chain effect_label=dom_unleash",
@@ -35631,7 +36032,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=dd_save,dd_frightened,dd_paralyzed,dd_silence effect_kind=chain effect_label=dd_unleash",
@@ -35659,7 +36061,8 @@
     "check_bonus": "2",
     "defense_target_type": "def",
     "rolled_atr1": "MIG",
-    "rolled_atr2": "DEX"
+    "rolled_atr2": "DEX",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Bleed effect_kind=apply_ae effect_label=rend_bleed target_ref=hit_action_targets"
@@ -35679,7 +36082,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "3 Rounds"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Searing Brand effect_kind=apply_ae effect_label=sb_mark target_ref=action_targets"
@@ -35724,7 +36128,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=grant effect_label=sc_mp grant_amount=50 grant_resource=mp target_ref=self"
@@ -35742,7 +36147,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=summon effect_label=summon_drakes summon_actor=Actor.2vmogpXhRJZzAvXt,Actor.mQlh6GTyw2449hXC summon_count=1"
@@ -35761,7 +36167,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "3 Rounds"
    },
    "effects": [
     "chain_steps=t_slow,t_dazed,t_weak,t_shaken,t_enraged,t_poisoned effect_kind=chain effect_label=torment_all",
@@ -35789,7 +36196,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=cu_cost,cu_choice effect_kind=open_action_menu effect_label=cu_choice menu_option_refs=cu_optA,cu_optB menu_responder=enemy",
@@ -35811,7 +36219,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=suffering_zp grant_amount=1 grant_resource=zero_power target_ref=self"
@@ -35830,7 +36239,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "damage_amount=floor(RAW_DAMAGE * ((MAX_HP - CUR_HP) / MAX_HP)) damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=blood_weapon_bonus"
@@ -35867,7 +36277,8 @@
     "check_bonus": "7",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Bane effect_kind=apply_ae effect_label=darkbane_apply target_ref=hit_action_targets"
@@ -35887,7 +36298,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "1 Round"
    },
    "effects": [
     "effect_kind=grant effect_label=dm_hpcost grant_amount=0 - floor(CUR_HP * 0.25) grant_resource=hp target_ref=self",
@@ -35933,7 +36345,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [
     "effect_kind=grant effect_label=lsh_hpcost grant_amount=0 - floor(CUR_HP * 0.25) grant_resource=hp target_ref=self",
@@ -35961,7 +36374,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "dice_count=1 dice_faces=12 effect_kind=roll_dice effect_label=ss_roll prompt_var=mig_die",
@@ -36005,7 +36419,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "1 Round"
    },
    "effects": [
     "effect_kind=grant effect_label=sw_gain_shield grant_amount=floor(CUR_HP * 0.25) grant_resource=shield target_ref=self",
@@ -36046,7 +36461,8 @@
     "on_activate_effect_ref": "sb_root",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_initial_charges=1 ae_template_ref=Shadowbringers effect_kind=apply_ae effect_label=sb_mark target_ref=self",
@@ -36095,7 +36511,8 @@
     "check_bonus": "8",
     "defense_target_type": "mdef",
     "rolled_atr1": "INS",
-    "rolled_atr2": "WLP"
+    "rolled_atr2": "WLP",
+    "duration": "Instantaneous"
    },
    "effects": [
     "effect_kind=transfer_ae effect_label=soul_share_to_target filter_tag=debuff from_ref=self keep_source=true target_ref=hit_action_targets",
@@ -36120,7 +36537,8 @@
     "check_bonus": "6",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_name_pool=Slow,Dazed,Weak,Shaken,Enraged,Poisoned effect_kind=apply_ae effect_label=torcleaver_debuff target_ref=trigger_subject"
@@ -36139,7 +36557,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "effect_kind=grant effect_label=adversity_gain_zp grant_amount=STATUS_COUNT + HAS_STATUS_CRISIS grant_resource=zero_power target_ref=self"
@@ -36157,7 +36576,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [],
@@ -36190,7 +36610,8 @@
     "check_bonus": "5",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -36225,7 +36646,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -36243,7 +36665,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "3 Rounds"
    },
    "effects": [],
    "reactions": [],
@@ -36285,7 +36708,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -36303,7 +36727,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -36320,7 +36745,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -36337,7 +36763,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [],
@@ -36381,7 +36808,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -36398,7 +36826,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "1 Turn"
    },
    "effects": [],
    "reactions": [],
@@ -36431,7 +36860,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [
@@ -36448,7 +36878,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Scene"
    },
    "effects": [],
    "reactions": [],
@@ -36496,7 +36927,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [],
    "reactions": [
@@ -36513,7 +36945,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -36545,7 +36978,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [],
    "reactions": [
@@ -36566,7 +37000,8 @@
     "check_bonus": "5",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "chain_steps=blaze_remove_burn,blaze_overflow effect_kind=chain effect_label=blaze_on_hit",
@@ -36589,7 +37024,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=explosive_save,explosive_damage,explosive_burn effect_kind=chain effect_label=explosive_unleash",
@@ -36616,7 +37052,8 @@
     "check_bonus": "5",
     "defense_target_type": "def",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG"
+    "rolled_atr2": "MIG",
+    "duration": "Instantaneous"
    },
    "effects": [
     "consume_charges=true effect_kind=trigger_status effect_label=flameclaw_blaze status_name=Burn target_ref=hit_action_targets trigger_count=1"
@@ -36639,7 +37076,8 @@
     "check_bonus": "4",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=add_charges ae_initial_charges=3 ae_template_ref=Burn effect_kind=apply_ae effect_label=apply_burn target_ref=hit_action_targets"
@@ -36660,7 +37098,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "Instantaneous"
    },
    "effects": [
     "charge_ae_name=Burn charge_amount=2 charge_operation=multiply effect_kind=adjust_charges effect_label=overblaze_double_burn target_ref=action_targets"
@@ -36677,7 +37116,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "candidate_source=combat effect_kind=targeting effect_label=rising_targets mode=all skip_when_passive=true",
@@ -36703,7 +37143,8 @@
     "check_bonus": "6",
     "defense_target_type": "mdef",
     "rolled_atr1": "DEX",
-    "rolled_atr2": "INS"
+    "rolled_atr2": "INS",
+    "duration": "Instantaneous"
    },
    "effects": [
     "ae_duplicate_mode=replace ae_template_ref=Oil effect_kind=apply_ae effect_label=apply_oil target_ref=hit_action_targets"
@@ -36727,7 +37168,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=meteor_halve effect_kind=chain effect_label=meteor_unleash",
@@ -36748,7 +37190,8 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "duration": "-"
    },
    "effects": [
     "chain_steps=ignition_mp,ignition_zp effect_kind=chain effect_label=ignition_gain",

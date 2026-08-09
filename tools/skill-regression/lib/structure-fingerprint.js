@@ -41,6 +41,12 @@ const KEPT_PROPS = [
   // `HAS_ARCANE_WEAPON == 1` gate to 6 docs moved nothing here, which is the
   // failure mode — a skill silently LOSING its gate would read as unchanged.
   "availability_formula", "availability_reason",
+  // `duration` is behaviour-bearing: ACTION_DURATION (skill-formulas ~L1115)
+  // ranks this free-form string 0/1/2 and gates on it (Cataclysm is
+  // instantaneous-only; Follow my lead needs >= 1). A TYPO silently reranks the
+  // skill — Solar Beam shipped "Instnataneous", which the `includes("instant")`
+  // normaliser does not catch, so it ranked 1 and would have lost Cataclysm.
+  "duration",
 ];
 
 // ⚠ KEPT_PROPS is an ALLOWLIST, so every prop nobody thought to list is a blind
