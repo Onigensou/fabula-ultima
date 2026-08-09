@@ -356,3 +356,90 @@ export function mpCapTargetCount(actor, costString, maxMpCost, requestedCount) {
   if (fit >= 1 && fit < requestedCount) return { count: fit, capped: true };
   return out;
 }
+
+// ── Cost substitution availability (Vismagus and any future cost-swap) ─────
+// "Could this caster pay a cost they can't currently afford, by swapping the
+// missing resource for another one?"
+//
+// WHY THIS EXISTS: the affordability GATE and the substitution ran in the wrong
+// order. `caster_short_on_mp` dispatches from the TARGET state, but the skill
+// PICKER had already decided the spell was unaffordable and set `disabled` —
+// which list-picker documents as "greyed + non-clickable + skipped by keyboard".
+// Measured 2026-08-09: Hina at 1 MP had 12 of 12 spells blocked, so Vismagus
+// could never fire for the case its own text describes ("if you don't have
+// enough Mind Points to pay for its total cost"). Only scaling spells survived,
+// because the picker prices variable costs at their MINIMUM.
+//
+// Deliberately NOT a Vismagus special case: the engine dispatches on the
+// generic `caster_short_on_mp` / `substitute_cost` pair and state-handlers
+// states "no skill name / class flag hardcoding lives here". This reads the
+// same authored rows and mirrors applySubstituteCostEffect's arithmetic —
+// including `min_remaining`, so the picker never offers a swap that the real
+// gate would refuse (which would dead-end the player in a rejected dialog).
+//
+// Returns null when no substitution applies, else a preview of the swap.
+// Preview only: nothing is mutated here — the real rewrite still happens in
+// applySubstituteCostEffect when the reaction fires.
+const SHORT_TRIGGER = "caster_short_on_mp";
+
+function liveRows(table) {
+  return Object.values(table || {}).filter((r) => r && typeof r === "object" && !r.$deleted);
+}
+
+export function findCostSubstitution(actor, costMap, opts = {}) {
+  if (!actor) return null;
+  const readMap = (k) => Number((costMap?.get ? costMap.get(k) : costMap?.[k]) ?? 0) || 0;
+
+  for (const item of actor.items ?? []) {
+    const props = item?.system?.props ?? {};
+    const configs = liveRows(props.reaction_config_table)
+      .filter((r) => String(r.reaction_trigger ?? "").trim() === SHORT_TRIGGER);
+    if (!configs.length) continue;
+    const effects = liveRows(props.effect_table);
+
+    for (const cfg of configs) {
+      const ref = String(cfg.reaction_effect_ref ?? "").trim();
+      // Direct ref only. A substitution buried inside a `chain` is not previewed
+      // — it will still FIRE correctly, the picker just won't pre-authorise it.
+      const row = effects.find((e) => String(e.effect_label ?? "").trim() === ref
+                                   && String(e.effect_kind ?? "").trim() === "substitute_cost");
+      if (!row) continue;
+
+      const fromRes = String(row.from_resource ?? "mp").trim().toLowerCase();
+      const toRes   = String(row.to_resource   ?? "hp").trim().toLowerCase();
+      const multiplier   = Number(row.multiplier ?? 2) || 2;
+      const minRemaining = Number(row.min_remaining ?? 1) || 1;
+
+      const fromAmount = readMap(fromRes);
+      if (fromAmount <= 0) continue;                       // nothing to swap
+
+      // Same arithmetic + rejection rule as applySubstituteCostEffect.
+      const def = RESOURCES[toRes];
+      const propKey = def?.prop ?? `current_${toRes}`;
+      const curTo = Number(actor.system?.props?.[propKey] ?? 0) || 0;
+      const toAmount = fromAmount * multiplier;
+      if (curTo - toAmount < minRemaining) continue;       // would refuse at the gate
+
+      return {
+        from: fromRes, to: toRes, fromAmount, toAmount,
+        label: `${toAmount} ${def?.label ?? toRes.toUpperCase()}`,
+        sourceName: item.name ?? null,
+        // `reaction_passive_mode` decides whether the player is asked; the
+        // picker only needs to know the option EXISTS.
+        mode: String(cfg.reaction_passive_mode ?? "ask").trim().toLowerCase(),
+      };
+    }
+  }
+  return null;
+}
+
+// Would the real gate even reach the substitution? Mirrors state-handlers'
+// preconditions: the shortfall must be ONLY on the swappable resource, and
+// (RAW Vismagus: "when you cast a spell") the action must be a Spell.
+export function canSubstituteForShortfall(missing, skillType) {
+  if (!Array.isArray(missing) || !missing.length) return false;
+  const onlyMp = missing.every(
+    (m) => String(m.resource ?? m.label ?? "").toLowerCase() === "mp");
+  const isSpell = String(skillType ?? "").trim().toLowerCase() === "spell";
+  return onlyMp && isSpell;
+}

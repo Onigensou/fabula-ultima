@@ -47,7 +47,8 @@
 //     imageUrl?,             // 40px icon image URL
 //     fallbackIcon?,         // HTML (e.g. FA <i>) shown when no imageUrl
 //     badge?,                // right-aligned HTML chip (e.g. a cost badge)
-//     badgeTone?,            // "free" (green) | "danger" (red) | undefined (neutral)
+//     badgeTone?,            // "free" (green) | "danger" (red) | "warning" (amber,
+//                            // selectable but not an ordinary spend) | undefined
 //     badges?,               // Array<{ text, tone? }> — the trailing cell is a
 //                            // LIST of chips, all on one baseline at equal
 //                            // height, laid out with a gap so they can never
@@ -285,6 +286,12 @@ function ensureStyles() {
     }
     .fud-lp-card .fud-lp-option .fud-lp-badge.is-danger {
       background: rgba(110, 30, 30, 0.18); border-color: rgba(110, 30, 30, 0.32); color: #6b1e1e;
+    }
+    /* "warning" = selectable, but NOT an ordinary spend. A cost-swap row
+       (Vismagus: "10 MP → 20 HP") is clickable yet must not read as affordable
+       the normal way — amber sits deliberately between is-free and is-danger. */
+    .fud-lp-card .fud-lp-option .fud-lp-badge.is-warning {
+      background: rgba(140, 95, 20, 0.20); border-color: rgba(140, 95, 20, 0.38); color: #7a5310;
     }
     /* Trailing chip LIST. Every chip is a .fud-lp-badge, so a "No HR" tag and a
        cost badge share one baseline and one height; the gap keeps them from ever
@@ -531,7 +538,9 @@ export async function pickFromList({
       ...(Array.isArray(row.badges) ? row.badges : []).filter((b) => b && b.text),
       ...(row.badge ? [{ text: row.badge, tone: row.badgeTone }] : []),
     ];
-    const chipCls = (tone) => tone === "free" ? " is-free" : tone === "danger" ? " is-danger" : "";
+    const chipCls = (tone) => tone === "free" ? " is-free"
+      : tone === "danger" ? " is-danger"
+      : tone === "warning" ? " is-warning" : "";
     const badgeHTML = chips.length
       ? `<div class="fud-lp-badges">${chips.map((c) => `<div class="fud-lp-badge${chipCls(c.tone)}">${c.text}</div>`).join("")}</div>`
       : `<div></div>`;

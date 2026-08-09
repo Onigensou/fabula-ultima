@@ -10,7 +10,8 @@
 // Returns a Promise resolving to `{ skillUuid, sourceItemUuid? } | null`.
 
 import { log, warn } from "./logger.js";
-import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
+import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost,
+         findCostSubstitution, canSubstituteForShortfall } from "./skill-cost.js";
 import { buildSkillResolver, evaluateFormula, normalizeDamageType } from "./skill-formulas.js";
 import { analyzeChainCost, estimatePerformReactionCost, isMergedArcanumChild } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
@@ -346,9 +347,22 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
   const costMap = new Map(stringCostMap);
   for (const [res, amt] of configDebit) costMap.set(res, (costMap.get(res) ?? 0) + amt);
   const gate = checkAffordable(actor, costMap);
+  // Cost SUBSTITUTION (Vismagus and any future cost-swap trait). The engine
+  // fires `caster_short_on_mp` from the TARGET state — which is unreachable if
+  // the picker has already greyed the entry out, since `disabled` means
+  // non-clickable. Measured 2026-08-09: Hina at 1 MP had 12/12 spells blocked,
+  // so Vismagus could not fire for the case its own text describes. Ask the
+  // same authored rows the gate will ask, and keep the entry live when a swap
+  // covers the shortfall. Mirrors min_remaining, so we never offer a swap the
+  // gate would refuse. Not a Vismagus special case — the dispatcher is generic.
+  let costSwap = null;
+  if (!gate.ok && canSubstituteForShortfall(gate.missing, p.skill_type)) {
+    costSwap = findCostSubstitution(actor, costMap);
+  }
   // Combined affordability: resource gate AND charge gate. Charge shortfalls
   // append to missingResources so the tooltip lists "Adoration: 1/3" too.
-  const affordable = gate.ok && chargeMissing.length === 0;
+  // A charge shortfall is never substitutable, so it still hard-blocks.
+  const affordable = (gate.ok || !!costSwap) && chargeMissing.length === 0;
   const missingResources = [...(gate.missing ?? []), ...chargeMissing];
   // Availability gate — a top-level `availability_formula` evaluated against the
   // caster (e.g. Numen's "OWN_NUMEN_COUNT == 0"). Falsy → the skill shows DIMMED
@@ -418,6 +432,9 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
     chargeCostParts,
     costVariable,
     affordable,
+    // Non-null when the entry is only clickable BECAUSE a cost swap covers the
+    // shortfall — the row must not read as ordinarily affordable.
+    costSwap,
     missingResources,
     source,
     sourceItemUuid: sourceItem?.uuid ?? null,
@@ -488,6 +505,10 @@ function candidateToRow(c) {
   else if (parts.length) costLabel = parts.join(", ");
   else if (c.costVariable) costLabel = "Varied";
   else costLabel = "Free";
+  // "Affordable via a cost swap" is NOT the same as affordable — show what will
+  // actually be spent (Vismagus: "10 MP → 20 HP"), so nobody clicks a spell
+  // expecting to pay MP and loses double that in HP.
+  if (c.costSwap) costLabel = `${costLabel} → ${c.costSwap.label}`;
   const isFree = !parts.length && !c.costVariable;
   const sourceTag = c.source === "item-granted" && c.sourceItemName
     ? `<span class="source-tag" title="${escapeHtml(c.sourceItemName)}">⚔️</span> ` : "";
@@ -518,7 +539,11 @@ function candidateToRow(c) {
     // baseline and can't collide), rather than as a separate corner tag.
     ...(noHighRoll ? { badges: [{ text: "No HR", tone: "danger" }] } : {}),
     badge: hardBlock ? escapeHtml(hardBlock) : escapeHtml(costLabel),
-    badgeTone: hardBlock ? "danger" : (isFree ? "free" : (c.affordable ? null : "danger")),
+    // A swap-funded row gets its own tone: clickable, but visibly not a normal
+    // MP spend.
+    badgeTone: hardBlock ? "danger"
+      : (isFree ? "free"
+      : (c.costSwap ? "warning" : (c.affordable ? null : "danger"))),
     ...(rangeBlocked ? { stamp: rangeBlocked } : {}),
     disabled: !!hardBlock || !!rangeBlocked || !c.affordable,
     tooltip: {
