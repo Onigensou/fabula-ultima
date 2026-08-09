@@ -253,15 +253,34 @@
       const current = currentId
         ? (slot.candidates ?? []).find((c) => c.id === currentId) ?? null
         : null;
+
+      // Legality travels WITH the slot so the screen can disable it and say why.
+      // canEquip is the shared predicate (martial proficiency from classes, hand
+      // slots, Dual Shieldbearer) — the UI never re-derives those rules.
+      let legal = true;
+      let reason = null;
+      try {
+        const verdict = mod.canEquip?.(actor, templateItem, key);
+        if (verdict) { legal = verdict.ok !== false; reason = verdict.reason ?? null; }
+      } catch (e) {
+        warn("canEquip failed; treating slot as legal:", e);
+      }
+
       slots.push({
         key,
         label: SLOT_LABELS[key] ?? key,
         current,                       // null => empty slot, rendered as "(Empty)" / "-"
         occupied: !!current,
+        legal,
+        reason,
       });
     }
 
-    const preferred = slots.find((s) => !s.occupied)?.key ?? slots[0]?.key ?? null;
+    // Auto-pick: first EMPTY legal slot, else first legal slot, else nothing.
+    const preferred =
+      slots.find((s) => s.legal && !s.occupied)?.key
+      ?? slots.find((s) => s.legal)?.key
+      ?? null;
 
     return {
       actorUuid: actor.uuid,
