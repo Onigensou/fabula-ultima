@@ -147,6 +147,12 @@
       #${OVL_ID} .tr-eq-btn:hover { background: rgba(120,85,40,.16); }
       #${OVL_ID} .tr-eq-btn:active { transform: translateY(1px); }
       #${OVL_ID} .tr-eq-btn.tr-eq-default { box-shadow: inset 0 0 0 2px rgba(120,85,40,.5); }
+      /* No legal slot for this item on this actor — Yes must not be pressable. */
+      #${OVL_ID} .tr-eq-btn.tr-eq-btn-disabled {
+        opacity: .38; cursor: not-allowed; text-decoration: line-through;
+        filter: grayscale(1);
+      }
+      #${OVL_ID} .tr-eq-btn.tr-eq-btn-disabled:hover { background: transparent; filter: grayscale(1); }
 
       /* ── Slot tabs — above the wearer, inside the middle column ──
          A 2-column grid rather than a wrapping flex row: two tabs sit side by
@@ -335,7 +341,9 @@
     // in this composition and would sit on top of the left card. Fade it out as
     // this screen comes in. The flow's own stage.clear() at the end is then a
     // no-op, so ownership is unchanged.
-    try { kit()?.stage?.clear?.({ immediate: true }); } catch { /* nothing parked */ }
+    // Drop the parked reward but KEEP the backdrop — this is a hand-off inside
+    // one sequence, not the end of it.
+    try { kit()?.stage?.clear?.({ immediate: true, keepDim: true }); } catch { /* nothing parked */ }
 
     const slots = payload?.slots ?? [];
     const activeKey = payload?.preferredSlotKey ?? slots.find((s) => s.legal !== false)?.key ?? slots[0]?.key ?? null;
@@ -349,6 +357,8 @@
       cardHTML(active?.current ?? null, { side: "current" }),
       cardHTML(payload?.incoming ?? null, { side: "new", compareTo: active?.current ?? null }),
     ]);
+
+    if (kit().stage.hasDim()) overlay.style.background = "transparent";
 
     overlay.innerHTML = `
       <div class="tr-eq-title">Switch Equipment</div>
@@ -459,15 +469,34 @@
           });
         });
 
+        // "Yes" is only meaningful if there is somewhere legal to put the item.
+        // Gating the slot tabs alone left Yes clickable, which would commit a
+        // swap the rules forbid (applyEquipmentSwap does not reject on martial
+        // grounds). Reflect legality on the button itself, and re-evaluate it
+        // whenever the selected slot changes.
+        const yesBtn = overlay.querySelector(".tr-eq-btn-yes");
+        const refreshYes = () => {
+          const slot = slots.find((s) => s.key === activeKey);
+          const ok = !!slot && slot.legal !== false;
+          yesBtn.classList.toggle("tr-eq-btn-disabled", !ok);
+          yesBtn.title = ok ? "" : (slot?.reason ?? "Cannot equip this here");
+          if (!ok) foot.textContent = slot?.reason ?? "Cannot equip this here";
+          else foot.textContent = "Default: No";
+          return ok;
+        };
+
         const answer = (equip) => {
+          if (equip && !refreshYes()) { K.Sound.play("CANCEL"); return; }
           K.Sound.play(equip ? "EQUIP_YES" : "EQUIP_NO");
           close({ equip, slotKey: activeKey });
         };
 
-        overlay.querySelector(".tr-eq-btn-yes").addEventListener("click", () => answer(true));
+        yesBtn.addEventListener("click", () => answer(true));
         overlay.querySelector(".tr-eq-btn-no").addEventListener("click", () => answer(false));
         overlay.querySelectorAll(".tr-eq-btn").forEach((b) =>
           b.addEventListener("mouseenter", () => K.Sound.play("HOVER")));
+
+        refreshYes();   // the auto-picked slot may already be illegal
 
         _keyHandler = (ev) => {
           if (ev.key === "Escape" || ev.key === "Enter") {

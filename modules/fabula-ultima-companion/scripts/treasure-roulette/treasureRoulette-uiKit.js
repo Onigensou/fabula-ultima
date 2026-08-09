@@ -307,7 +307,39 @@
   // and into this layer — it is the same element, so there is no re-render, no
   // flicker, and no need to match two renderers pixel-for-pixel.
   const STAGE_ID = "oni-tr-stage";
+  const DIM_ID = "oni-tr-dim";
   const PARK_LEFT_VW = 22;   // where the reward panel comes to rest (mockup: left)
+
+  // A backdrop that belongs to the SEQUENCE, not to any one screen.
+  //
+  // Each screen used to paint its own dim, so the handoff had a gap: the spin
+  // overlay faded out (dim gone), then the recipient overlay faded in (dim
+  // back) — the scene flashed bright between two screens that are meant to read
+  // as one continuous moment. This layer goes up when the reward parks and
+  // stays until the sequence ends; the screens make their own background
+  // transparent while it exists, so the dim never blinks and never doubles.
+  //
+  // Sits BELOW the screens (9999998) and below the parked panel (9999999).
+  function showDim() {
+    let d = document.getElementById(DIM_ID);
+    if (d) return d;
+    d = document.createElement("div");
+    d.id = DIM_ID;
+    d.style.cssText =
+      "position:fixed;inset:0;z-index:9999996;pointer-events:none;" +
+      "background:rgba(10,7,4,0.72);";
+    document.body.appendChild(d);
+    return d;
+  }
+  const hasDim = () => !!document.getElementById(DIM_ID);
+  function clearDim({ immediate = false } = {}) {
+    const d = document.getElementById(DIM_ID);
+    if (!d) return;
+    if (immediate) { d.remove(); return; }
+    d.style.transition = "opacity 260ms ease";
+    d.style.opacity = "0";
+    setTimeout(() => d.remove(), 280);
+  }
 
   function ensureStage() {
     let st = document.getElementById(STAGE_ID);
@@ -331,6 +363,7 @@
    */
   function park(node) {
     if (!node) return null;
+    showDim();                 // take over the backdrop before the spin fades out
     const stage = ensureStage();
 
     // The panel's looks live in CSS scoped to `.oni-treasure-roulette-overlay`,
@@ -381,7 +414,11 @@
    *   the parked reward to still be sitting there while the next screen draws
    *   over it. Hand-offs use immediate; end-of-sequence teardown can fade.
    */
-  function clearStage({ immediate = false } = {}) {
+  function clearStage({ immediate = false, keepDim = false } = {}) {
+    // keepDim: a hand-off between screens drops the parked panel but must NOT
+    // drop the backdrop, or the scene flashes bright mid-sequence.
+    if (!keepDim) clearDim({ immediate });
+
     const st = document.getElementById(STAGE_ID);
     if (!st) return;
     if (immediate) { st.remove(); return; }
@@ -438,7 +475,10 @@
     // motion
     staggerIn, staggerOut, ensureKitStyles, STAGGER_MS, ENTER_MS, EXIT_MS,
     // the travelling reward panel
-    stage: { ensure: ensureStage, park, clear: clearStage, hasParked, PARK_LEFT_VW },
+    stage: {
+      ensure: ensureStage, park, clear: clearStage, hasParked, PARK_LEFT_VW,
+      showDim, hasDim, clearDim,
+    },
     // sound
     Sound: { play, preloadAll, SOUNDS, VOLUME },
     esc,
