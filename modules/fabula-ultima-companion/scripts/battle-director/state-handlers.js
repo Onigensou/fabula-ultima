@@ -958,8 +958,11 @@ async function resolveAction(director, ar, opts = {}) {
     //
     // Still correct for a FREE cast: `free_of_cost` skips the debit via
     // skipCost, it is NOT a cost override, so costSerialized + overrides survive
-    // and the budget sees the real number. (A Fugitive-style `waive`, which IS
-    // an override, legitimately reports 0 — nothing was assessed.)
+    // and the budget sees the real number. A Fugitive-style waive can no longer
+    // drag it to 0 either — composeCostDelta drops DISCOUNTS on a free cast
+    // (nothing is being debited, so there is nothing to discount) while still
+    // composing SURCHARGES, which is how Cataclysm's overcharge spends the
+    // granting budget rather than the pool.
     lastSpellMp: Number(computeEffectiveCost(ar.costSerialized, ar.costOverride)?.mp ?? 0) || 0,
     // Acting skill/weapon name for `reaction_source_skill` self-scoping
     // (replaces the removed skill_type item-gate).
@@ -4274,6 +4277,7 @@ const Compute = {
               skill, effectTable: view.effect_table, startLabel: onActivateRef,
               actor: casterActorForCost, chainVars: preActivateVars,
               round: director.dCombat?.round ?? 0,
+              isFreeCast: !!freeActions.get(ar.attacker?.actorId)?.freeOfCost,
             });
           }
         } catch (e) { warn("Skill COMPUTE: pre-compose of chain adjust_cost threw", e); }

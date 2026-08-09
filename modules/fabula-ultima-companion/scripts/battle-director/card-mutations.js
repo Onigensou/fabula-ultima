@@ -1301,6 +1301,10 @@ async function applyAdjustCostMutation(ctx, cand, row) {
   const { composeCostDelta } = await import("./skill-cost.js");
   ctx.costOverride = composeCostDelta(ctx.costOverride, {
     resource, delta, source: via, label: String(row.effect_label ?? "").trim() || null,
+    // Same rule as the resolve-time path — a discount on a cast that pays
+    // nothing is dropped, a surcharge still counts. Read off the payload the
+    // candidate fired with, which carries CONFIRM's `actionIsFreeCast`.
+    isFreeCast: cand?.payloadAtFire?.actionIsFreeCast === true,
   });
   return "applied";
 }

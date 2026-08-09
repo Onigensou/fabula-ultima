@@ -262,12 +262,35 @@ export function computeEffectiveCost(base, override) {
 // `_parts` is the provenance log AND the dedup key: a row reachable from BOTH a
 // reaction ref and an on_activate ref must bill once, not twice.
 //
+// `isFreeCast` suppresses DISCOUNTS only — see the asymmetry note below.
+//
 // Returns the mutated override (created when null was passed), or the original
-// untouched when the delta is 0 or already recorded.
-export function composeCostDelta(override, { resource, delta, source = "reaction", label = null } = {}) {
+// untouched when the delta is 0, already recorded, or a waived discount.
+export function composeCostDelta(override, { resource, delta, source = "reaction", label = null, isFreeCast = false } = {}) {
   const res = String(resource ?? "mp").trim().toLowerCase();
   const d = Number(delta) || 0;
   if (!RESOURCES[res] || d === 0) return override;
+  // ── Free cast: a DISCOUNT is meaningless, a SURCHARGE is not ──────────────
+  // `free_of_cost` skips the DEBIT (skipCost) but leaves costSerialized intact,
+  // so the effective cost is still the number that "counts" — LAST_SPELL_MP
+  // reads it, and that is how a granting effect sizes its budget.
+  //
+  // A discount against a payment that will never happen buys nothing, yet it
+  // still drags the effective cost DOWN: Fugitive Experiment's waive on a
+  // Bimagus free cast drove LAST_SPELL_MP to 0, so the Encore was seeded with
+  // no charges and the second spell silently vanished. That was first patched
+  // per-skill (`ACTION_IS_FREE_CAST == 0` on Fugitive's own row), which left the
+  // same trap armed for every other discount — the catalog sweep found two
+  // already live (Hypercognition, Maid cap), one of them a discount written as
+  // a NEGATIVE ADD rather than a subtract.
+  //
+  // A surcharge still composes, and must: the user's ruling is that Cataclysm's
+  // overcharge on a free cast spends the BUDGET that granted the cast, not the
+  // caster's pool. Raising the count is exactly how that works.
+  if (isFreeCast && d < 0) {
+    log(`composeCostDelta: free cast — dropping ${res} ${d} discount (via ${source}${label ? `/${label}` : ""}); nothing is being debited`);
+    return override;
+  }
   const ov = override ?? { _parts: [] };
   if (!Array.isArray(ov._parts)) ov._parts = [];
   // Dedup by (source, label) — only when the row IS labelled. An unlabelled

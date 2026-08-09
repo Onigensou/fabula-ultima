@@ -3068,7 +3068,7 @@ export async function applyEffectByLabel(effectLabel, ctx) {
 //   - rows with a `condition_formula` are SKIPPED. A gate can read true now and
 //     false at RESOLVE (or the reverse), and a preview that guessed wrong would
 //     be locked in by its own dedup.
-export async function precomposeChainCostAdjustments({ skill, effectTable, startLabel, actor, chainVars, round = 0 }) {
+export async function precomposeChainCostAdjustments({ skill, effectTable, startLabel, actor, chainVars, round = 0, isFreeCast = false }) {
   const start = String(startLabel ?? "").trim();
   if (!effectTable || !start) return null;
   const byLabel = new Map();
@@ -3111,6 +3111,10 @@ export async function precomposeChainCostAdjustments({ skill, effectTable, start
     override = composeCostDelta(override, {
       resource: String(row.cost_resource ?? "mp").trim().toLowerCase(),
       delta, source, label: String(row.effect_label ?? "").trim() || null,
+      // The card must preview what RESOLVE will actually compose, and RESOLVE
+      // drops discounts on a free cast — previewing one here would print a
+      // price the debit never matches.
+      isFreeCast,
     });
   }
   return override;
@@ -3158,7 +3162,12 @@ async function applyAdjustCostEffect(row, ctx) {
   // Seed the map when the action had no override at all, and thread it back onto
   // ctx so both the settlement pass AND in-chain consume_resource discounting see
   // the same object.
-  ctx.costOverride = composeCostDelta(ctx.costOverride ?? null, { resource, delta, source, label });
+  ctx.costOverride = composeCostDelta(ctx.costOverride ?? null, {
+    resource, delta, source, label,
+    // Free cast -> the composer drops a discount (it would only shrink the
+    // effective cost a granting budget reads) but keeps a surcharge.
+    isFreeCast: ctx.payload?.actionIsFreeCast === true,
+  });
   return { ok: true, kind: "adjust_cost", applied: [{ resource, delta }], reason: "composed-into-cost-override" };
 }
 
