@@ -305,7 +305,8 @@
       <div class="tr-eq-stage">
         ${leftCard}
         <div class="tr-eq-mid">
-          ${kit().imgHTML(payload?.portrait, { size: 0, alt: payload?.actorName ?? "", cls: "tr-eq-portrait", extra: "width:150px;height:190px;" })}
+          ${/* size comes from .tr-eq-portrait; inline values would override it. */""}
+          ${kit().imgHTML(payload?.portrait, { size: 0, alt: payload?.actorName ?? "", cls: "tr-eq-portrait", extra: "" })}
           <div class="tr-eq-arrow">&#10230;</div>
           <div class="tr-eq-choices">
             <div class="tr-eq-btn tr-eq-btn-no tr-eq-default">No</div>

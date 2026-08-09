@@ -65,10 +65,17 @@
     .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
+  /**
+   * @param {number|null} size px for BOTH dimensions. Pass 0/null to emit no
+   *   width/height at all and let a CSS class own the sizing — an inline
+   *   width always beats the stylesheet, including `unset`, so there is no way
+   *   to "opt out" once it is written.
+   */
   function imgHTML(src, { size = 24, alt = "", cls = "", extra = "" } = {}) {
     if (!src) return "";
+    const dims = size ? `width:${size}px;height:${size}px;` : "";
     return `<img src="${esc(src)}" alt="${esc(alt)}" class="${esc(cls)}"
-      style="width:${size}px;height:${size}px;object-fit:contain;${IMG_RESET}${extra}">`;
+      style="${dims}object-fit:contain;${IMG_RESET}${extra}">`;
   }
 
   function attrIconHTML(attr, size = 26) {
@@ -214,6 +221,45 @@
       .tr-desc-body ul { margin:0 0 6px; padding-left:18px; }
       .tr-desc-body img { ${IMG_RESET} }
 
+      /* ── Parked reward panel ───────────────────────────────────────────
+         The roulette's own rules are scoped to its overlay, so once the panel
+         is transplanted here it needs its look re-declared. These mirror
+         .oni-roulette-panel and its children, plus the winner emphasis it had
+         when it left, and scale it up slightly since it is now the anchor of
+         the screen rather than one of eight options. */
+      #${STAGE_ID} .oni-roulette-panel {
+        position: fixed;
+        width: var(--oni-panel-w, 273px);
+        min-width: 340px;
+        height: var(--oni-panel-h, 70px);
+        display: flex; align-items: center; gap: 12px;
+        padding: 9px 13px; box-sizing: border-box;
+        border-radius: 10px;
+        background: #e7d7b7;
+        opacity: 1;
+        box-shadow:
+          0 14px 26px rgba(0,0,0,0.35),
+          0 0 0 3px rgba(255, 235, 185, 0.55),
+          0 0 26px 6px rgba(255, 214, 130, 0.28),
+          inset 0 0 0 2px rgba(60,35,20,0.25);
+      }
+      #${STAGE_ID} .oni-roulette-panel .oni-roulette-looticon {
+        width: calc(var(--oni-panel-h, 70px) * 0.70);
+        height: calc(var(--oni-panel-h, 70px) * 0.70);
+        object-fit: contain;
+        ${IMG_RESET}
+        filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25));
+      }
+      #${STAGE_ID} .oni-roulette-panel .oni-roulette-lootname {
+        flex: 1;
+        font-family: "Signika", "Modesto Condensed", "Palatino Linotype", serif;
+        font-size: calc(var(--oni-panel-h, 70px) * 0.34);
+        color: #3b2314;
+        letter-spacing: 0.3px;
+        text-shadow: 0 2px 0 rgba(0,0,0,0.15);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+
       /* Fixed-height description well: long text SCROLLS, the panel never grows. */
       .tr-desc-scroll {
         overflow-y: auto;
@@ -260,6 +306,22 @@
   function park(node) {
     if (!node) return null;
     const stage = ensureStage();
+
+    // The panel's looks live in CSS scoped to `.oni-treasure-roulette-overlay`,
+    // and its size comes from --oni-panel-w/h set on that overlay. Transplanting
+    // the node out of the overlay drops every one of those rules and the panel
+    // collapses to an unstyled scrap. Carry the sizing vars across, and the
+    // stage stylesheet below re-declares the visuals for its new home.
+    try {
+      const src = node.closest(".oni-treasure-roulette-overlay");
+      if (src) {
+        const cs = getComputedStyle(src);
+        for (const v of ["--oni-panel-w", "--oni-panel-h"]) {
+          const val = cs.getPropertyValue(v);
+          if (val) stage.style.setProperty(v, val.trim());
+        }
+      }
+    } catch { /* the stage CSS has fallbacks */ }
 
     // Freeze current viewport position so the transplant doesn't jump.
     const r = node.getBoundingClientRect();

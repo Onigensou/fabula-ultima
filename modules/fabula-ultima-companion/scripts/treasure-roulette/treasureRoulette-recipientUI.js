@@ -69,12 +69,12 @@
       /* Candidate column, right of the arrow. */
       #${OVL_ID} .tr-rc-list {
         position: absolute; left: 44vw; top: 50vh; transform: translateY(-50%);
-        display: flex; flex-direction: column; gap: 14px;
+        display: flex; flex-direction: column; gap: 30px;
         width: 430px; max-height: 84vh; overflow: visible;
       }
 
       #${OVL_ID} .tr-rc-card {
-        position: relative; height: 76px; padding: 0 20px 0 96px;
+        position: relative; height: 84px; padding: 0 20px 0 104px;
         display: flex; align-items: center;
         border-radius: 10px; cursor: pointer;
         background: linear-gradient(178deg, #f3e5c4 0%, #e7d7b7 55%, #dcc9a4 100%);
@@ -90,11 +90,14 @@
         transform: translateX(6px);
       }
 
-      /* Portrait breaks out above the bar, as in the mockup. */
+      /* Portrait breaks out above the bar, as in the mockup. It stands ON the
+         bar (bottom-aligned) and rises above it, so the row gap has to clear
+         the overhang — otherwise it lands on top of the card above. z-index
+         keeps it over its own card while the next card still draws above it. */
       #${OVL_ID} .tr-rc-portrait {
-        position: absolute; left: -6px; bottom: -4px;
-        width: 104px; height: 116px; object-fit: contain;
-        pointer-events: none;
+        position: absolute; left: -4px; bottom: 0;
+        width: 88px; height: 96px; object-fit: contain; object-position: bottom;
+        pointer-events: none; z-index: 2;
         filter: drop-shadow(0 6px 10px rgba(0,0,0,.55));
       }
       #${OVL_ID} .tr-rc-name {
@@ -142,7 +145,9 @@
     const K = kit();
     return `
       <div class="tr-rc-card${selected ? " tr-rc-selected" : ""}" data-id="${esc(id)}">
-        ${K.imgHTML(portrait, { size: 0, alt: name, cls: "tr-rc-portrait", extra: "width:104px;height:116px;" })}
+        ${/* size/position come from .tr-rc-portrait — passing them inline here
+              would win over the stylesheet and silently pin the old values. */""}
+        ${K.imgHTML(portrait, { size: 0, alt: name, cls: "tr-rc-portrait", extra: "" })}
         <div class="tr-rc-name">${esc(name)}</div>
         ${sub ? `<div class="tr-rc-sub">${esc(sub)}</div>` : ""}
       </div>`;
