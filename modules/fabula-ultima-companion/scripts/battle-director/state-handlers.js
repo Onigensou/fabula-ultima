@@ -352,6 +352,10 @@ async function resolveAction(director, ar, opts = {}) {
   const CARD_DRIVEN_KINDS = new Set(["Attack", "Skill"]);
   if (!skill && !CARD_DRIVEN_KINDS.has(ar.kind)) { warn("resolveAction: backing item not found", ar.skillUuid); return; }
 
+  // What step 1 actually took out of the pool. The settlement pass after the
+  // on_activate chain (§3b) reconciles against this, so an `adjust_cost` row
+  // authored inside the chain bills exactly like one authored on a reaction.
+  let _debitedCost = null;
   // 1. Debit cost (unless an outer flow paid out-of-band).
   if (!skipCost) {
     // Effective cost = base (costSerialized) folded with adjust_cost overrides
@@ -366,6 +370,8 @@ async function resolveAction(director, ar, opts = {}) {
     if (ar.itemSelection?.mode === "create" && costMap.has("ip") && (Number(ar.costSerialized?.ip) || 0) > 0) {
       costMap.set("ip", Math.max(1, Number(costMap.get("ip")) || 0));
     }
+    // Snapshot AFTER the IP floor — this is the real figure §3b reconciles to.
+    _debitedCost = Object.fromEntries(costMap);
     if (costMap.size > 0) {
       try {
         const debitRes = await debitCost(casterActor, costMap);
@@ -519,7 +525,12 @@ async function resolveAction(director, ar, opts = {}) {
     // Cost discount from an accepted adjust_cost reaction (Hypercognition). A
     // MUTABLE copy — in-chain consume_resource rows subtract + decrement it so a
     // spell's total cost drops once regardless of how many consume rows it has.
-    costOverride: ar?.costOverride ? { ...ar.costOverride } : null,
+    // `_parts` is copied too, not shared: the chain appends to it (adjust_cost)
+    // and decrements the running totals (consume_resource spending a discount),
+    // and neither may leak back onto the actionResult the card renders from.
+    costOverride: ar?.costOverride
+      ? { ...ar.costOverride, _parts: [...(ar.costOverride._parts ?? [])] }
+      : null,
     // Route any interactive prompt this chain still opens (open_action_menu /
     // prompt_element / prompt_number / remove_tagged_ae / transfer_ae / targeting)
     // to the CASTING actor's owner, with the GM racing a local copy. COMPUTE
@@ -578,13 +589,66 @@ async function resolveAction(director, ar, opts = {}) {
   //    below — so suppress the chain's own deal_damage here to avoid double-applying.
   //    Status/heal/MP-drain rows in the same chain still run normally.
   ctx.suppressDealDamage = !!ar._damageViaProfile;
+  // Where the override's provenance log stood before the chain ran. Anything
+  // appended past this mark is an adjust_cost row the CHAIN contributed, and is
+  // what §3b settles. (Length, not a deep diff: consume_resource mutates the
+  // running totals as it spends a discount, so the totals are not a safe
+  // before/after comparison — the appended parts are.)
+  const _costPartsMark = (ctx.costOverride?._parts ?? []).length;
+  let _chainAborted = false;
   try {
     const r = await SE().fireActivationEffect(skill, ctx);
     if (r?.abort) {
       log(`Skill resolve: on_activate aborted chain — skipping damage + post_damage`);
-      return;
+      _chainAborted = true;
     }
   } catch (e) { warn("Skill resolve: fireActivationEffect threw", e); }
+
+  // 3b. Cost settlement — the seam that lets `adjust_cost` mean the same thing
+  //     in a resolve-time chain as it does on a reaction.
+  //
+  //     The debit happens at §1, before the chain has run, so a chain-authored
+  //     adjust_cost is necessarily late. Rather than forbid it there (which is
+  //     what the engine used to do, silently), reconcile: bill the difference
+  //     between what the chain added and what §1 already took. A surcharge
+  //     debits the remainder; a discount refunds it.
+  //
+  //     Skipped entirely for a free cast (`skipCost`) — nothing was debited, so
+  //     there is nothing to reconcile, and a surcharge on a free action must not
+  //     suddenly start charging for it. Cataclysm on a Bimagus free cast still
+  //     raises LAST_SPELL_MP (that reads the override, not the pool), which is
+  //     how the overcharge spends the BUDGET instead of the caster's MP.
+  if (!skipCost && !_chainAborted && casterActor) {
+    try {
+      const { sumCostParts, settleCostDelta } = await import("./skill-cost.js");
+      const added = sumCostParts(ctx.costOverride, _costPartsMark);
+      // Merge the chain's deltas into the CONFIRM-time override and re-run the
+      // one canonical calc, rather than doing arithmetic here. That is not
+      // tidiness — computeEffectiveCost accumulates every delta raw and clamps
+      // ONCE at the end, and a per-step clamp reintroduces order-dependence.
+      // Concretely: Fugitive's waive (−MAX) plus a +30 in-chain surcharge must
+      // total 0, not 30. Clamping the pre-chain figure first would have charged
+      // the 30.
+      const merged = { ...(ar.costOverride ?? {}) };
+      for (const [res, amt] of Object.entries(added)) {
+        merged[res] = (Number(merged[res]) || 0) + (Number(amt) || 0);
+      }
+      const finalCost = computeEffectiveCost(ar.costSerialized, merged);
+      const delta = {};
+      for (const res of new Set([...Object.keys(finalCost), ...Object.keys(_debitedCost ?? {})])) {
+        const owed = (Number(finalCost[res]) || 0) - (Number(_debitedCost?.[res]) || 0);
+        if (owed !== 0) delta[res] = owed;
+      }
+      if (Object.keys(delta).length) {
+        const res = await settleCostDelta(casterActor, delta);
+        for (const [resource, amount] of Object.entries(res?.settled ?? {})) {
+          if (Number(amount) > 0) playResourceSpendVfx({ tokenUuid: ar.attacker?.tokenUuid, resource, amount: Number(amount) });
+        }
+        log(`Skill resolve: in-chain adjust_cost settled ${JSON.stringify(res?.settled ?? {})}`);
+      }
+    } catch (e) { warn("Skill resolve: cost settlement threw", e); }
+  }
+  if (_chainAborted) return;
 
   // 4. Apply damage per target (mirrors Attack RESOLVE) + fire
   //    post_damage_effect_ref with per-target payload so HP_DEALT etc.

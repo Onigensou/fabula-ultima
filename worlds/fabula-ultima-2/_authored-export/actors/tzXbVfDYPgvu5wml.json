@@ -3206,15 +3206,15 @@
               "prompt_var": "bimagus"
             },
             "2": {
-              "consume_amount": "VAR_BIMAGUS - 20",
-              "consume_resource": "mp",
-              "cost_amount": "",
-              "cost_operation": "",
-              "cost_resource": "",
-              "effect_kind": "consume_resource",
+              "consume_amount": "",
+              "consume_resource": "",
+              "cost_amount": "VAR_BIMAGUS - 20",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
               "effect_label": "bim_cost",
-              "on_empty": "abort",
-              "target_ref": "self"
+              "on_empty": "",
+              "target_ref": ""
             },
             "3": {
               "ae_initial_charges": "20 + VAR_BIMAGUS",

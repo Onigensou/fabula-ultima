@@ -247,6 +247,88 @@ export function computeEffectiveCost(base, override) {
   return out;
 }
 
+// ── The ONE place a cost delta enters an override map ─────────────────────
+// `adjust_cost` can be authored in two places and both mean the same thing:
+//   - a reaction chain, composed at CONFIRM  (card-mutations.applyAdjustCostMutation)
+//   - a resolve-time chain (on_activate / post_damage / any effect chain)
+//     (skill-effects.applyAdjustCostEffect)
+// They MUST agree, so neither owns the arithmetic — this does. An effect_kind
+// that behaves differently depending on where it was authored is invisible to
+// the author (the engine fails open, so the wrong-context row just returns ok
+// and does nothing); the fix is one composer, not two call sites kept in sync.
+//
+// `override` shape is the same map computeEffectiveCost consumes:
+//   { <res>: <additiveSum>, _mult?: {...}, _parts: [{source,label,resource,amount}] }
+// `_parts` is the provenance log AND the dedup key: a row reachable from BOTH a
+// reaction ref and an on_activate ref must bill once, not twice.
+//
+// Returns the mutated override (created when null was passed), or the original
+// untouched when the delta is 0 or already recorded.
+export function composeCostDelta(override, { resource, delta, source = "reaction", label = null } = {}) {
+  const res = String(resource ?? "mp").trim().toLowerCase();
+  const d = Number(delta) || 0;
+  if (!RESOURCES[res] || d === 0) return override;
+  const ov = override ?? { _parts: [] };
+  if (!Array.isArray(ov._parts)) ov._parts = [];
+  // Dedup by (source, label) — only when the row IS labelled. An unlabelled
+  // delta (a card mutation with no effect_label) can legitimately repeat.
+  if (label != null && ov._parts.some((p) => p?.label === label && p?.source === source)) {
+    log(`composeCostDelta: "${label}" (${source}) already billed — skipping duplicate`);
+    return ov;
+  }
+  ov[res] = (Number(ov[res]) || 0) + d;
+  ov._parts.push({ source, label, resource: res, amount: d });
+  log(`composeCostDelta: ${res} ${d >= 0 ? "+" : ""}${d} (via ${source}${label ? `/${label}` : ""}) — running ${ov[res]}`);
+  return ov;
+}
+
+// Sum the `_parts` a resolve-time chain ADDED, per resource. The settlement in
+// resolveAction can't just recompute from the running totals: an in-chain
+// `consume_resource` DECREMENTS the override as it spends a discount, so the
+// totals move for reasons that have nothing to do with the native cost. Summing
+// the parts we appended is immune to that.
+export function sumCostParts(override, sinceIndex = 0) {
+  const out = {};
+  const parts = Array.isArray(override?._parts) ? override._parts : [];
+  for (let i = Math.max(0, sinceIndex); i < parts.length; i += 1) {
+    const p = parts[i];
+    if (!p?.resource) continue;
+    out[p.resource] = (Number(out[p.resource]) || 0) + (Number(p.amount) || 0);
+  }
+  return out;
+}
+
+// Settle a cost difference against an actor — debit when positive, REFUND when
+// negative (a discount that arrived after the debit). Mirrors debitCost's single
+// atomic update. Refunds are clamped to the resource max so a waive can't push a
+// pool above its ceiling. Returns `{ ok, settled: { res: signedAmount } }`.
+export async function settleCostDelta(actor, deltaMap) {
+  if (!actor || !deltaMap) return { ok: true, settled: {} };
+  const update = {};
+  const settled = {};
+  for (const [resource, amount] of Object.entries(deltaMap)) {
+    const def = RESOURCES[resource];
+    const amt = Number(amount) || 0;
+    if (!def || amt === 0) continue;
+    const cur = readCurrent(actor, resource) ?? 0;
+    let next = cur - amt;                                  // positive amt = extra spend
+    next = Math.max(0, next);
+    const maxProp = def.max ? Number(actor?.system?.props?.[def.max]) : NaN;
+    if (amt < 0 && Number.isFinite(maxProp)) next = Math.min(next, maxProp);
+    if (next === cur) continue;
+    update[`system.props.${def.prop}`] = next;
+    settled[resource] = cur - next;
+  }
+  if (!Object.keys(update).length) return { ok: true, settled: {} };
+  try {
+    await actor.update(update);
+    return { ok: true, settled };
+  } catch (e) {
+    warn("skill-cost.settleCostDelta: actor.update threw", e);
+    return { ok: false, settled: {}, error: e };
+  }
+}
+
 // Debit — write the cost map to actor.system.props.*. Floors at 0;
 // caller is expected to gate first via checkAffordable. Returns
 // `{ ok, debited: { resource: amount } }`.

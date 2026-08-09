@@ -1295,10 +1295,13 @@ async function applyAdjustCostMutation(ctx, cand, row) {
   else if (op !== "add") warn(`adjust_cost: unsupported cost_operation "${op}" — treating as add`);
   if (delta === 0) return "skipped";
   const via = cand?.carrierName ?? cand?.reactorActorName ?? "reaction";
-  const ov = ctx.costOverride ?? (ctx.costOverride = { _parts: [] });
-  ov[resource] = (Number(ov[resource]) || 0) + delta;
-  ov._parts.push({ source: via, resource, amount: delta });
-  log(`adjust_cost: ${resource} ${op} ${delta} (via ${via}) — running ${ov[resource]}`);
+  // Arithmetic lives in skill-cost.composeCostDelta — the SAME composer the
+  // resolve-time chain handler uses, so `adjust_cost` cannot mean two different
+  // things depending on where it was authored.
+  const { composeCostDelta } = await import("./skill-cost.js");
+  ctx.costOverride = composeCostDelta(ctx.costOverride, {
+    resource, delta, source: via, label: String(row.effect_label ?? "").trim() || null,
+  });
   return "applied";
 }
 

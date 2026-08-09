@@ -3048,6 +3048,52 @@ export async function applyEffectByLabel(effectLabel, ctx) {
 // (+ optional `charge_max`), then write the result back — consolidating into one
 // AE (deletes the rest). No-op if the target has no such AE (can't multiply a
 // nonexistent stack). Used by Enkindle ("double the target's Burn": Burn ×2).
+// ── adjust_cost (resolve-time chain path) ─────────────────────────────────
+//
+// The chain-step twin of card-mutations.applyAdjustCostMutation. Same fields,
+// same signed-delta semantics, same composer — the only difference is WHEN it
+// runs, and resolveAction's settlement pass absorbs that difference so the
+// author never has to care.
+//
+// Because it runs inside the chain, its amount formula can read chain-local
+// vars: `cost_amount: "VAR_BIMAGUS - 20"` resolves against the value a
+// `prompt_number` step captured earlier in the same chain. That is the whole
+// reason to author one here rather than on a reaction.
+//
+// Fields: cost_resource (default mp), cost_operation (add|subtract),
+//         cost_amount (formula), condition_formula (optional extra gate).
+async function applyAdjustCostEffect(row, ctx) {
+  const { readAdjustment, buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+  const { op, amountFormula } = readAdjustment(row, "cost");
+  const resource = String(row.cost_resource ?? "mp").trim().toLowerCase();
+  const resolver = buildSkillResolver({
+    actor: ctx.reactorActor ?? null,
+    payload: ctx.payload,
+    skill: ctx.skill,
+    round: ctx.dCombat?.round ?? 0,
+  });
+  const cond = String(row.condition_formula ?? "").trim();
+  if (cond) {
+    let pass = 0;
+    try { pass = Number(evaluateFormula(cond, resolver, 0)) || 0; } catch { pass = 0; }
+    if (!pass) return { ok: true, kind: "adjust_cost", applied: [], skipped: true, reason: "condition-false" };
+  }
+  let delta = 0;
+  try { delta = Number(evaluateFormula(amountFormula, resolver, 0)) || 0; } catch { delta = 0; }
+  if (op === "subtract") delta = -Math.abs(delta);
+  else if (op !== "add") warn(`skill-effects.adjust_cost: unsupported cost_operation "${op}" on "${row.effect_label}" — treating as add`);
+  if (delta === 0) return { ok: true, kind: "adjust_cost", applied: [], reason: "zero-delta" };
+
+  const { composeCostDelta } = await import("./skill-cost.js");
+  const source = ctx.skill?.name ?? "chain";
+  const label = String(row.effect_label ?? "").trim() || null;
+  // Seed the map when the action had no override at all, and thread it back onto
+  // ctx so both the settlement pass AND in-chain consume_resource discounting see
+  // the same object.
+  ctx.costOverride = composeCostDelta(ctx.costOverride ?? null, { resource, delta, source, label });
+  return { ok: true, kind: "adjust_cost", applied: [{ resource, delta }], reason: "composed-into-cost-override" };
+}
+
 async function applyAdjustChargesEffect(row, ctx) {
   const aeName = String(row.charge_ae_name ?? "").trim();
   if (!aeName) {
@@ -3905,12 +3951,18 @@ const EFFECT_KIND_DISPATCH = {
   // (card-mutations.applyAdjustDefenseMutation). Registered so the row validates
   // + shows in the dropdown.
   adjust_defense:      (row) => ({ ok: true, kind: "adjust_defense", applied: [], reason: "applied-at-card-mutation-phase" }),
-  // adjust_cost: standing MP/IP cost modifier (the cost member of the adjust_*
-  // family). NO-OP in the effect pipeline — it is pure standing config read at
-  // cost-resolution time by skill-cost.applyCostAdjustments (affordability +
-  // debit), not run as a chain step. Registered so the row validates + appears
-  // in the effect_kind dropdown. First user: Hypercognition's focus discount.
-  adjust_cost:         (row) => ({ ok: true, kind: "adjust_cost", applied: [], reason: "applied-at-cost-resolution" }),
+  // adjust_cost: signed modifier on the ACTION's resource cost (the cost member
+  // of the adjust_* family). Works in EITHER channel and means the same thing in
+  // both: composed at CONFIRM when it sits in a reaction chain
+  // (card-mutations.applyAdjustCostMutation), composed HERE when it sits in a
+  // resolve-time chain (on_activate / post_damage / …), with resolveAction
+  // settling the difference against what it already debited.
+  //   Until 2026-08-09 this was a registry no-op returning ok:true — so a row
+  //   authored in an on_activate chain silently charged nothing, with no error
+  //   and no lint. Bimagus lost its entire variable cost that way (pick 50, pay
+  //   20). An effect_kind that works in one place and not another is invisible
+  //   to the author; there is one composer now, in skill-cost.
+  adjust_cost:         applyAdjustCostEffect,
   // check_die_swap: standing config read PRE-ROLL by check.rollCheck (Psychokinesis
   // — replace one accuracy-check Attribute die with a larger one, e.g. WLP). NO-OP
   // in the effect pipeline; the row's own swap_mode (on/ask/off) controls auto-swap.
