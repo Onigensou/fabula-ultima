@@ -3,14 +3,18 @@
 Build `modules/fabula-ultima-companion/reference/skills.json` from
 Fabula Ultima book PDFs.
 
-The PDFs themselves are **not** in the repo (copyrighted ~150 MB).
-The parser expects them on disk at `C:/Users/Nougat/Desktop/` —
-adjust the `SRC` constant in each parser if your local path differs.
+The PDFs live at **`reference/fabula-pdfs/`** (in the repo tree but
+**gitignored** — they are the publisher's copyrighted books, ~97 MB).
+Moved there from `C:/Users/Nougat/Desktop/` on 2026-08-10; see that
+directory's `INDEX.md` for which book defines which class.
+
+The parsers themselves read the **extracted text**, not the PDFs, so they
+were unaffected by the move — only step 1 below changed.
 
 ## Pipeline
 
 ```
-PDFs (off-repo)
+PDFs (reference/fabula-pdfs/, gitignored)
   └→ pdftotext -layout   (Poppler — bundled with Git for Windows)
        └→ e:/tmp/fu-pdf-text/*.txt
             └→ parse-<book>.js
@@ -22,8 +26,8 @@ PDFs (off-repo)
 ```bash
 # 1. Extract all PDFs to text once.
 mkdir -p e:/tmp/fu-pdf-text/
-cd "C:/Users/Nougat/Desktop/"
-for pdf in Fabula*.pdf The_Low*.pdf; do
+cd reference/fabula-pdfs/
+for pdf in Fabula*.pdf The_Low*.pdf Dark_Fantasy*.pdf; do
   out=$(echo "$pdf" | sed -E 's/[ ()]+/_/g; s/[,]+//g; s/_+$//; s/\.pdf$/.txt/i')
   "/c/Program Files/Git/mingw64/bin/pdftotext.exe" -layout "$pdf" "e:/tmp/fu-pdf-text/$out"
 done
