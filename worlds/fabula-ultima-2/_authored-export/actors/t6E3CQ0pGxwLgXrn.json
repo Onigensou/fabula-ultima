@@ -11213,6 +11213,7 @@
       "option_efficiency": "ON",
       "option_intiative": "Classic",
       "option_keyword": "ON",
+      "option_lootAutoRoute": "OFF",
       "option_overworld": "Classic",
       "option_partySwap": "ON",
       "option_support": "ON",
