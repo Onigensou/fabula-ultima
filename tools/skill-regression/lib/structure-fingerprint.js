@@ -36,7 +36,21 @@ const KEPT_PROPS = [
   "type_damage", "damage_bonus", "check_bonus", "defense_target_type",
   "rolled_atr1", "rolled_atr2", "container", "item_type", "isEquipped",
   "action_keywords", "ignore_hr",
+  // Whether the skill can be picked AT ALL (skill-picker.js ~L374): falsy
+  // dims it with `availability_reason`. Adding Bimagus's missing
+  // `HAS_ARCANE_WEAPON == 1` gate to 6 docs moved nothing here, which is the
+  // failure mode — a skill silently LOSING its gate would read as unchanged.
+  "availability_formula", "availability_reason",
 ];
+
+// ⚠ KEPT_PROPS is an ALLOWLIST, so every prop nobody thought to list is a blind
+// spot — the two above were found only because a live edit produced no drift.
+// The header comment above describes a DENYLIST ("deliberately excluded: churn"),
+// which is the shape that cannot under-cover; `skill-claims render` already
+// works that way ("add a field to the data model and it appears with no code
+// change"). Worth flipping, but that is a re-baseline of every doc carrying a
+// previously-unwatched prop, so it is left as a deliberate follow-up rather
+// than smuggled in alongside a two-field fix.
 
 /** Row fields that are noise rather than behaviour. */
 const ROW_NOISE = new Set(["menu_description", "menu_label", "menu_title", "menu_subtitle",

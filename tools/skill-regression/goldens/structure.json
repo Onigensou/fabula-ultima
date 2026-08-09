@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-08-09T18:20:04.826Z",
+ "capturedAt": "2026-08-09T21:26:40.620Z",
  "count": 1184,
  "structure": {
   "(world) / Absorb MP": {
@@ -1858,7 +1858,9 @@
     "pre_activate_effect_ref": "bim_prompt",
     "damage_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "availability_formula": "HAS_ARCANE_WEAPON == 1",
+    "availability_reason": "Requires an arcane weapon"
    },
    "effects": [
     "chain_steps=bim_prompt, bim_cost, bim_ae, bim_cast1 effect_kind=chain effect_label=bim_root",
@@ -2385,7 +2387,9 @@
    "props": {
     "skill_type": "Active",
     "skill_target": "Up to 99 Enemies",
-    "on_activate_effect_ref": "bd_root"
+    "on_activate_effect_ref": "bd_root",
+    "availability_formula": "AE_CHARGES_BRAINWAVE_CLOCK >= 4",
+    "availability_reason": "Brainwave Clock must be full"
    },
    "effects": [
     "chain_steps=bd_erase,bd_dmg effect_kind=chain effect_label=bd_root",
@@ -22202,7 +22206,9 @@
     "pre_activate_effect_ref": "bim_prompt",
     "damage_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "availability_formula": "HAS_ARCANE_WEAPON == 1",
+    "availability_reason": "Requires an arcane weapon"
    },
    "effects": [
     "chain_steps=bim_prompt, bim_cost, bim_ae, bim_cast1 effect_kind=chain effect_label=bim_root",
@@ -22657,7 +22663,9 @@
     "pre_activate_effect_ref": "bim_prompt",
     "damage_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "availability_formula": "HAS_ARCANE_WEAPON == 1",
+    "availability_reason": "Requires an arcane weapon"
    },
    "effects": [
     "chain_steps=bim_prompt, bim_cost, bim_ae, bim_cast1 effect_kind=chain effect_label=bim_root",
@@ -25194,7 +25202,9 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "availability_formula": "HAS_ARCANE_WEAPON == 1",
+    "availability_reason": "Requires an arcane weapon"
    },
    "effects": [
     "chain_steps=bim_prompt, bim_cost, bim_ae, bim_cast1 effect_kind=chain effect_label=bim_root",
@@ -26504,7 +26514,9 @@
     "check_bonus": "0",
     "defense_target_type": "def",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "availability_formula": "HAS_ARCANE_WEAPON == 1",
+    "availability_reason": "Requires an arcane weapon"
    },
    "effects": [
     "chain_steps=bim_prompt, bim_cost, bim_ae, bim_cast1 effect_kind=chain effect_label=bim_root",
@@ -32745,7 +32757,9 @@
     "pre_activate_effect_ref": "bim_prompt",
     "damage_bonus": "0",
     "rolled_atr1": "-",
-    "rolled_atr2": "-"
+    "rolled_atr2": "-",
+    "availability_formula": "HAS_ARCANE_WEAPON == 1",
+    "availability_reason": "Requires an arcane weapon"
    },
    "effects": [
     "chain_steps=bim_prompt, bim_cost, bim_ae, bim_cast1 effect_kind=chain effect_label=bim_root",
