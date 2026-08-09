@@ -217,6 +217,27 @@
          fud-kw-term styling so they match the action card exactly. */
       .tr-desc-kw { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:6px; }
       .tr-desc-body { font-size:12px; line-height:1.5; color:#3b2314; }
+
+      /* Keyword/status chips carry their own icon sized for the battle card's
+         larger type. Dropped into 12px prose they tower over the text, so tie
+         the icon to the current font size instead of letting it keep its
+         native dimensions. */
+      .tr-desc-body .fud-kw-term img,
+      .tr-desc-kw .fud-kw-term img,
+      .tr-desc-body .fud-kw-term i,
+      .tr-desc-kw .fud-kw-term i {
+        width: 1.15em !important;
+        height: 1.15em !important;
+        object-fit: contain;
+        vertical-align: -0.18em;
+        ${IMG_RESET}
+      }
+      .tr-desc-body .fud-kw-term,
+      .tr-desc-kw .fud-kw-term {
+        font-size: inherit;
+        line-height: 1.4;
+        vertical-align: baseline;
+      }
       .tr-desc-body p { margin:0 0 6px; }
       .tr-desc-body ul { margin:0 0 6px; padding-left:18px; }
       .tr-desc-body img { ${IMG_RESET} }

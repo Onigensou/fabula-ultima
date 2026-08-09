@@ -59,11 +59,15 @@
         color: #fff6e2; text-shadow: 0 3px 0 rgba(0,0,0,.5), 0 0 22px rgba(255,200,110,.35);
       }
 
-      /* Arrow sits between the parked reward and the list. */
+      /* Arrow sits between the parked reward and the list. Solid pointing
+         triangle, not a long-tailed arrow — the tail disappeared against the
+         battlefield. Stroked and glowed so it reads on any scene. */
       #${OVL_ID} .tr-rc-arrow {
         position: absolute; left: 36vw; top: 50vh; transform: translate(-50%,-50%);
-        font-size: 54px; color: #8d2f24; line-height: 1;
-        text-shadow: 0 2px 0 rgba(0,0,0,.4);
+        font-size: 54px; line-height: 1; color: #c9482f;
+        -webkit-text-stroke: 2px #2a0f0a;
+        paint-order: stroke fill;
+        text-shadow: 0 0 14px rgba(255,140,90,.75), 0 0 30px rgba(255,90,50,.45);
       }
 
       /* Candidate column, right of the arrow. */
@@ -194,7 +198,7 @@
     if (!interactive) overlay.classList.add("tr-rc-spectator");
     overlay.innerHTML = `
       <div class="tr-rc-title">Give to</div>
-      <div class="tr-rc-arrow">&#10230;</div>
+      <div class="tr-rc-arrow">&#9654;</div>
       <div class="tr-rc-list">
         ${cards.map((c) => cardHTML({ ...c, selected: c.id === defaultId })).join("")}
       </div>

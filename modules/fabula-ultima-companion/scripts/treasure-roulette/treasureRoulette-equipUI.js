@@ -96,6 +96,11 @@
         font-size: 17px; font-weight: 700;
       }
       #${OVL_ID} .tr-eq-row .tr-eq-val { font-size: 20px; font-weight: 800; }
+      #${OVL_ID} .tr-eq-label { display: inline-flex; align-items: center; gap: 8px; }
+      #${OVL_ID} .tr-eq-label i {
+        width: 18px; text-align: center; font-size: 15px;
+        color: rgba(59,35,20,.55);
+      }
       #${OVL_ID} .tr-eq-delta { font-size: 14px; margin-left: 6px; font-weight: 800; }
 
       #${OVL_ID} .tr-eq-desc {
@@ -119,9 +124,13 @@
         width: 150px; height: 190px; object-fit: contain;
         filter: drop-shadow(0 10px 16px rgba(0,0,0,.6));
       }
+      /* Solid pointing triangle, not a long-tailed arrow — the tail vanished
+         against the battlefield. Stroked and glowed so it reads on any scene. */
       #${OVL_ID} .tr-eq-arrow {
-        font-size: 40px; color: #8d2f24; line-height: 1;
-        text-shadow: 0 2px 0 rgba(0,0,0,.35);
+        font-size: 40px; line-height: 1; color: #c9482f;
+        -webkit-text-stroke: 2px #2a0f0a;
+        paint-order: stroke fill;
+        text-shadow: 0 0 12px rgba(255,140,90,.75), 0 0 26px rgba(255,90,50,.45);
       }
       #${OVL_ID} .tr-eq-choices {
         display: flex; flex-direction: column; gap: 8px; width: 130px;
@@ -139,10 +148,11 @@
       #${OVL_ID} .tr-eq-btn:active { transform: translateY(1px); }
       #${OVL_ID} .tr-eq-btn.tr-eq-default { box-shadow: inset 0 0 0 2px rgba(120,85,40,.5); }
 
-      /* ── Slot tabs ── */
+      /* ── Slot tabs — above the wearer, inside the middle column ── */
       #${OVL_ID} .tr-eq-slots {
-        position: absolute; left: 0; right: 0; bottom: 6vh;
-        display: flex; gap: 10px; justify-content: center;
+        position: relative;
+        display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+        margin-bottom: 4px;
       }
       #${OVL_ID} .tr-eq-slot {
         padding: 7px 16px; border-radius: 999px; cursor: pointer;
@@ -180,19 +190,46 @@
   // ── Row model ─────────────────────────────────────────────────────────────
   // Only the rows that mean something for the category, so a shield isn't padded
   // with blank weapon rows.
+  // Label icons. Chosen to agree with the battle-director action card where it
+  // has an opinion — fa-shield-halved is exactly what the card uses for defence
+  // — and kept neutral elsewhere. Attribute VALUES stay as art icons.
+  const LABEL_ICON = Object.freeze({
+    Attribute: "fa-dice-d20",
+    Accuracy:  "fa-crosshairs",
+    Damage:    "fa-burst",
+    Type:      "fa-fire-flame-curved",
+    DEF:       "fa-shield-halved",
+    MDEF:      "fa-wand-magic-sparkles",
+    Rarity:    "fa-gem",
+  });
+
+  // Candidates expose defence as one string ("DEF +1 • MDEF +0"); the mockup
+  // wants a row each, so pull the two numbers back out.
+  function defParts(cand) {
+    const s = String(cand?.defenseLine ?? "");
+    const def  = s.match(/DEF\s*([+-]?\d+)/i);
+    const mdef = s.match(/MDEF\s*([+-]?\d+)/i);
+    return {
+      def:  def  ? Number(def[1])  : null,
+      // "MDEF" also matches the DEF pattern, so a missing MDEF must not inherit it.
+      mdef: mdef ? Number(mdef[1]) : null,
+    };
+  }
+
   function rowsFor(cand) {
     const cat = String(cand?.category ?? "weapon").toLowerCase();
     if (cat === "shield" || cat === "armor") {
       return [
-        { label: "Defense", get: (c) => c?.defenseLine },
+        { label: "DEF",  icon: LABEL_ICON.DEF,  get: (c) => defParts(c).def,  kind: "num" },
+        { label: "MDEF", icon: LABEL_ICON.MDEF, get: (c) => defParts(c).mdef, kind: "num" },
       ];
     }
     if (cat === "accessory") return [];
     return [
-      { label: "Attribute", get: (c) => c?.attackStat, kind: "attr" },
-      { label: "Accuracy",  get: (c) => c?.checkBonus,  kind: "num" },
-      { label: "Damage",    get: (c) => c?.damageBonus, kind: "num" },
-      { label: "Type",      get: (c) => c?.element,     kind: "element" },
+      { label: "Attribute", icon: LABEL_ICON.Attribute, get: (c) => c?.attackStat,  kind: "attr" },
+      { label: "Accuracy",  icon: LABEL_ICON.Accuracy,  get: (c) => c?.checkBonus,  kind: "num" },
+      { label: "Damage",    icon: LABEL_ICON.Damage,    get: (c) => c?.damageBonus, kind: "num" },
+      { label: "Type",      icon: LABEL_ICON.Type,      get: (c) => c?.element,     kind: "element" },
     ];
   }
 
@@ -221,11 +258,13 @@
     const icon = isEmpty ? "" : K.imgHTML(cand.img, { size: 34, alt: nameText });
 
     const rows = rowsFor(cand ?? compareTo ?? {});
-    const rowsHTML = rows.map(({ label, get, kind }) => {
+    const rowsHTML = rows.map(({ label, icon, get, kind }) => {
       const raw = cand ? get(cand) : null;
+      const labelHTML =
+        `<span class="tr-eq-label"><i class="fa-solid ${esc(icon ?? "fa-circle")}"></i>${esc(label)}</span>`;
 
       if (raw === null || raw === undefined || raw === "") {
-        return `<div class="tr-eq-row"><span>${esc(label)}</span>
+        return `<div class="tr-eq-row">${labelHTML}
           <span class="tr-eq-val" style="opacity:.35">—</span></div>`;
       }
 
@@ -246,7 +285,7 @@
         }
       } else valHTML = esc(raw);
 
-      return `<div class="tr-eq-row"><span>${esc(label)}</span>
+      return `<div class="tr-eq-row">${labelHTML}
         <span class="tr-eq-val">${valHTML}</span></div>`;
     }).join("");
 
@@ -312,9 +351,10 @@
       <div class="tr-eq-stage">
         ${leftCard}
         <div class="tr-eq-mid">
+          ${slotTabsHTML(slots, activeKey)}
           ${/* size comes from .tr-eq-portrait; inline values would override it. */""}
           ${kit().imgHTML(payload?.portrait, { size: 0, alt: payload?.actorName ?? "", cls: "tr-eq-portrait", extra: "" })}
-          <div class="tr-eq-arrow">&#10230;</div>
+          <div class="tr-eq-arrow">&#9654;</div>
           <div class="tr-eq-choices">
             <div class="tr-eq-btn tr-eq-btn-no tr-eq-default">No</div>
             <div class="tr-eq-btn tr-eq-btn-yes">Yes</div>
@@ -322,7 +362,6 @@
         </div>
         ${rightCard}
       </div>
-      ${slotTabsHTML(slots, activeKey)}
       <div class="tr-eq-foot"></div>`;
 
     document.body.appendChild(overlay);
