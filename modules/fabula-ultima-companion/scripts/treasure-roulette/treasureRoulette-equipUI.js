@@ -148,15 +148,19 @@
       #${OVL_ID} .tr-eq-btn:active { transform: translateY(1px); }
       #${OVL_ID} .tr-eq-btn.tr-eq-default { box-shadow: inset 0 0 0 2px rgba(120,85,40,.5); }
 
-      /* ── Slot tabs — above the wearer, inside the middle column ── */
+      /* ── Slot tabs — above the wearer, inside the middle column ──
+         A 2-column grid rather than a wrapping flex row: two tabs sit side by
+         side instead of stacking, and the columns stay even whatever the
+         labels are. */
       #${OVL_ID} .tr-eq-slots {
-        position: relative;
-        display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+        position: relative; width: 100%;
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px;
         margin-bottom: 4px;
       }
       #${OVL_ID} .tr-eq-slot {
-        padding: 7px 16px; border-radius: 999px; cursor: pointer;
-        font-size: 13px; font-weight: 800; letter-spacing: .04em;
+        padding: 7px 6px; border-radius: 999px; cursor: pointer;
+        text-align: center; white-space: nowrap;
+        font-size: 13px; font-weight: 800; letter-spacing: .03em;
         color: rgba(240,220,176,.8);
         border: 1px solid #6b5210; background: rgba(0,0,0,.42);
         transition: all 130ms ease;
