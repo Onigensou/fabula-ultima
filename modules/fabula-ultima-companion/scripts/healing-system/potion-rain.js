@@ -14,7 +14,11 @@
 //      SKILL_HAS_TAG_POTION); we reuse it rather than inventing a bespoke rule.
 // ============================================================================
 
-const POTION_RAIN_NAME = "potion rain";
+import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
+
+// Declared in shared/code-backed-content.js — Potion Rain carries no config rows
+// of its own, so that registry is where "implemented, in here" is discoverable.
+const POTION_RAIN_NAME = CODE_BACKED_NAME.POTION_RAIN.toLowerCase();
 const POTION_TAG = "potion";
 
 // Tokenise a CSB `skill_tags` string the SAME way the reaction engine does

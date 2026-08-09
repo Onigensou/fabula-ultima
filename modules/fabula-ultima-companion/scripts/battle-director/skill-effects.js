@@ -35,6 +35,7 @@ import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { getIntentChannel } from "./intent-channel.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { INTENTS } from "./intents.js";
+import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -1735,7 +1736,10 @@ function capSubjectRef(payload, reactorUuid = null) {
 // A target-scoped row with NO resolvable subject must not silently collapse every
 // creature into one shared bucket (that would cap the row globally after N fires).
 // Sentinel keeps it per-fire-safe: an unresolvable subject never blocks.
-const CAP_NO_SUBJECT = " nosubject";
+// NOTE: the escape MUST stay written as \u0000 — a RAW NUL byte here makes
+// ripgrep classify this whole file as binary and SKIP it in every content
+// search, silently. Guarded by tools/safe-edit/hooks/pre-commit.
+const CAP_NO_SUBJECT = "\u0000nosubject";
 function reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef) {
   const bucket = scope === "battle" ? "all"
     : scope === "target" ? `t:${subjectRef}`
@@ -7850,7 +7854,11 @@ function buildArcanumMenuOptions(row, ctx) {
 // removes this summon's dismiss) are recorded via `quickSummonNoDismiss` on the
 // merge AE for a later enforcement pass; the player-facing "choose up to two"
 // menu is a follow-up that belongs with the live summon UI.
-const QUICK_SUMMONING_NAME = "quick summoning";
+//
+// The name is DECLARED in shared/code-backed-content.js — this skill carries no
+// config rows of its own, so that registry is the only place the fact "Quick
+// Summoning is implemented, in here" is discoverable. Keep them in lock-step.
+const QUICK_SUMMONING_NAME = CODE_BACKED_NAME.QUICK_SUMMONING.toLowerCase();
 function findQuickSummoning(actor) {
   for (const it of (actor?.items ?? [])) {
     if (!String(it?.system?.props?.skill_type ?? "")) continue;

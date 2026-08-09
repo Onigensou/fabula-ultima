@@ -16,6 +16,14 @@
 
 WORLD=fabula-ultima-2
 
+# ── raw-NUL guard (runs on EVERY commit, world data or not) ──────────────────
+# A single NUL byte makes ripgrep skip the whole file in content searches with no
+# error, so the file silently vanishes from grep. See check-no-nul.js for the
+# 2026-08-09 case that motivated it (the core engine file was invisible).
+if ! node tools/safe-edit/hooks/check-no-nul.js; then
+  exit 1
+fi
+
 # Only act when this commit actually touches the world's LevelDB data.
 if ! git diff --cached --name-only | grep -q "^worlds/${WORLD}/data/"; then
   exit 0

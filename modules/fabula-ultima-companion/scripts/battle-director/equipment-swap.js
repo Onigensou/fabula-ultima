@@ -25,6 +25,7 @@
 
 import { log, warn } from "./logger.js";
 import { reconcileSetBonuses, withManagedEquip } from "./set-bonus.js";
+import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
 
 const UNARM_STRIKE_ITEM_ID = "bwqZvS4NXw7bCrmV";
 const FLAG_NS = "fabula-ultima-companion";
@@ -40,7 +41,10 @@ const ITEM_TYPE_ARMOR     = "armor";
 // UI (filter main-slot candidates) and the apply-side (reject stale
 // submissions). Defaults to "no" → main-hand-shield blocked unless the
 // actor owns the named skill.
-const DSB_SKILL_NAME = "Dual Shieldbearer";
+// Declared in shared/code-backed-content.js (match: "exact" — this comparison is
+// case-SENSITIVE, unlike most name lookups). That registry is the only place the
+// fact "Dual Shieldbearer is implemented, in here" is discoverable.
+const DSB_SKILL_NAME = CODE_BACKED_NAME.DUAL_SHIELDBEARER;
 function actorOwnsDualShieldbearer(actor) {
   const items = actor?.items?.contents ?? (Array.isArray(actor?.items) ? actor.items : []);
   for (const item of items) {

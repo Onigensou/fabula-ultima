@@ -113,6 +113,20 @@
     //  refactored, not silenced)
   ];
 
+  // Declared code-backed content (shared/code-backed-content.js) is the OTHER
+  // allowlist, and the one that actually gets used. A hardcoded name is a canon
+  // violation *unless it has been reviewed and declared* — declaring it is what
+  // makes "this skill is implemented, in code, over here" discoverable at all.
+  // Undeclared names still fire, so a new code-backed lookup can't slip in
+  // unnoticed the way Quick Summoning did (found 2026-08-09, years after it
+  // shipped, only because a party audit reported it as UNBUILT).
+  // Read off the global: this lint is a classic script and cannot import.
+  function declaredCodeBacked() {
+    const reg = globalThis["oni.CodeBackedContent"];
+    try { return new Set(reg?.codeBackedNames?.() ?? []); }
+    catch { return new Set(); }
+  }
+
   function isAllowed(file, code, line) {
     for (const entry of ALLOWLIST) {
       if (entry.file !== file) continue;
@@ -137,16 +151,29 @@
   // `<expr>.name === "<Capitalized name with 4+ chars>"` or `!==`.
   // Skips status-like strings.
   const RX_NAME_EQ = /\.name\s*(===|!==)\s*"([A-Z][A-Za-z]{3,}(?:\s+[A-Z][A-Za-z]+)*)"/g;
+  // The LOWERCASED form the original regex missed entirely:
+  //   String(it.name ?? "").trim().toLowerCase() === "quick summoning"
+  // This is how most engine name checks are actually written, so the scanner was
+  // blind to the majority of the pattern it exists to find — the ALLOWLIST sat
+  // empty not because there were no violations but because none were detected.
+  // Anchored on `name` so it can't drag in the many `skill_type`/`item_type`
+  // comparisons written the same way (unanchored, this fired 71 false positives
+  // against 0 real ones — a scanner nobody can trust is a scanner nobody reads).
+  const RX_NAME_EQ_LOWER =
+    /\bname\b[^=\n]{0,60}?toLowerCase\(\)\s*(===|!==)\s*"([a-z][a-z' -]{3,})"/g;
   function scanHardcodedSkillName(src, file) {
     const out = [];
+    const declared = declaredCodeBacked();
     const lines = src.split(/\r?\n/);
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      RX_NAME_EQ.lastIndex = 0;
+      for (const rx of [RX_NAME_EQ, RX_NAME_EQ_LOWER]) {
+      rx.lastIndex = 0;
       let m;
-      while ((m = RX_NAME_EQ.exec(line)) !== null) {
+      while ((m = rx.exec(line)) !== null) {
         const name = m[2];
         if (STATUS_LIKE.has(name)) continue;
+        if (declared.has(name.toLowerCase())) continue;   // reviewed + declared
         // Skip strings that look like prop keys ("Strict-mode" etc.)
         if (/_/.test(name)) continue;
         if (isAllowed(file, "ENGINE_HARDCODED_SKILL_NAME", line)) continue;
@@ -163,6 +190,7 @@
             `appropriate trigger / effect_kind, or via a system flag on the ` +
             `actor / AE that the dispatcher reads.`,
         });
+      }
       }
     }
     return out;

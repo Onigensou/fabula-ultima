@@ -13,12 +13,16 @@
 // breaks free (free action at turn start, or via the Objective action).
 // See [[project_grappled_advanced_debuff]].
 
+import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
+
 const NS = "fabula-ultima-companion";
-const GRAPPLED_NAME = "grappled";
+// Both names are declared in shared/code-backed-content.js — these AEs are
+// recognised BY NAME, so a rename here silently breaks the whole debuff.
+const GRAPPLED_NAME = CODE_BACKED_NAME.GRAPPLED.toLowerCase();
 // The grappler-side reciprocal AE (applied to whoever applies "Grappled" via
 // the supervised reciprocalAe flag in skill-effects.applyApplyAeEffect). It
 // hosts the shared-space splash reaction (rule #1).
-const GRAPPLING_NAME = "grappling";
+const GRAPPLING_NAME = CODE_BACKED_NAME.GRAPPLING.toLowerCase();
 
 const nameMatches = (e) => String(e?.name ?? "").trim().toLowerCase() === GRAPPLED_NAME;
 const grapplingMatches = (e) => String(e?.name ?? "").trim().toLowerCase() === GRAPPLING_NAME;

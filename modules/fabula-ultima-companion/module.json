@@ -353,6 +353,7 @@
     "scripts/battle-director/rewind-button.js"
   ],
   "esmodules": [
+    "scripts/shared/code-backed-content.js",
     "scripts/shared/identifier-registry.js",
     "scripts/shop-system/shopOpen-bootstrap.js",
     "scripts/shop-system/shopPurchase-handler.js",
