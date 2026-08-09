@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "5Rg3NSMXFKjTHHsk",
-  "formula": "1d7",
+  "formula": "1d1",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Fafnir Castle - Enemies",
   "ownership": {
@@ -20,112 +20,5 @@
     "default": 0
   },
   "replacement": true,
-  "results": [
-    {
-      "_id": "0yfS8ji8A0hNRZu7",
-      "documentCollection": "Actor",
-      "documentId": "sTGMdYipYCG36aBO",
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/mystery-man.svg",
-      "range": [
-        4,
-        4
-      ],
-      "text": "Lightning Prism",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "6yQexnsY73gmhKkA",
-      "documentCollection": "Actor",
-      "documentId": "TvLv878yZLNUAWNN",
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/mystery-man.svg",
-      "range": [
-        7,
-        7
-      ],
-      "text": "Qilin",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "8HoeyUKr6tj4tIWX",
-      "documentCollection": "Actor",
-      "documentId": "P1uCkpNnxLRBNqZr",
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Fafnir_Lightning.png",
-      "range": [
-        6,
-        6
-      ],
-      "text": "⭐️ Fafnir",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "PNuIHLovHEOoztBw",
-      "documentCollection": "Actor",
-      "documentId": "2vmogpXhRJZzAvXt",
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/mystery-man.svg",
-      "range": [
-        2,
-        2
-      ],
-      "text": "Flame Drake",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "PvZjc65DYyrTlk41",
-      "documentCollection": "Actor",
-      "documentId": "A1VzokzJPoyxobCd",
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/mystery-man.svg",
-      "range": [
-        1,
-        1
-      ],
-      "text": "Electro Slime",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "qgs3f3tpZxqhu3QE",
-      "documentCollection": "Actor",
-      "documentId": "mQlh6GTyw2449hXC",
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/mystery-man.svg",
-      "range": [
-        3,
-        3
-      ],
-      "text": "Lightning Drake",
-      "type": "document",
-      "weight": 1
-    },
-    {
-      "_id": "URfhESa3DpPES5o1",
-      "documentCollection": "Actor",
-      "documentId": "I2sSkVIQ4FCunZBE",
-      "drawn": false,
-      "flags": {},
-      "img": "icons/svg/mystery-man.svg",
-      "range": [
-        5,
-        5
-      ],
-      "text": "Skizzik",
-      "type": "document",
-      "weight": 1
-    }
-  ],
   "sort": 0
 }
