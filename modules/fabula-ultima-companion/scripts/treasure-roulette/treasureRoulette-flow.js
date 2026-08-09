@@ -288,6 +288,13 @@
   function askScreen({ screen, requestId, payload, controllerUserId, timeoutMs, fallback }) {
     const key = `${requestId}:${screen}`;
 
+    // Spectators name who they're waiting on, so a table watching a frozen
+    // screen knows whose turn it is to click.
+    const shown = {
+      ...payload,
+      controllerName: (controllerUserId && game.users?.get?.(controllerUserId)?.name) || null,
+    };
+
     return new Promise((resolve) => {
       let done = false;
       let timer = null;
@@ -309,13 +316,13 @@
       timer = setTimeout(() => finish(fallback, "timeout"), timeoutMs);
 
       // Spectators + the controller.
-      emit(MSG_SHOW, { screen, requestId, payload, controllerUserId });
+      emit(MSG_SHOW, { screen, requestId, payload: shown, controllerUserId });
 
       // The GM's own copy is always interactive (GM override).
       try {
         const ui = localUiFor(screen);
         if (ui?.show) {
-          Promise.resolve(ui.show({ payload, interactive: true, requestId }))
+          Promise.resolve(ui.show({ payload: shown, interactive: true, requestId }))
             .then((choice) => { if (choice != null) finish(choice, "gm"); })
             .catch((e) => warn(`local ${screen} UI threw:`, e));
         } else {
