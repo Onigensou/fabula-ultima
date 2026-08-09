@@ -69,6 +69,13 @@
       /* Card visuals live UNSCOPED in the UI Kit — the card is transplanted
          between screens and scoped rules would not survive the move. */
 
+      /* Reserves the right-hand card's footprint while the real card slides in
+         from screen 2. Same size, no paint — the layout must not shift when the
+         travelling card arrives. */
+      #${OVL_ID} .tr-eq-cardholder {
+        width: 420px; height: 520px; flex: 0 0 auto; visibility: hidden;
+      }
+
       /* ── Middle column: wearer, arrow, choices ── */
       #${OVL_ID} .tr-eq-mid {
         display: flex; flex-direction: column; align-items: center;
@@ -186,9 +193,17 @@
     // in this composition and would sit on top of the left card. Fade it out as
     // this screen comes in. The flow's own stage.clear() at the end is then a
     // no-op, so ownership is unchanged.
-    // Drop the parked reward but KEEP the backdrop — this is a hand-off inside
-    // one sequence, not the end of it.
-    try { kit()?.stage?.clear?.({ immediate: true, keepDim: true }); } catch { /* nothing parked */ }
+    // One continuous system: if screen 2 already put the item's card on the
+    // stage, that SAME element travels into this screen's right-hand slot. Only
+    // when there's nothing to inherit do we clear and draw fresh. The backdrop
+    // is never touched here — it belongs to the whole run.
+    const inherited = document.querySelector("#oni-tr-stage .tr-rc-cardslot");
+    if (inherited) {
+      // The little spin panel has served its purpose; the card replaces it.
+      document.querySelectorAll("#oni-tr-stage .oni-roulette-panel").forEach((n) => n.remove());
+    } else {
+      try { kit()?.stage?.clear?.({ immediate: true, keepDim: true }); } catch {}
+    }
 
     const slots = payload?.slots ?? [];
     const activeKey = payload?.preferredSlotKey ?? slots.find((s) => s.legal !== false)?.key ?? slots[0]?.key ?? null;
@@ -205,6 +220,13 @@
 
     if (kit().stage.hasDim()) overlay.style.background = "transparent";
 
+    // When a card is travelling in from screen 2, the right side is a spacer of
+    // identical size: it reserves the layout slot so the inherited card has
+    // somewhere to land, without a second copy of the card existing.
+    const rightSlot = inherited
+      ? `<div class="tr-eq-cardholder"></div>`
+      : rightCard;
+
     overlay.innerHTML = `
       <div class="tr-eq-title">Switch Equipment</div>
       <div class="tr-eq-stage">
@@ -219,7 +241,7 @@
             <div class="tr-eq-btn tr-eq-btn-yes">Yes</div>
           </div>
         </div>
-        ${rightCard}
+        ${rightSlot}
       </div>
       <div class="tr-eq-foot"></div>`;
 
@@ -235,7 +257,29 @@
     ].filter(Boolean);
     K.staggerIn(order, { onEach: () => K.Sound.play("PANEL_IN") });
 
-    return { overlay, slots, activeKey, order };
+    // Slide the inherited card from its screen-2 position into the reserved
+    // slot, scaling back to full size. Same element, moved — not replaced.
+    if (inherited) {
+      const holder = overlay.querySelector(".tr-eq-cardholder");
+      if (holder) {
+        // Measure after layout so the target is where the card will actually sit.
+        requestAnimationFrame(() => {
+          const r = holder.getBoundingClientRect();
+          inherited.style.transition =
+            "left 460ms cubic-bezier(.2,.9,.2,1), top 460ms cubic-bezier(.2,.9,.2,1), transform 460ms cubic-bezier(.2,.9,.2,1)";
+          inherited.style.left = `${r.left + r.width / 2}px`;
+          inherited.style.top = `${r.top + r.height / 2}px`;
+          inherited.style.transform = "translate(-50%, -50%) scale(1)";
+        });
+        // The travelled card now needs the comparison it didn't have on
+        // screen 2 — deltas appear as it lands.
+        cardHTML(payload?.incoming ?? null, { side: "new", compareTo: active?.current ?? null })
+          .then((html) => { inherited.innerHTML = html; })
+          .catch(() => {});
+      }
+    }
+
+    return { overlay, slots, activeKey, order, inherited };
   }
 
   async function close(result) {
@@ -247,10 +291,13 @@
     const el = document.getElementById(OVL_ID);
     if (el) {
       const K = kit();
+      // The incoming card may be the travelled one, living on the stage rather
+      // than in this overlay — include whichever exists so both leave together.
       const order = [
         el.querySelector('.tr-eq-card[data-side="current"]'),
         el.querySelector(".tr-eq-mid"),
-        el.querySelector('.tr-eq-card[data-side="new"]'),
+        el.querySelector('.tr-eq-card[data-side="new"]')
+          ?? document.querySelector("#oni-tr-stage .tr-rc-cardslot"),
       ].filter(Boolean);
       await K.staggerOut(order);
       el.classList.remove("oni-in");
@@ -266,7 +313,7 @@
     async show({ payload, interactive = false } = {}) {
       if (_resolve) await close(null);
 
-      const { overlay, slots } = await buildOverlay(payload, interactive);
+      const { overlay, slots, inherited } = await buildOverlay(payload, interactive);
       let activeKey = payload?.preferredSlotKey ?? slots.find((s) => s.legal !== false)?.key ?? slots[0]?.key ?? null;
 
       return new Promise((resolve) => {
@@ -304,14 +351,22 @@
             overlay.querySelectorAll(".tr-eq-slot").forEach((t) =>
               t.classList.toggle("tr-eq-slot-active", t.dataset.slot === activeKey));
 
-            // Re-render both cards for the newly selected slot.
+            // Re-render for the newly selected slot. The worn item changes, and
+            // with it the deltas on the incoming card.
             const s = slots.find((x) => x.key === activeKey);
             const [l, r] = await Promise.all([
               cardHTML(s?.current ?? null, { side: "current", stamp: true }),
               cardHTML(payload?.incoming ?? null, { side: "new", compareTo: s?.current ?? null }),
             ]);
             stage.querySelector('.tr-eq-card[data-side="current"]').outerHTML = l;
-            stage.querySelector('.tr-eq-card[data-side="new"]').outerHTML = r;
+
+            // The incoming card may be the one that travelled in from screen 2
+            // and lives on the stage, not in this overlay — update whichever
+            // exists rather than assuming it is a child here.
+            const inOverlay = stage.querySelector('.tr-eq-card[data-side="new"]');
+            if (inOverlay) inOverlay.outerHTML = r;
+            else if (inherited) inherited.innerHTML = r;
+
             stage.querySelectorAll(".tr-eq-card").forEach((c) => c.classList.add("tr-anim-enter", "tr-anim-in"));
           });
         });
