@@ -864,6 +864,21 @@ async function resolveAction(director, ar, opts = {}) {
     // creature_completes_spell reaction can gate to "spell with a check" (e.g.
     // Opportunity Advantage's self-consume only spends on an offensive spell).
     actionCanMiss: !!ar.canMiss,
+    // Whether this was a FREE cast — read by ACTION_IS_FREE_CAST. Previously
+    // stamped ONLY on the damage-window payload, so no post-resolve reaction
+    // could tell a free cast from a paid one: Bimagus's follow-up gates on
+    // `ACTION_IS_FREE_CAST == 1` off creature_completes_spell and would have
+    // read 0 forever, never granting the second spell. It also has to live here
+    // rather than at the damage window alone, because a NON-damaging first
+    // spell (a buff or a heal) never reaches that window at all.
+    //
+    // Sourced from `skipCost` — the decision this very call was made with —
+    // NOT from a fresh freeActions.get(). The registry lookup is the wrong
+    // question twice over: the caller already applied the
+    // `topIsFreeAction(ctx)` frame guard (a stale grant outside a free-action
+    // frame must NOT count), and on the Attack path the grant is consumed at
+    // COMPUTE, so by here it is gone.
+    actionIsFreeCast: skipCost,
     // TOTAL MP cost of the spell/skill that just resolved — read by the
     // LAST_SPELL_MP formula identifier so a `creature_completes_spell` reaction
     // can size a follow-up off the cast's cost (Bimagus's "2nd spell ≤ ½ the
