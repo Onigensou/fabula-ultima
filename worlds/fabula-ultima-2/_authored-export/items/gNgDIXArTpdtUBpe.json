@@ -100,10 +100,7 @@
             "emotions": [
               "hatred"
             ]
-          },
-          "tags": [
-            "debuff"
-          ]
+          }
         },
         "statuscounter": {
           "config": {

@@ -19,6 +19,7 @@
 
 import { log } from "../logger.js";
 import { findOnActor } from "../skill-charges.js";
+import { findCostSubstitution, canSubstituteForShortfall } from "../skill-cost.js";
 
 const norm = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, "_");
 const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; };
@@ -92,6 +93,30 @@ export function canAfford(actor, costText) {
 }
 
 // Convenience: can this actor pay for this item right now?
+//
+// "Afford" must mean the same thing everywhere, so this asks the SAME question
+// the real gates ask — including whether a cost SUBSTITUTION covers the
+// shortfall (Vismagus: pay 2× the MP in HP instead). Without that, an MP-short
+// spell reads unaffordable here, so the brain never proposes it and a scripted
+// directive silently falls through to the brain — meaning the sim could never
+// exercise Vismagus at all, and any balance run under-counted the caster.
+//
+// This is the same blind spot skill-picker had before 56ff06a4, in a second
+// place; both now route through skill-cost's findCostSubstitution /
+// canSubstituteForShortfall, which mirror the live gate's arithmetic including
+// `min_remaining` (so we never call "affordable" a swap that would drop the
+// caster to 0 and be refused).
 export function canAffordItem(actor, item) {
-  return canAfford(actor, item?.system?.props?.cost);
+  const direct = canAfford(actor, item?.system?.props?.cost);
+  if (direct.ok || direct.unknown) return direct;
+  // Only an MP shortfall on a Spell is substitutable — same gate as the picker.
+  const missing = [{ resource: direct.res, label: direct.res, has: direct.have, need: direct.need }];
+  const skillType = item?.system?.props?.skill_type;
+  if (!canSubstituteForShortfall(missing, skillType)) return direct;
+  const swap = findCostSubstitution(actor, new Map([[direct.res, direct.need]]));
+  if (!swap) return direct;
+  log(`[SIM] canAffordItem: "${item?.name}" unaffordable in ${direct.res} `
+    + `(${direct.have}/${direct.need}) but covered by ${swap.sourceName ?? "a cost substitution"} `
+    + `— treating as affordable`);
+  return { ...direct, ok: true, viaSubstitution: swap };
 }
