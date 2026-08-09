@@ -27,6 +27,7 @@
       "cost": "",
       "damage_bonus": "12 + (CHAR_LEVEL >= 20) * 4 + (CHAR_LEVEL >= 40) * 2",
       "defense_target_type": "mdef",
+      "duration": "Scene",
       "effect_table": {
         "0": {
           "$deleted": false,

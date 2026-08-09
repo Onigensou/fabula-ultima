@@ -266,7 +266,7 @@
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "You protect the targets from attacks that would corrupt their body and spirit. <strong>Choose:</strong> Dazed, Shaken, Slow, or Weak. Until this spell ends, each target is <strong>immune</strong> to the chosen status.",
-      "duration": "-",
+      "duration": "Scene",
       "effect_table": {
         "0": {
           "allowed_types": "",

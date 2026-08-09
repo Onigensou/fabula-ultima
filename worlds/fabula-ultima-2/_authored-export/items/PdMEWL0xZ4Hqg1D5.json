@@ -27,6 +27,7 @@
       "cost": "",
       "defense_target_type": "mdef",
       "details_roller": "Show",
+      "duration": "Scene",
       "effect_table": {
         "0": {
           "$deleted": false,

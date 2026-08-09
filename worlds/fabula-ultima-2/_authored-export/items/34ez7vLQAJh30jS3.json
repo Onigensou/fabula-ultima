@@ -32,7 +32,7 @@
       "damage_bonus": "15",
       "defense_target_type": "def",
       "description": "You focus your inner energy into a barrage of blinding soul rays. Each target hit by this spell suffers <strong>HR + 15 Light</strong> damage.<br><strong>Opportunity:</strong> Each target hit suffers <strong>Dazed</strong>.",
-      "duration": "-",
+      "duration": "Instantaneous",
       "effect_table": {},
       "heroic_requirement": "",
       "ignore_hr": false,

@@ -23,6 +23,7 @@
   "sort": 0,
   "system": {
     "props": {
+      "duration": "Instantaneous",
       "effect_table": {
         "0": {
           "chain_steps": "is_shield, is_cost",

@@ -104,6 +104,7 @@
     "props": {
       "cost": "15 MP",
       "description": "<p>Cast 【✨ Charm】: 15 MP, One Creature. 50% chance to inflict Charmed for 1 Round.</p>",
+      "duration": "Instantaneous",
       "effect_table": {
         "0": {
           "$deleted": false,

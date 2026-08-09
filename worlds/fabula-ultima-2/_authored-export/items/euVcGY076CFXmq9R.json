@@ -67,7 +67,11 @@
       "statuses": [
         "fud-griffin-dance-air"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -142,7 +146,11 @@
       "statuses": [
         "fud-griffin-dance-air"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"

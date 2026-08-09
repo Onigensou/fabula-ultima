@@ -3102,7 +3102,11 @@
           "origin": null,
           "sort": 0,
           "statuses": [],
-          "system": {},
+          "system": {
+            "tags": [
+              "bimagus"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -3157,7 +3161,11 @@
           "origin": null,
           "sort": 0,
           "statuses": [],
-          "system": {},
+          "system": {
+            "tags": [
+              "bimagus"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -6669,7 +6677,7 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-          "duration": "-",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,

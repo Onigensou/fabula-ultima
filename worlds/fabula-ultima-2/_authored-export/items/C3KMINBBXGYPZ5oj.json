@@ -27,6 +27,7 @@
       "cost": "5 x T MP",
       "damage_bonus": "0",
       "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers from 1 debuff</strong> of your choice <em>(any active effect tagged as a debuff)</em>.</p>",
+      "duration": "Instantaneous",
       "effect_table": {
         "0": {
           "$deleted": false,

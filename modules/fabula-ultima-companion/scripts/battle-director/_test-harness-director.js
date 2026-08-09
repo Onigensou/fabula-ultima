@@ -142,6 +142,51 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
     .filter((r) => r?.hit)
     .map((r) => r.tokenUuid ?? (ar.targets ?? []).find((t) => t?.actorUuid === r?.actorUuid)?.tokenUuid)
     .filter(Boolean);
+  // ── Shared ACTION-LEVEL base — mirrors state-handlers' `actionBase` ───────
+  // The live CONFIRM scan spreads `actionBase` into every payload it builds;
+  // this harness used to hand-roll its literal instead, so every action-level
+  // identifier the live path supplies was simply ABSENT here. Those gates then
+  // fail SILENTLY and in the permissive direction: `ACTION_DURATION` read
+  // `undefined` → rank 0 → "instantaneous", so Cataclysm's
+  // `ACTION_DURATION == 0` gate passed for a *Scene* spell under the harness
+  // while correctly refusing it in play. A test that cannot fail is worse than
+  // no test, and the same hole covered SKILL_HAS_TAG_*, ACTION_COST_*,
+  // ACTION_IS_SPELL and the crit/fumble gates.
+  //
+  // Spread FIRST so every explicit key below still wins — this can only fill
+  // gaps, never change a value the scan already states (same contract as the
+  // live block).
+  let harnessSkillTags = "";
+  let harnessSkillDuration = "";
+  try {
+    const actingSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
+    harnessSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
+    harnessSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
+  } catch (_) { /* noop — both are optional gates */ }
+  const harnessActionBase = {
+    actionKind: ar.kind ?? null,
+    actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+    actionIsCheck: !!ar.isCheck,
+    actionCanMiss: !!ar.canMiss,
+    // No free-action registry in a harness run: the harness never grants one,
+    // so a cast here is never free. Matches the live read for that state.
+    actionIsFreeCast: false,
+    actionName: ar.skillName ?? ar.weapon?.name ?? ar.kind,
+    sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
+    skillTags: harnessSkillTags,
+    skillDuration: harnessSkillDuration,
+    isCrit: !!ar.roll?.isCrit,
+    isFumble: !!ar.roll?.isFumble,
+    checkTotal: Number(ar.roll?.total ?? 0) || 0,
+    costHp: Number(ar.costSerialized?.hp ?? 0) || 0,
+    costMp: Number(ar.costSerialized?.mp ?? 0) || 0,
+    costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
+  };
+
+  // Every candidate the CONFIRM-stage scan saw, available or not, with the
+  // reason it was refused — stamped on the returned ar as `reactionScanLog`.
+  const scanLog = [];
+
   const byKey = new Map();
   for (const entry of ar.perTargetResults) {
     // Mirrors state-handlers CONFIRM: scan every target (hit or miss) so the
@@ -153,6 +198,7 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
     const matchedTarget = (ar.targets ?? []).find((t) => t?.actorUuid === subjectActorUuid);
     const subjectTokenUuid = entry.tokenUuid ?? matchedTarget?.tokenUuid ?? null;
     const payloadForTrigger = {
+      ...harnessActionBase,   // action-level defaults; every explicit key below wins
       subjectActorUuid,
       subjectTokenUuid,
       targets: allTargetUuids,
@@ -173,18 +219,37 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
       skillUuid: ar.skillUuid ?? null,
       weaponUuid: ar.weapon?.uuid ?? null,
     };
-    let cands;
+    let scanned;
     try {
-      cands = await findPassiveCandidates({
+      // includeUnavailable so the harness can report WHY a reaction did not
+      // surface. "Not in the list" is ambiguous on its own — it conflates "the
+      // gate refused it" with "the trigger never considered it", and those are
+      // opposite verdicts when the thing under test IS a gate. The accept path
+      // below still consumes available candidates ONLY, so behaviour is
+      // unchanged; this only adds the reason to the record.
+      scanned = await findPassiveCandidates({
         casterActor: attackerActor,
         trigger: "creature_will_deal_damage",
         payload: payloadForTrigger,
+        includeUnavailable: true,
       });
     } catch (e) {
       console.warn(`${TAG} acceptReactions findPassiveCandidates threw for ${entry?.name}`, e);
       continue;
     }
-    for (const cand of cands ?? []) {
+    for (const c of scanned ?? []) {
+      scanLog.push({
+        carrierName: c?.carrierName ?? null,
+        rowKey: c?.rowKey ?? null,
+        mode: c?.mode ?? null,
+        available: c?.available !== false,
+        unavailableKind: c?.unavailableKind ?? null,
+        unavailableReason: c?.unavailableReason ?? null,
+        skillDuration: payloadForTrigger.skillDuration ?? null,
+      });
+    }
+    const cands = (scanned ?? []).filter((c) => c?.available !== false);
+    for (const cand of cands) {
       // Filter to allowed names.
       if (accept !== true) {
         const namesArr = Array.isArray(accept) ? accept : [];
@@ -216,8 +281,20 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
   if (Array.isArray(picks) && picks.length) {
     for (const c of byKey.values()) c.chosenMenuPicks = [...picks];
   }
+  // One row per (carrier, rowKey) — the per-target loop above sees the same
+  // candidate once per target, and that repetition is noise, not signal.
+  const scanSeen = new Set();
+  const reactionScanLog = scanLog.filter((s) => {
+    const k = `${s.carrierName}::${s.rowKey}`;
+    if (scanSeen.has(k)) return false;
+    scanSeen.add(k);
+    return true;
+  });
+
   const applied = [...byKey.values()];
-  if (!applied.length) return ar;
+  // Even with nothing accepted the scan record is the useful output for a
+  // NEGATIVE test ("was it offered, and if not, why") — so it rides along.
+  if (!applied.length) return freezeActionResult({ ...ar, reactionScanLog });
   let recomputed = ar.perTargetResults;
   try {
     // Single post-decision recompute — matches production CONFIRM. The `applied`
@@ -237,6 +314,7 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
     perTargetResults: recomputed,
     acceptedCardReactions: applied,
     evaluatedCardReactions: applied.map((c) => ({ carrierUuid: c.carrierUuid, rowKey: c.rowKey })),
+    reactionScanLog,
   });
 }
 

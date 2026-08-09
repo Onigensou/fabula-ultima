@@ -41,6 +41,7 @@
       "sort": 0,
       "system": {
         "props": {
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "chain_steps": "is_shield, is_cost",
@@ -211,6 +212,7 @@
       "system": {
         "props": {
           "cost": "50 MP",
+          "duration": "Scene",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -558,6 +560,7 @@
           "cost": "",
           "damage_bonus": "12 + (CHAR_LEVEL >= 20) * 4 + (CHAR_LEVEL >= 40) * 2",
           "defense_target_type": "mdef",
+          "duration": "Scene",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -1006,6 +1009,7 @@
           "cost": "20 MP",
           "damage_bonus": "25",
           "defense_target_type": "mdef",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -1384,6 +1388,7 @@
         "props": {
           "cost": "",
           "defense_target_type": "mdef",
+          "duration": "Scene",
           "effect_table": {
             "0": {
               "$deleted": false,

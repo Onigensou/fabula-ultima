@@ -1491,7 +1491,11 @@
           "origin": null,
           "sort": 0,
           "statuses": [],
-          "system": {},
+          "system": {
+            "tags": [
+              "bimagus"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -1546,7 +1550,11 @@
           "origin": null,
           "sort": 0,
           "statuses": [],
-          "system": {},
+          "system": {
+            "tags": [
+              "bimagus"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"

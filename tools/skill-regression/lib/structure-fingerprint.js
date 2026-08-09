@@ -20,49 +20,102 @@
 // doc in the world, whether or not it is usable, skipped, or reachable. It
 // needs no bench and no COMPUTE — just the game open — so it costs seconds.
 //
-// Deliberately EXCLUDED (churn, not content): description/img/uuid/id, `level`
-// and `max_level` (legitimately per-copy), battle logs, `_stats`, and animation
-// timing. Everything kept is something an engine gate or the framework reads.
+// ── WATCHING: a DENYLIST, not an allowlist ────────────────────────────────
+// This was an allowlist of 28 hand-picked props until 2026-08-10. An allowlist
+// makes every prop nobody thought to list a permanent blind spot, and the two
+// most recent additions (`availability_formula`, `duration`) were both found the
+// same way: a real live edit produced NO drift. That is the failure mode
+// announcing itself twice.
+//
+// A census of the authored corpus (3557 skill-shaped docs, 141 distinct prop
+// keys) put a number on the gap — 113 of 141 keys were unwatched, including:
+//
+//   custom_logic_action (88 docs) / custom_logic_resolution (77)
+//   passive_logic_action (67) / passive_logic_resolution (23)
+//                       ...executable behaviour. Edit the code a skill runs and
+//                       the config golden said "unchanged".
+//   weapon_range (1273)  ...the EXACT prop whose blank value silently killed 10
+//                       melee gates — trigger fires, candidate matches, gate
+//                       declines (see feedback_monster_attack_blank_range…).
+//   hand_slots, item_rarity, set_name, isSet, isMartial, isFacet,
+//   heroic_requirement, item_baseDef/Mdef, ip_cost, related_item_list,
+//   item_skill_active/passive, action_command, check_mode, has_pierce, …
+//
+// Each of those was confirmed read by engine code, not inferred from its name.
+// So the rule is inverted: everything is watched unless it is listed below as
+// churn. `skill-claims render` already works this way — "add a field to the data
+// model and it shows up with no code change" — and that is the only shape that
+// cannot under-cover.
 // ───────────────────────────────────────────────────────────────────────────
 "use strict";
 
+const crypto = require("crypto");
+
 const NS = "fabula-ultima-companion";
 
-/** Props whose value changes behaviour. Anything not listed is ignored. */
-const KEPT_PROPS = [
-  "skill_type", "isReaction", "isHeroic", "isOffensiveSpell", "isCheck", "isZeroPower",
-  "cost", "skill_target", "target_eligibility", "skill_tags", "skill_range",
-  "on_activate_effect_ref", "pre_activate_effect_ref", "post_damage_effect_ref",
-  "type_damage", "damage_bonus", "check_bonus", "defense_target_type",
-  "rolled_atr1", "rolled_atr2", "container", "item_type", "isEquipped",
-  "action_keywords", "ignore_hr",
-  // Whether the skill can be picked AT ALL (skill-picker.js ~L374): falsy
-  // dims it with `availability_reason`. Adding Bimagus's missing
-  // `HAS_ARCANE_WEAPON == 1` gate to 6 docs moved nothing here, which is the
-  // failure mode — a skill silently LOSING its gate would read as unchanged.
-  "availability_formula", "availability_reason",
-  // `duration` is behaviour-bearing: ACTION_DURATION (skill-formulas ~L1115)
-  // ranks this free-form string 0/1/2 and gates on it (Cataclysm is
-  // instantaneous-only; Follow my lead needs >= 1). A TYPO silently reranks the
-  // skill — Solar Beam shipped "Instnataneous", which the `includes("instant")`
-  // normaliser does not catch, so it ranked 1 and would have lost Cataclysm.
-  "duration",
+/**
+ * CHURN — moves without behaviour changing, or is presentation only.
+ * Anything not matched here is watched. Add to this list only with a reason.
+ */
+const CHURN_PROPS = [
+  // Identity + provenance. `name` and `id` are how the golden KEYS a doc
+  // (collect-structure.js), so recording them again inside the value would make
+  // every rename a double-report.
+  /^(id|uuid|name|img)$/,
+  // Prose for humans. `skill_information` and `details_roller` have zero engine
+  // readers; the rest reach only sheet/chat rendering. NOTE `heroic_requirement`
+  // is deliberately NOT here — it reads like prose but requirement-eval.js
+  // parses it, so it is content.
+  /^(description|skill_description|skill_information|flavor_text|set_description|details_roller)$/,
+  // Legitimately per-copy: the same master sits at different ranks on different
+  // actors, which is authoring, not drift.
+  /^(level|max_level)$/,
+  // Written by PLAY (and by every sim run), never authored — same rationale as
+  // world-export's VOLATILE_PROPS.
+  /^battle_log(_table)?$/,
+  // Presentation. Timing offsets, JB2A asset URLs, and the animation script are
+  // all cosmetic; `animation_script` alone is 632 docs of HTML that would swamp
+  // the diff surface this tool exists to keep readable.
+  /^skill_animation_/, /^animation_/,
+  // CSB bookkeeping, not authored config.
+  /^(optional_params|use_optional_params|\$deleted)$/,
 ];
 
-// ⚠ KEPT_PROPS is an ALLOWLIST, so every prop nobody thought to list is a blind
-// spot — the two above were found only because a live edit produced no drift.
-// The header comment above describes a DENYLIST ("deliberately excluded: churn"),
-// which is the shape that cannot under-cover; `skill-claims render` already
-// works that way ("add a field to the data model and it appears with no code
-// change"). Worth flipping, but that is a re-baseline of every doc carrying a
-// previously-unwatched prop, so it is left as a deliberate follow-up rather
-// than smuggled in alongside a two-field fix.
+const isChurn = (k) => CHURN_PROPS.some((re) => re.test(k));
+
+/**
+ * Template defaults every document carries whether or not anyone authored them:
+ * the ~27 species affinities sit at 100 (neutral), unset flags at false, unset
+ * numerics at 0. Recording them would add ~33k inert entries to the golden and
+ * bury the handful that were actually set.
+ *
+ * Suppressing a default costs NO signal, because it is suppressed on both
+ * sides: `item_def_bonus 2 -> 0` still reports as `present -> (removed)`, and
+ * `0 -> 2` as `(absent) -> present`. Same mechanism `blank()` already used.
+ */
+function isTemplateDefault(k, s) {
+  if (/_ef$/.test(k)) return s === "100";           // species affinity, neutral
+  if (/^(is|has|use)[A-Z_]/.test(k)) return s === "false";
+  return s === "0" || s === "+0" || s === "-" || s === "false";
+}
+
+// Long values (the custom_logic_* / passive_logic_* code blobs, big projection
+// tables) are stored as a content hash: still an exact change detector, but the
+// golden stays a reviewable size instead of carrying 88 embedded HTML scripts.
+const HASH_OVER = 240;
+const digest = (s) => `#sha1:${crypto.createHash("sha1").update(s).digest("hex").slice(0, 16)} (${s.length} chars)`;
 
 /** Row fields that are noise rather than behaviour. */
 const ROW_NOISE = new Set(["menu_description", "menu_label", "menu_title", "menu_subtitle",
   "menu_option_labels", "menu_option_descriptions", "menu_option_colors", "menu_option_icons"]);
 
-const blank = (v) => v === undefined || v === null || v === "" || v === false;
+const blank = (v) => {
+  if (v === undefined || v === null || v === "" || v === false) return true;
+  // An empty table/array is "unset", not content — 2331 docs carry an empty
+  // `active_effect_config_table` and 14 an empty `reaction_effect_table`.
+  if (typeof v === "object") return !Object.keys(v).length;
+  return false;
+};
 
 /** One table row -> a stable "k=v" list, empties dropped, sorted. */
 function rowSig(row, { keepNoise = false } = {}) {
@@ -93,10 +146,16 @@ function tableSig(table, opts) {
 function structureOf(doc) {
   const p = doc?.system?.props ?? {};
   const props = {};
-  for (const k of KEPT_PROPS) {
+  for (const k of Object.keys(p).sort()) {
+    if (isChurn(k)) continue;
     const v = p[k];
     if (blank(v)) continue;
-    props[k] = typeof v === "object" ? JSON.stringify(v) : String(v);
+    // The two big tables get their own row-wise signatures below; keeping them
+    // here as well would double-report every row edit.
+    if (k === "effect_table" || k === "reaction_config_table") continue;
+    const s = typeof v === "object" ? JSON.stringify(v) : String(v);
+    if (isTemplateDefault(k, s)) continue;
+    props[k] = s.length > HASH_OVER ? digest(s) : s;
   }
 
   const effects = tableSig(p.effect_table);
@@ -181,4 +240,4 @@ function diffStructure(a, b, prefix = "") {
   return out;
 }
 
-module.exports = { structureOf, diffStructure, KEPT_PROPS };
+module.exports = { structureOf, diffStructure, CHURN_PROPS, isChurn };

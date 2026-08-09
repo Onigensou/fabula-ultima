@@ -810,6 +810,7 @@
           "cost": "5 x T MP",
           "damage_bonus": "0",
           "description": "<p>You project your soul outside your body and direct it to surround the targets, shielding them from dangerous magic. Until this spell ends, each target may treat their <strong>Magic Defense as 12</strong> against effects that target them <em>(they keep their normal MDEF if higher).</em></p>",
+          "duration": "Scene",
           "effect_table": {
             "0": {
               "ae_duplicate_mode": "replace_per_caster",
@@ -2491,7 +2492,7 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-          "duration": "-",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -3199,6 +3200,7 @@
           "cost": "20 MP",
           "damage_bonus": "0",
           "description": "<p>You allow a creature to focus their vital energy into accomplishing what they previously could not. <strong>Choose:</strong> Dexterity, Insight, Might, or Willpower. Until this spell ends, the target treats the chosen Attribute as if it were one die size higher <em>(up to a maximum of d12)</em>.</p>",
+          "duration": "Scene",
           "effect_table": {
             "0": {
               "effect_kind": "open_action_menu",
@@ -3286,6 +3288,7 @@
           "cost": "5 x T MP",
           "damage_bonus": "0",
           "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers from 1 debuff</strong> of your choice <em>(any active effect tagged as a debuff)</em>.</p>",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,

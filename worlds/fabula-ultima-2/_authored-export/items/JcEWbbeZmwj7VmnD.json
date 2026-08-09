@@ -94,6 +94,7 @@
       "cost": "5 x T MP",
       "damage_bonus": "0",
       "description": "<p>You project your soul outside your body and direct it to surround the targets, shielding them from dangerous magic. Until this spell ends, each target may treat their <strong>Magic Defense as 12</strong> against effects that target them <em>(they keep their normal MDEF if higher).</em></p>",
+      "duration": "Scene",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace_per_caster",

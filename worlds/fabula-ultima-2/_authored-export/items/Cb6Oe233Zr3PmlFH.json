@@ -99,7 +99,7 @@
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>You imbue a willing creature's equipped weapon with the cleansing energy of your spirit. Until this spell ends, all damage dealt by that creature's equipped weapons becomes <strong>Light</strong> type. <em>(Per-weapon scoping is a follow-up — currently affects all of the target's equipped weapons.)</em></p>",
-      "duration": "-",
+      "duration": "Scene",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace_per_caster",

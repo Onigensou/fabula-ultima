@@ -26,6 +26,7 @@
       "cost": "20 MP",
       "damage_bonus": "25",
       "defense_target_type": "mdef",
+      "duration": "Instantaneous",
       "effect_table": {
         "0": {
           "$deleted": false,

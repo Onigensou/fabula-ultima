@@ -1047,6 +1047,7 @@
           "cost": "0",
           "damage_bonus": "15",
           "description": "<p>A single Starfall comet. Deals <strong>【HR+15】 Light damage</strong> to one random enemy.</p>",
+          "duration": "Instantaneous",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214939.162.png",
           "isCheck": true,
           "isOffensiveSpell": true,
@@ -5663,7 +5664,11 @@
           "origin": null,
           "sort": 0,
           "statuses": [],
-          "system": {},
+          "system": {
+            "tags": [
+              "bimagus"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -5718,7 +5723,11 @@
           "origin": null,
           "sort": 0,
           "statuses": [],
-          "system": {},
+          "system": {
+            "tags": [
+              "bimagus"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -7622,6 +7631,7 @@
         "props": {
           "cost": "30 MP",
           "description": "<p><strong>Roulette Enemy.</strong> Summon 3 comets to fall on random enemies (repeats allowed). Each deals <strong>【HR+15】 Light damage</strong>.</p>",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -14040,7 +14050,7 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-          "duration": "-",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,

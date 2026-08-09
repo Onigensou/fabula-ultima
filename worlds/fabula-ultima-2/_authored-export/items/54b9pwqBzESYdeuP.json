@@ -32,7 +32,7 @@
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>You cause a creature to lose any semblance of temper and act brazenly. The target hit by this spell <em>(INS+WLP vs MDEF)</em> suffers <strong>Enraged</strong> and cannot perform the <strong>Guard</strong> or <strong>Spell</strong> actions during their next turn.</p>",
-      "duration": "-",
+      "duration": "Instantaneous",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace_per_caster",

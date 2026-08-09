@@ -32,7 +32,7 @@
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>You smother the soul energy coursing through the bodies of your foes, hindering their movements. <strong>Choose:</strong> Slow or Weak. Inflict the chosen status effect on each target hit by this spell <em>(INS+WLP vs MDEF)</em>.</p>",
-      "duration": "-",
+      "duration": "Instantaneous",
       "effect_table": {
         "0": {
           "allowed_types": "",

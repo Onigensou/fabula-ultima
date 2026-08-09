@@ -117,16 +117,42 @@ and 2.4x the coverage. The Stop-hook gate runs it on every evaluation for that
 reason; it is never fatal on its own error (a missing golden or a closed bridge
 must not read as drift).
 
-What it watches: the behaviour-bearing props (`skill_type`, `cost`,
-`skill_target`, `target_eligibility`, `skill_tags`, the activate refs, keywords),
-every `effect_table` / `reaction_config_table` row, and every AE's
-`transfer` / `statuses` / `tags` / flags / **change values** plus any
-`reactionConfig` it carries. Deliberately ignored as churn: descriptions, images,
-ids, `level` / `max_level` (legitimately per-copy), battle logs, animation timing,
-and menu label/description text.
+**What it watches is a DENYLIST** — every authored prop, minus a short list of
+churn — plus every `effect_table` / `reaction_config_table` row and every AE's
+`transfer` / `statuses` / `tags` / flags / **change values** and any
+`reactionConfig` it carries.
 
-Self-tested by injecting the three real defects above and confirming each is
-reported, then reverting.
+It was an allowlist of 28 hand-picked props until 2026-08-10, which made every
+prop nobody thought to list a permanent blind spot. Both of the last two
+additions (`availability_formula`, `duration`) were found the same way — a real
+edit produced *no drift* — which is the failure mode announcing itself twice. A
+census of the corpus (3557 skill-shaped docs, 141 distinct prop keys) showed
+**113 of 141 keys unwatched**, including `custom_logic_action` /
+`custom_logic_resolution` / `passive_logic_action` (**executable behaviour** — 255
+docs between them) and `weapon_range`, the exact prop whose blank value silently
+killed 10 melee gates. Each was confirmed read by engine code, not inferred from
+its name.
+
+Ignored as churn: ids/uuid/img/name (name is the golden's *key*), prose
+(`description`, `skill_information`, `flavor_text`, `set_description`,
+`details_roller` — zero engine readers between them), `level` / `max_level`
+(legitimately per-copy), battle logs, animation timing + scripts + asset URLs,
+CSB bookkeeping, and menu label/description text. ⚠ `heroic_requirement` reads
+like prose but `requirement-eval.js` parses it, so it is **content**.
+
+Two mechanisms keep the golden readable rather than doubling it: **template
+defaults are suppressed** (species affinities at 100, unset flags at false, unset
+numerics at 0 — ~33k inert entries), and **values over 240 chars are stored as a
+content hash**, which is still an exact change detector without embedding 88 HTML
+scripts. Net effect measured over the real corpus: **27 → 81 props watched on the
+same 1184 docs, for +4% golden size.**
+
+Self-tested against the corpus offline (`old vs new` on real documents): six
+injected defects — edited `custom_logic_action`, cleared `weapon_range`, edited
+`passive_logic_action`, changed `set_name`, dropped `skill_tags: dance`,
+rewritten `heroic_requirement` — are **all** reported, where the allowlist caught
+only `skill_tags`. Two controls (reworded description, nudged animation timing)
+stay silent in both, and no previously-watched prop was lost.
 
 ## Correctness invariants: `verify`
 

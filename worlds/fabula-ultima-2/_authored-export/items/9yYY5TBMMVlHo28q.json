@@ -24,6 +24,7 @@
   "system": {
     "props": {
       "cost": "50 MP",
+      "duration": "Scene",
       "effect_table": {
         "0": {
           "$deleted": false,

@@ -50,7 +50,7 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-          "duration": "-",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -293,6 +293,7 @@
           "cost": "5 x T MP",
           "damage_bonus": "0",
           "description": "<p>You project your soul outside your body and direct it to surround the targets, shielding them from dangerous magic. Until this spell ends, each target may treat their <strong>Magic Defense as 12</strong> against effects that target them <em>(they keep their normal MDEF if higher).</em></p>",
+          "duration": "Scene",
           "effect_table": {
             "0": {
               "ae_duplicate_mode": "replace_per_caster",
@@ -423,7 +424,7 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You imbue a willing creature's equipped weapon with the cleansing energy of your spirit. Until this spell ends, all damage dealt by that creature's equipped weapons becomes <strong>Light</strong> type. <em>(Per-weapon scoping is a follow-up — currently affects all of the target's equipped weapons.)</em></p>",
-          "duration": "-",
+          "duration": "Scene",
           "effect_table": {
             "0": {
               "ae_duplicate_mode": "replace_per_caster",
@@ -653,6 +654,7 @@
           "cost": "20 MP",
           "damage_bonus": "0",
           "description": "<p>You allow a creature to focus their vital energy into accomplishing what they previously could not. <strong>Choose:</strong> Dexterity, Insight, Might, or Willpower. Until this spell ends, the target treats the chosen Attribute as if it were one die size higher <em>(up to a maximum of d12)</em>.</p>",
+          "duration": "Scene",
           "effect_table": {
             "0": {
               "effect_kind": "open_action_menu",
@@ -1072,7 +1074,7 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You smother the soul energy coursing through the bodies of your foes, hindering their movements. <strong>Choose:</strong> Slow or Weak. Inflict the chosen status effect on each target hit by this spell <em>(INS+WLP vs MDEF)</em>.</p>",
-          "duration": "-",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "allowed_types": "",
@@ -1199,7 +1201,11 @@
           "origin": null,
           "sort": 0,
           "statuses": [],
-          "system": {},
+          "system": {
+            "tags": [
+              "bimagus"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -1254,7 +1260,11 @@
           "origin": null,
           "sort": 0,
           "statuses": [],
-          "system": {},
+          "system": {
+            "tags": [
+              "bimagus"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -1441,7 +1451,7 @@
           "defense_target_type": "def",
           "description": "You focus your inner energy into a barrage of blinding soul rays. Each target hit by this spell suffers <strong>HR + 15 Light</strong> damage.<br><strong>Opportunity:</strong> Each target hit suffers <strong>Dazed</strong>.",
           "details_roller": "Show",
-          "duration": "-",
+          "duration": "Instantaneous",
           "effect_table": {},
           "gadget_alchemy_tier": "",
           "gadget_infusion_tier": "",
@@ -1891,7 +1901,7 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "You protect the targets from attacks that would corrupt their body and spirit. <strong>Choose:</strong> Dazed, Shaken, Slow, or Weak. Until this spell ends, each target is <strong>immune</strong> to the chosen status.",
-          "duration": "-",
+          "duration": "Scene",
           "effect_table": {
             "0": {
               "allowed_types": "",
@@ -2426,7 +2436,7 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You cause a creature to lose any semblance of temper and act brazenly. The target hit by this spell <em>(INS+WLP vs MDEF)</em> suffers <strong>Enraged</strong> and cannot perform the <strong>Guard</strong> or <strong>Spell</strong> actions during their next turn.</p>",
-          "duration": "-",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "ae_duplicate_mode": "replace_per_caster",
@@ -2586,6 +2596,7 @@
           "cost": "5 x T MP",
           "damage_bonus": "0",
           "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers from 1 debuff</strong> of your choice <em>(any active effect tagged as a debuff)</em>.</p>",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,

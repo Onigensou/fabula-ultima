@@ -27,6 +27,7 @@
       "cost": "20 MP",
       "damage_bonus": "0",
       "description": "<p>You allow a creature to focus their vital energy into accomplishing what they previously could not. <strong>Choose:</strong> Dexterity, Insight, Might, or Willpower. Until this spell ends, the target treats the chosen Attribute as if it were one die size higher <em>(up to a maximum of d12)</em>.</p>",
+      "duration": "Scene",
       "effect_table": {
         "0": {
           "effect_kind": "open_action_menu",

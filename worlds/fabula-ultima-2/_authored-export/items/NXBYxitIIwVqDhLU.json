@@ -25,6 +25,7 @@
     "container": "nt0aSfqujhxInx6y",
     "props": {
       "cost": "15 MP",
+      "duration": "Instantaneous",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",
