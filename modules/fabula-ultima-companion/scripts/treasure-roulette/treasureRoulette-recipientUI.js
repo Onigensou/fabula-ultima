@@ -284,7 +284,10 @@
     // If we drew the stand-in, we own the stage and must clean it up. When the
     // spin parked the real panel, the FLOW owns it — it has to survive into the
     // equip screen.
-    if (_ownsStage) { kit()?.stage?.clear?.(); _ownsStage = false; }
+    // Drop what THIS screen drew, but never the backdrop: the sequence may
+    // continue into the equip screen, which expects it to still be there.
+    // Whoever started the run (TR.Flow, or the bench) clears the dim at the end.
+    if (_ownsStage) { kit()?.stage?.clear?.({ keepDim: true }); _ownsStage = false; }
 
     fn?.(result ?? null);
   }
