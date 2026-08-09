@@ -68,6 +68,13 @@
         -webkit-text-stroke: 2px #2a0f0a;
         paint-order: stroke fill;
         text-shadow: 0 0 14px rgba(255,140,90,.75), 0 0 30px rgba(255,90,50,.45);
+        animation: trArrowBobCentered 1.5s ease-in-out infinite;
+      }
+      /* The arrow is centred with a transform, so its idle bob has to carry the
+         centring too — animating transform would otherwise drop it. */
+      @keyframes trArrowBobCentered {
+        0%, 100% { transform: translate(-50%, -50%) translateX(-5px); }
+        50%      { transform: translate(-50%, -50%) translateX(7px); }
       }
 
       /* Candidate column, right of the arrow. */
@@ -104,6 +111,13 @@
         pointer-events: none; z-index: 2;
         filter: drop-shadow(0 6px 10px rgba(0,0,0,.55));
       }
+      /* The Party row shows an object, not a character. At sprite size a bag
+         reads as comically large next to the cast, so it gets its own scale. */
+      #${OVL_ID} .tr-rc-portrait.tr-rc-portrait-icon {
+        width: 74px; height: 74px; left: 12px; bottom: 50%;
+        transform: translateY(50%); object-position: center;
+      }
+
       #${OVL_ID} .tr-rc-name {
         font-size: 30px; font-weight: 800; color: #3b2314; line-height: 1;
       }
@@ -145,13 +159,13 @@
     return "";
   }
 
-  function cardHTML({ id, portrait, name, sub, selected }) {
+  function cardHTML({ id, portrait, name, sub, selected, kind }) {
     const K = kit();
     return `
       <div class="tr-rc-card${selected ? " tr-rc-selected" : ""}" data-id="${esc(id)}">
         ${/* size/position come from .tr-rc-portrait — passing them inline here
               would win over the stylesheet and silently pin the old values. */""}
-        ${K.imgHTML(portrait, { size: 0, alt: name, cls: "tr-rc-portrait", extra: "" })}
+        ${K.imgHTML(portrait, { size: 0, alt: name, cls: "tr-rc-portrait" + (kind === "party" ? " tr-rc-portrait-icon" : ""), extra: "" })}
         <div class="tr-rc-name">${esc(name)}</div>
         ${sub ? `<div class="tr-rc-sub">${esc(sub)}</div>` : ""}
       </div>`;
