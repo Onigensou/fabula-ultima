@@ -10,103 +10,6 @@
   },
   "effects": [
     {
-      "_id": "COKHUbD4Nza8q1M0",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1784466355717,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "affinity_3",
-          "mode": 0,
-          "priority": 1,
-          "value": "VU"
-        },
-        {
-          "key": "wet_status",
-          "mode": 5,
-          "priority": 1,
-          "value": "true"
-        }
-      ],
-      "description": "<p>Gain <strong>Bolt </strong>vulnerability</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "sKaI09DfDAMkJkyy",
-          "originalParentId": "XVOWOq9oUmEECGrU",
-          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-wet",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": true
-        },
-        "fabula-ultima-companion": {
-          "crossScene": true,
-          "directorPermanent": true,
-          "setBonus": "Swift Swimmers:2:ae",
-          "setBonusSig": "{\"n\":\"Wet\",\"s\":[\"5FFBDg2y54bpqgat\"],\"c\":[{\"k\":\"affinity_3\",\"m\":0,\"v\":\"VU\"},{\"k\":\"wet_status\",\"m\":5,\"v\":\"true\"}],\"di\":false,\"du\":{},\"dp\":true,\"cs\":true}",
-          "wetStatusBooleanPatchBackup_v1": {
-            "changes": [
-              {
-                "key": "affinity_3",
-                "mode": 0,
-                "priority": 1,
-                "value": "VU"
-              }
-            ],
-            "createdAt": 1777713393201,
-            "effectName": "Wet",
-            "effectUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy",
-            "parentName": "Debuff",
-            "parentType": "Item"
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/flying_sardine.png",
-      "name": "Wet",
-      "origin": null,
-      "sort": 0,
-      "statuses": [
-        "5FFBDg2y54bpqgat"
-      ],
-      "system": {
-        "tags": [
-          "debuff"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
       "_id": "Gqq6U5F48GEhLYuv",
       "_stats": {
         "compendiumSource": null,
@@ -236,6 +139,103 @@
       "statuses": [],
       "system": {
         "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Wa3bzYqjzjBiZL5P",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786297558514,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 0,
+          "priority": 1,
+          "value": "VU"
+        },
+        {
+          "key": "wet_status",
+          "mode": 5,
+          "priority": 1,
+          "value": "true"
+        }
+      ],
+      "description": "<p>Gain <strong>Bolt </strong>vulnerability</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "Wa3bzYqjzjBiZL5P",
+          "originalParentId": "gdJZ1L1kv5mjTTMr",
+          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.Wa3bzYqjzjBiZL5P"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-wet",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "crossScene": true,
+          "directorPermanent": true,
+          "setBonus": "Swift Swimmers:2:ae",
+          "setBonusSig": "{\"n\":\"Wet\",\"s\":[\"5FFBDg2y54bpqgat\"],\"c\":[{\"k\":\"affinity_3\",\"m\":0,\"v\":\"VU\"},{\"k\":\"wet_status\",\"m\":5,\"v\":\"true\"}],\"di\":false,\"du\":{},\"dp\":true,\"cs\":true}",
+          "wetStatusBooleanPatchBackup_v1": {
+            "changes": [
+              {
+                "key": "affinity_3",
+                "mode": 0,
+                "priority": 1,
+                "value": "VU"
+              }
+            ],
+            "createdAt": 1777713393201,
+            "effectName": "Wet",
+            "effectUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy",
+            "parentName": "Debuff",
+            "parentType": "Item"
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/flying_sardine.png",
+      "name": "Wet",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "5FFBDg2y54bpqgat"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
       },
       "tint": "#ffffff",
       "transfer": false,
