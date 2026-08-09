@@ -85,12 +85,12 @@
         -webkit-text-stroke: 2px #2a0f0a;
         paint-order: stroke fill;
         text-shadow: 0 0 12px rgba(255,140,90,.75), 0 0 26px rgba(255,90,50,.45);
-        animation: trArrowBob 1.5s ease-in-out infinite;
+        animation: trArrowBob 2.4s ease-in-out infinite;
       }
       /* Flow-positioned here, so a plain translate is enough. */
       @keyframes trArrowBob {
-        0%, 100% { transform: translateX(-5px); }
-        50%      { transform: translateX(7px); }
+        0%, 100% { transform: translateX(-2px); }
+        50%      { transform: translateX(3px); }
       }
       #${OVL_ID} .tr-eq-choices {
         display: flex; flex-direction: column; gap: 8px; width: 130px;
@@ -294,7 +294,9 @@
           el.addEventListener("mouseleave", () => { if (reasonEl) reasonEl.textContent = ""; });
 
           el.addEventListener("click", async () => {
-            if (slot?.legal === false) { K.Sound.play("CANCEL"); return; }
+            // Illegal slot: greyed out is the whole message. A buzzer on top of
+            // that just punishes the player for reading the screen.
+            if (slot?.legal === false) return;
             if (el.dataset.slot === activeKey) return;
             activeKey = el.dataset.slot;
             K.Sound.play("SELECT");
@@ -331,7 +333,7 @@
         };
 
         const answer = (equip) => {
-          if (equip && !refreshYes()) { K.Sound.play("CANCEL"); return; }
+          if (equip && !refreshYes()) return;   // silently inert — the button is already greyed
           K.Sound.play(equip ? "EQUIP_YES" : "EQUIP_NO");
           close({ equip, slotKey: activeKey });
         };

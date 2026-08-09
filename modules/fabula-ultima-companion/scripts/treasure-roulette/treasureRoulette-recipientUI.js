@@ -68,13 +68,13 @@
         -webkit-text-stroke: 2px #2a0f0a;
         paint-order: stroke fill;
         text-shadow: 0 0 14px rgba(255,140,90,.75), 0 0 30px rgba(255,90,50,.45);
-        animation: trArrowBobCentered 1.5s ease-in-out infinite;
+        animation: trArrowBobCentered 2.4s ease-in-out infinite;
       }
       /* The arrow is centred with a transform, so its idle bob has to carry the
          centring too — animating transform would otherwise drop it. */
       @keyframes trArrowBobCentered {
-        0%, 100% { transform: translate(-50%, -50%) translateX(-5px); }
-        50%      { transform: translate(-50%, -50%) translateX(7px); }
+        0%, 100% { transform: translate(-50%, -50%) translateX(-2px); }
+        50%      { transform: translate(-50%, -50%) translateX(3px); }
       }
 
       /* Candidate column, right of the arrow. */
