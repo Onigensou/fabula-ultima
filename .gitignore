@@ -148,3 +148,9 @@ Thumbs.db
 
 # Auto-playtest journals (sim debug output, not world data)
 worlds/*/sim-logs/
+
+# Fabula Ultima source PDFs — the canonical rules reference for skill authoring,
+# at /reference/fabula-pdfs/. Already covered by the blanket `/*` at the top of
+# this file (nothing at root is tracked unless explicitly un-ignored); recorded
+# here only so the omission reads as deliberate. They are the publisher's
+# copyrighted books, so this directory must never gain an `!` exception.
