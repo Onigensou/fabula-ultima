@@ -4543,6 +4543,21 @@ const Confirm = {
       actionSkillType: String(ar.skillType ?? "").toLowerCase(),
       actionIsCheck: !!ar.isCheck,
       actionCanMiss: !!ar.canMiss,
+      // Whether this action is a FREE cast — read by ACTION_IS_FREE_CAST.
+      // Genuinely action-level (the whole action is free or it isn't), so it
+      // belongs here rather than in one scan's literal. It USED to live only in
+      // the damage-window scan, which is precisely the fails-closed gap this
+      // block exists to close: Bimagus's follow-up gates on ACTION_IS_FREE_CAST
+      // off `creature_completes_spell`, whose CONFIRM-time pre-evaluation ran
+      // without the field, read 0, recorded the row as "conditions not met" —
+      // and `skipEvaluated` then suppressed it at RESOLVE, so the post-resolve
+      // payload that DOES carry the flag never got to re-evaluate it. Measured
+      // in a live sim 2026-08-09: no second cast was ever granted.
+      // NB: RESOLVE derives the same fact from `skipCost`, which additionally
+      // requires `topIsFreeAction(director.ctx)` (a stale grant outside a
+      // free-action frame must not count). CONFIRM keeps the unguarded read the
+      // damage window has always used, so no existing gate shifts.
+      actionIsFreeCast: !!freeActions.get(ar.attacker?.actorId)?.freeOfCost,
       actionName: ar.skillName ?? ar.weapon?.name ?? ar.kind,
       // No `?? kind` fallback: blank means "ambient" to the source-skill filter.
       sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
@@ -4726,12 +4741,11 @@ const Confirm = {
             // read 0 here, so a spell-gated damage reaction could never surface.
             actionSkillType: String(ar.skillType ?? "").toLowerCase(),
             actionIsCheck: !!ar.isCheck,
-            // Whether this is a FREE cast — read by ACTION_IS_FREE_CAST so a
-            // damage-window cost reaction (Cataclysm's overcharge → adjust_cost)
-            // can exclude free casts. The MP cost itself now comes from
+            // `actionIsFreeCast` (Cataclysm's overcharge excludes free casts)
+            // now comes from `actionBase` — same expression, one place, so every
+            // CONFIRM-time scan sees it. The MP cost itself comes from
             // `actionBase.costMp` (ACTION_COST_MP); the old rival `actionMpCost`
             // field was retired 2026-08-02 — see skill-formulas' note.
-            actionIsFreeCast: !!freeActions.get(ar.attacker?.actorId)?.freeOfCost,
             targets: allTargetUuids,
             hitTargets: hitTargetUuids,
             rawDamage: entry.rawDamage,

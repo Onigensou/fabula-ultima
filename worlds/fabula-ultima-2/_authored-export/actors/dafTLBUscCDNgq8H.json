@@ -5647,7 +5647,7 @@
             },
             "fabula-ultima-companion": {
               "directorPermanent": false,
-              "lifetimeMode": "persistent_counter",
+              "lifetimeMode": "round_end",
               "tags": [
                 "bimagus"
               ]
@@ -5702,7 +5702,7 @@
             },
             "fabula-ultima-companion": {
               "directorPermanent": false,
-              "lifetimeMode": "persistent_counter",
+              "lifetimeMode": "round_end",
               "tags": [
                 "bimagus"
               ]
@@ -5764,17 +5764,21 @@
               "effect_kind": "prompt_number",
               "effect_label": "bim_prompt",
               "prompt_label": "Bimagus — spend Mind Points (spell budget = 20 + spend)",
-              "prompt_max": "min(50, CUR_MP)",
+              "prompt_max": "min(50, 20 + CUR_MP)",
               "prompt_min": "20",
               "prompt_step": "5",
               "prompt_var": "bimagus"
             },
             "2": {
-              "cost_amount": "VAR_BIMAGUS - 20",
-              "cost_operation": "add",
-              "cost_resource": "mp",
-              "effect_kind": "adjust_cost",
-              "effect_label": "bim_cost"
+              "consume_amount": "VAR_BIMAGUS - 20",
+              "consume_resource": "mp",
+              "cost_amount": "",
+              "cost_operation": "",
+              "cost_resource": "",
+              "effect_kind": "consume_resource",
+              "effect_label": "bim_cost",
+              "on_empty": "abort",
+              "target_ref": "self"
             },
             "3": {
               "ae_initial_charges": "20 + VAR_BIMAGUS",
@@ -5810,9 +5814,26 @@
               "max_mp_cost": "AE_CHARGES_BIMAGUS_ENCORE"
             },
             "8": {
-              "effect_kind": "remove_tagged_ae",
+              "chain_steps": "bim_sweep_a, bim_sweep_b",
+              "effect_kind": "chain",
               "effect_label": "bim_sweep",
-              "filter_tag": "bimagus",
+              "filter_tag": "",
+              "target_ref": ""
+            },
+            "9": {
+              "charge_ae_name": "Bimagus",
+              "charge_amount": "0",
+              "charge_operation": "set",
+              "effect_kind": "adjust_charges",
+              "effect_label": "bim_sweep_a",
+              "target_ref": "self"
+            },
+            "10": {
+              "charge_ae_name": "Bimagus Encore",
+              "charge_amount": "0",
+              "charge_operation": "set",
+              "effect_kind": "adjust_charges",
+              "effect_label": "bim_sweep_b",
               "target_ref": "self"
             }
           },
