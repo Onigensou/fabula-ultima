@@ -17310,11 +17310,11 @@
         },
         "H0DADhpEoUIbwhex": {
           "active_class": "Spiritist",
-          "active_cost": "",
+          "active_cost": "20 MP",
           "active_description": "<p>Once per turn during a conflict, if you have an <strong>arcane</strong> weapon equipped, you may use an action and spend <strong>20 to 50 Mind Points</strong> to perform the <strong>【📕Spell】</strong> action for free <strong>twice</strong>, casting two spells without needing to pay their MP costs. If you do, the two spells must have a combined total MP cost equal to or lower than <strong>【20 + the amount of MP you spent to use this Skill】</strong>, and the second spell must have a total MP cost that is equal to or lower than half the total MP cost of the first spell.</p>",
           "active_duration": "",
           "active_level": 1,
-          "active_target": "-",
+          "active_target": "Self",
           "id": "${item.id}",
           "name": "Bimagus",
           "roll": "",
