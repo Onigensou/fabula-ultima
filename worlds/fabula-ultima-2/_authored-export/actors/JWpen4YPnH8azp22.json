@@ -1405,7 +1405,7 @@
             },
             "fabula-ultima-companion": {
               "directorPermanent": false,
-              "lifetimeMode": "round_end",
+              "lifetimeMode": "persistent_counter",
               "tags": [
                 "bimagus"
               ]
@@ -1460,7 +1460,7 @@
             },
             "fabula-ultima-companion": {
               "directorPermanent": false,
-              "lifetimeMode": "round_end",
+              "lifetimeMode": "persistent_counter",
               "tags": [
                 "bimagus"
               ]
@@ -1564,13 +1564,16 @@
               "max_mp_cost": "AE_CHARGES_BIMAGUS_ENCORE"
             },
             "8": {
-              "chain_steps": "bim_sweep_a, bim_sweep_b",
-              "effect_kind": "chain",
+              "ae_template_ref": "Bimagus, Bimagus Encore",
+              "chain_steps": "",
+              "effect_kind": "remove_ae",
               "effect_label": "bim_sweep",
               "filter_tag": "",
-              "target_ref": ""
+              "include_persistent": true,
+              "target_ref": "self"
             },
             "9": {
+              "$deleted": true,
               "charge_ae_name": "Bimagus",
               "charge_amount": "0",
               "charge_operation": "set",
@@ -1579,6 +1582,7 @@
               "target_ref": "self"
             },
             "10": {
+              "$deleted": true,
               "charge_ae_name": "Bimagus Encore",
               "charge_amount": "0",
               "charge_operation": "set",

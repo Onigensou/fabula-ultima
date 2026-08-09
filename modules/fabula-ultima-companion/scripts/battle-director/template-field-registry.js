@@ -42,6 +42,8 @@ const ADJUST_CHARGES_VIS = `equalText(sameRow("effect_kind",''), "adjust_charges
 const TRIGGER_STATUS_VIS = `equalText(sameRow("effect_kind",''), "trigger_status")`;
 // free_action — perform ONE free turn-action (skill name / "self" / type).
 const FREE_ACTION_VIS = `equalText(sameRow("effect_kind",''), "free_action")`;
+// remove_ae is the canonical AE-deletion kind; remove_tagged_ae is its alias.
+const REMOVE_AE_VIS = `or(equalText(sameRow("effect_kind",''), "remove_ae"), equalText(sameRow("effect_kind",''), "remove_tagged_ae"))`;
 // prompt_number — interactive amount picker (Blazing Tether's Burn-stack move).
 const PROMPT_NUMBER_VIS = `equalText(sameRow("effect_kind",''), "prompt_number")`;
 // prompt_element — interactive damage-type picker (Meteor Shower). Stores the
@@ -113,6 +115,10 @@ function selectCol(key, colName, options, { tooltip = "", vis = "", defaultValue
 // (Only fields prone to being added/forgotten are listed; the ensure-pass is a
 // no-op for columns that already exist, so listing a stable field is harmless.)
 export const EFFECT_TABLE_REQUIRED_COLUMNS = [
+  // remove_ae — the ONE AE-deletion verb. `ae_template_ref` (name) and
+  // `filter_tag` (tag/chargeKey) both already exist as columns; only the
+  // persistent opt-in is new.
+  checkboxCol("include_persistent", "Incl. Persistent Counters", { tooltip: "remove_ae: also delete AEs whose lifetimeMode is persistent_counter (clocks / point-pools). OFF by default so Dispel and Cleanse can never strip a resource tracker; turn ON when a skill clears a counter IT applied (e.g. Bimagus sweeping its own MP budget at turn end).", vis: REMOVE_AE_VIS }),
   // open_action_menu config
   textCol("menu_title", "Menu Title", { tooltip: "Prompt title above the option list (open_action_menu / prompt_element).", vis: `or(${OAM_VIS}, ${PROMPT_ELEMENT_VIS})` }),
   textCol("menu_subtitle", "Menu Subtitle", { tooltip: "Prompt subtitle / instruction line.", vis: OAM_VIS }),

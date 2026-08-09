@@ -3881,6 +3881,9 @@ const EFFECT_KIND_DISPATCH = {
   prompt_number:       applyPromptNumberEffect,
   prompt_element:      applyPromptElementEffect,
   roll_dice:           applyRollDiceEffect,
+  // remove_ae is the canonical spelling; remove_tagged_ae is the same handler
+  // under its original name (61 authored rows) and simply passes no ae_template_ref.
+  remove_ae:           applyRemoveTaggedAeEffect,
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
   transfer_ae:         applyTransferAeEffect,
   summon:              applySummonEffect,
@@ -4014,7 +4017,8 @@ export const EFFECT_KIND_LABELS = {
   check_die_swap:      "Check Die Swap (pre-roll: replace one accuracy die — e.g. → WLP)",
   prompt_number:       "Prompt Number (ask the user for an amount)",
   prompt_element:      "Prompt Element (ask the user for a damage type)",
-  remove_tagged_ae:    "Remove Tagged AE",
+  remove_ae:           "Remove AE (delete by name and/or tag — include_persistent for a clock)",
+  remove_tagged_ae:    "Remove Tagged AE (alias of Remove AE — prefer remove_ae)",
   transfer_ae:         "Transfer AE (move an AE to another creature, keeping charges)",
   summon:              "Summon (spawn actor(s) as own-turn combatants)",
   take_turn_next:      "Take Turn Next (a creature acts immediately after this turn)",
@@ -4119,7 +4123,15 @@ const EFFECT_KIND_PREVIEW = {
   }),
 
   remove_tagged_ae: (row) => ({
-    type: "cleanse", filter: String(row.filter_tag ?? "").trim().toLowerCase() || null,
+    type: "cleanse",
+    filter: String(row.filter_tag ?? "").trim().toLowerCase()
+      || String(row.ae_template_ref ?? "").trim().toLowerCase() || null,
+    valence: "beneficial", source: row.effect_label, targetRef: row.target_ref ?? null,
+  }),
+  remove_ae: (row) => ({
+    type: "cleanse",
+    filter: String(row.filter_tag ?? "").trim().toLowerCase()
+      || String(row.ae_template_ref ?? "").trim().toLowerCase() || null,
     valence: "beneficial", source: row.effect_label, targetRef: row.target_ref ?? null,
   }),
 
@@ -4399,7 +4411,7 @@ export async function applyEffectRow(row, ctx) {
     // `targeting` is capturable too: it PROMPTS the pick pre-card and records the
     // chosen tokens (so a no-eligible-target case aborts back to the Action Menu
     // before the card is built). applyTargetingEffect handles the capture branch.
-    const CAPTURE_KINDS = new Set(["chain", "prompt_element", "prompt_number", "open_action_menu", "remove_tagged_ae", "targeting"]);
+    const CAPTURE_KINDS = new Set(["chain", "prompt_element", "prompt_number", "open_action_menu", "remove_tagged_ae", "remove_ae", "targeting"]);
     if (!CAPTURE_KINDS.has(kind)) {
       return { ok: true, kind, applied: [], skipped: true, reason: "capture-mode-noop" };
     }
@@ -8563,14 +8575,13 @@ async function applyTransferAeEffect(row, ctx) {
     warn(`skill-effects.transfer_ae: needs ae_template_ref or filter_tag on "${row.effect_label}"`);
     return { ok: false, kind: "transfer_ae", reason: "no-ae-ref" };
   }
-  const matchesFilter = (eff) => {
-    const lifetimeMode = String(eff?.flags?.[FLAG_NS]?.lifetimeMode ?? "").trim().toLowerCase();
-    if (lifetimeMode === "persistent_counter") return false;
-    if (filterAll) return true;
-    const tags = Array.isArray(eff?.system?.tags) ? eff.system.tags : [];
-    const chargeKey = String(eff?.flags?.[FLAG_NS]?.chargeKey ?? "").trim().toLowerCase();
-    return filterTags.some((t) => tags.includes(t) || (chargeKey && chargeKey === t));
-  };
+  // Same selector remove_ae uses — "which AEs on this actor" is ONE question and
+  // must not have two answers. transfer_ae keeps persistent_counter immunity
+  // (moving somebody's clock is never intended) by not opting in.
+  const matchesFilter = (eff) => selectAEsOnActor(
+    { effects: [eff] },
+    { filterTag: filterAll ? "*" : filterTags.join(","), includePersistent: false, where: "transfer_ae" },
+  ).length > 0;
   // keep_source: COPY instead of MOVE — the matched AEs stay on the source and
   // are ALSO applied to the destination. Turns transfer_ae into a copy/share
   // primitive (Geist's Souleater "share the debuffs between you and the target":
@@ -9426,12 +9437,89 @@ async function applyCreateBondEffect(row, ctx) {
   return { ok: applied.length > 0, kind: "create_bond", applied };
 }
 
+// ── AE selection — the ONE matcher behind remove_ae / remove_tagged_ae ────
+//
+// "Pick some Active Effects on a target" was spelled two different ways in this
+// file: transfer_ae could name an AE (`ae_template_ref`) OR filter by tag, with
+// comma-lists and `*`; remove_tagged_ae could only take a single tag and had no
+// way to name one at all. Same operation, different capability — so an author
+// who could move an AE by name could not remove it by name, and reached for
+// `adjust_charges set 0` instead. One selector now.
+//
+// `include_persistent` is the ONLY intentional context-split here, and it is
+// opt-in rather than baked in: clocks / point-pools must stay immune to
+// Dispel and Cleanse (a resource tracker is not a debuff), but a skill that
+// applied its OWN counter must be able to clear it by name. Default false =
+// today's behaviour for every existing row.
+export function aeTagsOf(eff) {
+  const sys = Array.isArray(eff?.system?.tags) ? eff.system.tags : [];
+  return sys.map((t) => String(t).trim().toLowerCase()).filter(Boolean);
+}
+
+// 🪤 The canonical tag store is `system.tags`. An AE carrying tags ONLY under
+// `flags[NS].tags` is invisible to every tag filter in the engine — measured
+// 2026-08-09: 25 such AEs in the world, including Bond of Hatred, four Dance
+// variants and Ring of Regeneration. We deliberately do NOT read the flag
+// spelling as a fallback: Bond of Hatred is a BOND mis-tagged "debuff", and
+// honouring it would let Cleanse strip a Bond and Souleater transfer one. So
+// the fix for the mis-spelling is to make it LOUD, not to obey it.
+function warnIfTagsMisfiled(eff, where) {
+  const flagTags = eff?.flags?.[FLAG_NS]?.tags;
+  if (!Array.isArray(flagTags) || !flagTags.length) return;
+  if (aeTagsOf(eff).length) return;                      // has the real store too
+  warn(`skill-effects.${where}: AE "${eff.name}" carries tags ONLY under flags.${FLAG_NS}.tags `
+     + `(${JSON.stringify(flagTags)}) — the canonical store is system.tags, so NO tag filter can see it. `
+     + `Move them, or select this AE by name.`);
+}
+
+// Select AEs on an actor by NAME and/or TAG.
+//   aeName            exact (case-insensitive) name match; comma-list = any
+//                     (authored as `ae_template_ref` — the same column apply_ae
+//                      and transfer_ae use to name an AE)
+//   filterTag         tag or chargeKey; comma-list = any; "*"/"all" = every AE
+//   includePersistent allow lifetimeMode "persistent_counter" matches
+// A row may supply either, both (union), or — with includePersistent for a
+// by-name sweep — just the name.
+export function selectAEsOnActor(actor, { aeName = "", filterTag = "", includePersistent = false, where = "remove_ae" } = {}) {
+  const names = String(aeName ?? "").trim().toLowerCase()
+    .split(",").map((s) => s.trim()).filter(Boolean);
+  const rawTag = String(filterTag ?? "").trim().toLowerCase();
+  const tagAll = rawTag === "*" || rawTag === "all";
+  const tags = tagAll ? [] : rawTag.split(",").map((s) => s.trim()).filter(Boolean);
+  if (!names.length && !tags.length && !tagAll) return [];
+  return Array.from(actor?.effects ?? []).filter((eff) => {
+    const isCounter = String(eff?.flags?.[FLAG_NS]?.lifetimeMode ?? "").trim().toLowerCase() === "persistent_counter";
+    if (isCounter && !includePersistent) return false;
+    if (names.length && names.includes(String(eff?.name ?? "").trim().toLowerCase())) return true;
+    if (tagAll) return true;
+    if (!tags.length) return false;
+    warnIfTagsMisfiled(eff, where);
+    const own = aeTagsOf(eff);
+    if (tags.some((t) => own.includes(t))) return true;
+    // A charge-based status's REAL identity is its chargeKey (e.g. "burn") —
+    // templates tag inconsistently, so a tag-only match would silently skip Burn
+    // from some sources. Same identity the cost walker keys on.
+    const chargeKey = String(eff?.flags?.[FLAG_NS]?.chargeKey ?? "").trim().toLowerCase();
+    return !!chargeKey && tags.includes(chargeKey);
+  });
+}
+
+// `remove_ae` — delete matching Active Effects from the target(s).
+// `remove_tagged_ae` is the same handler under its original name (61 authored
+// rows still use it); it simply supplies no `ae_name`.
+//
+// Fields: ae_template_ref / filter_tag (at least one), include_persistent, count,
+//         target_ref.
 async function applyRemoveTaggedAeEffect(row, ctx) {
   const filterTag = String(row.filter_tag ?? "").trim().toLowerCase();
-  if (!filterTag) {
-    warn(`skill-effects.remove_tagged_ae: missing filter_tag on "${row.effect_label}"`);
+  const aeName = String(row.ae_template_ref ?? "").trim();
+  const includePersistent = row.include_persistent === true
+    || String(row.include_persistent ?? "").trim().toLowerCase() === "true";
+  if (!filterTag && !aeName) {
+    warn(`skill-effects.remove_ae: needs ae_template_ref or filter_tag on "${row.effect_label}"`);
     return { ok: false, kind: "remove_tagged_ae", reason: "no-filter-tag" };
   }
+  const _what = aeName ? `"${aeName}"` : `"${filterTag}"`;
   // count semantics: ABSENT/empty OR "all" → remove ALL matches. A number N →
   // remove N: auto-remove when N ≥ matches (nothing to choose), else show the
   // list-picker so the player chooses which N (passive ctx auto-picks). Default
@@ -9465,29 +9553,12 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
     const actor = token.actor;
     if (!actor) continue;
 
-    // Match on system.tags OR the charge-AE identity flag (chargeKey). A
-    // charge-based status's REAL identity is its chargeKey (e.g. "burn"), and
-    // templates aren't tagged consistently (some Burn templates carry only
-    // ["debuff"], or no tags) — so a tag-only match would silently skip Burn
-    // applied from those sources. chargeKey is the same identity the cost
-    // walker (findChargeAEsOnActor) keys on, so this keeps the two aligned.
-    const matches = Array.from(actor.effects ?? []).filter((eff) => {
-      // Clocks / points pools (lifetimeMode "persistent_counter" — Prophecy
-      // Points, Adoration/Grave/Brainwave clocks) are resource trackers, NOT
-      // buffs/debuffs: they are NEVER removable by a tag-filter effect
-      // (Dispel/Cleanse), regardless of how they happen to be tagged or what
-      // chargeKey they carry. persistent_counter is the canonical "clock"
-      // marker, so guarding on it makes every clock dispel-immune by construction.
-      const lifetimeMode = String(eff?.flags?.[FLAG_NS]?.lifetimeMode ?? "").trim().toLowerCase();
-      if (lifetimeMode === "persistent_counter") return false;
-      const tags = eff?.system?.tags;
-      if (Array.isArray(tags) && tags.includes(filterTag)) return true;
-      const chargeKey = String(eff?.flags?.[FLAG_NS]?.chargeKey ?? "").trim().toLowerCase();
-      return !!chargeKey && chargeKey === filterTag;
+    const matches = selectAEsOnActor(actor, {
+      aeName, filterTag, includePersistent, where: "remove_ae",
     });
 
     if (!matches.length) {
-      log(`skill-effects.remove_tagged_ae: ${actor.name} has no "${filterTag}" AE; skipping target`);
+      log(`skill-effects.remove_ae: ${actor.name} has no ${_what} AE; skipping target`);
       continue;
     }
 
