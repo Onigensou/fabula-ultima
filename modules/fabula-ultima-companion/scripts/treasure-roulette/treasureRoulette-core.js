@@ -102,7 +102,12 @@
       },
 
       award: {
-        mode: "grant", // "grant" | "chatOnly" | "none"
+        // "grant"    — Core queues AwardDispatcher; recipient must be known up-front.
+        // "deferred" — the caller (TR.Flow) owns awarding. Core locks the winner and
+        //              broadcasts the spin, but does NOT queue AwardDispatcher and does
+        //              NOT fill in a recipient — the recipient is chosen AFTER the spin.
+        // "chatOnly" | "none" — legacy, unused by the tile flow.
+        mode: "grant",
         showTransferCard: true,
         postToChatSummary: true,
         sync: {
@@ -125,6 +130,12 @@
     merged.award = { ...out.award, ...(req?.award || {}) };
     merged.award.sync = { ...out.award.sync, ...(req?.award?.sync || {}) };
 
+    // Deferred award: the recipient is chosen AFTER the spin, so never pre-fill it
+    // with the requesting user's character (the old "whoever clicked Roll!" rule).
+    if (merged.award.mode === "deferred" && req?.recipient?.actorUuid == null) {
+      merged.recipient = { actorUuid: null };
+    }
+
     // Normalize ints/bools
     merged.pool.poolSize = clamp(safeInt(merged.pool.poolSize, 8), 1, 99);
     merged.pool.rollCount = clamp(safeInt(merged.pool.rollCount, 1), 1, 99);
@@ -146,7 +157,9 @@
     if (!req.tableUuid) errors.push("Missing tableUuid (RollTable UUID).");
 
     if (!req.roller?.userId) errors.push("Missing roller.userId.");
-    if (!req.recipient?.actorUuid) {
+    // A missing recipient is EXPECTED in deferred mode (chosen after the spin) and
+    // only noteworthy otherwise.
+    if (!req.recipient?.actorUuid && req.award?.mode !== "deferred") {
       // This is allowed, but award should degrade later; still warn.
       console.warn("[TreasureRoulette][Core] recipient.actorUuid missing; award should degrade to chatOnly later.");
     }
@@ -166,9 +179,17 @@
   // --------------------------------------------------------------------------
   // Authority resolution + routing
   // --------------------------------------------------------------------------
+  // The authority GM. MUST agree with FUCompanion.isPrimaryGM() — this game runs
+  // two GM clients in real sessions, and a raw-socket request arrives at BOTH.
+  // The old body picked users.contents[0] (collection order), which is NOT
+  // necessarily game.users.activeGM (lowest id), so Core and the other gates
+  // could elect DIFFERENT hosts and roll/award the same tile twice.
   function findActiveGM() {
-    const gms = game.users?.contents?.filter(u => u?.isGM && u?.active) ?? [];
-    return gms[0] ?? null;
+    const primary = globalThis.FUCompanion?.primaryGM?.();
+    if (primary) return primary;
+    // Fallback mirrors primary-gm.js: lowest-id active GM, not collection order.
+    return (game.users?.filter?.(u => u?.isGM && u?.active) ?? [])
+      .sort((a, b) => String(a.id).localeCompare(String(b.id)))[0] ?? null;
   }
 
   function isAuthorityForRequest(req) {
@@ -611,6 +632,12 @@ function buildRewardDescriptor(req, winnerRow) {
       recipient: req.recipient,
       consumeResults: req.consumeResults,
 
+      // Travels on the wire so AwardDispatcher on EVERY client can tell a
+      // flow-owned (deferred) packet from a legacy grant packet and stay out of
+      // the way. Without this, a remote dispatcher would queue a timer and award
+      // to nobody while TR.Flow is still asking who gets it.
+      awardMode: req.award?.mode ?? "grant",
+
       serverTime: Date.now(),
       spinMs: safeInt(req.ui?.spinMs, 8000),
 
@@ -661,6 +688,10 @@ function buildRewardDescriptor(req, winnerRow) {
   // - Uses DB_resolver: await window.FUCompanion.api.getCurrentGameDb()
   // --------------------------------------------------------------------------
   async function applyRecipientFallback(req) {
+  // Deferred award: TR.Flow picks the recipient after the spin (Party Inventory or a
+  // party member). Filling one in here would defeat the whole point of the v2 flow.
+  if (req?.award?.mode === "deferred") return req;
+
   // IMPORTANT:
   // - For IP (rouletteType like "Itempoints"), do NOT fallback to Database Actor.
   // - Game rule: IP cannot be stored in DB Actor. If recipient missing, AwardDispatcher will only chat + warn.
@@ -753,14 +784,19 @@ try {
   // ignore
 }
 
-// Queue AwardDispatcher locally too (authority client might not receive its own socket)
-try {
-  const ad = window["oni.TreasureRoulette.AwardDispatcher"];
-  if (ad && typeof ad.queue === "function") {
-    ad.queue(packet);
+// Queue AwardDispatcher locally too (authority client might not receive its own socket).
+// NOT in deferred mode: there the recipient is still unknown, and AwardDispatcher's
+// ack/timeout would race TR.Flow and award to nobody. TR.Flow calls award() itself
+// once the player has picked a recipient.
+if (request.award?.mode !== "deferred") {
+  try {
+    const ad = window["oni.TreasureRoulette.AwardDispatcher"];
+    if (ad && typeof ad.queue === "function") {
+      ad.queue(packet);
+    }
+  } catch (e) {
+    // ignore
   }
-} catch (e) {
-  // ignore
 }
 
 console.log("[TreasureRoulette][Core] Locked + broadcast packet:", packet);
