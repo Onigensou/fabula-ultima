@@ -78,11 +78,13 @@
     armor:     ["armor"],
   });
 
+  // Short by design: these are tab labels in a narrow two-column grid, and
+  // "Hand" is redundant next to a hand icon's worth of context.
   const SLOT_LABELS = Object.freeze({
-    main: "Main Hand",
-    off: "Off Hand",
-    accessory1: "Accessory 1",
-    accessory2: "Accessory 2",
+    main: "Main",
+    off: "Off",
+    accessory1: "Acc 1",
+    accessory2: "Acc 2",
     armor: "Armor",
   });
 
