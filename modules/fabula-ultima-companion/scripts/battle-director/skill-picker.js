@@ -506,9 +506,13 @@ function candidateToRow(c) {
   else if (c.costVariable) costLabel = "Varied";
   else costLabel = "Free";
   // "Affordable via a cost swap" is NOT the same as affordable — show what will
-  // actually be spent (Vismagus: "10 MP → 20 HP"), so nobody clicks a spell
+  // actually be spent (Vismagus: "10 MP -> 20 HP"), so nobody clicks a spell
   // expecting to pay MP and loses double that in HP.
-  if (c.costSwap) costLabel = `${costLabel} → ${c.costSwap.label}`;
+  // ⚠ ASCII "->" on purpose. The picker stack is Inter/Signika/Segoe UI and the
+  // U+2192 arrow falls back to a glyph that renders as an EN DASH there, so
+  // "5 MP → 10 HP" read as the RANGE "5 MP – 10 HP" in the actual UI. Caught by
+  // screenshotting the menu; the console output looked fine.
+  if (c.costSwap) costLabel = `${costLabel} -> ${c.costSwap.label}`;
   const isFree = !parts.length && !c.costVariable;
   const sourceTag = c.source === "item-granted" && c.sourceItemName
     ? `<span class="source-tag" title="${escapeHtml(c.sourceItemName)}">⚔️</span> ` : "";
