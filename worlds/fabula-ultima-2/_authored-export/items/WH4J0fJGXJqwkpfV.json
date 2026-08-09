@@ -26,7 +26,7 @@
     "container": "vz3tqJwPprB8hpR1",
     "props": {
       "cost": "-",
-      "description": "<ul><li><p><em>Gain <strong>Swift</strong> (increase your <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+      "description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",
@@ -34,12 +34,12 @@
           "ae_template_ref": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.foMQpdHKjia9gJ03",
           "effect_kind": "apply_ae",
           "effect_label": "cafeaulait_swift",
-          "target_ref": "self"
+          "target_ref": "action_targets"
         }
       },
       "isCheck": false,
       "on_activate_effect_ref": "cafeaulait_swift",
-      "skill_description": "<ul><li><p><em>Gain <strong>Swift</strong> (increase your <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+      "skill_description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
       "skill_target": "One Ally",
       "skill_type": "Item",
       "type_damage": ""

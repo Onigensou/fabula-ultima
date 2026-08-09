@@ -37,6 +37,7 @@
       "name": "Golem Fragment",
       "on_activate_effect_ref": "golemfrag_shield",
       "skill_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
+      "skill_target": "One Ally",
       "skill_type": "Item"
     },
     "template": "j0F5Msw5RZ8aIB3j",

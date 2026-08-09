@@ -70,7 +70,8 @@
           "related_item_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
           "uuid": "Item.IEE1BT8rggOVnwfO"
         }
-      }
+      },
+      "skill_target": "One Creature"
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

@@ -51,6 +51,7 @@
       "name": "Turbo Remedy",
       "on_activate_effect_ref": "turboremedy_use",
       "skill_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
+      "skill_target": "All allies",
       "skill_type": "Item"
     },
     "template": "j0F5Msw5RZ8aIB3j",

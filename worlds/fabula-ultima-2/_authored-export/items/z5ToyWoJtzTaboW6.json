@@ -49,6 +49,7 @@
       "name": "Mixed Juice",
       "on_activate_effect_ref": "mixedjuice_use",
       "skill_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+      "skill_target": "One Creature",
       "skill_type": "Item"
     },
     "template": "j0F5Msw5RZ8aIB3j",

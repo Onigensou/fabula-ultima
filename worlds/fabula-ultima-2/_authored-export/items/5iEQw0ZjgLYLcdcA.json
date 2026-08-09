@@ -72,7 +72,8 @@
           "related_item_description": "<ul><li><p><em>All allies recover <strong>50 Hit Points</strong>.</em></p></li></ul>",
           "uuid": "Item.jwexX699IchAonpS"
         }
-      }
+      },
+      "skill_target": "All allies"
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,

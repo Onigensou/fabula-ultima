@@ -60,7 +60,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
+      "description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
       "dragon_ef": "100",
       "effect_table": {
         "0": {
@@ -69,7 +69,7 @@
           "ae_template_ref": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.foMQpdHKjia9gJ03",
           "effect_kind": "apply_ae",
           "effect_label": "cafeaulait_swift",
-          "target_ref": "self"
+          "target_ref": "action_targets"
         }
       },
       "elemental_ef": "100",
@@ -128,7 +128,7 @@
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
       "set_name": "",
-      "skill_target": "Self",
+      "skill_target": "One Ally",
       "soldier_ef": "100",
       "spirit_ef": "100",
       "type_damage": "Physical",

@@ -1434,7 +1434,7 @@
       "system": {
         "container": "CNKnuIJzsIVPR0GD",
         "props": {
-          "description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+          "description": "<ul><li><p><em>Target ally gains <strong>Strong</strong> (increase their <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "effect_table": {
             "0": {
               "ae_duplicate_mode": "replace",
@@ -1442,12 +1442,13 @@
               "ae_template_ref": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.SNtz75qDr9oLQmLI",
               "effect_kind": "apply_ae",
               "effect_label": "bluebovine_strong",
-              "target_ref": "self"
+              "target_ref": "action_targets"
             }
           },
           "name": "Blue Bovine",
           "on_activate_effect_ref": "bluebovine_strong",
-          "skill_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+          "skill_description": "<ul><li><p><em>Target ally gains <strong>Strong</strong> (increase their <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+          "skill_target": "One Ally",
           "skill_type": "Item"
         },
         "template": "j0F5Msw5RZ8aIB3j",
@@ -1588,6 +1589,55 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "KoC4PHdQrp7r4rM9"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "bx8p5ji8rhvbMVPv",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786235210132,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral.png",
+      "name": "Golem Fragment",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "goV9gV4SZ232oKZ4",
+        "props": {
+          "description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "golemfrag_shield",
+              "grant_amount": "5",
+              "grant_resource": "shield",
+              "target_ref": "action_targets"
+            }
+          },
+          "name": "Golem Fragment",
+          "on_activate_effect_ref": "golemfrag_shield",
+          "skill_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
+          "skill_target": "One Ally",
+          "skill_type": "Item"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278387,
+        "unique": false,
+        "uniqueId": "zF5H6P553x8T5duB"
       },
       "type": "equippableItem"
     },
@@ -2330,7 +2380,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong>&nbsp;die by 1 stage&nbsp;</em>(to a maximum for D12))<em>&nbsp;for the rest of the scene.</em></p></li></ul>",
+          "description": "<ul><li><p><em>Target ally gains <strong>Strong</strong> (increase their <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "dragon_ef": "100",
           "effect_table": {
             "0": {
@@ -2339,7 +2389,7 @@
               "ae_template_ref": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.SNtz75qDr9oLQmLI",
               "effect_kind": "apply_ae",
               "effect_label": "bluebovine_strong",
-              "target_ref": "self"
+              "target_ref": "action_targets"
             }
           },
           "elemental_ef": "100",
@@ -2396,6 +2446,7 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
+          "skill_target": "One Ally",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
@@ -4068,6 +4119,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "bx8p5ji8rhvbMVPv": {
+              "id": "${item.id}",
+              "name": "Golem Fragment",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.bx8p5ji8rhvbMVPv"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -4079,12 +4140,20 @@
           "recipe_kind": "",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "bx8p5ji8rhvbMVPv": {
+              "id": "${item.id}",
+              "name": "Golem Fragment",
+              "related_item_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.bx8p5ji8rhvbMVPv"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
           "skill_tags": "",
-          "skill_target": "One Enemy",
+          "skill_target": "One Ally",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
@@ -5316,7 +5385,7 @@
         "container": "vS9KOLFe1mIhiJBi",
         "props": {
           "cost": "-",
-          "description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+          "description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -5328,6 +5397,7 @@
           },
           "isCheck": false,
           "on_activate_effect_ref": "cafeaulait_swift",
+          "skill_description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "skill_target": "One Ally",
           "skill_type": "Item",
           "type_damage": ""
@@ -9015,14 +9085,14 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
+          "description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "dragon_ef": "100",
           "effect_table": {
             "0": {
               "ae_template_ref": "Swift",
               "effect_kind": "apply_ae",
               "effect_label": "cafeaulait_swift",
-              "target_ref": "self"
+              "target_ref": "action_targets"
             }
           },
           "elemental_ef": "100",
@@ -9079,6 +9149,7 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
+          "skill_target": "One Ally",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
