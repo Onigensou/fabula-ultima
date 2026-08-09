@@ -623,6 +623,17 @@
     const slotKey = choice.slotKey ?? payload.preferredSlotKey;
     if (!slotKey) return;
 
+    // Authoritative legality re-check. applyEquipmentSwap does NOT reject on
+    // martial grounds, so the UI gate is the only thing standing between a
+    // stale or bypassed submission and an illegal loadout. Re-verify here
+    // rather than trusting what came back from the screen.
+    const chosen = (payload.slots ?? []).find((s) => s.key === slotKey);
+    if (chosen && chosen.legal === false) {
+      warn(`refusing illegal equip: ${granted.name} → ${slotKey} (${chosen.reason})`);
+      ui.notifications?.warn?.(`Cannot equip ${granted.name}: ${chosen.reason}`);
+      return;
+    }
+
     const mod = await equipMod();
     if (!mod?.applyEquipmentSwap) {
       warn("applyEquipmentSwap unavailable — equip skipped.");

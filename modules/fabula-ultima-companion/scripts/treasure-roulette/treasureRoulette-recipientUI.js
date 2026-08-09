@@ -73,12 +73,12 @@
       /* Candidate column, right of the arrow. */
       #${OVL_ID} .tr-rc-list {
         position: absolute; left: 44vw; top: 50vh; transform: translateY(-50%);
-        display: flex; flex-direction: column; gap: 30px;
+        display: flex; flex-direction: column; gap: 40px;
         width: 430px; max-height: 84vh; overflow: visible;
       }
 
       #${OVL_ID} .tr-rc-card {
-        position: relative; height: 84px; padding: 0 20px 0 104px;
+        position: relative; height: 70px; padding: 0 20px 0 116px;
         display: flex; align-items: center;
         border-radius: 10px; cursor: pointer;
         background: linear-gradient(178deg, #f3e5c4 0%, #e7d7b7 55%, #dcc9a4 100%);
@@ -99,8 +99,8 @@
          the overhang — otherwise it lands on top of the card above. z-index
          keeps it over its own card while the next card still draws above it. */
       #${OVL_ID} .tr-rc-portrait {
-        position: absolute; left: -4px; bottom: 0;
-        width: 88px; height: 96px; object-fit: contain; object-position: bottom;
+        position: absolute; left: -8px; bottom: -2px;
+        width: 118px; height: 134px; object-fit: contain; object-position: bottom;
         pointer-events: none; z-index: 2;
         filter: drop-shadow(0 6px 10px rgba(0,0,0,.55));
       }
@@ -196,6 +196,9 @@
     const overlay = document.createElement("div");
     overlay.id = OVL_ID;
     if (!interactive) overlay.classList.add("tr-rc-spectator");
+    // When the sequence already owns a backdrop, don't paint a second one —
+    // stacking two 0.72 dims reads noticeably darker than either screen alone.
+    if (K.stage.hasDim()) overlay.style.background = "transparent";
     overlay.innerHTML = `
       <div class="tr-rc-title">Give to</div>
       <div class="tr-rc-arrow">&#9654;</div>
