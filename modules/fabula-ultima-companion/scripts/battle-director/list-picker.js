@@ -47,8 +47,12 @@
 //     imageUrl?,             // 40px icon image URL
 //     fallbackIcon?,         // HTML (e.g. FA <i>) shown when no imageUrl
 //     badge?,                // right-aligned HTML chip (e.g. a cost badge)
+//     glow?,                 // "danger" — soft pulsing red glow on the ROW, for a
+//                            // selectable but costly choice (HP-funded spell)
 //     badgeTone?,            // "free" (green) | "danger" (red) | "warning" (amber,
-//                            // selectable but not an ordinary spend) | undefined
+//                            // selectable but not an ordinary spend)
+//                            // | "swap" (saturated red — paying with something
+//                            // that hurts) | undefined
 //     badges?,               // Array<{ text, tone? }> — the trailing cell is a
 //                            // LIST of chips, all on one baseline at equal
 //                            // height, laid out with a gap so they can never
@@ -136,6 +140,13 @@ function ensureStyles() {
     .fud-lp-card .fud-lp-options {
       display: flex; flex-direction: column; gap: 6px;
       overflow-y: auto; flex: 1; min-height: 0;
+      /* overflow-y:auto forces overflow-x to compute to auto as well, so the
+         scroll box CLIPS a row's outer glow at its left/right edge — the cut-off
+         look. Inset the rows with padding and pull the box back out by the same
+         amount, so the glow has somewhere to bleed and the row width is
+         unchanged. (No backticks in this block — it lives inside a JS template
+         literal.) */
+      padding: 5px 8px; margin: -5px -8px;
     }
     /* Optional tab bar (tabbed mode, ≥2 sections). Each section is a panel. */
     .fud-lp-card .fud-lp-tabs { display: flex; gap: 4px; margin-bottom: 8px; flex-shrink: 0; }
@@ -287,11 +298,48 @@ function ensureStyles() {
     .fud-lp-card .fud-lp-option .fud-lp-badge.is-danger {
       background: rgba(110, 30, 30, 0.18); border-color: rgba(110, 30, 30, 0.32); color: #6b1e1e;
     }
-    /* "warning" = selectable, but NOT an ordinary spend. A cost-swap row
-       (Vismagus: "10 MP → 20 HP") is clickable yet must not read as affordable
-       the normal way — amber sits deliberately between is-free and is-danger. */
+    /* "warning" = selectable, but NOT an ordinary spend. Amber sits
+       deliberately between is-free and is-danger. */
     .fud-lp-card .fud-lp-option .fud-lp-badge.is-warning {
       background: rgba(140, 95, 20, 0.20); border-color: rgba(140, 95, 20, 0.38); color: #7a5310;
+    }
+    /* "swap" = paying with something that HURTS (Vismagus buying a spell with
+       HP). It must never be mistaken for is-danger, which on a dimmed row means
+       "you can't afford this" — so the two differ in HUE and TREATMENT, not
+       just shade: is-danger is a flat, muted BRICK fill; is-swap is an OUTLINED
+       CRIMSON chip on a full-brightness row. Crimson also reads as vitality/
+       blood rather than as an error. A first pass used a solid saturated red
+       and was rejected for being both too loud and too close to is-danger. */
+    .fud-lp-card .fud-lp-option .fud-lp-badge.is-swap {
+      background: rgba(196, 52, 96, 0.12);
+      border-color: rgba(170, 28, 74, 0.62);
+      color: #a3164a; font-weight: 800;
+    }
+    /* Row glow — the option itself is marked as a costly choice. SOFT and
+       slowly breathing: a 2.6s ease-in-out pulse over a low-alpha base, so it
+       draws the eye without competing with the parchment or nagging. */
+    /* ⚠ box-shadow is ONE property — the keyframes must REPEAT the row's base
+       lift + inner highlight, or the animation replaces them and the row goes
+       flat. That, not the colour, is what made the first attempt look wrong. */
+    @keyframes fud-lp-glow-danger {
+      0%, 100% { box-shadow: 0 2px 0 rgba(41, 33, 24, 0.25),
+                             0 0 0 1px rgba(255, 255, 255, 0.8) inset,
+                             0 0 5px 0px rgba(196, 52, 96, 0.16); }
+      50%      { box-shadow: 0 2px 0 rgba(41, 33, 24, 0.25),
+                             0 0 0 1px rgba(255, 255, 255, 0.8) inset,
+                             0 0 10px 2px rgba(196, 52, 96, 0.32); }
+    }
+    .fud-lp-card .fud-lp-option.is-glow-danger {
+      border-color: rgba(170, 28, 74, 0.38);
+      animation: fud-lp-glow-danger 2.6s ease-in-out infinite;
+    }
+    .fud-lp-card .fud-lp-option.is-glow-danger:hover { animation-duration: 1.5s; }
+    /* Motion is decoration — the crimson chip already carries the meaning. */
+    @media (prefers-reduced-motion: reduce) {
+      .fud-lp-card .fud-lp-option.is-glow-danger { animation: none;
+        box-shadow: 0 2px 0 rgba(41, 33, 24, 0.25),
+                    0 0 0 1px rgba(255, 255, 255, 0.8) inset,
+                    0 0 8px 1px rgba(196, 52, 96, 0.24); }
     }
     /* Trailing chip LIST. Every chip is a .fud-lp-badge, so a "No HR" tag and a
        cost badge share one baseline and one height; the gap keeps them from ever
@@ -540,7 +588,8 @@ export async function pickFromList({
     ];
     const chipCls = (tone) => tone === "free" ? " is-free"
       : tone === "danger" ? " is-danger"
-      : tone === "warning" ? " is-warning" : "";
+      : tone === "warning" ? " is-warning"
+      : tone === "swap" ? " is-swap" : "";
     const badgeHTML = chips.length
       ? `<div class="fud-lp-badges">${chips.map((c) => `<div class="fud-lp-badge${chipCls(c.tone)}">${c.text}</div>`).join("")}</div>`
       : `<div></div>`;
@@ -548,10 +597,13 @@ export async function pickFromList({
     const trailingHTML = multiSelect ? `<div class="fud-lp-check" aria-hidden="true">✓</div>` : badgeHTML;
     const secHTML = row.secondary ? `<div class="secondary${row.secondaryNoWrap ? " is-nowrap" : ""}">${row.secondary}</div>` : "";
     const stampHTML = row.stamp ? `<span class="fud-lp-stamp">${escapeHtml(row.stamp)}</span>` : "";
+    // Optional soft pulsing glow marking a costly choice (e.g. a Vismagus
+    // HP-funded spell). Decoration only — the chip carries the meaning.
+    const glowCls = row.glow === "danger" ? " is-glow-danger" : "";
     const accent = row.color ? ` style="border-left: 4px solid ${row.color};"` : "";
     const tipAttr = row.tooltip ? ` data-fud-lp-tip="${encodeURIComponent(JSON.stringify(row.tooltip))}"` : "";
     return `
-      <div class="fud-lp-option${disabled ? " is-disabled" : ""}" data-fud-lp-idx="${idx}" role="button" tabindex="0"${accent}${tipAttr}>
+      <div class="fud-lp-option${disabled ? " is-disabled" : ""}${glowCls}" data-fud-lp-idx="${idx}" role="button" tabindex="0"${accent}${tipAttr}>
         <div class="icon">${iconInner}</div>
         <div class="info">
           <div class="primary">${row.primary ?? ""}</div>

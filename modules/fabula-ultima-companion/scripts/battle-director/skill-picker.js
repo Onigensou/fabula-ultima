@@ -177,7 +177,7 @@ function stripHtml(html) {
 //     rawCost, parsedCost, costMap, affordable, missingResources,
 //     source: "actor" | "item-granted", sourceItemUuid, sourceItemName,
 //   }
-export async function gatherSkillsForActor(actor) {
+export async function gatherSkillsForActor(actor, { freeOfCost = false } = {}) {
   if (!actor) return [];
   const candidates = [];
   const seenUuids = new Set();
@@ -208,7 +208,7 @@ export async function gatherSkillsForActor(actor) {
     const container = String(item.system?.container ?? "").trim();
     if (container && container !== "-" && !isMergedArcanumChild(item, actor)) continue;
     if (seenUuids.has(item.uuid)) continue;
-    const cand = buildCandidateFromItem(item, actor, { source: "actor", sourceItem: null });
+    const cand = buildCandidateFromItem(item, actor, { source: "actor", sourceItem: null, freeOfCost });
     if (!cand) continue;
     seenUuids.add(item.uuid);
     candidates.push(cand);
@@ -258,7 +258,7 @@ export async function gatherSkillsForActor(actor) {
       if (!isEquipped && !skillDeclaresVersatile(skill)) continue;
       if (seenUuids.has(skill.uuid)) continue;
       if (knownNames.has(String(skill.name ?? "").trim().toLowerCase())) continue;
-      const cand = candidateFromSkill(skill, actor, { source: "item-granted", sourceItem: item });
+      const cand = candidateFromSkill(skill, actor, { source: "item-granted", sourceItem: item, freeOfCost });
       if (!cand) continue;
       seenUuids.add(skill.uuid);
       candidates.push(cand);
@@ -284,7 +284,7 @@ const CHARGE_LABELS = {
 
 // Build a candidate from props (shared by the live-item walk and the
 // fromUuid path). `skill` is the resolved Item doc.
-function candidateFromSkill(skill, actor, { source, sourceItem }) {
+function candidateFromSkill(skill, actor, { source, sourceItem, freeOfCost = false }) {
   // Helper skills are sub-actions invoked only by another skill's `free_action`
   // (e.g. each Starfall comet) — never a directly-pickable turn-action. Flagged
   // via `flags.fabula-ultima-companion.helperSkill` (an item flag, NOT a CSB
@@ -356,7 +356,14 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
   // covers the shortfall. Mirrors min_remaining, so we never offer a swap the
   // gate would refuse. Not a Vismagus special case — the dispatcher is generic.
   let costSwap = null;
-  if (!gate.ok && canSubstituteForShortfall(gate.missing, p.skill_type)) {
+  // `freeOfCost` — this pick is for a grant that pays NOTHING (Bimagus's two
+  // free spells). The debit is skipped at RESOLVE, so the caster's MP is
+  // irrelevant here and no substitution is needed. Without this the picker
+  // gated a free cast on MP the caster never spends: at low MP it disabled
+  // every spell outright (Bimagus unusable exactly when you'd want it), and
+  // once substitutions landed it started offering to burn HP for a spell that
+  // was already free. Caught by screenshotting the free-cast menu.
+  if (!freeOfCost && !gate.ok && canSubstituteForShortfall(gate.missing, p.skill_type)) {
     costSwap = findCostSubstitution(actor, costMap);
   }
   // Combined affordability: resource gate AND charge gate. Charge shortfalls
@@ -431,7 +438,10 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
     configDebit,
     chargeCostParts,
     costVariable,
-    affordable,
+    // A granted free cast pays nothing at RESOLVE (skipCost), so the caster's
+    // pools are irrelevant to whether the row is pickable.
+    affordable: freeOfCost ? (chargeMissing.length === 0) : affordable,
+    freeOfCost,
     // Non-null when the entry is only clickable BECAUSE a cost swap covers the
     // shortfall — the row must not read as ordinarily affordable.
     costSwap,
@@ -505,15 +515,17 @@ function candidateToRow(c) {
   else if (parts.length) costLabel = parts.join(", ");
   else if (c.costVariable) costLabel = "Varied";
   else costLabel = "Free";
-  // "Affordable via a cost swap" is NOT the same as affordable — show what will
-  // actually be spent (Vismagus: "10 MP -> 20 HP"), so nobody clicks a spell
-  // expecting to pay MP and loses double that in HP.
-  // ⚠ ASCII "->" on purpose. The picker stack is Inter/Signika/Segoe UI and the
-  // U+2192 arrow falls back to a glyph that renders as an EN DASH there, so
-  // "5 MP → 10 HP" read as the RANGE "5 MP – 10 HP" in the actual UI. Caught by
-  // screenshotting the menu; the console output looked fine.
-  if (c.costSwap) costLabel = `${costLabel} -> ${c.costSwap.label}`;
-  const isFree = !parts.length && !c.costVariable;
+  // A swap-funded row shows ONLY what is actually spent — the HP. The MP figure
+  // is what you CANNOT pay, so leading with it (the old "5 MP -> 10 HP") buried
+  // the real price behind a number that never leaves your pool. The full
+  // conversion still shows in the dwell tooltip for anyone who wants it.
+  const swapCostLabel = c.costSwap ? c.costSwap.label : null;
+  const fullSwapLabel = c.costSwap ? `${costLabel} -> ${c.costSwap.label}` : null;
+  if (swapCostLabel) costLabel = swapCostLabel;
+  // A granted free cast pays nothing, so the printed cost is not what happens.
+  // Say "Free" and let the MP cap (Max N MP) carry the only real restriction.
+  if (c.freeOfCost) costLabel = "Free";
+  const isFree = c.freeOfCost || (!parts.length && !c.costVariable);
   const sourceTag = c.source === "item-granted" && c.sourceItemName
     ? `<span class="source-tag" title="${escapeHtml(c.sourceItemName)}">⚔️</span> ` : "";
   const safeImg = c.img && !/['"<>\n\r]/.test(c.img) ? c.img : "icons/svg/sun.svg";
@@ -541,19 +553,30 @@ function candidateToRow(c) {
     secondary,
     // Sits in the trailing chip list ALONGSIDE the cost badge below (they share a
     // baseline and can't collide), rather than as a separate corner tag.
-    ...(noHighRoll ? { badges: [{ text: "No HR", tone: "danger" }] } : {}),
+    // Chips render LEFT of the single `badge`, so naming the swap's source here
+    // puts "Vismagus" immediately left of the HP cost — the player sees WHICH
+    // trait is letting them cast, not just that something is.
+    ...((noHighRoll || c.costSwap) ? {
+      badges: [
+        ...(noHighRoll ? [{ text: "No HR", tone: "danger" }] : []),
+        ...(c.costSwap?.sourceName ? [{ text: escapeHtml(c.costSwap.sourceName), tone: "swap" }] : []),
+      ],
+    } : {}),
     badge: hardBlock ? escapeHtml(hardBlock) : escapeHtml(costLabel),
-    // A swap-funded row gets its own tone: clickable, but visibly not a normal
-    // MP spend.
+    // A swap-funded row gets the loud `swap` tone: clickable, but paid for with
+    // something that hurts.
     badgeTone: hardBlock ? "danger"
       : (isFree ? "free"
-      : (c.costSwap ? "warning" : (c.affordable ? null : "danger"))),
+      : (c.costSwap ? "swap" : (c.affordable ? null : "danger"))),
+    // Soft pulsing red glow so the whole row — not just the chip — reads costly.
+    ...(c.costSwap && !hardBlock ? { glow: "danger" } : {}),
     ...(rangeBlocked ? { stamp: rangeBlocked } : {}),
     disabled: !!hardBlock || !!rangeBlocked || !c.affordable,
     tooltip: {
       name: c.name,
       body: stripHtml(c.descriptionHtml || "(no description)"),
-      cost: isFree ? null : costLabel,
+      // Tooltip keeps the FULL conversion the badge deliberately drops.
+      cost: isFree ? null : (fullSwapLabel ?? costLabel),
       missing: c.missingResources.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ") || null,
     },
   };
@@ -584,6 +607,9 @@ export async function pickSkill({
   // off-limits. Variable-cost spells gate on their MINIMUM mp (resolveCost at
   // variableAmount=0); the player can still keep the paid amount under the cap.
   maxMpCost = null,
+  // The grant pays no resource cost (Bimagus's free spells) — gate on the MP
+  // CAP only, never on the caster's current pools.
+  freeOfCost = false,
   // Range-class lockout (Snared blocks melee, Obscure blocks ranged), as plain
   // data: { melee: reason|null, ranged: reason|null }. Used by the NPC Attack
   // picker, whose rows ARE the attacks — a blocked one is shown disabled and
@@ -592,7 +618,7 @@ export async function pickSkill({
   // weapon picker gives and the same object as a Stagger/Panic blade stamp.
   rangeBlock = null,
 }) {
-  const all = await gatherSkillsForActor(actor);
+  const all = await gatherSkillsForActor(actor, { freeOfCost });
   // Drop reaction-only items: they carry a skill_type label ("Active"/"Spell")
   // but their behavior is entirely triggered (reaction_config_table, no active
   // body), so they aren't turn-actions and would be a no-op if picked.

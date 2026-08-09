@@ -1033,6 +1033,11 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell,
       excludeIntents,
       allowedRefs,
       maxMpCost,
+      // Bimagus grants its two spells free_of_cost. Without this the picker
+      // gates a free cast on MP the caster never spends — at low MP it disabled
+      // every spell, and with substitutions live it offered to burn HP for a
+      // spell that was already free.
+      freeOfCost: grant?.freeOfCost === true,
     }),
     cancelSentinel,
   );
