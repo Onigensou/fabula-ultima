@@ -642,6 +642,22 @@
     await sleep(REVEAL_MOVE_MS);
     banner.classList.add("oni-in");
     await sleep(REVEAL_HOLD_MS);
+
+    // Hand the panel off to the loot stage: it slides to the parked position on
+    // the left and STAYS THERE while the recipient screen builds around it.
+    // Transplanting the live node (rather than fading here and re-drawing there)
+    // means there is no blank frame between the two screens and nothing to keep
+    // pixel-matched between two renderers.
+    try {
+      const K = globalThis.ONI?.TreasureRoulette?.UIKit;
+      if (K?.stage?.park) {
+        banner.remove();               // the name is re-stated by the next screen
+        K.stage.park(winner);
+        await sleep(160);              // let the glide begin before the dim lifts
+      }
+    } catch (e) {
+      console.warn("[TreasureRoulette][UI] park failed; falling back to fade:", e);
+    }
   }
 
   async function easeIn(overlayEl) {

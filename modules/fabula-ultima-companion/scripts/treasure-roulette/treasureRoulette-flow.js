@@ -550,6 +550,12 @@
         }
       }
 
+      // The reward panel travelled from the reveal and sat on the loot stage
+      // across both screens. This is the only place that knows the whole
+      // sequence is over, so this is where it gets torn down.
+      try { globalThis.ONI?.TreasureRoulette?.UIKit?.stage?.clear?.(); }
+      catch (e) { warn("stage clear failed:", e); }
+
       _busy.delete(tileDoc.id);
 
       if (packet) {

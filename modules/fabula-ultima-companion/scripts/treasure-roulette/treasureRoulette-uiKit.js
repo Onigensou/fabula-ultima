@@ -231,6 +231,69 @@
     document.head.appendChild(s);
   }
 
+  // ── The loot stage ────────────────────────────────────────────────────────
+  // A layer that outlives the individual screens, so the reward panel can travel
+  // from the reveal into the recipient screen instead of the screen going blank
+  // between two overlays.
+  //
+  // park() TRANSPLANTS the live winner panel node out of the roulette overlay
+  // and into this layer — it is the same element, so there is no re-render, no
+  // flicker, and no need to match two renderers pixel-for-pixel.
+  const STAGE_ID = "oni-tr-stage";
+  const PARK_LEFT_VW = 22;   // where the reward panel comes to rest (mockup: left)
+
+  function ensureStage() {
+    let st = document.getElementById(STAGE_ID);
+    if (st) return st;
+    st = document.createElement("div");
+    st.id = STAGE_ID;
+    st.style.cssText =
+      "position:fixed;inset:0;z-index:9999997;pointer-events:none;";
+    document.body.appendChild(st);
+    return st;
+  }
+
+  /**
+   * Move a live panel node into the stage and glide it to the parked position.
+   * @param {HTMLElement} node the winner panel (already on screen)
+   */
+  function park(node) {
+    if (!node) return null;
+    const stage = ensureStage();
+
+    // Freeze current viewport position so the transplant doesn't jump.
+    const r = node.getBoundingClientRect();
+    node.style.transition = "none";
+    node.style.position = "fixed";
+    node.style.left = `${r.left + r.width / 2}px`;
+    node.style.top = `${r.top + r.height / 2}px`;
+    node.style.margin = "0";
+    node.style.transform = "translate(-50%, -50%)";
+    stage.appendChild(node);
+
+    // Next frame: animate to the park slot.
+    requestAnimationFrame(() => {
+      node.style.transition =
+        "left 520ms cubic-bezier(.2,.9,.2,1), top 520ms cubic-bezier(.2,.9,.2,1), transform 520ms cubic-bezier(.2,.9,.2,1)";
+      node.style.left = `${PARK_LEFT_VW}vw`;
+      node.style.top = "50vh";
+      node.style.transform = "translate(-50%, -50%) scale(1)";
+    });
+
+    stage.dataset.parked = "1";
+    return node;
+  }
+
+  const hasParked = () => document.getElementById(STAGE_ID)?.dataset.parked === "1";
+
+  function clearStage() {
+    const st = document.getElementById(STAGE_ID);
+    if (!st) return;
+    st.style.transition = "opacity 260ms ease";
+    st.style.opacity = "0";
+    setTimeout(() => st.remove(), 280);
+  }
+
   // ── Sound ─────────────────────────────────────────────────────────────────
   // Ported from the check-requester conventions (same registry shape, same
   // local-only playback). Cues are provisional — handpick and tune later.
@@ -273,6 +336,8 @@
     describeHTML,
     // motion
     staggerIn, staggerOut, ensureKitStyles, STAGGER_MS, ENTER_MS, EXIT_MS,
+    // the travelling reward panel
+    stage: { ensure: ensureStage, park, clear: clearStage, hasParked, PARK_LEFT_VW },
     // sound
     Sound: { play, preloadAll, SOUNDS, VOLUME },
     esc,
