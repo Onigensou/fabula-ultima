@@ -410,7 +410,7 @@
         });
 
         const answer = (equip) => {
-          K.Sound.play(equip ? "EQUIP_YES" : "CANCEL");
+          K.Sound.play(equip ? "EQUIP_YES" : "EQUIP_NO");
           close({ equip, slotKey: activeKey });
         };
 

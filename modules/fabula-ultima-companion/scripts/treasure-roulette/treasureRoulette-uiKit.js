@@ -293,8 +293,13 @@
     if (st) return st;
     st = document.createElement("div");
     st.id = STAGE_ID;
+    // ABOVE the screens (which sit at 9999998), not below them. The screens
+    // paint a dark backdrop across the whole viewport, so a stage underneath
+    // gets dimmed by it — the parked reward would read as greyed-out even
+    // though it is part of the same UI. pointer-events:none keeps it from
+    // swallowing clicks meant for the list behind it.
     st.style.cssText =
-      "position:fixed;inset:0;z-index:9999997;pointer-events:none;";
+      "position:fixed;inset:0;z-index:9999999;pointer-events:none;";
     document.body.appendChild(st);
     return st;
   }
@@ -365,10 +370,15 @@
     SELECT:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav",
     CONFIRM:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
     CANCEL:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Buzzer2.ogg",
-    EQUIP_YES:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/success_4.wav",
+    // Equip yes/no. YES borrows the Equipment system's own confirm sound
+    // (Soundboard/Key.ogg, per [Macro] Equipment.js) so swapping gear sounds
+    // the same wherever the player does it.
+    EQUIP_YES:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Key.ogg",
+    EQUIP_NO:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_3.wav",
   });
   const VOLUME = Object.freeze({
-    PANEL_IN: 0.35, HOVER: 0.25, SELECT: 0.5, CONFIRM: 0.6, CANCEL: 0.5, EQUIP_YES: 0.7,
+    PANEL_IN: 0.35, HOVER: 0.25, SELECT: 0.5, CONFIRM: 0.6, CANCEL: 0.5,
+    EQUIP_YES: 0.7, EQUIP_NO: 0.6,
   });
 
   function play(key) {
