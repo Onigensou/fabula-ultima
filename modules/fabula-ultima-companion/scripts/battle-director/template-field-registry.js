@@ -234,7 +234,14 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // apply_action_keyword config — which keyword to tag the in-flight hit with.
   // Extensible: each new keyword = one option here + one branch in
   // recomputePerTargetDamages. Author via a creature_will_deal_damage reaction
-  // (e.g. Chomp: TRIGGER_IS_SELF == 1 && RAW_DAMAGE >= 100 → apply_action_keyword pierce).
+  // (e.g. Chomp: FINAL_DAMAGE >= 100 → apply_action_keyword crush).
+  // ⚠ Not every keyword can live here. This row applies at damage recompute, so
+  // it can only carry keywords the engine reads AT THAT POINT. `pierce` is read
+  // much earlier — action-profile.js `describePrimary` sets `pierce:
+  // keywords.includes("pierce")` at the PRIMARY stage, where pierceMiss
+  // (50%-on-miss) is decided, before any damage exists. A damage-conditional
+  // Pierce is therefore not expressible; declare Pierce inherently on the item's
+  // `action_keywords` prop instead.
   selectCol("action_keyword", "Action Keyword", [
     { key: "drain",  value: "Drain (heal user 50% of damage dealt)" },
     { key: "crush",  value: "Crush (step affinity down one level)" },
@@ -245,8 +252,9 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // Used for: tier-gating Gadgets infusions (GADGET_INFUSION_TIER >= 2), Prepare-
   // to-Charge style conditionals, Soul Steal HIT_COUNT > 0, etc. Always visible.
   // SPECIAL CASE: on an apply_action_keyword row the gate is evaluated LATER (post
-  // pre-resolve bonuses) so it may reference FINAL_DAMAGE (e.g. Chomp pierce:
-  // "FINAL_DAMAGE >= 100"); on every other kind it's a dispatch-time gate.
+  // pre-resolve bonuses) so it may reference FINAL_DAMAGE (e.g. Chomp's crush:
+  // "FINAL_DAMAGE >= 100"); on every other kind it's a dispatch-time gate. That
+  // late evaluation is exactly why `pierce` cannot be granted this way.
   textCol("condition_formula", "Row Condition", { tooltip: "Generic gate: blank = always. Falsy → skip this row (chain continues); on a menu-option row, falsy also HIDES the option. e.g. GADGET_INFUSION_TIER >= 2, HIT_COUNT > 0. (apply_action_keyword: evaluated post-bonus, may use FINAL_DAMAGE.)", vis: "" }),
   // notify — surface a short message (stub branches / info toast).
   textCol("notify_message", "Notify Message", { tooltip: "notify: the text shown (chat + UI toast). e.g. \"Alchemy gadgets are not yet implemented.\"", vis: NOTIFY_VIS }),
