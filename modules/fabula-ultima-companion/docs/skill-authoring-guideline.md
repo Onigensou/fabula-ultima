@@ -349,6 +349,25 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
   columns are silently stripped): one line in `template-field-registry.js`, with
   the mandatory CSB version bump.
 
+- **I3a — 🔍 REVIEW GATE 1: a second instance reads the authored change BEFORE
+  the harness runs.** Spawn the `skill-reviewer` agent
+  (`.claude/agents/skill-reviewer.md`) with `GATE: pre-test` and the list of
+  documents/files touched. It reads the authored data against this guideline —
+  carrier wiring, rows-not-props, no on-gear config, undeclared columns, the
+  deep-merge full-key-set rule, AE change-key family, frozen `costOverride`,
+  string `==`, blank `duration`, empty-string-vs-null.
+
+  This gate exists because those failures are **silent at author time and
+  invisible to the harness**: a write to an undeclared column reports success
+  and vanishes; a leaked key from a cloned row produces behavior that runs
+  perfectly and was never authored. A test cannot catch what it doesn't know to
+  look for, so the read has to happen first, by someone who didn't write it.
+
+  ⚠ The reviewer's tools read the **JSON export**, which is only as fresh as the
+  last `world-export export` (game CLOSED). With the game open — the normal
+  authoring state — pass that fact in the prompt so it uses
+  `skill-claims render --live` and doesn't file a stale-export miss as a finding.
+
 - **I4 — Verify with the director harness before asking for a playtest**
   (`runDirectorSkillCompute` / `runDirectorSkillSimulate`). Don't launch a combat
   for what the harness can model. **But know the harness's three blind spots — each
@@ -389,6 +408,28 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
   relaunch the client** — a fresh page is the only reliable reset. Kill the OLD hold
   client first; a second one cannot take the GM II seat while the first holds it
   (Playwright fails with "option being selected is not enabled").
+
+- **I4b — 🔍 REVIEW GATE 2: the same agent reads the HARNESS OUTPUT after the
+  run.** Spawn `skill-reviewer` with `GATE: post-test`, the raw harness result,
+  and the diff. It is briefed to attack the claim "the test passed", not to
+  confirm it.
+
+  The governing failure is that **a harness that omits a payload field fails
+  PERMISSIVE** — a rig that never set `skillDuration` let an
+  instantaneous-only gate PASS a Scene spell it refused in actual play. Green
+  meant "the gate never saw the field", and nothing in the output said so. So
+  the reviewer's first question is always *did the harness supply the field the
+  gate reads*, followed by *could this test have failed at all* — if the result
+  is identical with and without the change, the row probably never dispatched
+  (I4). It also re-checks the blind spots in I4/I4a that turn a working skill
+  into a false negative, and confirms the observed writes match the RAW text —
+  a skill can pass every mechanical check and still do the wrong thing.
+
+- **I4c — Findings are BLOCKING.** Work is not "done" until every finding is
+  fixed or **waived out loud to the user with a reason**. Never silently drop
+  one. This matches how `world-export`'s removal warnings already gate a push:
+  the point of a tripwire is that clearing it is a decision someone made on the
+  record. The reviewer is read-only — it files, the author fixes.
 
 - **I5 — Set `level:1`, an explicit `max_level`, and `isHeroic:true` for
   heroics** — never rely on template defaults.
