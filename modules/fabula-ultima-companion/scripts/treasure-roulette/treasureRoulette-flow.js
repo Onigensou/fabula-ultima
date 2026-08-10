@@ -78,11 +78,13 @@
     armor:     ["armor"],
   });
 
+  // Short by design: these are tab labels in a narrow two-column grid, and
+  // "Hand" is redundant next to a hand icon's worth of context.
   const SLOT_LABELS = Object.freeze({
-    main: "Main Hand",
-    off: "Off Hand",
-    accessory1: "Accessory 1",
-    accessory2: "Accessory 2",
+    main: "Main",
+    off: "Off",
+    accessory1: "Acc 1",
+    accessory2: "Acc 2",
     armor: "Armor",
   });
 
@@ -220,6 +222,20 @@
     }
   }
 
+  // The winner's stat block, for the recipient screen's card. Only items have
+  // one — Zenit and IP resolve to null and the screen falls back to the small
+  // reward panel.
+  async function describeWinner(packet) {
+    const uuid = packet?.winner?.uuid;
+    if (!uuid || !String(uuid).startsWith("Item.")) return null;
+    try {
+      const doc = await fromUuid(uuid);
+      return doc ? await describeGear(doc) : null;
+    } catch {
+      return null;
+    }
+  }
+
   function itemTypeOf(item) {
     return String(item?.system?.props?.item_type ?? "").trim().toLowerCase();
   }
@@ -253,15 +269,34 @@
       const current = currentId
         ? (slot.candidates ?? []).find((c) => c.id === currentId) ?? null
         : null;
+
+      // Legality travels WITH the slot so the screen can disable it and say why.
+      // canEquip is the shared predicate (martial proficiency from classes, hand
+      // slots, Dual Shieldbearer) — the UI never re-derives those rules.
+      let legal = true;
+      let reason = null;
+      try {
+        const verdict = mod.canEquip?.(actor, templateItem, key);
+        if (verdict) { legal = verdict.ok !== false; reason = verdict.reason ?? null; }
+      } catch (e) {
+        warn("canEquip failed; treating slot as legal:", e);
+      }
+
       slots.push({
         key,
         label: SLOT_LABELS[key] ?? key,
         current,                       // null => empty slot, rendered as "(Empty)" / "-"
         occupied: !!current,
+        legal,
+        reason,
       });
     }
 
-    const preferred = slots.find((s) => !s.occupied)?.key ?? slots[0]?.key ?? null;
+    // Auto-pick: first EMPTY legal slot, else first legal slot, else nothing.
+    const preferred =
+      slots.find((s) => s.legal && !s.occupied)?.key
+      ?? slots.find((s) => s.legal)?.key
+      ?? null;
 
     return {
       actorUuid: actor.uuid,
@@ -454,6 +489,10 @@
               img: packet?.winner?.img ?? "icons/svg/chest.svg",
               kind,
             },
+            // The full stat block, so the player can see what the item DOES
+            // before deciding who should carry it. Null for Zenit/IP, which
+            // have no card to show.
+            incoming: await describeWinner(packet),
             // IP can never be stored on the Party Inventory actor (game rule).
             allowParty: !isIp,
             partyInventory: dbUuid ? { actorUuid: dbUuid, name: db?.name ?? "Party Inventory" } : null,
@@ -531,6 +570,12 @@
         }
       }
 
+      // The reward panel travelled from the reveal and sat on the loot stage
+      // across both screens. This is the only place that knows the whole
+      // sequence is over, so this is where it gets torn down.
+      try { globalThis.ONI?.TreasureRoulette?.UIKit?.stage?.clear?.(); }
+      catch (e) { warn("stage clear failed:", e); }
+
       _busy.delete(tileDoc.id);
 
       if (packet) {
@@ -595,6 +640,17 @@
 
     const slotKey = choice.slotKey ?? payload.preferredSlotKey;
     if (!slotKey) return;
+
+    // Authoritative legality re-check. applyEquipmentSwap does NOT reject on
+    // martial grounds, so the UI gate is the only thing standing between a
+    // stale or bypassed submission and an illegal loadout. Re-verify here
+    // rather than trusting what came back from the screen.
+    const chosen = (payload.slots ?? []).find((s) => s.key === slotKey);
+    if (chosen && chosen.legal === false) {
+      warn(`refusing illegal equip: ${granted.name} → ${slotKey} (${chosen.reason})`);
+      ui.notifications?.warn?.(`Cannot equip ${granted.name}: ${chosen.reason}`);
+      return;
+    }
 
     const mod = await equipMod();
     if (!mod?.applyEquipmentSwap) {

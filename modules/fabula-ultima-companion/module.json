@@ -230,6 +230,7 @@
     "scripts/treasure-roulette/treasureRoulette-net.js",
     "scripts/treasure-roulette/treasureRoulette-UIListener.js",
     "scripts/treasure-roulette/treasureRoulette-awardDispatcher.js",
+    "scripts/treasure-roulette/treasureRoulette-uiKit.js",
     "scripts/treasure-roulette/treasureRoulette-recipientUI.js",
     "scripts/treasure-roulette/treasureRoulette-equipUI.js",
     "scripts/treasure-roulette/treasureRoulette-flow.js",

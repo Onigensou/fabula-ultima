@@ -4155,7 +4155,11 @@ function chipIconHTML(icon) {
 }
 
 // Action Keyword — diamond bullet + icon + bold/underline uppercase label.
-function keywordChipHTML({ key, label, icon }) {
+// Exported so other surfaces (Treasure Roulette's equip comparison) can render
+// the SAME keyword chips this card does — they carry the shared `fud-kw-term`
+// styling and tooltip wiring, so a chip looks and behaves identically wherever
+// it appears. Pure render, no behaviour change for BD.
+export function keywordChipHTML({ key, label, icon }) {
   return `<span class="fud-kw-term is-keyword" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}">`
     + `<span class="fud-kw-bullet" aria-hidden="true">◆</span>`
     + `${chipIconHTML(icon)}`
@@ -4173,7 +4177,11 @@ function statusChipHTML({ key, label, icon }) {
 // for chips, flatten unknown links. Returns { keywords:[{key,label,icon}],
 // bodyHtml:string }. Never throws — on any failure falls back to the old
 // plain-text strip so the Effect section still renders something.
-function parseEffectDescription(html) {
+// Exported alongside keywordChipHTML — the roulette's equip panel renders the
+// parsed pieces in its own parchment layout rather than BD's <fieldset>, so it
+// takes the PARSER and not buildEffectSectionHTML. One description pipeline,
+// two presentations.
+export function parseEffectDescription(html) {
   const empty = { keywords: [], bodyHtml: "" };
   if (!html) return empty;
   try {

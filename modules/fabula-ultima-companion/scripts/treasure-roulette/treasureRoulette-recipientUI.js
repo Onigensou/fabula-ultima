@@ -1,20 +1,26 @@
 // ============================================================================
 // [TreasureRoulette] Recipient UI • Foundry VTT v12
 // ----------------------------------------------------------------------------
-// Screen 2 of the loot flow: "who gets this?"
+// Screen 2: "Give to" — the reward sits parked on the left (it travelled here
+// from the reveal), an arrow points right, and the candidates stack vertically
+// with their portraits breaking out over the panel edge.
 //
-// Pure presentation. It knows nothing about sockets or awarding — TR.Flow shows
-// it on every client, gates which one can answer, and owns the decision.
+//   [ Poison Lash ]   ▶    ┌ Party ┐
+//                          ┌ Hina  ┐
+//                          ┌ Zarg  ┐   ← stagger in left→right
+//                          ┌ Keren ┐      stagger out the opposite way
 //
+// Pure presentation:
 //   show({ payload, interactive }) -> Promise<{kind, actorUuid} | null>
 //   hide()
+// Spectators see the same screen, inert, with "Waiting for <name>…".
 //
-// Interactive client: the promise resolves with the chosen recipient.
-// Spectators:         the promise never resolves on its own; hide() closes it
-//                     with null when the deciding client answers.
+// The reward panel is NOT drawn here when one is already parked on the loot
+// stage — that node is the very element from the spin. Only when this screen is
+// opened standalone (the UX bench) does it draw its own stand-in.
 //
-// Party Inventory is the default selection and is hidden entirely for IP
-// rewards, which cannot be stored on the Party Inventory actor.
+// Party Inventory is the default and is hidden entirely for IP rewards, which
+// cannot be stored on the Party Inventory actor.
 // ============================================================================
 
 (() => {
@@ -24,276 +30,308 @@
 
   const PARTY_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png";
 
-  const esc = (s) => String(s ?? "")
-    .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+  const kit = () => globalThis.ONI?.TreasureRoulette?.UIKit;
+  const esc = (s) => (kit()?.esc ?? ((v) => String(v ?? "")))(s);
 
   let _resolve = null;
   let _keyHandler = null;
+  let _ownsStage = false;   // true when WE drew the reward panel (bench path)
 
   function ensureStyles() {
+    kit()?.ensureKitStyles?.();
     if (document.getElementById(STYLE_ID)) return;
     const s = document.createElement("style");
     s.id = STYLE_ID;
     s.textContent = `
       #${OVL_ID} {
         position: fixed; inset: 0; z-index: 9999998;
-        background: rgba(10, 7, 4, 0.74);
-        display: flex; align-items: center; justify-content: center;
-        opacity: 0; transition: opacity 260ms cubic-bezier(.2,.9,.2,1);
+        background: rgba(10, 7, 4, 0.72);
+        opacity: 0; transition: opacity 240ms cubic-bezier(.2,.9,.2,1);
         font-family: "Signika", "Palatino Linotype", Palatino, Georgia, serif;
       }
       #${OVL_ID}.oni-in { opacity: 1; }
       #${OVL_ID}.oni-out { opacity: 0; }
       #${OVL_ID} * { user-select: none; box-sizing: border-box; }
 
-      #${OVL_ID} .tr-rc-panel {
-        min-width: 520px; max-width: min(1100px, 92vw);
-        padding: 26px 30px 24px;
-        border-radius: 14px;
-        background:
-          radial-gradient(ellipse at 50% 0%, rgba(255,220,150,0.08) 0%, transparent 70%),
-          linear-gradient(175deg, #241a10 0%, #1b130c 55%, #140e08 100%);
-        border: 2px solid #8B6914;
-        box-shadow: 0 0 0 1px #c9973a, 0 18px 44px rgba(0,0,0,0.6);
-        transform: translateY(12px) scale(0.98);
-        transition: transform 260ms cubic-bezier(.2,.9,.2,1);
-      }
-      #${OVL_ID}.oni-in .tr-rc-panel { transform: translateY(0) scale(1); }
-
-      #${OVL_ID} .tr-rc-reward {
-        display: flex; align-items: center; justify-content: center; gap: 10px;
-        margin-bottom: 4px;
-      }
-      #${OVL_ID} .tr-rc-reward img {
-        width: 34px; height: 34px; object-fit: contain;
-        background: transparent !important; border: 0 !important;
-        outline: 0 !important; box-shadow: none !important;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-      }
-      #${OVL_ID} .tr-rc-reward-name {
-        font-size: 22px; font-weight: 800; color: #ffeec2;
-        text-shadow: 0 0 16px rgba(255,200,110,0.4);
-      }
-
       #${OVL_ID} .tr-rc-title {
-        text-align: center; font-size: 13px; letter-spacing: 3px;
-        text-transform: uppercase; color: rgba(255,233,190,0.7);
-        margin-bottom: 20px;
+        position: absolute; top: 5vh; left: 0; right: 0; text-align: center;
+        font-size: 40px; font-weight: 800; letter-spacing: 1px;
+        color: #fff6e2; text-shadow: 0 3px 0 rgba(0,0,0,.5), 0 0 22px rgba(255,200,110,.35);
       }
 
-      #${OVL_ID} .tr-rc-cards {
-        display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+      /* Arrow sits between the parked reward and the list. Solid pointing
+         triangle, not a long-tailed arrow — the tail disappeared against the
+         battlefield. Stroked and glowed so it reads on any scene. */
+      #${OVL_ID} .tr-rc-arrow {
+        position: absolute; left: 36vw; top: 50vh; transform: translate(-50%,-50%);
+        font-size: 54px; line-height: 1; color: #c9482f;
+        -webkit-text-stroke: 2px #2a0f0a;
+        paint-order: stroke fill;
+        text-shadow: 0 0 14px rgba(255,140,90,.75), 0 0 30px rgba(255,90,50,.45);
+        animation: trArrowBobCentered 2.4s ease-in-out infinite;
+      }
+      /* The arrow is centred with a transform, so its idle bob has to carry the
+         centring too — animating transform would otherwise drop it. */
+      @keyframes trArrowBobCentered {
+        0%, 100% { transform: translate(-50%, -50%) translateX(-2px); }
+        50%      { transform: translate(-50%, -50%) translateX(3px); }
+      }
+
+      /* Candidate column, right of the arrow. */
+      #${OVL_ID} .tr-rc-list {
+        position: absolute; left: 44vw; top: 50vh; transform: translateY(-50%);
+        display: flex; flex-direction: column; gap: 40px;
+        width: 430px; max-height: 84vh; overflow: visible;
       }
 
       #${OVL_ID} .tr-rc-card {
-        width: 168px; padding: 14px 12px 12px;
+        position: relative; height: 70px; padding: 0 20px 0 116px;
+        display: flex; align-items: center;
         border-radius: 10px; cursor: pointer;
-        background: linear-gradient(175deg, #3a2a18 0%, #2a1d11 60%, #1e150c 100%);
-        border: 2px solid #6b5210;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
-        display: flex; flex-direction: column; align-items: center; gap: 8px;
-        transition: transform 140ms ease, box-shadow 140ms ease,
-                    border-color 140ms ease, filter 140ms ease;
+        background: linear-gradient(178deg, #f3e5c4 0%, #e7d7b7 55%, #dcc9a4 100%);
+        border: 2px solid #8B6914;
+        box-shadow: 0 0 0 1px #c9973a, 0 10px 22px rgba(0,0,0,.45),
+                    inset 0 1px 0 rgba(255,255,255,.45);
+        transition: filter 130ms ease, box-shadow 130ms ease, transform 130ms ease;
       }
-      #${OVL_ID} .tr-rc-card:hover { transform: translateY(-3px); filter: brightness(1.12); }
+      #${OVL_ID} .tr-rc-card:hover { filter: brightness(1.06); transform: translateX(6px); }
       #${OVL_ID} .tr-rc-card.tr-rc-selected {
-        border-color: #f0d060;
-        box-shadow: 0 0 0 2px rgba(255,220,130,0.5), 0 10px 22px rgba(0,0,0,0.5);
-        transform: translateY(-3px);
+        box-shadow: 0 0 0 3px rgba(255,220,130,.85), 0 12px 26px rgba(0,0,0,.5),
+                    inset 0 1px 0 rgba(255,255,255,.45);
+        transform: translateX(6px);
       }
 
+      /* Portrait breaks out above the bar, as in the mockup. It stands ON the
+         bar (bottom-aligned) and rises above it, so the row gap has to clear
+         the overhang — otherwise it lands on top of the card above. z-index
+         keeps it over its own card while the next card still draws above it. */
       #${OVL_ID} .tr-rc-portrait {
-        width: 76px; height: 76px; border-radius: 8px; object-fit: contain;
-        background: rgba(0,0,0,0.35) !important;
-        border: 0 !important; outline: 0 !important; box-shadow: none !important;
+        position: absolute; left: -8px; bottom: -2px;
+        width: 118px; height: 134px; object-fit: contain; object-position: bottom;
+        pointer-events: none; z-index: 2;
+        filter: drop-shadow(0 6px 10px rgba(0,0,0,.55));
       }
+      /* The Party row shows an object, not a character. At sprite size a bag
+         reads as comically large next to the cast, so it gets its own scale. */
+      #${OVL_ID} .tr-rc-portrait.tr-rc-portrait-icon {
+        width: 74px; height: 74px; left: 12px; bottom: 50%;
+        transform: translateY(50%); object-position: center;
+      }
+
       #${OVL_ID} .tr-rc-name {
-        font-size: 15px; font-weight: 700; color: #f0dcb0; text-align: center;
-        line-height: 1.2;
+        font-size: 30px; font-weight: 800; color: #3b2314; line-height: 1;
       }
       #${OVL_ID} .tr-rc-sub {
-        font-size: 11px; color: rgba(240,220,176,0.62); text-align: center;
-        font-style: italic; min-height: 14px; line-height: 1.25;
+        margin-left: auto; font-size: 12px; font-style: italic;
+        color: rgba(59,35,20,.62);
       }
 
-      #${OVL_ID} .tr-rc-footer {
-        margin-top: 20px; display: flex; align-items: center;
-        justify-content: space-between; gap: 16px;
+      #${OVL_ID} .tr-rc-foot {
+        position: absolute; left: 0; right: 0; bottom: 3vh; text-align: center;
+        font-size: 13px; font-style: italic; color: rgba(240,220,176,.6);
       }
-      #${OVL_ID} .tr-rc-hint {
-        font-size: 12px; font-style: italic; color: rgba(240,220,176,0.55);
-      }
-      #${OVL_ID} .tr-rc-confirm {
-        padding: 10px 26px; border-radius: 8px; cursor: pointer;
-        font-weight: 800; letter-spacing: 0.04em; font-size: 14px;
-        color: #d8f0c0; border: 2px solid #8B6914;
-        background: linear-gradient(175deg, #2e5c28 0%, #3a7832 30%, #255022 100%);
-        box-shadow: 0 0 0 1px #c9973a, 2px 4px 10px rgba(0,0,0,0.5);
-        transition: filter 120ms ease, transform 80ms ease;
-      }
-      #${OVL_ID} .tr-rc-confirm:hover { filter: brightness(1.14); }
-      #${OVL_ID} .tr-rc-confirm:active { transform: translateY(1px); }
 
-      /* Spectator: everything is visible but inert. */
-      #${OVL_ID}.tr-rc-spectator .tr-rc-card,
-      #${OVL_ID}.tr-rc-spectator .tr-rc-confirm {
-        cursor: default; pointer-events: none;
+      #${OVL_ID}.tr-rc-spectator .tr-rc-card { cursor: default; pointer-events: none; }
+
+      /* The item card's slot on the left. Scaled down a touch so a 520px card
+         doesn't dominate the screen next to the candidate list. */
+      .tr-rc-cardslot {
+        position: fixed; left: 22vw; top: 50vh;
+        transform: translate(-50%, -50%) scale(.78);
+        opacity: 0;
+        transition: opacity 320ms cubic-bezier(.2,.9,.2,1),
+                    transform 320ms cubic-bezier(.2,.9,.2,1);
       }
-      #${OVL_ID}.tr-rc-spectator .tr-rc-confirm { opacity: 0.45; }
+      .tr-rc-cardslot.tr-rc-cardslot-in {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(.82);
+      }
+
+      /* Stand-in reward panel — only drawn when nothing is parked (bench use).
+         Mirrors the roulette panel so the bench looks like the real flow. */
+      .tr-rc-standin {
+        position: fixed; left: 22vw; top: 50vh; transform: translate(-50%,-50%);
+        width: 300px; height: 78px; padding: 10px 14px;
+        display: flex; align-items: center; gap: 12px;
+        border-radius: 10px; background: #e7d7b7; color: #3b2314;
+        box-shadow: 0 10px 20px rgba(0,0,0,.25), inset 0 0 0 2px rgba(60,35,20,.25);
+        font-family: "Signika", "Palatino Linotype", serif;
+      }
+      .tr-rc-standin .tr-rc-standin-name {
+        font-size: 22px; font-weight: 800; white-space: nowrap;
+        overflow: hidden; text-overflow: ellipsis;
+      }
     `;
     document.head.appendChild(s);
   }
 
-  function cardHtml({ id, portrait, name, sub, selected }) {
-    return `
-      <div class="tr-rc-card${selected ? " tr-rc-selected" : ""}" data-id="${esc(id)}">
-        <img class="tr-rc-portrait" src="${esc(portrait)}" alt="${esc(name)}"
-             onerror="this.src='icons/svg/mystery-man.svg'">
-        <div class="tr-rc-name">${esc(name)}</div>
-        <div class="tr-rc-sub">${esc(sub ?? "")}</div>
-      </div>`;
-  }
-
-  // What to show under each member's portrait: for IP, their headroom; for gear,
-  // nothing yet (the equip screen does the comparison).
-  function memberSubtitle(member, kind) {
+  function memberSubtitle(m, kind) {
     if (kind === "itempoint") {
-      const { cur, max } = member.ip ?? {};
+      const { cur, max } = m.ip ?? {};
       if (Number(max) > 0) return `IP ${cur}/${max}`;
-      return "";
     }
     return "";
+  }
+
+  function cardHTML({ id, portrait, name, sub, selected, kind }) {
+    const K = kit();
+    return `
+      <div class="tr-rc-card${selected ? " tr-rc-selected" : ""}" data-id="${esc(id)}">
+        ${/* size/position come from .tr-rc-portrait — passing them inline here
+              would win over the stylesheet and silently pin the old values. */""}
+        ${K.imgHTML(portrait, { size: 0, alt: name, cls: "tr-rc-portrait" + (kind === "party" ? " tr-rc-portrait-icon" : ""), extra: "" })}
+        <div class="tr-rc-name">${esc(name)}</div>
+        ${sub ? `<div class="tr-rc-sub">${esc(sub)}</div>` : ""}
+      </div>`;
   }
 
   function buildOverlay(payload, interactive) {
     ensureStyles();
     document.getElementById(OVL_ID)?.remove();
 
+    const K = kit();
     const kind = String(payload?.reward?.kind ?? "").toLowerCase();
     const allowParty = payload?.allowParty !== false && !!payload?.partyInventory;
 
     const cards = [];
-
     if (allowParty) {
       cards.push({
         id: payload.partyInventory.actorUuid,
         portrait: PARTY_ICON,
-        name: payload.partyInventory.name || "Party Inventory",
+        name: "Party",
         sub: "Shared stash",
         kind: "party",
       });
     }
-
     for (const m of payload?.members ?? []) {
-      cards.push({
-        id: m.actorUuid,
-        portrait: m.portrait,
-        name: m.name,
-        sub: memberSubtitle(m, kind),
-        kind: "member",
-      });
+      cards.push({ id: m.actorUuid, portrait: m.portrait, name: m.name, sub: memberSubtitle(m, kind), kind: "member" });
     }
-
-    // Party Inventory is the default when it's on the table; otherwise (IP) the
-    // first party member is.
     const defaultId = cards[0]?.id ?? null;
+
+    // The item's own stat card, in the left slot. Choosing a recipient without
+    // knowing what the item DOES is a blind question, so the card the equip
+    // screen uses is shown here too — with no comparison yet, so bare values
+    // and no deltas. The spin's little reward panel cross-fades out beneath it.
+    _ownsStage = false;
+    if (payload?.incoming) {
+      const stage = K.stage.ensure();
+      const holder = document.createElement("div");
+      holder.className = "tr-rc-cardslot";
+      stage.appendChild(holder);
+      K.renderItemCard(payload.incoming, { side: "solo" }).then((html) => {
+        holder.innerHTML = html;
+        requestAnimationFrame(() => holder.classList.add("tr-rc-cardslot-in"));
+        // Retire the small panel the spin parked — the card replaces it.
+        const parked = stage.querySelector(".oni-roulette-panel");
+        if (parked) {
+          parked.style.transition = "opacity 260ms ease, transform 260ms ease";
+          parked.style.opacity = "0";
+          parked.style.transform = "translate(-50%, -50%) scale(.9)";
+          setTimeout(() => parked.remove(), 280);
+        }
+      });
+      _ownsStage = true;
+    } else if (!K.stage.hasParked()) {
+      const stage = K.stage.ensure();
+      const standin = document.createElement("div");
+      standin.className = "tr-rc-standin";
+      standin.innerHTML =
+        `${K.imgHTML(payload?.reward?.img ?? "icons/svg/chest.svg", { size: 46 })}
+         <div class="tr-rc-standin-name">${esc(payload?.reward?.name ?? "Reward")}</div>`;
+      stage.appendChild(standin);
+      _ownsStage = true;
+    }
 
     const overlay = document.createElement("div");
     overlay.id = OVL_ID;
     if (!interactive) overlay.classList.add("tr-rc-spectator");
-
+    // When the sequence already owns a backdrop, don't paint a second one —
+    // stacking two 0.72 dims reads noticeably darker than either screen alone.
+    if (K.stage.hasDim()) overlay.style.background = "transparent";
     overlay.innerHTML = `
-      <div class="tr-rc-panel">
-        <div class="tr-rc-reward">
-          <img src="${esc(payload?.reward?.img ?? "icons/svg/chest.svg")}" alt="">
-          <span class="tr-rc-reward-name">${esc(payload?.reward?.name ?? "Reward")}</span>
-        </div>
-        <div class="tr-rc-title">Who takes it?</div>
-        <div class="tr-rc-cards">
-          ${cards.map((c) => cardHtml({ ...c, selected: c.id === defaultId })).join("")}
-        </div>
-        <div class="tr-rc-footer">
-          <div class="tr-rc-hint"></div>
-          <div class="tr-rc-confirm">Confirm</div>
-        </div>
-      </div>`;
+      <div class="tr-rc-title">Give to</div>
+      <div class="tr-rc-arrow">&#9654;</div>
+      <div class="tr-rc-list">
+        ${cards.map((c) => cardHTML({ ...c, selected: c.id === defaultId })).join("")}
+      </div>
+      <div class="tr-rc-foot"></div>`;
 
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add("oni-in"));
 
+    K.staggerIn(overlay.querySelectorAll(".tr-rc-card"), {
+      onEach: () => K.Sound.play("PANEL_IN"),
+    });
+
     return { overlay, cards, defaultId };
   }
 
-  function close(result) {
+  async function close(result) {
     const fn = _resolve;
     _resolve = null;
 
-    if (_keyHandler) {
-      window.removeEventListener("keydown", _keyHandler, true);
-      _keyHandler = null;
-    }
+    if (_keyHandler) { window.removeEventListener("keydown", _keyHandler, true); _keyHandler = null; }
 
     const el = document.getElementById(OVL_ID);
     if (el) {
+      const K = kit();
+      await K.staggerOut(el.querySelectorAll(".tr-rc-card"));
       el.classList.remove("oni-in");
       el.classList.add("oni-out");
-      setTimeout(() => el.remove(), 280);
+      setTimeout(() => el.remove(), 260);
     }
+
+    // If we drew the stand-in, we own the stage and must clean it up. When the
+    // spin parked the real panel, the FLOW owns it — it has to survive into the
+    // equip screen.
+    // Drop what THIS screen drew, but never the backdrop: the sequence may
+    // continue into the equip screen, which expects it to still be there.
+    // Whoever started the run (TR.Flow, or the bench) clears the dim at the end.
+    if (_ownsStage) { kit()?.stage?.clear?.({ keepDim: true }); _ownsStage = false; }
 
     fn?.(result ?? null);
   }
 
   const API = {
-    /**
-     * @param {object}  opts
-     * @param {object}  opts.payload      { reward, allowParty, partyInventory, members }
-     * @param {boolean} opts.interactive  can this client answer?
-     * @returns {Promise<{kind:string, actorUuid:string}|null>}
-     */
+    /** @returns {Promise<{kind:string, actorUuid:string}|null>} */
     show({ payload, interactive = false } = {}) {
-      // A second show() replaces the first; never leave a stale overlay behind.
       if (_resolve) close(null);
 
       const { overlay, cards, defaultId } = buildOverlay(payload, interactive);
-
       let selectedId = defaultId;
 
       return new Promise((resolve) => {
         _resolve = resolve;
+        const K = kit();
+        const foot = overlay.querySelector(".tr-rc-foot");
 
-        const hint = overlay.querySelector(".tr-rc-hint");
         if (!interactive) {
           const who = payload?.controllerName;
-          hint.textContent = who ? `Waiting for ${who}…` : "Waiting for the party leader…";
-          return;   // spectators watch; hide() closes them out
+          foot.textContent = who ? `Waiting for ${who}…` : "Waiting for the party leader…";
+          return;
         }
-
-        hint.textContent = "Default: Party Inventory";
+        foot.textContent = "Click to choose · Enter confirms";
 
         const select = (id) => {
+          if (id === selectedId) return;
           selectedId = id;
-          overlay.querySelectorAll(".tr-rc-card").forEach((el) => {
-            el.classList.toggle("tr-rc-selected", el.dataset.id === id);
-          });
+          K.Sound.play("SELECT");
+          overlay.querySelectorAll(".tr-rc-card").forEach((el) =>
+            el.classList.toggle("tr-rc-selected", el.dataset.id === id));
         };
-
-        overlay.querySelectorAll(".tr-rc-card").forEach((el) => {
-          el.addEventListener("click", () => select(el.dataset.id));
-          // Double-click is "pick and go".
-          el.addEventListener("dblclick", () => {
-            select(el.dataset.id);
-            confirm();
-          });
-        });
 
         const confirm = () => {
           const card = cards.find((c) => c.id === selectedId) ?? cards[0];
           if (!card) return close(null);
+          K.Sound.play("CONFIRM");
           close({ kind: card.kind, actorUuid: card.id });
         };
 
-        overlay.querySelector(".tr-rc-confirm").addEventListener("click", confirm);
+        overlay.querySelectorAll(".tr-rc-card").forEach((el) => {
+          el.addEventListener("mouseenter", () => K.Sound.play("HOVER"));
+          // Single click picks AND commits — the mockup has no separate confirm.
+          el.addEventListener("click", () => { select(el.dataset.id); confirm(); });
+        });
 
         _keyHandler = (ev) => {
           if (ev.key === "Enter") { ev.preventDefault(); ev.stopPropagation(); confirm(); }
@@ -313,5 +351,5 @@
   globalThis.ONI.TreasureRoulette.RecipientUI = API;
   window["oni.TreasureRoulette.RecipientUI"] = API;
 
-  console.debug(TAG, "Installed.");
+  console.debug(TAG, "installed.");
 })();
