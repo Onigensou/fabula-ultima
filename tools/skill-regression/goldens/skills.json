@@ -1390,26 +1390,13 @@
     },
     "Elementalist / Vortex": {
       "caster": "Elementalist",
-      "element": "air",
-      "hasDamage": true,
+      "element": "",
+      "hasDamage": false,
       "hasHealing": false,
       "offensive": true,
       "ok": true,
-      "perTarget": [
-        {
-          "affinity": "IM",
-          "damage": 0,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
+      "perTarget": [],
+      "roll": null,
       "skill": "Vortex",
       "skillType": "Spell",
       "targets": 1

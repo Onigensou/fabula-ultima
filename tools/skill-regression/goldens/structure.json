@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-08-09T23:28:46.994Z",
- "count": 1184,
+ "capturedAt": "2026-08-10T18:03:06.059Z",
+ "count": 1196,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -6577,6 +6577,30 @@
    ],
    "aes": []
   },
+  "(world) / Fulgur": {
+   "props": {
+    "class": "Elementalist",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isFacet": "true",
+    "isOffensiveSpell": "true",
+    "on_activate_effect_ref": "fulgur_opportunity",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Bolt"
+   },
+   "effects": [
+    "ae_duplicate_mode=replace_per_caster ae_template_ref=Dazed condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=fulgur_opportunity target_ref=hit_action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
   "(world) / Fulgur Shield": {
    "props": {
     "category": "Arcane",
@@ -6961,7 +6985,7 @@
     "class": "Elementalist",
     "cost": "10 x T MP",
     "damage_bonus": "15",
-    "defense_target_type": "def",
+    "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
     "isFacet": "true",
@@ -8735,6 +8759,30 @@
      ]
     }
    ]
+  },
+  "(world) / Ignis": {
+   "props": {
+    "class": "Elementalist",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isFacet": "true",
+    "isOffensiveSpell": "true",
+    "on_activate_effect_ref": "ignis_opportunity",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Fire"
+   },
+   "effects": [
+    "ae_duplicate_mode=replace_per_caster ae_template_ref=Shaken condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=ignis_opportunity target_ref=hit_action_targets"
+   ],
+   "reactions": [],
+   "aes": []
   },
   "(world) / Ignis Shield": {
    "props": {
@@ -13856,6 +13904,51 @@
     }
    ]
   },
+  "(world) / Shadow Strike": {
+   "props": {
+    "class": "Darkblade",
+    "cost": "X HP",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isOffensiveSpell": "true",
+    "on_activate_effect_ref": "ss_root",
+    "skill_range": "Any",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "dice_count=1 dice_faces=MIG_CURRENT_DIE effect_kind=roll_dice effect_label=ss_roll prompt_var=mig_die",
+    "ae_duplicate_mode=replace ae_initial_charges=VAR_MIG_DIE ae_template_ref=Shadow Strike effect_kind=apply_ae effect_label=ss_store target_ref=self",
+    "consume_amount=AE_CHARGES_SHADOW_STRIKE consume_can_defeat=true consume_resource=hp effect_kind=consume_resource effect_label=ss_hpcost on_empty=drain target_ref=self",
+    "action_ref=Attack condition_formula=CUR_HP > 0 damage_bonus_formula=SL + AE_CHARGES_SHADOW_STRIKE effect_kind=free_action effect_label=ss_freeattack element_override=dark",
+    "condition_formula=CUR_HP <= 0 count=all effect_kind=remove_tagged_ae effect_label=ss_abort_cleanup filter_tag=shadow_strike include_persistent=true target_ref=self",
+    "chain_steps=ss_roll,ss_store,ss_hpcost,ss_freeattack,ss_abort_cleanup effect_kind=chain effect_label=ss_root"
+   ],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Shadow Strike",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [
+      "fud-shadow-strike"
+     ],
+     "tags": [
+      "shadow_strike"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 12,
+     "changes": [],
+     "aeReactions": [
+      "reaction_effect_ref=ss_cleanup reaction_passive_mode=on reaction_source=self reaction_trigger=creature_completes_attack"
+     ],
+     "aeEffects": [
+      "count=all effect_kind=remove_tagged_ae effect_label=ss_cleanup filter_tag=shadow_strike include_persistent=true target_ref=self"
+     ]
+    }
+   ]
+  },
   "(world) / Shadow Tunic": {
    "props": {
     "category": "Arcane",
@@ -14246,6 +14339,48 @@
    ],
    "reactions": [],
    "aes": []
+  },
+  "(world) / Soaring Strike": {
+   "props": {
+    "class": "Elementalist",
+    "cost": "10 MP",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isFacet": "true",
+    "on_activate_effect_ref": "sst_root",
+    "skill_range": "Any",
+    "skill_target": "Self",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "chain_steps=sst_arm,sst_free effect_kind=chain effect_label=sst_root",
+    "ae_duplicate_mode=replace_per_caster ae_duration_rounds=1 ae_template_ref=Soaring Strike (Airborne) effect_kind=apply_ae effect_label=sst_arm target_ref=self",
+    "action_ref=Attack condition_formula=HAS_MELEE_WEAPON == 1 effect_kind=free_action effect_label=sst_free"
+   ],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Soaring Strike (Airborne)",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [
+      "fud-soaring-strike"
+     ],
+     "tags": [
+      "buff"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [],
+     "aeReactions": [
+      "condition_formula=TARGET_IS_FLYING == 1 reaction_effect_ref=sst_ground reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_deals_damage"
+     ],
+     "aeEffects": [
+      "ae_template_ref=Grounded effect_kind=apply_ae effect_label=sst_ground target_ref=trigger_subject"
+     ]
+    }
+   ]
   },
   "(world) / Soothing Cream": {
    "props": {
@@ -15164,6 +15299,30 @@
      ]
     }
    ]
+  },
+  "(world) / Terra": {
+   "props": {
+    "class": "Elementalist",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isFacet": "true",
+    "isOffensiveSpell": "true",
+    "on_activate_effect_ref": "terra_opportunity",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Earth"
+   },
+   "effects": [
+    "condition_formula=CRIT == 1 effect_kind=modify_turns effect_label=terra_opportunity target_ref=hit_action_targets turns_delta=-1 turns_floor=0"
+   ],
+   "reactions": [],
+   "aes": []
   },
   "(world) / Terra Shield": {
    "props": {
@@ -16339,6 +16498,47 @@
     "reaction_effect_ref=vismagus_swap reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=caster_short_on_mp"
    ],
    "aes": []
+  },
+  "(world) / Vortex": {
+   "props": {
+    "class": "Elementalist",
+    "cost": "10 MP",
+    "defense_target_type": "def",
+    "duration": "Scene",
+    "isFacet": "true",
+    "on_activate_effect_ref": "vortex_apply",
+    "skill_range": "Any",
+    "skill_target": "Self",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "ae_duplicate_mode=replace_per_caster ae_duration_rounds=scene ae_template_ref=Vortex effect_kind=apply_ae effect_label=vortex_apply target_ref=self"
+   ],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Vortex",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [
+      "fud-vortex"
+     ],
+     "tags": [
+      "buff",
+      "dispellable"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [],
+     "aeReactions": [
+      "condition_formula=ATTACK_IS_RANGED == 1 reaction_effect_ref=vortex_def reaction_passive_mode=on reaction_source=self reaction_trigger=creature_targeted_by_action"
+     ],
+     "aeEffects": [
+      "defense_amount=2 defense_operation=add effect_kind=adjust_defense effect_label=vortex_def"
+     ]
+    }
+   ]
   },
   "(world) / Wardancer": {
    "props": {
@@ -22111,6 +22311,48 @@
    ],
    "aes": []
   },
+  "Darkblade / Shadow Strike": {
+   "props": {
+    "class": "Darkblade",
+    "cost": "X HP",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "ss_root",
+    "skill_target": "Self",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "dice_count=1 dice_faces=MIG_CURRENT_DIE effect_kind=roll_dice effect_label=ss_roll prompt_var=mig_die",
+    "ae_duplicate_mode=replace ae_initial_charges=VAR_MIG_DIE ae_template_ref=Shadow Strike effect_kind=apply_ae effect_label=ss_store target_ref=self",
+    "consume_amount=AE_CHARGES_SHADOW_STRIKE consume_can_defeat=true consume_resource=hp effect_kind=consume_resource effect_label=ss_hpcost on_empty=drain target_ref=self",
+    "action_ref=Attack condition_formula=CUR_HP > 0 damage_bonus_formula=SL + AE_CHARGES_SHADOW_STRIKE effect_kind=free_action effect_label=ss_freeattack element_override=dark",
+    "condition_formula=CUR_HP <= 0 count=all effect_kind=remove_tagged_ae effect_label=ss_abort_cleanup filter_tag=shadow_strike include_persistent=true target_ref=self",
+    "chain_steps=ss_roll,ss_store,ss_hpcost,ss_freeattack,ss_abort_cleanup effect_kind=chain effect_label=ss_root"
+   ],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Shadow Strike",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [
+      "fud-shadow-strike"
+     ],
+     "tags": [
+      "shadow_strike"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 12,
+     "changes": [],
+     "aeReactions": [
+      "reaction_effect_ref=ss_cleanup reaction_passive_mode=on reaction_source=self reaction_trigger=creature_completes_attack"
+     ],
+     "aeEffects": [
+      "count=all effect_kind=remove_tagged_ae effect_label=ss_cleanup filter_tag=shadow_strike include_persistent=true target_ref=self"
+     ]
+    }
+   ]
+  },
   "Dryad / Charm": {
    "props": {
     "cost": "15 MP",
@@ -23699,12 +23941,36 @@
     }
    ]
   },
+  "Elementalist / Fulgur": {
+   "props": {
+    "class": "Elementalist",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isFacet": "true",
+    "isOffensiveSpell": "true",
+    "on_activate_effect_ref": "fulgur_opportunity",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Bolt"
+   },
+   "effects": [
+    "ae_duplicate_mode=replace_per_caster ae_template_ref=Dazed condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=fulgur_opportunity target_ref=hit_action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
   "Elementalist / Glacies": {
    "props": {
     "class": "Elementalist",
     "cost": "10 x T MP",
     "damage_bonus": "15",
-    "defense_target_type": "def",
+    "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
     "isFacet": "true",
@@ -23719,6 +23985,30 @@
    },
    "effects": [
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Slow condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=glacies_opportunity target_ref=hit_action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Elementalist / Ignis": {
+   "props": {
+    "class": "Elementalist",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isFacet": "true",
+    "isOffensiveSpell": "true",
+    "on_activate_effect_ref": "ignis_opportunity",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Fire"
+   },
+   "effects": [
+    "ae_duplicate_mode=replace_per_caster ae_template_ref=Shaken condition_formula=CRIT == 1 effect_kind=apply_ae effect_label=ignis_opportunity target_ref=hit_action_targets"
    ],
    "reactions": [],
    "aes": []
@@ -23771,6 +24061,113 @@
      "charges": null,
      "changes": [
       "extra_damage_mod_spell mode2 = propAtLeast(\"level\", 40, 10, 5)"
+     ]
+    }
+   ]
+  },
+  "Elementalist / Soaring Strike": {
+   "props": {
+    "class": "Elementalist",
+    "cost": "10 MP",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isFacet": "true",
+    "on_activate_effect_ref": "sst_root",
+    "skill_range": "Any",
+    "skill_target": "Self",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "chain_steps=sst_arm,sst_free effect_kind=chain effect_label=sst_root",
+    "ae_duplicate_mode=replace_per_caster ae_duration_rounds=1 ae_template_ref=Soaring Strike (Airborne) effect_kind=apply_ae effect_label=sst_arm target_ref=self",
+    "action_ref=Attack condition_formula=HAS_MELEE_WEAPON == 1 effect_kind=free_action effect_label=sst_free"
+   ],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Soaring Strike (Airborne)",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [
+      "fud-soaring-strike"
+     ],
+     "tags": [
+      "buff"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [],
+     "aeReactions": [
+      "condition_formula=TARGET_IS_FLYING == 1 reaction_effect_ref=sst_ground reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_deals_damage"
+     ],
+     "aeEffects": [
+      "ae_template_ref=Grounded effect_kind=apply_ae effect_label=sst_ground target_ref=trigger_subject"
+     ]
+    }
+   ]
+  },
+  "Elementalist / Terra": {
+   "props": {
+    "class": "Elementalist",
+    "cost": "10 x T MP",
+    "damage_bonus": "15",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isFacet": "true",
+    "isOffensiveSpell": "true",
+    "on_activate_effect_ref": "terra_opportunity",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Spell",
+    "type_damage": "Earth"
+   },
+   "effects": [
+    "condition_formula=CRIT == 1 effect_kind=modify_turns effect_label=terra_opportunity target_ref=hit_action_targets turns_delta=-1 turns_floor=0"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Elementalist / Vortex": {
+   "props": {
+    "class": "Elementalist",
+    "cost": "10 MP",
+    "defense_target_type": "def",
+    "duration": "Scene",
+    "isFacet": "true",
+    "on_activate_effect_ref": "vortex_apply",
+    "skill_range": "Any",
+    "skill_target": "Self",
+    "skill_type": "Spell"
+   },
+   "effects": [
+    "ae_duplicate_mode=replace_per_caster ae_duration_rounds=scene ae_template_ref=Vortex effect_kind=apply_ae effect_label=vortex_apply target_ref=self"
+   ],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Vortex",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [
+      "fud-vortex"
+     ],
+     "tags": [
+      "buff",
+      "dispellable"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [],
+     "aeReactions": [
+      "condition_formula=ATTACK_IS_RANGED == 1 reaction_effect_ref=vortex_def reaction_passive_mode=on reaction_source=self reaction_trigger=creature_targeted_by_action"
+     ],
+     "aeEffects": [
+      "defense_amount=2 defense_operation=add effect_kind=adjust_defense effect_label=vortex_def"
      ]
     }
    ]
@@ -26869,7 +27266,7 @@
     "class": "Elementalist",
     "cost": "10 x T MP",
     "damage_bonus": "15",
-    "defense_target_type": "def",
+    "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
     "isFacet": "true",
@@ -31548,7 +31945,7 @@
     "class": "Elementalist",
     "cost": "30 x T MP",
     "damage_bonus": "43",
-    "defense_target_type": "def",
+    "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
     "isOffensiveSpell": "true",
@@ -32337,7 +32734,7 @@
     "class": "Elementalist",
     "cost": "10 x T MP",
     "damage_bonus": "15",
-    "defense_target_type": "def",
+    "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
     "isFacet": "true",
@@ -33405,7 +33802,7 @@
     "class": "Elementalist",
     "cost": "10 x T MP",
     "damage_bonus": "15",
-    "defense_target_type": "def",
+    "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
     "isFacet": "true",
@@ -34949,7 +35346,7 @@
     "class": "Elementalist",
     "cost": "10 x T MP",
     "damage_bonus": "15",
-    "defense_target_type": "def",
+    "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
     "isFacet": "true",

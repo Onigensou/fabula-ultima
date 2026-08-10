@@ -687,14 +687,61 @@ async function runDirectorSkillCompute({
 //   - Hooks (callAll) still fire — UI bindings observe captured writes.
 //     The captures themselves are the source of truth for assertions.
 //   - Chat messages are not suppressed; ui.notifications fires.
-function installWriteCaptures() {
+async function installWriteCaptures() {
   const captures = {
     actorUpdates: [],   // { actorUuid, actorName, patch }
     itemUpdates: [],    // { itemUuid, itemName, patch, parentUuid }
     aeUpdates: [],      // { aeId, aeName, parentUuid, patch }
     aeCreates: [],      // { parentUuid, parentName, name, statusIds, changes, flags }
     aeDeletes: [],      // { aeId, aeName, parentUuid }
+    freeActions: [],    // { sourceLabel, reactorActorId, actionType, presetName, request }
   };
+
+  // ── free-action grants ───────────────────────────────────────────────────
+  // A `free_action` effect row touches no document — it calls
+  // freeActionQueue.enqueue(), so it was invisible to every capture below and
+  // ANY skill granting a free action was unprovable under simulate.
+  //
+  // 🚨 THIS MUST STAY ABOVE THE PROTOTYPE PATCHES. The `await` yields, and once
+  // Actor/Item/ActiveEffect.prototype are swapped, ANY page write that lands in
+  // that window (sheet render, CSB label persist, a hook continuation) is
+  // captured instead of committed — it reports success and changes nothing.
+  // Awaiting first keeps the patched window inside one synchronous frame + the
+  // run itself, which is the invariant the rest of this file relies on.
+  //
+  // 🪤 Canonical specifier (NO ?cb=) — a cache-busted copy is a DIFFERENT module
+  // instance with its own queue, so skill-effects.js (which does its own bare
+  // `import("./free-action-queue.js")`) would reach the original and this would
+  // silently record nothing.
+  // ⚠ Awaited, not .then() — a deferred patch could land after the chain ran,
+  // leaving `freeActions` empty and reading as "no free action granted". That is
+  // a fail-PERMISSIVE gap, the worst kind.
+  let restoreFreeActions = () => {};
+  try {
+    const mod = await import("./free-action-queue.js");
+    const q = mod?.freeActionQueue;
+    if (!q || typeof q.enqueue !== "function") {
+      warn("harness: freeActionQueue unavailable — free-action grants will NOT be captured");
+    } else {
+      const originalEnqueue = q.enqueue.bind(q);
+      q.enqueue = function captureEnqueue(request) {
+        captures.freeActions.push({
+          sourceLabel:    request?.sourceLabel ?? null,
+          reactorActorId: request?.reactorActorId ?? null,
+          actionType:     request?.actionType ?? request?.kind ?? null,
+          presetName:     request?.preset?.name ?? request?.presetName ?? null,
+          request,
+        });
+        // ⚠ SWALLOWED — simulate must not leave a real pending free action on the
+        // actor. Note this makes simulate diverge from play for anything that
+        // depends on the queue being non-empty downstream (FREE_ACTION_WINDOW).
+        return undefined;
+      };
+      restoreFreeActions = () => { q.enqueue = originalEnqueue; };
+    }
+  } catch (e) {
+    warn("harness: could not patch freeActionQueue", e);
+  }
 
   // Snapshot originals from the actual runtime classes — the global
   // `Actor` / `Item` / `ActiveEffect` constructors. Foundry's documents
@@ -834,6 +881,7 @@ function installWriteCaptures() {
   };
 
   function restore() {
+    restoreFreeActions();
     ActorCls.prototype.update                  = originals.actorUpdate;
     ActorCls.prototype.createEmbeddedDocuments = originals.actorCreateEmbedded;
     ActorCls.prototype.deleteEmbeddedDocuments = originals.actorDeleteEmbedded;
@@ -1261,7 +1309,7 @@ async function runDirectorSkillSimulate(args = {}) {
   const acceptPassives = args.acceptPassives ?? false;
   const passiveAcceptor = installPassiveAutoAcceptor(acceptPassives);
   const headlessGates = installHeadlessGates();
-  const { captures, restore } = installWriteCaptures();
+  const { captures, restore } = await installWriteCaptures();
   let resolveError = null;
   try {
     const resolveHandler = STATE_HANDLERS[STATES.RESOLVE];
@@ -1442,7 +1490,7 @@ async function runDirectorAttackSimulate(args = {}) {
   const acceptPassives = args.acceptPassives ?? false;
   const passiveAcceptor = installPassiveAutoAcceptor(acceptPassives);
   const headlessGates = installHeadlessGates();
-  const { captures, restore } = installWriteCaptures();
+  const { captures, restore } = await installWriteCaptures();
 
   const passResults = [];
   const renderedCards = [];   // one card per pass (two-weapon → 2)
@@ -1603,7 +1651,7 @@ async function runDirectorPassiveTriggerTest(args = {}) {
   const acceptPassives = args.acceptPassives ?? false;
   const passiveAcceptor = installPassiveAutoAcceptor(acceptPassives);
   const headlessGates = installHeadlessGates();
-  const { captures, restore } = installWriteCaptures();
+  const { captures, restore } = await installWriteCaptures();
 
   let result = null;
   let err = null;

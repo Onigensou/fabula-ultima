@@ -10622,7 +10622,7 @@
         "id": "YAMrjKy6d6hgGP1F",
         "name": "Shadow Strike",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "uvtEB71f8xmQAiRB",
@@ -10946,7 +10946,7 @@
         "id": "1RZQnLLb3DnPxMOi",
         "name": "Soaring Strike",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "WQzVAB1xoaPdDTS7",
@@ -12494,7 +12494,7 @@
         "id": "tTLMqCkHSxjnTiDQ",
         "name": "Vortex",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "0NzdLoTr5nqvGw2b",

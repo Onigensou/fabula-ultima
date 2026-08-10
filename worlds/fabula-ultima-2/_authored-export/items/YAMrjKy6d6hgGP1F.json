@@ -8,6 +8,88 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "HtkcWJ5NclPl2sEU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786372667089,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Your next <strong>Attack</strong> deals extra <strong>Dark</strong> damage equal to <strong>【SL + this counter】</strong> <em>(the Might die you rolled)</em>, and its damage becomes <strong>Dark</strong>.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "HtkcWJ5NclPl2sEU",
+          "originalParentId": "YAMrjKy6d6hgGP1F",
+          "originalUuid": "Item.YAMrjKy6d6hgGP1F.ActiveEffect.HtkcWJ5NclPl2sEU"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "shadow_strike",
+          "charges": 1,
+          "chargesMax": 12,
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "count": "all",
+                "effect_kind": "remove_tagged_ae",
+                "effect_label": "ss_cleanup",
+                "filter_tag": "shadow_strike",
+                "include_persistent": true,
+                "target_ref": "self"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "ss_cleanup",
+                "reaction_passive_mode": "on",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_completes_attack"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/flood_of_darkness.png",
+      "name": "Shadow Strike",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-shadow-strike"
+      ],
+      "system": {
+        "tags": [
+          "shadow_strike"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -36,7 +118,86 @@
       "description": "<p>You have learned to channel your vital force into your attacks. You may use an action to perform a <strong>Shadow Strike</strong>: roll your current <strong>Might</strong> die and lose an amount of Hit Points equal to <strong>【the number rolled on your Might die】</strong>. If this didn't reduce your Hit Points to 0, you may perform a <strong>free attack</strong> with a weapon you have equipped: if this attack hits one or more targets, it deals extra damage equal to <strong>【SL + the number rolled on your Might die】</strong>. However, all damage dealt by this attack becomes <strong>dark</strong> and its damage type cannot be changed.</p>",
       "details_roller": "Show",
       "duration": "Instantaneous",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "consume_self": false,
+          "dice_count": "1",
+          "dice_faces": "MIG_CURRENT_DIE",
+          "effect_kind": "roll_dice",
+          "effect_label": "ss_roll",
+          "from_resource": "",
+          "menu_label": "",
+          "prompt_var": "mig_die",
+          "roll_interactive": false,
+          "roll_label": "",
+          "to_resource": ""
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_family": "",
+          "ae_initial_charges": "VAR_MIG_DIE",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Shadow Strike",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "ss_store",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "self",
+          "to_resource": ""
+        },
+        "2": {
+          "consume_amount": "AE_CHARGES_SHADOW_STRIKE",
+          "consume_can_defeat": true,
+          "consume_resource": "hp",
+          "consume_self": false,
+          "effect_kind": "consume_resource",
+          "effect_label": "ss_hpcost",
+          "from_resource": "",
+          "menu_label": "",
+          "on_empty": "drain",
+          "target_ref": "self",
+          "to_resource": ""
+        },
+        "3": {
+          "action_ref": "Attack",
+          "chain": false,
+          "condition_formula": "CUR_HP > 0",
+          "consume_self": false,
+          "damage_bonus_formula": "SL + AE_CHARGES_SHADOW_STRIKE",
+          "effect_kind": "free_action",
+          "effect_label": "ss_freeattack",
+          "element_override": "dark",
+          "free_of_cost": false,
+          "from_resource": "",
+          "menu_label": "",
+          "on_hit_effect_refs": "",
+          "performer_ref": "",
+          "to_resource": ""
+        },
+        "4": {
+          "condition_formula": "CUR_HP <= 0",
+          "consume_self": false,
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "ss_abort_cleanup",
+          "filter_tag": "shadow_strike",
+          "from_resource": "",
+          "include_persistent": true,
+          "menu_label": "",
+          "target_ref": "self",
+          "to_resource": ""
+        },
+        "5": {
+          "chain_steps": "ss_roll,ss_store,ss_hpcost,ss_freeattack,ss_abort_cleanup",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "ss_root",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
+        }
+      },
       "heroic_requirement": "",
       "id": "YAMrjKy6d6hgGP1F",
       "ignore_hr": false,
@@ -50,7 +211,7 @@
       "level": "1",
       "max_level": "5",
       "name": "Shadow Strike",
-      "on_activate_effect_ref": "",
+      "on_activate_effect_ref": "ss_root",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "-",
