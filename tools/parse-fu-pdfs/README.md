@@ -50,7 +50,34 @@ node tools/parse-fu-pdfs/parse-core-skills.js
 | `parse-core-spells.js` | pending | Core PDF per-class spell tables | `classes.<Class>.spells` |
 | `parse-atlas.js` | pending | 4 Atlas PDFs | new classes + `universal_heroic` |
 | `parse-bonus.js` | pending | 5 Bonus PDFs | mostly `universal_heroic` |
-| `parse-playtest.js` | pending | Latest + older Playtest snapshots | `playtest_overrides` patches |
+| `parse-dark-fantasy.js` | shipped | Dark Fantasy Classes v0.2 | Hexer / Slayer / Tamer + Hexer spells + `lineage_traditions` |
+| `parse-playtest.js` | **missing** | Latest + older Playtest snapshots | `playtest_overrides` patches |
+
+⚠ `parse-playtest.js` has never been written — the June 22nd 2026 playtest
+(the only authoritative one) is **not** in `skills.json`. Patches are added by
+hand as skills are touched.
+
+### `parse-dark-fantasy.js` is curated, not scraped
+
+The other parsers scrape `-layout` output. That book is a two-column zine whose
+spell table is printed as two side-by-side tables, so one `-layout` line carries
+text from both columns — and its "offensive spell" marker is a lightning-bolt
+glyph with no ToUnicode mapping, which `pdftotext` drops entirely (leaving
+`offensive ( )`). Every offensive flag was read off a 3× page render
+(`pymupdf`), not inferred from wording.
+
+To keep curation honest the script **re-verifies all 115 stored passages verbatim
+against a fresh `pdftotext -enc UTF-8` extraction on every run** and exits
+non-zero on drift:
+
+```bash
+node tools/parse-fu-pdfs/parse-dark-fantasy.js --dry-run   # verify + report, no write
+node tools/parse-fu-pdfs/parse-dark-fantasy.js             # verify + write (idempotent)
+node tools/parse-fu-pdfs/parse-dark-fantasy.js --txt x.txt # verify against a given extraction
+```
+
+It writes `skills.json` in place, preserving the file's CRLF style, and is the
+only parser that does so — the others still emit to a temp file (step 3 below).
 
 ## Conventions
 
