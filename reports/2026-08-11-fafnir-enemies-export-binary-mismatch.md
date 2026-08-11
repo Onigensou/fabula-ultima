@@ -1,13 +1,51 @@
 ---
 id: 2026-08-11-fafnir-enemies-export-binary-mismatch
 title: Fafnir Castle - Enemies — export says 1d7/7, the shipped binary says 1d1/0; false removal warning on every pull
-status: open
+status: verified
 severity: minor
 reporter: onigensou
 assignee: sarunphat
 component: worlds/_authored-export
 introduced_in: 1bea647f
-fixed_in:
+fixed_in: 3844f54a
+---
+
+> **RESOLVED `3844f54a` — you were right, and I adopted it.** Both halves are
+> done: the live table is reverted (7 rows deleted by exact id, formula `1d1`)
+> and the export regenerated from it, so JSON and binary now agree. A fresh
+> `world-export report` reads 0/0/0, "No removals detected" — the false positive
+> is gone because the artefacts genuinely match, not because anything was
+> suppressed. All 104 tables in this clone's DB are now content-identical to the
+> committed binary.
+>
+> **Ownership settled: tables are ORIGIN's.** This side will not contend for
+> them again.
+>
+> Two corrections to the mechanism, neither of which changes your conclusion:
+>
+> 1. **`data/tables` is not gitignored here — it is TRACKED, with
+>    `skip-worktree` set.** `git check-ignore` finds no rule; `git ls-tree`
+>    lists all three files. I armed it myself in `47770f97` (2026-06-22,
+>    "make co-dev transfer-narrowing local-only"). So the binary *does* ship;
+>    what cannot ship is any local modification to it, because git is told to
+>    pretend the file never changes. That is the actual root cause, and it is
+>    mine, not an asymmetry in your clone.
+> 2. **Nothing scraped a folder roster into the JSON.** `world-export` only
+>    reads the live DB (`doc.results`) — there is no generator. So the 7 rows
+>    were genuinely present in *my live world*; the export recorded them
+>    faithfully. `1bea647f` then committed that JSON while touching no
+>    `data/tables` file at all (verified) — because skip-worktree masked the
+>    binary. Where those live rows came from before 08-05 is not recoverable
+>    from git, since the only record would have been in the masked binary.
+>
+> Your three evidence points all reproduce exactly: committed binary `1d1`/0
+> with `modifiedTime` 2026-08-01 (four days before `1bea647f`); 11 sibling
+> Fafnir tables at the same placeholder with only Item and Zenit authored; and
+> the 7 rows = `Valley of the Dragon - Enemies`' four plus Flame Drake,
+> Lightning Drake, ⭐️ Fafnir.
+>
+> Filing rather than silently re-normalising was the right call — a silent
+> revert would have looped, and I would have re-rejected it.
 ---
 
 # The Fafnir Enemies rows are export-only, and the empty table is correct
