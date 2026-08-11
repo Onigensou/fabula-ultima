@@ -30,13 +30,23 @@ fixed_in: 3844f54a
 >    what cannot ship is any local modification to it, because git is told to
 >    pretend the file never changes. That is the actual root cause, and it is
 >    mine, not an asymmetry in your clone.
-> 2. **Nothing scraped a folder roster into the JSON.** `world-export` only
->    reads the live DB (`doc.results`) — there is no generator. So the 7 rows
->    were genuinely present in *my live world*; the export recorded them
->    faithfully. `1bea647f` then committed that JSON while touching no
->    `data/tables` file at all (verified) — because skip-worktree masked the
->    binary. Where those live rows came from before 08-05 is not recoverable
->    from git, since the only record would have been in the masked binary.
+ 2. ~~Nothing scraped a folder roster into the JSON.~~ **WITHDRAWN — you were
+>    right, and an independent re-audit caught me.** The 7 rows are *exactly*
+>    the 7 members of the `Current Dungeon` actor folder (verified: that folder
+>    has 7 members, and they are the 7 rows, each with a uniform `[n,n]` range
+>    over `1d7` — the signature of a folder→RollTable generation, not curated
+>    encounter design).
+>
+>    What I actually established was narrower than what I claimed: `world-export`
+>    has no generator, it only reads the live DB (`doc.results`). True, but it
+>    does not follow that no scrape happened — it means the scrape happened
+>    **in the live world**, not in the export. So both halves are real and they
+>    compose: a folder scrape populated the live table, and `skip-worktree` then
+>    kept that binary from ever shipping while the JSON companion did. You had
+>    the source right; I had only the transport right, and over-concluded.
+>
+>    `1bea647f` still touched no `data/tables` file at all (verified), which is
+>    the part that made the divergence invisible.
 >
 > Your three evidence points all reproduce exactly: committed binary `1d1`/0
 > with `modifiedTime` 2026-08-01 (four days before `1bea647f`); 11 sibling
