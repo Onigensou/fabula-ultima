@@ -154,6 +154,71 @@ rewritten `heroic_requirement` — are **all** reported, where the allowlist cau
 only `skill_tags`. Two controls (reworded description, nudged animation timing)
 stay silent in both, and no previously-watched prop was lost.
 
+## Game-CLOSED audits: `parity` and `census`
+
+Everything above needs the world open. These two are pure source/export reads —
+milliseconds to ~3 s, no bridge — so they run while Foundry is shut for a
+commit, and the Stop hook runs them even on a closed-game turn, which used to
+produce no signal at all.
+
+```
+node bin/skill-regression.js parity          # rig vs live payload
+node bin/skill-regression.js census [--all]  # golden vs engine reads
+```
+
+### `parity` — does the TEST RIG supply what the LIVE dispatch supplies?
+
+`state-handlers.js` spreads a shared `actionBase` into every CONFIRM-stage
+trigger payload. The harness used to hand-roll its own literal, so every field
+`actionBase` supplies was **absent under test**. The direction of failure is the
+danger: a missing identifier resolves to `0`/blank, and for a `== 0` gate that
+is the PERMISSIVE answer —
+
+```
+Cataclysm: "… && ACTION_DURATION == 0 && …"
+payload.skillDuration undefined -> rank 0 -> "instantaneous"
+=> a SCENE spell PASSED an instantaneous-only gate under the harness,
+   while correctly failing in play.
+```
+
+A test that cannot fail is worse than no test. `parity` compares the **assembled
+payload** on each side (scan literal ∪ whatever base it spreads), located by
+trigger string rather than position. Exempt fields live in `HARNESS_EXEMPT`
+(`lib/payload-parity.js`) with the reason each cannot apply.
+
+🪤 It compares payloads, not bases — an earlier version compared the two bases
+and produced six false "missing" for keys the harness states in its own literal.
+🪤 If either literal cannot be located it reports a **failure**, never a pass: a
+silent "0 keys, all good" is the very bug it exists to catch. (The first draft
+did exactly that — its hand-rolled comment stripper hit an apostrophe inside a
+comment, blanked the rest of the literal, and reported ✓ off 4 of 25 keys. It
+now reuses `engine-fingerprint.stripComments`.)
+
+Self-tested: deleting `skillDuration` from the harness base makes it report
+`MISSING skillDuration` and exit 1.
+
+### `census` — what is the config golden BLIND to?
+
+Tallies every prop key across every skill-shaped doc in the authored export,
+cross-references which the engine actually READS, and reports the intersection
+the golden treats as churn. Under a denylist that list should be empty.
+
+Reader detection is **props-qualified** (`props.<key>`, `p.<key>`,
+`props["<key>"]`, `readProp*(…, "<key>")`) — a bare `.name`/`.level` match is
+useless, since those exist on every Foundry document, and the first draft
+reported 13 "blind spots" that were all same-named document fields.
+
+Engine-read props that are deliberately churn live in `ACKNOWLEDGED`
+(`lib/census.js`) **with a reason each**, so a genuinely new blind spot appears
+alone instead of buried in 13 lines of known noise — a gate that cries wolf gets
+ignored. A stale acknowledgement (key gone, or now watched) is reported too.
+
+`--all` lists every key with docs/distinct/watched/readers; `--json` gives the
+table. Also the cheapest way to size a bulk edit before opening the world.
+
+Self-tested: moving `weapon_range` into `CHURN_PROPS` makes it report exactly
+that one blind spot, naming its readers.
+
 ## Correctness invariants: `verify`
 
 The golden answers "did behaviour **change**"; `verify` answers "is it

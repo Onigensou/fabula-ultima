@@ -27,6 +27,8 @@ const { recordVerified } = require("../lib/engine-fingerprint");
 const { dataWitness } = require("../lib/data-witness");
 const { collectStructure } = require("../lib/collect-structure");
 const { diffStructure } = require("../lib/structure-fingerprint");
+const { runCensus } = require("../lib/census");
+const { checkPayloadParity } = require("../lib/payload-parity");
 const DATA_KEY = dataWitness().key;
 
 const ROOT = path.resolve(__dirname, "..");
@@ -281,6 +283,91 @@ async function main() {
     return (added.length || removed.length || changed.length) ? 1 : 0;
   }
 
+  // ── parity ───────────────────────────────────────────────────────────────
+  // Does the TEST RIG supply every action-level identifier the LIVE dispatch
+  // supplies? Static source comparison — no game, milliseconds.
+  if (cmd === "parity") {
+    const r = checkPayloadParity();
+    if (r.error) {
+      console.log(`✗ parity: ${r.error}`);
+      return 1;
+    }
+    console.log(`parity — live payload ${r.live} key(s) · harness payload ${r.harness} key(s)  [creature_will_deal_damage]`);
+    if (r.extra.length) {
+      console.log(`  note: harness-only key(s) (live never sends these): ${r.extra.join(", ")}`);
+    }
+    if (r.ok) {
+      console.log("✓ the harness supplies every action-level field the live dispatch does.");
+      return 0;
+    }
+    console.log(`\n⚠ HARNESS IS MISSING ${r.missing.length} LIVE FIELD(S): ${r.missing.join(", ")}`);
+    console.log("\nA missing identifier resolves to 0/blank, and for a `== 0` gate that is the");
+    console.log("PERMISSIVE answer — the gate PASSES under test and refuses in play. Add each");
+    console.log("to `harnessActionBase` in _test-harness-director.js, or list it in");
+    console.log("HARNESS_EXEMPT (lib/payload-parity.js) with the reason it cannot apply.");
+    return 1;
+  }
+
+  // ── census ───────────────────────────────────────────────────────────────
+  // Coverage audit for the config golden: which props does the ENGINE read that
+  // the golden does NOT watch? Game-CLOSED (reads the authored export), so it
+  // costs nothing and runs while Foundry is shut for a commit.
+  //
+  // Under a denylist the blind list should be EMPTY; a hit means the churn list
+  // ate real content. Exits 1 on a blind spot so it can gate.
+  if (cmd === "census") {
+    const t0 = Date.now();
+    const { docCount, rows, blind, acknowledged, staleAck, exportMissing } = runCensus();
+    const took = ((Date.now() - t0) / 1000).toFixed(1);
+
+    if (exportMissing) {
+      console.log("✗ census: no authored export found — run `world-export export` first (game closed).");
+      return 1;
+    }
+    if (a.json) {
+      console.log(JSON.stringify({ docCount, blind, rows }, null, 1));
+      return blind.length ? 1 : 0;
+    }
+
+    const watched = rows.filter((r) => r.watched).length;
+    console.log(`census — ${rows.length} distinct prop key(s) across ${docCount} skill-shaped doc(s), ${took}s`);
+    console.log(`  watched by the config golden: ${watched}   classified churn: ${rows.length - watched}\n`);
+
+    if (a.all) {
+      console.log("=== every key (docs · distinct values · watched · engine readers) ===");
+      for (const r of rows) {
+        console.log(
+          `${String(r.docs).padStart(5)} ${String(r.distinct).padStart(4)}v  ` +
+          `${r.watched ? "WATCH" : "churn"}  ${r.key}` +
+          (r.readers.length ? `   ← ${r.readers.slice(0, 3).join(", ")}` : "   (no engine reader)")
+        );
+      }
+      console.log();
+    }
+
+    if (acknowledged.length) {
+      console.log(`  ${acknowledged.length} engine-read churn prop(s) reviewed + acknowledged: ${acknowledged.map((r) => r.key).join(", ")}`);
+    }
+    if (staleAck.length) {
+      console.log(`  ⚠ stale acknowledgement(s) protecting nothing (key gone, or now watched): ${staleAck.join(", ")}`);
+      console.log(`    drop them from ACKNOWLEDGED in lib/census.js.`);
+    }
+    if (!blind.length) {
+      console.log("\n✓ no blind spots — every engine-read prop is either watched or acknowledged.");
+      if (!a.all) console.log("  (pass --all to list every key, or --json for the full table)");
+      return 0;
+    }
+    console.log(`⚠ BLIND SPOTS — ${blind.length} prop(s) the engine READS but the golden treats as churn:`);
+    for (const r of blind) {
+      console.log(`  ${String(r.docs).padStart(5)} docs  ${r.key}   ← read by ${r.readers.slice(0, 3).join(", ")}`);
+      if (r.sample) console.log(`            e.g. ${r.sample}`);
+    }
+    console.log("\nEither the prop is real content (remove it from CHURN_PROPS in");
+    console.log("lib/structure-fingerprint.js, then `structure --update`), or the read is");
+    console.log("incidental (leave it, and say why in the CHURN_PROPS comment).");
+    return 1;
+  }
+
   // ── structure ────────────────────────────────────────────────────────────
   // The CONFIG half. Diffs the authored shape of every skill-shaped doc, so a
   // change COMPUTE cannot observe (a lost `skill_tags`, an ungated AE change
@@ -422,6 +509,10 @@ async function main() {
   node bin/skill-regression.js check   [opts]   diff current vs goldens (exit 1 on change)
   node bin/skill-regression.js structure       diff authored CONFIG vs goldens/structure.json
   node bin/skill-regression.js structure --update   re-baseline the config golden
+
+Game-CLOSED audits (no bridge; run them while Foundry is shut for a commit):
+  node bin/skill-regression.js census  [--all]  props the ENGINE reads that the golden does NOT watch
+  node bin/skill-regression.js parity          fields the LIVE dispatch sends that the TEST RIG does not
   node bin/skill-regression.js check --update    accept current as new goldens
   node bin/skill-regression.js verify  [opts]   assert expected-value scenarios (exit 1 on mismatch)
   node bin/skill-regression.js teardown [opts]  delete the bench scene (game open; no-op if absent)

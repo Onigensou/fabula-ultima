@@ -178,6 +178,9 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
     isCrit: !!ar.roll?.isCrit,
     isFumble: !!ar.roll?.isFumble,
     checkTotal: Number(ar.roll?.total ?? 0) || 0,
+    // The High Roll. Found MISSING by `skill-regression parity` — same class of
+    // hole as skillDuration, so an HR-gated damage rider read 0 under test.
+    hr: Number(ar.roll?.hr ?? 0) || 0,
     costHp: Number(ar.costSerialized?.hp ?? 0) || 0,
     costMp: Number(ar.costSerialized?.mp ?? 0) || 0,
     costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
@@ -211,6 +214,9 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
       weaponType: ar.weapon?.weaponType ?? null,
       weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
       affinity: entry.affinity,
+      // Per-TARGET, so it belongs here rather than in the action-level base.
+      // Powers "Conquer N" damage riders (Minotaurus Axe); absent, they read 0.
+      hitMargin: (Number(ar.roll?.total ?? 0) || 0) - (Number(entry.defense ?? 0) || 0),
       sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
       sourceActorUuid: ar.attackerActorRef,
       actionIntent: ar.actionIntent,

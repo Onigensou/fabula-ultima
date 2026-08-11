@@ -94,6 +94,37 @@ if (fp.hash && !dataChanged && !marker.kinds?.data && verified && verified.hash 
   process.exit(0);
 }
 
+// ── Static audits — the only checks that work with the game CLOSED ──────────
+// `parity` (does the test rig supply every field the live dispatch does?) and
+// `census` (does the engine read a prop the config golden treats as churn?) are
+// pure source/export reads: no bridge, milliseconds to ~3s. That makes them the
+// ONLY signal available on a game-closed turn, which until now produced none —
+// the gate simply deferred and the turn ended with nothing checked.
+//
+// Both fail in the PERMISSIVE direction when they regress, which is why they
+// are worth running unprompted: a missing rig field makes a gate PASS under
+// test and refuse in play. Never fatal on their own error — a broken audit must
+// not read as a code regression.
+function staticVerdict() {
+  const lines = [];
+  for (const [cmd, label] of [["parity", "test-rig payload parity"], ["census", "config-golden coverage"]]) {
+    let r;
+    try {
+      r = spawnSync("node", ["bin/skill-regression.js", cmd], {
+        cwd: ROOT, encoding: "utf8", timeout: 60 * 1000, maxBuffer: 8 * 1024 * 1024,
+      });
+    } catch { continue; }
+    if (!r || r.error || r.status == null) continue;   // audit itself broke — stay quiet
+    if (r.status === 0) continue;                      // clean
+    const detail = String(r.stdout || "")
+      .split("\n")
+      .find((l) => /MISSING|BLIND SPOT/.test(l)) || `${label} reported a problem`;
+    lines.push(`⚠ skill-regression ${cmd}: ${detail.trim()}`);
+    lines.push(`   → node tools/skill-regression/bin/skill-regression.js ${cmd}`);
+  }
+  return lines;
+}
+
 if (!bridgeAlive()) {
   // A data-only trigger needs no marker to survive: `dataChanged` is derived by
   // comparing against the verdict we're still holding, so it stays true on every
@@ -101,6 +132,10 @@ if (!bridgeAlive()) {
   // ENGINE edit forward.
   const kept = hasMarker ? " (marker kept)" : "";
   process.stderr.write(`⏳ skill-regression: ${kinds} changed this turn but Foundry is closed — regression check deferred until the world is open${kept}.\n`);
+  // The sweep needs the game; these two do not. Run them so a closed-game turn
+  // is not a turn with zero verification.
+  const sv = staticVerdict();
+  if (sv.length) process.stderr.write(sv.join("\n") + "\n");
   process.exit(0);
 }
 
@@ -214,8 +249,10 @@ recordVerified({
 
 if (!counts.added && !counts.removed && !counts.changed) {
   const s = structureVerdict();
-  if (s.drifted) {
-    process.stderr.write(`✓ skill-regression: ${counts.total} skills checked after ${kinds} edit — no behavioral drift.\n${s.text}`);
+  const stat = staticVerdict();
+  if (s.drifted || stat.length) {
+    const tail = (s.drifted ? s.text : "") + (stat.length ? stat.join("\n") + "\n" : "");
+    process.stderr.write(`✓ skill-regression: ${counts.total} skills checked after ${kinds} edit — no behavioral drift.\n${tail}`);
     process.exit(2);
   }
   process.stderr.write(`✓ skill-regression: ${counts.total} skills checked after ${kinds} edit — no behavioral drift${s.note}.\n`);
@@ -235,5 +272,6 @@ for (const k of (added || []).slice(0, 8)) lines.push(`  + NEW ${k}`);
 lines.push(`Review whether this is intended. If it is, re-baseline: node tools/skill-regression/bin/skill-regression.js check --update`);
 const sv = structureVerdict();
 if (sv.drifted) lines.push(sv.text.replace(/\n$/, ""));
+lines.push(...staticVerdict());
 process.stderr.write(lines.join("\n") + "\n");
 process.exit(2);
