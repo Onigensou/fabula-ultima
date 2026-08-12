@@ -41,6 +41,10 @@ import { log, warn } from "./logger.js";
 import { resolveTargetRef as resolveBdTargetRef, makeChainContext as makeBdChainContext } from "./skill-targeting.js";
 import { deriveCheck, decideHit } from "./check.js";
 import { resolvesVsMagicDefense } from "./snapshot.js";
+import {
+  composeGmRoll, gmDamageInput, composeGmDefenseOverrides, gmHitOverrideMap,
+  applyGmDamageOverrides, recomputeHitTokenUuids, gmOverrideDeltaRows, isGmOverrideEmpty,
+} from "./gm-card-override.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -1583,15 +1587,62 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
       negated: true, cancelled: false,
     };
   }
-  const accuracyOverride = mut.accuracyOverride ?? null;
+  // ── Manual GM overrides (gm-card-override.js) ──────────────────────────────
+  // Composed onto the engine's own override channels BEFORE the recompute, so
+  // the single shared re-derivation honors them by construction. Ordering is the
+  // authority model: the reaction engine has already had its say above; the GM
+  // layer overrules it here, and nothing after this re-derives the verdict.
+  // Absolute (set-to-value) semantics make the whole layer idempotent, so the
+  // preview recompute and the CONFIRM commit can both apply it without drift.
+  const gmOverride = ar?.gmOverride ?? null;
+  const hasGmOverride = !isGmOverrideEmpty(gmOverride);
+  let accuracyOverride = mut.accuracyOverride ?? null;
+  const gmHitOverrides = hasGmOverride ? gmHitOverrideMap(gmOverride) : null;
+  const gmDamage = hasGmOverride ? gmDamageInput(gmOverride) : null;
+  // A hand-set accuracy REPLACES the dice rather than adjusting a total, so it
+  // rides the same replaced-roll path check_reroll uses: total, Highest Roll,
+  // crit and fumble all re-derive from the new pair. Editing a total instead
+  // would leave HR — and therefore damage — describing dice nobody rolled.
+  // The attacker's own crit range / fumble threshold are honoured when we have
+  // the live actor; without it deriveCheck falls back to the standard rules.
+  const gmRoll = hasGmOverride
+    ? composeGmRoll(ar, gmOverride, deriveCheck,
+        attackerActor?.system?.props ?? null,
+        Number(attackerActor?.system?.props?.fumble_threshold) || 1)
+    : null;
+  // Publish the hand-set roll's TOTAL as an accuracyOverride as well.
+  //
+  // Replacing ar.roll alone is not enough: the recompute rebuilds `check.total`
+  // from the dice plus the ATTACKER'S OWN bonus (computeCheck derives bonusParts
+  // from the actor), so a GM's bonus-accuracy field would be shown on the card
+  // and then silently ignored when deciding hit/miss. accuracyOverride.to is the
+  // engine's existing "the effective to-hit total is not the natural roll" input
+  // and is folded in BEFORE the per-target pass, so hit and damage derive
+  // together. The dice still flow through ar.roll, which is what drives Highest
+  // Roll (and therefore damage), crit and fumble.
+  if (gmRoll) {
+    const natural = Number(ar?.roll?.total ?? 0);
+    accuracyOverride = {
+      ...(accuracyOverride ?? {}),
+      from: natural,
+      to: Number(gmRoll.total),
+      blocked: false,
+      parts: [...(accuracyOverride?.parts ?? []),
+              { source: "GM adjustment", amount: Number(gmRoll.total) - natural, gm: true }],
+      gm: true,
+    };
+  }
   const grantOverride = mut.grantOverride ?? null;
   // Per-target defense overrides (adjust_defense / Verónica): collected from the
   // core mutation and THREADED INTO the recompute (like accuracyOverride), so the
   // recompute itself honors them — one place re-derives hit/miss for every override
   // kind, instead of patching the result after the recompute clobbers it.
-  const defenseOverrides = (mut.perTargetResults ?? [])
+  let defenseOverrides = (mut.perTargetResults ?? [])
     .filter((p) => p?.defenseOverride)
     .map((p) => ({ tokenUuid: p.tokenUuid, actorUuid: p.actorUuid, ...p.defenseOverride }));
+  // GM-set DEF/MDEF joins the same list (appended last so it wins on a slot a
+  // reaction also bumped) and rides the existing per-target re-apply.
+  if (hasGmOverride) defenseOverrides = composeGmDefenseOverrides(gmOverride, defenseOverrides, mut.perTargetResults ?? []);
   // Per-target incoming-damage overrides (adjust_damage / Ninja Log): collected
   // like defenseOverrides and THREADED INTO the recompute so the rebuilt damage
   // is re-soaked, instead of the recompute clobbering the reduction.
@@ -1613,7 +1664,10 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
     // single shared recompute (recomputeActionProfile) honor any roll change by
     // construction — a new roll-mutating effect just writes ctx.ar and gets correct
     // recalculation for free, no per-effect recompute logic.
-    const mutatedAr = { ...ar, roll: mut.roll ?? ar.roll, targets: mutatedTargets, perTargetResults };
+    // GM roll wins over the engine's (a reroll mutation) — the table's hand-set
+    // dice are the final word, and everything the recompute derives (HR →
+    // damage, crit, per-target hit) must come from them.
+    const mutatedAr = { ...ar, roll: gmRoll ?? mut.roll ?? ar.roll, targets: mutatedTargets, perTargetResults };
     if (attackerActor) {
       const { refreshReactionSubjects } = await import("./skill-effects.js" + sfx);
       try { await refreshReactionSubjects({ acceptedCardReactions: accepted, ar: mutatedAr, attackerActor }); }
@@ -1621,7 +1675,7 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
     }
     const { recomputeActionProfile } = await import("./action-profile.js" + sfx);
     const delta = await recomputeActionProfile({
-      ar: mutatedAr, targets: mutatedTargets, acceptedReactions: accepted, round, accuracyOverride, grantOverride, defenseOverrides, damageOverrides,
+      ar: mutatedAr, targets: mutatedTargets, acceptedReactions: accepted, round, accuracyOverride, grantOverride, defenseOverrides, damageOverrides, gmHitOverrides, gmDamage,
     });
     if (Array.isArray(delta?.perTargetResults) && delta.perTargetResults.length) {
       perTargetResults = delta.perTargetResults;
@@ -1642,6 +1696,18 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
     perTargetResults = split.perTargetResults;
     hitTokenUuids = split.hitTokenUuids;
   }
+  // GM absolute damage — applied LAST, after every engine pass including the
+  // shield split, because a hand-set number is the final figure and must not be
+  // re-soaked by anything downstream. Hit/DEF were threaded into the recompute
+  // above; only damage is patched here (it is a leaf — see gm-card-override.js).
+  // The hit list is then rebuilt from the final rows so on-hit rider AEs follow
+  // a GM-forced verdict instead of the pre-override victim set.
+  let gmOverrideRows = [];
+  if (hasGmOverride) {
+    perTargetResults = applyGmDamageOverrides(perTargetResults, gmOverride);
+    hitTokenUuids = recomputeHitTokenUuids(perTargetResults, hitTokenUuids);
+    gmOverrideRows = gmOverrideDeltaRows(perTargetResults, gmOverride);
+  }
   // Itemized accuracy roll — computed ONCE here, the single mutation entry every
   // card recompute funnels through, so EVERY consumer (GM card, player mirror,
   // any reaction-driven update) renders the same composed accuracy. Mirrors how
@@ -1651,7 +1717,12 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
   // via the SAME builder the initial card uses. Blocking overrides (Crossfire)
   // carry no parts → null → the "Negated" treatment owns the display.
   let accuracyRoll = null;
-  if (accuracyOverride?.rerolled && accuracyOverride.newRoll) {
+  if (gmRoll) {
+    // Hand-set dice: render them directly, exactly as a reroll does. Placed
+    // first so a GM edit is what the accuracy fieldset shows even when a
+    // reaction also adjusted the check.
+    accuracyRoll = { ...gmRoll };
+  } else if (accuracyOverride?.rerolled && accuracyOverride.newRoll) {
     // check_reroll REPLACES the dice — render the new roll directly (new rA/rB +
     // total), keeping its modifier breakdown (a reroll leaves checkBonus untouched).
     // The SAME builder the initial card uses then repaints the fieldset, so a reroll
@@ -1687,6 +1758,21 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
     ...mut,
     targets: mutatedTargets,
     perTargetResults,
+    // The GM-composed accuracy override, NOT `mut.accuracyOverride` — the spread
+    // above carries the engine's, which the GM layer may have overruled. The
+    // commit path persists whatever this returns, so leaving the spread's value
+    // here would drop a hand-set accuracy at Confirm.
+    accuracyOverride,
+    // The hand-set roll REPLACES the action's roll for every consumer (commit,
+    // RESOLVE, crit handling, the post-commit card). Rides out as `roll` so the
+    // existing reroll plumbing carries it with no new branch.
+    ...(gmRoll ? { roll: gmRoll } : {}),
+    // Lets the commit adopt the recomputed headline damage for a damage-only
+    // edit, which changes no dice and so would fail a roll-changed test.
+    gmDamageApplied: !!gmDamage,
+    // What the GM changed, for the card delta / mirror repaint. Empty when the
+    // card was never hand-edited.
+    gmOverrideRows,
     accuracyRoll, accuracyIsSpellish,
     // Recomputed headline damage (used by the card when the roll changed — reroll).
     // `mut.roll` (post-mutation roll) rides through the `...mut` spread for HR.

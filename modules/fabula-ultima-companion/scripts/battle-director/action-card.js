@@ -35,7 +35,10 @@ import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
-import { resolvesVsMagicDefense } from "./snapshot.js";
+import { resolvesVsMagicDefense, freezeActionResult } from "./snapshot.js";
+import { mergeGmOverride, normalizeGmOverride, describeGmEditors, isGmEditableRow,
+         summarizeGmOverride, isGmOverrideEmpty, GM_DIE_SIZES,
+         GM_DAMAGE_TYPES, GM_WEAPON_TYPES } from "./gm-card-override.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
 import { simInvoke } from "./sim/invoke-brain.js";
@@ -181,6 +184,7 @@ export function ensureStyles() {
   const css = document.createElement("style");
   css.id = CSS_ID;
   css.textContent = `
+
     #${ROOT_ID} {
       position: fixed;
       top: 50%; left: 50%;
@@ -1592,6 +1596,298 @@ export function ensureStyles() {
     .fud-bf-desc-tip .fud-bf-desc-tip-body { font-weight: 400; }
     .fud-bf-desc-tip .fud-bf-desc-tip-body p { margin: 0 0 6px; }
     .fud-bf-desc-tip .fud-bf-desc-tip-body p:last-child { margin-bottom: 0; }
+
+    /* ── GM edit surface (gm-card-override.js) ─────────────────────────────
+       Emitted LAST on purpose. These rules override established card styling
+       (target rows, buttons), and the sheet is one string: at equal specificity
+       source order decides. Sitting first, .fud-gm-edit-card's width lost to
+       .fud-bf-card and the hand-set row tint lost to .t-result.hit|miss|…,
+       so both silently did nothing.
+
+       Colours come from the card's own tokens (--fud-gold-1/2, --fud-stroke,
+       --fud-ink-soft) and its white-over-parchment surface idiom, rather than a
+       parallel amber set. */
+
+    /* Launch button — parked in a ZERO-HEIGHT wrapper and absolutely placed
+       inside it, so introducing it cannot move any existing card element. */
+    .fud-bf-card .fud-gm-launch-wrap { position: relative; height: 0; }
+    .fud-bf-card .fud-gm-launch {
+      position: absolute; right: 9px; bottom: 2px;
+      width: 28px; height: 28px; padding: 0; margin: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid var(--fud-stroke, #7a6a55);
+      border-radius: 6px; cursor: pointer; z-index: 3;
+      color: var(--fud-ink-soft, #4b4338); line-height: 1; font-size: 12px;
+      box-sizing: border-box;
+      transition: background 120ms ease, color 120ms ease, filter 120ms ease;
+    }
+    /* The glyph carries Font Awesome's own line-height and a trailing advance,
+       which pushed it up-left of the button's centre. Neutralise both and let
+       flex centring do the work. */
+    .fud-bf-card .fud-gm-launch > i {
+      display: block; line-height: 1; width: auto; margin: 0; font-size: 12px;
+    }
+    .fud-bf-card .fud-gm-launch:hover {
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
+      color: #221b14;
+    }
+    .fud-bf-card .fud-gm-launch:focus-visible {
+      outline: 2px solid var(--fud-gold-2, #b7935a); outline-offset: 2px;
+    }
+    /* Carries an override — the card's own gold, plus a corner badge so the
+       state survives a greyscale / colour-blind read rather than relying on hue. */
+    .fud-bf-card .fud-gm-launch.is-active {
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
+      color: #221b14;
+    }
+    .fud-bf-card .fud-gm-launch-dot {
+      position: absolute; top: -4px; right: -4px;
+      min-width: 14px; height: 14px; padding: 0 3px;
+      border-radius: 999px; background: #8a4b22; color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      font-size: 9px; font-weight: 800; line-height: 12px; text-align: center;
+    }
+    /* Gutter on BOTH sides so a long subtitle can never run under the button
+       while its text stays centred on the card. Padding on the right alone
+       shifted "Melee · Normal Attack" visibly off-centre — the button must not
+       move existing content, and reserving space asymmetrically does exactly
+       that. */
+    .fud-bf-card .fud-bf-subtitle { padding-left: 38px; padding-right: 38px; }
+
+    /* Editor card — its own overlay, above the action card it edits. */
+    #fud-gm-edit-card-root {
+      position: fixed; inset: 0; z-index: 120;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(24, 28, 41, 0.32);
+      opacity: 0; pointer-events: none;
+      transition: opacity 160ms ease-out;
+    }
+    #fud-gm-edit-card-root.is-visible { opacity: 1; pointer-events: auto; }
+    .fud-bf-card.fud-gm-edit-card {
+      width: min(384px, calc(100vw - 28px));
+      max-height: calc(100vh - 40px);
+      display: flex; flex-direction: column;
+      transform: scale(0.96);
+      transition: transform 160ms cubic-bezier(.2,.7,.2,1);
+    }
+    #fud-gm-edit-card-root.is-visible .fud-gm-edit-card { transform: scale(1); }
+    .fud-gm-edit-head {
+      padding: 11px 14px 9px;
+      border-bottom: 2px solid var(--fud-stroke, #7a6a55);
+      display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+    }
+    .fud-gm-edit-title {
+      flex: 1 1 100%; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+      font-size: 9.5px; color: #5c5344;
+    }
+    .fud-gm-edit-sub { font-size: 13px; font-weight: 800; color: var(--fud-ink, #3a3228); }
+    .fud-gm-edit-body { padding: 9px 12px; overflow-y: auto; flex: 1 1 auto; }
+
+    /* Sections mirror fieldset.fud-bf-section exactly — same border, radius,
+       wash and legend weight — so the editor reads as the same furniture as the
+       card it edits. */
+    .fud-gm-edit-card fieldset.fud-gm-sec {
+      border: 1px solid var(--fud-stroke, #7a6a55);
+      border-radius: 8px;
+      padding: 4px 9px 8px;
+      margin: 0 0 7px 0;
+      background: rgba(255, 255, 255, 0.20);
+    }
+    .fud-gm-edit-card fieldset.fud-gm-sec legend {
+      padding: 0 5px;
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase;
+      color: var(--fud-ink-soft, #4b4338);
+    }
+    /* ROW layout. Each line reads "<what> <is now> adjust by [ ]", so the eye
+       runs down a single column of inputs. The previous uniform 2-column grid
+       gave twelve controls the same weight and the same shouty uppercase label,
+       which is what made the panel hard to read at a glance. */
+    .fud-gm-row { display: flex; align-items: center; gap: 7px; padding: 3px 0; min-width: 0; }
+    /* THREE typographic levels, which is what the panel was missing. Legends
+       stay uppercase/800 (group). Field names are sentence case at reading
+       weight (which field) — as uppercase 800 they were indistinguishable from
+       the legends and eleven of them stacked down the left edge was the actual
+       clutter. Connectors (below) carry the semantics and get real weight. */
+    .fud-gm-rl {
+      flex: 0 0 44px; font-size: 11px; font-weight: 600; letter-spacing: 0;
+      color: var(--fud-ink-soft, #4b4338);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    /* The action's current value — a fact to read, so it is plain text rather
+       than a boxed field that would invite a click. */
+    .fud-gm-now {
+      flex: 0 0 auto; min-width: 26px; text-align: right;
+      font-weight: 800; font-size: 12.5px; font-variant-numeric: tabular-nums;
+      color: var(--fud-ink, #3a3228);
+    }
+    /* The CONNECTOR is the only thing on the row telling the GM whether their
+       number replaces ("shows") or adds ("adjust by"). It was 9.5px at 60%
+       opacity — the faintest text in the dialog carrying the whole semantic.
+       Colour is set directly rather than via opacity, which drags foreground
+       and background together and is why every de-emphasised string here fell
+       under AA. */
+    .fud-gm-sep {
+      flex: 1 1 auto; text-align: right; font-size: 10.5px;
+      color: #5c5344; white-space: nowrap;
+    }
+    .fud-gm-sep.is-verb { font-weight: 700; color: #4b4338; }
+    .fud-gm-edit-card .fud-gm-row .fud-gm-num { flex: 0 0 58px; width: 58px; min-width: 58px; }
+    .fud-gm-edit-card .fud-gm-row .fud-gm-die { flex: 0 0 88px; width: 88px; min-width: 88px; }
+    .fud-gm-types { padding-top: 6px; margin-top: 2px; border-top: 1px dashed var(--fud-stroke, #7a6a55); }
+    .fud-gm-edit-card .fud-gm-types .fud-gm-sel { flex: 1 1 0; width: auto; min-width: 0; }
+    .fud-gm-check { gap: 8px; }
+    .fud-gm-check > span { font-size: 11px; color: var(--fud-ink, #3a3228); }
+    /* Target rows keep a small grid — three genuinely parallel fields. */
+    .fud-gm-grid { display: grid; grid-template-columns: 1.35fr 1fr 1fr; gap: 6px; }
+    .fud-gm-f { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .fud-gm-f > span {
+      font-size: 11px; font-weight: 600; color: var(--fud-ink-soft, #4b4338);
+    }
+
+    /* Controls. Scoped + pinned: Foundry's own input/select styling outranks a
+       bare single-class selector, so an unscoped width loses and every control
+       stretches full-width. White-over-parchment wells to match the card. */
+    .fud-gm-edit-card .fud-gm-num,
+    .fud-gm-edit-card .fud-gm-sel {
+      width: 100%; min-width: 0; height: 25px; margin: 0;
+      padding: 1px 6px; font-size: 12px; line-height: 21px;
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.55);
+      color: var(--fud-ink, #3a3228);
+      border: 1px solid var(--fud-stroke, #7a6a55); border-radius: 6px;
+    }
+    .fud-gm-edit-card .fud-gm-num {
+      text-align: right; font-variant-numeric: tabular-nums;
+      appearance: textfield; -moz-appearance: textfield;
+    }
+    .fud-gm-edit-card .fud-gm-num::-webkit-outer-spin-button,
+    .fud-gm-edit-card .fud-gm-num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    /* The placeholder is NOT decorative hint text — it is the engine's own
+       number, which the footnote tells the GM to read. It has to clear contrast
+       like body text, not sit at a hint's 2:1. */
+    .fud-gm-edit-card .fud-gm-num::placeholder {
+      color: #5a5145; opacity: 1; font-style: italic;
+    }
+    .fud-gm-edit-card .fud-gm-num:focus-visible,
+    .fud-gm-edit-card .fud-gm-sel:focus-visible {
+      outline: 2px solid var(--fud-gold-2, #b7935a); outline-offset: 1px;
+    }
+    /* Authored — driven by an explicit class, NOT :placeholder-shown. The
+       pseudo-class marks a field amber whenever its placeholder is empty (a
+       target with no known DEF), and can never mark a <select>, so a changed
+       die size looked untouched. */
+    .fud-gm-edit-card .fud-gm-num.is-edited,
+    .fud-gm-edit-card .fud-gm-sel.is-edited {
+      border-color: var(--fud-gold-2, #b7935a);
+      background: rgba(213, 182, 122, 0.30);
+      font-weight: 700;
+    }
+    /* Foundry core styles select:focus with an orange-red glow, which made the
+       auto-focused first field look like an error in a gold/parchment dialog.
+       Keyed on :focus (not :focus-visible) because core is. */
+    .fud-gm-edit-card .fud-gm-num:focus,
+    .fud-gm-edit-card .fud-gm-sel:focus { box-shadow: none; }
+    /* The HR toggle is the one override with no typed value to look at, so it
+       needs its own authored marker — the class was toggled but nothing matched. */
+    .fud-gm-edit-card .fud-gm-check.is-edited > span {
+      font-weight: 800; color: #6b5314;
+    }
+    .fud-gm-edit-card .fud-gm-check.is-edited > span::after {
+      content: " · changed"; font-size: 9.5px; font-weight: 700; color: #8a4b22;
+    }
+    /* A changed <select> is otherwise signalled by fill alone — lost in
+       greyscale or a deuteranopic read. */
+    .fud-gm-edit-card .fud-gm-sel.is-edited {
+      box-shadow: inset 3px 0 0 #8a4b22;
+    }
+    .fud-gm-edit-card input[type="checkbox"] {
+      width: 16px; height: 16px; margin: 0; flex: 0 0 auto;
+      accent-color: var(--fud-gold-2, #b7935a);
+    }
+    /* The ANSWER — what the typed inputs actually produce. Given a box and real
+       weight because it is the one line the GM is working towards; as plain
+       small grey text it disappeared under the controls that feed it. */
+    .fud-gm-derived {
+      margin: 7px 0 0; padding: 5px 8px;
+      font-size: 11.5px; font-weight: 700; text-align: center;
+      font-variant-numeric: tabular-nums;
+      color: var(--fud-ink, #3a3228);
+      background: rgba(0, 0, 0, 0.05);
+      box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.07); border-radius: 6px;
+    }
+    /* Crit / fumble use the CARD's own verdict colour, so the same event does
+       not read as two different things one screen apart. */
+    .fud-gm-derived.is-crit   { color: #b40000; background: rgba(180, 0, 0, 0.08); }
+    .fud-gm-derived.is-fumble { color: #1f1f1f; background: rgba(31, 31, 31, 0.08); }
+    .fud-gm-trow { padding: 6px 0 2px; }
+    .fud-gm-trow + .fud-gm-trow { border-top: 1px solid var(--fud-stroke, #7a6a55); }
+    .fud-gm-tname {
+      font-size: 11px; font-weight: 800; margin-bottom: 5px;
+      color: var(--fud-ink, #3a3228);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    /* Result needs more room than the two numeric fields — at even thirds
+       "Auto (engine)" truncated inside its select. */
+    .fud-gm-trow .fud-gm-grid { grid-template-columns: 1.35fr 1fr 1fr; }
+    .fud-gm-note {
+      margin: 6px 0 0; font-size: 11px; line-height: 1.5;
+      color: var(--fud-ink-soft, #4b4338);
+    }
+    .fud-gm-note em { font-style: normal; font-weight: 800; opacity: 1; }
+    .fud-gm-edit-foot {
+      display: flex; flex-wrap: wrap; gap: 7px; padding: 9px 12px 11px;
+      border-top: 2px solid var(--fud-stroke, #7a6a55);
+    }
+    /* Footer reuses the card's own .fud-btn idiom (see .fud-bf-card .fud-btn) —
+       same radius, stroke, lift and uppercase weight — instead of a parallel
+       button style. Only the flex split is local. */
+    /* Explicit percentage bases rather than auto: with an auto basis the two
+       shared a row only until a label grew, then each claimed a full row.
+       Percentages keep the Cancel/Save pair side by side at every width. Save
+       leads (order 0) so the primary sits where the card's own CONFIRM does. */
+    /* Shorter than the action card's own buttons: those are the turn's decision
+       and earn the height, while these close a utility dialog. */
+    .fud-gm-edit-card .fud-btn { padding: 6px 10px; font-size: 11px; }
+    .fud-gm-edit-card .fud-btn-save {
+      order: 0; flex: 1 1 56%;
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
+      color: #221b14;
+    }
+    .fud-gm-edit-card .fud-btn-back {
+      order: 1; flex: 1 1 34%;
+      background: linear-gradient(180deg, #e5d6c5, #c9b294);
+      color: var(--fud-ink, #3a3228);
+    }
+    /* Destructive, and it COMMITS (wipes every override for the table). Given
+       its OWN ROW below the Cancel/Save pair — sharing a row put it directly in
+       the path of a mis-aimed click at Save, and squeezed all three past the
+       card's width. Disabled outright when there is nothing to remove. */
+    .fud-gm-edit-card .fud-btn-clear {
+      order: 2; flex: 1 1 100%; padding: 5px 9px; font-size: 10px;
+      background: #f3e3de; color: #8a2b1e; border-color: #a8503f;
+    }
+    .fud-gm-edit-card .fud-btn-clear[disabled] {
+      opacity: 0.4; cursor: not-allowed; filter: grayscale(0.5);
+    }
+    .fud-gm-edit-card .fud-btn-clear[disabled]:hover { transform: none; filter: grayscale(0.5); }
+
+    /* Rows carrying a hand-set value — an amber rail, deliberately distinct from
+       the redirect tint so the two never read as the same thing on a card where
+       both are present. Scoped to beat the result-state colours, which are
+       themselves scoped and would otherwise win. */
+    .fud-bf-card .fud-bf-target-row.is-gm-edited { box-shadow: inset 3px 0 0 var(--fud-gold-2, #b7935a); }
+    .fud-bf-card .fud-bf-target-row .t-def.is-gm-edited,
+    .fud-bf-card .fud-bf-target-row .t-result.is-gm-edited { color: #8a4b22; }
+    /* An accuracy / damage edit has no per-target row to mark, so the panel
+       itself carries the rail — otherwise a hand-set 16 is indistinguishable
+       from a rolled one. */
+    .fud-bf-card fieldset.fud-bf-section.is-gm-edited {
+      box-shadow: inset 3px 0 0 var(--fud-gold-2, #b7935a);
+    }
+    .fud-bf-card fieldset.fud-bf-section.is-gm-edited legend::after {
+      content: " · GM SET"; color: #8a4b22; font-size: 9px;
+    }
   `;
   document.head.appendChild(css);
 }
@@ -2087,7 +2383,17 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     if (r.studied === false) {
       const maskedTip = `<p>Study this target to identity tier (≥7) to reveal defense, damage, and affinity.</p>`;
       const maskedAttrs = ` data-fud-equip-desc="${escapeHtml(maskedTip)}" data-fud-equip-desc-name="${escapeHtml(r.name)}"`;
-      return `<div class="fud-bf-target-row"${maskedAttrs}>
+      // Identity hooks are carried on the MASKED row too. They expose only which
+      // token the row is (its name is already printed right here) — never the
+      // masked DEF/damage/affinity — and without them every per-uuid patcher
+      // (redirect, defense override, GM edit) silently cannot find the row, so a
+      // mutation would apply in the data and never repaint for an unidentified
+      // target. That is the common case: an enemy nobody has Studied yet.
+      const maskedIdAttrs =
+        ` data-fud-target-token-uuid="${escapeHtml(String(r.tokenUuid ?? ""))}"`
+        + ` data-fud-target-actor-uuid="${escapeHtml(String(r.actorUuid ?? ""))}"`
+        + ` data-fud-target-slot-index="${_slotIdx}"`;
+      return `<div class="fud-bf-target-row is-unstudied"${maskedIdAttrs}${maskedAttrs}>
         <span class="t-name">${escapeHtml(r.name)}</span>
         <span class="t-def">${defLabelTag} ???</span>
         <span class="t-result">???</span>
@@ -2744,6 +3050,11 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
       `.fud-bf-target-row[data-fud-target-actor-uuid="${CSS.escape(String(d.actorUuid))}"]`
     ));
     if (!rowEl) continue;
+    // A row masked as unstudied stays masked for non-GMs. This delta is the SAME
+    // payload every mirror receives, and a defence override — whether a
+    // reaction's +DEF or a GM's hand-set value — would otherwise print the exact
+    // number the Study gate exists to withhold, straight onto the player's card.
+    if (rowEl.classList.contains("is-unstudied") && !game.user?.isGM) continue;
     const defSpan = rowEl.querySelector(".t-def");
     if (defSpan) defSpan.textContent = `${defLabelTag} ${d.to}`;
     // Hover — re-derive the Hit Check vs the NEW DEF + itemize the +DEF source.
@@ -2765,6 +3076,76 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
       const shim = { hit: d.hit, crit: d.crit, affinity: d.affinity, damage: d.damage };
       resultSpan.className = `t-result ${resultClsFor(shim)}`;
       resultSpan.innerHTML = resultLabelFor(shim);
+    }
+  }
+
+  // Manual GM overrides — repaint the hand-set DEF / verdict / damage on each
+  // edited row and mark WHICH fields the table set, so nobody reads a GM figure
+  // as an engine result. Runs AFTER the reaction loops above: the GM layer is
+  // applied last in the engine too, so the DOM order matches the data order.
+  // Purely delta-driven, so the player/support-GM mirrors get it identically.
+  for (const g of (Array.isArray(delta.gmOverrides) ? delta.gmOverrides : [])) {
+    const rowEl = (g.tokenUuid && rootEl.querySelector(
+      `.fud-bf-target-row[data-fud-target-token-uuid="${CSS.escape(String(g.tokenUuid))}"]`
+    )) || (g.actorUuid && rootEl.querySelector(
+      `.fud-bf-target-row[data-fud-target-actor-uuid="${CSS.escape(String(g.actorUuid))}"]`
+    ));
+    if (!rowEl) continue;
+    // A row masked as unstudied stays masked for non-GMs. This delta is the SAME
+    // serializable payload every mirror receives, so painting a GM-set damage or
+    // DEF into a masked row would hand players the very numbers the Study gate
+    // exists to withhold. GMs (host and support alike) see the edit painted.
+    if (rowEl.classList.contains("is-unstudied") && !game.user?.isGM) continue;
+    rowEl.classList.add("is-gm-edited");
+    if (g.fields?.defense) {
+      const defSpan = rowEl.querySelector(".t-def");
+      if (defSpan) {
+        defSpan.textContent = `${defLabelTag} ${g.defense}`;
+        defSpan.classList.add("is-gm-edited");
+      }
+    }
+    const resultSpan = rowEl.querySelector(".t-result");
+    if (resultSpan && (g.fields?.hit || g.fields?.damage)) {
+      const shim = { hit: g.hit, crit: g.crit, affinity: g.affinity, damage: g.damage };
+      const oldTNum = parseInt(resultSpan.querySelector(".t-num")?.textContent ?? "", 10);
+      resultSpan.className = `t-result ${resultClsFor(shim)} is-gm-edited`;
+      resultSpan.innerHTML = resultLabelFor(shim);
+      const tNum = resultSpan.querySelector(".t-num");
+      if (tNum) animateCardNumber(tNum, oldTNum, Number(tNum.textContent), (v) => { tNum.textContent = String(v); });
+    }
+    // Hover — say plainly that these numbers were set by hand, and which ones.
+    const edited = [
+      g.fields?.hit ? "hit/miss" : null,
+      g.fields?.damage ? "damage" : null,
+      g.fields?.defense ? defLabelTag : null,
+    ].filter(Boolean);
+    rowEl.setAttribute("data-fud-equip-desc",
+      `<p><b>GM override</b> — set by hand: ${escapeHtml(edited.join(", "))}</p>` +
+      `<p><b>Affinity:</b> ${escapeHtml(g.affinity ?? "NE")}</p>` +
+      `<p>${g.hit ? "Hits" : "Misses"}${g.fields?.damage ? ` for ${g.damage}` : ""} — this figure overrides the engine's.</p>`);
+  }
+  // Launch button state — marked active while this card carries any override,
+  // with the summary in its tooltip. Rebuilt on every delta so it stays true
+  // when the OTHER GM edits or clears, and so a GM arriving at a card mid-action
+  // can see at a glance that its numbers were touched.
+  {
+    const btn = rootEl.querySelector("[data-fud-gm-launch]");
+    if (btn) {
+      const active = !!delta.gmEditSummary;
+      btn.classList.toggle("is-active", active);
+      const label = active
+        ? `Edited: ${delta.gmEditSummary}${delta.gmEditors ? ` — ${delta.gmEditors}` : ""}`
+        : "Edit this action";
+      btn.setAttribute("title", label);
+      btn.setAttribute("aria-label", label);
+      let dot = btn.querySelector(".fud-gm-launch-dot");
+      if (active && !dot) {
+        dot = document.createElement("span");
+        dot.className = "fud-gm-launch-dot";
+        dot.setAttribute("aria-hidden", "true");
+        btn.appendChild(dot);
+      } else if (!active && dot) dot.remove();
+      if (dot) dot.textContent = String(delta.gmEditCount ?? "");
     }
   }
 
@@ -2982,6 +3363,24 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
   if (delta.effectPreview && cardEl) {
     try { renderReactionEffectPreview(cardEl, delta.effectPreview); }
     catch (e) { warn("applyCardTargetMutationDelta: effect preview threw", e); }
+  }
+
+  // Panel rails go LAST: the accuracy and damage fieldsets are REBUILT from
+  // HTML further up this same function when a mutation changes the roll, which
+  // discards any class set on them beforehand. Marking them after every rebuild
+  // is the only placement that survives.
+  // Accuracy / damage edits have no per-target row to mark, so rail the PANEL
+  // instead. Without this a hand-set accuracy total looked exactly like a rolled
+  // one — the only tell was a 26px icon in the card's corner.
+  {
+    // `.fud-bf-acc` is a DIV *inside* the accuracy fieldset (only the damage
+    // fieldset carries its own class), so climb to the enclosing fieldset —
+    // marking the inner div left the rail with nothing to draw on.
+    const acc = rootEl.querySelector(".fud-bf-acc")?.closest("fieldset.fud-bf-section");
+    const dmg = rootEl.querySelector("fieldset.fud-bf-dmg")
+      ?? rootEl.querySelector(".fud-bf-dmg")?.closest("fieldset.fud-bf-section");
+    acc?.classList?.toggle("is-gm-edited", !!delta.gmRollEdited);
+    dmg?.classList?.toggle("is-gm-edited", !!delta.gmDamageEdited);
   }
 }
 
@@ -4449,6 +4848,10 @@ const ACTION_CARD_RENDER_KEYS = [
   "costSerialized", "descriptionHtml",
   // Ultima actions (Domination / Escape / Recovery):
   "ultimaCost", "dominanceCost",
+  // Manual GM overrides — the edit panel renders each field's CURRENT override
+  // from this, so a support GM's mirror shows the same typed values as the host
+  // instead of blank boxes over already-overridden numbers.
+  "gmOverride",
 ];
 
 export function composeActionCardRenderPayload(ar) {
@@ -4539,12 +4942,30 @@ function projectActionResultForRender(ar) {
     damage: ar.damage ? {
       finalIfHit: ar.damage.finalIfHit ?? null,
       ignoreHR: ar.damage.ignoreHR ?? null,
+      // `base` is shipped EXPLICITLY, not reconstructed as finalIfHit − base by
+      // whoever reads this. Without it a support GM's editor derived base 0 and
+      // folded the whole figure into "Highest Roll", so the two GMs' editors
+      // showed different numbers for the same action.
+      base: ar.damage.base ?? null,
+      // The element too — without it a support GM's editor showed
+      // "Keep — unchanged" where the host showed "Keep — Physical", so they
+      // could not tell that picking Fire would be overriding anything.
+      element: ar.damage.element ?? null,
     } : null,
     // MAP, never filter: rows are matched to .fud-bf-target-row by index, so
     // dropping one would repaint the wrong target.
     perTargetResults: (Array.isArray(ar.perTargetResults) ? ar.perTargetResults : []).map((r) => {
       if (!r) return r ?? null;
       return {
+        // Row IDENTITY. The invoke repaint matches by index, but a support GM's
+        // edit surface has to name the target it is editing, and a per-target
+        // override is keyed by token. Without these the editor rendered a
+        // nameless row whose override could never be addressed. Discloses
+        // nothing new — the same uuid already rides in `renderPayload.targets`
+        // and its perTargetResults — and two short strings per row is not the
+        // duplication this projection exists to prevent.
+        tokenUuid: r.tokenUuid ?? null,
+        name: r.name ?? null,
         hit: r.hit, crit: r.crit, isCrit: r.isCrit,
         damage: r.damage, affinity: r.affinity ?? null,
         resource: r.resource ?? null,
@@ -4571,7 +4992,513 @@ function projectActionResultForRender(ar) {
 // byte-identical. Does not attach to the document (the caller owns placement +
 // the is-visible transition). Returns the root element and the initial pending-
 // reaction count (the GM gates Confirm / auto-resolve on it).
-function assembleActionCardRoot({ card, cardReactions, rootId }) {
+// ─── GM edit surface ─────────────────────────────────────────────────────────
+// A launch button on the card, and a SEPARATE editor card it opens. The action
+// card itself carries no controls: the GM works in the editor, and nothing takes
+// effect until Save. Cancel returns to the card having changed nothing.
+//
+// Two reasons the editor is its own card rather than a panel on this one:
+//   • The target-row list is regenerated wholesale by rerenderCardTargetSurfaces
+//     whenever a mutation changes the target set, which would destroy in-card
+//     controls — and any half-typed value in them — on the next redirect.
+//   • A staged edit needs somewhere to stage. Live-applying each keystroke made
+//     every intermediate value (an empty box mid-retype, a half-typed "5" on the
+//     way to "55") a real committed override broadcast to the whole table.
+//
+// Every value the editor sends is ABSOLUTE, so the patch stays idempotent end to
+// end (see gm-card-override.js).
+
+// The launch button. Rendered into a ZERO-HEIGHT relatively-positioned wrapper
+// and absolutely placed inside it, so adding it cannot move a single pixel of
+// the existing card — it has to appear above the Engagement panel without
+// disturbing anything already laid out.
+function buildGmEditLaunchHTML(gmOverride = null) {
+  const summary = summarizeGmOverride(gmOverride);
+  const count = gmEditCount(gmOverride);
+  // The ACTION stays the accessible name ("Edit this action") — a screen reader
+  // needs the verb, not a state string. What was edited rides in the
+  // description/tooltip instead.
+  const desc = summary ? `Edited: ${summary}` : "";
+  return `<div class="fud-gm-launch-wrap">
+    <button type="button" class="fud-gm-launch${summary ? " is-active" : ""}"
+            data-fud-gm-launch="1" aria-label="Edit this action"
+            title="${escapeHtml(summary ? `Edit this action — ${desc}` : "Edit this action")}">
+      <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>${
+        count ? `<span class="fud-gm-launch-dot" aria-hidden="true">${count}</span>` : ""}
+    </button>
+  </div>`;
+}
+
+// How many distinct things this card carries an override for — drives the badge
+// count, so the edited state reads without depending on hue.
+function gmEditCount(gmOverride) {
+  const gm = normalizeGmOverride(gmOverride);
+  return (gm.roll ? 1 : 0) + (gm.damage ? 1 : 0) + Object.keys(gm.perTarget).length;
+}
+
+const GM_EDIT_ROOT_ID = "fud-gm-edit-card-root";
+
+// Project an actionResult (host) or render payload (mirror) into the editor's
+// inputs. One projection for both surfaces, so a support GM's editor cannot show
+// different numbers from the host's.
+function gmEditContextFor(src, kind = null, title = null) {
+  return {
+    perTargetResults: src?.perTargetResults ?? [],
+    roll: src?.roll ?? null,
+    damage: src?.damage ?? null,
+    // The action's current weapon category, for the weapon-type picker's
+    // "keep" label. Spells carry none, which the picker renders as "unchanged".
+    weaponType: src?.weapon?.weaponType ?? src?.damageType ?? null,
+    // The actor's own fumble threshold, so the live preview applies the same
+    // rule deriveCheck will. Defaults to 1 when the payload does not carry it.
+    fumbleThreshold: src?.roll?.fumbleThreshold ?? src?.attacker?.fumbleThreshold ?? 1,
+    hasDamage: src?.hasDamage !== false,
+    gmOverride: src?.gmOverride ?? null,
+    // DEF vs MDEF, derived exactly as the recompute's `redirectVsMDef` does.
+    // `kind` is NOT part of the render payload, so it must be passed in — reading
+    // it off the payload silently yielded undefined and mislabelled the defence
+    // field on any mdef-tagged Attack.
+    isSpellish: String(kind ?? "").toLowerCase() !== "attack"
+      && resolvesVsMagicDefense({
+        defenseTargetType: src?.defenseTargetType,
+        isSpell: String(src?.skillType ?? "").toLowerCase() === "spell",
+      }),
+    title: title ?? src?.skillName ?? src?.weapon?.name ?? String(kind ?? "Action"),
+  };
+}
+
+// Build the editor card's markup from the action's CURRENT values and whatever
+// override is already in force. Engine values appear as placeholders, so an
+// empty box always reads as "leave this to the engine" — never as zero.
+function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null, isSpellish = false, gmOverride = null, hasDamage = true, title = "Action" }) {
+  const gm = normalizeGmOverride(gmOverride);
+  const defTag = isSpellish ? "MDEF" : "DEF";
+  const num = (v) => (v == null ? "" : String(v));
+  // ONE idiom for "no override" across every optional control: a leading
+  // "Keep — <current>" entry. The die selects previously had no way to express
+  // it at all (they always hold a concrete size), so a GM who changed one had
+  // no marker showing what it had been and reverting was guesswork.
+  const dieOpts = (sel, engine) =>
+    `<option value="">Keep d${engine ?? "?"}</option>` + GM_DIE_SIZES.map((d) =>
+      `<option value="${d}"${Number(sel) === d ? " selected" : ""}>d${d}</option>`).join("");
+  // Damage/weapon-type pickers carry an explicit "keep" entry rather than
+  // pre-selecting the engine's value: these are optional overrides, and a
+  // select that always holds a concrete value cannot express "leave it alone".
+  // The engine's own value is named in the keep option so it stays visible.
+  const typeOpts = (list, sel, engine) => {
+    const engLabel = engine ? cap(String(engine)) : "unchanged";
+    return `<option value="">Keep — ${escapeHtml(engLabel)}</option>` + list.map((t) =>
+      `<option value="${t}"${sel === t ? " selected" : ""}>${escapeHtml(cap(t))}</option>`).join("");
+  };
+  const engElement = String(damage?.element ?? "").toLowerCase() || null;
+  const engWeapon = String(weaponType ?? "").toLowerCase() || null;
+  // The action's OWN bonus, shown read-only beside the adjustment field. Both
+  // adjustment fields add to what already exists rather than replacing it, so
+  // the GM has to be able to see what they are adding to.
+  const engBonus = Number(roll?.checkBonus ?? 0) || 0;
+  const signed = (n) => (n > 0 ? `+${n}` : String(n));
+
+  // Accuracy — each die's SIZE and rolled VALUE, plus the flat bonus. Total,
+  // Highest Roll, crit and fumble are DERIVED from these, never typed.
+  // Name the dice by the ATTRIBUTE they belong to, matching the card's own
+  // "INS d12 + WLP d10" line. "First / Second value" forced the GM to map by
+  // position, and a screen reader heard "Value" twice with nothing between them.
+  const nameA = roll?.A1 ? String(roll.A1).toUpperCase() : "First";
+  const nameB = roll?.A2 ? String(roll.A2).toUpperCase() : "Second";
+  // Laid out as ROWS that read like the card's own accuracy line — one row per
+  // die, one for the bonus — instead of a uniform grid of eight equally-loud
+  // cells. Each row is "what it is → what you're changing it to", so the eye
+  // scans down one column of inputs rather than hunting a checkerboard.
+  // The CONNECTOR ("shows" / "adjust by") carries the whole semantic — whether
+  // a typed number replaces or adds — so it reads at full weight. The field
+  // name repeats what is already on the card behind this dialog, so it is
+  // demoted to sentence case. Getting that hierarchy the wrong way round is
+  // what made the panel hard to read: the eye landed on "INS" and slid off the
+  // word that told you what your number would do.
+  const dieRow = (label, dieField, resField, dieVal, engDie, resVal, engRes) => `
+    <div class="fud-gm-row">
+      <span class="fud-gm-rl">${escapeHtml(label)}</span>
+      <select class="fud-gm-sel fud-gm-die" data-fud-gm-field="${dieField}"
+              aria-label="${escapeHtml(label)} die size">${dieOpts(dieVal, engDie)}</select>
+      <span class="fud-gm-sep">shows</span>
+      <input type="number" class="fud-gm-num" data-fud-gm-field="${resField}" min="1" max="${Number(dieVal ?? engDie) || 12}"
+             aria-label="${escapeHtml(label)} rolled result"
+             value="${escapeHtml(num(resVal))}" placeholder="${escapeHtml(String(engRes ?? ""))}" />
+    </div>`;
+  const accuracy = roll ? `
+    <fieldset class="fud-gm-sec">
+      <legend>Accuracy check</legend>
+      ${dieRow(nameA, "dA", "rA", gm.roll?.dA, roll.dA, gm.roll?.rA, roll.rA)}
+      ${dieRow(nameB, "dB", "rB", gm.roll?.dB, roll.dB, gm.roll?.rB, roll.rB)}
+      <div class="fud-gm-row">
+        <span class="fud-gm-rl">Bonus</span>
+        <span class="fud-gm-now">${signed(engBonus)}</span>
+        <span class="fud-gm-sep is-verb">adjust by</span>
+        <input type="number" class="fud-gm-num" data-fud-gm-field="bonus"
+               aria-label="Accuracy bonus adjustment"
+               value="${escapeHtml(num(gm.roll?.bonus))}" placeholder="0" />
+      </div>
+      <p class="fud-gm-derived" data-fud-gm-derived="accuracy"></p>
+    </fieldset>` : "";
+
+  // Damage — base, whether Highest Roll is added, and a flat bonus.
+  const engBase = Number(damage?.base ?? 0);
+  const engHr = Math.max(0, Number(damage?.finalIfHit ?? 0) - engBase);
+  const hrOn = gm.damage?.useHR == null ? !damage?.ignoreHR : !!gm.damage.useHR;
+  const dmgSec = (hasDamage && damage) ? `
+    <fieldset class="fud-gm-sec">
+      <legend>Damage</legend>
+      <div class="fud-gm-row">
+        <span class="fud-gm-rl">Base</span>
+        <span class="fud-gm-now">${escapeHtml(String(engBase))}</span>
+        <span class="fud-gm-sep is-verb">adjust by</span>
+        <input type="number" class="fud-gm-num" data-fud-gm-field="dmgBonus"
+               aria-label="Damage adjustment"
+               value="${escapeHtml(num(gm.damage?.bonus))}" placeholder="0" />
+      </div>
+      <label class="fud-gm-row fud-gm-check">
+        <input type="checkbox" data-fud-gm-field="useHR"${hrOn ? " checked" : ""} />
+        <span>Add Highest Roll <b data-fud-gm-hrlabel>${engHr}</b></span>
+      </label>
+      <!-- Classification, not quantity — kept below the numbers and visually
+           quieter so the two kinds of edit do not compete for the same glance. -->
+      <div class="fud-gm-row fud-gm-types">
+        <span class="fud-gm-rl">Element</span>
+        <select class="fud-gm-sel" data-fud-gm-field="element" aria-label="Damage element">${
+          typeOpts(GM_DAMAGE_TYPES, gm.damage?.element, engElement)}</select>
+      </div>
+      <div class="fud-gm-row">
+        <span class="fud-gm-rl">Weapon</span>
+        <select class="fud-gm-sel" data-fud-gm-field="weaponType" aria-label="Weapon category">${
+          typeOpts(GM_WEAPON_TYPES, gm.damage?.weaponType, engWeapon)}</select>
+      </div>
+      <p class="fud-gm-derived" data-fud-gm-derived="damage" data-fud-gm-hr="${engHr}" aria-live="polite"></p>
+    </fieldset>` : "";
+
+  // Per target — verdict, final damage, defence.
+  const rows = (perTargetResults ?? []).filter(isGmEditableRow);
+  const targets = rows.length ? `
+    <fieldset class="fud-gm-sec">
+      <legend>Result</legend>
+      ${rows.map((r) => {
+        const uuid = String(r.tokenUuid ?? "");
+        const ov = gm.perTarget[uuid] ?? {};
+        const sel = ov.hit === true ? "hit" : ov.hit === false ? "miss" : "auto";
+        return `<div class="fud-gm-trow" data-fud-gm-token="${escapeHtml(uuid)}">
+          <div class="fud-gm-tname">${escapeHtml(r.name ?? "")}</div>
+          <div class="fud-gm-grid">
+            <label class="fud-gm-f"><span>Outcome</span>
+              <select class="fud-gm-sel" data-fud-gm-field="hit">
+                <option value="auto"${sel === "auto" ? " selected" : ""}>Keep — engine</option>
+                <option value="hit"${sel === "hit" ? " selected" : ""}>Hit</option>
+                <option value="miss"${sel === "miss" ? " selected" : ""}>Miss</option>
+              </select></label>
+            ${hasDamage ? `<label class="fud-gm-f"><span>Damage</span>
+              <input type="number" class="fud-gm-num" data-fud-gm-field="damage"
+                     value="${escapeHtml(num(ov.damage))}" placeholder="${escapeHtml(String(r.damage ?? 0))}" /></label>` : ""}
+            <label class="fud-gm-f"><span>${defTag}</span>
+              <input type="number" class="fud-gm-num" data-fud-gm-field="defense"
+                     value="${escapeHtml(num(ov.defense))}" placeholder="${escapeHtml(String(r.defense ?? ""))}" /></label>
+          </div>
+        </div>`;
+      }).join("")}
+    </fieldset>` : "";
+
+  const credit = describeGmEditors(gm) ?? "";
+  return `<div class="fud-bf-card fud-gm-edit-card" role="dialog" aria-modal="true" aria-label="Edit action">
+    <div class="fud-gm-edit-head">
+      <span class="fud-gm-edit-title">Edit action</span>
+      <span class="fud-gm-edit-sub">${escapeHtml(title)}</span>
+    </div>
+    <div class="fud-gm-edit-body">
+      ${accuracy}${dmgSec}${targets}
+      <p class="fud-gm-note" id="fud-gm-note">A blank box or a <b>Keep</b> entry means no override —
+        the grey value beside it is what the engine produced. Nothing changes until you
+        save.${credit ? ` <em>${escapeHtml(credit)}</em>` : ""}</p>
+    </div>
+    <div class="fud-gm-edit-foot">
+      <button type="button" class="fud-btn fud-btn-clear" data-fud-gm-action="reset"
+              title="Clear every field back to no override (still needs Save)"${isGmOverrideEmpty(gm) ? " disabled" : ""}>Clear all fields</button>
+      <button type="button" class="fud-btn fud-btn-back" data-fud-gm-action="cancel">Cancel</button>
+      <button type="button" class="fud-btn fud-btn-save" data-fud-gm-action="save">Save</button>
+    </div>
+  </div>`;
+}
+
+// Open the editor over `context`. Resolves to a PATCH on Save (or Clear all) and
+// to null on Cancel. The caller decides what to do with it — the host applies it
+// directly, a support GM ships it as an EDIT_CARD intent — so both surfaces
+// share one editor and cannot drift.
+function openGmEditCard(context) {
+  return new Promise((resolve) => {
+    document.getElementById(GM_EDIT_ROOT_ID)?.remove();
+    const root = document.createElement("div");
+    root.id = GM_EDIT_ROOT_ID;
+    root.innerHTML = buildGmEditCardHTML(context);
+    document.body.appendChild(root);
+    requestAnimationFrame(() => root.classList.add("is-visible"));
+
+    const card = root.querySelector(".fud-gm-edit-card");
+    const q = (sel) => card.querySelector(sel);
+    // Clamp to the control’s own min/max. `min`/`max` on an input outside a
+    // <form> are advisory only — nothing enforces them — so a d8 would happily
+    // accept a result of 40 and feed it into the total, the crit test and Save.
+    const valOf = (el) => {
+      if (!el || el.value === "") return null;
+      let n = Math.trunc(Number(el.value));
+      if (!Number.isFinite(n)) return null;
+      const lo = el.min === "" ? null : Number(el.min);
+      const hi = el.max === "" ? null : Number(el.max);
+      if (lo != null && n < lo) n = lo;
+      if (hi != null && n > hi) n = hi;
+      if (String(n) !== el.value) el.value = String(n);   // show the correction
+      return n;
+    };
+
+    // Every optional control now says “no override” the same way — an empty
+    // value — so overriding is simply “has a value”. No per-control special
+    // cases, and a die size restored from a saved bag still reads as authored.
+    const selOverriding = (el) => !!el && el.value !== "";
+
+    const markEdited = () => {
+      for (const el of card.querySelectorAll(".fud-gm-num")) el.classList.toggle("is-edited", el.value !== "");
+      for (const el of card.querySelectorAll(".fud-gm-sel")) el.classList.toggle("is-edited", selOverriding(el));
+      const hrEl = q('[data-fud-gm-field="useHR"]');
+      const hrDefault = !context.damage?.ignoreHR;
+      hrEl?.closest(".fud-gm-check")?.classList.toggle("is-edited", !!hrEl && hrEl.checked !== hrDefault);
+      // "Remove all" only means something once something is set.
+      const anySet = [...card.querySelectorAll(".fud-gm-num")].some((e) => e.value !== "")
+        || [...card.querySelectorAll(".fud-gm-sel")].some(selOverriding)
+        || (!!hrEl && hrEl.checked !== hrDefault);
+      const clearBtn = q('[data-fud-gm-action="reset"]');
+      if (clearBtn) clearBtn.disabled = !anySet;
+      _dirty = anySet;
+    };
+    // Whether anything is currently set — read by the discard guards.
+    let _dirty = false;
+    const isDirty = () => _dirty;
+
+    // Read the whole form into a bag. Absolute values only; an empty box is a
+    // real `null`, which the merge treats as "clear this override".
+    const readForm = () => {
+      const roll = context.roll ? {
+        dA: valOf(q('[data-fud-gm-field="dA"]')),
+        rA: valOf(q('[data-fud-gm-field="rA"]')),
+        dB: valOf(q('[data-fud-gm-field="dB"]')),
+        rB: valOf(q('[data-fud-gm-field="rB"]')),
+        bonus: valOf(q('[data-fud-gm-field="bonus"]')),
+      } : null;
+      // The die selects carry an explicit "Keep" entry now, so an untouched one
+      // is simply empty and valOf already returns null. No change-detection
+      // needed, and a deliberate "this should have been a d20" survives Save.
+      const hrEl = q('[data-fud-gm-field="useHR"]');
+      const dmgBonus = valOf(q('[data-fud-gm-field="dmgBonus"]'));
+      const hrDefault = !context.damage?.ignoreHR;
+      const hrChanged = !!(hrEl && hrEl.checked !== hrDefault);
+      // Empty string = the "Keep" entry, i.e. no override for that field.
+      const elEl = q('[data-fud-gm-field="element"]');
+      const wtEl = q('[data-fud-gm-field="weaponType"]');
+      const element = elEl && elEl.value ? elEl.value : null;
+      const weaponType = wtEl && wtEl.value ? wtEl.value : null;
+      const damage = (dmgBonus != null || hrChanged || element || weaponType)
+        ? { base: null, useHR: hrEl ? !!hrEl.checked : null, bonus: dmgBonus, element, weaponType }
+        : null;
+      const perTarget = {};
+      for (const row of card.querySelectorAll("[data-fud-gm-token]")) {
+        const sel = row.querySelector('[data-fud-gm-field="hit"]');
+        perTarget[row.dataset.fudGmToken] = {
+          hit: sel?.value === "hit" ? true : sel?.value === "miss" ? false : null,
+          damage: valOf(row.querySelector('[data-fud-gm-field="damage"]')),
+          defense: valOf(row.querySelector('[data-fud-gm-field="defense"]')),
+        };
+      }
+      return { roll, damage, perTarget };
+    };
+
+    // Live readout of what the typed dice actually produce. The GM enters
+    // inputs; the total, Highest Roll and crit/fumble verdict are consequences.
+    // Showing them while typing is the difference between entering dice and
+    // guessing at a total. (Display only — the engine re-derives on Save with
+    // this actor's real crit range and fumble threshold.)
+    const refreshDerived = () => {
+      const accEl = q('[data-fud-gm-derived="accuracy"]');
+      const liveHr = () => {
+        const rA = valOf(q('[data-fud-gm-field="rA"]')) ?? Number(context.roll?.rA ?? 0);
+        const rB = valOf(q('[data-fud-gm-field="rB"]')) ?? Number(context.roll?.rB ?? 0);
+        return Math.max(rA, rB);
+      };
+      if (accEl && context.roll) {
+        const rA = valOf(q('[data-fud-gm-field="rA"]')) ?? Number(context.roll.rA ?? 0);
+        const rB = valOf(q('[data-fud-gm-field="rB"]')) ?? Number(context.roll.rB ?? 0);
+        // Adjustment, not replacement — so the readout spells the sum out.
+        // "Total 19" alone left the GM working out whether their +3 had been
+        // added to the existing +8 or had swallowed it.
+        const engB = Number(context.roll.checkBonus ?? 0);
+        const adj = valOf(q('[data-fud-gm-field="bonus"]')) ?? 0;
+        const bonus = engB + adj;
+        // Fumble uses the ACTOR's own threshold, not a hardcoded 1 — an actor
+        // with fumble_threshold 2 fumbles on 2/2, and the preview said nothing.
+        // Crit is flagged "if it lands", because a matching high pair still has
+        // to beat each target's defence.
+        const fThr = Math.max(1, Number(context.fumbleThreshold) || 1);
+        const isFum = rA <= fThr && rB <= fThr;
+        const isCrit = !isFum && rA === rB && rA >= 6;
+        const verdict = isFum ? " · Fumble" : isCrit ? " · Critical if it lands" : "";
+        const sum = adj ? `${rA}+${rB}${engB ? `+${engB}` : ""}${adj > 0 ? `+${adj}` : `−${Math.abs(adj)}`}`
+                        : `${rA}+${rB}${engB ? `+${engB}` : ""}`;
+        accEl.textContent = `Total ${rA + rB + bonus} (${sum}) · Highest Roll ${Math.max(rA, rB)}${verdict}`;
+        accEl.classList.toggle("is-crit", isCrit);
+        accEl.classList.toggle("is-fumble", isFum);
+      }
+      const dmgEl = q('[data-fud-gm-derived="damage"]');
+      if (dmgEl && context.damage) {
+        const engBase = Number(context.damage.base ?? 0);
+        const base = engBase;
+        const bonus = valOf(q('[data-fud-gm-field="dmgBonus"]')) ?? 0;
+        const useHr = !!q('[data-fud-gm-field="useHR"]')?.checked;
+        const hr = context.roll ? liveHr() : Number(dmgEl.dataset.fudGmHr ?? 0);
+        const dSum = `${base}${useHr ? `+${hr}` : ""}${bonus ? (bonus > 0 ? `+${bonus}` : `−${Math.abs(bonus)}`) : ""}`;
+        // The checkbox's own number has to track the edited dice too — baked in
+        // at build time it kept showing the PRE-edit highest roll, contradicting
+        // the accuracy readout two sections above it.
+        const hrLabel = q("[data-fud-gm-hrlabel]");
+        if (hrLabel) hrLabel.textContent = `(${hr})`;
+        // Named for what it actually is: crit bonus/multiplier, damage
+        // reduction, weapon efficiency and affinity all still apply after this.
+        // "Before affinity" implied affinity was the only thing left.
+        dmgEl.textContent = `Before crit and affinity: ${base + bonus + (useHr ? hr : 0)} (${dSum})`;
+      }
+      // Keep each die's max in step with its selected size, so a d8 cannot be
+      // given a result of 40 and quietly feed that into the total.
+      for (const [selSel, numSel] of [['[data-fud-gm-field="dA"]', '[data-fud-gm-field="rA"]'],
+                                      ['[data-fud-gm-field="dB"]', '[data-fud-gm-field="rB"]']]) {
+        const s = q(selSel), n = q(numSel);
+        if (s && n) n.max = String(Number(s.value) || 12);
+      }
+      markEdited();
+    };
+    refreshDerived();
+    card.addEventListener("input", refreshDerived);
+    card.addEventListener("change", refreshDerived);
+
+    // Return focus where it came from — a GM who opened this from the keyboard
+    // is otherwise dumped at the top of the document on close.
+    const returnFocus = document.activeElement;
+    let done = false;
+    const close = (result) => {
+      if (done) return;
+      done = true;
+      root.classList.remove("is-visible");
+      document.removeEventListener("keydown", onKey, true);
+      setTimeout(() => root.remove(), 160);
+      try { returnFocus?.focus?.(); } catch { /* the card may already be gone */ }
+      resolve(result);
+    };
+
+    const focusables = () => [...card.querySelectorAll(
+      'input:not([disabled]), select:not([disabled]), button:not([disabled])')];
+
+    // Escape cancels, matching every other dismissable overlay in the director.
+    // Enter saves, so a GM who has just typed a value never has to reach for the
+    // mouse. Tab is trapped: this is aria-modal, and without it focus walks
+    // straight out into the action card behind the dimmer.
+    const onKey = (ev) => {
+      if (ev.key === "Escape") {
+        ev.preventDefault(); ev.stopPropagation();
+        if (isDirty() && !confirm("Discard your unsaved edits to this action?")) return;
+        return close(null);
+      }
+      if (ev.key === "Enter" && !ev.shiftKey && card.contains(ev.target)) {
+        // Not from a button — Space/Enter on a button should do that button.
+        // Not from a button, and not from a select — Enter is how you commit an
+        // open native dropdown, so saving on it would fire the moment a GM
+        // picked a die size with the keyboard.
+        if (ev.target.tagName === "BUTTON" || ev.target.tagName === "SELECT") return;
+        ev.preventDefault(); ev.stopPropagation();
+        return close({ replace: readForm() });
+      }
+      if (ev.key === "Tab") {
+        const list = focusables();
+        if (!list.length) return;
+        const first = list[0], last = list[list.length - 1];
+        const active = document.activeElement;
+        if (!card.contains(active)) { ev.preventDefault(); first.focus(); return; }
+        if (!ev.shiftKey && active === last) { ev.preventDefault(); first.focus(); }
+        else if (ev.shiftKey && active === first) { ev.preventDefault(); last.focus(); }
+      }
+    };
+    document.addEventListener("keydown", onKey, true);
+
+    // Clicking the dimmed backdrop cancels — the same as Cancel, and the
+    // behaviour a dimmer implies. Guarded to the backdrop itself so a click
+    // inside the card never dismisses it.
+    // Backdrop click cancels — but never silently throws away typed work. When
+    // something is set it asks first; an accidental click outside a 384px
+    // dialog should not cost the GM their edits.
+    root.addEventListener("mousedown", (ev) => {
+      if (ev.target !== root) return;
+      if (isDirty() && !confirm("Discard your unsaved edits to this action?")) return;
+      close(null);
+    });
+
+    // Focus the first real field so the editor is usable from the keyboard the
+    // moment it opens.
+    // Focus the first NUMBER field, never the die select: landing on a select
+    // means the first Arrow-Down — or a scroll over the dialog — silently
+    // changes the die size and records it as a deliberate override.
+    requestAnimationFrame(() => {
+      try { (card.querySelector(".fud-gm-num") ?? card).focus(); } catch { /* no-op */ }
+    });
+
+    card.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("[data-fud-gm-action]");
+      if (!btn) return;
+      ev.preventDefault(); ev.stopPropagation();
+      const action = btn.dataset.fudGmAction;
+      if (action === "cancel") return close(null);
+      // Clear all is a FORM operation, not a commit. It used to close the
+      // dialog and wipe every override for the table immediately — directly
+      // contradicting the note two lines above it that says nothing changes
+      // until you save, and sitting right beside Save where a mis-aimed click
+      // lands. Now it empties the fields and leaves Save to commit, so Cancel
+      // still undoes it.
+      if (action === "reset") {
+        for (const el of card.querySelectorAll(".fud-gm-num")) el.value = "";
+        for (const el of card.querySelectorAll(".fud-gm-sel")) el.value = "";
+        const hrEl = q('[data-fud-gm-field="useHR"]');
+        if (hrEl) hrEl.checked = !context.damage?.ignoreHR;
+        refreshDerived();
+        q('[data-fud-gm-field="rA"]')?.focus();
+        return;
+      }
+      if (action === "save") return close({ replace: readForm() });
+    });
+  });
+}
+
+// Wire the launch button inside any container (host card root OR a support GM's
+// mirror wrapper). `getContext()` supplies the editor's current values at click
+// time — not at wire time — so the editor always opens on the card's LATEST
+// state, including anything a reaction changed since the card was posted.
+function wireGmEditLaunch(container, getContext, onPatch) {
+  const btn = container?.querySelector?.("[data-fud-gm-launch]");
+  if (!btn || btn.dataset.fudGmWired === "1") return;
+  btn.dataset.fudGmWired = "1";
+  btn.addEventListener("click", async (ev) => {
+    ev.preventDefault(); ev.stopPropagation();
+    if (btn.dataset.fudGmOpen === "1") return;
+    btn.dataset.fudGmOpen = "1";
+    try {
+      const patch = await openGmEditCard(getContext());
+      if (patch) await onPatch(patch);
+    } catch (e) {
+      warn("wireGmEditLaunch: editor threw", e);
+    } finally {
+      delete btn.dataset.fudGmOpen;
+    }
+  });
+}
+function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, kind = null }) {
   const list = Array.isArray(cardReactions) ? cardReactions : [];
   const askPassives = list.filter((p) => p?.mode === "ask" && p?.available !== false);
   const reactionRowHtml = list.length ? buildReactionPillRow(list) : "";
@@ -4583,6 +5510,15 @@ function assembleActionCardRoot({ card, cardReactions, rootId }) {
   // per-pill data-fud-reaction-gating flag the counter paths read.
   const initialPending = askPassives.length;
   const initialGating = askPassives.filter((p) => !!p?.reactorActorUuid).length;
+  // GM edit launch button — rendered only for GM clients. The host's rendered
+  // HTML is also broadcast verbatim to players for non-local-render kinds, so
+  // the mirror handler STRIPS this node for non-GMs as well; that strip is the
+  // authoritative gate and this check just keeps the markup out of the
+  // local-render path.
+  let gmEditHtml = "";
+  try {
+    if (game.user?.isGM) gmEditHtml = buildGmEditLaunchHTML(payload?.gmOverride ?? null);
+  } catch (e) { warn("assembleActionCardRoot: GM edit launch build threw", e); }
   const innerHTML = `
     <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${initialGating > 0 ? ` data-fud-reactions-pending="${initialGating}"` : ""}>
       <div class="fud-bf-header">
@@ -4594,6 +5530,7 @@ function assembleActionCardRoot({ card, cardReactions, rootId }) {
         <div class="fud-bf-portrait-slot right">${card.portraits?.right ?? ""}</div>
       </div>
       ${card.subtitle ?? ""}
+      ${gmEditHtml}
       <div class="fud-bf-body">${card.body}</div>
       ${reactionRowHtml}
       ${card.buttons}
@@ -4830,7 +5767,7 @@ export async function postActionCard({ director, kind, payload }) {
   // REACTION_CHOICE listener loop below so the owner can apply their own reactions;
   // the Confirm LOCK itself is driven by the third-party-only counter baked into
   // the card's data-fud-reactions-pending attribute (see assembleActionCardRoot).
-  const { root, initialPending } = assembleActionCardRoot({ card, cardReactions, rootId: ROOT_ID });
+  const { root, initialPending } = assembleActionCardRoot({ card, cardReactions, rootId: ROOT_ID, payload: effectivePayload, kind });
   document.body.appendChild(root);
   requestAnimationFrame(() => root.classList.add("is-visible"));
 
@@ -5669,6 +6606,12 @@ export async function postActionCard({ director, kind, payload }) {
             // Blazing Sweep's -50% repeat shows full damage per target while the
             // header + the committed damage stay correct). Null for normal cards.
             freeActionGrant: base?.freeActionGrant ?? null,
+            // Manual GM overrides (gm-card-override.js). This projection is an
+            // EXPLICIT field list — a bag left unnamed here is dropped, and the
+            // preview would silently re-derive without the GM's edits while the
+            // commit (which reads the full live ar) kept them. That split is
+            // exactly the drift this snapshot exists to prevent.
+            gmOverride: base?.gmOverride ?? null,
             round: base?.round ?? director?.dCombat?.round ?? 0,
           };
 
@@ -5809,6 +6752,20 @@ export async function postActionCard({ director, kind, payload }) {
           const delta = {
             redirects,
             defenseOverrides: defenseOverrideRows,
+            // Manual GM edits (gm-card-override.js) — repainted by the SAME
+            // shared patcher as every other mutation, so the host card and every
+            // mirrored client render an edit through one code path.
+            gmOverrides: mutationResult.gmOverrideRows ?? [],
+            gmEditors: describeGmEditors(arSnapshot.gmOverride),
+            // Drives the launch button's active state + tooltip on every client,
+            // so a GM can tell at a glance that this card carries manual edits —
+            // including edits the OTHER GM made.
+            gmEditSummary: summarizeGmOverride(arSnapshot.gmOverride),
+            gmEditCount: gmEditCount(arSnapshot.gmOverride),
+            // Which PANELS carry a hand-set value, so the accuracy and damage
+            // fieldsets can be railed like an edited target row.
+            gmRollEdited: !!normalizeGmOverride(arSnapshot.gmOverride).roll,
+            gmDamageEdited: !!normalizeGmOverride(arSnapshot.gmOverride).damage,
             // Effective-cost repaint (adjust_cost) — null reverts the bullet to base.
             cost: costDelta,
             hasDamageRows,
@@ -6154,6 +7111,7 @@ export async function postActionCard({ director, kind, payload }) {
     let cancelAwait = null;
     let reactionAwait = null;
     let invokeAwait = null;
+    let editAwait = null;
     let hudOpenAwait = null;
     let hudCloseAwait = null;
     let hudSelectAwait = null;
@@ -6162,6 +7120,7 @@ export async function postActionCard({ director, kind, payload }) {
       try { cancelAwait?.abort?.("postActionCard-finish"); } catch {}
       try { reactionAwait?.abort?.("postActionCard-finish"); } catch {}
       try { invokeAwait?.abort?.("postActionCard-finish"); } catch {}
+      try { editAwait?.abort?.("postActionCard-finish"); } catch {}
       try { hudOpenAwait?.abort?.("postActionCard-finish"); } catch {}
       try { hudCloseAwait?.abort?.("postActionCard-finish"); } catch {}
       try { hudSelectAwait?.abort?.("postActionCard-finish"); } catch {}
@@ -6468,6 +7427,88 @@ export async function postActionCard({ director, kind, payload }) {
           });
         };
         if (ownerUserId) armInvokeAwait();
+
+        // ─── Manual GM card edits ────────────────────────────────────────────
+        // THE single writer. Both the host GM's own panel and a support GM's
+        // EDIT_CARD intent land here, so there is exactly one place that mutates
+        // ar.gmOverride and exactly one recompute+broadcast that follows it. A
+        // support GM's edit therefore becomes visible to them only once the host
+        // has echoed it — which is what keeps two GMs from diverging.
+        const applyGmEditPatch = async (patch, editor) => {
+          // Drift guard, same as invoke: never edit a card the director has
+          // already moved past (an F5 or a fast Confirm can retire it).
+          const liveInst = director.ctx.actionResult?._instanceId ?? null;
+          if (liveInst && cardInstanceId && liveInst !== cardInstanceId) {
+            warn(`postActionCard: EDIT_CARD ignored — card ${cardInstanceId} is no longer the live action (live ${liveInst})`);
+            return false;
+          }
+          if (resolved) return false;
+          try {
+            const next = mergeGmOverride(director.ctx.actionResult?.gmOverride ?? null, patch, editor);
+            director.ctx.actionResult = freezeActionResult({
+              ...director.ctx.actionResult,
+              gmOverride: next,
+            });
+            // Keep the card's private snapshot in step with the slot, exactly as
+            // the invoke path does — every later read on this card uses cardAr.
+            cardAr = director.ctx.actionResult;
+            // Reuse the shared recompute: it re-derives through the same mutation
+            // entrypoint (which now folds the GM layer in) and broadcasts the
+            // delta to every other client. No separate GM-edit render path.
+            await recomputeTargetPreviews().catch(() => {});
+            log(`postActionCard: GM edit applied by ${editor?.userName ?? "GM"}`);
+            return true;
+          } catch (e) {
+            warn("postActionCard: applyGmEditPatch threw", e);
+            return false;
+          }
+        };
+
+        // Host GM's own launch button. The context is read at CLICK time from
+        // the live actionResult, not captured now, so the editor always opens on
+        // the card's current numbers — including anything a reaction changed
+        // since the card was posted.
+        try {
+          wireGmEditLaunch(root, () => gmEditContextFor(director.ctx.actionResult ?? cardAr, kind),
+            (patch) => applyGmEditPatch(patch, {
+              userId: game.user?.id, userName: game.user?.name, at: Date.now(),
+            }));
+        } catch (e) { warn("postActionCard: GM edit launch wiring threw", e); }
+
+        // Support-GM edits arriving over the socket. Re-armed after each patch so
+        // a co-GM can make a run of edits, mirroring the invoke loop.
+        const armEditAwait = () => {
+          if (resolved) return;
+          editAwait = director.intentChannel.awaitIntent(INTENTS.EDIT_CARD, {
+            timeoutMs: 30 * 60 * 1000,
+          });
+          editAwait.then(async (intent) => {
+            const fromUid = intent?.fromUserId ?? null;
+            const sender = fromUid ? game.users?.get(fromUid) : null;
+            // Authority check. EDIT_CARD is GM-only: the mirror renders the panel
+            // for GMs alone, but the socket is not a trusted surface — a crafted
+            // intent from a player client would otherwise rewrite the card.
+            // RE-ARM FIRST, before doing any async work. applyGmEditPatch awaits
+            // a full recompute (hundreds of ms), and a GM editing a card types
+            // into several fields in quick succession — re-arming afterwards
+            // leaves a window with no EDIT_CARD listener, and every patch that
+            // lands in it is dropped. Measured: a damage edit immediately
+            // followed by a hit-toggle silently lost the toggle.
+            // applyGmEditPatch serialises internally (recomputeTargetPreviews
+            // queues on _previewInFlight), so overlapping patches are safe.
+            armEditAwait();
+            if (!sender?.isGM) {
+              warn(`postActionCard: EDIT_CARD REJECTED — sender ${sender?.name ?? fromUid} is not a GM`);
+              return;
+            }
+            await applyGmEditPatch(intent?.body?.patch ?? {}, {
+              userId: fromUid, userName: sender.name, at: Date.now(),
+            });
+          }).catch((e) => {
+            if (!resolved) log(`postActionCard: EDIT_CARD await aborted (${e?.message})`);
+          });
+        };
+        armEditAwait();
 
         // Spectator-HUD relay — a player/secondary-GM actor announces when they
         // OPEN or DISMISS (cancel) their invoke HUD, before committing. The GM
@@ -7392,6 +8433,8 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
             card: built,
             cardReactions: menuSpec.renderPayload.cardReactions,
             rootId: ROOT_ID,
+            payload: menuSpec.renderPayload,
+            kind: menuSpec.cardKind,
           });
           cardHtml = root.outerHTML;
         }
@@ -7458,6 +8501,44 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       for (const row of wrapper.querySelectorAll(".fud-bf-btn-row")) {
         row.style.display = "none";
       }
+    }
+
+    // ─── GM edit launch on the mirror ────────────────────────────────────────
+    // AUTHORITATIVE strip: for non-local-render kinds the host's own rendered
+    // HTML is broadcast verbatim, launch button included, so a player client
+    // would otherwise receive it in its DOM. Remove the node outright rather
+    // than hiding it — the host still rejects a forged EDIT_CARD from a non-GM,
+    // but nothing about the edit surface should reach a player at all.
+    if (!game.user?.isGM) {
+      for (const p of wrapper.querySelectorAll(".fud-gm-launch-wrap")) p.remove();
+    } else {
+      // Support GM: the editor opens locally, but this client is NOT the writer.
+      // Save ships one EDIT_CARD intent to the host, which merges it and
+      // broadcasts the resulting delta back — so what a support GM ends up
+      // seeing is always the host's committed state, never a local guess.
+      try {
+        wireGmEditLaunch(
+          wrapper,
+          // renderPayload is the COMPLETE display payload the card was built
+          // from (skillType / defenseTargetType / hasDamage live only there);
+          // playerAr is the fresher post-invoke state. Overlay the second on the
+          // first so the editor gets both identity and currency — either alone
+          // loses something the editor needs.
+          () => gmEditContextFor({
+            ...(menuSpec.renderPayload ?? {}),
+            ...(playerAr ? { roll: playerAr.roll, damage: playerAr.damage ?? menuSpec.renderPayload?.damage,
+                             perTargetResults: playerAr.perTargetResults } : {}),
+          }, menuSpec.cardKind),
+          (patch) => {
+            try {
+              channel.emit({
+                type: INTENTS.EDIT_CARD,
+                body: { patch },
+                combatId: menuSpec.combatId ?? null,
+              });
+            } catch (e) { warn("mirror: EDIT_CARD emit threw", e); }
+          });
+      } catch (e) { warn("mirror: GM edit launch wiring threw", e); }
     }
 
     // Reaction Apply/Skip — gate EACH pending pill on the reactor's owner,

@@ -32,6 +32,18 @@ export const INTENTS = Object.freeze({
   CONFIRM_ACTION:  "CONFIRM_ACTION",
   CANCEL_ACTION:   "CANCEL_ACTION",
 
+  // External — sent by a SUPPORT GM's mirror action card when they hand-edit a
+  // value on it (accuracy total, a target's hit/miss, damage, DEF/MDEF). The
+  // host GM (the client holding `_instance`) is the sole writer: it validates
+  // the sender is a GM, merges the patch into ar.gmOverride, re-runs the shared
+  // recompute, and broadcasts the resulting delta back to every client — so the
+  // support GM sees their own edit only once the host has echoed it. Rejected
+  // outright from non-GM senders. See gm-card-override.js.
+  // Body: { patch: { accuracyTotal?, perTarget?: { <tokenUuid>: { hit?, damage?, defense? } }, reset? } }
+  // A null field value CLEARS that override; `reset: true` drops all of them.
+  // awaitIntent-only — never reaches the FSM transition table.
+  EDIT_CARD: "EDIT_CARD",
+
   // External — sent by the owner player's mirror card when they click
   // Invoke Trait or Invoke Bond. GM-side postActionCard validates, pays
   // FP/UP, rerolls, patches its DOM, then broadcasts the updated result

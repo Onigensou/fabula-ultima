@@ -9,6 +9,7 @@
 // which are deliberately out of scope for the prototype).
 
 import { log, warn, err } from "./logger.js";
+import { isGmOverrideEmpty, summarizeGmOverride } from "./gm-card-override.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
@@ -5920,7 +5921,10 @@ const Confirm = {
           // other mutations keep their existing payload-derived headline path.
           const rollChanged = !!(r.roll && liveAr.roll
             && (r.roll.rA !== liveAr.roll.rA || r.roll.rB !== liveAr.roll.rB || r.roll.total !== liveAr.roll.total));
-          if (rollChanged && r.recomputedDamage) recomputedHeadlineDamage = r.recomputedDamage;
+          // `gmDamageApplied` too: a hand-set damage composition changes no dice,
+          // so a roll-changed test alone would commit the per-target figures
+          // while the headline kept the pre-edit number.
+          if ((rollChanged || r.gmDamageApplied) && r.recomputedDamage) recomputedHeadlineDamage = r.recomputedDamage;
           accuracyOverride = r.accuracyOverride ?? null;
           costOverride = r.costOverride ?? null;
           if (r.mutationsApplied > 0 || negated) {
@@ -6062,6 +6066,43 @@ const Confirm = {
         // reaction firing; the per-target hits are already zeroed + Blocked above.
         negated,
       });
+    } else if (!isGmOverrideEmpty(director.ctx.actionResult?.gmOverride)) {
+      // Manual GM edits with NO reaction decisions — the block above never runs,
+      // so the hand-set values would be shown on the card and then silently
+      // dropped at Confirm. Re-run the SAME shared entrypoint with an empty
+      // accepted list: every reaction phase no-ops, and the recompute re-derives
+      // the rows with the GM layer threaded in, exactly as the card preview did.
+      //
+      // Deliberately a separate branch rather than widening the gate above: that
+      // block also stamps `acceptedCardReactions` / `evaluatedCardReactions`, and
+      // running it with an empty decision list would overwrite any candidates
+      // COMPUTE pre-stamped. Here we write ONLY the fields the GM layer owns.
+      const liveAr = director.ctx.actionResult ?? ar;
+      try {
+        const { applyTargetSetMutation } = await import("./card-mutations.js?cb=" + Date.now());
+        const r = await applyTargetSetMutation({
+          ar: liveAr, accepted: [],
+          attackerActor, round: director.dCombat?.round ?? 0,
+        });
+        if (!r?.cancelled) {
+          log(`CONFIRM: GM card override committed — ${summarizeGmOverride(liveAr.gmOverride) ?? "none"}`);
+          director.ctx.actionResult = freezeActionResult({
+            ...director.ctx.actionResult,
+            perTargetResults: r.perTargetResults ?? liveAr.perTargetResults ?? null,
+            hitTokenUuids: Array.isArray(r.hitTokenUuids) ? r.hitTokenUuids : (liveAr.hitTokenUuids ?? null),
+            // Hand-set dice replace the action's roll wholesale — RESOLVE, crit
+            // handling and the battle log all read ar.roll, so a GM accuracy
+            // edit that stopped at the card would be cosmetic only.
+            ...(r.roll ? { roll: r.roll } : {}),
+            ...((r.gmDamageApplied || r.roll) && r.recomputedDamage ? { damage: r.recomputedDamage } : {}),
+            // Only when the GM actually set one — an unconditional write would
+            // null out an accuracyOverride COMPUTE had already composed.
+            ...(r.accuracyOverride ? { accuracyOverride: r.accuracyOverride } : {}),
+          });
+        }
+      } catch (e) {
+        warn("CONFIRM: GM card override commit threw", e);
+      }
     }
     // Drop the survival-flag pendingAction the moment the card resolves
     // (confirm or cancel). Without this, an F5 between here and the

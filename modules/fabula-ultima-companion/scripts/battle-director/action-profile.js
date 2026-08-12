@@ -26,6 +26,7 @@ import { applyClassAffinityAndMult, crushAffinity,
   bypassAffinity, affinityBypassRank } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck, decideHit } from "./check.js";
+import { applyGmDamageInput, gmDamageInput, applyGmPrimaryOverrides } from "./gm-card-override.js";
 import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp, describeGrant,
   getConditionAffinityFor } from "./skill-effects.js";
@@ -362,29 +363,46 @@ function computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice,
 // the hit / pierceMiss flags plus the `outcome` object: auto-hit when no roll,
 // crit/fumble overrides, Attack pierce-on-miss. Extracted from the per-target
 // builder so the hit rule lives in one place and every effect kind shares it.
-function resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll }) {
+// `hitOverride` (true/false/null) — a MANUAL GM verdict for this target, set on
+// the open action card (gm-card-override.js). It is applied HERE, inside the
+// shared decision, rather than by patching rows afterwards, because the caller
+// derives damage from `hit` in the same pass: a miss→hit flip applied after the
+// fact leaves damage stuck at 0 (the same failure mode the accuracyOverride
+// fold-in above exists to avoid). A crit still reports as a crit only when the
+// dice actually crit AND the target ends up hit. `pierceMiss` is evaluated
+// against the FINAL verdict, so a GM-forced miss on a pierce action still deals
+// its half damage — the GM overruled the hit, not the keyword.
+function resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll, hitOverride = null }) {
   let hit = !rolled;            // auto-hit when no roll required
   let pierceMiss = false;
   if (rolled) {
     // Shared hit rule: crit hits, fumble misses, else total ≥ defense (`check`
     // is the roll here, so the auto-hit branch never engages inside `if rolled`).
     hit = decideHit(check, check.total, defStat);
-    // Pierce-miss (deal half on a miss) applies to ANY pierce action — attack OR a
-    // pierce spell (Iceberg). `primary.pierce` is now set kind-agnostically.
-    if (!hit && primary.pierce) pierceMiss = true;
   }
+  // GM override wins over BOTH the derived verdict and the auto-hit default —
+  // it is the table's final word, so it also applies to checkless actions.
+  const gmForced = hitOverride === true || hitOverride === false;
+  if (gmForced) hit = hitOverride;
+  if (rolled && !hit && primary.pierce) pierceMiss = true;
   const outcome = {
-    kind: isPreRoll ? "pending" : (!rolled ? "auto" : (hit ? "hit" : "miss")),
-    hit: isPreRoll ? null : (rolled ? hit : true),
+    // A GM-forced verdict reports as a real hit/miss, never as "auto" — the
+    // table decided it, so the card should not present it as a rules default.
+    kind: isPreRoll ? "pending" : ((!rolled && !gmForced) ? "auto" : (hit ? "hit" : "miss")),
+    // Read `hit` directly: it already carries the auto-hit default for a
+    // checkless action AND any GM override, so the old `rolled ? hit : true`
+    // (which hard-coded the auto-hit) would have discarded a forced miss.
+    hit: isPreRoll ? null : hit,
     crit: !!check.isCrit && hit, pierceMiss,
     margin: rolled ? (check.total - defStat) : null,
+    gmForced,
     tier: null, source: null,
   };
   return { hit, pierceMiss, outcome };
 }
 
 // ── Per-target outcome + primary EffectPreview ───────────────────────────────
-async function buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon }) {
+async function buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon, gmHitOverrides = null, gmDamage = null }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
   const out = [];
   // Pre-roll = a Check is required but dice aren't known yet (ranges, not finals).
@@ -437,7 +455,11 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 
   for (const e of targets) {
     const defStat = pickDef(e);
-    const { hit, pierceMiss, outcome } = resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll });
+    // Manual GM verdict for THIS slot, keyed by token (not actor) so two linked
+    // tokens sharing one world actor stay independently editable.
+    const hitOverride = (gmHitOverrides && e?.tokenUuid && e.tokenUuid in gmHitOverrides)
+      ? gmHitOverrides[e.tokenUuid] : null;
+    const { hit, pierceMiss, outcome } = resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll, hitOverride });
 
     const effects = [];
     let damageVal = 0, rawDamage = 0, affinityCode = "NE", damageRange = null;
@@ -510,7 +532,15 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         breakdown: [], preAffinity: null, affinity: affinityCode, range: damageRange,
       });
     } else if (primary.mode === "damage" && (hit || pierceMiss)) {
-      const preMult = effectiveHr + primary.damageBonus + primary.outgoingTotal;
+      // Manual GM damage composition (base / include-HR / bonus). Applied HERE,
+      // at the single point where base damage is assembled, so the GM's figure
+      // still runs the whole downstream pipeline — damage reduction, crit,
+      // weapon efficiency, reaction ops and affinity. Setting the row's damage
+      // afterwards would bypass all of that and make a resisted hit read the
+      // same as an unresisted one. Null leaves the engine's arithmetic exactly
+      // as it was.
+      const _gmDmg = applyGmDamageInput(gmDamage, primary.damageBonus + primary.outgoingTotal, effectiveHr);
+      const preMult = _gmDmg.hr + _gmDmg.flat;
       const outBase = Math.floor(preMult * atkDmgMult);
       if (atkDmgMult !== 1 && outBase !== preMult) {
         damageModParts.push({ source: atkMultSource(), amount: outBase - preMult });
@@ -845,6 +875,10 @@ export async function computeActionProfile(input) {
   const {
     view: _viewIn, ar = null, attacker, weapon = null, targets = [], dice = null, ctx = {},
     acceptedReactions = null, accuracyOverride = null,
+    // Manual GM overrides from the card's editor (see gm-card-override.js).
+    // Both null on every non-edited action, which keeps the engine on its
+    // untouched default path.
+    gmHitOverrides = null, gmDamage = null,
   } = input;
   let view = _viewIn;
   const kind = view?.kind ?? ar?.kind ?? "Skill";
@@ -894,6 +928,11 @@ export async function computeActionProfile(input) {
 
   const studiedGate = makeStudiedGate(attacker);
   const primary = describePrimary({ view, ar, weapon, liveAttacker, resolver, grant: ctx?.grant ?? null, chainVars: ctx?.chainVars ?? null });
+  // Manual GM element / weapon-category choice, applied to the primary
+  // descriptor BEFORE any per-target derivation — so affinity, element-scoped
+  // damage reduction and weapon efficiency are all computed against what the GM
+  // chose rather than being relabelled afterwards.
+  applyGmPrimaryOverrides(primary, gmDamage);
   // Attack damage tooltip breakdown (per-AE/weapon/grant source list) — the
   // Skill path's baseParts are just the outgoing-mod parts; Attack appends the
   // buildDamageBonusParts breakdown ahead of them (mirrors COMPUTE Attack).
@@ -940,7 +979,7 @@ export async function computeActionProfile(input) {
   let perTarget = [];
   let healingObj = null;
   if (primary.mode === "damage" || check.required) {
-    perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon });
+    perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon, gmHitOverrides, gmDamage });
   }
   if (primary.mode !== "damage") {
     const heal = await attachHealEffects({ rows: perTarget, view, ar, targets, resolver, liveAttacker, check, kind, primary, chainVars: ctx?.chainVars ?? null });
@@ -1153,22 +1192,39 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
     }
     return null;
   })();
+  // Headline damage — run the SAME GM composition helper the per-target builder
+  // uses, so the number on the Damage panel and the numbers on the target rows
+  // can never disagree about what the GM set. `reactionDelta` stays outside the
+  // override: it is what accepted reactions contributed, not part of the base
+  // the GM is editing.
+  // Read the GM damage inputs off the ar rather than taking a parameter: this
+  // projection is called from several places (COMPUTE, the recompute) and the
+  // actionResult always carries the override, so sourcing it here keeps the
+  // headline in step with the per-target rows without threading an argument
+  // through every caller.
+  const _hlGmIn = gmDamageInput(baseAr?.gmOverride ?? null);
+  const _hlGm = applyGmDamageInput(_hlGmIn, prim.damageBonus + prim.outgoingTotal, effectiveHr);
+  const _hlBase = _hlGm.flat + reactionDelta;
+  const _hlFinal = _hlGm.hr + _hlGm.flat + reactionDelta;
+  const _gmIgnoreHr = _hlGmIn && _hlGmIn.useHR === false;
   const damageObj = hasDamage ? (kind === "Attack" ? {
-    base: prim.damageBonus + prim.outgoingTotal + reactionDelta,
+    base: _hlBase,
     baseParts: [...(prim.baseParts ?? prim.outgoingParts ?? []), ...repReactionParts],
-    element: repOverrideElement ?? prim.overriddenElement ?? prim.nativeElement ?? prim.element,
-    ignoreHR: attackIgnoreHR,
+    // A GM-chosen element outranks a reaction's override, which otherwise sits
+    // at the front of this ladder.
+    element: _hlGmIn?.element ?? repOverrideElement ?? prim.overriddenElement ?? prim.nativeElement ?? prim.element,
+    ignoreHR: attackIgnoreHR || _gmIgnoreHr,
     ...(profile._summary?.hrZeroReason ? { hrZeroReason: profile._summary.hrZeroReason } : {}),
-    finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal + reactionDelta,
+    finalIfHit: _hlFinal,
   } : {
-    base: prim.damageBonus + prim.outgoingTotal + reactionDelta,
+    base: _hlBase,
     baseParts: [...(prim.outgoingParts ?? []), ...repReactionParts],
     // Same element-read ladder as the Attack arm (overridden/native are undefined for
     // a spell → falls through to prim.element); aligned so the two arms can't drift.
-    element: repOverrideElement ?? prim.overriddenElement ?? prim.nativeElement ?? prim.element,
+    element: _hlGmIn?.element ?? repOverrideElement ?? prim.overriddenElement ?? prim.nativeElement ?? prim.element,
     resource: prim.resource,
-    ignoreHR: !roll,
-    finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal + reactionDelta,
+    ignoreHR: !roll || _gmIgnoreHr,
+    finalIfHit: _hlFinal,
   }) : null;
 
   // hitTokenUuids — for a Check, the hit rows; with NO Check, ALL action
@@ -1266,9 +1322,14 @@ export async function buildActionViewFromAr(ar) {
 // card-reaction candidates (their appliesToTargetUuids should already be refreshed
 // via skill-effects.refreshReactionSubjects). Returns the projected delta
 // (perTargetResults, damage, hitTokenUuids, …) or null on hard failure.
-export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null, grantOverride = null, defenseOverrides = null, damageOverrides = null } = {}) {
+export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null, grantOverride = null, defenseOverrides = null, damageOverrides = null, gmHitOverrides = null, gmDamage = null } = {}) {
   if (!ar) return null;
   try {
+    // A GM-forced verdict is decided inside buildPerTarget (so damage derives
+    // with it). The post-hoc re-apply loops below rewrite `hit` for every row
+    // they touch, which would silently undo that — so they consult this and
+    // leave forced slots' verdict/damage alone.
+    const gmForcedHit = (row) => !!(gmHitOverrides && row?.tokenUuid && row.tokenUuid in gmHitOverrides);
     const srcTargets = Array.isArray(targets) ? targets : (Array.isArray(ar.targets) ? ar.targets : []);
     const snaps = [];
     for (const t of srcTargets) {
@@ -1292,7 +1353,7 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
       // the per-target rows drift) and its hit/miss to the un-granted total.
       // Re-derives from the same dice, so the grant folds once — no double-count.
       ctx: { round: ar.round ?? round ?? 0, attackMode: attackMode ?? ar.attackMode ?? null, grant: ar.freeActionGrant ?? null },
-      acceptedReactions, accuracyOverride,
+      acceptedReactions, accuracyOverride, gmHitOverrides, gmDamage,
     });
     const delta = projectProfileToActionResult(profile, ar, snaps);
     if (Array.isArray(delta?.perTargetResults)) {
@@ -1314,6 +1375,12 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
       const newTotal = Number(accuracyOverride.to ?? 0);
       const newHits = [];
       for (const row of delta.perTargetResults) {
+        // GM-forced slot: the verdict is already final and its damage was
+        // derived under that verdict. Keep both; only contribute to the hit list.
+        if (gmForcedHit(row)) {
+          if (row.hit && row.tokenUuid) newHits.push(row.tokenUuid);
+          continue;
+        }
         const def = Number(row.defense ?? 10);
         const newHit = decideHit(ar.roll, newTotal, def);   // shared hit rule
         row.hit = newHit;
@@ -1341,14 +1408,17 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
           (o.tokenUuid && o.tokenUuid === row.tokenUuid) || (o.actorUuid && o.actorUuid === row.actorUuid));
         if (!ov) continue;
         const newDef = Number(ov.to);
-        const newHit = decideHit(ar.roll, effTotal, newDef);   // shared hit rule
         row.defense = newDef;
+        row.defenseOverride = { from: ov.from, to: ov.to, via: ov.via, reactorName: ov.reactorName ?? null };
+        flipped = true;
+        // GM-forced slot: adopt the new DEF for display, but the verdict stays
+        // the GM's — a hand-set defense must not re-derive away a forced hit.
+        if (gmForcedHit(row)) continue;
+        const newHit = decideHit(ar.roll, effTotal, newDef);   // shared hit rule
         row.hit = newHit;
         row.crit = isCrit && newHit;
         row.rawDamage = newHit ? row.rawDamage : 0;
         row.damage = newHit ? row.damage : 0;
-        row.defenseOverride = { from: ov.from, to: ov.to, via: ov.via, reactorName: ov.reactorName ?? null };
-        flipped = true;
       }
       // Rebuild the hit list from the final per-target state (covers a +DEF miss).
       if (flipped) delta.hitTokenUuids = delta.perTargetResults.filter((r) => r.hit && r.tokenUuid).map((r) => r.tokenUuid);
