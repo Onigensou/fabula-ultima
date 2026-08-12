@@ -232,6 +232,75 @@ export function ensureStyles() {
       color: var(--fud-ink, #3a3228);
       font-family: "Inter", "Signika", "Segoe UI", system-ui, sans-serif;
       letter-spacing: 0.2px;
+      /* ── Fitting the card to the screen ──────────────────────────────────
+         The root is position:fixed and centred, the card had no max-height,
+         and nothing above it scrolls — so any overflow was simply
+         UNREACHABLE. Measured on a 3-target card with 7 reaction pills: 978px
+         tall, overflowing by 39px at 1280x900 and 249px at 800x480, with
+         CONFIRM off-screen and no way to scroll to it. That is a desktop bug,
+         not only a small-screen one.
+
+         The answer is NOT to scroll the card. The panels are the readout the
+         GM is deciding from, so every panel stays on screen; what scrolls is
+         the content inside the three regions that grow without bound — the
+         target list, the reaction list and the effect prose. Everything else
+         keeps its natural height. */
+      max-height: calc(100vh - 16px);
+      max-height: calc(100dvh - 16px);
+      display: flex; flex-direction: column;
+    }
+    /* Fixed furniture: never shrinks, never scrolls. */
+    .fud-bf-card > .fud-bf-header,
+    .fud-bf-card > .fud-bf-subtitle,
+    .fud-bf-card > .fud-bf-btn-row { flex: 0 0 auto; }
+    .fud-bf-card > .fud-bf-body {
+      flex: 1 1 auto; min-height: 0;
+      /* Last resort only. fitActionCardToViewport() caps the three growing
+         regions first, so this engages only on a viewport too short for the
+         FIXED panels — at which point a scrollbar beats an unreachable button. */
+      overflow-y: auto;
+    }
+    /* NOT shrinkable by flex. Its list is capped by the same JS pass as the
+       other two, and letting flex squeeze the row as well meant two mechanisms
+       fighting over one panel — the row lost height the cap had not accounted
+       for, and the reaction pills ended up thinner than the target rows. */
+    .fud-bf-card > .fud-bf-reactions-row { flex: 0 0 auto; }
+    /* The three regions that grow without bound. Their CAP is set in JS, not
+       here: it depends on how much room the fixed panels leave, which CSS
+       cannot know. Two pure-CSS attempts are worth recording as dead ends —
+       a flex chain through the fieldsets left the list at its full natural
+       height spilling out of a squeezed panel (an auto flex-basis is the
+       content height, and a flex item will not shrink below it), and switching
+       to a zero basis collapsed the lists to 0px, because a fieldset's
+       anonymous content box has no definite height to distribute. */
+    .fud-bf-card .fud-bf-target-list,
+    .fud-bf-card .fud-bf-effect-body,
+    .fud-bf-card .fud-bf-reactions-list { overflow-y: auto; }
+    /* A capped list has to SAY it is capped. A thin scrollbar is not enough on
+       Windows, where it only paints on hover — a GM would see one target row on
+       a three-target attack with nothing at all to suggest the other two. The
+       bottom edge fades wherever there is more below it. */
+    .fud-bf-card .is-clipped {
+      -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 16px), transparent);
+      mask-image: linear-gradient(180deg, #000 calc(100% - 16px), transparent);
+    }
+    /* A default scrollbar inside a parchment card is jarring, and on a list
+       that only sometimes scrolls it is also the only cue that there is more —
+       so it is styled to read as part of the card rather than hidden. */
+    .fud-bf-card .fud-bf-target-list,
+    .fud-bf-card .fud-bf-effect-body,
+    .fud-bf-card .fud-bf-reactions-list {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(122, 106, 85, 0.55) transparent;
+      overscroll-behavior: contain;
+    }
+    .fud-bf-card .fud-bf-target-list::-webkit-scrollbar,
+    .fud-bf-card .fud-bf-effect-body::-webkit-scrollbar,
+    .fud-bf-card .fud-bf-reactions-list::-webkit-scrollbar { width: 7px; }
+    .fud-bf-card .fud-bf-target-list::-webkit-scrollbar-thumb,
+    .fud-bf-card .fud-bf-effect-body::-webkit-scrollbar-thumb,
+    .fud-bf-card .fud-bf-reactions-list::-webkit-scrollbar-thumb {
+      background: rgba(122, 106, 85, 0.55); border-radius: 99px;
     }
 
     /* Strip Foundry's default img border/background from anything we render. */
@@ -3633,6 +3702,10 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     acc?.classList?.toggle("is-gm-edited", !!delta.gmRollEdited);
     dmg?.classList?.toggle("is-gm-edited", !!delta.gmDamageEdited);
   }
+  // Re-fit last: a delta can add a target row, inject a reaction pill or rebuild
+  // the whole target surface, any of which changes what the growing regions need.
+  // Runs on the GM card and on every mirror, since both come through here.
+  fitActionCardToViewport(rootEl.closest?.(`#${ROOT_ID}, #${MIRROR_ROOT_ID}`) ?? rootEl);
 }
 
 // Build the two header sprite slots ({ left, right }) for an action. Attacker
@@ -4900,10 +4973,13 @@ function buildEffectSectionHTML({ descriptionHtml }) {
   const keywordRow = keywords.length
     ? `<div class="fud-bf-keyword-row">${keywords.map(keywordChipHTML).join("")}</div>`
     : "";
+  // Classed, not just inline-styled: this is the one Effect panel whose height
+  // is unbounded (authored prose), so it is one of the three regions that
+  // scrolls internally rather than pushing the card off the screen.
   const bodyBlock = hasBody
-    ? `<div style="font-size:11.5px; line-height:1.5; opacity:0.92;">${bodyHtml}</div>`
+    ? `<div class="fud-bf-effect-body" style="font-size:11.5px; line-height:1.5; opacity:0.92;">${bodyHtml}</div>`
     : "";
-  return `<fieldset class="fud-bf-section">
+  return `<fieldset class="fud-bf-section fud-bf-effect">
         <legend>Effect</legend>
         ${keywordRow}${bodyBlock}
       </fieldset>`;
@@ -6244,6 +6320,128 @@ function wireGmEditLaunch(container, getContext, onPatch) {
     }
   });
 }
+// ── Fitting the card to the viewport ─────────────────────────────────────────
+//
+// The card is position:fixed and centred, with nothing scrollable above it, so
+// overflow is not merely ugly — it is UNREACHABLE. Measured before this existed:
+// a 3-target card with 7 reaction pills stood 978px tall and put CONFIRM off the
+// bottom at 1280x900, on a perfectly ordinary desktop.
+//
+// The panels are the readout the GM is deciding from, so every panel stays on
+// screen. What gives is the content INSIDE the three regions that grow without
+// bound — the target list, the reaction list and the effect prose.
+//
+// This is done here rather than in CSS because the cap depends on how much room
+// the FIXED panels leave, which no CSS length can express. (The two pure-CSS
+// attempts and why each failed are recorded beside the rules in ensureStyles.)
+// Never crush a region past roughly one row. 36 rather than 46 is measured, not
+// taste: at 46 a 3-target/7-pill card on a 720p laptop — the commonest small
+// screen there is — came 22px short of fitting, so the body scrolled for the
+// sake of 10px per region that nobody was reading.
+const FIT_REGION_MIN = 36;
+const FIT_VIEWPORT_PAD = 16;
+
+export function fitActionCardToViewport(rootEl) {
+  // Callers pass the ROOT (postActionCard), the mirror WRAPPER, or sometimes the
+  // card itself (the delta patcher is called both ways) — accept all three.
+  const card = rootEl?.classList?.contains?.("fud-bf-card")
+    ? rootEl
+    : rootEl?.querySelector?.(".fud-bf-card");
+  if (!card) return;
+  try {
+    const regions = [
+      card.querySelector(".fud-bf-target-list"),
+      card.querySelector(".fud-bf-effect-body"),
+      card.querySelector(".fud-bf-reactions-list"),
+    ].filter(Boolean);
+    if (!regions.length) return;
+    // Measure the card's NATURAL height, which means undoing two things first:
+    // last pass's caps (or the caps only ever ratchet downwards) and the CSS
+    // max-height clamp. Leaving the clamp on was a silent no-op — the card
+    // always measured exactly the viewport height, so the deficit was always
+    // zero and nothing was ever capped.
+    for (const el of regions) el.style.maxHeight = "";
+    const prevClamp = card.style.maxHeight;
+    card.style.maxHeight = "none";
+    const natural = card.getBoundingClientRect().height;
+    const sized = regions
+      .map((el) => ({ el, h: el.getBoundingClientRect().height }))
+      .filter((r) => r.h > FIT_REGION_MIN);
+    card.style.maxHeight = prevClamp;               // back to the stylesheet
+
+    // Mark whatever ends up clipped, so a capped list says so. Runs on every
+    // path including the early return — a region can be scrollable for reasons
+    // that have nothing to do with the cap.
+    const markClipped = () => {
+      for (const el of regions) {
+        el.classList.toggle("is-clipped", el.scrollHeight > el.clientHeight + 1);
+      }
+    };
+
+    const avail = Math.max(240, window.innerHeight - FIT_VIEWPORT_PAD);
+    const deficit = Math.ceil(natural - avail);
+    if (deficit <= 0) { markClipped(); return; }    // it already fits: leave it alone
+    if (!sized.length) return;                      // nothing left to give
+
+
+    // Water-filling: lower a common ceiling until the regions have collectively
+    // given up the deficit. Trimming the TALLEST first is the point — a single
+    // long description should not force the target list down to one row while
+    // it keeps twenty.
+    const total = sized.reduce((a, r) => a + r.h, 0);
+    const target = Math.max(sized.length * FIT_REGION_MIN, total - deficit);
+    const desc = [...sized].sort((a, b) => b.h - a.h);
+    let ceiling = desc[0].h;
+    for (let i = 0; i < desc.length; i++) {
+      // If every region were capped at the next height down, would that be
+      // enough? If so the answer lies between, so solve for it exactly.
+      const next = i + 1 < desc.length ? desc[i + 1].h : FIT_REGION_MIN;
+      const atNext = sized.reduce((a, r) => a + Math.min(r.h, next), 0);
+      if (atNext <= target) {
+        const n = i + 1;                             // regions currently at the ceiling
+        const rest = sized.reduce((a, r) => a + Math.min(r.h, next), 0)
+          - desc.slice(0, n).reduce((a, r) => a + Math.min(r.h, next), 0);
+        ceiling = Math.max(FIT_REGION_MIN, (target - rest) / n);
+        break;
+      }
+      ceiling = next;
+    }
+    for (const r of sized) {
+      if (r.h > ceiling) r.el.style.maxHeight = `${Math.max(FIT_REGION_MIN, Math.floor(ceiling))}px`;
+    }
+    markClipped();
+  } catch (e) {
+    warn("fitActionCardToViewport threw", e);
+  }
+}
+
+// One listener for the lifetime of the page, re-fitting whatever card is up.
+// rAF-coalesced: a drag-resize fires resize continuously, and each fit is a
+// forced layout.
+let _fitPending = false;
+function scheduleActionCardFit() {
+  if (_fitPending) return;
+  _fitPending = true;
+  requestAnimationFrame(() => {
+    _fitPending = false;
+    for (const id of [ROOT_ID, MIRROR_ROOT_ID]) {
+      const el = document.getElementById(id);
+      if (el) fitActionCardToViewport(el);
+    }
+  });
+}
+// REPLACE the handler rather than guarding on a boolean. The flag lives on
+// `window` and outlives a module re-import, so a boolean guard pins the listener
+// to whichever instance loaded FIRST — in production that is merely untidy, but
+// under the harness (which re-imports with a cache-bust every call) it meant the
+// resize handler was permanently the first version loaded that session, and a
+// fixed function kept measuring as if it were still broken.
+if (typeof window !== "undefined") {
+  if (window.__fudCardFitHandler) window.removeEventListener("resize", window.__fudCardFitHandler);
+  window.__fudCardFitHandler = scheduleActionCardFit;
+  window.addEventListener("resize", scheduleActionCardFit);
+}
+
 function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, kind = null }) {
   const list = Array.isArray(cardReactions) ? cardReactions : [];
   const askPassives = list.filter((p) => p?.mode === "ask" && p?.available !== false);
@@ -6520,7 +6718,12 @@ export async function postActionCard({ director, kind, payload }) {
   // the card's data-fud-reactions-pending attribute (see assembleActionCardRoot).
   const { root, initialPending } = assembleActionCardRoot({ card, cardReactions, rootId: ROOT_ID, payload: effectivePayload, kind });
   document.body.appendChild(root);
-  requestAnimationFrame(() => root.classList.add("is-visible"));
+  requestAnimationFrame(() => {
+    root.classList.add("is-visible");
+    // Cap the growing regions before the card is shown, not after — fitting a
+    // visible card makes the lists visibly jump to their capped height.
+    fitActionCardToViewport(root);
+  });
 
   log("Battlefield action card spawned", card.titleText);
 
@@ -10140,6 +10343,10 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (importedRoot && !importedRoot.classList.contains("is-visible")) {
       requestAnimationFrame(() => importedRoot.classList.add("is-visible"));
     }
+    // A player's mirror is the same card on a possibly smaller screen, so it
+    // needs the same fit — the HTML arrives with the GM's caps baked in, which
+    // are wrong for this viewport (fitActionCardToViewport clears them first).
+    requestAnimationFrame(() => fitActionCardToViewport(wrapper));
 
     _mirrorCleanup = () => {
       try { wrapper.removeEventListener("click", onClick); } catch {}
