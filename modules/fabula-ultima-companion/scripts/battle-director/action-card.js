@@ -40,7 +40,7 @@ import { mergeGmOverride, normalizeGmOverride, describeGmEditors, isGmEditableRo
          summarizeGmOverride, isGmOverrideEmpty, GM_DIE_SIZES,
          GM_DAMAGE_TYPES, GM_WEAPON_TYPES, gmReactionKey, isGmEditableReaction,
          gmReactionDecisionChanges, gmReactionDecision, readGmReopenKeys,
-         gmReactionBlocksAutoFire, reduceGmTargetRows } from "./gm-card-override.js";
+         gmReactionBlocksAutoFire, reduceGmTargetRows, gmEditCount } from "./gm-card-override.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
 import { simInvoke } from "./sim/invoke-brain.js";
@@ -1630,18 +1630,48 @@ export function ensureStyles() {
        --fud-ink-soft) and its white-over-parchment surface idiom, rather than a
        parallel amber set. */
 
-    /* Launch button — parked in a ZERO-HEIGHT wrapper and absolutely placed
-       inside it, so introducing it cannot move any existing card element. */
-    .fud-bf-card .fud-gm-launch-wrap { position: relative; height: 0; }
+    /* Launch button — a pill DOCKED on the header's bottom rule, right-aligned
+       to the same 16px gutter the fieldsets use. It sits ON a real structural
+       edge instead of floating in the gap between the subtitle and the first
+       panel, which is what made the old placement read as a sticker.
+       GM cards RESERVE the band it occupies (below), so it overlaps nothing. */
+    .fud-bf-card .fud-bf-header { position: relative; }
+    /* The pill needs ~10px of clear air below the rule. Buying it here — on the
+       GM's own card, via :has, so a player's card is untouched — instead of
+       padding the subtitle is what lets the subtitle keep its FULL width.
+       Reserving space in the subtitle instead cost 92px of a 288px line (32%),
+       and charged it to every client, including the players whose DOM has no
+       button in it at all. It also could not help the cards that have NO
+       subtitle (unknown-kind and composition-failure cards, buildSubtitleHTML
+       returning "" when there is no weapon), where the pill hung straight into
+       the first fieldset and severed its rounded top-right border. */
+    .fud-bf-card:has(> .fud-bf-header > .fud-gm-launch) .fud-bf-header {
+      margin-bottom: 22px;
+    }
     .fud-bf-card .fud-gm-launch {
-      position: absolute; right: 9px; bottom: 2px;
-      width: 28px; height: 28px; padding: 0; margin: 0;
+      /* right:0 is the HEADER's padding edge, which lands the pill's right edge
+         on exactly the same 16px gutter every fieldset uses — measured, not
+         guessed. At right:8px it sat 8px further in than the panels below it,
+         which is what made an otherwise tidy control read as floating.
+         Weighted BELOW the rule (more of it hangs than rises), because the
+         portrait sprites bottom out only ~8px above that rule and a centred
+         pill stood on their feet and their drop-shadow. */
+      position: absolute; right: 0; bottom: -18px;
+      width: auto; height: 25px; padding: 0 8px; margin: 0; gap: 5px;
       display: flex; align-items: center; justify-content: center;
-      background: rgba(255, 255, 255, 0.45);
+      /* Translucent white over the parchment — the card's own raised-chip idiom
+         (the same wash the launch button always used), NOT a flat fill. A flat
+         parchment would match the card body and the pill would vanish into it;
+         a named token would be worse still, since the only parchment tokens
+         here are --fud-parchment / -top / -bot and this is not one of them. */
+      background: rgba(255, 255, 255, 0.62);
       border: 1px solid var(--fud-stroke, #7a6a55);
-      border-radius: 6px; cursor: pointer; z-index: 3;
+      border-radius: 999px; cursor: pointer; z-index: 3;
       color: var(--fud-ink-soft, #4b4338); line-height: 1; font-size: 12px;
       box-sizing: border-box;
+      /* Lifts it off the rule it straddles, so the pill reads as sitting on
+         the card rather than being cut out of it. */
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.10);
       transition: background 120ms ease, color 120ms ease, filter 120ms ease;
     }
     /* The glyph carries Font Awesome's own line-height and a trailing advance,
@@ -1650,32 +1680,58 @@ export function ensureStyles() {
     .fud-bf-card .fud-gm-launch > i {
       display: block; line-height: 1; width: auto; margin: 0; font-size: 12px;
     }
+    /* Hover deepens what is already there rather than switching palette — the
+       old hover painted the gold gradient, so an ALREADY-edited pill changed
+       identity under the cursor instead of merely responding.
+       The CLEAN hover is deliberately NEUTRAL (whiter, not warmer): the first
+       attempt at this used a warm parchment that measured within 4/255 of the
+       active fill, so hovering an unedited pill made it look edited — the same
+       bug the other way round. */
     .fud-bf-card .fud-gm-launch:hover {
-      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
-      color: #221b14;
+      background: rgba(255, 255, 255, 0.92);
+      color: #2f2716;
+      border-color: #5f5342;
     }
+    .fud-bf-card .fud-gm-launch.is-active:hover {
+      background: linear-gradient(180deg, #f6e9c2, #ddc48e);
+    }
+    /* --fud-gold-2 measures 2.50:1 on this parchment — under WCAG 1.4.11's 3:1
+       for a non-text indicator, and with outline-offset the ring lands on
+       parchment on three sides. The card's own stroke is 4.63:1 and is already
+       this pill's border colour. */
     .fud-bf-card .fud-gm-launch:focus-visible {
-      outline: 2px solid var(--fud-gold-2, #b7935a); outline-offset: 2px;
+      outline: 2px solid var(--fud-stroke, #7a6a55); outline-offset: 2px;
     }
-    /* Carries an override — the card's own gold, plus a corner badge so the
-       state survives a greyscale / colour-blind read rather than relying on hue. */
+    /* Carries an override — the card's OWN amber rail, the same marker already
+       used on an edited fieldset (.fud-bf-section.is-gm-edited) and an edited
+       target row, so the button and the things it changed read as one family.
+       It used to be a full gold gradient: identical weight to CONFIRM, on a
+       control that is not the card's decision. The count stays as a second,
+       non-hue signal for a greyscale or colour-blind read. */
     .fud-bf-card .fud-gm-launch.is-active {
-      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
-      color: #221b14;
+      background: linear-gradient(180deg, #f2e5c6, #e4d1a3);
+      color: #8a4b22;
+      /* A BORDER, not an inset rail. The fieldset/target-row rails this wanted
+         kinship with are inset 3px 0 0 on a square edge; on a 999px radius
+         the same shadow survives only as a ~2px crescent that reads as a dark
+         left edge, not a rail — so it was claiming a relationship it could not
+         actually draw. The hue (#8a4b22, the "GM SET" legend colour) carries
+         the kinship instead, and the fill and the count do the real work. */
+      border-color: #8a4b22;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.10);
     }
+    /* INSIDE the pill. As a corner badge on a control sitting 9px from the card
+       edge it was clipped by the card's own border — the count was the half of
+       the state that does not depend on hue, and it was the half being cut off. */
     .fud-bf-card .fud-gm-launch-dot {
-      position: absolute; top: -4px; right: -4px;
-      min-width: 14px; height: 14px; padding: 0 3px;
-      border-radius: 999px; background: #8a4b22; color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      font-size: 9px; font-weight: 800; line-height: 12px; text-align: center;
+      font-size: 10px; font-weight: 800; line-height: 1;
+      color: #8a4b22; font-variant-numeric: tabular-nums;
     }
-    /* Gutter on BOTH sides so a long subtitle can never run under the button
-       while its text stays centred on the card. Padding on the right alone
-       shifted "Melee · Normal Attack" visibly off-centre — the button must not
-       move existing content, and reserving space asymmetrically does exactly
-       that. */
-    .fud-bf-card .fud-bf-subtitle { padding-left: 38px; padding-right: 38px; }
+    /* NO subtitle gutter any more. The pill used to overlap the subtitle's
+       band, so both sides were padded 38px (later 46px) to keep long text out
+       from under it while staying optically centred. Reserving the pill's own
+       band above (header margin) removes the overlap outright, so the subtitle
+       gets its full width back on every card — GM's and player's alike. */
 
     /* Editor card — its own overlay, above the action card it edits. */
     #fud-gm-edit-card-root {
@@ -3310,11 +3366,19 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     if (btn) {
       const active = !!delta.gmEditSummary;
       btn.classList.toggle("is-active", active);
-      const label = active
-        ? `Edited: ${delta.gmEditSummary}${delta.gmEditors ? ` — ${delta.gmEditors}` : ""}`
+      // TITLE and ARIA-LABEL are not the same string. The accessible name must
+      // stay a VERB — this repaint used to overwrite it with the summary, so
+      // after the first recompute the button announced "Edited: accuracy ·
+      // fire · damage — Edited by Bob, button": no verb, and no count either,
+      // since the count span is aria-hidden. It silently undid what
+      // buildGmEditLaunchHTML had just composed.
+      const title = active
+        ? `Edit this action — Edited: ${delta.gmEditSummary}${delta.gmEditors ? ` — ${delta.gmEditors}` : ""}`
         : "Edit this action";
-      btn.setAttribute("title", label);
-      btn.setAttribute("aria-label", label);
+      const n = Number(delta.gmEditCount) || 0;
+      btn.setAttribute("title", title);
+      btn.setAttribute("aria-label",
+        n ? `Edit this action — ${n} change${n === 1 ? "" : "s"} made` : "Edit this action");
       let dot = btn.querySelector(".fud-gm-launch-dot");
       if (active && !dot) {
         dot = document.createElement("span");
@@ -5185,34 +5249,50 @@ function projectActionResultForRender(ar) {
 // Every value the editor sends is ABSOLUTE, so the patch stays idempotent end to
 // end (see gm-card-override.js).
 
-// The launch button. Rendered into a ZERO-HEIGHT relatively-positioned wrapper
-// and absolutely placed inside it, so adding it cannot move a single pixel of
-// the existing card — it has to appear above the Engagement panel without
-// disturbing anything already laid out.
+// The launch button — a pill DOCKED on the header's bottom rule, right-aligned
+// to the same 16px gutter every fieldset uses (card border 2 + padding 14).
+//
+// It used to be a 28px filled square absolutely placed in a zero-height wrapper
+// between the subtitle and the body. That kept it from displacing any existing
+// layout, which was the right instinct, but it left the control floating in the
+// gap between two elements with no alignment relationship to either — and three
+// consequences followed from having no edge to sit on:
+//
+//   · it landed on the subtitle's optical centre line without being part of
+//     that row, so the metadata line read as a label for the button;
+//   · the count badge (top:-4px, right:-4px on a control at right:9px) was
+//     CLIPPED by the card's own border;
+//   · the active state was a solid gold gradient — the same weight as CONFIRM,
+//     on a utility control that is not the card's decision.
+//
+// Docking on the rule gives it a real edge, so it reads as attached furniture
+// rather than a sticker; the count moves INSIDE the pill where nothing can clip
+// it; and the active state wears the "GM SET" amber that already marks the
+// fieldsets this button's edits changed.
 function buildGmEditLaunchHTML(gmOverride = null) {
   const summary = summarizeGmOverride(gmOverride);
   const count = gmEditCount(gmOverride);
   // The ACTION stays the accessible name ("Edit this action") — a screen reader
-  // needs the verb, not a state string. What was edited rides in the
-  // description/tooltip instead.
+  // needs the verb, not a state string. The COUNT joins it, because it is the
+  // one thing the pill shows that the verb does not; the full summary rides in
+  // the tooltip.
   const desc = summary ? `Edited: ${summary}` : "";
-  return `<div class="fud-gm-launch-wrap">
-    <button type="button" class="fud-gm-launch${summary ? " is-active" : ""}"
-            data-fud-gm-launch="1" aria-label="Edit this action"
-            title="${escapeHtml(summary ? `Edit this action — ${desc}` : "Edit this action")}">
-      <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>${
-        count ? `<span class="fud-gm-launch-dot" aria-hidden="true">${count}</span>` : ""}
-    </button>
-  </div>`;
-}
-
-// How many distinct things this card carries an override for — drives the badge
-// count, so the edited state reads without depending on hue.
-function gmEditCount(gmOverride) {
-  const gm = normalizeGmOverride(gmOverride);
-  return (gm.roll ? 1 : 0) + (gm.damage ? 1 : 0)
-    + Object.keys(gm.perTarget).length + Object.keys(gm.reactions).length
-    + gm.targets.removed.length + gm.targets.added.length;
+  const label = count
+    ? `Edit this action — ${count} change${count === 1 ? "" : "s"} made`
+    : "Edit this action";
+  // No wrapper element. It used to be a positioning parent; once the button
+  // moved into the header it had no job left but `display: contents`, which
+  // made the header's layout depend on TWO rules both landing (that rule AND
+  // the button's own `position:absolute`). A client running new markup against
+  // a cached stylesheet — ensureStyles early-returns on a fixed id — would then
+  // get a real fourth flex item in a space-between row, throwing the title
+  // off-centre. One rule is one failure mode.
+  return `<button type="button" class="fud-gm-launch${summary ? " is-active" : ""}"
+          data-fud-gm-launch="1" aria-label="${escapeHtml(label)}"
+          title="${escapeHtml(summary ? `Edit this action — ${desc}` : "Edit this action")}">
+    <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>${
+      count ? `<span class="fud-gm-launch-dot" aria-hidden="true">${count}</span>` : ""}
+  </button>`;
 }
 
 const GM_EDIT_ROOT_ID = "fud-gm-edit-card-root";
@@ -6184,9 +6264,14 @@ function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, k
           <span class="fud-bf-title">${escapeHtml(card.titleText)}</span>
         </div>
         <div class="fud-bf-portrait-slot right">${card.portraits?.right ?? ""}</div>
+        <!-- Inside the HEADER so it can dock on that element's bottom rule.
+             Absolutely placed, so it still displaces nothing; the header is
+             also the one region no repaint path replaces
+             (rerenderCardTargetSurfaces rebuilds the attacker row, the portrait
+             slots' contents and the target list — never this). -->
+        ${gmEditHtml}
       </div>
       ${card.subtitle ?? ""}
-      ${gmEditHtml}
       <div class="fud-bf-body">${card.body}</div>
       ${reactionRowHtml}
       ${card.buttons}
@@ -9477,7 +9562,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // than hiding it — the host still rejects a forged EDIT_CARD from a non-GM,
     // but nothing about the edit surface should reach a player at all.
     if (!game.user?.isGM) {
-      for (const p of wrapper.querySelectorAll(".fud-gm-launch-wrap")) p.remove();
+      for (const p of wrapper.querySelectorAll(".fud-gm-launch")) p.remove();
     } else {
       // Support GM: the editor opens locally, but this client is NOT the writer.
       // Save ships one EDIT_CARD intent to the host, which merges it and

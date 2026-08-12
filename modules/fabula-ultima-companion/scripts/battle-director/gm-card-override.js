@@ -664,7 +664,17 @@ export function describeGmEditors(gmOverride) {
 
 // Short human summary of what is currently overridden — shown on the launch
 // button so a GM can see at a glance that this card carries manual edits.
-export function summarizeGmOverride(gmOverride) {
+// The overridden things, one string each. Exported so the launch button's COUNT
+// and its tooltip cannot disagree: the digit is the LENGTH of this list and the
+// tooltip is the list itself, so "3" always means "the three things named here".
+//
+// They used to be computed apart, and disagreed in both directions at once — a
+// separate counter scored the whole damage section as 1 while this enumeration
+// named element, weapon type and damage separately, and scored each per-target
+// override individually while this compresses them into one "3 targets" bit. A
+// bag carrying an accuracy nudge plus a retyped element rendered "2" beside a
+// tooltip listing three things.
+export function gmOverrideBits(gmOverride) {
   const gm = normalizeGmOverride(gmOverride);
   const bits = [];
   if (gm.roll) bits.push("accuracy");
@@ -685,5 +695,18 @@ export function summarizeGmOverride(gmOverride) {
   if (reopened) bits.push(`${reopened} reopened`);
   if (gm.targets.removed.length) bits.push(`−${gm.targets.removed.length} target`);
   if (gm.targets.added.length) bits.push(`+${gm.targets.added.length} target`);
+  return bits;
+}
+
+// One-line "what is overridden" for the launch button's tooltip.
+export function summarizeGmOverride(gmOverride) {
+  const bits = gmOverrideBits(gmOverride);
   return bits.length ? bits.join(" · ") : null;
+}
+
+// How many distinct things this card carries an override for — the pill's
+// count, so the edited state reads without depending on hue. Exactly the number
+// of things the tooltip names.
+export function gmEditCount(gmOverride) {
+  return gmOverrideBits(gmOverride).length;
 }
