@@ -1636,28 +1636,22 @@ export function ensureStyles() {
        panel, which is what made the old placement read as a sticker.
        GM cards RESERVE the band it occupies (below), so it overlaps nothing. */
     .fud-bf-card .fud-bf-header { position: relative; }
-    /* The pill needs ~10px of clear air below the rule. Buying it here — on the
-       GM's own card, via :has, so a player's card is untouched — instead of
-       padding the subtitle is what lets the subtitle keep its FULL width.
-       Reserving space in the subtitle instead cost 92px of a 288px line (32%),
-       and charged it to every client, including the players whose DOM has no
-       button in it at all. It also could not help the cards that have NO
-       subtitle (unknown-kind and composition-failure cards, buildSubtitleHTML
-       returning "" when there is no weapon), where the pill hung straight into
-       the first fieldset and severed its rounded top-right border. */
-    .fud-bf-card:has(> .fud-bf-header > .fud-gm-launch) .fud-bf-header {
-      margin-bottom: 22px;
-    }
+    /* It sits BELOW the rule, never across it, and moves nothing.
+       Measured on a live card: the rule ends 85px down and the first fieldset
+       starts at 113px, so the subtitle band is 28px of clear space — enough for
+       the pill with 2px top and bottom. An earlier attempt straddled the rule
+       and bought room by growing the header's bottom margin; both were wrong.
+       The rule is a structural edge, not a shelf, and a utility control has no
+       business moving the card's layout to make space for itself. */
     .fud-bf-card .fud-gm-launch {
       /* right:0 is the HEADER's padding edge, which lands the pill's right edge
          on exactly the same 16px gutter every fieldset uses — measured, not
-         guessed. At right:8px it sat 8px further in than the panels below it,
-         which is what made an otherwise tidy control read as floating.
-         Weighted BELOW the rule (more of it hangs than rises), because the
-         portrait sprites bottom out only ~8px above that rule and a centred
-         pill stood on their feet and their drop-shadow. */
-      position: absolute; right: 0; bottom: -18px;
-      width: auto; height: 25px; padding: 0 8px; margin: 0; gap: 5px;
+         guessed. At right:9px it sat further in than the panels below it, which
+         is what made an otherwise tidy control read as applied rather than
+         attached. bottom:-30px clears the 2px rule by 2px and leaves 2px above
+         the first fieldset: entirely inside the subtitle band, touching neither. */
+      position: absolute; right: 0; bottom: -30px;
+      width: auto; height: 24px; padding: 0 5px; margin: 0; gap: 5px;
       display: flex; align-items: center; justify-content: center;
       /* Translucent white over the parchment — the card's own raised-chip idiom
          (the same wash the launch button always used), NOT a flat fill. A flat
@@ -1727,11 +1721,27 @@ export function ensureStyles() {
       font-size: 10px; font-weight: 800; line-height: 1;
       color: #8a4b22; font-variant-numeric: tabular-nums;
     }
-    /* NO subtitle gutter any more. The pill used to overlap the subtitle's
-       band, so both sides were padded 38px (later 46px) to keep long text out
-       from under it while staying optically centred. Reserving the pill's own
-       band above (header margin) removes the overlap outright, so the subtitle
-       gets its full width back on every card — GM's and player's alike. */
+    /* The pill shares the subtitle's band, so long text needs keeping out from
+       under it — on BOTH sides, or the text stops being centred on the card.
+       Gated on the button actually being present: the rule used to be
+       unconditional, so every player paid 2×38px of a 288px line to reserve
+       space for a control their DOM does not contain (the mirror strips it).
+       38px is the value that shipped, kept exactly: the pill's padding was
+       trimmed to 5px so the widest it gets — icon, gap, two-digit count — still
+       clears the text, rather than widening the gutter to fit the pill. */
+    .fud-bf-card:has(.fud-gm-launch) .fud-bf-subtitle {
+      padding-left: 38px; padding-right: 38px;
+    }
+    /* THE ONE EXCEPTION, and it is stated rather than hidden: a card with no
+       subtitle at all (unknown-kind, composition-failure — buildSubtitleHTML
+       returns "" when there is no weapon) has only the header's 8px margin
+       between the rule and the first fieldset, so there is no band to sit in
+       and the pill would draw straight through that fieldset's rounded corner.
+       Those cards, and only those, get the room made for them. Every card that
+       HAS a subtitle is untouched. */
+    .fud-bf-card:has(.fud-gm-launch):not(:has(> .fud-bf-subtitle)) .fud-bf-header {
+      margin-bottom: 30px;
+    }
 
     /* Editor card — its own overlay, above the action card it edits. */
     #fud-gm-edit-card-root {
