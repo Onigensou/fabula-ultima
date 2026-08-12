@@ -71,6 +71,7 @@ export const EMPTY_GM_OVERRIDE = Object.freeze({
   damage: null,
   perTarget: Object.freeze({}),
   reactions: Object.freeze({}),
+  targets: Object.freeze({ removed: Object.freeze([]), added: Object.freeze([]) }),
   editors: Object.freeze([]),
 });
 
@@ -150,9 +151,39 @@ export function normalizeGmOverride(ov) {
     if (v !== null) reactions[key] = v;
   }
 
+  // Targets — TWO absolute sets of token uuids, not a final target list and not
+  // a sequence of edits.
+  //
+  // Absolute, so the layer stays idempotent: the recompute rebuilds the target
+  // set from the engine's own every pass and re-applies these on top, so running
+  // it twice cannot double-add or double-remove.
+  //
+  // Two SETS rather than one "final list" because a reaction can legitimately
+  // rewrite a slot mid-flight (Protect redirects an attack onto the protector).
+  // A stored final list would silently undo that redirect the next time it was
+  // applied — the GM's snapshot of the target set, taken when they opened the
+  // editor, would outrank an engine mutation that happened afterwards. Keyed by
+  // token instead, the two survive together: the redirect rewrites its slot, and
+  // the GM's add/remove applies on top of whatever the engine produced.
+  //
+  // "Change this target" is not a third operation: it is a remove plus an add,
+  // which is exactly how the editor presents it.
+  const t = ov.targets ?? {};
+  const uuidList = (v) => [...new Set((Array.isArray(v) ? v : [])
+    .filter((u) => typeof u === "string" && u.length))];
+  const removedUuids = uuidList(t.removed);
+  const addedSet = new Set(removedUuids);
+  const targets = {
+    removed: removedUuids,
+    // A token cannot be both added and removed. Removal wins: it is the
+    // destructive call, and letting the pair coexist would make the result
+    // depend on which loop ran last.
+    added: uuidList(t.added).filter((u) => !addedSet.has(u)),
+  };
+
   return {
     version: 2,
-    roll, damage, perTarget, reactions,
+    roll, damage, perTarget, reactions, targets,
     editors: Array.isArray(ov.editors)
       ? ov.editors.filter((e) => e && e.userId).slice(-EDITOR_LOG_CAP)
         .map((e) => ({ userId: String(e.userId), userName: String(e.userName ?? ""), at: Number(e.at) || 0 }))
@@ -171,7 +202,8 @@ function clampDie(n) {
 export function isGmOverrideEmpty(ov) {
   const n = normalizeGmOverride(ov);
   return !n.roll && !n.damage && Object.keys(n.perTarget).length === 0
-    && Object.keys(n.reactions).length === 0;
+    && Object.keys(n.reactions).length === 0
+    && n.targets.removed.length === 0 && n.targets.added.length === 0;
 }
 
 // Fold a patch into the existing bag and stamp WHO edited.
@@ -204,6 +236,7 @@ export function mergeGmOverride(prev, patch, editor = null) {
     damage: base.damage ? { ...base.damage } : {},
     perTarget: { ...base.perTarget },
     reactions: { ...base.reactions },
+    targets: { removed: [...base.targets.removed], added: [...base.targets.added] },
     editors,
   };
   mergeSection(next.roll, patch?.roll, ["dA", "rA", "dB", "rB", "bonus"]);
@@ -214,6 +247,10 @@ export function mergeGmOverride(prev, patch, editor = null) {
     if (raw == null) delete next.reactions[key];
     else next.reactions[key] = raw;
   }
+  // Whole-set replacement per side — a target edit is a set membership, so
+  // there is no per-key merge to do.
+  if (patch?.targets?.removed) next.targets.removed = patch.targets.removed;
+  if (patch?.targets?.added) next.targets.added = patch.targets.added;
   for (const [uuid, raw] of Object.entries(patch?.perTarget ?? {})) {
     if (!uuid) continue;
     const row = { ...(next.perTarget[uuid] ?? {}) };
@@ -511,6 +548,77 @@ export function readGmReopenKeys(patch) {
   return [...new Set(raw.filter((k) => typeof k === "string" && k.includes("::")))];
 }
 
+// ── Targets ─────────────────────────────────────────────────────────────────
+
+// Drop the GM's removed tokens from a (targets, perTargets) pair, keeping the
+// two parallel arrays in step.
+//
+// Returns fresh arrays and never mutates the inputs: `freezeActionResult`
+// deep-freezes every target object, so writing one throws in strict mode — the
+// same trap shield_redirect documents, where a single throw aborted a whole
+// recompute pass and the card silently stopped repainting.
+export function applyGmTargetRemovals(targets, perTargets, gmOverride) {
+  const gm = normalizeGmOverride(gmOverride);
+  if (!gm.targets.removed.length) return { targets, perTargets, removed: 0 };
+  const drop = new Set(gm.targets.removed);
+  const keptTargets = [], keptPer = [];
+  const rows = Array.isArray(perTargets) ? perTargets : [];
+  let removed = 0;
+  for (let i = 0; i < (targets?.length ?? 0); i++) {
+    const t = targets[i];
+    if (t?.tokenUuid && drop.has(t.tokenUuid)) { removed++; continue; }
+    keptTargets.push(t);
+  }
+  // The per-target rows are filtered by their OWN tokenUuid rather than by
+  // index: a reaction can already have spliced the two arrays (add_target,
+  // shield_redirect), so position is not a reliable join.
+  for (const p of rows) {
+    if (p?.tokenUuid && drop.has(p.tokenUuid)) continue;
+    keptPer.push(p);
+  }
+  return { targets: keptTargets, perTargets: keptPer, removed };
+}
+
+// Reduce the editor's target-list ROWS to the bag's two sets.
+//
+// Pure, and exported rather than living inside the editor closure, because this
+// reduction is where the whole target feature is decided and a DOM-bound
+// version of it is untestable. Each descriptor is one row:
+//
+//   token      the creature is in the action NOW (an engine target)
+//   addToken   the GM put it there
+//   dropped    staged for removal
+//
+export function reduceGmTargetRows(rows) {
+  const added = [], removed = [];
+  for (const r of (Array.isArray(rows) ? rows : [])) {
+    if (!r) continue;
+    if (!r.dropped) {
+      if (r.addToken) added.push(r.addToken);
+      continue;
+    }
+    // Dropped, and the action HAS this creature — so it goes to `removed`,
+    // whatever put it there. That includes a GM add the engine has since
+    // adopted: a Protect redirect can move the protector into the engine's own
+    // target set, and merely un-adding it would then leave it targeted while
+    // the editor had just shown the GM a removal. `normalizeGmOverride` strips
+    // it from `added` on the way in (removal wins), so the pair cannot persist.
+    if (r.token) { removed.push(r.token); continue; }
+    // Dropped with no `token`: a staged add discarded before it ever existed.
+    // Contributes to neither set.
+  }
+  return { added, removed };
+}
+
+// Which of the GM's added tokens are not already in the set. Callers resolve and
+// derive them (the engine's own add_target path), which needs Foundry.
+export function gmTargetsToAdd(targets, gmOverride) {
+  const gm = normalizeGmOverride(gmOverride);
+  if (!gm.targets.added.length) return [];
+  const present = new Set((targets ?? []).map((t) => t?.tokenUuid).filter(Boolean));
+  return gm.targets.added.filter((u) => !present.has(u));
+}
+
 // Which per-target rows the editor offers controls for.
 //
 // Grant/heal rows are excluded — they carry no hit check, defence or damage.
@@ -575,5 +683,7 @@ export function summarizeGmOverride(gmOverride) {
   if (forced) bits.push(`${forced} forced`);
   if (off) bits.push(`${off} suppressed`);
   if (reopened) bits.push(`${reopened} reopened`);
+  if (gm.targets.removed.length) bits.push(`−${gm.targets.removed.length} target`);
+  if (gm.targets.added.length) bits.push(`+${gm.targets.added.length} target`);
   return bits.length ? bits.join(" · ") : null;
 }

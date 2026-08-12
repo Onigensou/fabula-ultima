@@ -6090,6 +6090,15 @@ const Confirm = {
             ...director.ctx.actionResult,
             perTargetResults: r.perTargetResults ?? liveAr.perTargetResults ?? null,
             hitTokenUuids: Array.isArray(r.hitTokenUuids) ? r.hitTokenUuids : (liveAr.hitTokenUuids ?? null),
+            // The TARGET LIST too — a GM add/remove rewrites it, and RESOLVE
+            // reads `ar.targets` for `action_targets` (every status / save_check
+            // / apply_ae row the skill applies). Committing only the damage rows
+            // left a removed creature taking no damage while still receiving
+            // every status the skill hands out, and an added one taking damage
+            // but receiving none: half-applied, and the leaking half invisible.
+            // The reaction branch above already commits this; this branch runs
+            // for any card WITHOUT reaction pills, which is the common case.
+            targets: r.targets ?? liveAr.targets ?? null,
             // Hand-set dice replace the action's roll wholesale — RESOLVE, crit
             // handling and the battle log all read ar.roll, so a GM accuracy
             // edit that stopped at the card would be cosmetic only.

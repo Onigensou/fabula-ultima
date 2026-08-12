@@ -5,6 +5,7 @@ import {
   summarizeGmOverride, isGmEditableRow,
   gmReactionKey, gmReactionDecision, gmReactionDecisionChanges, isGmEditableReaction,
   readGmReopenKeys, gmReactionBlocksAutoFire,
+  applyGmTargetRemovals, gmTargetsToAdd, reduceGmTargetRows,
 } from "./gm-card-override.js";
 
 let pass = 0, fail = 0;
@@ -288,6 +289,100 @@ eq("no stored reopen replays on the next pass", reopenChanges({}, new Set()), []
 cur2.set("0:i1", "apply"); base2.set("0:i1", "apply");
 eq("suppress still means skip, not undecided",
   reopenChanges({ reactions: { [K("0", "i1")]: false } }, new Set())[0].decision, "skip");
+
+console.log("\n— targets: add / remove / change —");
+eq("both sides normalize + dedupe",
+  normalizeGmOverride({ targets: { removed: ["a", "a"], added: ["b", "b", 7, null] } }).targets,
+  { removed: ["a"], added: ["b"] });
+// Removal is the destructive call; letting a token sit in both sets would make
+// the result depend on which loop ran last.
+eq("a token in BOTH sets is removed, not added",
+  normalizeGmOverride({ targets: { removed: ["x"], added: ["x"] } }).targets, { removed: ["x"], added: [] });
+eq("a targets-only bag is NOT empty", isGmOverrideEmpty({ targets: { removed: ["a"] } }), false);
+eq("an all-junk targets bag IS empty", isGmOverrideEmpty({ targets: { added: [7, null] } }), true);
+eq("summary names both directions",
+  summarizeGmOverride({ targets: { removed: ["a", "b"], added: ["c"] } }), "−2 target · +1 target");
+eq("replace clears an omitted targets section",
+  mergeGmOverride(mergeGmOverride(null, { targets: { removed: ["a"] } }, ED),
+    { replace: { roll: null, damage: null, perTarget: {} } }, ED).targets, { removed: [], added: [] });
+
+const TGT = [
+  { tokenUuid: "T1", name: "Ally" },
+  { tokenUuid: "T2", name: "Enemy" },
+  { tokenUuid: "T3", name: "Bystander" },
+];
+const ROWS = [
+  { tokenUuid: "T1", damage: 5 }, { tokenUuid: "T2", damage: 9 }, { tokenUuid: "T3", damage: 4 },
+];
+const cutOne = applyGmTargetRemovals(TGT, ROWS, { targets: { removed: ["T2"] } });
+eq("the target is dropped", cutOne.targets.map((t) => t.tokenUuid), ["T1", "T3"]);
+eq("and its per-target ROW with it", cutOne.perTargets.map((r) => r.tokenUuid), ["T1", "T3"]);
+eq("removal is counted", cutOne.removed, 1);
+// The two arrays are joined by tokenUuid, never by index — a reaction may
+// already have spliced them (add_target, shield_redirect), so position lies.
+const skewed = applyGmTargetRemovals(TGT, [ROWS[2], ROWS[0], ROWS[1]], { targets: { removed: ["T1"] } });
+eq("row filtering does not rely on array order",
+  skewed.perTargets.map((r) => r.tokenUuid), ["T3", "T2"]);
+eq("no removals → the SAME arrays back (no needless copy)",
+  applyGmTargetRemovals(TGT, ROWS, EMPTY_GM_OVERRIDE).targets, TGT);
+// Idempotence is the whole reason the bag stores absolute SETS: the recompute
+// re-runs this on every preview click and again at CONFIRM.
+const cutTwice = applyGmTargetRemovals(cutOne.targets, cutOne.perTargets, { targets: { removed: ["T2"] } });
+eq("APPLYING A REMOVAL TWICE == ONCE",
+  cutTwice.targets.map((t) => t.tokenUuid), cutOne.targets.map((t) => t.tokenUuid));
+// Inputs must never be mutated: freezeActionResult deep-freezes target objects,
+// so writing one throws in strict mode and kills the whole recompute pass.
+eq("the input array is untouched", TGT.length, 3);
+
+eq("an addition not yet present is reported",
+  gmTargetsToAdd(TGT, { targets: { added: ["T9"] } }), ["T9"]);
+eq("an addition ALREADY in the set is not re-added",
+  gmTargetsToAdd(TGT, { targets: { added: ["T2"] } }), []);
+eq("no additions → empty", gmTargetsToAdd(TGT, EMPTY_GM_OVERRIDE), []);
+// "Change this target" is not a third operation — it is the two primitives,
+// which is exactly how the editor presents it.
+const swapBag = { targets: { removed: ["T1"], added: ["T9"] } };
+eq("a CHANGE composes from remove + add",
+  [applyGmTargetRemovals(TGT, ROWS, swapBag).targets.map((t) => t.tokenUuid),
+   gmTargetsToAdd(TGT, swapBag)],
+  [["T2", "T3"], ["T9"]]);
+
+// ── reduceGmTargetRows ───────────────────────────────────────────────────────
+// The editor's target list reduces its ROWS to the two sets. Every failure the
+// design review found in this reduction was invisible to the rest of this file,
+// because it used to live inside the editor's DOM closure.
+const reduce = (rows) => reduceGmTargetRows(rows);
+const ROW = (o) => ({ token: null, addToken: null, dropped: false, ...o });
+
+eq("an untouched engine row contributes nothing",
+  reduce([ROW({ token: "T1" })]), { added: [], removed: [] });
+eq("a dropped engine row is REMOVED",
+  reduce([ROW({ token: "T1", dropped: true })]), { added: [], removed: ["T1"] });
+eq("a staged add is ADDED",
+  reduce([ROW({ addToken: "T9" })]), { added: ["T9"], removed: [] });
+// Discarded before it ever existed — it is in neither set, and in particular
+// must NOT land in `removed`, which would make it unaddable (removal wins).
+eq("a staged add, discarded, contributes to NEITHER set",
+  reduce([ROW({ addToken: "T9", dropped: true })]), { added: [], removed: [] });
+// The Protect case: the GM adds the protector, then a redirect moves it into
+// the engine's own target set. Un-adding alone would leave it targeted while
+// the editor had just shown a removal.
+eq("a GM add the ENGINE also targets goes to REMOVED when dropped, not merely un-added",
+  reduce([ROW({ token: "P", addToken: "P", dropped: true })]), { added: [], removed: ["P"] });
+eq("...and is still an ADD while it stands",
+  reduce([ROW({ token: "P", addToken: "P" })]), { added: ["P"], removed: [] });
+// normalizeGmOverride is what stops the pair persisting.
+eq("normalize drops the token from `added` once it is removed",
+  normalizeGmOverride({ targets: reduce([ROW({ token: "P", addToken: "P", dropped: true })]) }).targets,
+  { removed: ["P"], added: [] });
+eq("a whole list reduces in one pass", reduce([
+  ROW({ token: "A" }), ROW({ token: "B", dropped: true }),
+  ROW({ addToken: "X" }), ROW({ addToken: "Y", dropped: true }),
+  ROW({ token: "C", addToken: "C" }),
+]), { added: ["X", "C"], removed: ["B"] });
+eq("junk in the row list is skipped, not thrown on",
+  reduce([null, undefined, ROW({ token: "A", dropped: true })]), { added: [], removed: ["A"] });
+eq("a non-array is empty, not a throw", reduce(null), { added: [], removed: [] });
 
 console.log(`\n${fail === 0 ? "ALL PASS" : "FAILURES"} — ${pass} passed, ${fail} failed\n`);
 process.exit(fail === 0 ? 0 : 1);

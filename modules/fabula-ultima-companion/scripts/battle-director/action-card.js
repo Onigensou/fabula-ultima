@@ -40,7 +40,7 @@ import { mergeGmOverride, normalizeGmOverride, describeGmEditors, isGmEditableRo
          summarizeGmOverride, isGmOverrideEmpty, GM_DIE_SIZES,
          GM_DAMAGE_TYPES, GM_WEAPON_TYPES, gmReactionKey, isGmEditableReaction,
          gmReactionDecisionChanges, gmReactionDecision, readGmReopenKeys,
-         gmReactionBlocksAutoFire } from "./gm-card-override.js";
+         gmReactionBlocksAutoFire, reduceGmTargetRows } from "./gm-card-override.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
 import { simInvoke } from "./sim/invoke-brain.js";
@@ -1687,8 +1687,12 @@ export function ensureStyles() {
     }
     #fud-gm-edit-card-root.is-visible { opacity: 1; pointer-events: auto; }
     .fud-bf-card.fud-gm-edit-card {
-      width: min(384px, calc(100vw - 28px));
-      max-height: calc(100vh - 40px);
+      width: min(384px, calc(100vw - 20px));
+      /* dvh, with vh kept above it as the fallback for engines without it:
+         100vh is the WRONG viewport on a phone, where browser chrome overlays
+         it and the footer — Save and Cancel — sits below the fold. */
+      max-height: calc(100vh - 24px);
+      max-height: calc(100dvh - 24px);
       display: flex; flex-direction: column;
       transform: scale(0.96);
       transition: transform 160ms cubic-bezier(.2,.7,.2,1);
@@ -1842,13 +1846,97 @@ export function ensureStyles() {
        not read as two different things one screen apart. */
     .fud-gm-derived.is-crit   { color: #b40000; background: rgba(180, 0, 0, 0.08); }
     .fud-gm-derived.is-fumble { color: #1f1f1f; background: rgba(31, 31, 31, 0.08); }
+    /* ── Target list ────────────────────────────────────────────────────────
+       ONE list showing the RESULTING target set — the action's own targets and
+       anything the GM added, in the same idiom, each removable the same way,
+       with the picker at the foot of the list it feeds. */
     .fud-gm-trow { padding: 6px 0 2px; }
     .fud-gm-trow + .fud-gm-trow { border-top: 1px solid var(--fud-stroke, #7a6a55); }
+    .fud-gm-thead {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      margin-bottom: 5px;
+    }
     .fud-gm-tname {
-      font-size: 11px; font-weight: 800; margin-bottom: 5px;
+      flex: 1 1 auto; min-width: 0;
+      font-size: 11px; font-weight: 800;
       color: var(--fud-ink, #3a3228);
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
+    /* Provenance. The editor previously gave no sign at all which targets it had
+       put there — after Save a GM-added creature was indistinguishable from one
+       the action had always carried. */
+    .fud-gm-tbadge {
+      flex: 0 0 auto;
+      font-size: 8.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+      padding: 1px 5px; border-radius: 999px;
+      background: rgba(213, 182, 122, 0.5);
+      border: 1px solid var(--fud-gold-2, #b7935a); color: #5c4514;
+    }
+    /* Says in words what the strike-through says in styling. text-decoration
+       alone survives neither a greyscale read nor a screen reader. */
+    .fud-gm-tcut {
+      flex: 0 0 auto; font-size: 9.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .03em; color: #8a2b1e;
+    }
+    .fud-gm-tcut:empty { display: none; }
+    /* One-click Remove, not a checkbox with a label beside it. Two kinds of row
+       now sit in ONE list, and a checkbox cannot express "discard this pending
+       add" and "stage a deletion" as the same gesture. The row carries the
+       state; the button says what pressing it does NEXT. */
+    .fud-gm-edit-card .fud-gm-tdrop {
+      flex: 0 0 auto; width: auto; margin: 0;
+      padding: 2px 8px; height: 22px; line-height: 1;
+      font-size: 10px; font-weight: 700; font-family: inherit;
+      text-transform: uppercase; letter-spacing: .03em;
+      background: rgba(255, 255, 255, 0.5); color: #8a2b1e;
+      border: 1px solid #a8503f; border-radius: 6px; cursor: pointer;
+    }
+    .fud-gm-edit-card .fud-gm-tdrop:hover { background: #f3e3de; }
+    .fud-gm-edit-card .fud-gm-tdrop:focus-visible {
+      outline: 2px solid var(--fud-gold-2, #b7935a); outline-offset: 1px;
+    }
+    /* Restore is not destructive, so it stops wearing destructive colour. */
+    .fud-gm-trow.is-cut .fud-gm-tdrop { color: #4b4338; border-color: var(--fud-stroke, #7a6a55); }
+    /* The last surviving target cannot be removed — an action with no targets
+       leaves the card painted with rows it is no longer resolving. */
+    .fud-gm-edit-card .fud-gm-tdrop[disabled] {
+      opacity: .35; cursor: not-allowed; color: #4b4338; border-color: var(--fud-stroke, #7a6a55);
+    }
+    .fud-gm-edit-card .fud-gm-tdrop[disabled]:hover { background: rgba(255, 255, 255, 0.5); }
+    /* A staged add has no engine numbers yet, so it says what will happen rather
+       than showing three empty boxes that look editable. */
+    .fud-gm-tnote {
+      margin: 0 0 4px; font-size: 10px; line-height: 1.4;
+      color: var(--fud-ink-soft, #4b4338);
+    }
+    /* The picker is part of the list, not a neighbouring section — it sits under
+       the rows it appends to, behind a dashed rule. */
+    .fud-gm-addrow {
+      display: flex; align-items: center; gap: 7px;
+      margin-top: 6px; padding-top: 7px;
+      border-top: 1px dashed var(--fud-stroke, #7a6a55);
+    }
+    .fud-gm-addrow.is-empty { display: none; }
+    .fud-gm-edit-card .fud-gm-addrow .fud-gm-sel { flex: 1 1 0; width: auto; min-width: 0; }
+    .fud-gm-edit-card .fud-gm-addbtn {
+      flex: 0 0 auto; width: auto; margin: 0;
+      padding: 4px 11px; font-size: 10px; min-height: 25px;
+      background: linear-gradient(180deg, #e5d6c5, #c9b294);
+      color: var(--fud-ink, #3a3228);
+    }
+    .fud-gm-edit-card .fud-gm-addbtn[disabled] {
+      opacity: .4; cursor: not-allowed; filter: grayscale(0.5);
+    }
+    .fud-gm-edit-card .fud-gm-addbtn[disabled]:hover { transform: none; filter: grayscale(0.5); }
+    /* Membership changes announce here, with the resulting COUNT — the number
+       the GM is actually deciding, and the one thing a list of rows never says
+       out loud. Also the screen-reader channel for a row that appears or
+       vanishes without focus moving to it. */
+    .fud-gm-tlive {
+      margin: 5px 0 0; font-size: 10px; font-weight: 700;
+      color: var(--fud-ink-soft, #4b4338);
+    }
+    .fud-gm-tlive:empty { display: none; }
     /* Result needs more room than the two numeric fields — at even thirds
        "Auto (engine)" truncated inside its select. */
     .fud-gm-trow .fud-gm-grid { grid-template-columns: 1.35fr 1fr 1fr; }
@@ -1864,7 +1952,11 @@ export function ensureStyles() {
       align-items: center; padding: 5px 0;
     }
     .fud-gm-rxrow + .fud-gm-rxrow { border-top: 1px solid var(--fud-stroke, #7a6a55); }
-    .fud-gm-rxrow .fud-gm-tname { margin-bottom: 0; white-space: normal; }
+    /* A target staged for removal is struck through and dimmed — its numeric
+       fields stay editable but plainly no longer matter. */
+    .fud-gm-trow.is-cut .fud-gm-tname { text-decoration: line-through; }
+    .fud-gm-trow.is-cut .fud-gm-grid { opacity: .45; }
+    .fud-gm-rxrow .fud-gm-tname { white-space: normal; }
     /* Reactor name above the skill, matching the pill's own two-line name block
        so a third-party reaction is identified the same way in both places. */
     .fud-gm-rx-who {
@@ -1918,6 +2010,44 @@ export function ensureStyles() {
       opacity: 0.4; cursor: not-allowed; filter: grayscale(0.5);
     }
     .fud-gm-edit-card .fud-btn-clear[disabled]:hover { transform: none; filter: grayscale(0.5); }
+
+    /* ── Small screens ──────────────────────────────────────────────────────
+       The dialog is min(384px, 100vw - 20px), so below ~404px of viewport its
+       width tracks the viewport and the fixed tracks below stop fitting: the
+       accuracy row alone reserves 44 + 88 + 58 plus gaps, and the reaction grid
+       pins 132px for its select. Both are made shrinkable rather than being
+       given a second layout, so nothing reflows into an unfamiliar shape — the
+       columns just narrow, and only the reaction row (which has the least room
+       to give) actually stacks. */
+    @media (max-width: 420px) {
+      .fud-gm-edit-body { padding: 8px 9px; }
+      .fud-gm-edit-card fieldset.fud-gm-sec { padding: 4px 7px 7px; }
+      .fud-gm-edit-card .fud-gm-row .fud-gm-die { flex: 0 1 88px; min-width: 62px; }
+      .fud-gm-edit-card .fud-gm-row .fud-gm-num { flex: 0 1 58px; min-width: 46px; }
+      .fud-gm-rl { flex: 0 1 44px; min-width: 30px; }
+      /* Name over control: at this width the 132px select leaves the carrier
+         name four characters, and a reaction the GM cannot identify is worse
+         than one that costs a line. */
+      .fud-gm-rxrow { grid-template-columns: 1fr; gap: 4px; }
+      .fud-gm-edit-card .fud-gm-rxrow .fud-gm-sel { width: 100%; }
+      /* Three numeric columns become two, Outcome taking the full first row —
+         it is the widest label and the one that truncates first. */
+      .fud-gm-grid, .fud-gm-trow .fud-gm-grid { grid-template-columns: 1fr 1fr; }
+      .fud-gm-grid > .fud-gm-f:first-child { grid-column: 1 / -1; }
+    }
+    /* A short viewport (a laptop with the board open, or a phone in landscape)
+       is the case where the footer gets pushed off. Give the scrolling body the
+       height back rather than the chrome. */
+    @media (max-height: 560px) {
+      .fud-gm-edit-head { padding: 7px 12px 6px; }
+      .fud-gm-edit-title { font-size: 9px; }
+      .fud-gm-edit-body { padding: 7px 10px; }
+      .fud-gm-edit-card fieldset.fud-gm-sec { margin-bottom: 5px; }
+      .fud-gm-edit-foot { padding: 7px 12px 8px; }
+      /* Kept, not hidden — it carries the "who edited this card" credit, which
+         is the only place a second GM's involvement is stated. */
+      .fud-gm-note { font-size: 10px; line-height: 1.4; }
+    }
 
     /* Rows carrying a hand-set value — an amber rail, deliberately distinct from
        the redirect tint so the two never read as the same thing on a card where
@@ -5081,7 +5211,8 @@ function buildGmEditLaunchHTML(gmOverride = null) {
 function gmEditCount(gmOverride) {
   const gm = normalizeGmOverride(gmOverride);
   return (gm.roll ? 1 : 0) + (gm.damage ? 1 : 0)
-    + Object.keys(gm.perTarget).length + Object.keys(gm.reactions).length;
+    + Object.keys(gm.perTarget).length + Object.keys(gm.reactions).length
+    + gm.targets.removed.length + gm.targets.added.length;
 }
 
 const GM_EDIT_ROOT_ID = "fud-gm-edit-card-root";
@@ -5105,11 +5236,108 @@ function gmEditReactionRows(cands, decisionOf = null) {
   }));
 }
 
+// Tokens on the canvas scene that are NOT already targets — the pool the editor
+// can add from.
+//
+// A dropdown rather than a canvas target-picker on purpose: the editor is a
+// modal dialog staging an edit, and a picker would have to hide it, take a
+// click on the board, and come back — the card-hiding dance the redirect picker
+// already needs. A GM correcting a target list is naming a creature, not aiming.
+function gmAddableTargets(perTargetResults, attackerTokenUuid = null) {
+  try {
+    const taken = new Set((perTargetResults ?? []).map((r) => r?.tokenUuid).filter(Boolean));
+    // Restricted to the scene THIS ACTION is on, not merely the current canvas.
+    // A GM whose canvas has wandered to another scene would otherwise be offered
+    // that scene's roster, and an off-canvas target is a known hazard: reaction
+    // scans resolve reactors through `canvas.tokens`, so such a creature reads
+    // as absent to half the engine.
+    const actionSceneId = (() => {
+      const anyTarget = (perTargetResults ?? []).find((r) => r?.tokenUuid)?.tokenUuid
+        ?? attackerTokenUuid ?? "";
+      const m = String(anyTarget).match(/^Scene\.([^.]+)\./);
+      return m?.[1] ?? canvas?.scene?.id ?? null;
+    })();
+    const rows = (canvas?.tokens?.placeables ?? [])
+      .map((t) => t?.document)
+      .filter((d) => d?.uuid && d?.actor && !taken.has(d.uuid))
+      // The attacker is not offered. Adding the actor to their own action is
+      // almost always a misclick, and the engine's own add_target honours
+      // `exclude_self`; this control has no targeting rules of its own.
+      .filter((d) => !attackerTokenUuid || d.uuid !== attackerTokenUuid)
+      .filter((d) => !actionSceneId || d.parent?.id === actionSceneId)
+      .map((d) => ({
+        tokenUuid: d.uuid,
+        name: d.name ?? d.actor?.name ?? "?",
+        // Disposition, so allies and enemies are distinguishable in a list that
+        // is otherwise just names — and so four identically-named goblins are
+        // not four identical rows.
+        hostile: Number(d.disposition) < 0,
+      }));
+    // Group enemies first, then allies, each alphabetical: a GM adding a target
+    // is nearly always reaching for the other side.
+    rows.sort((a, b) => (Number(b.hostile) - Number(a.hostile)) || a.name.localeCompare(b.name));
+    // Disambiguate repeats by ordinal, since the dropdown shows names only.
+    const seen = new Map();
+    for (const r of rows) {
+      const n = (seen.get(r.name) ?? 0) + 1;
+      seen.set(r.name, n);
+      r.ordinal = n;
+    }
+    const dupes = new Set([...seen].filter(([, n]) => n > 1).map(([n]) => n));
+    return rows.map((r) => ({
+      tokenUuid: r.tokenUuid,
+      name: `${r.name}${dupes.has(r.name) ? ` (${r.ordinal})` : ""}${r.hostile ? "" : " — ally"}`,
+    }));
+  } catch (e) {
+    warn("gmAddableTargets: scene scan threw", e);
+    return [];
+  }
+}
+
+// One row of the target list.
+//
+// Module scope because rows are emitted from TWO places — the builder, for the
+// action's targets and anything a saved bag already holds, and the add control
+// at runtime. Same markup from both, or a row restored after Save would behave
+// differently from one just added.
+//
+// The row IS the state. Three attributes, and every behaviour follows from them:
+//
+//   data-fud-gm-token       the creature is CURRENTLY in the action
+//   data-fud-gm-add-token   the GM put it there
+//   data-fud-gm-drop="1"    staged for removal
+//
+// A row with `add-token` and no `token` is a staged add that has not been
+// derived yet — nothing real is being changed, so its Remove discards the row
+// outright and hands the option back to the picker. Every other row toggles a
+// strike-through, because its Remove takes out a creature the action really
+// has. That asymmetry is the point, not an inconsistency: a pending add and a
+// committed member are not the same thing to undo.
+function gmTargetRowHTML({ tokenUuid = null, addToken = null, name = "", cut = false, fields = "" }) {
+  const live = tokenUuid ? ` data-fud-gm-token="${escapeHtml(String(tokenUuid))}"` : "";
+  const add = addToken ? ` data-fud-gm-add-token="${escapeHtml(String(addToken))}"` : "";
+  const nm = escapeHtml(String(name ?? ""));
+  return `<div class="fud-gm-trow${cut ? " is-cut" : ""}${addToken ? " is-added" : ""}"
+       data-fud-gm-trow${live}${add}${cut ? ` data-fud-gm-drop="1"` : ""}>
+    <div class="fud-gm-thead">
+      <span class="fud-gm-tname">${nm}</span>
+      ${addToken ? `<span class="fud-gm-tbadge">Added by GM</span>` : ""}
+      <span class="fud-gm-tcut" data-fud-gm-tcut>${cut ? "Will be removed" : ""}</span>
+      <button type="button" class="fud-gm-tdrop" data-fud-gm-action="drop"
+              aria-label="${cut ? "Restore" : "Remove"} ${nm}">${cut ? "Restore" : "Remove"}</button>
+    </div>
+    ${fields}
+  </div>`;
+}
+
 // Project an actionResult (host) or render payload (mirror) into the editor's
 // inputs. One projection for both surfaces, so a support GM's editor cannot show
 // different numbers from the host's.
 function gmEditContextFor(src, kind = null, title = null, reactions = null) {
   return {
+    // Computed on whichever client opens the editor: both GMs see the same
+    // canvas, and it is derived state, not an authored value the host owns.
+    addable: gmAddableTargets(src?.perTargetResults, src?.attacker?.tokenUuid ?? null),
     // The host passes its LIVE candidate list (which includes anything a cascade
     // injected since the card was posted); the mirror falls back to the payload's.
     reactions: reactions ?? gmEditReactionRows(src?.cardReactions),
@@ -5140,7 +5368,7 @@ function gmEditContextFor(src, kind = null, title = null, reactions = null) {
 // Build the editor card's markup from the action's CURRENT values and whatever
 // override is already in force. Engine values appear as placeholders, so an
 // empty box always reads as "leave this to the engine" — never as zero.
-function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null, isSpellish = false, gmOverride = null, hasDamage = true, title = "Action", reactions = [] }) {
+function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null, isSpellish = false, gmOverride = null, hasDamage = true, title = "Action", reactions = [], addable = [] }) {
   const gm = normalizeGmOverride(gmOverride);
   const defTag = isSpellish ? "MDEF" : "DEF";
   const num = (v) => (v == null ? "" : String(v));
@@ -5245,12 +5473,56 @@ function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null
       <p class="fud-gm-derived" data-fud-gm-derived="damage" data-fud-gm-hr="${engHr}" aria-live="polite"></p>
     </fieldset>` : "";
 
-  // Per target — verdict, final damage, defence.
-  const rows = (perTargetResults ?? []).filter(isGmEditableRow);
-  const targets = rows.length ? `
-    <fieldset class="fud-gm-sec">
-      <legend>Result</legend>
-      ${rows.map((r) => {
+  // ── Targets ────────────────────────────────────────────────────────────────
+  // ONE list showing the RESULTING target set, with the add control at the foot
+  // of the list it feeds.
+  //
+  // It used to be two disjoint controls: a "Remove from this action" checkbox
+  // buried inside a fieldset called "Result", and a separate "Add a target"
+  // fieldset holding a single <select>. Three faults with one root cause — the
+  // editor never showed the GM the SET they were deciding:
+  //
+  //   · a creature picked in the add box appeared NOWHERE in the list, so the
+  //     resulting membership was never visible
+  //   · the add box sat in a different section from the thing it modified
+  //   · ONE add per save. `added: addEl.value ? [addEl.value] : []` meant a
+  //     second pick silently replaced the first, and one <select> could only
+  //     ever pre-select one of several stored adds — even though the bag has
+  //     always modelled `added` as an array.
+  //
+  // Read the ROWS, never a parallel JS array: keeping the two in step is how
+  // this kind of editor drifts.
+  const engineRows = (perTargetResults ?? []).filter(isGmEditableRow);
+  const engineTokens = new Set(engineRows.map((r) => String(r.tokenUuid ?? "")));
+  // Every token the action currently carries — INCLUDING rows this editor
+  // offers no fields for (heal/grant). That is what separates "added, already
+  // derived" from "added, still staged", which is what decides whether Remove
+  // strikes through or discards.
+  const presentTokens = new Set((perTargetResults ?? [])
+    .map((r) => String(r?.tokenUuid ?? "")).filter(Boolean));
+  const addedSet = new Set(gm.targets.added);
+  const addableName = new Map(addable.map((t) => [t.tokenUuid, t.name]));
+  const nameOfToken = (u) =>
+    (perTargetResults ?? []).find((r) => String(r?.tokenUuid ?? "") === u)?.name
+    ?? addableName.get(u) ?? "Added target";
+  // Adds with no editable engine row of their own — not derived yet, or derived
+  // onto a row that carries no hit/damage/defence (a grant). They must still
+  // RENDER: the reduction reads `added` back off the rows, so an unrendered add
+  // would be silently dropped by the next Save and the creature would vanish.
+  //
+  // EVERY token the bag mentions gets a row, added or removed — the reduction
+  // reads both sets back off the rows, so an unrendered one is silently dropped
+  // by the next Save. That is a live hazard, not a hypothetical: `ctx.actionResult`
+  // is only ever rewritten with `gmOverride` (applyGmEditPatch), never with the
+  // mutated target set, so a GM-added creature NEVER appears in the
+  // perTargetResults this editor reads — not even after Save and reopen.
+  const extraAdds = gm.targets.added.filter((u) => !engineTokens.has(u));
+  const extraRemoved = gm.targets.removed.filter((u) => !engineTokens.has(u));
+  const addOptions = addable.filter((t) => !addedSet.has(t.tokenUuid) && !engineTokens.has(t.tokenUuid));
+  const targets = (engineRows.length || extraAdds.length || extraRemoved.length || addable.length) ? `
+    <fieldset class="fud-gm-sec fud-gm-targets" data-fud-gm-targets>
+      <legend>Targets</legend>
+      ${engineRows.map((r) => {
         const uuid = String(r.tokenUuid ?? "");
         const ov = gm.perTarget[uuid] ?? {};
         // "" for keep, like every other select — it used to be "auto", which is a
@@ -5258,9 +5530,14 @@ function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null
         // edited and "Clear all fields" was never disabled. Clear-all also sets
         // selects to "", which on an "auto" option list left the control BLANK.
         const sel = ov.hit === true ? "hit" : ov.hit === false ? "miss" : "";
-        return `<div class="fud-gm-trow" data-fud-gm-token="${escapeHtml(uuid)}">
-          <div class="fud-gm-tname">${escapeHtml(r.name ?? "")}</div>
-          <div class="fud-gm-grid">
+        return gmTargetRowHTML({
+          tokenUuid: uuid,
+          // Normalize guarantees a token is never in both sets, so an added row
+          // can never also be a removed one.
+          addToken: addedSet.has(uuid) ? uuid : null,
+          name: r.name ?? "",
+          cut: gm.targets.removed.includes(uuid),
+          fields: `<div class="fud-gm-grid">
             <label class="fud-gm-f"><span>Outcome</span>
               <select class="fud-gm-sel" data-fud-gm-field="hit">
                 <option value=""${sel === "" ? " selected" : ""}>Keep — engine</option>
@@ -5273,9 +5550,33 @@ function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null
             <label class="fud-gm-f"><span>${defTag}</span>
               <input type="number" class="fud-gm-num" data-fud-gm-field="defense"
                      value="${escapeHtml(num(ov.defense))}" placeholder="${escapeHtml(String(r.defense ?? ""))}" /></label>
-          </div>
-        </div>`;
+          </div>`,
+        });
       }).join("")}
+      ${extraAdds.map((u) => gmTargetRowHTML({
+        tokenUuid: presentTokens.has(u) ? u : null, addToken: u, name: nameOfToken(u),
+      })).join("")}
+      ${extraRemoved.map((u) => gmTargetRowHTML({
+        tokenUuid: u, name: nameOfToken(u), cut: true,
+      })).join("")}
+      <div class="fud-gm-addrow">
+        <label class="fud-gm-rl" for="fud-gm-addsel">Add</label>
+        <select class="fud-gm-sel" id="fud-gm-addsel" data-fud-gm-field="addTarget">
+          <option value="">Choose a creature…</option>
+          ${addOptions.map((t) => `<option value="${escapeHtml(t.tokenUuid)}">${escapeHtml(t.name)}</option>`).join("")}
+        </select>
+        <!-- An explicit button, NOT an action bound to the select's change
+             event. A native select fires change per option while arrowing
+             through a closed list, so a keyboard GM reaching the third name
+             would have staged the first two and destroyed their options on the
+             way past. It also keeps every select in this dialog a revertible
+             VALUE rather than a command. -->
+        <button type="button" class="fud-btn fud-gm-addbtn" data-fud-gm-action="add" disabled>Add</button>
+      </div>
+      <p class="fud-gm-tlive" data-fud-gm-tlive role="status" aria-live="polite"></p>
+      <p class="fud-gm-tnote">A creature added here runs through the action's own pipeline —
+        its defence, affinity and damage reduction all apply. Its outcome and damage are
+        derived, so this editor cannot hand-set them.</p>
     </fieldset>` : "";
 
   // Reactions — what happens to each candidate, in the PILL's own vocabulary so
@@ -5402,15 +5703,98 @@ function openGmEditCard(context) {
     // cases, and a die size restored from a saved bag still reads as authored.
     const selOverriding = (el) => !!el && el.value !== "";
 
+    // ── Target list ──────────────────────────────────────────────────────────
+    // The DOM is the model. Every row carries its own token and staging flags,
+    // and both the dirty check and Save reduce the SAME rows through the same
+    // function — so "Clear all fields" can never be enabled for a state Save
+    // would not write, and vice versa.
+    const targetsSec = card.querySelector("[data-fud-gm-targets]");
+    const addSel = card.querySelector('[data-fud-gm-field="addTarget"]');
+    const liveEl = card.querySelector("[data-fud-gm-tlive]");
+    const addableName = new Map((context.addable ?? []).map((t) => [t.tokenUuid, t.name]));
+    const targetRows = () => [...card.querySelectorAll("[data-fud-gm-trow]")];
+
+    const readTargetLists = () => reduceGmTargetRows(targetRows().map((row) => ({
+      token: row.dataset.fudGmToken ?? null,
+      addToken: row.dataset.fudGmAddToken ?? null,
+      dropped: row.dataset.fudGmDrop === "1",
+    })));
+    // How many creatures the action would have after Save — the number the GM is
+    // actually deciding, and the guard on removing the last one.
+    const survivingRows = () => targetRows().filter((r) => r.dataset.fudGmDrop !== "1");
+
+    // Announce membership changes, and carry the resulting COUNT — the number a
+    // GM is actually deciding, and the one thing a list of rows does not say
+    // out loud. Doubles as the screen-reader channel for a row that appears or
+    // vanishes without focus moving to it.
+    const announce = (msg) => {
+      if (!liveEl) return;
+      const n = survivingRows().length;
+      liveEl.textContent = `${msg} · ${n} target${n === 1 ? "" : "s"} after save`;
+    };
+
+    // Rebuild the picker from what is NOT already in the list, so a creature
+    // cannot be staged twice and an unstaged one comes straight back.
+    const refreshAddOptions = () => {
+      if (!addSel) return;
+      const taken = new Set(targetRows()
+        .flatMap((r) => [r.dataset.fudGmToken, r.dataset.fudGmAddToken])
+        .filter(Boolean));
+      const opts = [...addableName].filter(([u]) => !taken.has(u));
+      // Same placeholder the builder emits — they drifted once, so the picker
+      // silently relabelled itself after the first add.
+      addSel.innerHTML = `<option value="">Choose a creature…</option>`
+        + opts.map(([u, n]) => `<option value="${escapeHtml(u)}">${escapeHtml(n)}</option>`).join("");
+      addSel.value = "";
+      addSel.closest(".fud-gm-addrow")?.classList.toggle("is-empty", opts.length === 0);
+    };
+
     const markEdited = () => {
       for (const el of card.querySelectorAll(".fud-gm-num")) el.classList.toggle("is-edited", el.value !== "");
       for (const el of card.querySelectorAll(".fud-gm-sel")) el.classList.toggle("is-edited", selOverriding(el));
+      // The add picker is a doing-control, not a stored override: its value is
+      // consumed the instant it changes. Marking it edited would leave an amber
+      // "you set this" rail on a control that holds nothing.
+      addSel?.classList.remove("is-edited");
+      // Paint each row from its own flag, every pass. `is-cut` used to be
+      // written only at BUILD time from the saved bag, so the whole visual
+      // signal for "this creature is being dropped" appeared one round late —
+      // after Save and reopen, which is exactly when it stops being useful.
+      const lastOne = survivingRows().length <= 1;
+      for (const row of targetRows()) {
+        const cut = row.dataset.fudGmDrop === "1";
+        row.classList.toggle("is-cut", cut);
+        const nm = row.querySelector(".fud-gm-tname")?.textContent?.trim() ?? "";
+        const btn = row.querySelector('[data-fud-gm-action="drop"]');
+        if (btn) {
+          // The label flips rather than the button gaining a pressed state: a
+          // toggle announced as "Remove, pressed" tells a screen-reader user
+          // nothing about what pressing it again would do. The staged state is
+          // carried by real text in the row (.fud-gm-tcut) and re-announced
+          // through the live region, neither of which a strike-through is.
+          btn.textContent = cut ? "Restore" : "Remove";
+          // The whole phrase, not the bare verb: "Remove" beside a creature
+          // name is ambiguous with deleting the token off the board.
+          btn.setAttribute("aria-label",
+            cut ? `Restore ${nm} to this action` : `Remove ${nm} from this action`);
+          // The last surviving target cannot be removed — see the drop handler.
+          btn.disabled = !cut && lastOne;
+          btn.title = btn.disabled ? "An action needs at least one target" : "";
+        }
+        const flag = row.querySelector("[data-fud-gm-tcut]");
+        if (flag) flag.textContent = cut ? "Will be removed" : "";
+      }
+      // Nothing chosen, nothing to add.
+      const addBtn = q('[data-fud-gm-action="add"]');
+      if (addBtn) addBtn.disabled = !addSel?.value;
       const hrEl = q('[data-fud-gm-field="useHR"]');
       const hrDefault = !context.damage?.ignoreHR;
       hrEl?.closest(".fud-gm-check")?.classList.toggle("is-edited", !!hrEl && hrEl.checked !== hrDefault);
-      // "Remove all" only means something once something is set.
+      // "Clear all fields" only means something once something is set.
+      const t = readTargetLists();
       const anySet = [...card.querySelectorAll(".fud-gm-num")].some((e) => e.value !== "")
-        || [...card.querySelectorAll(".fud-gm-sel")].some(selOverriding)
+        || [...card.querySelectorAll(".fud-gm-sel")].some((e) => e !== addSel && selOverriding(e))
+        || t.added.length > 0 || t.removed.length > 0
         || (!!hrEl && hrEl.checked !== hrDefault);
       const clearBtn = q('[data-fud-gm-action="reset"]');
       if (clearBtn) clearBtn.disabled = !anySet;
@@ -5446,14 +5830,34 @@ function openGmEditCard(context) {
         ? { base: null, useHR: hrEl ? !!hrEl.checked : null, bonus: dmgBonus, element, weaponType }
         : null;
       const perTarget = {};
+      // Only rows that actually CARRY the fields — an add row for a grant/heal
+      // target has a token but no controls, and reading it would write an
+      // all-null override entry for a creature the GM never touched.
       for (const row of card.querySelectorAll("[data-fud-gm-token]")) {
         const sel = row.querySelector('[data-fud-gm-field="hit"]');
+        if (!sel) continue;
+        // A creature being removed carries no outcome. Keeping its override
+        // would leave the bag counting a target the action no longer has, and
+        // `summarizeGmOverride` reporting it on the launch button.
+        if (row.dataset.fudGmDrop === "1") continue;
         perTarget[row.dataset.fudGmToken] = {
           hit: sel?.value === "hit" ? true : sel?.value === "miss" ? false : null,
           damage: valOf(row.querySelector('[data-fud-gm-field="damage"]')),
           defense: valOf(row.querySelector('[data-fud-gm-field="defense"]')),
         };
       }
+      // A control the editor could not RENDER must not be read as "the GM
+      // cleared it". Save sends a wholesale `replace`, so an absent target list
+      // would otherwise delete the other GM's target edit with no conflict
+      // signal — the exact failure already fixed once for reactions. Fall back
+      // to what the bag already holds.
+      //
+      // One list closes a gap the two-control version had: `removed` was gated
+      // on the drop checkbox and `added` on the Add box SEPARATELY, so a client
+      // whose canvas offered nothing addable fell back for one half while still
+      // writing the other. The halves can no longer diverge.
+      const prior = normalizeGmOverride(context.gmOverride);
+      const targets = targetsSec ? readTargetLists() : prior.targets;
       // Reactions. Only real verdicts are sent — a "keep" row contributes NO key,
       // so an untouched candidate can never be mistaken for a suppressed one.
       // (Save replaces this section wholesale, so an omitted key IS the clear.)
@@ -5479,7 +5883,7 @@ function openGmEditCard(context) {
         else if (v === "ask") { reopen.push(key); reactions[key] = "ask"; }
         else if (row.dataset.fudGmRxPrev === "ask") reactions[key] = "ask";
       }
-      return { roll, damage, perTarget, reactions, reopen };
+      return { roll, damage, perTarget, reactions, reopen, targets };
     };
 
     // The Save patch. `reopen` is hoisted OUT of the replaced bag: the bag is a
@@ -5488,7 +5892,7 @@ function openGmEditCard(context) {
     const buildPatch = () => {
       const f = readForm();
       return {
-        replace: { roll: f.roll, damage: f.damage, perTarget: f.perTarget, reactions: f.reactions },
+        replace: { roll: f.roll, damage: f.damage, perTarget: f.perTarget, reactions: f.reactions, targets: f.targets },
         ...(f.reopen.length ? { reopen: f.reopen } : {}),
       };
     };
@@ -5558,6 +5962,24 @@ function openGmEditCard(context) {
     refreshDerived();
     card.addEventListener("input", refreshDerived);
     card.addEventListener("change", refreshDerived);
+
+    // Add APPENDS a row and resets the picker, so the control can be used again
+    // immediately — the whole point of the rebuild. The single <select> it
+    // replaces held the pending add as its own value, which is why a second
+    // pick silently overwrote the first.
+    const addStagedTarget = () => {
+      const uuid = addSel?.value;
+      if (!uuid) return;
+      const name = addableName.get(uuid) ?? "Target";
+      addSel.closest(".fud-gm-addrow")
+        ?.insertAdjacentHTML("beforebegin", gmTargetRowHTML({ addToken: uuid, name }));
+      refreshAddOptions();
+      announce(`${name} added`);
+      // Focus stays on the picker, which is now back at its placeholder and
+      // ready for the next creature.
+      try { addSel.focus(); } catch { /* the picker may have just emptied */ }
+      refreshDerived();
+    };
 
     // Return focus where it came from — a GM who opened this from the keyboard
     // is otherwise dumped at the top of the document on close.
@@ -5633,6 +6055,41 @@ function openGmEditCard(context) {
       if (!btn) return;
       ev.preventDefault(); ev.stopPropagation();
       const action = btn.dataset.fudGmAction;
+      if (action === "add") return addStagedTarget();
+      // Remove / Restore on a target row.
+      if (action === "drop") {
+        const row = btn.closest("[data-fud-gm-trow]");
+        if (!row) return;
+        const name = row.querySelector(".fud-gm-tname")?.textContent?.trim() ?? "Target";
+        // Removing the LAST target is blocked, not staged. The card's surface
+        // rebuild is gated on `recomputed.length`, so an empty target set leaves
+        // every original row painted on the card and on every mirror as though
+        // it were still being hit — a state the GM cannot see is wrong. An
+        // action with no targets is a cancel, not an edit.
+        if (row.dataset.fudGmDrop !== "1" && survivingRows().length <= 1) {
+          announce(`${name} cannot be removed — an action needs at least one target`);
+          return;
+        }
+        // A staged add that has not been derived yet is not part of the action,
+        // so there is nothing to strike through — discard the row and hand the
+        // option back. Leaving a struck-through ghost for a creature the action
+        // never had would read as "removing a target", which is false.
+        if (row.dataset.fudGmAddToken && !row.dataset.fudGmToken) {
+          row.remove();
+          refreshAddOptions();
+          announce(`${name} removed`);
+          // Focus would otherwise fall to the document root, since the button
+          // that had it no longer exists.
+          try { addSel?.focus(); } catch { /* the picker may be hidden */ }
+          refreshDerived();
+          return;
+        }
+        if (row.dataset.fudGmDrop === "1") delete row.dataset.fudGmDrop;
+        else row.dataset.fudGmDrop = "1";
+        announce(`${name} ${row.dataset.fudGmDrop === "1" ? "will be removed" : "restored"}`);
+        refreshDerived();
+        return;
+      }
       if (action === "cancel") return close(null);
       // Clear all is a FORM operation, not a commit. It used to close the
       // dialog and wipe every override for the table immediately — directly
@@ -5643,8 +6100,29 @@ function openGmEditCard(context) {
       if (action === "reset") {
         for (const el of card.querySelectorAll(".fud-gm-num")) el.value = "";
         for (const el of card.querySelectorAll(".fud-gm-sel")) el.value = "";
+        // The target list is not made of .fud-gm-num / .fud-gm-sel, so the two
+        // loops above do not reach it. It was silently exempt once already:
+        // Clear-all + Save dropped the add and KEPT the removal, the opposite
+        // of what this button promises.
+        for (const row of targetRows()) {
+          // Clearing every override leaves the action with exactly what the
+          // ENGINE targeted. A staged add was never part of that, so it goes.
+          if (row.dataset.fudGmAddToken && !row.dataset.fudGmToken) { row.remove(); continue; }
+          // A row the engine DOES target keeps its place, but stops carrying
+          // the GM's marks: un-staged, and no longer counted as an add (which
+          // is itself an override).
+          delete row.dataset.fudGmDrop;
+          delete row.dataset.fudGmAddToken;
+          row.classList.remove("is-added");
+          row.querySelector(".fud-gm-tbadge")?.remove();
+        }
+        refreshAddOptions();
         const hrEl = q('[data-fud-gm-field="useHR"]');
         if (hrEl) hrEl.checked = !context.damage?.ignoreHR;
+        // The live region holds whatever the last membership change said. Left
+        // alone it survives Clear-all and states a count that is now wrong,
+        // which is worse than saying nothing.
+        if (liveEl) announce("Cleared");
         refreshDerived();
         q('[data-fud-gm-field="rA"]')?.focus();
         return;
@@ -7051,13 +7529,19 @@ export async function postActionCard({ director, kind, payload }) {
           //   • a NO-DAMAGE skill's verdict flipped (SUCCESS↔FAILED) from a check-adjust
           //     — the surgical result-span loop below is gated on hasDamageRows and so
           //     never repaints those. Damage skills keep the surgical + animated path.
-          const targetSetGrew = mutTargets.length > original.length
+          // CHANGED, not merely grew. A GM removal makes the set SHRINK, and the
+          // surgical loop below walks `recomputed` and `original` BY INDEX — with
+          // different lengths that misaligns, painting one target's hit/damage
+          // onto another creature's row on the GM card and every mirror, while
+          // the removed row stays on the card looking hit. A rebuild is the only
+          // honest response to a set whose membership moved.
+          const targetSetChanged = mutTargets.length !== original.length
             || mutTargets.some((t) => t?.addedVia || t?.shieldedVia);
           const verdictFlipped = recomputed.some((e, i) =>
             e && original[i] && (!!e.hit !== !!original[i].hit));
           const needsSurfaceRebuild =
             (Array.isArray(delta.redirects) && delta.redirects.length)
-            || targetSetGrew
+            || targetSetChanged
             || (!hasDamageRows && verdictFlipped);
           if (needsSurfaceRebuild && recomputed.length) {
             const rowsSrc = recomputed.map((r, i) => ({
@@ -7097,10 +7581,21 @@ export async function postActionCard({ director, kind, payload }) {
             // load-bearing: it drives the NULLIFIED label and the muted class for
             // a soaked hit (Ninja Log), and dropping it would silently downgrade
             // those rows to a plain "HIT 0".
+            //
+            // Joined by TOKEN, not by index. `original` and `recomputed` are
+            // only index-parallel while the set has the same membership, and a
+            // GM removal makes it shrink: with targets [A, B, C] and A dropped,
+            // i=1 paired B's uuid with C's numbers, so B's row — on the GM card
+            // and on every mirror — was painted with C's damage and affinity.
+            // The surface rebuild above does not save it; this loop runs after
+            // it and re-corrupts the freshly-built rows.
+            const origByToken = new Map((original ?? [])
+              .filter((r) => r?.tokenUuid).map((r) => [r.tokenUuid, r]));
             const resultRows = [];
-            for (let i = 0; i < recomputed.length; i++) {
-              const origEntry = original[i];
-              const entry = recomputed[i];
+            for (const entry of recomputed) {
+              // A GM-ADDED creature has no original row at all; it is its own
+              // source for the DOM hooks.
+              const origEntry = (entry?.tokenUuid && origByToken.get(entry.tokenUuid)) || entry;
               if (!origEntry?.actorUuid || !entry) continue;
               if (entry.redirectedFrom) continue;                     // already patched
               if (entry.studied === false) continue;                  // stays masked

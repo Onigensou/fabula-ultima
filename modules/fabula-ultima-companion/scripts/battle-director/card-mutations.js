@@ -44,6 +44,7 @@ import { resolvesVsMagicDefense } from "./snapshot.js";
 import {
   composeGmRoll, gmDamageInput, composeGmDefenseOverrides, gmHitOverrideMap,
   applyGmDamageOverrides, recomputeHitTokenUuids, gmOverrideDeltaRows, isGmOverrideEmpty,
+  applyGmTargetRemovals, gmTargetsToAdd,
 } from "./gm-card-override.js";
 
 const FLAG_NS = "fabula-ultima-companion";
@@ -1575,7 +1576,7 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
   const sfx = _cb ? `?cb=${_cb}` : "";
   const mut = await applyAcceptedCardMutations(ar, accepted, remotePrompt, costOnlyAccepted);
   if (mut.cancelled) return { cancelled: true };
-  const mutatedTargets = mut.targets;
+  let mutatedTargets = mut.targets;
   let perTargetResults = mut.perTargetResults;
   if (mut.negated) {
     // Spread the core result so every override bag it produced (accuracy/grant/
@@ -1667,6 +1668,49 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
     // GM roll wins over the engine's (a reroll mutation) — the table's hand-set
     // dice are the final word, and everything the recompute derives (HR →
     // damage, crit, per-target hit) must come from them.
+    // ── GM target-set edit ─────────────────────────────────────────────────
+    // Applied HERE — after every reaction mutation, before `mutatedAr` — so the
+    // single recompute below derives each surviving and each added row itself.
+    // Patching the target list after the recompute would leave an added target
+    // with no damage and a removed one still in hitTokenUuids, which is the same
+    // failure mode the accuracy fold-in documents.
+    //
+    // Both operations are idempotent: this rebuilds from the engine's own target
+    // set every pass and re-applies the GM's absolute add/remove sets on top, so
+    // a preview and the CONFIRM commit land on the same answer.
+    if (hasGmOverride) {
+      const cut = applyGmTargetRemovals(mutatedTargets, perTargetResults, gmOverride);
+      if (cut.removed > 0) {
+        mutatedTargets = cut.targets;
+        perTargetResults = cut.perTargets;
+        log(`GM target edit: removed ${cut.removed} target(s)`);
+      }
+      const toAdd = gmTargetsToAdd(mutatedTargets, gmOverride);
+      if (toAdd.length) {
+        // Same builders the engine's own add_target uses (snapshotTargetForToken
+        // + rederiveTargetRow → buildPerTarget), so a hand-added target goes
+        // through the full pipeline: its own DEF/MDEF, affinity and damage
+        // reduction all apply. Anything less would be a target the rules never
+        // actually saw.
+        const { snapshotTargetForToken } = await import("./snapshot.js" + sfx);
+        const addedTargets = [...mutatedTargets];
+        const addedRows = [...perTargetResults];
+        for (const tokenUuid of toAdd) {
+          const tok = await fromUuid(tokenUuid).catch(() => null);
+          if (!tok?.actor) { warn(`GM target edit: ${tokenUuid} not resolvable — skipped`); continue; }
+          const snap = snapshotTargetForToken(tok);
+          const per = snap ? await rederiveTargetRow(ar, snap) : null;
+          if (!snap || !per) { warn(`GM target edit: could not derive a row for ${tok.name} — skipped`); continue; }
+          const addedVia = { via: "GM adjustment", gm: true };
+          per.addedVia = addedVia;
+          addedTargets.push({ ...snap, addedVia });
+          addedRows.push(per);
+          log(`GM target edit: +${tok.actor.name}`);
+        }
+        mutatedTargets = addedTargets;
+        perTargetResults = addedRows;
+      }
+    }
     const mutatedAr = { ...ar, roll: gmRoll ?? mut.roll ?? ar.roll, targets: mutatedTargets, perTargetResults };
     if (attackerActor) {
       const { refreshReactionSubjects } = await import("./skill-effects.js" + sfx);
