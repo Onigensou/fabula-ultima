@@ -14,6 +14,8 @@
 //   damage    the action's damage composition: base, whether Highest Roll is
 //             added, and a flat bonus.
 //   perTarget a specific target's verdict, final damage, or defence.
+//   reactions whether a reaction candidate on this card fires at all — force one
+//             the player skipped, or suppress one the engine auto-applied.
 //
 // ── Why source values, not results ───────────────────────────────────────────
 // Overriding the DICE rather than the total means everything downstream stays
@@ -68,8 +70,16 @@ export const EMPTY_GM_OVERRIDE = Object.freeze({
   roll: null,
   damage: null,
   perTarget: Object.freeze({}),
+  reactions: Object.freeze({}),
   editors: Object.freeze([]),
 });
+
+// Identity of a reaction candidate inside the bag. The card's own decision map
+// keys on `rowKey:carrierUuid`; this uses a DOUBLE colon deliberately so the two
+// namespaces can never be passed to each other by accident — a bag key handed to
+// the decision map silently addresses nothing, and that failure is invisible.
+export const gmReactionKey = (rowKey, carrierUuid) =>
+  `${String(rowKey ?? "")}::${String(carrierUuid ?? "")}`;
 
 // Strict integer coercion. Deliberately NOT `Number.isFinite(Number(v))`:
 // Number(null), Number("") and Number(false) are all 0, so that test accepts
@@ -123,9 +133,26 @@ export function normalizeGmOverride(ov) {
     if (row) perTarget[uuid] = row;
   }
 
+  // Reactions — `key → true | false | "ask"` (force | suppress | un-decided).
+  // Anything else is DROPPED rather than coerced: "no opinion" is a further
+  // state, and it has to stay distinguishable from "suppress".
+  //
+  // `"ask"` records only ONE thing: do not let this candidate auto-fire again.
+  // The un-deciding itself is the patch's `reopen` list (an action). Storing the
+  // instruction is what makes it survive a card re-post — an F5 rebuilds the
+  // decision map from scratch, and without this the `on`/`force` auto-apply at
+  // spawn silently re-applied a reaction the GM had just un-applied.
+  const reactions = {};
+  for (const [key, raw] of Object.entries(ov.reactions ?? {})) {
+    if (!key) continue;
+    if (raw === "ask") { reactions[key] = "ask"; continue; }
+    const v = toBool(raw);
+    if (v !== null) reactions[key] = v;
+  }
+
   return {
     version: 2,
-    roll, damage, perTarget,
+    roll, damage, perTarget, reactions,
     editors: Array.isArray(ov.editors)
       ? ov.editors.filter((e) => e && e.userId).slice(-EDITOR_LOG_CAP)
         .map((e) => ({ userId: String(e.userId), userName: String(e.userName ?? ""), at: Number(e.at) || 0 }))
@@ -143,7 +170,8 @@ function clampDie(n) {
 
 export function isGmOverrideEmpty(ov) {
   const n = normalizeGmOverride(ov);
-  return !n.roll && !n.damage && Object.keys(n.perTarget).length === 0;
+  return !n.roll && !n.damage && Object.keys(n.perTarget).length === 0
+    && Object.keys(n.reactions).length === 0;
 }
 
 // Fold a patch into the existing bag and stamp WHO edited.
@@ -175,10 +203,17 @@ export function mergeGmOverride(prev, patch, editor = null) {
     roll: base.roll ? { ...base.roll } : {},
     damage: base.damage ? { ...base.damage } : {},
     perTarget: { ...base.perTarget },
+    reactions: { ...base.reactions },
     editors,
   };
   mergeSection(next.roll, patch?.roll, ["dA", "rA", "dB", "rB", "bonus"]);
   mergeSection(next.damage, patch?.damage, ["base", "useHR", "bonus", "element", "weaponType"]);
+  // Same null-clears rule as every other section, applied per candidate key.
+  for (const [key, raw] of Object.entries(patch?.reactions ?? {})) {
+    if (!key) continue;
+    if (raw == null) delete next.reactions[key];
+    else next.reactions[key] = raw;
+  }
   for (const [uuid, raw] of Object.entries(patch?.perTarget ?? {})) {
     if (!uuid) continue;
     const row = { ...(next.perTarget[uuid] ?? {}) };
@@ -354,6 +389,128 @@ export function recomputeHitTokenUuids(perTargetResults, fallback = null) {
   return rows.filter((r) => r?.hit && r?.tokenUuid).map((r) => r.tokenUuid);
 }
 
+// ── Reactions ───────────────────────────────────────────────────────────────
+//
+// The GM's verdict on ONE candidate: "apply" (force it to fire), "skip"
+// (suppress it), or null (no opinion — leave the engine and the player alone).
+export function gmReactionDecision(gmOverride, rowKey, carrierUuid) {
+  const gm = normalizeGmOverride(gmOverride);
+  const v = gm.reactions[gmReactionKey(rowKey, carrierUuid)];
+  // "ask" is NOT a verdict — it deliberately returns null so the ordinary
+  // `want = gm ?? base` computation falls through to whatever has been decided
+  // SINCE. That is what stops it replaying: once a player answers the reopened
+  // question, their answer stands, and the stored "ask" only goes on suppressing
+  // the auto-fire at spawn (see gmReactionBlocksAutoFire).
+  return v === true ? "apply" : v === false ? "skip" : null;
+}
+
+// Does the bag forbid this candidate auto-applying at card spawn?
+//
+// The `on`/`force` auto-apply runs every time a card is built, including a
+// re-post after an F5. A reaction the GM sent back to undecided must not quietly
+// re-arm itself there — that would undo the un-decision with no trace, which is
+// the one outcome "put it back to the table" cannot survive.
+export function gmReactionBlocksAutoFire(gmOverride, rowKey, carrierUuid) {
+  const gm = normalizeGmOverride(gmOverride);
+  return gm.reactions[gmReactionKey(rowKey, carrierUuid)] === "ask";
+}
+
+// Which reaction candidates the editor offers a control for.
+//
+// Excluded, both for the same reason — the control would be a lie:
+//   • CONDITION-unavailable rows. Their trigger does not apply to this action at
+//     all, so "force" would run a chain against a situation it was never written
+//     for. (COST-unavailable rows ARE offered: the trigger fired, the reactor
+//     merely can't pay, and overruling a cost is a normal table call.)
+//   • `_addTarget` rows (Barrage). Their Apply already spliced targets into the
+//     live payload at click time — a later "suppress" cannot un-splice them, so
+//     the control would silently do half of what it says. Adding and removing
+//     targets is its own editor surface.
+export function isGmEditableReaction(p) {
+  if (!p) return false;
+  // ── ADD_TARGET, in any form ────────────────────────────────────────────────
+  // `_addTarget` (Barrage) splices at Apply-click. But `usesAddTarget` alone is
+  // just as dangerous: state-handlers PRE-SPLICES every force/`on` add_target
+  // candidate into the live actionResult BEFORE the card is even posted
+  // (state-handlers.js, "force add_target pre-splice" — Grappling's shared-space
+  // splash), and NOTHING removes a target again: applyTargetSetMutation only
+  // ever starts from ar.targets and dedups additions.
+  //
+  // Gating on `_addTarget` alone therefore offered a Skip over a splice that had
+  // already happened — the pill flipped to "Suppressed" while the extra target
+  // stayed on the card, in the CONFIRM mutation and in hitTokenUuids, and took
+  // damage at RESOLVE. Silent, and exactly backwards from what the control said.
+  if (p._addTarget || p.usesAddTarget) return false;
+  // ── UNAVAILABLE ────────────────────────────────────────────────────────────
+  // Condition-unavailable: the trigger never applied, so forcing would run a
+  // chain against a situation it was not written for.
+  //
+  // COST-unavailable is now blocked too, reversing an earlier call of mine. It
+  // looked like "overruling a price is a normal table call", but the two halves
+  // of a reaction are gated in different places: the card-mutation half
+  // (redirect / adjust_damage / adjust_accuracy) applies at preview and COMMITS
+  // at CONFIRM without ever consulting affordability, while the cost lives in
+  // the chain and aborts at RESOLVE (`on_empty: "abort"`). Forcing an unpayable
+  // reaction therefore banks the benefit and never pays the price — a
+  // half-applied reaction, which is precisely what "they still have to go
+  // through the process of the skill" forbids.
+  if (p.available === false) return false;
+  return true;
+}
+
+// Reconcile a card's live decision state against the bag.
+//
+// This is the WHOLE of how a GM reaction edit reaches the engine. The card's
+// decision map is the single upstream of both the preview's `accepted` list and
+// snapshotReactionDecisions() — which in turn feeds CONFIRM's mutation pass and
+// RESOLVE's firePreAcceptedCandidate — so rewriting that map is the same
+// "thread INTO the recompute, never patch results after it" rule the roll and
+// damage sections follow. Nothing here touches a result.
+//
+//   candidates  the card's live cardReactions list
+//   currentOf   (cand) → "apply" | "skip" | null — what the map holds NOW
+//   baseOf      (cand) → "apply" | "skip" | null — what it would hold with no
+//               GM opinion at all (auto-fire at spawn, or the player's click)
+//
+// Returns ONLY the candidates whose decision must change, so a save that
+// re-states an override repaints and broadcasts nothing. `decision: null` means
+// "delete the entry" — the GM cleared their override and no baseline exists, so
+// the pill goes back to undecided rather than to a fabricated verdict.
+// `reopenedKeys` — bag keys the GM has just sent back to UNDECIDED this pass.
+// Their decision is null by construction (the caller has already cleared the
+// base), and they are flagged so the pill repaint and the mirror broadcast can
+// tell "the GM reopened this" from "an override was cleared and there was
+// nothing underneath". The two look identical in the data and are not the same
+// event: only the first has to re-arm a pill and tell the table why.
+export function gmReactionDecisionChanges(candidates, gmOverride, currentOf, baseOf = () => null, reopenedKeys = null) {
+  const out = [];
+  for (const cand of (candidates ?? [])) {
+    if (!isGmEditableReaction(cand)) continue;
+    const reopened = !!reopenedKeys?.has?.(gmReactionKey(cand.rowKey, cand.carrierUuid));
+    const gm = gmReactionDecision(gmOverride, cand.rowKey, cand.carrierUuid);
+    const want = reopened ? null : (gm ?? baseOf(cand) ?? null);
+    const cur = currentOf(cand) ?? null;
+    if (want === cur) continue;
+    out.push({
+      rowKey: cand.rowKey, carrierUuid: cand.carrierUuid,
+      carrierName: cand.carrierName ?? null,
+      decision: want, from: cur, byGm: reopened || gm != null, reopened,
+    });
+  }
+  return out;
+}
+
+// The reopen keys carried on an editor patch, validated.
+//
+// Reopen is an ACTION, not a stored verdict: "put this back to undecided" is an
+// event, and a bag that recorded it would keep re-firing it on every later
+// recompute — wiping whatever decision was made in the meantime. Keeping it off
+// the bag is what lets every stored override stay absolute and idempotent.
+export function readGmReopenKeys(patch) {
+  const raw = Array.isArray(patch?.reopen) ? patch.reopen : [];
+  return [...new Set(raw.filter((k) => typeof k === "string" && k.includes("::")))];
+}
+
 // Which per-target rows the editor offers controls for.
 //
 // Grant/heal rows are excluded — they carry no hit check, defence or damage.
@@ -408,5 +565,15 @@ export function summarizeGmOverride(gmOverride) {
   if (gm.damage && (gm.damage.base != null || gm.damage.bonus != null || gm.damage.useHR != null)) bits.push("damage");
   const n = Object.keys(gm.perTarget).length;
   if (n) bits.push(`${n} target${n === 1 ? "" : "s"}`);
+  // Forced and suppressed are counted apart: they are opposite table calls, and
+  // "2 reactions" would leave a GM unable to tell which way a card was bent
+  // without opening the editor.
+  const rx = Object.values(gm.reactions);
+  const forced = rx.filter((v) => v === true).length;
+  const off = rx.filter((v) => v === false).length;
+  const reopened = rx.filter((v) => v === "ask").length;
+  if (forced) bits.push(`${forced} forced`);
+  if (off) bits.push(`${off} suppressed`);
+  if (reopened) bits.push(`${reopened} reopened`);
   return bits.length ? bits.join(" · ") : null;
 }

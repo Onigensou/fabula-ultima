@@ -292,9 +292,14 @@ async function main() {
       console.log(`✗ parity: ${r.error}`);
       return 1;
     }
-    console.log(`parity — live payload ${r.live} key(s) · harness payload ${r.harness} key(s)  [creature_will_deal_damage]`);
-    if (r.extra.length) {
-      console.log(`  note: harness-only key(s) (live never sends these): ${r.extra.join(", ")}`);
+    // One line per SCAN SHAPE. A single roll-up line would let a second trigger
+    // be added and then silently drop out of the report.
+    for (const t of r.triggers ?? []) {
+      console.log(`parity — live ${t.live} key(s) · harness ${t.harness} key(s)  [${t.trigger}]` +
+        (t.missing.length ? `  ⚠ ${t.missing.length} missing` : ""));
+      if (t.extra.length) {
+        console.log(`  note: harness-only key(s) (live never sends these): ${t.extra.join(", ")}`);
+      }
     }
     if (r.ok) {
       console.log("✓ the harness supplies every action-level field the live dispatch does.");

@@ -50,6 +50,22 @@ const HARNESS_EXEMPT = {
   defenseResolved: "derived from ar.canMiss + defenseTargetType at CONFIRM; the harness sets its own per-scan",
 };
 
+// Local names either file gives a trigger payload literal. Matched by NAME and
+// then narrowed by the trigger string, so the two files may name theirs
+// differently (live: `performPayload`; harness: `payloadForTrigger`) without the
+// checker losing track of which pairs with which.
+const DECL_NAMES = ["payloadForTrigger", "performPayload"];
+
+// Every trigger whose payload must agree between live and harness.
+//
+// One entry per SCAN SHAPE, not per trigger name. `creature_will_deal_damage`
+// fires per target row; `creature_performs_action` fires once per action with a
+// different field set (rollDieA/B, actionKind, the die attribute names). Adding
+// a harness builder for a second shape without adding it here would leave that
+// shape exactly as unchecked as the first one was — which is the whole defect
+// this module was written for.
+const TRIGGERS = ["creature_will_deal_damage", "creature_performs_action"];
+
 /**
  * Extract the key names of the object literal assigned to `<name>` in `src`.
  * Brace-matched from the literal's opening `{`, then top-level `key:` picked
@@ -119,8 +135,8 @@ function objectLiteralKeys(src, declRe, atIndex = null) {
  * reordering the scans in either file cannot silently repoint this at the wrong
  * one.
  */
-function assembledPayloadKeys(src, trigger) {
-  const decl = /const\s+payloadForTrigger\s*=\s*\{/g;
+function assembledPayloadKeys(src, trigger, declNames = DECL_NAMES) {
+  const decl = new RegExp(`const\\s+(?:${declNames.join("|")})\\s*=\\s*\\{`, "g");
   let m;
   while ((m = decl.exec(src))) {
     // Is THIS the scan for the trigger we care about? The dispatch call follows
@@ -145,23 +161,13 @@ function assembledPayloadKeys(src, trigger) {
   return null;
 }
 
-function checkPayloadParity() {
-  const out = { ok: true, missing: [], extra: [], live: 0, harness: 0, error: null };
-  let liveSrc, harnessSrc;
-  try {
-    liveSrc = stripComments(fs.readFileSync(LIVE_FILE, "utf8"));
-    harnessSrc = stripComments(fs.readFileSync(HARNESS_FILE, "utf8"));
-  } catch (e) {
-    out.ok = false; out.error = `could not read source: ${e.message}`;
-    return out;
-  }
+function checkOneTrigger(liveSrc, harnessSrc, trigger) {
+  const out = { trigger, ok: true, missing: [], extra: [], live: 0, harness: 0, error: null };
+  const live = assembledPayloadKeys(liveSrc, trigger);
+  const harness = assembledPayloadKeys(harnessSrc, trigger);
 
-  const TRIGGER = "creature_will_deal_damage";
-  const live = assembledPayloadKeys(liveSrc, TRIGGER);
-  const harness = assembledPayloadKeys(harnessSrc, TRIGGER);
-
-  if (!live) { out.ok = false; out.error = `could not locate the live "${TRIGGER}" payload in state-handlers.js — the parity check is BLIND, fix the matcher`; return out; }
-  if (!harness) { out.ok = false; out.error = `could not locate the harness "${TRIGGER}" payload in _test-harness-director.js — the parity check is BLIND, fix the matcher`; return out; }
+  if (!live) { out.ok = false; out.error = `could not locate the live "${trigger}" payload in state-handlers.js — the parity check is BLIND, fix the matcher`; return out; }
+  if (!harness) { out.ok = false; out.error = `could not locate the harness "${trigger}" payload in _test-harness-director.js — the parity check is BLIND, fix the matcher`; return out; }
 
   out.live = live.size;
   out.harness = harness.size;
@@ -178,4 +184,29 @@ function checkPayloadParity() {
   return out;
 }
 
-module.exports = { checkPayloadParity, HARNESS_EXEMPT };
+// One result per trigger, plus a roll-up. The roll-up keeps the shape callers
+// already read (`ok` / `error` / `missing`), so an added trigger cannot quietly
+// stop being reported by a caller that only looks at the top level.
+function checkPayloadParity() {
+  let liveSrc, harnessSrc;
+  try {
+    liveSrc = stripComments(fs.readFileSync(LIVE_FILE, "utf8"));
+    harnessSrc = stripComments(fs.readFileSync(HARNESS_FILE, "utf8"));
+  } catch (e) {
+    return { ok: false, error: `could not read source: ${e.message}`, triggers: [], missing: [], extra: [], live: 0, harness: 0 };
+  }
+  const triggers = TRIGGERS.map((t) => checkOneTrigger(liveSrc, harnessSrc, t));
+  const firstError = triggers.find((r) => r.error);
+  return {
+    ok: triggers.every((r) => r.ok),
+    error: firstError?.error ?? null,
+    triggers,
+    // Roll-ups, deduped across triggers.
+    missing: [...new Set(triggers.flatMap((r) => r.missing))].sort(),
+    extra: [...new Set(triggers.flatMap((r) => r.extra))].sort(),
+    live: triggers[0]?.live ?? 0,
+    harness: triggers[0]?.harness ?? 0,
+  };
+}
+
+module.exports = { checkPayloadParity, HARNESS_EXEMPT, TRIGGERS };

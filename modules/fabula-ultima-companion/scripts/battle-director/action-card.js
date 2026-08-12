@@ -38,7 +38,9 @@ import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { resolvesVsMagicDefense, freezeActionResult } from "./snapshot.js";
 import { mergeGmOverride, normalizeGmOverride, describeGmEditors, isGmEditableRow,
          summarizeGmOverride, isGmOverrideEmpty, GM_DIE_SIZES,
-         GM_DAMAGE_TYPES, GM_WEAPON_TYPES } from "./gm-card-override.js";
+         GM_DAMAGE_TYPES, GM_WEAPON_TYPES, gmReactionKey, isGmEditableReaction,
+         gmReactionDecisionChanges, gmReactionDecision, readGmReopenKeys,
+         gmReactionBlocksAutoFire } from "./gm-card-override.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
 import { simInvoke } from "./sim/invoke-brain.js";
@@ -887,6 +889,26 @@ export function ensureStyles() {
       background: rgba(220, 220, 220, 0.40);
       border-color: rgba(140, 140, 140, 0.45);
       opacity: 0.55;
+    }
+    /* A verdict the GM set by hand, forced or suppressed. Marked with the gold
+       stroke the editor's own surfaces use, and — because a suppressed reaction
+       must stay legible as a deliberate call — WITHOUT the skipped fade. The
+       chip beside it already says Forced / Suppressed; this is what makes the
+       pill scannable as "someone overruled the card" at a glance. */
+    .fud-bf-card .fud-bf-reaction-pill.is-gm-set {
+      opacity: 1;
+      border-color: var(--fud-gold-2, #b7935a);
+      box-shadow: inset 0 0 0 1px rgba(183, 147, 90, 0.55);
+    }
+    /* Suppressed keeps the neutral grey ground of a skipped pill but not its
+       fade, so force (green) and suppress (grey) still read apart. */
+    .fud-bf-card .fud-bf-reaction-pill.is-gm-set.is-skipped {
+      background: rgba(220, 220, 220, 0.40);
+    }
+    /* A forced candidate may be one the engine dimmed as unaffordable — the GM
+       has overruled that, so it must stop rendering as non-interactive. */
+    .fud-bf-card .fud-bf-reaction-pill.is-unavailable.is-gm-set {
+      opacity: 1; filter: none;
     }
     /* Submitting — the owner clicked Apply/Skip and the GM is resolving it
        (possibly awaiting a secondary pick on this client). Dim + block the
@@ -1830,6 +1852,31 @@ export function ensureStyles() {
     /* Result needs more room than the two numeric fields — at even thirds
        "Auto (engine)" truncated inside its select. */
     .fud-gm-trow .fud-gm-grid { grid-template-columns: 1.35fr 1fr 1fr; }
+    /* Reaction rows: name on the left, one verdict select on the right. Laid out
+       like the accuracy rows (name → control) rather than the target grid — there
+       is a single control, so a grid would leave two empty columns. */
+    /* 132px, not 108: "Keep — applied" is the label that tells the GM what the
+       card is CURRENTLY doing, and at 108 it truncated to "Keep — appl…" — the
+       exact failure the target-row grid above already carries a note about. The
+       name column absorbs it because reaction names wrap. */
+    .fud-gm-rxrow {
+      display: grid; grid-template-columns: 1fr 132px; gap: 8px;
+      align-items: center; padding: 5px 0;
+    }
+    .fud-gm-rxrow + .fud-gm-rxrow { border-top: 1px solid var(--fud-stroke, #7a6a55); }
+    .fud-gm-rxrow .fud-gm-tname { margin-bottom: 0; white-space: normal; }
+    /* Reactor name above the skill, matching the pill's own two-line name block
+       so a third-party reaction is identified the same way in both places. */
+    .fud-gm-rx-who {
+      display: block; font-size: 9px; font-weight: 700; letter-spacing: .04em;
+      text-transform: uppercase; opacity: .75;
+    }
+    /* The reason a candidate is unaffordable. Kept quiet — it is a caveat on a
+       choice the GM is still allowed to make, not a warning against making it. */
+    .fud-gm-rx-why {
+      display: block; font-size: 10px; font-weight: 600;
+      color: var(--fud-ink-soft, #4b4338); opacity: .8;
+    }
     .fud-gm-note {
       margin: 6px 0 0; font-size: 11px; line-height: 1.5;
       color: var(--fud-ink-soft, #4b4338);
@@ -5033,16 +5080,39 @@ function buildGmEditLaunchHTML(gmOverride = null) {
 // count, so the edited state reads without depending on hue.
 function gmEditCount(gmOverride) {
   const gm = normalizeGmOverride(gmOverride);
-  return (gm.roll ? 1 : 0) + (gm.damage ? 1 : 0) + Object.keys(gm.perTarget).length;
+  return (gm.roll ? 1 : 0) + (gm.damage ? 1 : 0)
+    + Object.keys(gm.perTarget).length + Object.keys(gm.reactions).length;
 }
 
 const GM_EDIT_ROOT_ID = "fud-gm-edit-card-root";
 
+// Project the card's reaction candidates into editor rows.
+//
+// `decisionOf` is the card's live decision map lookup and is only available on
+// the HOST — a support GM's mirror has the candidate list but not the verdicts.
+// It stays null there rather than being guessed at: the row then labels its
+// "keep" option with the pill's dispatch MODE, which is true on both surfaces,
+// instead of inventing an Applied/Skipped state the mirror cannot know.
+function gmEditReactionRows(cands, decisionOf = null) {
+  return (Array.isArray(cands) ? cands : []).filter(isGmEditableReaction).map((p) => ({
+    rowKey: p.rowKey, carrierUuid: p.carrierUuid,
+    carrierName: p.carrierName ?? "Reaction",
+    reactorActorName: p.reactorActorUuid ? (p.reactorActorName ?? "Reactor") : null,
+    mode: p.mode ?? null,
+    available: p.available !== false,
+    unavailableReason: p.available === false ? (p.unavailableReason ?? "Unavailable") : null,
+    decision: decisionOf ? (decisionOf(p) ?? null) : null,
+  }));
+}
+
 // Project an actionResult (host) or render payload (mirror) into the editor's
 // inputs. One projection for both surfaces, so a support GM's editor cannot show
 // different numbers from the host's.
-function gmEditContextFor(src, kind = null, title = null) {
+function gmEditContextFor(src, kind = null, title = null, reactions = null) {
   return {
+    // The host passes its LIVE candidate list (which includes anything a cascade
+    // injected since the card was posted); the mirror falls back to the payload's.
+    reactions: reactions ?? gmEditReactionRows(src?.cardReactions),
     perTargetResults: src?.perTargetResults ?? [],
     roll: src?.roll ?? null,
     damage: src?.damage ?? null,
@@ -5070,7 +5140,7 @@ function gmEditContextFor(src, kind = null, title = null) {
 // Build the editor card's markup from the action's CURRENT values and whatever
 // override is already in force. Engine values appear as placeholders, so an
 // empty box always reads as "leave this to the engine" — never as zero.
-function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null, isSpellish = false, gmOverride = null, hasDamage = true, title = "Action" }) {
+function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null, isSpellish = false, gmOverride = null, hasDamage = true, title = "Action", reactions = [] }) {
   const gm = normalizeGmOverride(gmOverride);
   const defTag = isSpellish ? "MDEF" : "DEF";
   const num = (v) => (v == null ? "" : String(v));
@@ -5183,13 +5253,17 @@ function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null
       ${rows.map((r) => {
         const uuid = String(r.tokenUuid ?? "");
         const ov = gm.perTarget[uuid] ?? {};
-        const sel = ov.hit === true ? "hit" : ov.hit === false ? "miss" : "auto";
+        // "" for keep, like every other select — it used to be "auto", which is a
+        // non-empty value, so markEdited railed every untouched outcome row as
+        // edited and "Clear all fields" was never disabled. Clear-all also sets
+        // selects to "", which on an "auto" option list left the control BLANK.
+        const sel = ov.hit === true ? "hit" : ov.hit === false ? "miss" : "";
         return `<div class="fud-gm-trow" data-fud-gm-token="${escapeHtml(uuid)}">
           <div class="fud-gm-tname">${escapeHtml(r.name ?? "")}</div>
           <div class="fud-gm-grid">
             <label class="fud-gm-f"><span>Outcome</span>
               <select class="fud-gm-sel" data-fud-gm-field="hit">
-                <option value="auto"${sel === "auto" ? " selected" : ""}>Keep — engine</option>
+                <option value=""${sel === "" ? " selected" : ""}>Keep — engine</option>
                 <option value="hit"${sel === "hit" ? " selected" : ""}>Hit</option>
                 <option value="miss"${sel === "miss" ? " selected" : ""}>Miss</option>
               </select></label>
@@ -5204,6 +5278,74 @@ function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null
       }).join("")}
     </fieldset>` : "";
 
+  // Reactions — what happens to each candidate, in the PILL's own vocabulary so
+  // the GM is choosing between the same words the card shows everyone else:
+  //
+  //   Keep       no override; the engine and the player decide
+  //   Apply      make it fire, including one the player skipped or can't afford
+  //   Skip       stop it firing, including an `on`/`force` one already applied
+  //   Ask again  hand the decision back — the pill returns to UNDECIDED, buttons
+  //              live, exactly as it stood before anyone chose
+  //
+  // "Ask again" is the one that is not simply the opposite of another option.
+  // Apply and Skip both DECIDE; only this un-decides, which is the correction a
+  // table actually needs ("wait — un-apply that, we'll redo it") and the only way
+  // to put an auto-fired `on` reaction back to a real choice.
+  //
+  // It is deliberately NOT called "Cancel": this dialog already has a Cancel, and
+  // that one discards the GM's unsaved edits. Two Cancels meaning different
+  // things in one dialog is a trap. "Ask again" also matches the card's own
+  // "Asks (You choose)" mode label.
+  //
+  // The keep option names what the card would do on its own. On the host that is
+  // the LIVE verdict ("Applied" / "Skipped" / still waiting); on a mirror only
+  // the dispatch mode is knowable, so it says that instead of guessing.
+  const rxRows = Array.isArray(reactions) ? reactions : [];
+  // A carrier can present several rows (Adversity: one accuracy, one damage) and
+  // the card collapses them into ONE pill. Listing them here as N identically
+  // named rows gave the GM no way to tell which was which, so qualify the
+  // duplicates by their row key. Only when there IS a duplicate — a lone row
+  // stays plainly named.
+  const rxNameCount = new Map();
+  for (const r of rxRows) rxNameCount.set(r.carrierName, (rxNameCount.get(r.carrierName) ?? 0) + 1);
+  const reactionSec = rxRows.length ? `
+    <fieldset class="fud-gm-sec">
+      <legend>Reactions</legend>
+      ${rxRows.map((r) => {
+        const key = gmReactionKey(r.rowKey, r.carrierUuid);
+        const ov = gm.reactions[key];
+        // "" is the no-override value for EVERY select in this editor — it is
+        // what markEdited, "Clear all fields" and readForm all key on.
+        const sel = ov === true ? "apply" : ov === false ? "skip" : "";
+        const keepLabel =
+          ov === "ask"           ? "Keep — reopened" :
+          r.decision === "apply" ? "Keep — applied" :
+          r.decision === "skip"  ? "Keep — skipped" :
+          r.mode === "on" || r.mode === "force" ? "Keep — active" :
+          r.mode === "off" ? "Keep — disabled" : "Keep — asks";
+        // A cost-unavailable candidate stays selectable: the trigger fired and the
+        // GM overruling the price is a normal table call. The reason is shown so
+        // that call is made knowingly rather than by accident.
+        const why = r.unavailableReason ? `<span class="fud-gm-rx-why">${escapeHtml(r.unavailableReason)}</span>` : "";
+        const who = r.reactorActorName ? `<span class="fud-gm-rx-who">${escapeHtml(r.reactorActorName)}</span>` : "";
+        // The bag value this row STARTED with, so Save can tell "the GM left a
+        // stored reopen alone" from "the GM never reopened this". See readForm.
+        return `<div class="fud-gm-rxrow" data-fud-gm-rx="${escapeHtml(key)}"${
+          ov === "ask" ? ` data-fud-gm-rx-prev="ask"` : ""}>
+          <div class="fud-gm-tname">${who}${escapeHtml(r.carrierName ?? "Reaction")}${
+            (rxNameCount.get(r.carrierName) ?? 0) > 1
+              ? `<span class="fud-gm-rx-why">row ${escapeHtml(String(r.rowKey))}</span>` : ""}${why}</div>
+          <select class="fud-gm-sel" data-fud-gm-field="reaction"
+                  aria-label="${escapeHtml(`${r.carrierName ?? "Reaction"} — fire this reaction`)}">
+            <option value=""${sel === "" ? " selected" : ""}>${escapeHtml(keepLabel)}</option>
+            <option value="apply"${sel === "apply" ? " selected" : ""}>Apply</option>
+            <option value="skip"${sel === "skip" ? " selected" : ""}>Skip</option>
+            <option value="ask">Ask again</option>
+          </select>
+        </div>`;
+      }).join("")}
+    </fieldset>` : "";
+
   const credit = describeGmEditors(gm) ?? "";
   return `<div class="fud-bf-card fud-gm-edit-card" role="dialog" aria-modal="true" aria-label="Edit action">
     <div class="fud-gm-edit-head">
@@ -5211,7 +5353,7 @@ function buildGmEditCardHTML({ perTargetResults, roll, damage, weaponType = null
       <span class="fud-gm-edit-sub">${escapeHtml(title)}</span>
     </div>
     <div class="fud-gm-edit-body">
-      ${accuracy}${dmgSec}${targets}
+      ${accuracy}${dmgSec}${reactionSec}${targets}
       <p class="fud-gm-note" id="fud-gm-note">A blank box or a <b>Keep</b> entry means no override —
         the grey value beside it is what the engine produced. Nothing changes until you
         save.${credit ? ` <em>${escapeHtml(credit)}</em>` : ""}</p>
@@ -5312,7 +5454,43 @@ function openGmEditCard(context) {
           defense: valOf(row.querySelector('[data-fud-gm-field="defense"]')),
         };
       }
-      return { roll, damage, perTarget };
+      // Reactions. Only real verdicts are sent — a "keep" row contributes NO key,
+      // so an untouched candidate can never be mistaken for a suppressed one.
+      // (Save replaces this section wholesale, so an omitted key IS the clear.)
+      //
+      // "Ask again" is TWO things, and they are stored differently on purpose:
+      //
+      //   the ACTION  — `reopen`, a patch-only list. Clears the decision NOW.
+      //   the RULE    — `reactions[key] = "ask"`, stored. Stops the candidate
+      //                 auto-firing again when the card is re-posted (F5).
+      //
+      // The action must never replay: once a player answers the reopened
+      // question, re-sending `reopen` would wipe their answer. So a row the GM
+      // LEFT ALONE re-emits the stored "ask" (preserving the rule) WITHOUT
+      // joining `reopen` (not repeating the action). Picking Apply or Skip
+      // overwrites the rule outright, which is what those verdicts mean.
+      const reactions = {};
+      const reopen = [];
+      for (const row of card.querySelectorAll("[data-fud-gm-rx]")) {
+        const key = row.dataset.fudGmRx;
+        const v = row.querySelector('[data-fud-gm-field="reaction"]')?.value;
+        if (v === "apply") reactions[key] = true;
+        else if (v === "skip") reactions[key] = false;
+        else if (v === "ask") { reopen.push(key); reactions[key] = "ask"; }
+        else if (row.dataset.fudGmRxPrev === "ask") reactions[key] = "ask";
+      }
+      return { roll, damage, perTarget, reactions, reopen };
+    };
+
+    // The Save patch. `reopen` is hoisted OUT of the replaced bag: the bag is a
+    // state and the reopen list is an action, and the merge would silently drop
+    // an unknown key inside `replace` anyway.
+    const buildPatch = () => {
+      const f = readForm();
+      return {
+        replace: { roll: f.roll, damage: f.damage, perTarget: f.perTarget, reactions: f.reactions },
+        ...(f.reopen.length ? { reopen: f.reopen } : {}),
+      };
     };
 
     // Live readout of what the typed dice actually produce. The GM enters
@@ -5415,7 +5593,7 @@ function openGmEditCard(context) {
         // picked a die size with the keyboard.
         if (ev.target.tagName === "BUTTON" || ev.target.tagName === "SELECT") return;
         ev.preventDefault(); ev.stopPropagation();
-        return close({ replace: readForm() });
+        return close(buildPatch());
       }
       if (ev.key === "Tab") {
         const list = focusables();
@@ -5471,7 +5649,7 @@ function openGmEditCard(context) {
         q('[data-fud-gm-field="rA"]')?.focus();
         return;
       }
-      if (action === "save") return close({ replace: readForm() });
+      if (action === "save") return close(buildPatch());
     });
   });
 }
@@ -5913,6 +6091,35 @@ export async function postActionCard({ director, kind, payload }) {
     // auto-rejected and not rendered. Both decisions are recorded
     // immediately so the resolve path sees the full picture.
     const reactionDecisionMap = new Map(); // rowKey:carrierUuid → "apply"|"skip"
+    // What each pill would decide with NO GM opinion at all: the auto-fire
+    // verdict at spawn, plus every genuine Apply/Skip. Kept beside the effective
+    // map purely so CLEARING a GM reaction override can restore what the card
+    // itself decided — the effective map alone has no memory of it, so a cleared
+    // override would otherwise strand the pill on the GM's last verdict.
+    const baseDecisionMap = new Map();
+    // Decision-map keys (single colon) currently carrying a GM verdict. Read off
+    // the live bag each time rather than cached — a support GM's edit lands via
+    // the socket and must be visible to the very next pill write.
+    const gmDecidedKeys = () => {
+      const gm = normalizeGmOverride(director.ctx.actionResult?.gmOverride ?? cardAr?.gmOverride ?? null);
+      const out = new Set();
+      for (const key of Object.keys(gm.reactions)) {
+        const i = key.lastIndexOf("::");
+        if (i >= 0) out.add(`${key.slice(0, i)}:${key.slice(i + 2)}`);
+      }
+      return out;
+    };
+    // The engine/player write path. A GM verdict OUTRANKS the card, so a late
+    // auto-accept or a stray click can never silently overwrite it — the base
+    // still records what the card wanted, ready for the override being cleared.
+    const setReactionDecision = (key, decision) => {
+      baseDecisionMap.set(key, decision);
+      if (!gmDecidedKeys().has(key)) reactionDecisionMap.set(key, decision);
+    };
+    const clearReactionDecision = (key) => {
+      baseDecisionMap.delete(key);
+      if (!gmDecidedKeys().has(key)) reactionDecisionMap.delete(key);
+    };
     for (const p of cardReactions) {
       const key = `${p.rowKey}:${p.carrierUuid}`;
       // "on" + "force" both auto-apply (force is engine-mandatory, on
@@ -5920,8 +6127,24 @@ export async function postActionCard({ director, kind, payload }) {
       // when unavailable (can't pay cost): a surfaced-dimmed on/force pill must
       // never auto-fire, or RESOLVE would try to consume a resource the actor
       // doesn't have. It stays a dimmed informational pill instead.
-      if (isAutoFireReactionMode(p.mode) && p.available !== false) reactionDecisionMap.set(key, "apply");
-      if (p.mode === "off") reactionDecisionMap.set(key, "skip");
+      // A candidate the GM sent back to undecided must NOT re-arm itself on a
+      // re-post — the auto-apply below runs on every card build, so without this
+      // an F5 silently undid the un-decision.
+      if (gmReactionBlocksAutoFire(cardAr?.gmOverride ?? null, p.rowKey, p.carrierUuid)) continue;
+      if (isAutoFireReactionMode(p.mode) && p.available !== false) setReactionDecision(key, "apply");
+      if (p.mode === "off") setReactionDecision(key, "skip");
+    }
+    // A card can be RE-POSTED with GM verdicts already in the bag — ar.gmOverride
+    // rides the frozen actionResult through persistence, so an F5 or a restore
+    // rebuilds this map from scratch while the bag remembers everything.
+    // setReactionDecision deliberately refuses to write over a GM-decided key, so
+    // without this pass those keys would hold NO effective entry at all, and
+    // snapshotReactionDecisions defaults an absent entry to "skip" — silently
+    // dropping a force the GM had already made. Seeding straight from the bag is
+    // the same absolute-value rule the rest of the layer follows.
+    for (const p of cardReactions) {
+      const d = gmReactionDecision(cardAr?.gmOverride ?? null, p.rowKey, p.carrierUuid);
+      if (d) reactionDecisionMap.set(`${p.rowKey}:${p.carrierUuid}`, d);
     }
 
     function snapshotReactionDecisions() {
@@ -6146,6 +6369,10 @@ export async function postActionCard({ director, kind, payload }) {
             ? ownerUserIdForActor(reactor)
             : await resolveCardOwnerUserId(cascadeAttackerUuid);
           cascadeFiredKeys.add(rd.candidateKey(c));
+          // Marks this pill as DERIVED — it exists only because some other
+          // reaction was applied. A GM rolling any reaction back has to be able
+          // to retract it; see reconcileGmReactions.
+          c._cascadeInjected = true;
           cardReactions.push(c);
         }
         appendCascadePills(added);
@@ -6241,6 +6468,10 @@ export async function postActionCard({ director, kind, payload }) {
             c.reactorOwnerUserId = await resolveCardOwnerUserId(c.reactorActorUuid ?? attackerActorUuid);
           } catch { c.reactorOwnerUserId = null; }
           cascadeFiredKeys.add(rd.candidateKey(c));
+          // Marks this pill as DERIVED — it exists only because some other
+          // reaction was applied. A GM rolling any reaction back has to be able
+          // to retract it; see reconcileGmReactions.
+          c._cascadeInjected = true;
           cardReactions.push(c);
         }
         appendCascadePills(added);
@@ -6288,7 +6519,7 @@ export async function postActionCard({ director, kind, payload }) {
       // Provisional set so recompute / card-mutations see the decision.
       // If "apply" needs a picker and the player cancels, we rewind this
       // before committing the DOM so the pill stays in pending state.
-      reactionDecisionMap.set(`${rowKey}:${carrierUuid}`, decision);
+      setReactionDecision(`${rowKey}:${carrierUuid}`, decision);
 
       // Barrage (creature_performs_action, tagged `_addTarget`): the pill's
       // Apply runs the reaction's add_target chain (JRPG picker + MP cost) via
@@ -6305,7 +6536,7 @@ export async function postActionCard({ director, kind, payload }) {
       if (addTargetCand) {
         if (decision === "apply") {
           if (typeof payload.onAddTargetApply !== "function") {
-            reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+            clearReactionDecision(`${rowKey}:${carrierUuid}`);
             return;
           }
           // The card auto-hides while the LOCAL targeting picker is up via the
@@ -6316,7 +6547,7 @@ export async function postActionCard({ director, kind, payload }) {
           try { res = await payload.onAddTargetApply(addTargetCand, remotePrompt); }
           catch (e) { warn("recordPillDecision: onAddTargetApply threw", e); }
           if (!res?.ok) {
-            reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+            clearReactionDecision(`${rowKey}:${carrierUuid}`);
             revertRemotePill();
             log(`recordPillDecision: add_target apply ${res?.cancelled ? "cancelled" : "failed"} for ${rowKey}:${carrierUuid} — pill stays pending`);
             return;
@@ -6404,7 +6635,7 @@ export async function postActionCard({ director, kind, payload }) {
                 remotePrompt,
               });
               if (menuRes?.cancelled) {
-                reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+                clearReactionDecision(`${rowKey}:${carrierUuid}`);
                 revertRemotePill();
                 log(`recordPillDecision: ${rowKey}:${carrierUuid} menu cancelled — pill stays pending`);
                 return;
@@ -6431,7 +6662,7 @@ export async function postActionCard({ director, kind, payload }) {
           warn(`recordPillDecision: recompute threw for ${rowKey}:${carrierUuid}`, e);
         }
         if (cancelled) {
-          reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+          clearReactionDecision(`${rowKey}:${carrierUuid}`);
           if (cand) { cand.chosenMenuPicks = null; cand.previewEffects = null; cand.previewDamageNullified = false; }
           revertRemotePill();
           log(`recordPillDecision: ${rowKey}:${carrierUuid} apply cancelled — pill stays pending`);
@@ -6762,6 +6993,19 @@ export async function postActionCard({ director, kind, payload }) {
             // including edits the OTHER GM made.
             gmEditSummary: summarizeGmOverride(arSnapshot.gmOverride),
             gmEditCount: gmEditCount(arSnapshot.gmOverride),
+            // The BAG ITSELF, plus the live candidate rows, so a support GM's
+            // editor opens on the host's CURRENT state.
+            //
+            // Without these it only ever saw the bag frozen into the original
+            // card broadcast — an empty one — while its Save sends a wholesale
+            // `replace`. A support GM nudging damage therefore SILENTLY WIPED
+            // every verdict the host had made: reactions, roll, per-target, all
+            // of it, with no conflict signal. Cascade-injected candidates were
+            // missing from their form for the same reason, so those keys were
+            // dropped too.
+            gmOverrideBag: normalizeGmOverride(arSnapshot.gmOverride),
+            gmEditReactions: gmEditReactionRows(cardReactions,
+              (c) => reactionDecisionMap.get(`${c.rowKey}:${c.carrierUuid}`)),
             // Which PANELS carry a hand-set value, so the accuracy and damage
             // fieldsets can be railed like an edited target row.
             gmRollEdited: !!normalizeGmOverride(arSnapshot.gmOverride).roll,
@@ -7013,7 +7257,7 @@ export async function postActionCard({ director, kind, payload }) {
               if (p.mode !== "ask") continue;
               const k = `${p.rowKey}:${p.carrierUuid}`;
               if (reactionDecisionMap.has(k)) continue;   // already decided (incl. the negate/block pill itself)
-              reactionDecisionMap.set(k, "skip");
+              setReactionDecision(k, "skip");
               try { commitPillDecisionDom(p.rowKey, p.carrierUuid, "skip"); }
               catch (e) { warn("auto-reject pending pill on negate threw", e); }
             }
@@ -7434,6 +7678,171 @@ export async function postActionCard({ director, kind, payload }) {
         // ar.gmOverride and exactly one recompute+broadcast that follows it. A
         // support GM's edit therefore becomes visible to them only once the host
         // has echoed it — which is what keeps two GMs from diverging.
+        // Re-derive the Confirm lock from the DOM rather than nudging it by ±1.
+        // A GM edit can flip several pills at once and in either direction (an
+        // undecided ask pill forced, a forced one cleared back to undecided), so
+        // a delta would have to be exactly right in every combination; a recount
+        // is right by construction.
+        const recountReactionPending = () => {
+          const cardEl = root.querySelector(".fud-bf-card");
+          if (!cardEl) return 0;
+          const n = root.querySelectorAll(
+            '.fud-bf-reaction-pill[data-fud-reaction-pending="1"][data-fud-reaction-gating="1"]').length;
+          if (n > 0) cardEl.dataset.fudReactionsPending = String(n);
+          else delete cardEl.dataset.fudReactionsPending;
+          return n;
+        };
+
+        // Push the GM's reaction verdicts into the card's decision map.
+        //
+        // That map is the SINGLE upstream of both the preview's accepted list and
+        // snapshotReactionDecisions() — which feeds CONFIRM's mutation pass and
+        // RESOLVE's firePreAcceptedCandidate — so writing it here is the same
+        // "thread INTO the recompute" rule the roll and damage sections follow.
+        // No result is patched, and the caller's recompute does the rest.
+        const reconcileGmReactions = (gmOverride, reopenKeys = null) => {
+          // Reopen FIRST, by clearing what the card decided unaided. After that
+          // the ordinary want = gm ?? base computation lands on null all by
+          // itself, so an un-decision travels the same single path as every
+          // other verdict instead of getting its own repaint branch.
+          const reopened = new Set(reopenKeys ?? []);
+          for (const key of reopened) {
+            const i = key.lastIndexOf("::");
+            if (i >= 0) baseDecisionMap.delete(`${key.slice(0, i)}:${key.slice(i + 2)}`);
+          }
+          const changes = gmReactionDecisionChanges(
+            cardReactions, gmOverride,
+            (c) => reactionDecisionMap.get(`${c.rowKey}:${c.carrierUuid}`) ?? null,
+            (c) => baseDecisionMap.get(`${c.rowKey}:${c.carrierUuid}`) ?? null,
+            reopened,
+          );
+          if (!changes.length) return { total: 0, forced: 0 };
+          for (const ch of changes) {
+            const key = `${ch.rowKey}:${ch.carrierUuid}`;
+            // ⚠ A GM verdict overrides the DECISION AND NOTHING ELSE.
+            //
+            // Only the decision map is written here. The CANDIDATE is never
+            // touched — not `available`, not its cost rows — so a forced
+            // reaction still runs the skill's whole normal process: the chain
+            // fires in order, `consume_resource` charges as authored, and a
+            // payer who is short hits that row's own `on_empty` (default
+            // "abort", so the chain stops and no pool goes negative).
+            //
+            // USER RULING 2026-08-12: "GM only override decision. They still
+            // have to go through the process of the skill (or the skill might
+            // break)." So do NOT add a convenience bypass here — flipping
+            // `available` or skipping the cost row to make a forced reaction
+            // "work" would skip the very steps the rest of the skill depends on.
+            // If a forced reaction does nothing, an unmet cost or gate is the
+            // ANSWER, not a bug to route around.
+            if (ch.decision == null) reactionDecisionMap.delete(key);
+            else reactionDecisionMap.set(key, ch.decision);
+            // Drop the apply-click residue when a reaction stops being applied,
+            // exactly as recordPillDecision's skip branch does. Without this a
+            // suppressed candidate keeps its cached menu picks, and a LATER
+            // Apply from this editor replays them silently instead of asking —
+            // the pill path always re-runs previewReactionMenu, so the two
+            // surfaces would answer the same question differently.
+            if (ch.decision !== "apply") {
+              const cand = cardReactions.find((p) =>
+                String(p.rowKey) === String(ch.rowKey) && String(p.carrierUuid) === String(ch.carrierUuid));
+              if (cand) {
+                cand.chosenMenuPicks = null;
+                cand.previewEffects = null;
+                cand.previewDamageNullified = false;
+              }
+            }
+            const pillSel = `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(String(ch.rowKey))}"][data-fud-reaction-carrier="${CSS.escape(String(ch.carrierUuid))}"]`;
+            // buildReactionPills COLLAPSES several auto rows from one carrier
+            // into a single pill (Adversity's two force rows), so an exact
+            // rowKey match finds nothing for every row but the first — a Skip
+            // then updated the map with no visible change at all. Fall back to
+            // the carrier's pill, which is the one representing this row.
+            const carrierSel = `.fud-bf-reaction-pill[data-fud-reaction-carrier="${CSS.escape(String(ch.carrierUuid))}"]`;
+            let pillEl = root.querySelector(pillSel) ?? root.querySelector(carrierSel);
+            // An `off`-mode candidate has NO pill — buildReactionPills hides
+            // player-disabled rows. Forcing one would then fire a reaction the
+            // card never mentions, which is the one thing a manual override must
+            // not do: everyone at the table has to be able to see that it
+            // happened. Inject the pill first, as an active row, and let the
+            // paint below stamp it "Forced".
+            // Only when the carrier has NO pill at all — the carrier fallback
+            // above already covers a collapsed row, and injecting there would
+            // add a second pill for a carrier that is on the card once.
+            if (!pillEl && ch.decision === "apply") {
+              const cand = cardReactions.find((p) =>
+                String(p.rowKey) === String(ch.rowKey) && String(p.carrierUuid) === String(ch.carrierUuid));
+              if (cand) {
+                try { appendCascadePills([{ ...cand, mode: "force", available: true }]); }
+                catch (e) { warn("reconcileGmReactions: pill injection threw", e); }
+                pillEl = root.querySelector(pillSel);
+              }
+            }
+            if (pillEl) {
+              const cardEl = root.querySelector(".fud-bf-card");
+              if (ch.decision == null) restoreReactionPillButtons(pillEl, cardEl);
+              else resolveReactionPillDom(pillEl, cardEl, ch.decision, { gm: ch.byGm });
+            }
+            log(`GM reaction ${ch.reopened ? "reopened (undecided)" : (ch.decision ?? "cleared")}: ${ch.carrierName ?? ch.carrierUuid} (${key})`);
+          }
+          // ── Retract derived pills when anything is rolled back ─────────────
+          // A cascade pill (Bullet Break after Crossfire) exists only because
+          // another reaction was applied. Suppressing or reopening the set
+          // without touching the children left them decided, in
+          // acceptedCardReactions, and FIRING at RESOLVE — chained to an action
+          // the card now says never happened.
+          //
+          // They are un-decided rather than skipped: nothing is committed before
+          // CONFIRM, so handing the question back is the honest revert, and a
+          // still-eligible child can simply be applied again. Scoped to
+          // rollbacks — a force ADDS to the set, and injectCascadeReactions
+          // re-derives from it.
+          const rolledBack = changes.some((c) => c.decision !== "apply");
+          if (rolledBack) {
+            for (const cand of cardReactions) {
+              if (!cand?._cascadeInjected) continue;
+              const ckey = `${cand.rowKey}:${cand.carrierUuid}`;
+              if (!reactionDecisionMap.has(ckey) && !baseDecisionMap.has(ckey)) continue;
+              reactionDecisionMap.delete(ckey);
+              baseDecisionMap.delete(ckey);
+              const cEl = root.querySelector(
+                `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(String(cand.rowKey))}"][data-fud-reaction-carrier="${CSS.escape(String(cand.carrierUuid))}"]`);
+              if (cEl) restoreReactionPillButtons(cEl, root.querySelector(".fud-bf-card"));
+              log(`GM reaction rollback also retracted derived pill: ${cand.carrierName} (${ckey})`);
+            }
+          }
+          const pending = recountReactionPending();
+          // Mirror every flip out, with the recounted lock, so a player watching
+          // sees the GM's call on their own pill instead of a stale Apply button.
+          try {
+            const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+            for (const ch of changes) {
+              director?.intentChannel?.broadcastMenuOpen({
+                targetUserIds: onlineNonPrimary.map((u) => u.id),
+                menuSpec: {
+                  kind: "action-card-pill-update",
+                  combatId: director.combatId,
+                  rowKey: ch.rowKey, carrierUuid: ch.carrierUuid,
+                  decision: ch.decision ?? "revert",
+                  // ALWAYS true here — every change on this path came from a GM
+                  // edit, including one that CLEARS an override back to a pill
+                  // with no baseline. Sending `byGm` instead sent false for that
+                  // case, and the mirror then took its in-flight-revert branch
+                  // (restoreReactionPillToActionable), which only clears
+                  // submitting flags: the player was left looking at a "Forced"
+                  // chip with no buttons and a locked Confirm, unable to make the
+                  // decision the GM had just handed back to them.
+                  gm: true,
+                  pendingCount: pending,
+                },
+              });
+            }
+          } catch (e) { warn("reconcileGmReactions: pill-update broadcast threw", e); }
+          // Split, because the caller acts on them differently: a FORCE has to
+          // derive its follow-up cascade, the others must not.
+          return { total: changes.length, forced: changes.filter((c) => c.decision === "apply").length };
+        };
+
         const applyGmEditPatch = async (patch, editor) => {
           // Drift guard, same as invoke: never edit a card the director has
           // already moved past (an F5 or a fast Confirm can retire it).
@@ -7452,6 +7861,22 @@ export async function postActionCard({ director, kind, payload }) {
             // Keep the card's private snapshot in step with the slot, exactly as
             // the invoke path does — every later read on this card uses cardAr.
             cardAr = director.ctx.actionResult;
+            // Reaction verdicts BEFORE the recompute: the recompute builds its
+            // accepted list from the decision map, so reconciling afterwards
+            // would preview the previous set and only correct itself on the next
+            // edit. (gmDecidedKeys reads the slot, which is already updated.)
+            //
+            // `reopen` is read off the PATCH, not the merged bag — it is an
+            // action and was deliberately never stored there.
+            const rxChanges = reconcileGmReactions(next, readGmReopenKeys(patch));
+            // A player's Apply derives follow-up reactions (Bullet Break after
+            // Crossfire) via injectCascadeReactions; a GM force must do the same
+            // or it skips a step of the very process the force is meant to run
+            // in full. Convergence-guarded, so running it per edit is safe.
+            if (rxChanges.forced > 0) {
+              try { await injectCascadeReactions(); }
+              catch (e) { warn("applyGmEditPatch: cascade inject after force threw", e); }
+            }
             // Reuse the shared recompute: it re-derives through the same mutation
             // entrypoint (which now folds the GM layer in) and broadcasts the
             // delta to every other client. No separate GM-edit render path.
@@ -7469,7 +7894,13 @@ export async function postActionCard({ director, kind, payload }) {
         // the card's current numbers — including anything a reaction changed
         // since the card was posted.
         try {
-          wireGmEditLaunch(root, () => gmEditContextFor(director.ctx.actionResult ?? cardAr, kind),
+          wireGmEditLaunch(root, () => gmEditContextFor(
+            director.ctx.actionResult ?? cardAr, kind, null,
+            // The host's LIVE candidates + their current verdicts — the live ar
+            // carries neither (cardReactions is this closure's array, and the
+            // decisions are in the map), so reading them off the ar would show
+            // the GM an empty Reactions section on every card.
+            gmEditReactionRows(cardReactions, (c) => reactionDecisionMap.get(`${c.rowKey}:${c.carrierUuid}`))),
             (patch) => applyGmEditPatch(patch, {
               userId: game.user?.id, userName: game.user?.name, at: Date.now(),
             }));
@@ -8131,19 +8562,28 @@ function clearReactionPillTimer(pillEl) {
 // so the selector no longer matches and the classes are already set). `pendingCount`
 // SETS the card counter when the GM supplies its authoritative value; omitted (the
 // optimistic path) it decrements the local counter by one.
-function resolveReactionPillDom(pillEl, cardEl, decision, { pendingCount = null } = {}) {
+function resolveReactionPillDom(pillEl, cardEl, decision, { pendingCount = null, gm = false } = {}) {
   if (!pillEl) return;
   clearReactionPillTimer(pillEl);
   delete pillEl.dataset.fudReactionSubmitting;
   delete pillEl.dataset.fudReactionAckPending;
-  pillEl.classList.remove("is-submitting");
+  pillEl.classList.remove("is-submitting", "is-applied", "is-skipped", "is-gm-set");
   pillEl.dataset.fudReactionPending = "0";
   pillEl.classList.add("is-resolved", decision === "apply" ? "is-applied" : "is-skipped");
+  // A GM's manual verdict is labelled for what it is. "Applied" on a pill the
+  // player never touched — or on one they explicitly Skipped — reads as their
+  // own decision, and hides the fact that the card was overruled at the table.
+  if (gm) pillEl.classList.add("is-gm-set");
+  const label = gm
+    ? (decision === "apply" ? "Forced" : "Suppressed")
+    : (decision === "apply" ? "Applied" : "Skipped");
   // Replace whatever's in the actions slot ("Waiting for…" chip on a non-owner
-  // mirror; Apply/Skip buttons on the owner's) with the final status chip.
-  const actions = pillEl.querySelector(".fud-bf-reaction-actions, .fud-bf-reaction-status.is-waiting");
+  // mirror; Apply/Skip buttons on the owner's) with the final status chip. An
+  // is-auto pill has neither — it carries a plain status chip — so that is
+  // matched too, or a suppressed auto reaction would go on saying "Active".
+  const actions = pillEl.querySelector(".fud-bf-reaction-actions, .fud-bf-reaction-status");
   if (actions) {
-    actions.outerHTML = `<span class="fud-bf-reaction-status">${decision === "apply" ? "Applied" : "Skipped"}</span>`;
+    actions.outerHTML = `<span class="fud-bf-reaction-status">${label}</span>`;
   }
   if (cardEl) {
     // Explicit pendingCount (authoritative GM broadcast) wins verbatim. Otherwise
@@ -8170,7 +8610,13 @@ function restoreReactionPillButtons(pillEl, cardEl) {
   clearReactionPillTimer(pillEl);
   delete pillEl.dataset.fudReactionSubmitting;
   delete pillEl.dataset.fudReactionAckPending;
-  pillEl.classList.remove("is-submitting", "is-resolved", "is-applied", "is-skipped");
+  // `is-auto` / `is-gm-set` too: the GM can send an auto-fired `on`/`force` pill
+  // back to undecided, and it must then LOOK like the decision it now is —
+  // an ask pill with live buttons, not an "Active" chip wearing buttons. Both
+  // classes are absent on the optimistic-rollback path this is shared with, so
+  // removing them there is a no-op.
+  pillEl.classList.remove("is-submitting", "is-resolved", "is-applied", "is-skipped", "is-auto", "is-gm-set");
+  pillEl.classList.add("is-ask");
   pillEl.dataset.fudReactionPending = "1";
   const status = pillEl.querySelector(".fud-bf-reaction-status");
   if (status) {
@@ -8241,6 +8687,11 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
   // playerAr holds the serialized actionResult broadcast with the card so the
   // player can show the invoke HUD without accessing GM-only director state.
   let playerAr = null;
+  // Host-authoritative GM override state, refreshed by every recompute delta.
+  // A support GM edits from THESE, never from the card-post payload — see the
+  // gmOverrideBag note on the delta.
+  let playerGmOverride = undefined;
+  let playerGmReactions = null;
   let playerInvokeState = { trait: false, bond: false };
 
   // Invoke-update handler — GM calls this after processing an INVOKE_CHOICE
@@ -8334,6 +8785,11 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (!menuSpec || menuSpec.kind !== "action-card-target-mutation") return;
     const wrapper = document.getElementById(MIRROR_ROOT_ID);
     if (!wrapper) return;
+    // Track the host's CURRENT override state before painting. A support GM's
+    // editor reads these; stale, its Save (a wholesale replace) wipes whatever
+    // the host has set since this card was posted.
+    if (menuSpec.delta?.gmOverrideBag !== undefined) playerGmOverride = menuSpec.delta.gmOverrideBag;
+    if (Array.isArray(menuSpec.delta?.gmEditReactions)) playerGmReactions = menuSpec.delta.gmEditReactions;
     try {
       applyCardTargetMutationDelta(wrapper, menuSpec.delta);
     } catch (e) { warn("action-card-target-mutation: patch threw", e); }
@@ -8366,6 +8822,19 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // clear the in-flight flags. (Skip never reverts — it opens no picker — so a
     // revert always lands on an apply-path pill whose buttons are intact.)
     if (menuSpec.decision === "revert") {
+      // A GM CLEARING a manual verdict is a different revert: the pill is not
+      // mid-flight, it is sitting on a status chip this client painted from the
+      // GM's earlier force/suppress. Rebuild its controls (and take the host's
+      // recounted lock) so it goes back to being the player's decision to make.
+      if (menuSpec.gm) {
+        restoreReactionPillButtons(pillEl, cardEl);
+        if (cardEl) {
+          const n = Math.max(0, Number(menuSpec.pendingCount ?? 0));
+          if (n > 0) cardEl.dataset.fudReactionsPending = String(n);
+          else delete cardEl.dataset.fudReactionsPending;
+        }
+        return;
+      }
       restoreReactionPillToActionable(pillEl);
       return;
     }
@@ -8373,7 +8842,8 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // For a pill the owner already resolved optimistically (Skip) this is an
     // idempotent confirm; for every other mirror it's the first resolution.
     const decision = menuSpec.decision === "apply" ? "apply" : "skip";
-    resolveReactionPillDom(pillEl, cardEl, decision, { pendingCount: menuSpec.pendingCount ?? 0 });
+    resolveReactionPillDom(pillEl, cardEl, decision,
+      { pendingCount: menuSpec.pendingCount ?? 0, gm: !!menuSpec.gm });
   });
 
   // Card body re-render handler — propagates a GM-side full-body rebuild
@@ -8460,6 +8930,8 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
 
     // Reset per-card state for the new card.
     playerAr = menuSpec.actionResult ?? null;
+    playerGmOverride = undefined;
+    playerGmReactions = null;
     playerInvokeState = { trait: false, bond: false };
 
     // Build a wrapper so we can hold both the imported HTML and the
@@ -8528,7 +9000,16 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
             ...(menuSpec.renderPayload ?? {}),
             ...(playerAr ? { roll: playerAr.roll, damage: playerAr.damage ?? menuSpec.renderPayload?.damage,
                              perTargetResults: playerAr.perTargetResults } : {}),
-          }, menuSpec.cardKind),
+            // The host's LIVE bag when a recompute has delivered one; the
+            // card-post payload only until then. Save sends a wholesale
+            // `replace`, so opening on a stale bag is not a display nit — it
+            // silently deletes the host's edits.
+            ...(playerGmOverride !== undefined ? { gmOverride: playerGmOverride } : {}),
+          }, menuSpec.cardKind, null,
+            // Likewise the candidate rows: the post-time projection misses
+            // anything a cascade injected, and an absent row means an absent
+            // key, which `replace` reads as "cleared".
+            playerGmReactions ?? undefined),
           (patch) => {
             try {
               channel.emit({

@@ -3,6 +3,8 @@ import {
   composeGmRoll, gmDamageInput, applyGmDamageInput, composeGmDefenseOverrides, gmHitOverrideMap,
   applyGmDamageOverrides, recomputeHitTokenUuids, gmOverrideDeltaRows, describeGmEditors,
   summarizeGmOverride, isGmEditableRow,
+  gmReactionKey, gmReactionDecision, gmReactionDecisionChanges, isGmEditableReaction,
+  readGmReopenKeys, gmReactionBlocksAutoFire,
 } from "./gm-card-override.js";
 
 let pass = 0, fail = 0;
@@ -160,6 +162,132 @@ eq("summary lists what is set",
   "accuracy · damage · 1 target");
 eq("summary pluralises", summarizeGmOverride({ perTarget: { t1: { hit: true }, t2: { hit: false } } }), "2 targets");
 eq("nothing set → null summary", summarizeGmOverride(null), null);
+
+console.log("\n— reactions: bag —");
+const K = (r, c) => gmReactionKey(r, c);
+eq("key shape", K("0", "Item.abc"), "0::Item.abc");
+eq("reaction bag normalizes", normalizeGmOverride({ reactions: { "0::i1": true } }).reactions, { "0::i1": true });
+eq("false is KEPT (suppress ≠ absent)", normalizeGmOverride({ reactions: { "0::i1": false } }).reactions, { "0::i1": false });
+eq("non-boolean verdict dropped", normalizeGmOverride({ reactions: { "0::i1": "apply", "1::i1": 1 } }).reactions, {});
+eq("a reaction-only bag is NOT empty", isGmOverrideEmpty({ reactions: { "0::i1": true } }), false);
+eq("an all-junk reaction bag IS empty", isGmOverrideEmpty({ reactions: { "0::i1": "yes" } }), true);
+let rbag = mergeGmOverride(null, { reactions: { "0::i1": true, "1::i2": false } }, ED);
+eq("merge sets both", rbag.reactions, { "0::i1": true, "1::i2": false });
+rbag = mergeGmOverride(rbag, { reactions: { "0::i1": null } }, ED);
+eq("null CLEARS one verdict", rbag.reactions, { "1::i2": false });
+eq("replace drops omitted verdicts",
+  mergeGmOverride(rbag, { replace: { reactions: { "9::i9": true } } }, ED).reactions, { "9::i9": true });
+eq("reset clears reactions too", isGmOverrideEmpty(mergeGmOverride(rbag, { reset: true }, ED)), true);
+eq("decision lookup: force", gmReactionDecision(rbag, "1", "i2"), "skip");
+eq("decision lookup: absent → null", gmReactionDecision(rbag, "0", "i1"), null);
+eq("summary names the direction",
+  summarizeGmOverride({ reactions: { "0::i1": true, "1::i2": false, "2::i3": false } }),
+  "1 forced · 2 suppressed");
+
+console.log("\n— reactions: which candidates are editable —");
+eq("plain candidate", isGmEditableReaction({ rowKey: "0", carrierUuid: "i1" }), true);
+eq("cost-unavailable is BLOCKED (mutation commits, cost aborts ⇒ half-applied)",
+  isGmEditableReaction({ available: false, unavailableKind: "cost" }), false);
+eq("a pre-spliced force add_target is BLOCKED (nothing removes a target)",
+  isGmEditableReaction({ usesAddTarget: true, mode: "force" }), false);
+eq("…and an ask-mode add_target too — the block is on the capability",
+  isGmEditableReaction({ usesAddTarget: true, mode: "ask" }), false);
+eq("condition-unavailable is NOT (its trigger never applied)",
+  isGmEditableReaction({ available: false, unavailableKind: "condition" }), false);
+eq("_addTarget is NOT (already spliced at click; suppress can't undo it)",
+  isGmEditableReaction({ _addTarget: true }), false);
+
+console.log("\n— reactions: reconciling a card's decisions —");
+const CANDS = [
+  { rowKey: "0", carrierUuid: "i1", carrierName: "Cognitive Focus" },   // auto-applied
+  { rowKey: "0", carrierUuid: "i2", carrierName: "Protect" },           // undecided ask
+  { rowKey: "1", carrierUuid: "i3", carrierName: "Barrage", _addTarget: true },
+];
+const cur = new Map([["0:i1", "apply"]]);
+const base = new Map([["0:i1", "apply"]]);
+const changesFor = (bag) => gmReactionDecisionChanges(CANDS, bag,
+  (c) => cur.get(`${c.rowKey}:${c.carrierUuid}`) ?? null,
+  (c) => base.get(`${c.rowKey}:${c.carrierUuid}`) ?? null);
+
+eq("no bag → nothing changes", changesFor(null), []);
+// THE trap this whole layer exists to avoid: a "green" run where nothing fired.
+// Force must produce a real change entry, or a suppress/force test compares
+// 0 mutations against 0 mutations and passes having proved nothing.
+const forced = changesFor({ reactions: { [K("0", "i2")]: true } });
+eq("forcing an undecided ask pill IS a change", forced.length, 1);
+eq("…to apply, credited to the GM", [forced[0].decision, forced[0].byGm, forced[0].from], ["apply", true, null]);
+const supp = changesFor({ reactions: { [K("0", "i1")]: false } });
+eq("suppressing an auto-applied pill IS a change", [supp.length, supp[0].decision, supp[0].from], [1, "skip", "apply"]);
+eq("_addTarget is never touched",
+  changesFor({ reactions: { [K("1", "i3")]: false } }).length, 0);
+// Absolute, therefore idempotent — the same claim the roll/damage sections make.
+// A save that re-states the current state must repaint and broadcast nothing.
+const sameBag = { reactions: { [K("0", "i1")]: true } };
+eq("restating the CURRENT decision is a no-op", changesFor(sameBag), []);
+// Clearing must restore what the CARD decided, not strand the GM's verdict.
+cur.set("0:i1", "skip");   // as if a suppress had been applied
+eq("clearing restores the engine's own verdict",
+  changesFor({ reactions: {} }).map((c) => [c.carrierUuid, c.decision, c.byGm]),
+  [["i1", "apply", false]]);
+cur.set("0:i1", "apply");
+cur.set("0:i2", "apply");  // as if a force had been applied
+base.delete("0:i2");       // …to a pill the card never decided
+eq("clearing a force on an UNDECIDED pill returns it to undecided",
+  changesFor({ reactions: {} }).map((c) => [c.carrierUuid, c.decision]), [["i2", null]]);
+
+console.log("\n— reactions: Ask again (back to pre-decision) —");
+// Reopen is an ACTION on the patch, never a stored verdict. If it were stored it
+// would re-fire on every later recompute and wipe whatever was decided since.
+eq("reopen keys read off the patch", readGmReopenKeys({ reopen: ["0::i1", "1::i2"] }), ["0::i1", "1::i2"]);
+eq("reopen deduped", readGmReopenKeys({ reopen: ["0::i1", "0::i1"] }), ["0::i1"]);
+eq("junk reopen entries dropped", readGmReopenKeys({ reopen: [null, 7, "nonsense", "0::ok"] }), ["0::ok"]);
+eq("absent reopen → empty", readGmReopenKeys({}), []);
+// "Ask again" is TWO things stored differently: the ACTION (patch-only `reopen`,
+// clears the decision now) and the RULE ("ask" in the bag, stops the candidate
+// auto-firing again on a card re-post). The action must never replay; the rule
+// must survive an F5.
+eq("the RULE is stored", normalizeGmOverride({ reactions: { "0::i1": "ask" } }).reactions, { "0::i1": "ask" });
+eq("junk that merely looks like it is still dropped",
+  normalizeGmOverride({ reactions: { "0::i1": "asked", "1::i2": "APPLY" } }).reactions, {});
+eq("an ask-only bag is NOT empty — it still forbids the auto-fire",
+  isGmOverrideEmpty({ reactions: { "0::i1": "ask" } }), false);
+// It is NOT a verdict: reconcile must fall through to whatever was decided
+// SINCE, or answering the reopened question would be wiped on the next pass.
+eq("ask is not a verdict", gmReactionDecision({ reactions: { "0::i1": "ask" } }, "0", "i1"), null);
+eq("ask blocks the spawn auto-fire",
+  gmReactionBlocksAutoFire({ reactions: { "0::i1": "ask" } }, "0", "i1"), true);
+eq("a real verdict does not block the auto-fire",
+  gmReactionBlocksAutoFire({ reactions: { "0::i1": true } }, "0", "i1"), false);
+eq("summary counts reopened separately",
+  summarizeGmOverride({ reactions: { "0::i1": "ask", "1::i2": true } }), "1 forced · 1 reopened");
+
+// The card auto-applied Cheap Shot (`on` mode). The GM sends it back to
+// undecided: the decision is deleted, NOT flipped to skip — those are different
+// table calls, and only this one lets it be decided again.
+const cur2 = new Map([["0:i1", "apply"]]);
+const base2 = new Map([["0:i1", "apply"]]);
+const reopenChanges = (bag, reopened) => gmReactionDecisionChanges(
+  [{ rowKey: "0", carrierUuid: "i1", carrierName: "Cheap Shot" }], bag,
+  (c) => cur2.get(`${c.rowKey}:${c.carrierUuid}`) ?? null,
+  (c) => base2.get(`${c.rowKey}:${c.carrierUuid}`) ?? null,
+  reopened);
+
+// The host clears the base first (that is what "nobody has decided" means), so
+// the ordinary want = gm ?? base computation lands on null by itself.
+base2.delete("0:i1");
+const reop = reopenChanges({}, new Set([K("0", "i1")]));
+eq("reopen produces ONE change", reop.length, 1);
+eq("…to undecided, not to skip", reop[0].decision, null);
+eq("…flagged as the GM's doing", [reop[0].byGm, reop[0].reopened], [true, true]);
+eq("…from the auto-applied state", reop[0].from, "apply");
+// Once reopened and re-decided by a player, a later pass must NOT re-reopen it —
+// the bag never recorded the action, so there is nothing to replay.
+cur2.set("0:i1", "skip"); base2.set("0:i1", "skip");
+eq("no stored reopen replays on the next pass", reopenChanges({}, new Set()), []);
+// Suppress and reopen are genuinely different verdicts on the same pill.
+cur2.set("0:i1", "apply"); base2.set("0:i1", "apply");
+eq("suppress still means skip, not undecided",
+  reopenChanges({ reactions: { [K("0", "i1")]: false } }, new Set())[0].decision, "skip");
 
 console.log(`\n${fail === 0 ? "ALL PASS" : "FAILURES"} — ${pass} passed, ${fail} failed\n`);
 process.exit(fail === 0 ? 0 : 1);

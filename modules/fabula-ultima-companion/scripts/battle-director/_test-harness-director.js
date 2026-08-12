@@ -80,7 +80,7 @@ async function loadDeps(reuseToken = null) {
   globalThis.__FU_CB = token;
   const bust = `?harness=${token}`;
   const cb = `?cb=${token}`;  // MUST match hot-reload.js's loader query
-  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects, actionProfile, actionCard, hot] = await Promise.all([
+  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects, actionProfile, actionCard, cardMutations, gmOverrideMod, hot] = await Promise.all([
     import(`./state-handlers.js${bust}`),
     import(`./states.js${bust}`),
     import(`./intents.js${bust}`),
@@ -89,6 +89,8 @@ async function loadDeps(reuseToken = null) {
     import(`./skill-effects.js${cb}`),
     import(`./action-profile.js${bust}`),
     import(`./action-card.js${bust}`),
+    import(`./card-mutations.js${bust}`),
+    import(`./gm-card-override.js${bust}`),
     import(`./hot-reload.js`),  // singleton (registry on globalThis); no cache-bust
   ]);
   // state-handlers registered its skill-effects hot edge during the import
@@ -115,6 +117,13 @@ async function loadDeps(reuseToken = null) {
     composeActionCardObject: actionCard.composeActionCardObject,
     composeActionCardRenderPayload: actionCard.composeActionCardRenderPayload,
     stripHtmlForDesc: actionCard.stripHtmlForDesc,
+    // The SINGLE pre-resolve mutation entrypoint the card preview and CONFIRM
+    // both go through — what a reaction probe has to drive if its verdict is to
+    // mean anything about play.
+    applyTargetSetMutation: cardMutations.applyTargetSetMutation,
+    gmReactionKey: gmOverrideMod.gmReactionKey,
+    gmReactionDecisionChanges: gmOverrideMod.gmReactionDecisionChanges,
+    isGmEditableReaction: gmOverrideMod.isGmEditableReaction,
   };
   if (reuseToken != null) _depsCache = { token: reuseToken, deps };
   return deps;
@@ -132,13 +141,17 @@ async function loadDeps(reuseToken = null) {
 //   - undefined / falsy              → accept nothing; the ar comes back untouched
 //   - true                           → accept EVERY matching card-reaction (rare; risky if multiple match)
 //   - ["Cheap Shot", "Vanish", ...]  → accept only candidates whose carrierName matches one of these
-async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept, dCombat, deps, picks = null }) {
-  if (!accept) return ar;
-  if (!Array.isArray(ar?.perTargetResults) || !ar.perTargetResults.length) return ar;
-  if (!ar.hasDamage && ar.kind !== "Attack") return ar;
-  const { findPassiveCandidates, recomputeActionProfile, freezeActionResult } = deps;
+// Every per-target scan payload this action would present to a reaction trigger.
+//
+// Extracted so the accept path and the reaction PROBE build their payloads from
+// the same code. A probe that re-rolled its own payload literal would be free to
+// omit a field, and an omitted field does not fail loudly — it resolves to
+// 0/blank, which for a `== 0` gate is the PERMISSIVE answer. That is exactly how
+// an instantaneous-only gate passed a Scene spell under test and refused it in
+// play; two probes drifting apart would reintroduce it one field at a time.
+async function buildReactionScanPayloads(ar) {
   const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
-  const hitTargetUuids = ar.perTargetResults
+  const hitTargetUuids = (ar.perTargetResults ?? [])
     .filter((r) => r?.hit)
     .map((r) => r.tokenUuid ?? (ar.targets ?? []).find((t) => t?.actorUuid === r?.actorUuid)?.tokenUuid)
     .filter(Boolean);
@@ -186,12 +199,8 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
     costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
   };
 
-  // Every candidate the CONFIRM-stage scan saw, available or not, with the
-  // reason it was refused — stamped on the returned ar as `reactionScanLog`.
-  const scanLog = [];
-
-  const byKey = new Map();
-  for (const entry of ar.perTargetResults) {
+  const out = [];
+  for (const entry of (ar.perTargetResults ?? [])) {
     // Mirrors state-handlers CONFIRM: scan every target (hit or miss) so the
     // reaction surfaces regardless of outcome; only HIT targets are recorded
     // as recipients (appliesToTargetUuids), so the effect/cost land only on a
@@ -225,6 +234,96 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
       skillUuid: ar.skillUuid ?? null,
       weaponUuid: ar.weapon?.uuid ?? null,
     };
+    // ⚠ No `<key>:` may appear between the literal above and the end of this
+    // function's consumers. `skill-regression parity` scrapes the
+    // `payloadForTrigger` literal straight out of this source and its brace
+    // matcher over-runs the closing brace, so any later `foo: bar` — including a
+    // DESTRUCTURING rename — is scraped as though it were a payload field, and
+    // parity then reports a harness-only key that does not exist. Property
+    // assignment and shorthand carry no colon and stay invisible to it.
+    const rec = { entry, subjectActorUuid, subjectTokenUuid };
+    rec.scanPayload = payloadForTrigger;
+    out.push(rec);
+  }
+  return out;
+}
+
+// The PERFORMER-side scan payload — `creature_performs_action`.
+//
+// A separate builder because the live scan is a different shape: it fires ONCE
+// per action carrying action-level state, not once per target row. Reusing the
+// per-target damage payload here would have silently dropped every field only
+// this scan supplies (rollDieA/B, rollCheckBonus, actionKind, the die attribute
+// names), and a gate reading a dropped field gets 0 — the permissive answer.
+// Mirrors state-handlers' `performPayload` field for field; `skill-regression
+// parity` compares the two so a future edit to one cannot silently outrun the
+// other.
+async function buildPerformsActionPayload(ar) {
+  const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+  let performSkillTags = "";
+  let performSkillDuration = "";
+  try {
+    const actingSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
+    performSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
+    performSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
+  } catch (_) { /* noop — both are optional gates */ }
+  const payloadForTrigger = {
+    sourceActorUuid: ar.attackerActorRef,
+    subjectActorUuid: ar.attackerActorRef,
+    sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+    targets: allTargetUuids,
+    targetTokenUuids: allTargetUuids,
+    actionIntent: ar.actionIntent ?? "harmful",
+    actionKind: ar.kind ?? "Attack",
+    actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+    // No free-action registry in a harness run — a cast here is never free.
+    actionIsFreeCast: false,
+    costHp: Number(ar.costSerialized?.hp ?? 0) || 0,
+    costMp: Number(ar.costSerialized?.mp ?? 0) || 0,
+    costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
+    skillTags: performSkillTags,
+    skillDuration: performSkillDuration,
+    actionIsCheck: !!ar.isCheck,
+    actionCanMiss: !!ar.canMiss,
+    isCrit: !!ar.roll?.isCrit,
+    isFumble: !!ar.roll?.isFumble,
+    checkTotal: Number(ar.roll?.total ?? 0) || 0,
+    // From the live `actionBase` spread. Both were MISSING from the first draft
+    // of this builder and `parity` caught them the moment it was taught about
+    // this scan — which is the argument for teaching it, not for trusting a
+    // careful transcription.
+    weaponType: ar.weapon?.weaponType ?? null,
+    damageType: ar.damageType ?? ar.damage?.element ?? null,
+    // NB: no `hr` here. The live performer scan does not send one (only the
+    // per-target damage scan does), and inventing a field the live path omits
+    // fails in the same permissive direction as dropping one.
+    rollDieA: Number(ar.roll?.rA ?? 0) || 0,
+    rollDieB: Number(ar.roll?.rB ?? 0) || 0,
+    rollDieAAttr: String(ar.roll?.A1 ?? ""),
+    rollDieBAttr: String(ar.roll?.A2 ?? ""),
+    rollCheckBonus: Number(ar.roll?.checkBonus ?? 0) || 0,
+    actionName: ar.weapon?.name ?? ar.skillName ?? ar.kind ?? "Action",
+    sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
+    weaponUuid: ar.weapon?.uuid ?? null,
+    skillUuid: ar.skillUuid ?? null,
+    weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+  };
+  return payloadForTrigger;   // trigger: "creature_performs_action"
+}
+
+async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept, dCombat, deps, picks = null }) {
+  if (!accept) return ar;
+  if (!Array.isArray(ar?.perTargetResults) || !ar.perTargetResults.length) return ar;
+  if (!ar.hasDamage && ar.kind !== "Attack") return ar;
+  const { findPassiveCandidates, recomputeActionProfile, freezeActionResult } = deps;
+
+  // Every candidate the CONFIRM-stage scan saw, available or not, with the
+  // reason it was refused — stamped on the returned ar as `reactionScanLog`.
+  const scanLog = [];
+  const byKey = new Map();
+  for (const rec of await buildReactionScanPayloads(ar)) {
+    const { entry, subjectActorUuid, subjectTokenUuid } = rec;
+    const payloadForTrigger = rec.scanPayload;
     let scanned;
     try {
       // includeUnavailable so the harness can report WHY a reaction did not
@@ -322,6 +421,278 @@ async function applyAcceptedReactionsToActionResult({ ar, attackerActor, accept,
     evaluatedCardReactions: applied.map((c) => ({ carrierUuid: c.carrierUuid, rowKey: c.rowKey })),
     reactionScanLog,
   });
+}
+
+// ── Reaction probe ──────────────────────────────────────────────────────────
+//
+// THE way to test a reaction. Read this before hand-building a candidate.
+//
+// A hand-written candidate that is subtly wrong does not error: it returns
+// `mutationsApplied: 0`, so a with-vs-without test compares 0 against 0 and
+// PASSES having proved nothing. Two fields cause almost all of it — `rowKey`
+// indexes the carrier's `reaction_config_table` (NOT its effect_table), and
+// `ref` is the effect row's `effect_label` — and adding `subjectActorUuid`,
+// `appliesToTargetUuids` or `decision` gates the candidate straight back out.
+//
+// So this does not accept a candidate at all. It DISCOVERS them from the real
+// scan, fires each one through the real mutation entrypoint, and reports which
+// ones actually did something. Nothing is hard-coded, so it cannot drift when
+// content changes, and `ok:false / no_reaction_fired` makes "nothing happened"
+// impossible to read as a pass.
+//
+// Returns { ok, candidates[], fired[], scanLog[] } where each candidate carries
+// its own before/after: mutationsApplied, accuracyOverride, per-target damage,
+// negated, costOverride.
+const PROBE_TRIGGERS = Object.freeze(["creature_will_deal_damage", "creature_performs_action"]);
+
+// Fire ONE accepted set through the real pre-resolve mutation entrypoint and
+// describe what moved. `ar` is never mutated — applyTargetSetMutation returns
+// fresh arrays — so every probe run starts from the same baseline.
+async function probeOneAcceptedSet({ ar, accepted, attackerActor, round, deps, gmOverride = null }) {
+  const probeAr = gmOverride ? { ...ar, gmOverride } : ar;
+  let r;
+  try {
+    r = await deps.applyTargetSetMutation({
+      ar: probeAr, accepted, attackerActor, round, _cb: Date.now(),
+    });
+  } catch (e) {
+    return { ok: false, threw: String(e?.message ?? e) };
+  }
+  const rows = Array.isArray(r?.perTargetResults) ? r.perTargetResults : [];
+  return {
+    ok: true,
+    mutationsApplied: Number(r?.mutationsApplied ?? 0) || 0,
+    negated: !!r?.negated,
+    cancelled: !!r?.cancelled,
+    accuracyOverride: r?.accuracyOverride ?? null,
+    costOverride: r?.costOverride ?? null,
+    rollTotal: r?.roll?.total ?? probeAr?.roll?.total ?? null,
+    perTarget: rows.map((x) => ({
+      name: x?.name ?? null, tokenUuid: x?.tokenUuid ?? null,
+      hit: !!x?.hit, crit: !!x?.crit, damage: x?.damage ?? null,
+      defense: x?.defense ?? null, affinity: x?.affinity ?? null,
+    })),
+  };
+}
+
+// Did anything actually move between two probe results? This is the assertion a
+// reaction test must make FIRST — before comparing any specific number — because
+// every other comparison is meaningless if the reaction never ran.
+function probeDiff(before, after) {
+  if (!before?.ok || !after?.ok) return { changed: false, why: "probe_failed" };
+  const bits = [];
+  if ((after.mutationsApplied ?? 0) > (before.mutationsApplied ?? 0)) bits.push("mutationsApplied");
+  if (JSON.stringify(after.accuracyOverride) !== JSON.stringify(before.accuracyOverride)) bits.push("accuracy");
+  if (JSON.stringify(after.costOverride) !== JSON.stringify(before.costOverride)) bits.push("cost");
+  if (after.negated !== before.negated) bits.push("negated");
+  if (after.rollTotal !== before.rollTotal) bits.push("roll");
+  const n = Math.max(before.perTarget.length, after.perTarget.length);
+  for (let i = 0; i < n; i++) {
+    const b = before.perTarget[i] ?? {}, a = after.perTarget[i] ?? {};
+    if (b.damage !== a.damage) bits.push(`damage[${a.name ?? i}]`);
+    if (b.hit !== a.hit) bits.push(`hit[${a.name ?? i}]`);
+    if (b.defense !== a.defense) bits.push(`defense[${a.name ?? i}]`);
+  }
+  return { changed: bits.length > 0, fields: bits };
+}
+
+async function probeCardReactions({
+  skillUuid = null, casterTokenUuid = null, targetTokenUuids = null,
+  // A plain weapon ATTACK instead of a skill. Worth its own entry: the
+  // `creature_will_deal_damage` family (Cheap Shot, Adversity, …) is the largest
+  // reaction class in the game and a no-damage skill never even reaches its
+  // scan, so a skill-only probe cannot see most of what exists.
+  attack = false, attackMode = "main",
+  force = null, round = 1, triggers = null, picks = null,
+  // Optional: probe with a GM override bag in force, so a GM edit can be shown
+  // to reach the same mutation the reaction does.
+  gmOverride = null,
+  // Hand back the RAW scanned candidate on each row, for an IN-PAGE caller that
+  // wants to mount a real card from them (the screenshot rig). Off by default:
+  // raw candidates are not guaranteed structured-cloneable, and every ordinary
+  // call crosses the Playwright boundary where that would throw.
+  includeRaw = false,
+  // Optional: skip the COMPUTE step and probe an actionResult you already have.
+  actionResult = null,
+  depsToken = null,
+} = {}) {
+  if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
+  const deps = await loadDeps(depsToken);
+
+  let ar = actionResult;
+  if (!ar) {
+    if (!casterTokenUuid || !targetTokenUuids?.length || (!attack && !skillUuid)) {
+      return { ok: false, reason: "missing_args",
+        hint: "casterTokenUuid + targetTokenUuids[], plus either skillUuid or attack:true — or an actionResult" };
+    }
+    const computed = attack
+      ? await runDirectorAttackCompute({
+          attackerTokenUuid: casterTokenUuid, targetTokenUuids, mode: attackMode, force, depsToken })
+      : await runDirectorSkillCompute({
+          skillUuid, casterTokenUuid, targetTokenUuids, force, picks, depsToken });
+    if (!computed.ok) return { ok: false, reason: "compute_failed", computed };
+    ar = computed.actionResult;
+  }
+  const attackerActor = ar?.attackerActorRef ? await fromUuid(ar.attackerActorRef).catch(() => null) : null;
+  if (!attackerActor) return { ok: false, reason: "attacker_actor_not_found", ref: ar?.attackerActorRef ?? null };
+
+  // ── Discover ───────────────────────────────────────────────────────────────
+  // Same payloads the accept path builds, so a gate that reads a field sees the
+  // same value it would in play.
+  const perTargetPayloads = (await buildReactionScanPayloads(ar)).map((r) => r.scanPayload);
+  // Performer-side fires ONCE per action, so its "list" is a single payload.
+  const performsPayloads = [await buildPerformsActionPayload(ar)];
+  const scanLog = [];
+  const byKey = new Map();
+  for (const trigger of (Array.isArray(triggers) && triggers.length ? triggers : PROBE_TRIGGERS)) {
+    const payloads = trigger === "creature_performs_action" ? performsPayloads : perTargetPayloads;
+    for (const payload of payloads) {
+      let scanned = null;
+      try {
+        scanned = await deps.findPassiveCandidates({
+          casterActor: attackerActor, trigger, payload, includeUnavailable: true,
+        });
+      } catch (e) {
+        scanLog.push({ trigger, threw: String(e?.message ?? e) });
+        continue;
+      }
+      for (const c of scanned ?? []) {
+        const key = `${c?.rowKey}::${c?.carrierUuid}`;
+        if (byKey.has(key)) continue;
+        byKey.set(key, { ...c, _trigger: trigger });
+        scanLog.push({
+          trigger, key,
+          carrierName: c?.carrierName ?? null, carrierKind: c?.carrierKind ?? null,
+          rowKey: c?.rowKey ?? null, ref: c?.ref ?? null, mode: c?.mode ?? null,
+          available: c?.available !== false,
+          unavailableKind: c?.unavailableKind ?? null,
+          unavailableReason: c?.unavailableReason ?? null,
+        });
+      }
+    }
+  }
+  const candidates = [...byKey.values()];
+  if (!candidates.length) {
+    return { ok: false, reason: "no_candidates_scanned", scanLog,
+      hint: "The trigger never offered a reaction here — check the attacker OWNS the carrier (a performer-side reaction only fires for its own actor) and that the scene/canvas matches the fixtures." };
+  }
+
+  // ── Fire each one, alone, through the real entrypoint ──────────────────────
+  const baseline = await probeOneAcceptedSet({ ar, accepted: [], attackerActor, round, deps, gmOverride });
+  const results = [];
+  for (const cand of candidates) {
+    // Menu picks are cached on the candidate at Apply-click in play; without them
+    // an open_action_menu chain prompts for real and hangs a headless run.
+    const c = (Array.isArray(picks) && picks.length) ? { ...cand, chosenMenuPicks: [...picks] } : cand;
+    const after = await probeOneAcceptedSet({ ar, accepted: [c], attackerActor, round, deps, gmOverride });
+    const diff = probeDiff(baseline, after);
+    results.push({
+      key: `${cand.rowKey}::${cand.carrierUuid}`,
+      carrierName: cand.carrierName ?? null, carrierKind: cand.carrierKind ?? null,
+      carrierUuid: cand.carrierUuid ?? null, rowKey: cand.rowKey ?? null, ref: cand.ref ?? null,
+      mode: cand.mode ?? null, trigger: cand._trigger,
+      available: cand.available !== false,
+      unavailableReason: cand.available === false ? (cand.unavailableReason ?? null) : null,
+      // Whether the shipped editor would offer this row. The product rule now
+      // excludes `usesAddTarget` itself, so no harness-side guard is needed:
+      // `_addTarget` is only stamped by state-handlers' CONFIRM dispatch and is
+      // therefore always absent on a directly-scanned candidate, but
+      // `usesAddTarget` comes from the scan and is present in both paths.
+      editableByGm: !!deps.isGmEditableReaction?.(cand),
+      usesAddTarget: !!cand.usesAddTarget,
+      // A real observed change against the no-reaction baseline, not "the call
+      // returned ok". Note this is measured for UNAVAILABLE candidates too — see
+      // the split below.
+      changed: !!diff.changed,
+      // The gate. An UNAVAILABLE candidate is never accepted in play (the card
+      // filters condition-unavailable rows out entirely and auto-accepts only
+      // `available !== false`), so counting one as "fired" would report a
+      // reaction that cannot happen — the same false-green this probe exists to
+      // prevent, arrived at from the other side. What it CAN prove is what a GM
+      // force would produce, which is `firesIfForced`.
+      fired: !!diff.changed && cand.available !== false,
+      firesIfForced: !!diff.changed && cand.available === false,
+      changedFields: diff.fields ?? [],
+      probe: after,
+      ...(includeRaw ? { candidate: cand } : {}),
+    });
+  }
+  const fired = results.filter((r) => r.fired);
+  const forcedOnly = results.filter((r) => r.firesIfForced);
+  return {
+    // ok:false when nothing the live card would ACCEPT fired — the whole point.
+    // A caller that reads `ok` can never mistake an inert probe for a pass.
+    ok: fired.length > 0,
+    reason: fired.length ? null : (forcedOnly.length ? "only_fires_if_forced" : "no_reaction_fired"),
+    hint: fired.length ? null
+      : forcedOnly.length
+        ? `${forcedOnly.length} candidate(s) would fire but are unavailable here (${forcedOnly.map((r) => `${r.carrierName}: ${r.unavailableReason}`).join("; ")}). In play the card never accepts those — only a GM force can.`
+        : "Every scanned candidate left the action unchanged. Usually the carrier's owner is not the attacker (performer-side reactions only fire for their own actor), or the row's effect chain does nothing at this stage.",
+    baseline, candidates: results, fired, forcedOnly, scanLog,
+  };
+}
+
+// Prove a GM force / suppress verdict reaches the engine, for ONE candidate that
+// the probe has already shown to fire.
+//
+// The three runs are the whole argument: the reaction ON, the reaction OFF, and
+// the GM's verdict — which must land on the OPPOSITE of what the card decided by
+// itself. The accepted list is derived through the SAME decision-map rewrite the
+// card performs (gmReactionDecisionChanges), so this exercises the shipped path
+// rather than a restatement of it.
+async function probeGmReactionOverride({
+  skillUuid = null, casterTokenUuid = null, targetTokenUuids = null,
+  attack = false, attackMode = "main",
+  force = null, round = 1, picks = null, carrierName = null, depsToken = null,
+} = {}) {
+  const probe = await probeCardReactions({ skillUuid, casterTokenUuid, targetTokenUuids, attack, attackMode, force, round, picks, depsToken });
+  // A COST-unavailable candidate that would fire is a legitimate subject here —
+  // overruling a price is exactly what force is for, and the editor offers those
+  // rows. So `only_fires_if_forced` is not a dead end for THIS test, unlike for
+  // probeCardReactions, whose job is to report what the card does on its own.
+  const pool = [...(probe.fired ?? []), ...(probe.forcedOnly ?? [])].filter((f) => f.editableByGm);
+  if (!probe.ok && !pool.length) return { ok: false, reason: probe.reason ?? "probe_failed", probe };
+  const target = carrierName
+    ? pool.find((f) => String(f.carrierName ?? "").includes(carrierName))
+    : pool.find((f) => f.fired) ?? pool[0];
+  if (!target) {
+    return { ok: false, reason: "no_firing_candidate_matched", carrierName,
+      fired: probe.fired, forcedOnly: probe.forcedOnly,
+      hint: "Nothing that fires here is GM-editable — `_addTarget` and condition-unavailable rows are deliberately outside the editor." };
+  }
+  const deps = await loadDeps(depsToken);
+  const row = { rowKey: target.rowKey, carrierUuid: target.carrierUuid, carrierName: target.carrierName };
+  const key = deps.gmReactionKey(target.rowKey, target.carrierUuid);
+  // What the card's reconcile does to its decision map, through the SHIPPED
+  // helper. Both directions, each against the state that makes it meaningful:
+  // suppress a candidate the card accepted, force one the card skipped.
+  const suppress = deps.gmReactionDecisionChanges([row], { reactions: { [key]: false } },
+    () => "apply", () => "apply");
+  const forceOn = deps.gmReactionDecisionChanges([row], { reactions: { [key]: true } },
+    () => null, () => null);
+  const flipsOk = suppress.length === 1 && suppress[0].decision === "skip"
+    && forceOn.length === 1 && forceOn[0].decision === "apply";
+  // The decision map's two states ARE these two engine runs: an accepted
+  // candidate produced `withReaction`, an empty accepted list produced
+  // `withoutReaction`. `changedFields` is the measured difference between them,
+  // so "the GM's verdict changes the outcome" is observed, not argued.
+  //
+  // `changed` (not `fired`) is the gate: a cost-unavailable candidate is a valid
+  // subject — force is precisely how it gets to happen — and it reports
+  // fired:false because the card alone would never accept it.
+  return {
+    ok: flipsOk && target.changed,
+    reason: !target.changed ? "candidate_did_not_fire"
+      : flipsOk ? null : "decision_flip_failed",
+    // Whether the card could have accepted this on its own, or only a GM force
+    // can reach it. Both are real cases; conflating them is not.
+    onlyReachableByForce: !target.fired && target.changed,
+    target,
+    withReaction: target.probe,
+    withoutReaction: probe.baseline,
+    changedFields: target.changedFields,
+    decisionChanges: { suppress, force: forceOn },
+  };
 }
 
 const TAG = "[FUCompanion][DirectorTest]";
@@ -1957,6 +2328,10 @@ function registerHarness() {
   root.api.test.runDirectorScenarios      = runDirectorScenarios;
   root.api.test.runDirectorPassiveTriggerTest = runDirectorPassiveTriggerTest;
   root.api.test.getDirectorTestFixtures   = getDirectorTestFixtures;
+  // Reaction testing. Use these instead of hand-building a candidate — a wrong
+  // one fires nothing and every with-vs-without assertion then passes on 0===0.
+  root.api.test.probeCardReactions        = probeCardReactions;
+  root.api.test.probeGmReactionOverride   = probeGmReactionOverride;
   // Golden-snapshot helpers (render-capture regression).
   root.api.test.diffCardGolden            = diffCardGolden;
   root.api.test.normalizeCardHtml         = normalizeCardHtml;
