@@ -2122,6 +2122,29 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
 
   const r = await applyEffectByLabel(candidate.ref, ctx);
 
+  // ── Encyclopedia witness ──────────────────────────────────────────────
+  // The party just saw this passive resolve — the passive card broadcast its
+  // NAME to every client a moment ago — so the journal entry must stop showing
+  // "???" for it. Only on `r.ok`: a chain that aborted (condition failed, cost
+  // unpayable) produced no visible effect, so it reveals nothing.
+  //
+  // Gated on the REACTOR's token (the carrier owner), not the action-taker: a
+  // PC's Protect riding on a monster's attack must not write to the monster's
+  // page. witnessNpcAbility drops everything that isn't a catalogued ability on
+  // a hostile creature. Fire-and-forget — journal bookkeeping never blocks or
+  // fails an effect chain.
+  if (r?.ok && ctx.reactorToken) {
+    try {
+      const { witnessFiredCandidate } = await import("./encyclopedia-witness.js");
+      witnessFiredCandidate({
+        candidate,
+        reactorTokenUuid: ctx.reactorToken?.uuid ?? ctx.reactorToken?.document?.uuid ?? null,
+      }).catch((e) => warn("firePreAcceptedCandidate: witness threw", e));
+    } catch (e) {
+      warn("firePreAcceptedCandidate: witness import threw", e);
+    }
+  }
+
   // Wait for any cinematic started by a `play_animation` step to FULLY finish
   // before the round advances. The step returns at the damage gate (so deal_damage
   // lands at impact), but the return-home motion is still playing — without this

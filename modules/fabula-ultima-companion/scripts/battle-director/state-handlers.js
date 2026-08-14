@@ -99,6 +99,7 @@ import { computeActionProfile, projectProfileToActionResult, resolveChosenChainR
 import { classifyActionIntent } from "./skill-intent.js";
 import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
 import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
+import { witnessNpcAbility, witnessFiredCandidate } from "./encyclopedia-witness.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
 // when their associated actor drops to 0 HP. RAW Core p.70:
@@ -5868,6 +5869,31 @@ const Confirm = {
       // (firePreAcceptedCandidate) doesn't re-prompt the picker or re-splice —
       // its damage is already in perTargetResults.
       const applied = acceptedDecisions.filter((d) => !candFor(d)?._addTarget);
+
+      // ── Encyclopedia witness: card-mutation passives ────────────────────
+      // These never reach firePreAcceptedCandidate — an adjust_damage /
+      // adjust_accuracy / redirect row is applied by applyAcceptedCardMutations
+      // and computeSenderDamageBonuses straight off `acceptedCardReactions`. The
+      // player still SEES them (the card prints the bonus), so they must reveal
+      // like any other ability.
+      //
+      // The reactor is whoever OWNS the carrier: `reactorActorUuid` for a
+      // third-party reaction (a PC's Protect redirecting a monster's attack —
+      // which must NOT write to the monster's page), falling back to the
+      // action-taker for a performer-side passive (a monster's own damage
+      // rider), which is the case this closes. witnessNpcAbility drops
+      // everything non-hostile / uncatalogued, so the fallback is safe.
+      for (const d of applied) {
+        const cand = candFor(d);
+        if (!cand) continue;
+        const reactorRef = cand.reactorTokenUuid
+          ?? cand.reactorActorUuid
+          ?? ar.attacker?.tokenUuid
+          ?? null;
+        if (!reactorRef) continue;
+        witnessFiredCandidate({ candidate: cand, reactorTokenUuid: reactorRef })
+          .catch((e) => warn("CONFIRM: card-reaction witness threw", e));
+      }
       // …but its extra-target SURCHARGE still has to compose into this action's
       // cost. The purchase is part of what the action costs (an `adjust_cost` row
       // in the reaction's chain), debited once with everything else at RESOLVE —
@@ -6161,8 +6187,10 @@ const Confirm = {
 // regardless of outcome. Only attacks / skills / spells are catalogued;
 // Guard / Hinder / Study / Equipment / Item aren't monster "abilities".
 //
-// recordWitnessedAction is GM-only and RESOLVE.onEnter is GM-side, so the
-// direct API call is safe. It only writes the Monster Encyclopedia journal
+// The gates live in encyclopedia-witness.witnessNpcAbility, shared with the
+// passive/reaction fire path (firePreAcceptedCandidate) so the two can't
+// drift. recordWitnessedAction is GM-only and RESOLVE.onEnter is GM-side, so
+// the call is safe. It only writes the Monster Encyclopedia journal
 // (never actor state), so ordering vs damage/AE application is irrelevant
 // and it stays out of the actor-based rewind snapshot — witness knowledge
 // is monotonic and shouldn't un-reveal on a turn rewind. The journal
@@ -6170,9 +6198,6 @@ const Confirm = {
 // (consistent with the director's no-chat-log rule).
 async function recordNpcActionWitness(director, ar) {
   try {
-    const encApi = globalThis.FUCompanion?.api?.encyclopedia;
-    if (!encApi?.recordWitnessedAction || !encApi?.resolveActorPrototypeUuid) return;
-
     // The embedded item that backs this action. Both split-pop to the
     // monster's embedded item _id — the witnessed key the encyclopedia
     // matches against `attack_list` / `skill_active_list` / `normal_spell_list`.
@@ -6196,32 +6221,14 @@ async function recordNpcActionWitness(director, ar) {
     const tokenUuid = ar.attacker?.tokenUuid ?? null;
     if (!tokenUuid) return;
 
-    // Hostile-only — read disposition off the live token document.
-    let disposition = 0;
-    try {
-      const tokenDoc = await fromUuid(tokenUuid);
-      disposition = Number(tokenDoc?.disposition ?? tokenDoc?.document?.disposition ?? 0);
-    } catch { /* tolerate — non-hostile fall-through below */ }
-    if (disposition !== -1) return;
-
-    // Prototype UUID keys the page (stable across token instances). The
-    // embedded item _id is identical on linked + unlinked tokens because
-    // embedded ids are copied from the prototype on token creation.
-    const protoUuid = await encApi.resolveActorPrototypeUuid(tokenUuid);
-    if (!protoUuid) return;
-    const itemId = String(actionUuid).split(".").pop();
-    if (!itemId) return;
-
-    const actionName = ar.skillName ?? ar.weapon?.name ?? ar.kind;
-    const result = await encApi.recordWitnessedAction({
-      actorUuid:   protoUuid,
-      itemId,
-      actionName,
-      monsterName: ar.attacker?.name ?? "Monster",
+    // Hostile gate, prototype resolution and the catalogue check all live in
+    // witnessNpcAbility — shared with the passive/reaction fire path so the
+    // two can't drift.
+    await witnessNpcAbility({
+      tokenUuid,
+      itemUuid:   actionUuid,
+      actionName: ar.skillName ?? ar.weapon?.name ?? ar.kind,
     });
-    if (result?.wasNew) {
-      log(`Encyclopedia: witnessed ${ar.attacker?.name ?? "?"} → ${actionName} (${itemId})`);
-    }
   } catch (e) {
     warn("RESOLVE: NPC action witness record failed", e);
   }
