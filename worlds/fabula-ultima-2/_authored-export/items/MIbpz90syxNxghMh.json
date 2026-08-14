@@ -1,34 +1,34 @@
 {
-  "_id": "0WLTOUYT0Qa0B4Mb",
+  "_id": "MIbpz90syxNxghMh",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1747230381347,
+    "createdTime": 1786718445088,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
   "flags": {
     "custom-system-builder": {
-      "version": "4.4.2"
+      "version": "3.2.4"
     },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "weapon",
         "fromTemplate": "gIRU9XGqYeMBwBN9",
-        "itemId": "0WLTOUYT0Qa0B4Mb",
-        "itemName": "Berserker Sword",
+        "itemId": "meKaiESlg3iy526k",
+        "itemName": "Adamanthammer",
         "pickedOldProps": {
-          "cost": "2800",
+          "cost": "1050",
           "martial": true
         },
-        "ts": 1769647435275
+        "ts": 1769647435068
       }
     }
   },
   "folder": "9DMIQGfw5u0sBo5Q",
-  "img": "https://m.media-amazon.com/images/I/712YnmMGXlL._AC_UY1000_.jpg",
-  "name": "Berserker Sword",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+  "name": "Giant Club",
   "ownership": {
     "2vy7wrEUqBy0kzsU": 3,
     "6DmgigM5jq76r0Gd": 3,
@@ -56,7 +56,7 @@
     "yL2PQxh3R9ddt0te": 3,
     "yUfwoVmEPVdFG3AY": 3
   },
-  "sort": 300000,
+  "sort": 100000,
   "system": {
     "container": null,
     "props": {
@@ -70,16 +70,15 @@
       "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
-      "damage_bonus": "38",
+      "damage_bonus": "22",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You cannot made <strong>free attack</strong> with this weapon.</p></li><li><p>You cannot attack with this weapon if it don't have <strong>high roll</strong>.</p></li><li><p>You cannot attack with this weapon if your Might die is not <strong>12</strong></p></li></ul>",
+      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Weighted</strong></a></p></li></ul><p>You are always <a class=\"content-link\" data-uuid=\"JournalEntry.0RscV9vkJNM9dVKQ\" data-id=\"0RscV9vkJNM9dVKQ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Delay</strong></a>.</p>",
       "dragon_ef": "100",
       "effect_table": {},
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",
-      "flavor_text": "<p><em>That thing was too big to be called a sword. Too big, too thick, too heavy, and too rough, it was more like a large hunk of iron.</em></p>",
       "flora_ef": "100",
       "fungus_ef": "100",
       "golem_ef": "100",
@@ -87,8 +86,8 @@
       "hand_slots": "Two-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "id": "0WLTOUYT0Qa0B4Mb",
-      "img": "https://m.media-amazon.com/images/I/712YnmMGXlL._AC_UY1000_.jpg",
+      "id": "MIbpz90syxNxghMh",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
       "ingredient_taste": "",
       "ingredient_taste2": "",
       "insect_ef": "100",
@@ -103,15 +102,15 @@
       "isUnique": false,
       "item_baseDef": "0",
       "item_baseMdef": "0",
-      "item_cost": "2800",
+      "item_cost": "1800",
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Common",
+      "item_rarity": "Uncommon",
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
-      "name": "Berserker Sword",
+      "name": "Giant Club",
       "optional_params": {},
       "plant_ef": "100",
       "reaction_config_table": {},
@@ -129,14 +128,14 @@
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
-      "uuid": "Item.0WLTOUYT0Qa0B4Mb",
+      "uuid": "Item.MIbpz90syxNxghMh",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,
     "unique": false,
-    "uniqueId": "0WLTOUYT0Qa0B4Mb"
+    "uniqueId": "MIbpz90syxNxghMh"
   },
   "type": "equippableItem"
 }

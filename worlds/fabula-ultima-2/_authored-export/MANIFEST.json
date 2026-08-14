@@ -6023,6 +6023,12 @@
         "effects": 3
       },
       {
+        "id": "MIbpz90syxNxghMh",
+        "name": "Giant Club",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "mmHnOv9fk8S2oXR9",
         "name": "Giant Fork",
         "type": "equippableItem",
@@ -17390,6 +17396,34 @@
           {
             "id": "RriNRMXown9Q90wG",
             "name": "Puff Up"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "1Lw78Js1f7MogV2B",
+        "name": "Gigas",
+        "type": "character",
+        "items": [
+          {
+            "id": "ZyOCJhF9cbkucSEW",
+            "name": "(Empty)"
+          },
+          {
+            "id": "VS9Qv9BV3xT38H4E",
+            "name": "Giant Club"
+          },
+          {
+            "id": "bqAczQJvRTcoQ4KN",
+            "name": "Heavy Bodyslam"
+          },
+          {
+            "id": "kKYtlrM1Gn0DbGSy",
+            "name": "Heavy Swing"
+          },
+          {
+            "id": "UFyiZDIkbhPmtqlG",
+            "name": "Oaf"
           }
         ],
         "effects": 0
