@@ -31,6 +31,14 @@ const resolveActor = (uuid) => {
 
 const fail = (reason, extra = {}) => ({ ok: false, reason, ...extra });
 
+/**
+ * Is the actor behind this uuid a subject of advancement?
+ *
+ * Exported so the window can check a uuid handed to it directly, using the same
+ * resolver as the write path (which accepts a bare id as well as a uuid).
+ */
+export const isSubjectUuid = (uuid) => isAdvancementSubject(resolveActor(uuid));
+
 // ── ledger ─────────────────────────────────────────────────────────────────
 
 /** The whole ledger flag, normalised. */
