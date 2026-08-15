@@ -192,7 +192,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Lightning Prism takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>It immediately gains a <strong>Free Action</strong>, which it uses to cast <strong>Fulgur Finis</strong> on an enemy — and the discharge strikes harder than a normal casting.</p><p>It pays the spell’s <strong>MP</strong> cost as normal — at <strong>0 MP</strong> it can no longer discharge.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Lightning Prism, whether it lands or is absorbed</p></li></ul><p>It immediately gains a <strong>Free Action</strong>, which it uses to cast <strong>Fulgur Finis</strong> on an enemy — and the discharge strikes harder than a normal casting.</p><p>It pays the spell’s <strong>MP</strong> cost as normal — at <strong>0 MP</strong> it can no longer discharge.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -224,6 +224,14 @@
               "reaction_passive_mode": "on",
               "reaction_source": "",
               "reaction_trigger": "creature_lose_resource"
+            },
+            "1": {
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
+              "reaction_effect_ref": "overcharge_cast",
+              "reaction_passive_mode": "on",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_gain_resource"
             }
           },
           "rolled_atr1": "-",
@@ -668,7 +676,7 @@
         "TDfsEA9gh8Pc6aUP": {
           "id": "${item.id}",
           "name": "Overcharge",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Lightning Prism takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>It immediately gains a <strong>Free Action</strong>, which it uses to cast <strong>Fulgur Finis</strong> on an enemy — and the discharge strikes harder than a normal casting.</p><p>It pays the spell’s <strong>MP</strong> cost as normal — at <strong>0 MP</strong> it can no longer discharge.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Lightning Prism, whether it lands or is absorbed</p></li></ul><p>It immediately gains a <strong>Free Action</strong>, which it uses to cast <strong>Fulgur Finis</strong> on an enemy — and the discharge strikes harder than a normal casting.</p><p>It pays the spell’s <strong>MP</strong> cost as normal — at <strong>0 MP</strong> it can no longer discharge.</p>",
           "roll": "",
           "uuid": "Actor.sTGMdYipYCG36aBO.Item.TDfsEA9gh8Pc6aUP"
         }
