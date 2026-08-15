@@ -43,7 +43,7 @@ import { pickItem } from "./item-picker.js";
 import { getLinkedSkillUuid } from "./item-resource.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
-import { resolveTargetPlan } from "./state-handlers.js";
+import { resolveTargetPlan } from "./target-survey.js";
 import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
 import { buildUltimaMenuSpec } from "./domination.js";

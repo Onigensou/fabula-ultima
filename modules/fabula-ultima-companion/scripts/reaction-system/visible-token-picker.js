@@ -47,6 +47,24 @@
     return reactorToken?.id ?? reactorToken?.document?.id ?? reactorToken?._id ?? null;
   }
 
+
+  // A creature declaring `cannot_be_targeted_by: "any"` can never be chosen — the
+  // shared targeting contract (canonical reader: hasUnconditionalTargetBlock in
+  // battle-director/snapshot.js; not imported, the reaction system stays
+  // independent of the director). This picker asks the human to "choose a
+  // creature you can see", which is a TARGET choice like any other.
+  function _isUntargetable(a) {
+    const effects = a?.effects?.contents ?? a?.effects ?? [];
+    for (const ae of effects) {
+      if (ae?.disabled) continue;
+      for (const ch of (ae?.changes ?? [])) {
+        if (ch?.key !== "cannot_be_targeted_by") continue;
+        if (String(ch.value ?? "").trim().toLowerCase().split(/[\s,]+/).includes("any")) return true;
+      }
+    }
+    return false;
+  }
+
   function _collectCandidates({ reactorToken, excludeNames }) {
     const scene = canvas?.scene;
     if (!scene) return [];
@@ -63,6 +81,7 @@
       if (doc.hidden) continue;
 
       const actor = doc.actor ?? tok.actor ?? null;
+      if (_isUntargetable(actor)) continue;
       const tokenName = String(doc.name ?? tok.name ?? "").trim();
       const actorName = String(actor?.name ?? "").trim();
       if (!tokenName && !actorName) continue;

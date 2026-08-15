@@ -59,16 +59,26 @@ function getTargetRule(context) {
   return context?.targetRule ?? null;
 }
 
-function getScenePlaceableTokens() {
-  return Array.from(canvas?.tokens?.placeables ?? []);
+function getParticipantTokens(context = null) {
+  // The shared participant pool, NOT every placeable: the candidate list and the
+  // pattern's counts must be the same set, or a rule chooses an action against a
+  // roster the targeting then does not honour. See AR.participantTokens().
+  return AR.participantTokens(context);
 }
 
-function normalizeSceneToken(tokenLike) {
+function normalizeSceneToken(tokenLike, performerTokenId = null) {
   const token = tokenLike?.object ?? tokenLike ?? null;
   const tokenDocument = AR.getTokenDocument(token);
   const actor = AR.getTokenActor(token);
 
   if (!tokenDocument || !actor) return null;
+  // A Guest is never anybody ELSE'S target. Dropping it at normalization keeps it
+  // out of every downstream path at once — relation filtering, focus weighting,
+  // the Burn-spread override — instead of one filter per exit. The performer is
+  // exempt: a guest must still be able to see itself, or a Self-targeted skill
+  // would be dropped as infeasible with a plausible-looking reason.
+  const isPerformer = performerTokenId && tokenDocument.id === performerTokenId;
+  if (!isPerformer && AR.isUntargetableActor(actor)) return null;
 
   const disposition = AR.getTokenDisposition(tokenDocument);
   const hp = AR.getResourcePair(actor, AR.keys.hpCurrent, AR.keys.hpMax);
@@ -99,10 +109,11 @@ function normalizeSceneToken(tokenLike) {
 
 function getCandidatePool(context, options = {}) {
   const explicitTokens = Array.isArray(options?.sceneTokens) ? options.sceneTokens : null;
-  const rawTokens = explicitTokens ?? getScenePlaceableTokens();
+  const rawTokens = explicitTokens ?? getParticipantTokens(context);
+  const performerTokenId = getPerformerTokenDocument(context)?.id ?? null;
 
   const normalized = rawTokens
-    .map(normalizeSceneToken)
+    .map((t) => normalizeSceneToken(t, performerTokenId))
     .filter(Boolean);
 
   const seen = new Set();

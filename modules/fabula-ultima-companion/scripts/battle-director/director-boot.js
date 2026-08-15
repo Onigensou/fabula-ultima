@@ -78,6 +78,7 @@ import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initKeywordSuggest } from "./keyword-suggest.js";
 import { initDevToolsMenu, registerDevTool } from "./dev-tools-menu.js";
 import { registerAutopilotSetting, registerAutopilotDevTool } from "./enemy-autopilot.js";
+import { registerSummonAutopilotSetting, registerSummonAutopilotDevTool } from "./summon-autopilot.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
@@ -360,6 +361,18 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   }
 
   try { await _instance.stop({ reason }); } catch (e) { warn("stop threw", e); }
+
+  // Drop any free-action request that was granted but never drained. The queue
+  // is a module singleton, so without this it OUTLIVES the battle: a round-end
+  // grant (Late Actor) that the fight ended on top of would still be sitting
+  // there when the next battle starts, and the next creature to reach a
+  // free-action window would spend it. Measured 2026-08-15 — a fresh battle
+  // opened with queue size 1 left over from the previous one.
+  try {
+    const { freeActionQueue } = await import("./free-action-queue.js");
+    if (!freeActionQueue.isEmpty()) freeActionQueue.clear();
+  } catch (e) { warn("stop: free-action queue clear threw", e); }
+
   try { TurnUI.despawnAll(); } catch {}
   try { TurnPicker.despawnAll(); } catch {}
   try { WeaponModePicker.despawnAll(); } catch {}
@@ -909,6 +922,9 @@ Hooks.once("init", () => {
   // to the action card). Registered here so get/set are live before "ready".
   // See [[project_action_pattern_ai]].
   try { registerAutopilotSetting(); } catch (e) { warn("registerAutopilotSetting threw", e); }
+  // Summon Autopilot — the same treatment for SUMMONED creatures, on its own
+  // switch so a GM who hand-drives monsters still gets self-driving summons.
+  try { registerSummonAutopilotSetting(); } catch (e) { warn("registerSummonAutopilotSetting threw", e); }
 });
 
 // Register the public API on ready. The `FUCompanion.api` root is set up by
@@ -1541,6 +1557,10 @@ Hooks.once("ready", () => {
   // Enemy Autopilot toggle button (registers into the Developer Tools launcher).
   try { registerAutopilotDevTool(); }
   catch (e) { warn("registerAutopilotDevTool on ready threw", e); }
+
+  // Summon Autopilot toggle button (sits beside the enemy one in the launcher).
+  try { registerSummonAutopilotDevTool(); }
+  catch (e) { warn("registerSummonAutopilotDevTool on ready threw", e); }
 
   // SFX audition tool — registers into the Developer Tools launcher.
   try { initSfxAudition(); }

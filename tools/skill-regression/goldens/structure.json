@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-08-10T18:03:06.059Z",
- "count": 1196,
+ "capturedAt": "2026-08-15T03:13:23.479Z",
+ "count": 1197,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -30228,32 +30228,31 @@
    ],
    "aes": []
   },
-  "Kalina / Guest": {
+  "Kalina / Late Actor": {
    "props": {
-    "class": "NPC",
-    "defense_target_type": "def",
-    "isReaction": "true",
     "skill_type": "Passive"
    },
    "effects": [
-    "allow_empty=true auto_confirm_when_obvious=true auto_target=skip candidate_source=combat category=ally count=1 effect_kind=targeting effect_label=g_crisis_ally exclude_self=true focus_max_formula=MAX_HP - CUR_HP iteration_mode=together mode=exact skip_when_passive=true target_filter=CUR_HP * 2 <= MAX_HP",
-    "allow_empty=true auto_confirm_when_obvious=true auto_target=skip candidate_source=combat category=enemy effect_kind=targeting effect_label=g_all_enemies exclude_self=true iteration_mode=together mode=all skip_when_passive=true",
-    "allow_empty=true auto_confirm_when_obvious=true auto_target=skip candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=g_one_enemy exclude_self=true iteration_mode=together mode=random skip_when_passive=true",
-    "effect_kind=grant effect_label=g_remedy grant_amount=50 grant_resource=hp target_ref=g_crisis_ally",
-    "attacker_name=Kalina damage_amount=20 damage_cause=damage damage_element=fire damage_resource=hp effect_kind=deal_damage effect_label=g_dragonfire target_ref=g_all_enemies",
-    "attacker_name=Kalina damage_amount=40 damage_cause=damage damage_element=air damage_resource=hp effect_kind=deal_damage effect_label=g_skyfall target_ref=g_one_enemy",
-    "action_ref=Dragonfire Dive effect_kind=play_animation effect_label=g_dragonfire_anim target_ref=g_all_enemies",
-    "chain_steps=g_dragonfire_anim,g_dragonfire effect_kind=chain effect_label=g_dragonfire_chain",
-    "action_ref=Skyfall Dive effect_kind=play_animation effect_label=g_skyfall_anim target_ref=g_one_enemy",
-    "chain_steps=g_skyfall_anim,g_skyfall effect_kind=chain effect_label=g_skyfall_chain",
-    "action_ref=Remedy effect_kind=play_animation effect_label=g_remedy_anim target_ref=g_crisis_ally",
-    "chain_steps=g_remedy_anim,g_remedy effect_kind=chain effect_label=g_remedy_chain"
+    "action_ref=Skill effect_kind=free_action effect_label=late_actor_act"
    ],
    "reactions": [
-    "condition_formula=ANY_ALLY_IN_CRISIS >= 1 reaction_effect_ref=g_remedy_chain reaction_passive_mode=on reaction_trigger=round_end",
-    "condition_formula=ANY_ALLY_IN_CRISIS == 0 && ENEMY_COUNT >= 3 reaction_effect_ref=g_dragonfire_chain reaction_passive_mode=on reaction_trigger=round_end",
-    "condition_formula=ANY_ALLY_IN_CRISIS == 0 && ENEMY_COUNT < 3 reaction_effect_ref=g_skyfall_chain reaction_passive_mode=on reaction_trigger=round_end"
+    "reaction_effect_ref=late_actor_act reaction_passive_mode=on reaction_trigger=round_end"
    ],
+   "aes": []
+  },
+  "Kalina / Remedy": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "on_activate_effect_ref": "remedy_heal",
+    "skill_range": "Any",
+    "skill_target": "One ally",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=remedy_heal grant_amount=50 grant_resource=hp target_ref=action_targets"
+   ],
+   "reactions": [],
    "aes": []
   },
   "Keren / +5 Ignis Shield": {

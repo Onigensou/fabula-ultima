@@ -240,7 +240,7 @@ async function think(token, range) {
 // Chain the pipeline for a single token, stopping before AnnounceResult. Returns
 // the ActionReader context (with chosenAction + chosenTargets) or null on any
 // stage failure. Never throws.
-async function runActionReader({ token, combat, combatant, activationIndex }) {
+async function runActionReader({ token, combat, combatant, activationIndex, director = null }) {
   try {
     let ctx = ActionReaderCore.createBaseContext();
 
@@ -568,7 +568,7 @@ async function decideViaActionReader(director, snap) {
     const pip = (inSim && !SimMode.showPip()) ? { remove() {} } : showThinkingPip(token);
     let ctx = null;
     try {
-      ctx = await runActionReader({ token, combat, combatant, activationIndex });
+      ctx = await runActionReader({ token, combat, combatant, activationIndex, director });
       await jitterDelay(inSim ? SimMode.thinkRange() : AUTOPILOT_TIMING.decision);
     } finally {
       pip.remove();
@@ -706,20 +706,48 @@ async function decideFreeActionBundle(director, snap, grant) {
       ? grant.allowedSkillRefs.map((r) => String(r).trim().toLowerCase()).filter(Boolean)
       : [];
 
-    // One ActionReader context, reused for affordability + targeting.
+    // One ActionReader context, reused for affordability + targeting. The roster
+    // and the per-action target survey arrive from the ambient battle provider
+    // (target-survey.js), so this frame needs no injection of its own — which is
+    // the point: this is the entry point that was missed when they did.
     let ctx = ActionReaderCore.createBaseContext();
     await resolveActionReaderPerformer(ctx, { token, combat, combatant });
     if (!ctx.performer?.actor) { log("autopilot: free-action frame — resolvePerformer produced no actor — manual fallback"); return null; }
     await buildActionReaderContext(ctx, {});
 
     // Choose the granted item: a named skill first, else a basic Attack when the
-    // grant permits one. An ambiguous "any Skill/Spell" grant with no named ref is
-    // deliberately left to the GM — we don't guess which skill an enemy should burn
-    // a free action on.
+    // grant permits one.
     let item = null;
     if (refs.length) item = pickNamedGrantItem(actor, refs, allow, ctx, snap);
     if (!item && labelPermits(allow, "Attack")) item = await resolveFirstNpcAttackItem(snap);
+
+    // An ambiguous "any Skill/Spell" grant used to stop here and hand the GM a
+    // compose menu — "we don't guess which skill an enemy should burn a free
+    // action on". That is the right default for a creature with no stated
+    // preference, but it is WRONG for one that has stated it: an
+    // `action_pattern_table` IS the author's answer to "which action, and when".
+    // Declining it meant a patterned creature behaved WORSE on a free action than
+    // on its own turn, where the same table decides everything.
+    //
+    // So: consult the pattern, then verify the grant permits what it chose. The
+    // grant still has the final say — this widens WHO can be auto-resolved, never
+    // WHAT a grant allows. A creature with no pattern falls through unchanged.
     if (!item) {
+      const hasPattern = Object.values(
+        actor?.system?.props?.[ActionReaderCore.keys.actionPatternTableKey] ?? {}
+      ).some((r) => r && !r[ActionReaderCore.keys.actionPatternDeletedKey]);
+
+      if (hasPattern) {
+        const patterned = await decideViaActionReader(director, snap);
+        const cmd = patterned?.command ?? patterned?.bundle?.command ?? null;
+        if (patterned && cmd && labelPermits(allow, cmd)) {
+          log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" for ${snap.name} resolved from its Action Pattern → ${cmd}`);
+          return patterned;
+        }
+        if (patterned && cmd) {
+          log(`autopilot: free-action pattern pick ${cmd} not permitted by grant (allow=${allow ? [...allow].join("/") : "any"}) — manual fallback`);
+        }
+      }
       log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" for ${snap.name} not auto-resolvable (allow=${allow ? [...allow].join("/") : "any"}) — manual fallback`);
       return null;
     }

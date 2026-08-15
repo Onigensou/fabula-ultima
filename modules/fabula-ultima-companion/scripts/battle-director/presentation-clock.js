@@ -32,6 +32,33 @@
 // about never collapsing. When the whole loop is pointless while hidden, guard
 // the CALLER with `shouldRender()` instead of shortening the wait.
 
+// ── "Nobody is watching" can also be DECLARED ────────────────────────────
+//
+// Every check below infers an audience from `document.hidden`. That misses two
+// real cases, and the second one cost hours:
+//
+//   1. A SIM. Nobody is watching by definition — it is a batch run whose output
+//      is a verdict, not a screen.
+//   2. A THROTTLED page. Measured 2026-08-15 on the headless harness client:
+//      `document.visibilityState` reports "visible" while Chromium runs rAF at
+//      ~4.5 fps and clamps timers 2.5x. So nothing collapses, but nothing draws
+//      either — the worst of both worlds. A sim round took ~130 s, most of it
+//      dwelling on frames no one would ever see, and the harness's own 180 s
+//      stall watchdog then reported the run as hung.
+//
+// So an owner can DECLARE the absence of an audience rather than have it
+// inferred. Same principle as everything else here: skip the show, never the
+// rules — this gates presentation dwell only.
+let _dwellSuppressed = false;
+
+export function setDwellSuppressed(on) {
+  _dwellSuppressed = !!on;
+}
+
+export function isDwellSuppressed() {
+  return _dwellSuppressed;
+}
+
 // True when the window is hidden or fully occluded — i.e. nothing this client
 // draws can be seen. Defensive against non-browser contexts (tests).
 export function isWindowHidden() {
@@ -47,7 +74,7 @@ export function isWindowHidden() {
 // cannot progress at all while hidden. Delaying the decision would just park
 // the pipeline on a frame that never arrives.
 export function shouldRender() {
-  return !isWindowHidden();
+  return !_dwellSuppressed && !isWindowHidden();
 }
 
 // ── How LONG have we been hidden ─────────────────────────────────────────
@@ -91,7 +118,7 @@ export function isBackgroundedFor(ms = 0) {
 // A presentation DWELL. Real delay while visible; zero while hidden.
 // Only ever wrap a pause that exists for a human to see something.
 export function pWait(ms) {
-  if (isWindowHidden()) return Promise.resolve();
+  if (_dwellSuppressed || isWindowHidden()) return Promise.resolve();
   const n = Number(ms);
   if (!Number.isFinite(n) || n <= 0) return Promise.resolve();
   return new Promise((r) => setTimeout(r, n));

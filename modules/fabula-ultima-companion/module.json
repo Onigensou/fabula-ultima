@@ -422,6 +422,8 @@
     "scripts/battle-director/battle-end/battle-end-transition.js",
     "scripts/battle-director/battle-end/battle-end-cleanup.js",
     "scripts/battle-director/battle-end/battle-end-rewards.js",
+    "scripts/guest-roster/guest-roster-core.js",
+    "scripts/guest-roster/guest-roster-ui.js",
     "scripts/main.js"
   ],
   "styles": [

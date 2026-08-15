@@ -65,11 +65,26 @@ const CONDITION_ALIASES = Object.freeze({
   enemy_count: "enemy_count",
   "enemy count": "enemy_count",
 
+  // "how many creatures can THIS action reach", as opposed to enemy_count's
+  // "how many enemies exist". Resolved against the row's own action, so it
+  // honours the action's skill_target side/count and its declared filters.
+  target_count: "target_count",
+  "target count": "target_count",
+  targets_available: "target_count",
+  "targets available": "target_count",
+
   ally_count: "ally_count",
   "ally count": "ally_count",
 
   enemy_has_status: "enemy_has_status",
   "enemy has status": "enemy_has_status",
+
+  ally_has_status: "ally_has_status",
+  "ally has status": "ally_has_status",
+
+  ally_in_crisis: "ally_in_crisis",
+  "ally in crisis": "ally_in_crisis",
+  ally_crisis: "ally_in_crisis",
 
   creature_has_status: "creature_has_status",
   "creature has status": "creature_has_status",
@@ -123,8 +138,11 @@ function getConditionLabel(conditionKey) {
     case "self_has_status": return "Self Has Status";
     case "self_lacks_status": return "Self Lacks Status";
     case "enemy_count": return "Enemy Count";
+    case "target_count": return "Targets Available";
     case "ally_count": return "Ally Count";
     case "enemy_has_status": return "Enemy Has Status";
+    case "ally_has_status": return "Ally Has Status";
+    case "ally_in_crisis": return "Ally In Crisis";
     case "creature_has_status": return "Creature Has Status";
     case "effect_stacks": return "Effect Stacks";
     case "random": return "Random %";

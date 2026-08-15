@@ -1397,11 +1397,45 @@ export function applyAllegianceOverride(naturalSide, tokenUuid, actorUuid, overr
 // Snapshot eligible targets read from a DirectorCombat (the no-Foundry-doc
 // path). Same returned shape as `snapshotEligibleTargets` so callers can swap
 // without changing downstream code.
-// A Guest (bdGuest) is a visual-only round-end helper — it can never be targeted,
-// hit by an AoE, or picked by any action. Excluded from every eligible/target pool
-// (it still ACTS via its own round_end reaction, which resolves ITS targets, not itself).
-const BD_GUEST_FLAG = "flags.fabula-ultima-companion.bdGuest";
-function isGuestActor(actor) { return !!foundry.utils.getProperty(actor ?? {}, BD_GUEST_FLAG); }
+// UNCONDITIONAL targeting block — the "untargetable by everything" case.
+//
+// This is the generic half of `cannot_be_targeted_by` (getTargetSideBlocks,
+// above). That key already carried a RANGE grammar — "melee" / "ranged" / "any"
+// — but only `applyAttackRangeGate` ever consumed it, and that gate runs solely
+// during ATTACK composition and bails out entirely when the weapon has no range.
+// So a block could never stop a skill, a spell, or an AoE pool.
+//
+// Split by what the declaration actually means:
+//   • "melee" / "ranged"  — a property of the ATTACK, so it stays in the
+//                           range gate where the weapon is known. Unchanged.
+//   • "any"               — a property of the CREATURE, so it belongs at every
+//                           pool build, which is what this function is for.
+//
+// This is what makes a Guest untargetable: it carries an AE declaring
+// `cannot_be_targeted_by: "any"` rather than the engine special-casing a flag
+// at each pool site. Any future "cannot be touched" creature gets it for free.
+//
+// ⚠ Widening audit (2026-08-15): exactly ONE document in this world declares
+// `cannot_be_targeted_by` — Guard's "Covered" (value "melee"). It is range-
+// specific, so it keeps taking the attack-gate path and its behaviour does not
+// change. Nothing declared "any" before now, so no existing content is affected.
+export function hasUnconditionalTargetBlock(actor) {
+  for (const b of getTargetSideBlocks(actor)) {
+    if (b?.ranges?.has?.("any")) return true;
+  }
+  return false;
+}
+
+// The AE name behind the block. NOT yet wired into the picker: blocked creatures
+// are dropped from the pool outright rather than pushed to `excluded`, so no
+// greyed row is produced for them (unlike cannot_target_uuids, which does
+// populate `excluded`). Exposed for diagnostics and for whoever wires that up.
+export function unconditionalTargetBlockReason(actor) {
+  for (const b of getTargetSideBlocks(actor)) {
+    if (b?.ranges?.has?.("any")) return b.aeName;
+  }
+  return null;
+}
 
 export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { category = "any" } = {}) {
   const combatants = dCombat?.combatants ?? [];
@@ -1446,7 +1480,11 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
     const token = c.tokenDoc;
     const actor = c.actorDoc;
     if (!token || !actor) continue;
-    if (isGuestActor(actor)) continue; // visual-only guest — never targetable
+    // "Nobody may target this creature" is about OTHER creatures. Applied to the
+    // creature itself it would empty its own self-pool, silently costing a guest
+    // any Self-targeted skill it is ever given. Mirrors the isSelf carve-out in
+    // ActionReader's countSceneTargetsForRelation.
+    if (c.id !== attackerSnapshot?.combatantId && hasUnconditionalTargetBlock(actor)) continue;
     const disp = c.disposition ?? token.disposition ?? 0;
     const hp = readPropNum(actor, ["current_hp", "hp"]);
     if (hp <= 0) continue;
@@ -1781,7 +1819,11 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
     const token = c.token;
     const actor = c.actor;
     if (!token || !actor) continue;
-    if (isGuestActor(actor)) continue; // visual-only guest — never targetable
+    // "Nobody may target this creature" is about OTHER creatures. Applied to the
+    // creature itself it would empty its own self-pool, silently costing a guest
+    // any Self-targeted skill it is ever given. Mirrors the isSelf carve-out in
+    // ActionReader's countSceneTargetsForRelation.
+    if (c.id !== attackerSnapshot?.combatantId && hasUnconditionalTargetBlock(actor)) continue;
     const disp = token.disposition;
     const hp = readPropNum(actor, ["current_hp", "hp"]);
     if (hp <= 0) continue; // defeated combatants are not targetable in v1

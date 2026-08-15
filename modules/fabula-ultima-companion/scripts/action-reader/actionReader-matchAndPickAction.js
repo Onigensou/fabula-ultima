@@ -250,18 +250,108 @@ function assessCandidateFeasibility(candidate, context) {
     }
   }
 
-  // Target existence (skip self-targeted / relation-less actions).
+  // Target existence.
+  //
+  // Preferred: ask the injected TARGET SURVEY how many creatures THIS action can
+  // legally reach. That is the same resolution the picker will run, so it
+  // accounts for the action's own `skill_target` side/count, its
+  // `target_eligibility` formula, its pool focus, and every exclusion the
+  // targeting system enforces (defeat, untargetable, Provoked, allegiance).
+  // (Not the weapon range gate: these candidates are pattern SKILLS and carry no
+  // weapon. A caller that surveys a weapon attack must pass `weapon` itself.)
+  //
+  // The fallback — a disposition head-count of the participants — is only a
+  // proxy: "an enemy exists somewhere" is not "this skill can hit something".
+  // It stays for the paths with no injected survey (the standalone world macro,
+  // out-of-combat), where a proxy beats refusing to decide.
+  //
+  // ⚠ `ok:false` is NOT "no targets", it is "no answer" — a survey that could
+  // not run must never read as zero, or every relation-bearing action becomes
+  // infeasible at once and the creature stands there with a plausible reason
+  // string. Hence `ok && available === 0`, spelled out rather than borrowed from
+  // target-survey's `surveyFindsNoTargets`: ActionReader imports nothing from the
+  // director, so the shared helper is unreachable from here by design.
+  const performerActor = context?.performer?.actor ?? context?.actorData?.actor ?? null;
+  const performerTokenDoc = context?.performer?.tokenDocument ?? null;
   const relation = AR.quickTargetRelation(candidate?.skillTarget);
-  if (relation && relation !== "self") {
-    const performerActor = context?.performer?.actor ?? context?.actorData?.actor ?? null;
-    const performerTokenDoc = context?.performer?.tokenDocument ?? null;
-    const available = AR.countSceneTargetsForRelation(performerActor, performerTokenDoc, relation);
+  const survey = safeSurvey(context, candidate, performerActor, performerTokenDoc);
+
+  if (survey?.ok) {
+    candidate.targetSurvey = survey;
+    if (survey.available === 0) {
+      reasons.push(`No legal target for "${candidate?.itemName ?? candidate?.actionName ?? "this action"}" (${survey.category || "target"}).`);
+    }
+  } else if (relation && relation !== "self") {
+    const available = AR.countSceneTargetsForRelation(performerActor, performerTokenDoc, relation, context);
     if (available < 1) {
       reasons.push(`No legal ${relation} target on the scene.`);
     }
   }
 
+  // The DEFERRED half of the `target_count` pattern condition. EvaluateConditions
+  // passes the row through because at that stage it has only an action NAME; the
+  // real test belongs here, against the item the matcher actually resolved, so
+  // the gate and the play can never be about different documents.
+  //
+  // OUTSIDE the survey branch on purpose: this runs whether or not the survey
+  // answered, because a gate that silently vanishes when it cannot be evaluated
+  // is not a gate. Inside the branch, an action carrying `target_sequence` (which
+  // the survey declines to answer for) would have made a `target_count 3-99` row
+  // behave as `always`.
+  applyDeferredTargetCount(candidate, survey, reasons);
+
   return { feasible: reasons.length === 0, reasons };
+}
+
+/* `target_count`, resolved. The row wanted between v1 and v2 reachable targets
+   for its OWN action; the survey has just answered that for the resolved item.
+
+   Fails CLOSED when there is no answer — a row whose gate could not be tested
+   must not be treated as satisfied, the same way `activation` fails closed
+   outside a director turn. So a row that opted into this condition simply never
+   qualifies where the survey is unavailable (a standalone world-macro run, out
+   of combat, or an action the survey declines to answer for), and a plain
+   `always` fallback row acts instead. */
+function applyDeferredTargetCount(candidate, survey, reasons) {
+  const row = candidate?.row;
+  if (AR.toString(row?.conditionKey, "") !== "target_count") return;
+
+  if (!survey?.ok) {
+    reasons.push(`Targets available is unknown (${survey?.reason ?? "no target survey"}) — condition cannot be tested.`);
+    return;
+  }
+
+  const details = row?.evaluation?.details ?? {};
+  const min = Number.isFinite(details.min) ? details.min : 1;
+  const max = Number.isFinite(details.max) ? details.max : Number.MAX_SAFE_INTEGER;
+  const available = AR.toInteger(survey.available, 0);
+
+  if (available < min || available > max) {
+    reasons.push(`Targets available (${available}) outside ${min}–${max}.`);
+  }
+}
+
+/* The survey is supplied by whoever owns the battle, so treat it as foreign
+   code: a throw here must degrade to the head-count fallback, not abort the
+   whole action choice and leave the creature idle. */
+function safeSurvey(context, candidate, performerActor, performerTokenDoc) {
+  // A per-run override on the context wins (that is how a harness supplies a
+  // synthetic battle); otherwise the ambient provider answers. Resolving it here
+  // rather than requiring every pipeline entry point to inject one is what stops
+  // a new entry point from silently reverting to scene-wide counting.
+  const survey = typeof context?.targetSurvey === "function"
+    ? context.targetSurvey
+    : AR.battleProvider()?.surveyTargets;
+  if (typeof survey !== "function") return null;
+  try {
+    return survey(candidate?.item ?? null, {
+      skillTargetText: candidate?.skillTarget ?? null,
+      performerActor,
+      performerTokenDocument: performerTokenDoc
+    }) ?? null;
+  } catch (_e) {
+    return null;
+  }
 }
 
 /* -------------------------------------------------------------------------- */

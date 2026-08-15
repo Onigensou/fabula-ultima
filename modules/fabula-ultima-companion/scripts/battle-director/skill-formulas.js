@@ -933,7 +933,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         for (const ref of list) {
           const a = _resolveActorByUuidSync(String(ref));
           if (!a || a === actor || a.uuid === actor.uuid) continue;
-          if (_isGuestActor(a)) continue;          // guest is inert — never a foe
+          if (_isUntargetable(a)) continue;          // guest is inert — never a foe
           const d = Number(_combatDisposition(a));
           if (!Number.isFinite(d)) continue;
           if (d * myDisp < 0) return 1;            // opposing sign => enemy
@@ -2423,9 +2423,26 @@ function collectDebuffStatusKeys(actor) {
 // runs on its own `dCombat` and often leaves `game.combat` null, so a combat-
 // only scan would miss every enemy mid-battle. Single source for every
 // enemy-iterating formula (ENEMY_DISTINCT_STATUS_COUNT, ENEMY_IN_CRISIS).
-// A Guest (bdGuest) is a visual-only round-end helper — invisible to enemy/ally
-// COUNTS too, so it never sways an enemy's ENEMY_COUNT branch or a PC's ALLY_COUNT.
-function _isGuestActor(a) { return !!foundry.utils.getProperty(a ?? {}, "flags.fabula-ultima-companion.bdGuest"); }
+// A creature declaring `cannot_be_targeted_by: "any"` is invisible to enemy/ally
+// COUNTS too, so it never sways an enemy's ENEMY_COUNT branch or a PC's
+// ALLY_COUNT. Counting a creature no action can ever reach would make every
+// count-gated branch fire on a body that cannot participate.
+//
+// Read inline rather than imported: snapshot.js (the canonical reader) already
+// imports THIS file, so importing back would close a cycle. The shared thing is
+// the AE contract, not the code — keep in step with
+// `getTargetSideBlocks` / `hasUnconditionalTargetBlock` in snapshot.js.
+function _isUntargetable(a) {
+  const effects = a?.effects?.contents ?? a?.effects ?? [];
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "cannot_be_targeted_by") continue;
+      if (String(ch.value ?? "").trim().toLowerCase().split(/[\s,]+/).includes("any")) return true;
+    }
+  }
+  return false;
+}
 
 function enemyActorsOf(actor) {
   if (!actor) return [];
@@ -2435,7 +2452,7 @@ function enemyActorsOf(actor) {
   const seen = new Set();
   const consider = (a, disp) => {
     if (!a || a === actor || seen.has(a)) return;
-    if (_isGuestActor(a)) return; // guest is inert — never counted
+    if (_isUntargetable(a)) return; // guest is inert — never counted
     const d = Number(disp);
     if (!Number.isFinite(d) || d * myDisp >= 0) return; // not an enemy
     seen.add(a);
@@ -2516,7 +2533,7 @@ function allyActorsOf(actor) {
   const seen = new Set();
   const consider = (a, disp) => {
     if (!a || a === actor || seen.has(a)) return;
-    if (_isGuestActor(a)) return; // guest is inert — never counted
+    if (_isUntargetable(a)) return; // guest is inert — never counted
     const d = Number(disp);
     if (!Number.isFinite(d) || d * myDisp <= 0) return; // ally = strict same-sign
     seen.add(a);
@@ -2582,6 +2599,9 @@ function myFocusInCrisis(actor, payload) {
     });
   const consider = (a, disp) => {
     if (!a || a === actor) return false;
+    // Same exclusion its siblings enemyActorsOf / allyActorsOf already apply:
+    // a creature nothing can target is not a focus you could heal.
+    if (_isUntargetable(a)) return false;
     const d = Number(disp);
     // ally/neutral: not an enemy (same rule as enemyActorsOf, inverted)
     const isAlly = myDisp == null || !Number.isFinite(d) || d * myDisp >= 0;

@@ -71,7 +71,7 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 490,
+    "count": 489,
     "engineVersion": "1.0.423",
     "override": {
       "SL": 5,
@@ -3944,35 +3944,9 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Kalina / Draconic Roar": {
-      "caster": "Kalina",
-      "element": "null",
-      "hasDamage": true,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 19,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
-      "skill": "Draconic Roar",
-      "skillType": "Active",
-      "targets": 1
-    },
     "Kalina / Dragonfire Dive": {
       "caster": "Kalina",
-      "element": "physical",
+      "element": "fire",
       "hasDamage": true,
       "hasHealing": false,
       "offensive": true,
@@ -3980,30 +3954,35 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 6,
+          "damage": 20,
           "grant": null,
           "grantRes": null,
           "hit": true,
           "resource": "hp"
         }
       ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
+      "roll": null,
       "skill": "Dragonfire Dive",
       "skillType": "Active",
       "targets": 1
     },
     "Kalina / Remedy": {
       "caster": "Kalina",
-      "element": "",
+      "element": "hp",
       "hasDamage": false,
-      "hasHealing": false,
+      "hasHealing": true,
       "offensive": true,
       "ok": true,
-      "perTarget": [],
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": 50,
+          "grantRes": "hp",
+          "hit": true,
+          "resource": null
+        }
+      ],
       "roll": null,
       "skill": "Remedy",
       "skillType": "Active",
@@ -4011,26 +3990,22 @@
     },
     "Kalina / Skyfall Dive": {
       "caster": "Kalina",
-      "element": "physical",
+      "element": "air",
       "hasDamage": true,
       "hasHealing": false,
       "offensive": true,
       "ok": true,
       "perTarget": [
         {
-          "affinity": "NE",
-          "damage": 6,
+          "affinity": "IM",
+          "damage": 0,
           "grant": null,
           "grantRes": null,
           "hit": true,
           "resource": "hp"
         }
       ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
+      "roll": null,
       "skill": "Skyfall Dive",
       "skillType": "Active",
       "targets": 1

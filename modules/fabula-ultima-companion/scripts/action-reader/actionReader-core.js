@@ -506,9 +506,152 @@ export const ActionReaderCore = {
     return "other";
   },
 
-  /* Count scene tokens matching a target relation relative to a performer. */
-  countSceneTargetsForRelation(performerActor, performerTokenDoc, relation) {
-    const tokens = Array.from(canvas?.tokens?.placeables ?? []);
+  /* A creature declaring `cannot_be_targeted_by: "any"` can never be targeted,
+     hit or counted — the same exclusion snapshot.js and skill-targeting.js apply
+     on their own pools. ActionReader keeps its OWN pool off
+     canvas.tokens.placeables, so it has to honour the rule itself: otherwise an
+     autopiloted monster picks such a creature as its target, and its presence
+     inflates every pattern's ENEMY_COUNT. It still ACTS (its own targeting
+     resolves normally) — only its presence as somebody ELSE's candidate is gone.
+
+     This reads the AE contract directly rather than importing snapshot.js:
+     ActionReader is a standalone subsystem with zero imports by design, and
+     coupling it to the Battle Director for six lines would be the wrong trade.
+     The CONTRACT is shared (an AE change key), not the code. Canonical reader +
+     the range grammar: `getTargetSideBlocks` / `hasUnconditionalTargetBlock` in
+     battle-director/snapshot.js — keep the two in step. */
+  isUntargetableActor(actor) {
+    const effects = actor?.effects?.contents ?? actor?.effects ?? [];
+    for (const ae of effects) {
+      if (ae?.disabled) continue;
+      for (const ch of (ae?.changes ?? [])) {
+        if (ch?.key !== "cannot_be_targeted_by") continue;
+        const raw = String(ch.value ?? "").trim().toLowerCase();
+        if (raw.split(/[\s,]+/).includes("any")) return true;
+      }
+    }
+    return false;
+  },
+
+  isUntargetableToken(tokenLike) {
+    return this.isUntargetableActor(this.getTokenActor(tokenLike));
+  },
+
+  /* The token ids that can actually PARTICIPATE, or null when there is no roster
+     to scope by (out of combat).
+
+     `scope` is deliberately permissive — it accepts any of:
+       • an ActionReader context   (the normal case; reads `context.participants`)
+       • an injected roster        `{ tokenIds: [...] }`
+       • a combat-like            `{ combatants: [...] }` (Foundry Combat)
+       • null / undefined         (look for a Foundry Combat, else no roster)
+
+     WHO IS IN THE BATTLE IS NOT ACTIONREADER'S TO DECIDE. The Battle Director
+     runs its own `dCombat` and creates no Foundry Combat document at all, so
+     `game.combats.active` is null for an entire BD battle. An earlier fix that
+     scoped to "the active combat" was therefore inert, and every count silently
+     fell back to `canvas.tokens.placeables` — every token standing on the map,
+     including scenery, a previous encounter's leftovers and test fixtures.
+
+     Measured 2026-08-15: a guest on the Training Ground chose an ALL-ENEMY skill
+     because `enemy_count` saw the standing rig (4) instead of the one Hellhound
+     she was fighting, then hit 4 bystanders with it. The count and the targeting
+     agreed with each other and both disagreed with the battle.
+
+     So the owner of the battle INJECTS its roster (`context.participants`) and
+     ActionReader honours it. That keeps the zero-import rule intact — the
+     contract is a plain list of token ids, not a BD type — while making the one
+     thing ActionReader cannot know come from the thing that does know it. */
+  participantScopeTokenIds(scope = null) {
+    const injected = scope?.participants ?? (Array.isArray(scope?.tokenIds) ? scope : null);
+    if (Array.isArray(injected?.tokenIds)) {
+      const ids = new Set(injected.tokenIds.filter(Boolean));
+      return ids.size ? ids : null;
+    }
+
+    /* Nobody threaded a roster — ask the ambient battle provider. This is what
+       makes the rule un-forgettable: an entry point that does not know about any
+       of this still gets the battle's roster instead of the whole scene. */
+    const ambient = this.battleProvider()?.participantTokenIds?.();
+    if (Array.isArray(ambient) && ambient.length) {
+      return new Set(ambient.filter(Boolean));
+    }
+
+    /* A Foundry Combat, when one genuinely exists (manual-attach play, or
+       ActionReader driven outside the director). Defeat is filtered here for the
+       same reason it is filtered by the injector: a corpse is not a participant,
+       and ActionReader had no notion of defeat at all — so a dead combatant
+       counted toward enemy_count and stayed a legal target. */
+    const combat = Array.isArray(scope?.combatants) || scope?.combatants?.size
+      ? scope
+      : (scope?.combat?.combat ?? scope?.actorData?.combat?.combat ?? this.getActiveCombat());
+    if (!combat) return null;
+
+    const ids = new Set();
+    for (const c of (combat.combatants ?? [])) {
+      const tid = c?.tokenId ?? c?.token?.id ?? null;
+      if (!tid) continue;
+      if (this.isDefeatedParticipant(c, c?.actor ?? c?.token?.actor ?? null)) continue;
+      ids.add(tid);
+    }
+    return ids.size ? ids : null;
+  },
+
+  /* The tokens that can actually PARTICIPATE — the pool every count and every
+     target pick must share. See participantScopeTokenIds for the scope contract.
+
+     Out of combat there is no roster, so the whole scene is the pool — that is
+     the pre-combat/exploration case and is unchanged. If scoping would somehow
+     empty the pool, fall back rather than blank it: a wrong count degrades a
+     decision, an empty pool makes every skill read as infeasible and the
+     creature stands there doing nothing. */
+  participantTokens(scope = null) {
+    const all = Array.from(canvas?.tokens?.placeables ?? []);
+    const ids = this.participantScopeTokenIds(scope);
+    if (!ids) return all;
+
+    const scoped = all.filter((tok) => {
+      const id = this.getTokenDocument(tok)?.id ?? null;
+      return Boolean(id) && ids.has(id);
+    });
+    if (scoped.length) return scoped;
+    /* The roster named creatures that are not on this canvas — almost always the
+       wrong scene being active, a known hazard here. Widening back to the scene
+       keeps the actor acting, but SILENTLY doing so restores the exact bug this
+       function exists to prevent, so it is announced. */
+    console.warn("[ActionReader] participant roster matched no token on this canvas "
+      + `(roster ${ids.size}, canvas ${all.length}) — falling back to the whole scene. `
+      + "Counts and targeting will include non-combatants. Wrong active scene?");
+    return all;
+  },
+
+  /* Defeat, read without importing the director: the Foundry combatant flag
+     first (what the defeat reactor stamps), then an HP<=0 fallback so the answer
+     is right even before the reactor has run. */
+  isDefeatedParticipant(combatant, actor) {
+    if (combatant?.isDefeated === true) return true;
+    if (combatant?.defeated === true) return true;
+    const props = this.getActorProps(actor);
+    const cur = Number(props?.[this.keys.hpCurrent]);
+    const max = Number(props?.[this.keys.hpMax]);
+    // Only treat 0 as defeat when the actor actually HAS an HP track; a doc with
+    // no max_hp reads cur=NaN and must not be silently dropped from the pool.
+    if (Number.isFinite(cur) && Number.isFinite(max) && max > 0 && cur <= 0) return true;
+    return false;
+  },
+
+  /* Count participants matching a target relation relative to a performer.
+
+     This is the SIDE head-count — "how many enemies are in this battle". It is
+     NOT the same question as "how many can THIS action target": an action's
+     `skill_target` picks a side, a count and a mode, and its own declared
+     filters narrow further. For that, ask the target survey (the BD injects it
+     as `context.targetSurvey`); this stays the cheap disposition count that the
+     `enemy_count` / `ally_count` pattern conditions are defined in terms of.
+
+     `scope` is the participantTokens contract — pass the ActionReader context. */
+  countSceneTargetsForRelation(performerActor, performerTokenDoc, relation, scope = null) {
+    const tokens = this.participantTokens(scope);
     const performerDisposition = this.getTokenDisposition(performerTokenDoc);
     const performerId = performerTokenDoc?.id ?? null;
 
@@ -520,6 +663,11 @@ export const ActionReaderCore = {
 
       const tokenDoc = this.getTokenDocument(tok);
       const isSelf = Boolean(performerId && tokenDoc?.id === performerId);
+      // Uncounted on every side — but NEVER hide a guest from ITSELF. "Nobody may
+      // target the guest" is about other creatures; applied to the performer it
+      // would make relation "self" count 0, and feasibility would silently drop
+      // any Self-targeted skill a guest ever gets.
+      if (!isSelf && this.isUntargetableActor(actor)) continue;
       const rel = this.relationToPerformer(this.getTokenDisposition(tokenDoc), performerDisposition);
 
       switch (relation) {
@@ -539,6 +687,16 @@ export const ActionReaderCore = {
   /* ---------------------------------------------------------------------- */
   /* Combat / token / disposition helpers                                   */
   /* ---------------------------------------------------------------------- */
+
+  /* The owner of the current battle, published on the module API rather than
+     imported — ActionReader stays free of every dependency on the Battle
+     Director, and what crosses the boundary is a token-id list and a function.
+     Null outside a battle, or if the director never published one; every
+     consumer degrades to its own standalone behaviour. */
+  battleProvider() {
+    try { return globalThis.FUCompanion?.api?.battleContext ?? null; }
+    catch (_e) { return null; }
+  },
 
   getActiveCombat() {
     return game.combats?.active ?? game.combat ?? null;

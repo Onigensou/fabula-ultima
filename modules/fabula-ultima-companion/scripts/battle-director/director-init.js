@@ -33,6 +33,8 @@ import { showBattleLoader, hideBattleLoader } from "./director-battle-loader.js"
 import { buildDirectorHud, dbPartyActorIds } from "./director-player-hud.js";
 import { extractAnimationUrlsFromActors } from "./director-animation.js";
 import { pWait, shouldRender } from "./presentation-clock.js";
+import { SimMode } from "./sim/sim-mode.js";
+import { resolveGuestRoster, ensureGuestPassive } from "../guest-roster/guest-roster-core.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -367,11 +369,68 @@ async function resolveEncounter(payload) {
 }
 
 // ─── Party resolution ──────────────────────────────────────────────────
-// Returns array of { actorUuid, actorId, name, slot, img }.
+// Returns array of { actorUuid, actorId, name, slot, img, isGuest }.
+//
+// `payload.party.members` is the DB roster (member_id_1..4), resolved upstream
+// by whichever entry point launched the battle — the Battle Prompt macro, the
+// Test Battle tool, a battle-end follow-up, the sim. GUESTS are merged in here,
+// at the one place every one of those paths funnels through, rather than in
+// each launcher: a guest is a property of the campaign, so a battle that starts
+// from the follow-up path should field the same guests as one from the prompt.
+//
+// Guests take slots after the real party (GUEST_SLOT_BASE) so ordering, and the
+// spawn layout that reads it, put them behind the PCs.
 
-function resolveParty(payload) {
+// Exported so the sim orders its guest clones identically instead of re-typing
+// the number (it builds its own member list and never calls resolveGuestMembers).
+export const GUEST_SLOT_BASE = 90;
+
+async function resolveGuestMembers(alreadyPresent) {
+  // A sim must never reach the LIVE guest actor: it clones the party precisely so
+  // a run cannot mutate real documents, and this function resolves real ones.
+  //
+  // That used to mean guests sat sims out entirely — which made guest behaviour
+  // the one thing a sim could not exercise. It no longer does: `sim-run` clones
+  // the deployed roster itself and passes the clones in as ordinary members
+  // carrying `isGuest`, which resolveParty honours. So the guests still arrive,
+  // and this path stays disabled so the live actor is never added ALONGSIDE its
+  // own clone.
+  if (SimMode.active) return [];
+
+  let roster = [];
+  try { roster = await resolveGuestRoster({ activeOnly: true }); }
+  catch (e) { warn("guest roster resolve failed — continuing without guests", e); return []; }
+
+  const out = [];
+  for (const [i, g] of roster.entries()) {
+    if (!g?.actorUuid) continue;
+    if (alreadyPresent.has(g.actorId)) continue;   // also a real party member
+    // Re-assert the Guest passive on the way in. Untargetability used to ride a
+    // persistent actor FLAG and could not drift; it now rides a derived AE that
+    // only a roster interaction repairs. Without this, an AE deleted or disabled
+    // between sessions (effects panel, actor re-import, a rewind restore
+    // replaying a pre-AE snapshot) deploys a guest that is targetable AND still
+    // undefeatable — an unkillable damage sponge, a state the old flag could
+    // never reach. Battle start is the last point where we still own the guest
+    // list, so it is the right place to make the guarantee.
+    await ensureGuestPassive(g.actor);
+    out.push({
+      actorUuid: g.actorUuid,
+      actorId: g.actorId,
+      name: g.name,
+      slot: GUEST_SLOT_BASE + i,
+      img: g.img ?? null,
+      isGuest: true,
+    });
+  }
+  if (out.length) log(`Guests joining: ${out.map((g) => g.name).join(", ")}`);
+  return out;
+}
+
+async function resolveParty(payload) {
   const members = Array.isArray(payload?.party?.members) ? payload.party.members : [];
   const out = [];
+  const seen = new Set();
   for (const m of members) {
     if (!m?.actorUuid) { warn("party member has no actorUuid", m); continue; }
     out.push({
@@ -380,8 +439,11 @@ function resolveParty(payload) {
       name: m.name,
       slot: m.slot ?? 99,
       img: m.img ?? null,
+      isGuest: !!m.isGuest,
     });
+    if (m.actorId) seen.add(m.actorId);
   }
+  out.push(...(await resolveGuestMembers(seen)));
   // Stable order by slot
   out.sort((a, b) => Number(a.slot) - Number(b.slot));
   return out;
@@ -910,7 +972,7 @@ async function runInPlaceReinforceInit(payload, battleScene) {
   // 1. Resolve enemies (the boss) + party roster.
   const enemies = await resolveEncounter(payload);
   if (!enemies.length) warn("in-place reinforce: no enemies resolved (check manualPicks)");
-  const party = resolveParty(payload);
+  const party = await resolveParty(payload);
 
   // 2. Adopt existing party tokens; spawn any roster member not on the scene.
   const adoptedPartyTokens = [];
@@ -1079,7 +1141,7 @@ export async function runDirectorInit(payload) {
 
   // ── 4. Resolve party members from payload.party.members. These come from
   // the DB resolver in the Battle Prompt (member_id_1..4 in the game DB).
-  const party = resolveParty(payload);
+  const party = await resolveParty(payload);
   log(`Resolved ${party.length} party members`);
   if (!party.length) {
     warn("No party members resolved — combat will be enemy-only. Check that the game DB has member_id_1..4 set.");

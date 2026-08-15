@@ -466,7 +466,30 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "action_pattern_table": {},
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "mp",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Crescent Cut",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "30",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Moonlight Blade",
+          "action_pattern_priority": "4",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "lowest_hp",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
       "activation": "0",
       "affinity_1": "NA",
       "affinity_2": "NA",

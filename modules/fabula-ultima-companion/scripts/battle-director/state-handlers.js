@@ -13,10 +13,14 @@ import { isGmOverrideEmpty, summarizeGmOverride } from "./gm-card-override.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, getMaxActionTargets, attackRangeBlockedBy } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, attackRangeBlockedBy } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
+// The shared pre-picker target resolution — the same question the autopilot asks
+// before it chooses an action. See target-survey.js's header for why the count
+// and the pick must come from one place.
+import { surveyActionTargets } from "./target-survey.js";
 import { postActionCard, BattlefieldActionCard, composeActionCardRenderPayload } from "./action-card.js";
 import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
@@ -98,6 +102,7 @@ import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
 import { computeActionProfile, projectProfileToActionResult, resolveChosenChainRows } from "./action-profile.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
+import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
@@ -206,8 +211,30 @@ export function installApplierReaperWatcher(director) {
 // defeated (isDefeatedLive: HP<=0 / defeated flag) OR the side has been emptied
 // entirely (all members fled / removed / destroyed). Empty = wiped so a side
 // cleared by NON-HP removal (leave_combat, destroy_summon, banish) is caught too.
+// A combatant only counts toward its side's WIPE tally if losing it could ever
+// happen. A Guest is undefeatable by design (defeat-reactor skips it in BOTH
+// passesActorGates and evaluateDefeatStatus), so `isDefeatedLive()` returns
+// false for it forever — and `every()` over a list containing one could never be
+// true. Net effect before this filter: with a guest on the party side, TOTAL
+// PARTY KILL was UNDETECTABLE. Every PC could be at 0 HP and the fight would run
+// on, because the one body that cannot die kept the side "alive".
+//
+// Deliberately keyed on UNDEFEATABLE (the guest marker), not on the
+// `cannot_be_targeted_by` targeting contract: a creature that is merely hard to
+// target can still be killed, so it must keep counting here. These are two
+// different questions and conflating them would silently drop real combatants
+// from the tally.
+function countsForSideWipe(c) {
+  return !isGuestActor(c?.actorDoc ?? null);
+}
+
 function sideIsWiped(dc, side) {
-  const members = dc.combatants.filter((c) => c.side === side);
+  const all = dc.combatants.filter((c) => c.side === side);
+  if (!all.length) return true;
+  const members = all.filter(countsForSideWipe);
+  // A side made up ENTIRELY of undefeatable helpers has no one left who could
+  // lose, so it counts as wiped — otherwise a fight where every PC is down but a
+  // guest remains would never end.
   if (!members.length) return true;
   return members.every((c) => c.isDefeatedLive());
 }
@@ -1370,155 +1397,12 @@ function queuePostResolveTrigger(director, config) {
   director.ctx._postResolveTriggers.push(config);
 }
 
-// Extract a formula-evaluable target count from a free-text
-// `skill_target` field.
-//
-// Examples (after caller has already classified mode by the presence of
-// "up to" / "all" / etc):
-//   "Up to SL creatures"   isUpTo=true  → resolver(SL)
-//   "up to 3 creatures"    isUpTo=true  → 3
-//   "SL enemies"           isUpTo=false → resolver(SL)
-//   "One creature"         isUpTo=false → 1   (via the "one"/"an" alias)
-//   "3 allies"             isUpTo=false → 3
-//
-// On any parse failure → 1 (the safe default). Final value is clamped
-// to ≥1 and floored to an integer; non-integer formulas (rare) round
-// down so author intent of "SL/2" reads as "half SL targets".
-//
-// The noun list is generous — it strips trailing keywords like
-// `creature(s) / enemy(ies) / ally/allies / target(s) / foe(s) /
-// opponent(s)` so the formula lifted out is just the math expression.
-export function extractTargetCountFromText(text, { isUpTo, resolver }) {
-  if (!text) return 1;
-  let expr = isUpTo
-    ? String(text).replace(/^.*?up\s+to\s+/i, "")
-    : String(text);
-  // Strip a trailing noun phrase so "SL creatures" → "SL" and "3
-  // enemies" → "3". If nothing matches, the whole string is kept and
-  // evaluated as-is (handles bare "SL" or "3").
-  expr = expr.replace(/\s+(creatures?|enemies|enemy|allies|ally|targets?|foes?|opponents?)\b.*$/i, "").trim();
-  // Common English number-word aliases used in skill text. RAW often
-  // writes "Up to three creatures" or "One creature" — treat the word
-  // forms as their numeric values. Anything beyond ten (rare in FU) the
-  // author can spell as a literal digit.
-  const wordNum = {
-    one: 1, single: 1, a: 1, an: 1,
-    two: 2, three: 3, four: 4, five: 5,
-    six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
-  };
-  const lookup = wordNum[expr.toLowerCase()];
-  if (lookup != null) return lookup;
-  if (!expr) return 1;
-  const n = evaluateFormula(expr, resolver, 1);
-  return Math.max(1, Math.floor(Number.isFinite(n) ? n : 1));
-}
-
-// SINGLE-SOURCE target-plan resolution. Parses a `skill_target` string into the
-// picker mode + count, clamps to the eligible pool, and applies the per-target
-// (×T) affordability cap — in ONE place, so every targeting site agrees. This
-// exists because the parse+cap logic was duplicated across THREE call sites
-// (compose-action's `composeAttack` + `resolveTargetsForSource` on the PLAYER's
-// client, and `resolveActionTargets` GM-side); a cross-cutting concern like the
-// affordability cap then has to be added everywhere or it silently misses the
-// path a live cast actually takes. Callers keep their OWN routing (return a
-// bundle / route a picker / send empty for GM-side random) but read the mode +
-// count from here.
-//
-// Returns `{ mode, count, randomize, capped, capNote }`:
-//   mode      — "random" | "all" | "up_to" | "exact". (Self is a disposition
-//               fact the caller handles before calling — not a count parse.)
-//   count     — targets to offer, clamped to the eligible pool (and to the
-//               affordable max for up_to / random-up-to). For "all" = pool size.
-//   randomize — random AND up-to (a variable random count).
-//   capped    — true iff the affordability cap reduced the count.
-//   capNote   — ready-to-toast string when capped (else null).
-//
-// `eligibleCount` = size of the already-filtered eligible pool (Infinity if the
-// caller hasn't built it yet). The affordability cap fires only for the
-// player-choice variable modes; "can't afford even one" is left to the
-// confirm-time gate (which surfaces the precise shortfall).
-export function resolveTargetPlan({ actor, skill, skillTargetText, eligibleCount = Infinity, round = 0, maxMpCost = null }) {
-  const text = String(skillTargetText ?? "").trim();
-  // Build the count resolver from the ACTOR alone — a backing skill Item is NOT
-  // required. Literal/word counts ("Up to two creatures") and actor-derived
-  // formulas (CHAR_LEVEL, CUR_HP, …) resolve without one; SL just defaults to 1.
-  // This is what lets a PC weapon attack (skill === null — the equipped weapon
-  // drives targeting, not a skill Item) honor a multi-target `skill_target`
-  // instead of silently collapsing to a single target. extractTargetCountFromText
-  // tolerates a null resolver (literal/word numbers don't need it; an actor-less
-  // formula falls back to 1), so the no-actor case keeps its old "1" behavior.
-  const resolver = actor
-    ? buildSkillResolver({ actor, payload: null, skill, round })
-    : null;
-  const countFrom = (t, isUpTo) => extractTargetCountFromText(t, { isUpTo, resolver });
-  const poolClamp = (n) => Math.max(1, Number.isFinite(eligibleCount) ? Math.min(n, eligibleCount) : n);
-
-  const isRandom = /\brandom\b/i.test(text);
-  const isAll    = /\ball\b/i.test(text);
-  const isUpTo   = /up\s+to/i.test(text);
-
-  let mode = "exact";
-  let count = 1;
-  let randomize = false;
-  if (isRandom) {
-    mode = "random";
-    const textForCount = text.replace(/\brandom\b/gi, "").replace(/\s+/g, " ").trim();
-    randomize = isUpTo;
-    count = countFrom(textForCount, isUpTo);
-  } else if (isAll) {
-    mode = "all";
-    count = Number.isFinite(eligibleCount) ? Math.max(1, eligibleCount) : 1;
-  } else if (isUpTo) {
-    mode = "up_to";
-    count = countFrom(text, true);
-  } else {
-    count = countFrom(text, false);
-  }
-  if (mode !== "all") count = poolClamp(count);
-
-  // Affordability cap — player-choice variable counts only (up_to / random-up-to).
-  let capped = false;
-  let capNote = null;
-
-  // Fatigue single-target cap. A `max_action_targets` AE (Fatigue Advanced
-  // Debuff → cap 1) no longer BLOCKS a variable "Up to X" action (the picker
-  // keeps it available) — instead it clamps the target count down to the cap, so
-  // the fatigued caster still acts, against a single creature. Only the variable
-  // families are clamped (up_to / random-up-to), mirroring the picker gate:
-  // fixed-multi (All / N creatures / Multi) stay blocked upstream. Runs before
-  // the affordability/MP caps so those still narrow further if needed.
-  if ((mode === "up_to" || (mode === "random" && randomize)) && count > 1) {
-    const { cap, reason } = getMaxActionTargets(actor);
-    if (Number.isFinite(cap) && cap < count) {
-      count = Math.max(1, cap);
-      capped = true;
-      capNote = `${skill?.name ?? "Action"}: ${reason || "restricted"} — limited to ${count} target${count === 1 ? "" : "s"}.`;
-    }
-  }
-  if ((mode === "up_to" || (mode === "random" && randomize)) && count > 1) {
-    const cap = affordableTargetCount(actor, skill?.system?.props?.cost, count);
-    if (cap.capped) {
-      count = cap.count;
-      capped = true;
-      const resTxt = (cap.missing ?? []).map((m) => m.label).join("/") || "resources";
-      capNote = `${skill?.name ?? "Action"}: only enough ${resTxt} for ${count} target${count === 1 ? "" : "s"} — capped.`;
-    }
-    // Free-action MP-cap clamp (Bimagus / Acceleration) — a freeOfCost ×T spell
-    // pays nothing, so the affordability cap above never clamps it. Clamp the
-    // up-to-N count so the spell's printed MP stays within the grant cap, so a
-    // free ×T spell auto-fits the cap during targeting instead of over-picking
-    // and getting bounced by COMPUTE's re-check. Same variable-count gate.
-    if (maxMpCost != null && count > 1) {
-      const mpCap = mpCapTargetCount(actor, skill?.system?.props?.cost, maxMpCost, count);
-      if (mpCap.capped) {
-        count = mpCap.count;
-        capped = true;
-        capNote = `${skill?.name ?? "Action"}: capped to ${count} target${count === 1 ? "" : "s"} to fit the ${Math.floor(Number(maxMpCost))} MP free-action limit.`;
-      }
-    }
-  }
-  return { mode, count, randomize, capped, capNote };
-}
+// `extractTargetCountFromText` and `resolveTargetPlan` now live in
+// target-survey.js — they are the parsing half of the same question the autopilot
+// asks, and splitting the parse from the pool is what let the two disagree.
+// Import them from there; they are deliberately NOT re-exported here, because
+// re-exporting would preserve the state-handlers -> compose-action -> state-handlers
+// import cycle that moving them removed.
 
 function describeActionForRewind(ar) {
   if (!ar) return "";
@@ -1945,6 +1829,17 @@ function escapeHtmlMin(s) {
   }[m]));
 }
 
+// Identity of "this creature's action, this round" — stable across the several
+// CARDS one action can post (a multi-pass attack posts one per pass) and derived
+// identically from a turn snapshot (DECLARE) and from an actionResult's attacker
+// (CONFIRM). Used to carry two summon-autopilot decisions across cards: whether
+// DECLARE auto-chose the action, and whether a human has already held it.
+function summonTurnKey(director, snapLike) {
+  const round = director?.dCombat?.round ?? 0;
+  const who = snapLike?.tokenUuid ?? snapLike?.actorUuid ?? snapLike?.tokenId ?? "?";
+  return `${round}:${who}`;
+}
+
 // ─── TURN_START ────────────────────────────────────────────────────────
 // In Phase 2 this state is responsible for *resolving who acts* on the
 // current side via the turn picker. nextTurn() (in TURN_END) only flips the
@@ -1983,8 +1878,22 @@ const TurnStart = {
         // keeps the manual picker so players still choose who acts; whoever is
         // picked, DECLARE decides per-combatant whether to auto-run it. Null
         // return → fall through to the normal single/multi picker paths.
-        if (isAutopilotEnabled()) {
-          const aiPool = eligible.filter(isAiControlledCombatant);
+        // The SUMMON autopilot widens this the same way for summons only: with
+        // the enemy toggle off, an eligible pool made entirely of automatable
+        // summons (the party's PCs have all acted, only the Numen is left) still
+        // auto-picks instead of parking on the turn picker. A pool that still
+        // holds an un-acted PC keeps the manual picker either way — turn ORDER
+        // stays the player's call, which is the whole reason the party side
+        // never auto-picks wholesale.
+        // NOTE the two clauses are independent, not nested: a summon qualifies
+        // because it is a SUMMON, never because of who owns its actor sheet.
+        // The Numen's base actor (Crysta) is owned by the summoner's player, so
+        // `isAiControlledCombatant` is FALSE for it — gating summons behind that
+        // would exclude exactly the creatures this feature exists for.
+        if (isAutopilotEnabled() || isSummonAutopilotEnabled()) {
+          const autoDrivable = (c) => (isAutopilotEnabled() && isAiControlledCombatant(c))
+            || isAutomatedSummon(c);   // party-side summons only — see summon-autopilot
+          const aiPool = eligible.filter(autoDrivable);
           const wholeSideAi = aiPool.length > 0 && aiPool.length === eligible.length;
           if (wholeSideAi) {
             // Polish: hold the enemy automation until this round's opening
@@ -2507,11 +2416,25 @@ const Declare = {
     // confirms. A null return (no Action Pattern, nothing feasible, unsupported
     // command, or an action-gating debuff) falls through to the normal manual
     // composeAction below — the failsafe. See [[project_action_pattern_ai]].
-    if (isAutopilotEnabled() && isAiControlledTurn(director)) {
+    // The same decision path serves an automated SUMMON on its own switch — a
+    // summon IS a non-player combatant, so `autopilotDecideAction` needs no
+    // summon-specific branch; only the gate differs. A summon with a blank
+    // Action Pattern still returns null here and falls through to the manual
+    // menu, exactly like an unpatterned monster.
+    // `snap` — not the director's current combatant — decides whether the SUMMON
+    // gate applies: a free action is declared by the REACTOR on someone else's
+    // turn, so asking "is the current combatant a summon?" would answer for the
+    // wrong creature and hand a PLAYER's free action to the AI.
+    if ((isAutopilotEnabled() && isAiControlledTurn(director)) || isAutomatedSummonTurn(director, snap)) {
       try {
         const autoBundle = await autopilotDecideAction(director, snap);
         if (autoBundle) {
           log(`DECLARE: autopilot → ${autoBundle.command} for ${snap.name}`);
+          // Remember that the ACTION was machine-chosen. CONFIRM only auto-confirms
+          // what DECLARE auto-declared: if the pattern was blank and a human had to
+          // compose from the Octopath menu, that human is already at the keyboard
+          // and their card must not confirm itself while they read the roll.
+          director.ctx.autoDeclaredTurnKey = summonTurnKey(director, snap);
           applyComposedBundleAndAdvance(director, autoBundle);
           return;
         }
@@ -2844,8 +2767,15 @@ const Declare = {
 //   Drives mode, category, and count. Defaults to "One Enemy".
 // opts.attackerActor     — resolved actor doc; needed for formula counts (SL…).
 // opts.skill             — item doc; used for intent classification + formulas.
-// opts.eligiblePostFilter — optional fn(pool) → pool applied AFTER category
-//   pool building. Attack uses this for applyAttackRangeGate (Covered/Vanish).
+// opts.eligiblePostFilter — optional fn(pool) → pool for narrowing that is NOT a
+//   property of the action — i.e. derived from THIS TURN's state, like Study's
+//   already-studied exclusion. Narrowing the action DECLARES (target_eligibility,
+//   weapon range, action_pool_focus) must NOT come through here: the survey reads
+//   those itself so the AI's count sees them too. A closure passed in here is
+//   invisible to every other consumer, which is how the count and the pick drifted.
+// opts.attackWeapon      — the weapon snapshot, for the RAW range gate
+//   (Covered can't be melee-targeted, Vanish likewise). Declarative replacement
+//   for the range-gate closure Attack used to pass as eligiblePostFilter.
 // opts.excludeSelf       — strips the attacker's own token from the pool.
 //   Pass true for all attack-type actions (can't target yourself in combat).
 // opts.usingPreComposed  — when true + composedTargetUuids has entries, skip
@@ -2867,6 +2797,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     usingPreComposed                  = false,
     composedTargetUuids               = null,
     attackRange                       = null,
+    attackWeapon                      = null,
     titleText:          forcedTitle   = null,
     cancelLabel                       = "Cancel",
     secondaryAction                   = null,
@@ -2919,94 +2850,55 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     return { ok: true, cancelled: false, targets, targetUuids: pickedUuids, namedPicks };
   }
 
-  const text   = String(rawText ?? "").trim().toLowerCase();
-  const isSelf = !text || /^self$/i.test(text);
+  // ── Survey: side, pool, mode + count ────────────────────────────────────
+  // Everything between the target text and the picker now lives in
+  // `target-survey.js`, and the autopilot asks it the SAME question before it
+  // chooses an action. Computing it once is the whole point: the number the AI
+  // decides on and the pool this picker offers can no longer be different
+  // populations. (They were: an AI counting canvas tokens picked an all-enemy
+  // skill against a scene of bystanders while the picker knew of one enemy.)
+  //
+  // Narrowing the ACTION declares — `target_eligibility`, the weapon range gate,
+  // `action_pool_focus` — is read by the survey itself, so the AI sees it too.
+  // Only narrowing derived from THIS TURN's state (Study's already-studied
+  // exclusion) still arrives as a postFilter.
+  //
+  // NOTE: the text is passed AS AUTHORED. It used to be lower-cased here, which
+  // zeroed every case-sensitive identifier in a count formula ("Up to (1 + 98 *
+  // HAS_SKILL_PILLAGE) creatures" resolved to 1) while the player-side composer
+  // passed it raw — the same skill offered different counts depending on who
+  // resolved it. Every mode test is case-insensitive, so nothing wanted this.
+  const text   = String(rawText ?? "").trim();
+  const survey = surveyActionTargets({
+    dCombat:         director.dCombat,
+    combat:          director.combat,
+    performer:       attackerSnap,
+    performerActor:  attackerActor,
+    action:          skill,
+    weapon:          attackWeapon,
+    skillTargetText: text,
+    excludeSelf,
+    postFilter:      eligiblePostFilter,
+    round:           director.dCombat?.round ?? 0,
+  });
 
-  // ── Build eligible pool ────────────────────────────────────────────────
-  let category = "enemy";
-  let eligibleForPicker;
-
-  if (isSelf) {
-    eligibleForPicker = [attackerSnap];
-  } else {
-    // Target side: an EXPLICIT side in skill_target wins (creature = either side;
-    // enemy; ally). The action-intent heuristic is only a TIEBREAKER for
-    // side-agnostic text ("One Target", "Up to 3") — it must NOT override an
-    // explicit "Enemy"/"Ally" (the bug that flipped Shadow Possession's "All
-    // Enemy" to allies because a damageless Active classifies as "aid").
-    const wantsCreature = /creature|creatures/i.test(text);
-    const wantsEnemy    = /enem/i.test(text);
-    const wantsAllyText = /\ball(?:y|ies)\b/i.test(text);
-    const intent        = skill ? classifyActionIntent(skill) : "harmful";
-    category = wantsCreature ? "any"
-      : wantsEnemy    ? "enemy"
-      : wantsAllyText ? "ally"
-      : (intent === "aid" ? "ally" : "enemy");
-    eligibleForPicker   = director.dCombat
-      ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category })
-      : snapshotEligibleTargets(director.combat, attackerSnap, { category });
-    if (excludeSelf) {
-      eligibleForPicker = eligibleForPicker.filter((e) => e.tokenUuid !== attackerSnap.tokenUuid);
-    }
-    if (eligiblePostFilter) {
-      eligibleForPicker = eligiblePostFilter(eligibleForPicker);
-    }
+  // A refusal is NOT an empty pool — it means the survey could not build one
+  // (performer absent from the roster, no combat, a narrowing rule that threw).
+  // The picker must not open over a pool that was never built, so bail the same
+  // way an empty pool does, but say which it was.
+  if (!survey.ok) {
+    warn(`resolveActionTargets: survey could not answer (${survey.reason}) for ${attackerSnap?.name ?? "?"}`);
+    ui.notifications?.warn(`Could not resolve targets for this action (${survey.reason}).`);
+    return { ok: false, cancelled: false, reason: "no_eligible", targets: [], targetUuids: [] };
   }
 
-  // ── Action-level pool focus (e.g. "Roulette — highest Burn stack") ───────
-  // A skill can declare an effect_table row with `action_pool_focus: true` and a
-  // `focus_max_formula`; we narrow the eligible pool to the candidate(s) with the
-  // MAX score of that formula (ties kept) BEFORE the picker/roulette runs. So
-  // Inferex Chomp (skill_target "One Random Creature" + focus "AE_CHARGES_BURN")
-  // rolls its roulette only over the highest-Burn creatures, randomizing ties —
-  // exactly the RAW "Roulette (creature with the highest Burn stack)" intent.
-  // Per-candidate score uses the candidate's own actor (resolved from its token),
-  // mirroring skill-targeting's target_filter/focus_max_formula resolver.
-  if (!isSelf && skill && eligibleForPicker.length > 1) {
-    const et = skill.system?.props?.effect_table ?? {};
-    const focusRow = Object.values(et).find(
-      (r) => r?.action_pool_focus === true && String(r?.focus_max_formula ?? "").trim()
-    );
-    if (focusRow) {
-      const round = director.dCombat?.round ?? 0;
-      let best = -Infinity;
-      const scored = [];
-      for (const e of eligibleForPicker) {
-        let a = null;
-        try { const td = await fromUuid(e.tokenUuid); a = td?.actor ?? td?.parent ?? null; } catch { /* gone */ }
-        const score = a
-          ? (Number(evaluateFormula(focusRow.focus_max_formula, buildSkillResolver({ actor: a, payload: null, skill, round }), 0)) || 0)
-          : -Infinity;
-        if (score > best) best = score;
-        scored.push({ e, score });
-      }
-      eligibleForPicker = scored.filter((s) => s.score === best).map((s) => s.e);
-      director.ctx.eligibleTargets = eligibleForPicker;
-      log(`resolveActionTargets: pool focus "${focusRow.focus_max_formula}" → ${eligibleForPicker.length} max-scorer(s) (score ${best})`);
-    }
-  }
-
-  // ── Determine picker mode (single-source resolveTargetPlan) ─────────────
-  // Self is a disposition fact handled above (isSelf); everything else — mode,
-  // count, randomize, AND the ×T affordability cap — comes from the one shared
-  // plan resolver, identical to the player-side composer (compose-action).
-  let pickerMode    = "exact";
-  let count         = 1;
-  let randomizeCount = false;
-
-  if (isSelf) {
-    pickerMode = "self";
-  } else {
-    const plan = resolveTargetPlan({
-      actor: attackerActor, skill, skillTargetText: text,
-      eligibleCount: eligibleForPicker.length,
-      round: director.dCombat?.round ?? 0,
-    });
-    pickerMode     = plan.mode;
-    count          = plan.count;
-    randomizeCount = plan.randomize;
-    if (plan.capNote) ui.notifications?.info(plan.capNote);
-  }
+  const isSelf            = survey.isSelf;
+  const category          = survey.category;
+  const eligibleForPicker = survey.eligible;
+  const pickerMode        = survey.mode;
+  const count             = survey.count;
+  const randomizeCount    = survey.randomize;
+  if (survey.capNote) ui.notifications?.info(survey.capNote);
 
   // ── Guard against empty pool ────────────────────────────────────────────
   if (!isSelf && !eligibleForPicker.length) {
@@ -3372,26 +3264,12 @@ const Target = {
         ? `${attackerSnap.name}: randomizing target for ${skill.name}`
         : _isAutoSkillPick ? null
         : `${attackerSnap.name}: pick target for ${skill.name}`;
-      // Per-candidate eligibility filter on the GM-side picker — the SAME
-      // top-level `target_eligibility` column compose-action.js honors on the
-      // player client, wired here so a GM-side / pre-composed resolve gates
-      // identically (e.g. Unicorn Dance: "BONDED_TO_SOURCE >= 1" → only allies
-      // Bonded to you; the caster fails its own bond test, so self drops too).
-      // Empty by default → zero change for every existing skill.
-      const _tgtEligibility = String(skill.system?.props?.target_eligibility ?? "").trim();
-      const _tgtFilterFn = _tgtEligibility
-        ? (pool) => pool.filter((e) => {
-            const cand = game.actors?.get?.(e.actorId) ?? null;
-            if (!cand) return false;
-            const resolver = buildSkillResolver({
-              actor: cand,
-              payload: { sourceActorUuid: attackerActor.uuid },
-              skill,
-              round: director.dCombat?.round ?? 0,
-            });
-            return Number(evaluateFormula(_tgtEligibility, resolver, 0)) > 0;
-          })
-        : null;
+      // `target_eligibility` (e.g. Unicorn Dance: "BONDED_TO_SOURCE >= 1" → only
+      // allies Bonded to you) used to be built here as a closure and handed in as
+      // a post-filter. It is DECLARED ON THE SKILL, so the survey now reads it
+      // itself — which is what makes it visible to the autopilot as well. Before,
+      // the AI counted four allies, committed to the skill, and the picker then
+      // filtered the pool to zero and aborted the turn.
       const skillTargeting = await resolveActionTargets(director, attackerSnap, {
         skillTargetText,
         attackerActor,
@@ -3399,7 +3277,6 @@ const Target = {
         usingPreComposed:    usingPreComposed,
         composedTargetUuids: composedSpell?.targetUuids,
         titleText:           _skillTitle,
-        eligiblePostFilter:  _tgtFilterFn,
       });
       if (!skillTargeting.ok) {
         director.dispatch({ type: (skillTargeting.cancelled || skillTargeting.reason === "no_eligible") ? INTENTS.TARGET_BACK : INTENTS.ABORT });
@@ -3910,16 +3787,17 @@ const Target = {
     }
     try { attackActorDoc = attacker?.actorUuid ? await fromUuid(attacker.actorUuid) : null; } catch {}
 
-    // RAW Core p.70 — Covered creatures can't be melee-targeted. The
-    // range gate is passed as a post-filter so the unified resolver still
-    // builds the full category pool (needed for random/creature modes)
-    // and then applies coverage + Vanish exclusions on top.
+    // RAW Core p.70 — Covered creatures can't be melee-targeted (Vanish
+    // likewise). The gate is declared by the WEAPON, so it is passed as the
+    // weapon rather than as a closure: the survey applies it after building the
+    // full category pool (still needed for random/creature modes), and the
+    // autopilot's count sees the same exclusions the picker will.
     const attackTargeting = await resolveActionTargets(director, attacker, {
       skillTargetText:    weaponSkillTarget,
       attackerActor:      attackActorDoc,
       skill:              attackSkillItem,
       excludeSelf:        true,
-      eligiblePostFilter: (pool) => applyAttackRangeGate(pool, currentWeapon),
+      attackWeapon:       currentWeapon,
       usingPreComposed:   !isMultiPassReEntry,
       composedTargetUuids: director.ctx.pickedTargetUuids,
       attackRange:        currentWeapon?.range ?? null,
@@ -5464,6 +5342,38 @@ const Confirm = {
     // card + roll, so a crit on any pass still gets its cinematic.
     playCritCutin(ar);
 
+    // Summon auto-confirm — the one place the summon autopilot goes FURTHER than
+    // the enemy one, which stops dead at this card. When the acting creature is
+    // an automated summon, hand the card a veto window: it renders normally,
+    // shows a countdown, and confirms itself when the countdown expires. Any
+    // interaction (click, key, reaction decision) cancels it permanently and the
+    // card reverts to a plain manual card. Resolved from the DirectorCombatant
+    // when we have one (it carries the live tokenDoc), else from the attacker
+    // token itself — a mid-chain spawn may not be in the roster yet.
+    let autoConfirm = null;
+    try {
+      if (isSummonAutopilotEnabled()) {
+        const actingDc = director.dCombat?.combatants
+          ?.find?.((c) => c.tokenUuid === ar.attacker?.tokenUuid) ?? null;
+        const turnKey = summonTurnKey(director, ar.attacker);
+        // Three conditions, all required:
+        //   • the actor is a party-side summon,
+        //   • DECLARE chose the action (a hand-composed card is a human's card),
+        //   • nobody has already held THIS turn. A hold has to outlive the card
+        //     it was made on: a multi-pass action posts one card per pass, and a
+        //     reload re-enters CONFIRM with a fresh one. Without the turn key,
+        //     "held" silently expired between passes.
+        const held = director.ctx.summonVetoHeldTurn && director.ctx.summonVetoHeldTurn === turnKey;
+        const autoDeclared = director.ctx.autoDeclaredTurnKey === turnKey;
+        if (actingDc && isAutomatedSummon(actingDc) && autoDeclared && !held) {
+          autoConfirm = { ms: summonVetoMs(), reason: "summon-autopilot", turnKey };
+          log(`CONFIRM: summon autopilot armed for ${ar.attacker?.name ?? "?"} — auto-confirm in ${Math.round(autoConfirm.ms / 1000)}s unless vetoed`);
+        } else if (actingDc && isAutomatedSummon(actingDc)) {
+          log(`CONFIRM: summon ${ar.attacker?.name ?? "?"} card stays manual (${held ? "held earlier this turn" : "action was composed by hand"})`);
+        }
+      }
+    } catch (e) { warn("CONFIRM: summon auto-confirm arm threw — card stays manual", e); }
+
     const result = await postActionCard({
       director,
       kind: ar.kind,
@@ -5473,6 +5383,9 @@ const Confirm = {
         // owns/derives below (invoke-stamped attacker, post-splice targets +
         // perTargetResults, live cardReactions, the onAddTargetApply callback).
         ...composeActionCardRenderPayload(ar),
+        // Non-null only for an automated summon's own card (see above). After
+        // the spread so a stale render-payload key can never win.
+        autoConfirm,
         attacker: { ...ar.attacker, invokeCapability, invokePointCount },
         attackerActor,
         targets: cardTargets,

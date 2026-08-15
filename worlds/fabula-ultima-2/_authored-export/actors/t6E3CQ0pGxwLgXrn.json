@@ -10312,7 +10312,7 @@
       "rotation": 0,
       "scaleX": 1.14,
       "scaleY": 1.14,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -10468,7 +10468,7 @@
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.C0dAFeczpsVl7LDZ"
         },
         "CNKnuIJzsIVPR0GD": {
-          "consume_description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong>&nbsp;die by 1 stage&nbsp;</em>(to a maximum for D12))<em>&nbsp;for the rest of the scene.</em></p></li></ul>",
+          "consume_description": "<ul><li><p><em>Target ally gains <strong>Strong</strong> (increase their <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "id": "${item.id}",
           "name": "Blue Bovine",
           "quantity": 2,
@@ -10644,7 +10644,7 @@
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.s7pxuXGSn60zA3Bi"
         },
         "vS9KOLFe1mIhiJBi": {
-          "consume_description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
+          "consume_description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "id": "${item.id}",
           "name": "Café au Lait",
           "quantity": 1,
@@ -10722,6 +10722,14 @@
         }
       },
       "gold_tile_percentage": "15",
+      "guest_table": {
+        "0": {
+          "$deleted": false,
+          "guest_active": true,
+          "guest_id": "JNewwFN6zvDk7Bfn",
+          "guest_name": "Kalina"
+        }
+      },
       "hazard_tile_percentage": "20",
       "healing_tile_percentage": "5",
       "id": "t6E3CQ0pGxwLgXrn",
@@ -11146,7 +11154,7 @@
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.zwKM2ITKA19U0coI"
         }
       },
-      "member_currenthp_1": "88",
+      "member_currenthp_1": "98",
       "member_currenthp_2": "96",
       "member_currenthp_3": "166",
       "member_currenthp_4": "111",
@@ -11174,7 +11182,7 @@
       "member_level_2": "41",
       "member_level_3": "41",
       "member_level_4": "41",
-      "member_maxhp_1": "88",
+      "member_maxhp_1": "98",
       "member_maxhp_2": "96",
       "member_maxhp_3": "166",
       "member_maxhp_4": "111",
@@ -11834,7 +11842,7 @@
     },
     "statusEffects": {},
     "template": "WpwYah7A9Vync3r6",
-    "templateSystemUniqueVersion": 938780200
+    "templateSystemUniqueVersion": 1276041954
   },
   "type": "character"
 }

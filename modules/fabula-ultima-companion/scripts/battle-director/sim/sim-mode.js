@@ -30,6 +30,7 @@
 
 import { log, warn } from "../logger.js";
 import { Journal } from "./sim-journal.js";
+import { setDwellSuppressed } from "../presentation-clock.js";
 
 // ── Pacing ─────────────────────────────────────────────────────────────────
 // watch — readable in real time; you spectate the fight like a replay.
@@ -249,6 +250,14 @@ export const SimMode = {
     _state.focus = null;
     _state.scripts = [];
     _state.active = true;
+    // AFTER `_state.active`, deliberately. Both clearers — `end()` and
+    // `forceEndSim()` — return early when the sim is not active, so setting this
+    // any earlier means a throw in between leaves it stuck TRUE for the rest of
+    // the page session, silently stripping every cinematic from the next REAL
+    // battle on this client. Nobody is watching a sim, so presentation dwell is
+    // pure cost; `watch` pace is the exception, since that one exists to be
+    // watched.
+    setDwellSuppressed(_state.config.pace !== "watch");
     installDiceOverride();
 
     // STANDALONE reactions (turn_start / turn_end / conflict_start / round_*) ride the
@@ -279,6 +288,9 @@ export const SimMode = {
   // real GM). Every caller wraps its run in try/finally around this.
   end() {
     if (!_state.active) return;
+    // Unconditional and FIRST: leaving this set would silently strip every
+    // cinematic from the next real battle on this client.
+    setDwellSuppressed(false);
     _state.active = false;
     _state.scripts = [];
     try { delete globalThis.__FU_HARNESS_ACCEPT_PASSIVES__; } catch { globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ = undefined; }

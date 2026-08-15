@@ -19211,20 +19211,12 @@
         "type": "character",
         "items": [
           {
-            "id": "K5C19MLqfJjZvZAp",
-            "name": "Draconic Roar"
-          },
-          {
             "id": "uo5X0wsuKZv7dIVJ",
             "name": "Dragonfire Dive"
           },
           {
-            "id": "ww3HMBYCQDamW2yK",
-            "name": "Dragonskull Helm"
-          },
-          {
-            "id": "C6uFFJWoqLcPIAQi",
-            "name": "Guest"
+            "id": "zMLqE7hOzjeTA9XB",
+            "name": "Late Actor"
           },
           {
             "id": "nRB08nYx6AnzY9Tr",
@@ -19235,7 +19227,7 @@
             "name": "Skyfall Dive"
           }
         ],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "gdJZ1L1kv5mjTTMr",
@@ -20577,7 +20569,7 @@
         "name": "Orc Bandit",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "qCD5Sbs7lIGJiLYM",

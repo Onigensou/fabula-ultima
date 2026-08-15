@@ -38,6 +38,25 @@
  *
  * Pairs with: reaction-grant.js (consumer), reaction-config-schema.md (docs).
  */
+
+// A creature declaring `cannot_be_targeted_by: "any"` is inert to COUNTS — no
+// action can ever reach it, so counting it would let a count-gated branch fire on
+// a body that cannot participate. This is the shared targeting contract, not a
+// per-creature special case; the canonical reader is `hasUnconditionalTargetBlock`
+// in battle-director/snapshot.js. Read inline because the reaction system stays
+// independent of the director. Keep the two in step.
+function _isUntargetable(a) {
+  const effects = a?.effects?.contents ?? a?.effects ?? [];
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "cannot_be_targeted_by") continue;
+      if (String(ch.value ?? "").trim().toLowerCase().split(/[\s,]+/).includes("any")) return true;
+    }
+  }
+  return false;
+}
+
 Hooks.once("ready", () => {
   const KEY = "oni.ReactionFormula";
   if (window[KEY]) {
@@ -356,7 +375,7 @@ Hooks.once("ready", () => {
     let n = 0;
     const consider = (a, disp) => {
       if (!a || a === reactorActor || seen.has(a)) return;
-      if (foundry.utils.getProperty(a ?? {}, "flags.fabula-ultima-companion.bdGuest")) return; // guest is inert — never counted
+      if (_isUntargetable(a)) return; // untargetable by anything — never counted
       const d = Number(disp);
       if (!Number.isFinite(d) || d * myDisp >= 0) return; // not an enemy
       seen.add(a); n++;
@@ -398,7 +417,7 @@ Hooks.once("ready", () => {
     const seen = new Set();
     const consider = (a, disp) => {
       if (!a || a === reactorActor || seen.has(a)) return false;
-      if (foundry.utils.getProperty(a ?? {}, "flags.fabula-ultima-companion.bdGuest")) return false; // guest is inert — never counted
+      if (_isUntargetable(a)) return false; // untargetable by anything — never counted
       const d = Number(disp);
       if (!Number.isFinite(d) || d * myDisp <= 0) return false; // ally = same-sign
       seen.add(a);

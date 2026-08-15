@@ -302,11 +302,41 @@ function getPerformerTokenDoc(context) {
   return context?.performer?.tokenDocument ?? context?.actorData?.tokenDocument ?? null;
 }
 
+/* `target_count` — "how many creatures can THIS action actually reach", vs an
+   inclusive v1–v2 range. Distinct from enemy_count, which answers "how many
+   enemies exist": an action's own skill_target side/count and its declared
+   filters (target_eligibility, pool focus, the weapon range gate) all narrow the
+   reachable set, so a rule written against the head-count fires for actions that
+   then find nothing to hit.
+
+   DEFERRED on purpose. Conditions are evaluated before actions are matched, so
+   here a row has an action NAME but no resolved Item — and resolving it by name
+   would be a SECOND, subtly different resolver: the matcher prefers an
+   action-list reference (by uuid, then id, then name) and skips Passive
+   duplicates, so a name lookup can land on a different document than the one
+   that will actually be used. Two resolvers means the gate can pass for one
+   document while another is played. So the row passes here and the real test
+   runs in MatchAndPickAction, where the Item is already resolved. */
+function deferTargetCount(row) {
+  const hasRange = AR.toString(row?.value1Raw, "") !== "" || AR.toString(row?.value2Raw, "") !== "";
+  const range = hasRange
+    ? normalizeRange(row?.value1, row?.value2)
+    : { min: 1, max: Number.MAX_SAFE_INTEGER };
+  return {
+    passed: true,
+    deferred: true,
+    conditionKey: "target_count",
+    conditionLabel: "Targets Available",
+    reason: `Deferred to action match — needs the resolved action (want ${range.min}–${range.max}).`,
+    details: { min: range.min, max: range.max, deferred: true }
+  };
+}
+
 /* Enemy/ally count vs an inclusive v1–v2 range. */
 function evaluateCountCondition(context, row, relation, label) {
   const actor = getActor(context);
   const tokenDoc = getPerformerTokenDoc(context);
-  const count = AR.countSceneTargetsForRelation(actor, tokenDoc, relation);
+  const count = AR.countSceneTargetsForRelation(actor, tokenDoc, relation, context);
   const range = normalizeRange(row?.value1, row?.value2);
   const passed = isValueInInclusiveRange(count, range.min, range.max);
 
@@ -333,7 +363,7 @@ function evaluateEnemyHasStatus(context, row) {
 
   const tokenDoc = getPerformerTokenDoc(context);
   const performerDisposition = AR.getTokenDisposition(tokenDoc);
-  const tokens = Array.from(canvas?.tokens?.placeables ?? []);
+  const tokens = AR.participantTokens(context);
 
   let holder = null;
   for (const tok of tokens) {
@@ -355,6 +385,103 @@ function evaluateEnemyHasStatus(context, row) {
 }
 
 /* Passes if ANY creature on the scene except the performer carries the status. */
+/* Ally-scoped twin of enemy_has_status. `creature_has_status` scans BOTH sides,
+   so it could not express "one of my side is in trouble" — an enemy carrying the
+   status passed the gate just as well. Guests are excluded (never counted). */
+function evaluateAllyHasStatus(context, row) {
+  const statusName = AR.toString(row?.stringRaw, "").trim();
+  const label = "Ally Has Status";
+
+  if (!statusName) {
+    return { passed: false, conditionKey: "ally_has_status", conditionLabel: label,
+      reason: "No status name entered in the row string field.", details: {} };
+  }
+
+  const tokenDoc = getPerformerTokenDoc(context);
+  const performerDisposition = AR.getTokenDisposition(tokenDoc);
+  const performerId = tokenDoc?.id ?? null;
+  const tokens = AR.participantTokens(context);
+
+  let holder = null;
+  for (const tok of tokens) {
+    const actor = AR.getTokenActor(tok);
+    if (!actor || AR.isUntargetableActor(actor)) continue;
+    const td = AR.getTokenDocument(tok);
+    if (performerId && td?.id === performerId) continue;   // self is not an ally
+    if (AR.relationToPerformer(AR.getTokenDisposition(td), performerDisposition) !== "ally") continue;
+    if (AR.actorHasEffectByName(actor, statusName)) { holder = AR.getActorName(actor); break; }
+  }
+
+  const passed = Boolean(holder);
+  return {
+    passed,
+    conditionKey: "ally_has_status",
+    conditionLabel: label,
+    reason: passed ? `Ally "${holder}" has "${statusName}".` : `No ally has "${statusName}".`,
+    details: { statusName, holder }
+  };
+}
+
+/* Crisis, byte-for-byte as the reaction engine defines it (_anyAllyInCrisis in
+   reaction-system/formula-evaluator.js). Kept as a mirror on purpose — two
+   different answers to "is this ally in Crisis" is worse than either answer:
+     • a DISABLED effect is NOT crisis (an earlier cut of this missed that, so a
+       disabled Crisis AE short-circuited before the HP fallback and would have
+       made a priority-12 healer burn every turn on a full-HP ally),
+     • the bdCrisis FLAG counts even when the effect is named something else,
+     • otherwise the RAW threshold, so the gate holds before the crisis-reactor
+       has stamped anything — which is exactly when a healer must act. */
+function isActorInCrisis(actor) {
+  const hasAe = (actor?.effects?.contents ?? Array.from(actor?.effects ?? [])).some((e) => {
+    if (e?.disabled) return false;
+    if (e?.flags?.["fabula-ultima-companion"]?.bdCrisis === true) return true;
+    return String(e?.name ?? "").trim().toLowerCase() === "crisis";
+  });
+  if (hasAe) return true;
+  const cur = Number(actor?.system?.props?.current_hp);
+  const max = Number(actor?.system?.props?.max_hp);
+  return Number.isFinite(cur) && Number.isFinite(max) && max > 0 && cur * 2 <= max;
+}
+
+/* Is one of my side in CRISIS? A core Fabula Ultima state, so it gets its own
+   condition rather than leaning on a status NAME through creature_has_status —
+   which scans both sides and would fire on a wounded ENEMY. */
+function evaluateAllyInCrisis(context, row) {
+  const label = "Ally In Crisis";
+  const tokenDoc = getPerformerTokenDoc(context);
+  const performerDisposition = AR.getTokenDisposition(tokenDoc);
+  const performerId = tokenDoc?.id ?? null;
+  const tokens = AR.participantTokens(context);
+
+  let holder = null;
+  let count = 0;
+  for (const tok of tokens) {
+    const actor = AR.getTokenActor(tok);
+    if (!actor || AR.isUntargetableActor(actor)) continue;
+    const td = AR.getTokenDocument(tok);
+    if (performerId && td?.id === performerId) continue;
+    if (AR.relationToPerformer(AR.getTokenDisposition(td), performerDisposition) !== "ally") continue;
+
+    if (isActorInCrisis(actor)) { count++; if (!holder) holder = AR.getActorName(actor); }
+  }
+
+  // Range semantics match the other count conditions: blank v1/v2 → "at least
+  // one" rather than the degenerate 0–0 window an unset range would produce.
+  const hasRange = AR.toString(row?.value1Raw, "") !== "" || AR.toString(row?.value2Raw, "") !== "";
+  const range = hasRange ? normalizeRange(row?.value1, row?.value2) : { min: 1, max: Number.MAX_SAFE_INTEGER };
+  const passed = isValueInInclusiveRange(count, range.min, range.max);
+
+  return {
+    passed,
+    conditionKey: "ally_in_crisis",
+    conditionLabel: label,
+    reason: passed
+      ? `${count} ally/allies in Crisis${holder ? ` (e.g. ${holder})` : ""} — within ${range.min}–${range.max}.`
+      : `${count} ally/allies in Crisis — outside ${range.min}–${range.max}.`,
+    details: { count, holder, min: range.min, max: range.max }
+  };
+}
+
 function evaluateCreatureHasStatus(context, row) {
   const statusName = AR.toString(row?.stringRaw, "").trim();
   const label = "Creature Has Status";
@@ -365,7 +492,7 @@ function evaluateCreatureHasStatus(context, row) {
   }
 
   const performerId = getPerformerTokenDoc(context)?.id ?? null;
-  const tokens = Array.from(canvas?.tokens?.placeables ?? []);
+  const tokens = AR.participantTokens(context);
 
   let holder = null;
   for (const tok of tokens) {
@@ -549,11 +676,20 @@ function evaluateOneCondition(context, row, options = {}) {
     case "enemy_count":
       return evaluateCountCondition(context, row, "enemy", "Enemy Count");
 
+    case "target_count":
+      return deferTargetCount(row);
+
     case "ally_count":
       return evaluateCountCondition(context, row, "ally", "Ally Count");
 
     case "enemy_has_status":
       return evaluateEnemyHasStatus(context, row);
+
+    case "ally_has_status":
+      return evaluateAllyHasStatus(context, row);
+
+    case "ally_in_crisis":
+      return evaluateAllyInCrisis(context, row);
 
     case "creature_has_status":
       return evaluateCreatureHasStatus(context, row);

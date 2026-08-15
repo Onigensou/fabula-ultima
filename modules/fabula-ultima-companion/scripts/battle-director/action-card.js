@@ -35,7 +35,7 @@ import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
-import { resolvesVsMagicDefense, freezeActionResult } from "./snapshot.js";
+import { resolvesVsMagicDefense, freezeActionResult, hasUnconditionalTargetBlock } from "./snapshot.js";
 import { mergeGmOverride, normalizeGmOverride, describeGmEditors, isGmEditableRow,
          summarizeGmOverride, isGmOverrideEmpty, GM_DIE_SIZES,
          GM_DAMAGE_TYPES, GM_WEAPON_TYPES, gmReactionKey, isGmEditableReaction,
@@ -1133,6 +1133,57 @@ export function ensureStyles() {
     .fud-bf-card .fud-bf-reaction-pill .fud-btn-reaction {
       cursor: pointer;
     }
+
+    /* ── Auto-confirm veto strip (Summon Autopilot) ─────────────────────────
+       Sits directly above the button row: a thin draining bar plus a one-line
+       explanation of why nobody has to click. The bar is a CSS animation so it
+       runs on the player mirror too; it PAUSES while any reaction pill is
+       undecided (same attribute that locks Confirm), which is exactly when the
+       GM-side timer pauses. The is-vetoed class is stamped the moment a human
+       touches the card — bar frozen, wording flipped to "held".
+       (NO BACKTICKS IN HERE — this comment lives inside a template literal, so a
+       backticked identifier ends the string and the rest parses as arbitrary
+       JS. It cost a silent throw out of ensureStyles, which left EVERY action
+       card unstyled while every behavioural test still passed.) */
+    .fud-bf-card .fud-bf-veto {
+      position: relative;
+      margin-top: 8px;
+      padding: 5px 8px 6px;
+      border: 1px solid rgba(120, 80, 200, 0.45);
+      border-radius: 5px;
+      background: rgba(120, 80, 200, 0.10);
+      overflow: hidden;
+    }
+    .fud-bf-card .fud-bf-veto-bar {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 100%;
+      background: rgba(120, 80, 200, 0.22);
+      transform-origin: left center;
+      animation-name: fud-bf-veto-drain;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+      pointer-events: none;
+    }
+    @keyframes fud-bf-veto-drain {
+      from { transform: scaleX(1); }
+      to   { transform: scaleX(0); }
+    }
+    /* Undecided reaction pill → Confirm is locked, so the countdown must not
+       run down behind the lock. Same attribute, same pause, every client. */
+    .fud-bf-card[data-fud-reactions-pending] .fud-bf-veto-bar {
+      animation-play-state: paused;
+    }
+    .fud-bf-card .fud-bf-veto-text {
+      position: relative;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      font-size: 11px; font-weight: 700; font-style: italic;
+      letter-spacing: 0.2px;
+      color: #4a2f87;
+    }
+    .fud-bf-card .fud-bf-veto-count { opacity: 0.85; white-space: nowrap; }
+    .fud-bf-card .fud-bf-veto.is-vetoed { border-color: rgba(90, 90, 90, 0.45); background: rgba(0, 0, 0, 0.06); }
+    .fud-bf-card .fud-bf-veto.is-vetoed .fud-bf-veto-bar { animation-play-state: paused; opacity: 0.25; }
+    .fud-bf-card .fud-bf-veto.is-vetoed .fud-bf-veto-text { color: #4a4a4a; }
 
     /* Buttons row */
     .fud-bf-card .fud-bf-btn-row {
@@ -5179,6 +5230,10 @@ const ACTION_CARD_RENDER_KEYS = [
   // from this, so a support GM's mirror shows the same typed values as the host
   // instead of blank boxes over already-overridden numbers.
   "gmOverride",
+  // Summon Autopilot veto window ({ ms }), so a locally-rendered mirror draws
+  // the same draining countdown strip the host does. Display only — the GM's
+  // timer is the only thing that can actually confirm.
+  "autoConfirm",
 ];
 
 export function composeActionCardRenderPayload(ar) {
@@ -5431,6 +5486,11 @@ function gmAddableTargets(perTargetResults, attackerTokenUuid = null) {
       // `exclude_self`; this control has no targeting rules of its own.
       .filter((d) => !attackerTokenUuid || d.uuid !== attackerTokenUuid)
       .filter((d) => !actionSceneId || d.parent?.id === actionSceneId)
+      // A creature declaring `cannot_be_targeted_by: "any"` is not offered. The
+      // GM override changes the DECISION, never the RULES — every other pool in
+      // the engine honours this contract, and a hand-added target that no
+      // automatic path could ever produce is a rule bypass, not a correction.
+      .filter((d) => !hasUnconditionalTargetBlock(d.actor))
       .map((d) => ({
         tokenUuid: d.uuid,
         name: d.name ?? d.actor?.name ?? "?",
@@ -6442,6 +6502,31 @@ if (typeof window !== "undefined") {
   window.addEventListener("resize", scheduleActionCardFit);
 }
 
+// ── Auto-confirm veto strip (Summon Autopilot) ───────────────────────────────
+// A summon's card confirms itself after a veto window. The strip announces that
+// and shows how long is left. The countdown BAR is a pure CSS animation started
+// at render time, so the player-side mirror (which receives this markup verbatim,
+// or rebuilds it from the projected render payload) shows a live, roughly-synced
+// countdown with no extra sockets. The numeric readout + the actual confirm are
+// driven GM-side by armAutoConfirmVeto — the CSS is decoration, never authority.
+//
+// Pausing while a reaction pill is undecided is handled in CSS off the card's
+// existing data-fud-reactions-pending attribute, so it pauses on every client.
+function buildAutoConfirmVetoHTML(autoConfirm) {
+  const ms = Number(autoConfirm?.ms);
+  if (!Number.isFinite(ms) || ms < 0) return "";
+  const secs = Math.max(0, Math.round(ms / 1000));
+  return `
+    <div class="fud-bf-veto" data-fud-veto-ms="${ms}">
+      <div class="fud-bf-veto-bar" style="animation-duration:${ms}ms;"></div>
+      <div class="fud-bf-veto-text">
+        <span class="fud-bf-veto-label">🐾 Summon on autopilot</span>
+        <span class="fud-bf-veto-count">${secs}s · click to hold</span>
+      </div>
+    </div>
+  `;
+}
+
 function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, kind = null }) {
   const list = Array.isArray(cardReactions) ? cardReactions : [];
   const askPassives = list.filter((p) => p?.mode === "ask" && p?.available !== false);
@@ -6482,6 +6567,7 @@ function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, k
       ${card.subtitle ?? ""}
       <div class="fud-bf-body">${card.body}</div>
       ${reactionRowHtml}
+      ${buildAutoConfirmVetoHTML(payload?.autoConfirm ?? null)}
       ${card.buttons}
     </div>
   `;
@@ -6828,7 +6914,22 @@ export async function postActionCard({ director, kind, payload }) {
           try { root.remove(); } catch {}
           try { descTip?.remove(); } catch {}
           descTip = null;
-          _overlays.delete(director.combatId);
+          // Run the overlay's own teardown before dropping the entry. Deleting
+          // it alone orphaned every listener/hook the card had registered —
+          // the picker hooks below, and (once summons could auto-confirm) a
+          // window keydown handler per card, since the NEXT postActionCard read
+          // _overlays.get() → undefined and so never chained the prior cleanup.
+          // cleanup() is re-entrant: `resolved` is already true, so its
+          // resolve-guard is a no-op and a second root.remove() is harmless.
+          // …but ONLY if the slot still holds OUR card. The fade is ~480ms and a
+          // multi-pass action posts the next card inside that window, so an
+          // unguarded cleanup here would tear down the card that just replaced
+          // us — and an unguarded delete would drop its record.
+          const rec = _overlays.get(director.combatId);
+          if (rec?.root === root) {
+            try { rec.cleanup?.(); } catch {}
+            _overlays.delete(director.combatId);
+          }
         }, fadeMs);
 
         if (keyListener) {
@@ -9210,6 +9311,129 @@ export async function postActionCard({ director, kind, payload }) {
 
     _overlays.set(director.combatId, { cleanup, root });
 
+    // ── Summon Autopilot: auto-confirm after a veto window ───────────────────
+    // The card is live and fully wired, so we resolve it through the SAME
+    // finish("confirm") path a human click takes — reaction snapshot, mirror
+    // close and despawn all run identically.
+    //
+    // Three rules make this safe to leave running unattended:
+    //   1. PAUSE while any ask-mode reaction pill is undecided. Confirm is
+    //      CSS-locked in that state, and a countdown that expired behind the
+    //      lock would confirm an action whose reactions nobody answered.
+    //   2. VETO on the first sign of a human — pointerdown anywhere on the card
+    //      (which covers every button and every reaction pill), any keypress, or
+    //      a picker opening. Cancelling is permanent: the card is theirs now.
+    //   3. NEVER in a sim. SimMode owns the confirm below; two timers racing on
+    //      one card would double-finish (harmless — finish() is idempotent — but
+    //      it would confirm before the sim's reaction brain had decided).
+    const vetoEl = payload?.autoConfirm ? root.querySelector(".fud-bf-veto") : null;
+    if (vetoEl && !SimMode.active) {
+      const totalMs = Math.max(0, Number(payload.autoConfirm.ms) || 0);
+      const cardEl = root.querySelector(".fud-bf-card");
+      const countEl = vetoEl.querySelector(".fud-bf-veto-count");
+      // A veto is per-TURN, not per-card. A multi-pass action posts one card per
+      // pass and a reload re-enters CONFIRM with a fresh card, so a hold that
+      // lived only in this closure evaporated exactly when the GM had just said
+      // "I am driving this one". The director ctx outlives the card, so record
+      // the hold there and let CONFIRM refuse to re-arm for the same turn.
+      const vetoKey = payload.autoConfirm.turnKey ?? null;
+      // WALL-CLOCK deadline, not a tick count. Chromium throttles timers in a
+      // backgrounded window (a 100ms interval degrades toward 1/second), so
+      // counting ticks stretched a 5s window into 12s+ whenever the GM tabbed
+      // away — measured, not theorised. A deadline fires on the first tick past
+      // the mark instead, which is exact while the window is visible and at
+      // worst ~1s late while it is not.
+      let deadline = performance.now() + totalMs;
+      let lastTick = performance.now();
+      let tickTid = null;
+      let vetoed = false;
+
+      const stopVeto = (reason) => {
+        if (vetoed) return;
+        vetoed = true;
+        try { clearInterval(tickTid); } catch {}
+        tickTid = null;
+        try {
+          vetoEl.classList.add("is-vetoed");
+          if (countEl) countEl.textContent = "held — confirm when ready";
+        } catch {}
+        // Persist the hold for the rest of this turn (multi-pass + reload).
+        try { if (vetoKey && director?.ctx) director.ctx.summonVetoHeldTurn = vetoKey; } catch {}
+        log(`action-card: summon auto-confirm vetoed (${reason})`);
+      };
+
+      const onHumanTouch = () => stopVeto("user interaction");
+      // Typing is not "taking the card". The card's own Enter-to-confirm
+      // listener already ignores keys aimed at an input surface; without the
+      // same guard, a GM writing a line of chat silently held the summon's card
+      // and the table waited on someone who was doing something else.
+      const onHumanKey = (ev) => {
+        const ae = document.activeElement;
+        if (ae) {
+          const tag = ae.tagName;
+          if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || ae.isContentEditable) return;
+        }
+        stopVeto(`keypress ${ev?.key ?? "?"}`);
+      };
+      root.addEventListener("pointerdown", onHumanTouch, true);
+      window.addEventListener("keydown", onHumanKey, true);
+      Hooks.on("fud.actionPickerOpen", onHumanTouch);
+      const dropVetoListeners = () => {
+        try { clearInterval(tickTid); } catch {}
+        tickTid = null;
+        try { root.removeEventListener("pointerdown", onHumanTouch, true); } catch {}
+        try { window.removeEventListener("keydown", onHumanKey, true); } catch {}
+        try { Hooks.off("fud.actionPickerOpen", onHumanTouch); } catch {}
+      };
+
+      const TICK_MS = 100;
+      tickTid = setInterval(() => {
+        // `resolved` covers the card ending by ANY route — a human Confirm, a
+        // Cancel, a despawn. Drop the window listeners with it: they are global
+        // (window keydown + a Hook), so one leaked pair per card means every
+        // later keystroke in Foundry runs N dead handlers holding N detached
+        // card DOMs alive.
+        if (resolved || vetoed) { dropVetoListeners(); return; }
+        const now = performance.now();
+        const sinceLast = now - lastTick;
+        lastTick = now;
+        // Rule 1 — a pending third-party reaction freezes both the bar (CSS) and
+        // the clock (here), so the two never disagree about how long is left.
+        // Pushing the deadline out by the elapsed slice is what "pause" means on
+        // a wall clock: time spent waiting is not time spent counting down.
+        if (cardEl?.hasAttribute("data-fud-reactions-pending")) {
+          deadline += sinceLast;
+          if (countEl) countEl.textContent = "waiting on reactions";
+          return;
+        }
+        const remaining = deadline - now;
+        if (remaining > 0) {
+          // Kept SHORT on purpose: the strip is now on every summon card (the
+          // switch ships on), and the card is height-budgeted against the
+          // viewport — a label that wraps to two lines costs ~18px on every one
+          // of them. "Confirm" is the button right below; it needs no caption.
+          if (countEl) countEl.textContent = `${Math.ceil(remaining / 1000)}s · click to hold`;
+          return;
+        }
+        dropVetoListeners();
+        log("action-card: summon auto-confirm fired");
+        try { finish("confirm"); }
+        catch (e) { warn("action-card: summon auto-confirm threw — card stays open for a manual confirm", e); }
+      }, TICK_MS);
+
+      // Belt and braces: the tick above drops the listeners on the next beat
+      // after any resolution, and the overlay cleanup drops them immediately if
+      // the card is despawned out from under us.
+      const priorCleanup = _overlays.get(director.combatId)?.cleanup;
+      _overlays.set(director.combatId, {
+        root,
+        cleanup: () => {
+          dropVetoListeners();
+          try { priorCleanup?.(); } catch {}
+        },
+      });
+    }
+
     // ── Sim harness: nobody is at the keyboard ───────────────────────────────
     // The card is fully built and wired at this point, so we resolve it through
     // the SAME `finish("confirm")` path a human click takes — the reaction-pill
@@ -9776,7 +10000,20 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // but nothing about the edit surface should reach a player at all.
     if (!game.user?.isGM) {
       for (const p of wrapper.querySelectorAll(".fud-gm-launch")) p.remove();
-    } else {
+    }
+
+    // ─── Auto-confirm strip on the mirror: informational only ────────────────
+    // The veto listeners live on the HOST's card and its window. A click here
+    // never reaches them, so the host's "click to hold" wording would be a
+    // promise this client cannot keep — worse on the OWNER's mirror, which is
+    // otherwise the interactive one. Reword to what is actually true. (Wiring a
+    // real player-side hold needs a veto intent on the wire; until then, do not
+    // draw a control that does nothing.)
+    if (!isActiveDirector()) {
+      const cnt = wrapper.querySelector(".fud-bf-veto-count");
+      if (cnt) cnt.textContent = "the GM can hold this";
+    }
+    if (game.user?.isGM && !isActiveDirector()) {
       // Support GM: the editor opens locally, but this client is NOT the writer.
       // Save ships one EDIT_CARD intent to the host, which merges it and
       // broadcasts the resulting delta back — so what a support GM ends up

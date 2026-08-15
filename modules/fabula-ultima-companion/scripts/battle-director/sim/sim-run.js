@@ -27,11 +27,19 @@
 import { log, warn } from "../logger.js";
 import { SimMode, forceEndSim } from "./sim-mode.js";
 import { Journal } from "./sim-journal.js";
+import { resolveGuestRoster, ensureGuestPassive } from "../../guest-roster/guest-roster-core.js";
+import { GUEST_SLOT_BASE } from "../director-init.js";
 
 const SCRATCH_FOLDER = "BD Sim";
 const SCENE_NAME = "Training Ground";
 const POLL_MS = 400;
 const STALL_TIMEOUT_MS = 180_000;   // no observable progress for 3 min → abort
+// Whole-run ceiling. A sim must ALWAYS terminate; the stall detector only catches
+// a run that stops MOVING, and a state loop that keeps moving without advancing
+// the round would otherwise run forever. Generous — a measured 2-round guest sim
+// on this machine takes ~570 s, since CSB charges ~360 ms of synchronous
+// recompute per actor write.
+const HARD_CAP_MS = 45 * 60_000;
 const ZP_PATH = "system.props.zero_power_value";
 
 function api() {
@@ -229,6 +237,81 @@ async function cloneParty(actorRefs, _startZp = 0, _startFp = 3) {
   return clones;
 }
 
+// ── Guest cloning ───────────────────────────────────────────────────────────
+// Guests used to sit sims out entirely (`resolveGuestMembers` returned [] under
+// SimMode). The reason was sound — a sim clones the party precisely so a run
+// cannot write to real actors, and an un-cloned guest would be written to for
+// real — but the consequence was that guest behaviour was the one thing the sim
+// could not exercise. A round-end free action (Kalina's Late Actor) could be
+// probed function-by-function and never watched actually run.
+//
+// So clone them the same way, with one difference that matters:
+//
+// ⚠ The clone must NOT inherit `bdGuestFromRoster`. That flag means "the roster
+// owns this actor's guest status", and `syncGuestRoster`'s cleanup walks every
+// actor carrying it, finds the clone is not on the roster (the roster names the
+// REAL actor), and strips its guest flag AND its untargetability passive. A sync
+// firing mid-run — the party sheet is open, someone edits a row — would turn the
+// guest into a targetable, killable combatant halfway through. Dropping the flag
+// leaves the clone reading as a HAND-flagged guest, which the sync deliberately
+// never touches; that carve-out already exists for exactly this shape of case.
+async function cloneGuests(startFp) {
+  let roster = [];
+  try { roster = await resolveGuestRoster({ activeOnly: true }); }
+  catch (e) { warn("[SIM] guest roster resolve failed — running without guests", e); return []; }
+  if (!roster.length) {
+    // SAY SO. A run commissioned to verify guest behaviour that quietly fields no
+    // guest would report a clean pass having never tested the thing.
+    SimMode.note("start", "guests requested but the roster is empty — none fielded");
+    log("[SIM] guests requested but the deployed roster is empty — none fielded");
+    return [];
+  }
+
+  const folder = await ensureScratchFolder();
+  const out = [];
+  for (const g of roster) {
+    const src = g?.actor ?? (g?.actorUuid ? await fromUuid(g.actorUuid).catch(() => null) : null);
+    if (!src) { warn(`[SIM] guest not found: ${g?.name ?? g?.actorUuid}`); continue; }
+
+    const data = src.toObject();
+    delete data._id;
+    data.name = `${src.name} [SIM]`;
+    data.folder = folder.id;
+    data.ownership = { default: 0 };
+
+    // ASSERT guest-ness rather than inherit it. `toObject()` carries bdGuest only
+    // if a sync has already stamped the source; a freshly-rostered actor has the
+    // roster row and no flag yet, and the clone would then be untargetable (the
+    // AE below) while still counted for side-wipe and still defeatable.
+    data.flags ??= {};
+    const flags = (data.flags["fabula-ultima-companion"] ??= {});
+    flags.bdGuest = true;
+    delete flags.bdGuestFromRoster;   // see the note above
+
+    const p = data.system?.props;
+    if (p) {
+      if (p.max_hp != null) p.current_hp = p.max_hp;
+      if (p.max_mp != null) p.current_mp = p.max_mp;
+      if (p.max_ip != null) p.current_ip = p.max_ip;
+      // Zero Power is AUTHORED on a guest, not a scenario knob the way it is for
+      // PCs (startingZp) and bosses (enemyZp). Kalina ships charged at 6; zeroing
+      // it would silently disarm her signature move for every sim.
+      p.fabula_point = startFp;
+    }
+
+    const doc = await Actor.create(data);
+    if (!doc) continue;
+    // Re-assert the passive on the CLONE for the same reason battle start
+    // re-asserts it on the real actor: untargetability is derived state, and a
+    // guest deployed without it is an unkillable damage sponge.
+    try { await ensureGuestPassive(doc); }
+    catch (e) { warn(`[SIM] could not assert the Guest passive on ${doc.name}`, e); }
+    out.push(doc);
+    log(`[SIM] cloned guest ${src.name} → ${doc.name}`);
+  }
+  return out;
+}
+
 async function deleteClones(clones) {
   const ids = clones.map((c) => c?.id).filter(Boolean);
   if (!ids.length) return;
@@ -261,14 +344,30 @@ function snapshotCombat(director) {
       name: c.name,
       side: c.side,
       defeated: !!c.isDefeatedLive?.(),
+      // A guest sits on the party SIDE but is not a party MEMBER, and every
+      // verdict below has to know the difference — see countsForReporting.
+      isGuest: !!c.actorDoc?.getFlag?.("fabula-ultima-companion", "bdGuest"),
       ...readHp(c.actorDoc),
     })),
   };
 }
 
+// A guest fights on the party side but is NOT a party member for any verdict.
+// It is undefeatable by design (the defeat reactor skips it), so counting it
+// makes `partyDead` unreachable — a genuine TPK with a guest on the field would
+// report "inconclusive" instead of "defeat". And it is untargetable, so its HP
+// bar is permanently full and drags the party's HP-remaining figure up.
+//
+// This is the same distinction `countsForSideWipe` draws in state-handlers; the
+// combat correctly ENDS on a wipe, and only the sim's REPORTING was still
+// counting the guest. Applied in one predicate so the two cannot drift.
+function countsForReporting(c) {
+  return !c?.isGuest;
+}
+
 function classify(snap) {
   if (!snap) return "unknown";
-  const party = snap.combatants.filter((c) => c.side === "party");
+  const party = snap.combatants.filter((c) => c.side === "party" && countsForReporting(c));
   const enemy = snap.combatants.filter((c) => c.side === "enemy");
   const partyDead = party.length > 0 && party.every((c) => c.defeated);
   const enemyDead = enemy.length > 0 && enemy.every((c) => c.defeated);
@@ -306,7 +405,10 @@ function verdictFor(outcome, hpLeft, rounds, expectedRounds) {
 // Party HP remaining, as a fraction of the party's total max HP. THE headline
 // balance number: a fight the party walks out of at >70% never really happened.
 function partyHpRemaining(snap) {
-  const party = (snap?.combatants ?? []).filter((c) => c.side === "party");
+  // Guests excluded: untargetable means permanently at full HP, so including one
+  // biases the headline number upward by its whole HP bar — enough to flip
+  // "a real fight" into "too easy", and worse the weaker the real party is.
+  const party = (snap?.combatants ?? []).filter((c) => c.side === "party" && countsForReporting(c));
   const cur = party.reduce((a, c) => a + Math.max(0, c.hp ?? 0), 0);
   const max = party.reduce((a, c) => a + (c.maxHp ?? 0), 0);
   if (!max) return null;
@@ -327,6 +429,7 @@ export async function run({
   startingZp = 0,        // Zero Power each PC walks in with (6 = a charged limit break)
   fabulaPoints = 3,      // Fabula Points each PC walks in with (invokes spend these)
   enemyZp = null,        // Zero Power to charge a boss with — number (all foes) or {ref: value}
+  guests = true,         // field the deployed guest roster (cloned, like the party)
   scripts = null,        // skill-under-test directives — force a caster's action(s)
 } = {}) {
   const a = api();
@@ -383,11 +486,33 @@ export async function run({
 
     clones = await cloneParty(refs, startingZp, fabulaPoints);
     if (!clones.length) throw new Error("no party clones were created");
+    // Feathers are a PARTY resource — stocked before the guests join `clones`,
+    // so a guest is not handed revives the players never bought.
     await stockFeathers(clones, phoenixFeathers);
 
     const members = clones.map((c, i) => ({
       actorUuid: c.uuid, actorId: c.id, name: c.name, slot: i + 1, img: c.img,
     }));
+
+    // Guests take slots after the real party (GUEST_SLOT_BASE) so spawn order and
+    // the HUD read the same in a sim as in play.
+    //
+    // What actually MAKES the clone behave as a guest is its `bdGuest` flag plus
+    // the untargetability AE, both asserted in cloneGuests — `isGuest` on the
+    // member is carried through by resolveParty but read nowhere, so do not rely
+    // on it. director-init's own guest merge stays disabled under SimMode, which
+    // is what stops the LIVE actor being added alongside its clone.
+    if (guests) {
+      const guestClones = await cloneGuests(fabulaPoints);
+      if (guestClones.length) {
+        clones = clones.concat(guestClones);   // one cleanup list
+        members.push(...guestClones.map((c, i) => ({
+          actorUuid: c.uuid, actorId: c.id, name: c.name,
+          slot: GUEST_SLOT_BASE + i, img: c.img, isGuest: true,
+        })));
+        SimMode.note("start", `guests: ${guestClones.map((c) => c.name).join(", ")}`);
+      }
+    }
 
     const payload = {
       context: { battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true },
@@ -396,7 +521,7 @@ export async function run({
     };
 
     const foeLabel = manualPicks.map((p) => `${p.name}×${p.quantity}`).join(" + ");
-    SimMode.note("start", `${members.length} PC(s) vs ${foeLabel}`);
+    SimMode.note("start", `${members.filter((m) => !m.isGuest).length} PC(s) vs ${foeLabel}`);
     // Charge any boss ZP on the world actor BEFORE spawn (the unlinked token
     // inherits it); restored in `finally`.
     zpRestore = await chargeEnemyZp(manualPicks, enemyZp);
@@ -409,6 +534,16 @@ export async function run({
     // → BATTLE_ENDING, which lean mode short-circuits straight to STOPPED), or
     // a guard trips. A sim must ALWAYS terminate — a hang costs a page reload.
     const started = Date.now();
+    // ABSOLUTE cap, independent of the progress signature.
+    //
+    // Putting the FSM state into that signature (below) fixed a real
+    // misdiagnosis, but it also weakened the watchdog against ONE failure the
+    // old signature caught: a free-action grant whose resolution grants another
+    // re-enters FREE_ACTION_WINDOW -> DECLARE -> ... -> RESOLVE -> FREE_ACTION_WINDOW
+    // forever. The states change every cycle, so the signature keeps moving; the
+    // ROUND never advances, so expectedRounds/maxRounds never bite either.
+    // Without this, a 3-minute abort would have become an infinite hang — and
+    // round-end free-action grants are exactly what this pass exists to exercise.
     let lastProgress = Date.now();
     let lastSig = "";
     let final = null;
@@ -422,7 +557,19 @@ export async function run({
 
       if (snap) {
         final = snap;
-        const sig = `${snap.round}|${snap.combatants.map((c) => `${c.name}:${c.hp}:${c.defeated}`).join(",")}`;
+        // PROGRESS, not just damage. The signature used to be round + everyone's
+        // HP, so a fight that was advancing through its states without anyone
+        // taking damage — a long CONFIRM, a targeting pass, a free-action window
+        // — read as frozen, and the watchdog reported "stalled … probably a gate
+        // waiting on a human". That is a misdiagnosis with a cost: measured
+        // 2026-08-15, a sim on this machine ran 95% main-thread-busy (446 long
+        // tasks in 100 s; CSB charges ~360 ms of synchronous recompute per actor
+        // write), so a slow-but-healthy run was being killed and reported as hung.
+        //
+        // The FSM state belongs in the signature: while it changes, the director
+        // is demonstrably alive, and only a director that is BOTH not advancing
+        // its state AND not changing the board is genuinely stuck.
+        const sig = `${director?.state ?? "?"}|${snap.round}|${snap.combatants.map((c) => `${c.name}:${c.hp}:${c.defeated}`).join(",")}`;
         if (sig !== lastSig) { lastSig = sig; lastProgress = Date.now(); }
 
         // Combat end, undying-aware. A revive boss (Geist's Blackest Night)
@@ -456,6 +603,11 @@ export async function run({
 
       if (!a.isRunning?.()) { SimMode.note("end", "director stopped"); break; }
 
+      if (Date.now() - started > HARD_CAP_MS) {
+        stalled = true;
+        SimMode.note("abort", `hard cap: ${Math.round(HARD_CAP_MS / 60000)} min of wall clock — aborting (a state loop that keeps moving without advancing the round)`);
+        break;
+      }
       if (Date.now() - lastProgress > STALL_TIMEOUT_MS) {
         stalled = true;
         SimMode.note("abort", `no progress for ${STALL_TIMEOUT_MS / 1000}s — aborting (a gate is probably still waiting on a human)`);
@@ -596,6 +748,11 @@ export async function testSkill({
   // so expectedRounds defaults high. Everything else mirrors `run`'s defaults.
   pace = "fast", reactions = "apply", expectedRounds = 30, maxRounds = 30,
   phoenixFeathers = 0, startingZp = 6, fabulaPoints = 3, enemyZp = null,
+  // OFF by default here, unlike `run`. This harness exists to isolate ONE skill;
+  // a guest takes turns, fires its own free actions and injects damage, AEs and
+  // reaction traffic into the very measurement being taken. Opt in explicitly if
+  // the guest is the point of the test.
+  guests = false,
 } = {}) {
   if (!caster || !skill) {
     ui.notifications?.error("[SIM] testSkill needs { caster, skill }.");
@@ -633,7 +790,7 @@ export async function testSkill({
     enemies: enemyGroup,
     party: partyRefs,
     pace, reactions, expectedRounds, maxRounds,
-    phoenixFeathers, startingZp, fabulaPoints, enemyZp,
+    phoenixFeathers, startingZp, fabulaPoints, enemyZp, guests,
     scripts: [{ caster: casterActor.uuid, skill, targets, force, once }],
   });
 }

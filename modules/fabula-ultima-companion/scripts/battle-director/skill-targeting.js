@@ -31,7 +31,7 @@
 import { log, warn } from "./logger.js";
 import { requestTargeting as requestBdTargetPicker } from "./target-picker.js";
 import { isGrappled, tokensGrappledBy } from "./grappled.js";
-import { getAllegianceOverrides, applyAllegianceOverride } from "./snapshot.js";
+import { getAllegianceOverrides, applyAllegianceOverride, hasUnconditionalTargetBlock } from "./snapshot.js";
 
 // Reserved strings that expand to inline targeting rows. Authoring sugar
 // — saves a row from the effect_table for the most common case.
@@ -727,12 +727,13 @@ function collectGrappledBySelf(ctx) {
   });
 }
 
-// A Guest (bdGuest) is a visual-only round-end helper — it can never be a target
-// candidate (single, AoE, random, all_allies/all_enemies). Filtered out of every
-// pool here. It still ACTS via its own round_end reaction, which resolves ITS
-// targets (enemies/allies) — those remain in the pool; only the guest itself is dropped.
-function isGuestTokenDoc(td) {
-  return !!foundry.utils.getProperty(td?.actor ?? {}, "flags.fabula-ultima-companion.bdGuest");
+// A creature declaring `cannot_be_targeted_by: "any"` can never be a target
+// candidate (single, AoE, random, all_allies/all_enemies), so it is filtered out
+// of every pool built here. This is how a Guest becomes untargetable — via the
+// shared targeting primitive rather than a bespoke flag check. Such a creature
+// still ACTS; its own action resolves ITS targets, which stay in the pool.
+function isUntargetableTokenDoc(td) {
+  return hasUnconditionalTargetBlock(td?.actor ?? null);
 }
 
 function collectCombatTokens(ctx) {
@@ -740,7 +741,7 @@ function collectCombatTokens(ctx) {
   // each combatant carries .tokenDoc.
   const dc = ctx.dCombat;
   if (dc?.combatants?.length) {
-    return dc.combatants.map((c) => c.tokenDoc).filter(Boolean).filter((td) => !isGuestTokenDoc(td));
+    return dc.combatants.map((c) => c.tokenDoc).filter(Boolean).filter((td) => !isUntargetableTokenDoc(td));
   }
   // Fallback to game.combat (manual-attach path, rare in director mode).
   const fc = game.combat;
@@ -748,7 +749,7 @@ function collectCombatTokens(ctx) {
     const out = [];
     for (const c of fc.combatants) {
       const t = c.token;
-      if (t && !isGuestTokenDoc(t)) out.push(t);
+      if (t && !isUntargetableTokenDoc(t)) out.push(t);
     }
     return out;
   }
@@ -756,7 +757,7 @@ function collectCombatTokens(ctx) {
   // card-mutation redirect picker) would otherwise see zero combatants when
   // game.combat is also null — which is the normal BD case (director runs on
   // its own dCombat). Mirrors the enemyActorsOf canvas fallback in skill-formulas.
-  return (globalThis.canvas?.tokens?.placeables ?? []).map((t) => t.document).filter(Boolean).filter((td) => !isGuestTokenDoc(td));
+  return (globalThis.canvas?.tokens?.placeables ?? []).map((t) => t.document).filter(Boolean).filter((td) => !isUntargetableTokenDoc(td));
 }
 
 async function uuidsToTokens(uuids) {

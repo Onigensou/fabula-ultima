@@ -687,6 +687,10 @@ async function runRotation({ token, combat, combatant, actorDoc, rows, blocked }
   if (!filteredRows.length) return null;
   try {
     const ctx = AR.createBaseContext();
+    // No injection needed: the ambient battle provider supplies the roster and
+    // the per-action survey, so a simulated PC decides and targets against the
+    // same population a real one does. A sim that disagrees with play is worse
+    // than no sim, and this is how that stays true without anyone remembering.
 
     await resolveActionReaderPerformer(ctx, { token, combat, combatant });
     if (!ctx.performer?.actor) return null;
