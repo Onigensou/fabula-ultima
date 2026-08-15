@@ -18,6 +18,7 @@
 
 import { ATTR, ATTR_KEYS, ATTR_META, STEP_EFFECT, num, nextDie, prevDie, log, warn, err } from "./attribute-const.js";
 import { isActingGM, registerHandler, request, installNet } from "../advancement/advancement-net.js";
+import { isAdvancementSubject, subjectFailure } from "../advancement/advancement-subject.js";
 import { gateState } from "../levelup-system/levelup-gate.js";
 
 const PROP = ATTR.PROP;
@@ -86,15 +87,22 @@ export function readStatus(actorUuid) {
 
   const byKey = Object.fromEntries(attributes.map((a) => [a.key, a]));
 
+  // An NPC has a level and therefore reaches milestones on paper, but is not a
+  // subject of this system. Reported rather than hidden so the window can draw
+  // a monster's stats read-only if something opens it deliberately, while
+  // `available` stays 0 and no arrow is ever offered.
+  const eligible = isAdvancementSubject(actor);
+
   return {
     ok: true,
+    eligible,
     actor: { uuid: actor.uuid, id: actor.id, name: actor.name, img: actor.img },
     attributes,
     derived: readDerived(p, byKey),
     advances: {
       reached: milestonesReached(actor),
       claimed: claimedCount(actor),
-      available: availableAdvances(actor),
+      available: eligible ? availableAdvances(actor) : 0,
     },
     ledger: readLog(actor),
     gate: gateState(),
@@ -188,6 +196,13 @@ async function applyAdvance(payload) {
     const actor = resolveActor(payload?.actorUuid);
     if (!actor) return fail("actor_not_found");
 
+    // Checked BEFORE the gate: an ineligible subject is not a "come back at
+    // camp" condition, it is a permanent no. Every UI path already filters, but
+    // this is the authority — a future entry point that forgets must still fail
+    // here rather than write a die step onto a monster.
+    const wrongSubject = subjectFailure(actor);
+    if (wrongSubject) return fail(wrongSubject);
+
     const gate = gateState();
     if (!gate.open) return fail("gate_closed", { gate });
 
@@ -247,6 +262,9 @@ async function applyRefund(payload) {
     const actor = resolveActor(payload?.actorUuid);
     if (!actor) return fail("actor_not_found");
 
+    const wrongSubject = subjectFailure(actor);
+    if (wrongSubject) return fail(wrongSubject);
+
     const { claimed, log: entries } = readLedger(actor);
     const last = entries.pop();
     if (!last) return fail("nothing_to_refund");
@@ -298,8 +316,9 @@ function registerApi() {
     readStatus, previewDerived, advance, refund,
     availableAdvances: (uuid) => {
       const a = resolveActor(uuid);
-      return a ? availableAdvances(a) : 0;
+      return a && isAdvancementSubject(a) ? availableAdvances(a) : 0;
     },
+    isSubject: (uuid) => isAdvancementSubject(resolveActor(uuid)),
   };
 }
 
