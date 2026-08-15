@@ -1898,7 +1898,7 @@
       "minimum_critical_dice": 6,
       "name": "Asura",
       "normal_spell_list": {},
-      "npc_rank": "champion",
+      "npc_rank": "elite",
       "override_all_damage_type": "None",
       "override_attack_damage_type": "None",
       "override_damage_type": "None",
