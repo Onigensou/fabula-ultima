@@ -13763,6 +13763,54 @@
         "effects": 0
       },
       {
+        "id": "0AwQ7wEDz4ISA9mA",
+        "name": "Asura",
+        "type": "character",
+        "items": [
+          {
+            "id": "nYbYx0X2yfIdteZ7",
+            "name": "Elemental Aspect"
+          },
+          {
+            "id": "ohrbXuZkGB4hNrPp",
+            "name": "Elemental Slash"
+          },
+          {
+            "id": "yq9JICuLI4TImXFn",
+            "name": "Elemental Slash (Arm)"
+          },
+          {
+            "id": "KRyhs4RfM7AK7DUJ",
+            "name": "Elemental Slash: Overflow"
+          },
+          {
+            "id": "wUfS7SWAocoznK0n",
+            "name": "Four-Armed Fury"
+          },
+          {
+            "id": "NFruWlBHrgfNSJmM",
+            "name": "Quad-Elemental Slash"
+          },
+          {
+            "id": "ZAKzWPxyVEz9MvYH",
+            "name": "Sword Enchant - Air"
+          },
+          {
+            "id": "aGPAPP5VKu0e8yLg",
+            "name": "Sword Enchant - Bolt"
+          },
+          {
+            "id": "ZpFMS4l2FcHKz89q",
+            "name": "Sword Enchant - Fire"
+          },
+          {
+            "id": "vhv7GLSTsduE1KLU",
+            "name": "Sword Enchant - Ice"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "o1jFZwDZxSAFSSWA",
         "name": "Bandit",
         "type": "character",
