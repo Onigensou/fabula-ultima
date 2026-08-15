@@ -849,7 +849,19 @@ async function resolveAction(director, ar, opts = {}) {
           source: { actorUuid: ar.attackerActorRef, tokenUuid: ar.attacker?.tokenUuid ?? null },
           // Itemized identity + "how it changed" context (the attack site has the
           // full action result; the tick site can't supply weapon/roll fields).
-          element: damageTypeForPayload,                     // fire/ice/… (recover → "healing")
+          // The TRUE element, never the "healing" display label. An ABSORB is
+          // still a bolt event — the affinity only decided which direction the
+          // HP moved. Collapsing it to "healing" here threw away the one field
+          // an absorb listener needs, so every `creature_gain_resource` row
+          // gated on TRIGGER_DAMAGE_IS_<ELEMENT> read 0 and could never fire
+          // (Lightning Prism's Overcharge, Skizzik's Chain Reaction,
+          // Stitched-Up Jacket's "whether it lands or you absorb it").
+          // The effect/tick path (skill-effects.fireResourceChangeTrigger at the
+          // deal_damage site) has always passed the raw element through — this
+          // is the attack path catching up, not a new convention. On a LOSS the
+          // two expressions are identical, so the loss path is unchanged.
+          element: ar.damageType,
+
           originLabel: ar.skillName ?? skill?.name ?? null,  // the attack/skill that dealt it
           originUuid: skill?.uuid ?? null,
           weaponType: ar.weapon?.weaponType ?? null,
