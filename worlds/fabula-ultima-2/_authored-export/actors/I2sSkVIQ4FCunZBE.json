@@ -32,7 +32,7 @@
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "icons/svg/explosion.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
       "name": "Chain Reaction",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -62,7 +62,7 @@
           },
           "heroic_requirement": "",
           "ignore_hr": false,
-          "img": "icons/svg/explosion.svg",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -117,7 +117,7 @@
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "icons/svg/lightning.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
       "name": "Thunder Strike",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -141,7 +141,7 @@
           "effect_table": {},
           "heroic_requirement": "",
           "ignore_hr": false,
-          "img": "icons/svg/lightning.svg",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,

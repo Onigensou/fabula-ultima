@@ -32,7 +32,7 @@
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "icons/svg/pawprint.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
       "name": "Hooves",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -56,7 +56,7 @@
           "effect_table": {},
           "heroic_requirement": "",
           "ignore_hr": false,
-          "img": "icons/svg/pawprint.svg",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -103,7 +103,7 @@
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "icons/svg/aura.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
       "name": "Lightning Charge",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -135,7 +135,7 @@
           },
           "heroic_requirement": "",
           "ignore_hr": false,
-          "img": "icons/svg/aura.svg",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -191,7 +191,7 @@
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "icons/svg/lightning.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213409.361.png",
       "name": "Rail Stream",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
@@ -200,7 +200,7 @@
       "sort": 100000,
       "system": {
         "props": {
-          "action_keywords": "pierce",
+          "action_keywords": "pierce, overflow",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -210,7 +210,7 @@
           "cost": "50 MP",
           "damage_bonus": "125",
           "defense_target_type": "mdef",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li></ul><p>The Qilin looses the charge gathered in its horn.</p><p>Deal <strong>devastating</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to <strong>all enemies</strong>.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>The Qilin looses the charge gathered in its horn.</p><p>Deal <strong>devastating</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to <strong>all enemies</strong>.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
@@ -220,7 +220,7 @@
           "heroic_requirement": "",
           "id": "zNhzAhg1phFoHW8q",
           "ignore_hr": false,
-          "img": "icons/svg/lightning.svg",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213409.361.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -246,7 +246,8 @@
           "target_eligibility": "",
           "type_damage": "Bolt",
           "use_optional_params": false,
-          "uuid": "Actor.TvLv878yZLNUAWNN.Item.zNhzAhg1phFoHW8q"
+          "uuid": "Actor.TvLv878yZLNUAWNN.Item.zNhzAhg1phFoHW8q",
+          "versatile": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278387,
@@ -653,7 +654,7 @@
           "id": "${item.id}",
           "name": "Rail Stream",
           "roll": "",
-          "spell_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li></ul><p>The Qilin looses the charge gathered in its horn.</p><p>Deal <strong>devastating</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to <strong>all enemies</strong>.</p>",
+          "spell_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>The Qilin looses the charge gathered in its horn.</p><p>Deal <strong>devastating</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to <strong>all enemies</strong>.</p>",
           "spell_target": "All Enemies",
           "uuid": "Actor.TvLv878yZLNUAWNN.Item.zNhzAhg1phFoHW8q"
         }
