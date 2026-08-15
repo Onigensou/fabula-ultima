@@ -28,6 +28,7 @@ import {
 import { evaluate, availableHeroics, indexActorSkills, heroicsBrokenBy } from "./requirement-eval.js";
 import { gateState } from "./levelup-gate.js";
 import { isActingGM, registerHandler, request, installNet } from "../advancement/advancement-net.js";
+import { isAdvancementSubject, subjectFailure } from "../advancement/advancement-subject.js";
 
 const PROP = LEVELUP.PROP;
 const RULE = LEVELUP.RULE;
@@ -184,6 +185,10 @@ export function getState(actorUuid) {
 
   return {
     ok: true,
+    // Whether this actor is a subject of advancement at all. NPCs carry levels
+    // and classes, so every number below computes for them too — the flag is
+    // what stops the window offering to spend on one.
+    eligible: isAdvancementSubject(actor),
     actor: { uuid: actor.uuid, id: actor.id, name: actor.name, img: actor.img },
     level: num(actor.system?.props?.[PROP.LEVEL], 0),
     classLevelTotal: sumClassLevels(actor),
@@ -257,6 +262,11 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
 
   const actor = resolveActor(actorUuid);
   if (!actor) return fail("actor_not_found");
+
+  // Advancement is a player-character system. The window filters its target,
+  // but this handler is the authority — see advancement-subject.js.
+  const wrongSubject = subjectFailure(actor);
+  if (wrongSubject) return fail(wrongSubject);
 
   const cls = resolveClass(classKey);
   if (!cls) return fail("class_not_found");
@@ -366,6 +376,9 @@ async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids }) {
   const actor = resolveActor(actorUuid);
   if (!actor) return fail("actor_not_found");
 
+  const wrongSubject = subjectFailure(actor);
+  if (wrongSubject) return fail(wrongSubject);
+
   const cls = resolveClass(classKey);
   if (!cls) return fail("class_not_found");
 
@@ -454,6 +467,9 @@ async function applyHeroic({ actorUuid, skillUuid }) {
 
   const actor = resolveActor(actorUuid);
   if (!actor) return fail("actor_not_found");
+
+  const wrongSubject = subjectFailure(actor);
+  if (wrongSubject) return fail(wrongSubject);
 
   const slots = heroicSlots(actor);
   if (slots.open < 1) return fail("no_heroic_slot", { slots });

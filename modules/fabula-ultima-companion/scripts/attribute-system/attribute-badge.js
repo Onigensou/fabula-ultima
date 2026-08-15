@@ -2,9 +2,15 @@
 // Unspent Attribute Point badge.
 //
 // Same contract as the Skill Point badge: it appears only where the point can
-// actually be spent — a camp lobby or the title screen — and clicking it opens
-// the Status window. A character who hits level 20 mid-fight is not nagged
-// about a decision the gate will not let them make yet.
+// actually be spent — a camp lobby or the title screen — for a PLAYER CHARACTER
+// only, and clicking it opens the Status window. A character who hits level 20
+// mid-fight is not nagged about a decision the gate will not let them make yet.
+//
+// It differs from the SP badge in one deliberate way: it follows a selected
+// token, so a GM can work on a player's behalf. That is also what made it
+// misfire — it followed ANY token, and a monster has a level like anyone else.
+// The subject filter lives in advancement-subject.js, shared with the window,
+// the macro and the write handlers.
 //
 // THE BOTTOM-LEFT STACK, floor upward:
 //
@@ -22,6 +28,7 @@
 
 import { ATTR } from "./attribute-const.js";
 import { readStatus } from "./attribute-api.js";
+import { advancementTarget } from "../advancement/advancement-subject.js";
 
 const STYLE_ID = "oni-attribute-badge-style";
 const ROOT_ID = "oni-attribute-badge";
@@ -65,11 +72,13 @@ function injectStyles() {
   document.head.appendChild(s);
 }
 
-const myActor = () => {
-  const t = canvas?.tokens?.controlled?.[0]?.actor;
-  if (t) return t;
-  return game.user?.character ?? null;
-};
+// A selected token first — this is how a GM operates the system on a player's
+// behalf — falling back to the user's own character. Both are filtered to
+// player characters: monsters carry levels too, so without the filter a GM who
+// clicked a level-40 monster at camp was told IT had unspent Attribute Points.
+// A monster selection returns null rather than falling through to the GM's own
+// character, because quietly retargeting the badge would be worse than nothing.
+const myActor = () => advancementTarget();
 
 export const AttributeBadge = {
   _el: null,
