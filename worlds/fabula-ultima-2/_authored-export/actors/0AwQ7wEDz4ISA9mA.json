@@ -349,6 +349,112 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "E4bUsoF04hjcvHEn",
+          "_stats": {
+            "createdTime": 1786777176638
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to bolt.</p>",
+          "disabled": false,
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Paralyze.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Paralyze.png",
+          "name": "Bolt Aspect",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_state"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "M7xjnt90I3Mq37wM",
+          "_stats": {
+            "createdTime": 1786777176738
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to ice.</p>",
+          "disabled": false,
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png",
+          "name": "Ice Aspect",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_state"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "nUaYGTfMlry3rDaZ",
+          "_stats": {
+            "createdTime": 1786777176832
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to air.</p>",
+          "disabled": false,
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png",
+          "name": "Air Aspect",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_state"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "P3pYArKH950t5zwb",
+          "_stats": {
+            "createdTime": 1786777176531
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to fire.</p>",
+          "disabled": false,
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
+          "name": "Fire Aspect",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_state"
+            ]
+          },
+          "transfer": false
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
