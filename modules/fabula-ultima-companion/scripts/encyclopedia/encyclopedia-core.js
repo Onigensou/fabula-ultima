@@ -733,13 +733,48 @@
     return renderSection("Skills", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAbilityEntry(actor, e, "old", true)).join("")}</ul>`, "details");
   }
 
-  function renderPassiveSkills(actor, p, witnessedSet = null) {
+  /**
+   * True when a passive actually EXECUTES — i.e. it carries at least one live
+   * reaction row, so the director can fire it and the witness pipeline can
+   * catch it.
+   *
+   * Passives without one ("inert" passives — Flying, Amplify Fire, Spell
+   * Sensitivity) are static trait text. They never execute, so no witness event
+   * for them can ever exist and they would otherwise read `???` forever. They
+   * are revealed by study tier instead — see renderPassiveSkills.
+   */
+  function hasExecutableReactionRow(item) {
+    const rc = item?.system?.props?.reaction_config_table;
+    if (!rc || typeof rc !== "object") return false;
+    return Object.values(rc).some(
+      row => row && !row.$deleted && String(row.reaction_trigger ?? "").trim()
+    );
+  }
+
+  /**
+   * `showDetails` (best >= TIER_DETAILS) reveals INERT passives only.
+   *
+   * Rationale: an inert passive is a descriptive trait that sits conceptually
+   * alongside Affinities / Weapon Efficiency / Condition Affinities, all of
+   * which already unlock at the Details tier. A player who studied the creature
+   * that thoroughly has "read the bestiary entry". A player who merely watched
+   * it fight has not — and executable passives stay strictly witness-gated, so
+   * a boss's signature reaction still can't be spoiled by one good Study roll.
+   */
+  function renderPassiveSkills(actor, p, witnessedSet = null, showDetails = false) {
     const ws = witnessedSet ?? new Set();
     const newList = objectToList(p.skill_passive_list).filter(e => !e?.$deleted);
     if (newList.length) {
       const items = newList.map(e => {
         const id = entryItemId(e);
-        const witnessed = id ? ws.has(id) : true;
+        let witnessed = id ? ws.has(id) : true;
+        if (!witnessed && showDetails) {
+          const item = resolveEmbeddedItem(actor, e);
+          // A row whose item no longer resolves is treated as inert: there is
+          // no reaction table to inspect and no live item that could ever fire,
+          // so tier-revealing it is strictly better than a permanent `???`.
+          if (!item || !hasExecutableReactionRow(item)) witnessed = true;
+        }
         return renderPassiveEntry(actor, e, "new", witnessed);
       });
       return renderSection("Passive", `<ul class="oni-enc-ability-list">${items.join("")}</ul>`, "details");
@@ -864,7 +899,7 @@
       renderAttacks(actor, p, witnessedSet),
       renderActiveSkills(actor, p, witnessedSet),
       renderSpells(actor, p, witnessedSet),
-      renderPassiveSkills(actor, p, witnessedSet),
+      renderPassiveSkills(actor, p, witnessedSet, showDetails),
     ].filter(Boolean);
     const actionBlock = actionSections.length
       ? [renderActionHeader(), ...actionSections]
