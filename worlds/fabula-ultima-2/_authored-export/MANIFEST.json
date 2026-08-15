@@ -19687,6 +19687,26 @@
         "effects": 0
       },
       {
+        "id": "TvLv878yZLNUAWNN",
+        "name": "Kirin",
+        "type": "character",
+        "items": [
+          {
+            "id": "0hLD12lSvD3sw40G",
+            "name": "Hooves"
+          },
+          {
+            "id": "3JBSipAdIt17tf68",
+            "name": "Lightning Charge"
+          },
+          {
+            "id": "zNhzAhg1phFoHW8q",
+            "name": "Rail Stream"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "zSCt4x8DUTuYUqTa",
         "name": "Koshka",
         "type": "character",
@@ -21036,26 +21056,6 @@
           {
             "id": "RvbmQYXiJnVzcrVe",
             "name": "Total Destruction"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "TvLv878yZLNUAWNN",
-        "name": "Qilin",
-        "type": "character",
-        "items": [
-          {
-            "id": "0hLD12lSvD3sw40G",
-            "name": "Hooves"
-          },
-          {
-            "id": "3JBSipAdIt17tf68",
-            "name": "Lightning Charge"
-          },
-          {
-            "id": "zNhzAhg1phFoHW8q",
-            "name": "Rail Stream"
           }
         ],
         "effects": 0

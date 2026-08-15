@@ -14,7 +14,7 @@
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
-  "img": "icons/svg/mystery-man.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
   "items": [
     {
       "_id": "IbE6lOJCeAs8Bb4n",
@@ -358,7 +358,7 @@
       "rotation": 0,
       "scaleX": 1,
       "scaleY": 1,
-      "src": "icons/svg/mystery-man.svg",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -459,10 +459,10 @@
       "current_hp": "90",
       "current_ip": "0",
       "current_mp": "60",
-      "cut_in_critical": "",
-      "cut_in_fumble": "",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
@@ -514,7 +514,7 @@
       "icon_offset_y": "",
       "icon_scale": "",
       "id": "I2sSkVIQ4FCunZBE",
-      "img": "icons/svg/mystery-man.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "init": "14",
       "ins_base": "8",
       "ins_current": 8,
@@ -587,8 +587,8 @@
       },
       "spear_ef": "100",
       "species": "ELEMENTAL",
-      "sprite_battle": "",
-      "sprite_standard": "",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "steal_percentage_table": {},
       "study_text": "<p>Living lightning, quicker than the eye can follow — <strong>bolt</strong> only rouses it, and it repays every jolt with a strike of its own. <strong>Earth</strong> grounds it dead.</p>",
       "subtype": "Sub-Type",

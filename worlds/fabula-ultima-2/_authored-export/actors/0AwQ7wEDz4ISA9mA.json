@@ -14,7 +14,7 @@
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
-  "img": "icons/svg/mystery-man.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
   "items": [
     {
       "_id": "aGPAPP5VKu0e8yLg",
@@ -1544,7 +1544,7 @@
       "rotation": 0,
       "scaleX": 1,
       "scaleY": 1,
-      "src": "icons/svg/mystery-man.svg",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -1798,10 +1798,10 @@
       "current_hp": "420",
       "current_ip": "0",
       "current_mp": "0",
-      "cut_in_critical": "",
-      "cut_in_fumble": "",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
@@ -1853,7 +1853,7 @@
       "icon_offset_y": "",
       "icon_scale": "",
       "id": "0AwQ7wEDz4ISA9mA",
-      "img": "icons/svg/mystery-man.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "init": "11",
       "ins_base": "8",
       "ins_current": 8,
@@ -1985,8 +1985,8 @@
       },
       "spear_ef": "100",
       "species": "DEMON",
-      "sprite_battle": "",
-      "sprite_standard": "",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "steal_percentage_table": {},
       "stealable_loot": {},
       "study_text": "<p>A demon that carries four blades and no patience — it will challenge anything that walks upright and call the challenge a courtesy. Scholars note its steel takes on whatever <strong>element</strong> last struck it, which makes a careless mage its best armourer.</p>",
