@@ -326,7 +326,8 @@ function registerApi() {
       const a = resolveActor(uuid);
       return a && isAdvancementSubject(a) ? availableAdvances(a) : 0;
     },
-    isSubject: (uuid) => isAdvancementSubject(resolveActor(uuid)),
+    // For callers that cannot import — the Status macro.
+    isSubject: isSubjectUuid,
   };
 }
 
