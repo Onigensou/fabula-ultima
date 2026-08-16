@@ -210,6 +210,16 @@ async function cloneParty(actorRefs, _startZp = 0, _startFp = 3) {
     // reads false even before the sim's AI-gate override kicks in.
     data.ownership = { default: 0 };
 
+    // Provenance: which real actor is this clone standing in for?
+    //
+    // A clone gets a fresh actor id, so anything keyed on the DB party roster
+    // (member_id_1..4) stops recognising it. That silently cost every sim its
+    // player resource HUD — the roster filter matched nothing, and
+    // buildDirectorHud returns early on an empty list, so there was no error to
+    // notice. Read by isHudPartyMember (director-player-hud.js).
+    data.flags ??= {};
+    (data.flags["fabula-ultima-companion"] ??= {}).simSourceActorId = src.id;
+
     // START FROM A KNOWN STATE. A clone inherits whatever HP/MP/IP the real PC
     // happens to be sitting on — Blanche was at 69/164 when we cloned her — which
     // silently makes a fight look harder than it is and makes two runs of the same

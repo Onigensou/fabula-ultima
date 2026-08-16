@@ -30,7 +30,7 @@ import { preloadDirectorCutins } from "./director-cutin.js";
 import { playSfx } from "./director-sfx.js";
 import { playBattleStartBanner } from "./director-round-banner.js";
 import { showBattleLoader, hideBattleLoader } from "./director-battle-loader.js";
-import { buildDirectorHud, dbPartyActorIds } from "./director-player-hud.js";
+import { buildDirectorHud, dbPartyActorIds, isHudPartyMember } from "./director-player-hud.js";
 import { extractAnimationUrlsFromActors } from "./director-animation.js";
 import { pWait, shouldRender } from "./presentation-clock.js";
 import { SimMode } from "./sim/sim-mode.js";
@@ -1060,7 +1060,7 @@ async function runInPlaceReinforceInit(payload, battleScene) {
     const partyIds = await dbPartyActorIds();
     buildDirectorHud(
       partyTokens
-        .filter((t) => partyIds.size === 0 || partyIds.has(t.actor?.id))
+        .filter((t) => isHudPartyMember(t.actor, partyIds))
         .map((t) => ({ actor: t.actor, token: t }))
         .filter((e) => e.actor),
       battleScene
@@ -1270,7 +1270,7 @@ export async function runDirectorInit(payload) {
   const hudPartyIds = await dbPartyActorIds();
   buildDirectorHud(
     partyTokens
-      .filter(t => hudPartyIds.size === 0 || hudPartyIds.has(t.actor?.id))
+      .filter(t => isHudPartyMember(t.actor, hudPartyIds))
       .map(t => ({ actor: t.actor, token: t }))
       .filter(e => e.actor),
     battleScene
