@@ -107,6 +107,23 @@ export async function runBattleEndSequence(director) {
     return;
   }
 
+  // ── Conflict event teardown ──────────────────────────────────────────────
+  // Deliberately placed AFTER the undying early-return and BEFORE the
+  // follow-up hand-off:
+  //   • undying resumed THIS conflict — the rule is still in play, so the
+  //     early return above must skip teardown entirely
+  //   • a follow-up is a NEW conflict on the same scene (round resets,
+  //     conflict_start re-fires) — sweeping here means it re-seeds clean
+  //     instead of the old state surviving alongside the new
+  // This is also where the system's cleanup lives generally: BD has no
+  // conflict_end dispatch site yet (see the note in state-handlers' STOPPED),
+  // and a status an event seeded must never follow a creature out of the
+  // fight. See [[conflict-event]].
+  try {
+    const { teardownConflictEvent } = await import("../../conflict-event/conflict-event-runtime.js");
+    await teardownConflictEvent(director);
+  } catch (e) { warn("[BattleEnd] conflict-event teardown threw", e); }
+
   // ── Follow-up / sequel evaluation (e.g. ⭐ Wandering Flame ambush) ────────
   // Runs BEFORE the Battle-End prompt + victory cinematic so a triggered
   // ambush skips the victory screen entirely: enemies wiped → boss drops in →

@@ -33,6 +33,7 @@ import { initWanderingFlameEntrance } from "./battle-end/followups/wandering-fla
 import { getPendingClaim, clearPendingClaim, listUndyingRules, isForceCinematic, setForceCinematic } from "./battle-end/undying/undying.js";
 import { registerBlackestNight, blackestNightReactor } from "./battle-end/undying/geist-blackest-night.js";
 import { initBlackestNightCinematic } from "./battle-end/undying/blackest-night-cinematic.js";
+import { conflictEventReactor } from "../conflict-event/conflict-event-runtime.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
 import { TurnUI } from "./turn-ui.js";
 import { registerPlayerComposeActionHandler } from "./compose-action.js";
@@ -260,6 +261,11 @@ async function start(arg) {
   // Geist's Blackest Night undying trigger — after defeatReactor so the
   // creature_defeated emit + KO status land first. See [[undying]].
   registerBuiltinReactor(blackestNightReactor);
+  // Conflict event (scene-selected additional rule). Last, so the engine's own
+  // reconcilers have settled Crisis / defeat / derived statuses before an
+  // event's rule reads the battlefield. No-ops unless the conflict scene
+  // selects an event. See [[conflict-event]].
+  registerBuiltinReactor(conflictEventReactor);
 
   _instance = director;
   try {
@@ -575,6 +581,9 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   // Geist's Blackest Night undying trigger — must survive resume too, or a
   // mid-boss-fight F5 silently disables the revive. See [[undying]].
   registerBuiltinReactor(blackestNightReactor);
+  // Conflict event — same reasoning: without this a mid-conflict F5 silently
+  // switches the scene's hazard off for the rest of the fight.
+  registerBuiltinReactor(conflictEventReactor);
 
   _instance = director;
 
