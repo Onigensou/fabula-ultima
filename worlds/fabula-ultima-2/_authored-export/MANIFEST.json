@@ -4658,7 +4658,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 51
+        "effects": 52
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -19687,6 +19687,26 @@
         "effects": 0
       },
       {
+        "id": "TvLv878yZLNUAWNN",
+        "name": "Kirin",
+        "type": "character",
+        "items": [
+          {
+            "id": "0hLD12lSvD3sw40G",
+            "name": "Hooves"
+          },
+          {
+            "id": "3JBSipAdIt17tf68",
+            "name": "Lightning Charge"
+          },
+          {
+            "id": "zNhzAhg1phFoHW8q",
+            "name": "Rail Stream"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "zSCt4x8DUTuYUqTa",
         "name": "Koshka",
         "type": "character",
@@ -20015,6 +20035,26 @@
           {
             "id": "wJJ3Jqpeol4tUqQQ",
             "name": "Mega-Elixir"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "iGc0EUHE9LKWT0Ye",
+        "name": "Mana Ray",
+        "type": "character",
+        "items": [
+          {
+            "id": "nEeldo45VbyKqFpS",
+            "name": "Flying"
+          },
+          {
+            "id": "lK1xNxttDeXzwhVh",
+            "name": "Mana Stinger"
+          },
+          {
+            "id": "qQ1UsyvTJj5TpCqy",
+            "name": "Volt Stinger"
           }
         ],
         "effects": 0
@@ -21036,26 +21076,6 @@
           {
             "id": "RvbmQYXiJnVzcrVe",
             "name": "Total Destruction"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "TvLv878yZLNUAWNN",
-        "name": "Qilin",
-        "type": "character",
-        "items": [
-          {
-            "id": "0hLD12lSvD3sw40G",
-            "name": "Hooves"
-          },
-          {
-            "id": "3JBSipAdIt17tf68",
-            "name": "Lightning Charge"
-          },
-          {
-            "id": "zNhzAhg1phFoHW8q",
-            "name": "Rail Stream"
           }
         ],
         "effects": 0
@@ -22946,6 +22966,26 @@
         "type": "character",
         "items": [],
         "effects": 1
+      },
+      {
+        "id": "kAYN54Id3iTAOw1A",
+        "name": "Volt Seahorse",
+        "type": "character",
+        "items": [
+          {
+            "id": "25CGufwQTX7ZHwW6",
+            "name": "Bubble Beam"
+          },
+          {
+            "id": "oN5ck6b98DPZbfPj",
+            "name": "Bubble Splash"
+          },
+          {
+            "id": "IQjzHjHJRozJJ4Oe",
+            "name": "Voltage Discharge"
+          }
+        ],
+        "effects": 0
       },
       {
         "id": "azHtPiPS4M1CnaAa",

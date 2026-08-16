@@ -210,6 +210,16 @@ async function cloneParty(actorRefs, _startZp = 0, _startFp = 3) {
     // reads false even before the sim's AI-gate override kicks in.
     data.ownership = { default: 0 };
 
+    // Provenance: which real actor is this clone standing in for?
+    //
+    // A clone gets a fresh actor id, so anything keyed on the DB party roster
+    // (member_id_1..4) stops recognising it. That silently cost every sim its
+    // player resource HUD — the roster filter matched nothing, and
+    // buildDirectorHud returns early on an empty list, so there was no error to
+    // notice. Read by isHudPartyMember (director-player-hud.js).
+    data.flags ??= {};
+    (data.flags["fabula-ultima-companion"] ??= {}).simSourceActorId = src.id;
+
     // START FROM A KNOWN STATE. A clone inherits whatever HP/MP/IP the real PC
     // happens to be sitting on — Blanche was at 69/164 when we cloned her — which
     // silently makes a fight look harder than it is and makes two runs of the same
@@ -431,6 +441,12 @@ export async function run({
   enemyZp = null,        // Zero Power to charge a boss with — number (all foes) or {ref: value}
   guests = true,         // field the deployed guest roster (cloned, like the party)
   scripts = null,        // skill-under-test directives — force a caster's action(s)
+  // Conflict event (scene-selected additional rule — a dungeon hazard, an arena
+  // gimmick). A sim runs on Training Ground, which is not a conflict scene and
+  // carries no selection, so without this a hazard-bearing encounter is balanced
+  // with its hazard SILENTLY ABSENT. Pass the event id to arm it, e.g.
+  // "lightning-storm". See [[conflict-event]].
+  conflictEvent = null,
 } = {}) {
   const a = api();
   if (!a?.start) { ui.notifications?.error("[SIM] Battle Director API not ready."); return null; }
@@ -515,13 +531,27 @@ export async function run({
     }
 
     const payload = {
-      context: { battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true },
+      context: {
+        battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true,
+        ...(conflictEvent ? { conflictEventId: String(conflictEvent) } : {}),
+      },
       encounterPlan: { mode: "manual", manualPicks },
       party: { members },
     };
 
     const foeLabel = manualPicks.map((p) => `${p.name}×${p.quantity}`).join(" + ");
     SimMode.note("start", `${members.filter((m) => !m.isGuest).length} PC(s) vs ${foeLabel}`);
+    // Recorded unconditionally. A balance run's numbers mean something different
+    // depending on whether a hazard was in play, and a transcript that stays
+    // silent about it is ambiguous in exactly the case that matters — so the
+    // "none" line is as load-bearing as the named one.
+    if (conflictEvent) {
+      const known = !!globalThis.FUCompanion?.api?.conflictEvents?.has?.(conflictEvent);
+      SimMode.note("start", `conflict event: ${conflictEvent}${known ? "" : " — NOT REGISTERED, will not run"}`);
+      if (!known) warn(`[SIM] conflict event "${conflictEvent}" is not registered — the fight will run without it`);
+    } else {
+      SimMode.note("start", "conflict event: none");
+    }
     // Charge any boss ZP on the world actor BEFORE spawn (the unlinked token
     // inherits it); restored in `finally`.
     zpRestore = await chargeEnemyZp(manualPicks, enemyZp);

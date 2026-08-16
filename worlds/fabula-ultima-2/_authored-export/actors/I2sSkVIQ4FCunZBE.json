@@ -14,7 +14,7 @@
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
-  "img": "icons/svg/mystery-man.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
   "items": [
     {
       "_id": "IbE6lOJCeAs8Bb4n",
@@ -50,7 +50,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Skizzik takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>It immediately performs a <strong>free Thunder Strike</strong>.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Skizzik, whether it lands or is absorbed</p></li></ul><p>It immediately performs a <strong>free Thunder Strike</strong>.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -77,10 +77,20 @@
           "reaction_config_table": {
             "0": {
               "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
+              "reaction_cause_filter": "damage",
               "reaction_effect_ref": "chain_strike",
               "reaction_passive_mode": "on",
               "reaction_source": "",
               "reaction_trigger": "creature_lose_resource"
+            },
+            "1": {
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
+              "reaction_cause_filter": "damage",
+              "reaction_effect_ref": "chain_strike",
+              "reaction_passive_mode": "on",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_gain_resource"
             }
           },
           "rolled_atr1": "-",
@@ -190,7 +200,7 @@
     },
     "detectionModes": [],
     "displayBars": 50,
-    "displayName": 0,
+    "displayName": 50,
     "disposition": -1,
     "flags": {
       "barbrawl": {
@@ -280,6 +290,10 @@
             "subdivisionsOwner": false
           }
         }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
       }
     },
     "height": 1,
@@ -348,9 +362,9 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1,
-      "scaleY": 1,
-      "src": "icons/svg/mystery-man.svg",
+      "scaleX": 1.84,
+      "scaleY": 1.84,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -451,10 +465,10 @@
       "current_hp": "90",
       "current_ip": "0",
       "current_mp": "60",
-      "cut_in_critical": "",
-      "cut_in_fumble": "",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
@@ -506,7 +520,7 @@
       "icon_offset_y": "",
       "icon_scale": "",
       "id": "I2sSkVIQ4FCunZBE",
-      "img": "icons/svg/mystery-man.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "init": "14",
       "ins_base": "8",
       "ins_current": 8,
@@ -572,15 +586,15 @@
         "IbE6lOJCeAs8Bb4n": {
           "id": "${item.id}",
           "name": "Chain Reaction",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Skizzik takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>It immediately performs a <strong>free Thunder Strike</strong>.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Skizzik, whether it lands or is absorbed</p></li></ul><p>It immediately performs a <strong>free Thunder Strike</strong>.</p>",
           "roll": "",
           "uuid": "Actor.I2sSkVIQ4FCunZBE.Item.IbE6lOJCeAs8Bb4n"
         }
       },
       "spear_ef": "100",
       "species": "ELEMENTAL",
-      "sprite_battle": "",
-      "sprite_standard": "",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "steal_percentage_table": {},
       "study_text": "<p>Living lightning, quicker than the eye can follow — <strong>bolt</strong> only rouses it, and it repays every jolt with a strike of its own. <strong>Earth</strong> grounds it dead.</p>",
       "subtype": "Sub-Type",

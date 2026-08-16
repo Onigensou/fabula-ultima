@@ -20,6 +20,7 @@ import {
   classIcon, CLASS_META_DEFAULT,
 } from "./levelup-const.js";
 import { renderDescription, keywordRowHTML, RICHTEXT_CSS } from "./levelup-richtext.js";
+import { isAdvancementSubject } from "../advancement/advancement-subject.js";
 import {
   sfx, hoverSfx, resetHover, preloadLevelUpSfx,
   staggerRows, windowAnim, previewIntro, burst, FX_CSS,
@@ -515,6 +516,11 @@ const LevelUpApp = {
   open(actorUuid) {
     const uuid = actorUuid ?? this._guessActor();
     if (!uuid) return ui.notifications?.warn?.("No character selected.");
+    // A uuid passed straight in skips _guessActor, so re-check the subject.
+    const st = api()?.getState?.(uuid);
+    if (st?.ok && !st.eligible) {
+      return ui.notifications?.warn?.("The level-up window is for player characters.");
+    }
     injectStyles();
 
     this._actorUuid = uuid;
@@ -625,12 +631,14 @@ const LevelUpApp = {
   toggle(uuid) { this.isOpen ? this.close() : this.open(uuid); },
 
   // The character this user is here to level: their assigned actor, else a
-  // selected token, else nothing.
+  // selected token, else nothing. Both are filtered to player characters —
+  // NPCs carry levels and class rows too, and the window would happily offer to
+  // spend on one. See advancement-subject.js.
   _guessActor() {
-    const owned = game.user?.character?.uuid;
-    if (owned) return owned;
-    const tok = canvas?.tokens?.controlled?.[0]?.actor?.uuid;
-    return tok ?? null;
+    const owned = game.user?.character ?? null;
+    if (owned) return isAdvancementSubject(owned) ? owned.uuid : null;
+    const tok = canvas?.tokens?.controlled?.[0]?.actor ?? null;
+    return tok && isAdvancementSubject(tok) ? tok.uuid : null;
   },
 
   // ── projection ──────────────────────────────────────────────────────────

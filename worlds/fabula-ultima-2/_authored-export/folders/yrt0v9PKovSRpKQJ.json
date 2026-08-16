@@ -2,7 +2,7 @@
   "_id": "yrt0v9PKovSRpKQJ",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1765683160513,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
@@ -13,7 +13,7 @@
   "flags": {},
   "folder": "oVRjRmlshSvb68gK",
   "name": "NPCs",
-  "sort": 0,
+  "sort": 100000,
   "sorting": "a",
   "type": "Actor"
 }

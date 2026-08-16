@@ -975,6 +975,30 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
       }
+      // Current MP of the trigger's subject (the target). The MP twin of
+      // TARGET_CURRENT_HP — same subjectActorUuid resolve, reading current_mp.
+      // Needed to CAP an MP-burn at what the victim actually has, so a rider
+      // that deals bonus damage equal to the MP it drained cannot over-report
+      // against a nearly-dry target (Mana Ray's Mana Stinger:
+      // `min(ceil(TARGET_MAX_MP * 0.2), TARGET_CURRENT_MP)`).
+      case "TARGET_CURRENT_MP": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return subject ? (Number(subject?.system?.props?.current_mp ?? 0) || 0) : 0;
+      }
+      // Max MP of the trigger's subject (the target). Twin of TARGET_MAX_HP,
+      // reading max_mp. Powers per-victim "% of the target's max MP" riders in
+      // the outgoing-damage pass (computeSenderDamageBonuses), where the
+      // resolver's `actor` is the CASTER — so plain MAX_MP would read the
+      // caster's pool, not the victim's. Scaling off MAX (not current) is the
+      // design intent: a bigger mana pool is a bigger target.
+      case "TARGET_MAX_MP": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return subject ? (Number(subject?.system?.props?.max_mp ?? 0) || 0) : 0;
+      }
       // Remaining shield buffer of the trigger's SUBJECT (the current target).
       // Twin of CUR_SHIELD resolved against subjectActorUuid, for per-victim
       // shield reads in the outgoing-damage pass.

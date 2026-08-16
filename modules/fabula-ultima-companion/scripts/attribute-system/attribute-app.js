@@ -14,7 +14,8 @@
 import {
   ATTR, ATTR_KEYS, ATTR_META, num, nextDie, log, warn,
 } from "./attribute-const.js";
-import { readStatus, previewDerived, advance } from "./attribute-api.js";
+import { readStatus, previewDerived, advance, isSubjectUuid } from "./attribute-api.js";
+import { advancementTarget } from "../advancement/advancement-subject.js";
 import { sfx, windowAnim, staggerRows } from "../levelup-system/levelup-fx.js";
 
 const ROOT_ID = "oni-attributes";
@@ -38,6 +39,13 @@ export const AttributeApp = {
   open(actorUuid) {
     const uuid = actorUuid ?? this._guessActor();
     if (!uuid) return ui.notifications?.warn?.("No character selected.");
+    // A uuid passed straight in bypasses _guessActor, so the subject is checked
+    // here too. Refusing outright beats rendering a panel whose every control
+    // is inert — the window is for player characters, and a monster's dice are
+    // a balance edit that belongs on the sheet.
+    if (!isSubjectUuid(uuid)) {
+      return ui.notifications?.warn?.("The Status window is for player characters.");
+    }
     injectStyles();
 
     this._actorUuid = uuid;
@@ -78,10 +86,10 @@ export const AttributeApp = {
 
   toggle(uuid) { this.isOpen ? this.close() : this.open(uuid); },
 
+  // Selected token first, so a GM can open a player's Status for them; own
+  // character otherwise. Filtered to player characters — see the badge.
   _guessActor() {
-    const t = canvas?.tokens?.controlled?.[0]?.actor;
-    if (t) return t.uuid;
-    return game.user?.character?.uuid ?? null;
+    return advancementTarget()?.uuid ?? null;
   },
 
   render() {

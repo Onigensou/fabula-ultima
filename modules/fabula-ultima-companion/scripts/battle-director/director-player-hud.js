@@ -842,6 +842,39 @@ Hooks.on("canvasTearDown", () => {
  * DB failure; callers should treat empty as "no filter" rather than blank
  * the HUD.
  */
+/**
+ * Does this actor get a resource card?
+ *
+ * The single definition of "party member" for the HUD, shared by all three
+ * build sites (PREP, in-place reinforce, undying resume) so they cannot drift.
+ *
+ * Two ways to qualify:
+ *
+ *   1. The actor IS a DB roster member (`member_id_1..4`) — normal play.
+ *   2. The actor is a SIM CLONE OF one. The automated-playtest harness clones
+ *      the party so a run can never write to the real PCs, and a clone gets a
+ *      brand-new actor id — so it matched nothing here and every sim ran with
+ *      NO player HUD at all. It failed silently, because buildDirectorHud
+ *      returns early on an empty list. `simSourceActorId` is stamped by
+ *      cloneParty and points at the actor the clone stands in for.
+ *
+ * Guests, summons and scene allies still fall through both branches: a guest
+ * clone's source is a roster actor, not a party member, so it is excluded here
+ * exactly as it is in a real battle. That is the whole reason this is a
+ * provenance check rather than a "skip the filter under SimMode" bypass —
+ * the latter would hand cards to everything on the party side.
+ *
+ * @param {Actor} actor
+ * @param {Set<string>} partyIds  from dbPartyActorIds(); empty = no filter
+ */
+export function isHudPartyMember(actor, partyIds) {
+  if (!actor) return false;
+  if (!partyIds || partyIds.size === 0) return true;   // DB failure → don't blank the HUD
+  if (partyIds.has(actor.id)) return true;
+  const src = actor.flags?.[MODULE_ID]?.simSourceActorId;
+  return !!src && partyIds.has(String(src));
+}
+
 export async function dbPartyActorIds() {
   try {
     const result = await window.FUCompanion?.api?.getCurrentGameDb?.();
@@ -866,7 +899,14 @@ export async function dbPartyActorIds() {
  * @param {Scene} scene  The active battle scene (used for flag storage + key).
  */
 export async function buildDirectorHud(entries, scene) {
-  if (!entries?.length || !scene) return;
+  // An empty list is how this feature disappears WITHOUT an error: every caller
+  // filters before calling, so a filter that matches nothing looks identical to
+  // "no battle". That is exactly how the sim ran HUD-less and nobody noticed.
+  if (!entries?.length) {
+    warn("buildDirectorHud: called with no entries — every candidate was filtered out; no HUD will render");
+    return;
+  }
+  if (!scene) return;
   const key      = `director-${scene.id}`;
   const valid    = entries.filter(e => e.actor);
   const actorIds = valid.map(e => e.actor.id);

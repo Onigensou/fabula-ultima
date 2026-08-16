@@ -536,6 +536,24 @@ grant_amount: "floor(CUR_HP / 4)"  // self-sacrifice scaling
 | `ae_template_ref` | string | An effect identifier — registry id, an `Item.x.ActiveEffect.y` UUID, or a name registered in the AEM. Forwarded to `FUCompanion.api.activeEffectManager.applyEffects` as-is. |
 | `target_ref` | string (`effect_label`) | Required. References a [`targeting`](#effect_kind-targeting--produce-a-named-token-list) row. Recipient(s) of the AE. |
 | `ae_duplicate_mode` | `"skip" \| "replace" \| "stack" \| "remove" \| "ask"` | Default `"replace"`. How to handle when the target already has the AE. |
+| `ae_chance_percent` | number \| formula | Optional, `0`–`100`. Rolled **independently for each target**. Blank = always applies. |
+
+`ae_chance_percent` vs [`effect_kind: "chance"`](#effect_kind-chance): the
+`chance` kind rolls **once for the whole row**, so on a multi-target row every
+target shares one coin flip (four Paralyzed or none). `ae_chance_percent` rolls
+per target, which is what *"50% chance to inflict Paralyzed on each creature
+hit"* means. Use the `chance` kind for a single-target rider or an
+all-or-nothing branch; use this field for an AoE status rider.
+
+There is no data-only alternative for a Spell: an **Attack** fires
+`creature_deals_damage` once per hit target, so a per-target `chance(50)` in a
+reaction's `condition_formula` works there (Electro Slime's Static Shot), but a
+**Skill/Spell** fires it once for the whole cast — there is no per-target hook.
+First user: Kirin's Rail Stream.
+
+The roll happens **after** the `condition_<slug>` immunity check, so an immune
+creature always shows its immune cue rather than sometimes losing a silent coin
+flip first.
 
 The AE itself must exist somewhere the AEM can resolve (on a skill item
 or registered globally). Inline AE JSON authoring was removed — keep the

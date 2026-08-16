@@ -849,7 +849,19 @@ async function resolveAction(director, ar, opts = {}) {
           source: { actorUuid: ar.attackerActorRef, tokenUuid: ar.attacker?.tokenUuid ?? null },
           // Itemized identity + "how it changed" context (the attack site has the
           // full action result; the tick site can't supply weapon/roll fields).
-          element: damageTypeForPayload,                     // fire/ice/… (recover → "healing")
+          // The TRUE element, never the "healing" display label. An ABSORB is
+          // still a bolt event — the affinity only decided which direction the
+          // HP moved. Collapsing it to "healing" here threw away the one field
+          // an absorb listener needs, so every `creature_gain_resource` row
+          // gated on TRIGGER_DAMAGE_IS_<ELEMENT> read 0 and could never fire
+          // (Lightning Prism's Overcharge, Skizzik's Chain Reaction,
+          // Stitched-Up Jacket's "whether it lands or you absorb it").
+          // The effect/tick path (skill-effects.fireResourceChangeTrigger at the
+          // deal_damage site) has always passed the raw element through — this
+          // is the attack path catching up, not a new convention. On a LOSS the
+          // two expressions are identical, so the loss path is unchanged.
+          element: ar.damageType,
+
           originLabel: ar.skillName ?? skill?.name ?? null,  // the attack/skill that dealt it
           originUuid: skill?.uuid ?? null,
           weaponType: ar.weapon?.weaponType ?? null,
@@ -6818,6 +6830,16 @@ const StandaloneReactionWindow = {
               } catch (e) { warn(`STANDALONE_REACTION_WINDOW: reAddPersistentSummons threw`, e); }
             }
           }
+          // Conflict event (scene-selected additional rule) — seeds at
+          // conflict_start, re-seeds / upkeeps at round_start. Runs AFTER the
+          // sweeps above so the battlefield it reads is reconciled, and BEFORE
+          // the forced dispatch so a status it seeds is visible to the
+          // force-mode reactions in this same window. No-ops unless the
+          // conflict scene selects an event. See [[conflict-event]].
+          try {
+            const { dispatchConflictEventLifecycle } = await import("../conflict-event/conflict-event-runtime.js");
+            await dispatchConflictEventLifecycle(director, trigger);
+          } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} conflict-event dispatch threw`, e); }
           // FORCED pass — auto-fire force/on (Burn commits + populates the
           // ledger; action-creating grants like High Speed enqueue freeActionQueue).
           await dispatchStandaloneTrigger({ director, trigger, payload, phase: "forced" });

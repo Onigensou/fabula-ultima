@@ -14,7 +14,7 @@
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
-  "img": "icons/svg/mystery-man.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningPrisim_Standard.png",
   "items": [
     {
       "_id": "pV3KgStkZyidF4uD",
@@ -192,7 +192,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Lightning Prism takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>It immediately gains a <strong>Free Action</strong>, which it uses to cast <strong>Fulgur Finis</strong> on an enemy — and the discharge strikes harder than a normal casting.</p><p>It pays the spell’s <strong>MP</strong> cost as normal — at <strong>0 MP</strong> it can no longer discharge.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Lightning Prism, whether it lands or is absorbed</p></li></ul><p>It immediately gains a <strong>Free Action</strong>, which it uses to cast <strong>Fulgur Finis</strong> on an enemy — and the discharge strikes harder than a normal casting.</p><p>It pays the spell’s <strong>MP</strong> cost as normal — at <strong>0 MP</strong> it can no longer discharge.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -220,10 +220,20 @@
           "reaction_config_table": {
             "0": {
               "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
+              "reaction_cause_filter": "damage",
               "reaction_effect_ref": "overcharge_cast",
               "reaction_passive_mode": "on",
               "reaction_source": "",
               "reaction_trigger": "creature_lose_resource"
+            },
+            "1": {
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
+              "reaction_cause_filter": "damage",
+              "reaction_effect_ref": "overcharge_cast",
+              "reaction_passive_mode": "on",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_gain_resource"
             }
           },
           "rolled_atr1": "-",
@@ -422,7 +432,7 @@
       "rotation": 0,
       "scaleX": 1,
       "scaleY": 1,
-      "src": "icons/svg/mystery-man.svg",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningPrisim_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -536,10 +546,10 @@
       "current_hp": "90",
       "current_ip": "0",
       "current_mp": "120",
-      "cut_in_critical": "",
-      "cut_in_fumble": "",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningPrisim_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningPrisim_Standard.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningPrisim_Standard.png",
       "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
@@ -591,7 +601,7 @@
       "icon_offset_y": "",
       "icon_scale": "",
       "id": "sTGMdYipYCG36aBO",
-      "img": "icons/svg/mystery-man.svg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningPrisim_Standard.png",
       "init": "8",
       "ins_base": "12",
       "ins_current": 12,
@@ -668,15 +678,15 @@
         "TDfsEA9gh8Pc6aUP": {
           "id": "${item.id}",
           "name": "Overcharge",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Lightning Prism takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>It immediately gains a <strong>Free Action</strong>, which it uses to cast <strong>Fulgur Finis</strong> on an enemy — and the discharge strikes harder than a normal casting.</p><p>It pays the spell’s <strong>MP</strong> cost as normal — at <strong>0 MP</strong> it can no longer discharge.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Lightning Prism, whether it lands or is absorbed</p></li></ul><p>It immediately gains a <strong>Free Action</strong>, which it uses to cast <strong>Fulgur Finis</strong> on an enemy — and the discharge strikes harder than a normal casting.</p><p>It pays the spell’s <strong>MP</strong> cost as normal — at <strong>0 MP</strong> it can no longer discharge.</p>",
           "roll": "",
           "uuid": "Actor.sTGMdYipYCG36aBO.Item.TDfsEA9gh8Pc6aUP"
         }
       },
       "spear_ef": "100",
       "species": "ELEMENTAL",
-      "sprite_battle": "",
-      "sprite_standard": "",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningPrisim_Standard.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/LightningPrisim_Standard.png",
       "steal_percentage_table": {},
       "study_text": "<p>A hovering shard of storm-glass that answers lightning with lightning — strike it with <strong>bolt</strong> and it discharges back at once, unbidden. Its facets crack under plain <strong>force</strong>.</p>",
       "subtype": "Sub-Type",

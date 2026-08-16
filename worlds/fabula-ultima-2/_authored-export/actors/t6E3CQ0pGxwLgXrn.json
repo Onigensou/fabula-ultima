@@ -730,6 +730,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "NxXbRDaJ9x6qYtly": {
+              "id": "${item.id}",
+              "name": "Apple Juice",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.NxXbRDaJ9x6qYtly"
+            }
+          },
           "item_type": "recipe",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -737,6 +747,12 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
+            "NxXbRDaJ9x6qYtly": {
+              "id": "${item.id}",
+              "name": "Apple Juice",
+              "related_item_description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.NxXbRDaJ9x6qYtly"
+            },
             "h4OIwjpKtjIPJtvV": {
               "id": "${item.id}",
               "name": "Apple Juice",
@@ -1015,6 +1031,7 @@
             }
           },
           "isCheck": false,
+          "name": "Phoenix Feather",
           "on_activate_effect_ref": "phoenix_revive",
           "skill_target": "One Ally",
           "skill_type": "Item",
@@ -1365,6 +1382,14 @@
           "item_quantity": "2",
           "item_rarity": "Common",
           "item_skill_active": {
+            "30aFFXoVM2lWFe7p": {
+              "id": "${item.id}",
+              "name": "Mega-Elixir",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 100 MP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.30aFFXoVM2lWFe7p"
+            },
             "Vt0MPszloAOQXcus": {
               "id": "${item.id}",
               "name": "Mega-Elixir",
@@ -1381,6 +1406,12 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
+            "30aFFXoVM2lWFe7p": {
+              "id": "${item.id}",
+              "name": "Mega-Elixir",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 100 MP</strong></p></li></ul>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.30aFFXoVM2lWFe7p"
+            },
             "Vt0MPszloAOQXcus": {
               "id": "${item.id}",
               "name": "Mega-Elixir",
@@ -2422,9 +2453,9 @@
             "amTrA25vqjsDFc9Y": {
               "id": "${item.id}",
               "name": "Blue Bovine",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
-              "skill_maxLevel": 1,
+              "skill_cost": "",
+              "skill_description": "<ul><li><p><em>Target ally gains <strong>Strong</strong> (increase their <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+              "skill_maxLevel": "",
               "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.amTrA25vqjsDFc9Y"
             }
           },
@@ -2438,7 +2469,7 @@
             "amTrA25vqjsDFc9Y": {
               "id": "${item.id}",
               "name": "Blue Bovine",
-              "related_item_description": "<ul><li><p><em>Gain <strong>Strong</strong> (increase your <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+              "related_item_description": "<ul><li><p><em>Target ally gains <strong>Strong</strong> (increase their <strong>【MIG】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
               "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.amTrA25vqjsDFc9Y"
             }
           },
@@ -3094,6 +3125,14 @@
           "item_quantity": "1",
           "item_rarity": "Common",
           "item_skill_active": {
+            "Vn109KRGiH0xheRs": {
+              "id": "${item.id}",
+              "name": "Apple",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 10 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.Vn109KRGiH0xheRs"
+            },
             "bsfVbKLci479o9Up": {
               "id": "${item.id}",
               "name": "Apple",
@@ -3110,6 +3149,12 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
+            "Vn109KRGiH0xheRs": {
+              "id": "${item.id}",
+              "name": "Apple",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 10 HP</strong></p></li></ul>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.Vn109KRGiH0xheRs"
+            },
             "bsfVbKLci479o9Up": {
               "id": "${item.id}",
               "name": "Apple",
@@ -3643,6 +3688,14 @@
               "skill_description": "<ul><li><p>Target creature <strong>recovers 20 HP</strong></p></li></ul>",
               "skill_maxLevel": 1,
               "uuid": "Item.lll2QQdBLyZuKxxd"
+            },
+            "vwKEyclzvClHBJRY": {
+              "id": "${item.id}",
+              "name": "Bread",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 20 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.vwKEyclzvClHBJRY"
             }
           },
           "item_type": "consumable",
@@ -3657,6 +3710,12 @@
               "name": "Bread",
               "related_item_description": "<ul><li><p>Target creature <strong>recovers 20 HP</strong></p></li></ul>",
               "uuid": "Item.lll2QQdBLyZuKxxd"
+            },
+            "vwKEyclzvClHBJRY": {
+              "id": "${item.id}",
+              "name": "Bread",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 20 HP</strong></p></li></ul>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.vwKEyclzvClHBJRY"
             }
           },
           "reptilian_ef": "100",
@@ -3776,12 +3835,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "5hvxauKmmsfLAdnl": {
+              "id": "${item.id}",
+              "name": "Phoenix Feather",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.5hvxauKmmsfLAdnl"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Phoenix Feather",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "5hvxauKmmsfLAdnl": {
+              "id": "${item.id}",
+              "name": "Phoenix Feather",
+              "related_item_description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.5hvxauKmmsfLAdnl"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -4014,12 +4091,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "2BDHKKnYm27y4NFi": {
+              "id": "${item.id}",
+              "name": "Invisibility Cloak (gear skill)",
+              "skill_cost": "",
+              "skill_description": "<p>You begin the battle with <strong>Hidden</strong>. You lose it when you perform an action that targets an enemy, or when you remove this accessory.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.2BDHKKnYm27y4NFi"
+            }
+          },
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Invisibility Cloak",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "2BDHKKnYm27y4NFi": {
+              "id": "${item.id}",
+              "name": "Invisibility Cloak (gear skill)",
+              "related_item_description": "<p>You begin the battle with <strong>Hidden</strong>. You lose it when you perform an action that targets an enemy, or when you remove this accessory.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.2BDHKKnYm27y4NFi"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -4123,9 +4218,9 @@
             "bx8p5ji8rhvbMVPv": {
               "id": "${item.id}",
               "name": "Golem Fragment",
-              "skill_cost": "-",
+              "skill_cost": "",
               "skill_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
-              "skill_maxLevel": 1,
+              "skill_maxLevel": "",
               "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.bx8p5ji8rhvbMVPv"
             }
           },
@@ -4779,6 +4874,14 @@
               "skill_description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
               "skill_maxLevel": "",
               "uuid": "Item.HBZ3kC5M0froQyCl"
+            },
+            "z0V9VVTbbrOFHs5Z": {
+              "id": "${item.id}",
+              "name": "Golem Soulstone",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.z0V9VVTbbrOFHs5Z"
             }
           },
           "item_type": "consumable",
@@ -4793,6 +4896,12 @@
               "name": "Golem Soulstone",
               "related_item_description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
               "uuid": "Item.HBZ3kC5M0froQyCl"
+            },
+            "z0V9VVTbbrOFHs5Z": {
+              "id": "${item.id}",
+              "name": "Golem Soulstone",
+              "related_item_description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.z0V9VVTbbrOFHs5Z"
             }
           },
           "reptilian_ef": "100",
@@ -5224,6 +5333,14 @@
               "skill_maxLevel": 1,
               "uuid": "ERROR"
             },
+            "OoBqgmeURbTH7d5w": {
+              "id": "${item.id}",
+              "name": "Adrenaline Rush",
+              "skill_cost": "-",
+              "skill_description": "<p>Reduce the next instance of damage by 30</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.OoBqgmeURbTH7d5w"
+            },
             "X2BkD1bUUyJHdUBq": {
               "id": "${item.id}",
               "name": "Adrenaline Endure",
@@ -5231,6 +5348,14 @@
               "skill_description": "<p>Reduce the next instance of damage by 30</p>",
               "skill_maxLevel": 1,
               "uuid": "Item.X2BkD1bUUyJHdUBq"
+            },
+            "c9KB9tJAsydN3xnx": {
+              "id": "${item.id}",
+              "name": "Adrenaline Endure",
+              "skill_cost": "-",
+              "skill_description": "<p>Reduce the next instance of damage by 30</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.c9KB9tJAsydN3xnx"
             },
             "wkdsS3Q6zw5q1FA9": {
               "id": "${item.id}",
@@ -5254,11 +5379,23 @@
               "related_item_description": "<p>Reduce the next instance of damage by 30</p>",
               "uuid": "ERROR"
             },
+            "OoBqgmeURbTH7d5w": {
+              "id": "${item.id}",
+              "name": "Adrenaline Rush",
+              "related_item_description": "<p>Reduce the next instance of damage by 30</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.OoBqgmeURbTH7d5w"
+            },
             "X2BkD1bUUyJHdUBq": {
               "id": "${item.id}",
               "name": "Adrenaline Endure",
               "related_item_description": "<p>Reduce the next instance of damage by 30</p>",
               "uuid": "Item.X2BkD1bUUyJHdUBq"
+            },
+            "c9KB9tJAsydN3xnx": {
+              "id": "${item.id}",
+              "name": "Adrenaline Endure",
+              "related_item_description": "<p>Reduce the next instance of damage by 30</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.c9KB9tJAsydN3xnx"
             }
           },
           "reptilian_ef": "100",
@@ -5396,6 +5533,7 @@
             }
           },
           "isCheck": false,
+          "name": "Café au Lait",
           "on_activate_effect_ref": "cafeaulait_swift",
           "skill_description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
           "skill_target": "One Ally",
@@ -7487,6 +7625,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "ozQ4YJCvDSGB1EBU": {
+              "id": "${item.id}",
+              "name": "Icarus Wing (gear skill)",
+              "skill_cost": "",
+              "skill_description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <strong>Fire</strong> damage.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU"
+            }
+          },
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -7495,6 +7643,14 @@
           "plant_ef": "100",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "ozQ4YJCvDSGB1EBU": {
+              "id": "${item.id}",
+              "name": "Icarus Wing (gear skill)",
+              "related_item_description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <strong>Fire</strong> damage.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -7620,12 +7776,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_passive": {
+            "rUMtX6xOMRYGvVvK": {
+              "id": "${item.id}",
+              "name": "Looting Bow (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>Equipped passive: When you reduce a creature to 0 HP, recover 2 Inventory Points.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.rUMtX6xOMRYGvVvK"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Looting Bow",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "rUMtX6xOMRYGvVvK": {
+              "id": "${item.id}",
+              "name": "Looting Bow (Passive)",
+              "related_item_description": "<p>Equipped passive: When you reduce a creature to 0 HP, recover 2 Inventory Points.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.rUMtX6xOMRYGvVvK"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
@@ -8770,12 +8944,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "nPgMwe5tQprUeYFP": {
+              "id": "${item.id}",
+              "name": "Invisibility Cloak (gear skill)",
+              "skill_cost": "",
+              "skill_description": "<p>You begin the battle with <strong>Hidden</strong>. You lose it when you perform an action that targets an enemy, or when you remove this accessory.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.nPgMwe5tQprUeYFP"
+            }
+          },
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Invisibility Cloak",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "nPgMwe5tQprUeYFP": {
+              "id": "${item.id}",
+              "name": "Invisibility Cloak (gear skill)",
+              "related_item_description": "<p>You begin the battle with <strong>Hidden</strong>. You lose it when you perform an action that targets an enemy, or when you remove this accessory.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.nPgMwe5tQprUeYFP"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -9122,6 +9314,14 @@
           "item_quantity": 1,
           "item_rarity": "Common",
           "item_skill_active": {
+            "LzSawvHFNBA5CdEa": {
+              "id": "${item.id}",
+              "name": "Café au Lait",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.LzSawvHFNBA5CdEa"
+            },
             "VNg8JKR5sUjqgdNb": {
               "id": "${item.id}",
               "name": "Café au Lait",
@@ -9138,6 +9338,12 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
+            "LzSawvHFNBA5CdEa": {
+              "id": "${item.id}",
+              "name": "Café au Lait",
+              "related_item_description": "<ul><li><p><em>Target ally gains <strong>Swift</strong> (increase their <strong>【DEX】</strong> die by 1 stage, to a maximum of d12) <strong>for the rest of the scene</strong>.</em></p></li></ul>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.LzSawvHFNBA5CdEa"
+            },
             "VNg8JKR5sUjqgdNb": {
               "id": "${item.id}",
               "name": "Café au Lait",
@@ -9954,6 +10160,7 @@
             }
           },
           "isCheck": false,
+          "name": "Golem Soulstone",
           "on_activate_effect_ref": "golemstone_shield",
           "skill_target": "One Ally",
           "skill_type": "Item",
@@ -10038,6 +10245,14 @@
           "item_quantity": "1",
           "item_rarity": "Rare",
           "item_skill_active": {
+            "I39txF6Uze60y6eg": {
+              "id": "${item.id}",
+              "name": "Rock your World",
+              "skill_cost": "30 MP",
+              "skill_description": "<p>Sing a killer tune, <strong>Choose:</strong></p><ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Gg1ot3L3XPuiGkym\" data-id=\"Gg1ot3L3XPuiGkym\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Strong</span></strong></a></span></span></p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.PXO8X5beH1JQHuz9\" data-id=\"PXO8X5beH1JQHuz9\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Swift</span></strong></a></span></span></p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.1ruFh69np3Bf6oVn\" data-id=\"1ruFh69np3Bf6oVn\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Awake</span></strong></a></span></span></p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vuYJUldWW07uFudt\" data-id=\"vuYJUldWW07uFudt\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Focus</span></strong></a></span></span></p></li></ul><p>All Ally gain the chosen effects.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.I39txF6Uze60y6eg"
+            },
             "NVvlMGKo1GJ6wCGq": {
               "id": "${item.id}",
               "name": "Rock your World",
@@ -10054,6 +10269,12 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
+            "I39txF6Uze60y6eg": {
+              "id": "${item.id}",
+              "name": "Rock your World",
+              "related_item_description": "<p>Sing a killer tune, <strong>Choose:</strong></p><ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Gg1ot3L3XPuiGkym\" data-id=\"Gg1ot3L3XPuiGkym\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Strong</span></strong></a></span></span></p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.PXO8X5beH1JQHuz9\" data-id=\"PXO8X5beH1JQHuz9\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Swift</span></strong></a></span></span></p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.1ruFh69np3Bf6oVn\" data-id=\"1ruFh69np3Bf6oVn\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Awake</span></strong></a></span></span></p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vuYJUldWW07uFudt\" data-id=\"vuYJUldWW07uFudt\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Focus</span></strong></a></span></span></p></li></ul><p>All Ally gain the chosen effects.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.I39txF6Uze60y6eg"
+            },
             "NVvlMGKo1GJ6wCGq": {
               "id": "${item.id}",
               "name": "Rock your World",
@@ -10312,7 +10533,7 @@
       "rotation": 0,
       "scaleX": 1.14,
       "scaleY": 1.14,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
