@@ -94,6 +94,9 @@ Raw `{rA, rB}` wins over semantic flags. `hit`/`miss` use the first target's def
 ```js
 // runDirectorSkillCompute
 { ok, actionResult, summary, enqueued, dispatched }
+//   ok:false + refused:true + reason:"compute_refused:<INTENT>" when COMPUTE
+//   declined to build a card. `actionResult` is still returned (whatever got
+//   computed before the bounce) so a refusal test can inspect it.
 
 // runDirectorSkillSimulate
 { ok, actionResult, summary, captures, perActorWrites, preApplied, resolveError }
@@ -107,6 +110,36 @@ Raw `{rA, rB}` wins over semantic flags. `hit`/`miss` use the first target's def
 ```
 
 `summary.healed` / `damaged` / `missed` are derived from COMPUTE's `perTargetResults` — they preview the action even if RESOLVE writes a different value (e.g. clamp to max).
+
+### Asserting a REFUSAL
+
+`ok` used to be a hardcoded `true`, so `runDirectorSkillSimulate`'s `if
+(!compute.ok)` guard was dead code and simulate walked into RESOLVE on an action
+COMPUTE had bounced — reporting the writes as though the action were allowed.
+That is a false green in the permissive direction, and it hit hardest on the
+tests most worth trusting: a gate is proven by showing the action does **not**
+happen.
+
+`ok` is now the presence of `INTERNAL_DONE`, the one intent `Compute` emits on
+success. Its only other intents are `TARGET_BACK` (pre_activate refused or
+cancelled) and `ABORT` (hard failure), and an empty queue — a swallowed throw —
+also reads as a refusal. Asserting the success token rather than blacklisting
+refusals means a refusal path added to `Compute` later fails closed here by
+default.
+
+```js
+const c = await FUCompanion.api.test.runDirectorSkillCompute({ ... });
+// a gate that SHOULD refuse:
+assert(c.ok === false && c.reason === "compute_refused:TARGET_BACK");
+// a gate that should NOT refuse — do not settle for a truthy actionResult,
+// it is returned on the refusal path too:
+assert(c.ok === true);
+```
+
+⚠ A refusal is the engine working correctly, but the regression collector counts
+`!ok` as an error (`collect.js:245`) and reduces the fingerprint to `{ok, reason}`
+(`:150-151`). So a skill that starts refusing shows up as golden churn plus an
+error, not as a silent pass.
 
 ---
 
