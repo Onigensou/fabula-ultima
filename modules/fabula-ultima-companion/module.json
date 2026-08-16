@@ -90,7 +90,6 @@
     "scripts/passive-system/autoPassive-manager.js",
     "scripts/passive-system/passive-card-ui.js",
     "scripts/passive-system/passive-modifier-engine.js",
-    "scripts/passive-system/passive-rules-setup.js",
     "scripts/refinement-system/refinement-config.js",
     "scripts/refinement-system/refinement-core.js",
     "scripts/refinement-system/refinement-feedback.js",

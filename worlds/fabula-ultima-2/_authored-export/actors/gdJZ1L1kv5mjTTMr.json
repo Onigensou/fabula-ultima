@@ -2231,7 +2231,7 @@
           "max_level": "5",
           "name": "Hypercognition",
           "optional_params": {},
-          "passive_logic_action": "<p>[{\"id\":\"hyper-crit-ramp\",\"label\":\"Hypercognition\",\"when\":{\"all\":[{\"actor\":{\"flagCompare\":{\"ns\":\"oni\",\"key\":\"focus.stacks\",\"op\":\">=\",\"value\":3}}}]},\"effects\":[{\"type\":\"critMult\",\"amount\":1.5},{\"type\":\"flat\",\"scope\":\"outgoing\",\"element\":\"ice\",\"amount\":250}]}]</p>",
+          "passive_logic_action": "",
           "reaction_config_table": {
             "0": {
               "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1 && ACTION_IS_SPELL == 1",
