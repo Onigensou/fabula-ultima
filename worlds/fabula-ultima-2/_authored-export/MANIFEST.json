@@ -19692,8 +19692,12 @@
         "type": "character",
         "items": [
           {
-            "id": "0hLD12lSvD3sw40G",
+            "id": "IIkAGJ0BQxtk1sBt",
             "name": "Hooves"
+          },
+          {
+            "id": "0hLD12lSvD3sw40G",
+            "name": "Horn Rush"
           },
           {
             "id": "3JBSipAdIt17tf68",

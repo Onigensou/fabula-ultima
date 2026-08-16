@@ -33,7 +33,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-      "name": "Hooves",
+      "name": "Horn Rush",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 0
@@ -41,6 +41,7 @@
       "sort": 100000,
       "system": {
         "props": {
+          "action_keywords": "execute",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -50,10 +51,23 @@
           "cost": "-",
           "damage_bonus": "62",
           "defense_target_type": "def",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Execute</strong></a></p></li></ul>\n<p>Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to one creature.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "consume_self": false,
+              "damage_amount": "2",
+              "damage_operation": "multiply",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "horn_execute",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
@@ -65,10 +79,30 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Hooves",
+          "name": "Horn Rush",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "TARGET_AE_COUNT_CRISIS > 0",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "horn_execute",
+              "reaction_max_per_round": "",
+              "reaction_max_scope": "round",
+              "reaction_origin_filter": "",
+              "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Horn Rush",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_will_deal_damage",
+              "requires_skill": ""
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
           "skill_animation_default": "",
@@ -77,7 +111,7 @@
           "skill_range": "Melee",
           "skill_target": "One Creature",
           "skill_type": "Attack",
-          "type_damage": "Physical",
+          "type_damage": "Bolt",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
@@ -177,6 +211,116 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278387,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "IIkAGJ0BQxtk1sBt",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1786907276728,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Hooves",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "9",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "45",
+          "defense_target_type": "def",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Slow</strong></a>.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "add_charges",
+              "ae_duration_rounds": "",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
+              "ae_name_pool": "",
+              "ae_pool_tag": "",
+              "ae_template_ref": "Slow",
+              "consume_self": false,
+              "effect_kind": "apply_ae",
+              "effect_label": "hooves_slow",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hooves",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "TRIGGER_IS_SELF == 1",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "hooves_slow",
+              "reaction_max_per_round": "",
+              "reaction_max_scope": "round",
+              "reaction_origin_filter": "",
+              "reaction_passive_mode": "on",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Hooves",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
@@ -483,7 +627,7 @@
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Rail Stream",
-          "action_pattern_priority": "6",
+          "action_pattern_priority": "8",
           "action_pattern_string": "",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "100",
@@ -491,12 +635,25 @@
         },
         "1": {
           "$deleted": false,
+          "action_pattern_condition": "random",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Horn Rush",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "60",
+          "action_pattern_value_2": ""
+        },
+        "2": {
+          "$deleted": false,
           "action_pattern_condition": "always",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Hooves",
-          "action_pattern_priority": "3",
+          "action_pattern_priority": "2",
           "action_pattern_string": "",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
@@ -518,13 +675,23 @@
       "attack_list": {
         "0hLD12lSvD3sw40G": {
           "active_target": "One Creature",
-          "attack_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Execute</strong></a></p></li></ul>\n<p>Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to one creature.</p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Horn Rush",
+          "roll": "",
+          "uuid": "Actor.TvLv878yZLNUAWNN.Item.0hLD12lSvD3sw40G"
+        },
+        "IIkAGJ0BQxtk1sBt": {
+          "active_target": "One Creature",
+          "attack_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Slow</strong></a>.</p>",
           "attribute_die1": "DEX",
           "attribute_die2": "MIG",
           "id": "${item.id}",
           "name": "Hooves",
           "roll": "",
-          "uuid": "Actor.TvLv878yZLNUAWNN.Item.0hLD12lSvD3sw40G"
+          "uuid": "Actor.TvLv878yZLNUAWNN.Item.IIkAGJ0BQxtk1sBt"
         }
       },
       "attribute": "LIGHTNING",
