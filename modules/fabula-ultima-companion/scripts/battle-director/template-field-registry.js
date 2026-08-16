@@ -294,7 +294,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   selectCol("grant_round", "Grant Rounding", [
     { key: "up",   value: "Up (default)" },
     { key: "down", value: "Down" },
-  ], { tooltip: "adjust_grant: rounding for a fractional Multiply result. Ignored by Add/Set.", vis: ADJUST_GRANT_VIS, defaultValue: "up" }),
+  ], { tooltip: "adjust_grant: rounding for a fractional Multiply result. Ignored by Add/Set.", vis: ADJUST_GRANT_VIS, reconcileVis: true, defaultValue: "" }),
   // modify_turns config — adjust a target's remaining actions (Stop = -1, min 0).
   // turns_delta lands this round; an unspendable reduction carries to the NEXT turn
   // (combatant.flags.pendingTurnDebt). Was data-only until registered here.
@@ -443,7 +443,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // free-action queue + COMPUTE-time bonus application).
   textCol("check_bonus_formula", "Free: Check Bonus", { tooltip: "Free action grant: bonus added to the granted action's Check (formula). e.g. Blazing Sweep repeat: -(AE_CHARGES_BLAZING_SWEEP_LOCK).", vis: FREE_GRANT_VIS, reconcileVis: true }),
   textCol("damage_bonus_formula", "Free: Damage Bonus", { tooltip: "Free action grant: bonus added to the granted action's damage (formula, may be negative). e.g. Blazing Sweep repeat: floor(38 * pow(0.5, AE_CHARGES_BLAZING_SWEEP_LOCK)) - 38.", vis: FREE_GRANT_VIS, reconcileVis: true }),
-  textCol("max_mp_cost", "Free: Max MP Cost", { tooltip: "Free action grant: cap on the granted action's MP cost (FORMULA, e.g. Bimagus \"20 + MP_SPENT_THIS_TURN\" / \"AE_CHARGES_BIMAGUS\"; blank = the action's own cost applies).", vis: FREE_GRANT_VIS }),
+  textCol("max_mp_cost", "Free: Max MP Cost", { tooltip: "Free action grant: cap on the granted action's MP cost (FORMULA, e.g. Bimagus \"20 + MP_SPENT_THIS_TURN\" / \"AE_CHARGES_BIMAGUS\"; blank = the action's own cost applies).", vis: FREE_GRANT_VIS, reconcileVis: true }),
   checkboxCol("free_of_cost", "Free: No Resource Cost", { tooltip: "Free action grant: the granted action pays NO resource cost (RAW Bimagus \"spells cost no MP\"). The Max MP Cost cap still gates which spell is eligible by its printed cost.", vis: FREE_GRANT_VIS }),
   textCol("element_override", "Free: Element Override", { tooltip: 'free_action: force the spawned action\'s damage element. "trigger_element" adopts the trigger payload\'s element (Ripples: "all its damage becomes the type dealt by your ally"); any other value is a literal element (fire/ice/bolt/…). Blank = the weapon\'s own element.', vis: FREE_ACTION_VIS }),
   textCol("on_hit_effect_refs", "Free: On-Hit Effect Refs", { tooltip: "free_action: effect_label(s) on THIS skill's effect_table to run AFTER the spawned attack RESOLVES, against its hit targets (hit_action_targets). Gated on a real hit. Comma/newline list. Ripples ends all \"hex\" AEs on the struck enemy via a remove_tagged_ae row.", vis: FREE_ACTION_VIS }),
