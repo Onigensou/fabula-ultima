@@ -1,5 +1,13 @@
 # Skill template refactor — draft 1
 
+> ⚠ **The width metric in this document is superseded.** It counts the UNION of
+> columns across a skill's rows, which is stock `dynamicTable` behaviour;
+> `effect_table` is a module-owned `compactDynamicTable` that renders per row and
+> skips invisible chips entirely. See the SUPERSEDED METRIC box in
+> [effect-kind-usability.md](effect-kind-usability.md) for the corrected
+> per-row numbers and the two conclusions that invert.
+
+
 Goal as briefed: make `_Skill Template` lighter and easier to use, dropping
 fields that aren't needed.
 

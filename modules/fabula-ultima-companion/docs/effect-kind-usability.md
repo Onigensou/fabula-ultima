@@ -1,5 +1,39 @@
 # Effect kinds: what actually makes them hard to use
 
+> ## ⚠ SUPERSEDED METRIC — read this before any number below
+>
+> Every "columns per skill" figure in this document (19.6 / 21.7 / p90 / worst,
+> and the "+11% wider" headline) measures the **union of columns across a
+> skill's rows**. That is how CSB's stock `dynamicTable` renders — it ORs
+> visibility across rows (`DynamicTable.js:276`) and collapses a hidden cell to
+> zero width.
+>
+> **`effect_table` is not a `dynamicTable`.** It is `compactDynamicTable`, a
+> module-owned subclass that renders each row as flex chips and SKIPS an
+> invisible field outright (`CompactDynamicTable.js`, `if (!visible) continue;`).
+> There is no union and no zero-width cell. The union path survives only in the
+> template-BUILDER view (`isBuilderTemplateSystem` defers to `super`), so the
+> old numbers were real — they just described the template editor, not the sheet
+> an author works in.
+>
+> The unit that matters is **per ROW**. Measured with
+> `tools/csb-template/bin/row-width.js`:
+>
+> | table | chips rendered | filled | visible when folded |
+> |---|---|---|---|
+> | `effect_table` | 13.6 | 4.9 | **5.0 (-63%)** |
+> | `reaction_config_table` | 20.4 | 5.1 | **5.2 (-74%)** |
+>
+> Two conclusions in this document invert under the correct model:
+> - **"Reordering `rowLayout` measures nothing"** is WRONG — chip order *is*
+>   `rowLayout` order in a flex row.
+> - **Un-gating a cross-kind field costs 1 chip on EVERY row**, not one column
+>   per skill — which is why `target_ref` and `count` were ungated only after
+>   the fold made an empty chip free.
+>
+> The merge/redundancy analysis below stands; the width arithmetic does not.
+
+
 Companion to [skill-template-refactor.md](skill-template-refactor.md). That pass
 fixed fields that were *invisible*. This one tests the next hypothesis: the
 effect kinds are hard to use — too many sub-fields each, and probably the same
