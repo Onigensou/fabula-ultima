@@ -13,6 +13,12 @@ all confirmed. Kirin took **15 damage (30 Bolt halved by its RS bolt) and +30
 MP**, twice in one round on its two activations — so affinity and the
 per-activation ruling both hold. Numbers are still unvalidated for BALANCE.
 
+That run also showed Rail Stream never firing, which triggered the
+2026-08-16 rebalance in [Roster interlock](#roster-interlock-valley-of-the-dragon):
+Kirin's MP pool and Rail Stream's cost both dropped to 30 (one Rod strike
+arms it), the Lightning Charge passive was deleted, and the ult stopped
+being a TPK. **Not yet live-tested at the new numbers.**
+
 Supersedes two earlier drafts:
 
 - **v1** — "at the start of any creature's turn, a chance of 30 Bolt / +30 MP."
@@ -141,12 +147,29 @@ this into the monster-facing notes — it is not obvious from the rules.
 
 See [[project_lightning_surge_dungeon]] for stat blocks and skill IDs.
 
-**Qilin / Rail Stream is the live danger.** Qilin starts at 0 MP, needs 50
-for Rail Stream, resists bolt (15 damage for 30 MP), and stacks Lightning
-Charge (+15) on top. **Rail Stream can arm by round 2 through nothing but
-careless attacking.** That is the mechanic teaching its lesson — but the
-lesson arrives as a party wipe, so the encounter-table ramp matters:
-rows 1–2 slime-only, 3–8 slimes + reactors, 9–12 Qilin. Keep that order.
+**Kirin / Rail Stream is the storm's mouthpiece.** (The actor is named Kirin;
+earlier drafts of this doc called it Qilin.) Kirin starts at 0 MP with a **30
+MP** pool, and Rail Stream costs **30** — so **one Rod strike arms it**, full
+stop. That is deliberate: the Rod pays 30 MP, Kirin resists bolt so the strike
+costs it only 15 HP, and the trade is never in the party's favour.
+
+**Rail Stream is meant to land.** It is not a doomsday clock the party is
+supposed to defuse, and it is not a wipe — it is a **heavy** party-wide Bolt hit
+(~52 per target, ~208 across four) with a **50% chance per target** of
+Paralyzed, rolled separately for each. The decision it poses is not *whether*
+but *when*: the Rod is a singleton and any damage moves it, so the party
+chooses which round Kirin gets fed and who is standing when it fires. Nobody
+dies at neutral affinity from full — Keren at VU bolt is the exception, which is
+the same VU tax the Rod itself charges.
+
+> **Design history.** Rail Stream was originally 50 MP out of a 60 pool at +125
+> damage — ~528 across the party, a TPK. It was fed by a **Lightning Charge**
+> passive (+15 MP per bolt instance, twice a round), so arming it took two
+> rounds of careless attacking and the payoff was a wipe. Both are gone as of
+> 2026-08-16: Lightning Charge was **deleted** (the Rod is the only feed now,
+> which is the whole point of the v3 hazard) and the damage was cut to +45.
+> The old encounter-table ramp existed to keep players away from the wipe;
+> it is no longer load-bearing for that reason.
 
 **Electro Slime closes the exploit.** The cheapest way to void the Rod is
 to kill its holder — hand it to 45-HP chaff and finish them. But the
