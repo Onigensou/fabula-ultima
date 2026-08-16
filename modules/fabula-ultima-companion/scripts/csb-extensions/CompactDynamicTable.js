@@ -63,6 +63,83 @@ Hooks.once("customSystemBuilderInit", () => {
   }
 
   // ---------------------------------------------------------------------------
+  // Row collapse — the reason this exists
+  // ---------------------------------------------------------------------------
+  // Measured over the authored corpus: an effect_table row renders 13.6 chips
+  // and fills 4.9 of them; a reaction_config_table row renders 20.4 and fills
+  // 4.8. So three quarters of what an author reads on a row is blank.
+  //
+  // Gating cannot fix it. A field that several kinds read (condition_formula,
+  // menu_label, consume_self) has no per-row formula that admits it, so it must
+  // render on EVERY row or be uneditable — and un-gating those, correctly, is
+  // what pushed effect_table from 12.3 to 13.6.
+  //
+  // So: render everything as before, but fold the chips that carry nothing into
+  // a `+N` toggle. Nothing is removed, nothing becomes uneditable, and the
+  // collapse is pure CSS over already-rendered DOM — no re-render, no data
+  // write, no persisted per-user state (a persisted collapse flag OVERRIDES the
+  // template default and reads as "the setting didn't work").
+  //
+  // Always kept visible when collapsed:
+  //   - the row's IDENTITY chips (see IDENTITY_KEYS)
+  //   - every chip that has a value
+  //   - a field the ENGINE REQUIRES for this row's kind but that is EMPTY —
+  //     the one blank worth showing, because it means the row silently does
+  //     nothing. Highlighted rather than merely shown.
+  //
+  // Identity is pinned BY KEY, not by position. "the first two rendered chips"
+  // is right for effect_table (every row leads with effect_label, effect_kind,
+  // both ungated) and wrong for reaction_config_table, whose layout order puts
+  // reaction_source / reaction_debuff_count_target second on 479 of 538 rows
+  // while reaction_effect_ref — the field naming what the reaction DOES — is
+  // 11th and would fold away on the 41 rows where it is blank.
+  const IDENTITY_KEYS = new Set([
+    "effect_label", "effect_kind",              // effect_table
+    "reaction_trigger", "reaction_effect_ref",  // reaction_config_table
+  ]);
+  // Fallback for any other compactDynamicTable: keep the first two rendered
+  // chips, which is the old rule and better than keeping none.
+  const FALLBACK_CORE_CHIPS = 2;
+
+  const chipBlank = (v) =>
+    v === undefined || v === null || v === "" || v === false ||
+    (Array.isArray(v) && v.length === 0);
+
+  // Populated asynchronously from the registry; an empty map only costs the
+  // required-field highlight, never correctness of the collapse itself.
+  // Kept as a PROMISE and awaited before the first render. A floating import
+  // whose result is only read later fails silently and totally: any 404/rename
+  // leaves the map empty forever, requiredKeysFor returns null for every kind,
+  // and not one row is ever flagged — with a single console.warn as the tell.
+  // Awaiting is free after the first resolve and removes the race outright.
+  let REQUIRED_BY_KIND = {};
+  const REQUIRED_READY = import(
+    foundry.utils.getRoute("/modules/fabula-ultima-companion/scripts/battle-director/template-field-registry.js")
+  )
+    .then((m) => { REQUIRED_BY_KIND = m.REQUIRED_FIELDS_BY_KIND ?? {}; })
+    .catch((e) => console.warn(`${TAG} required-field map unavailable; collapse will not highlight unset requirements.`, e));
+
+  const requiredKeysFor = (row) => {
+    const kind = String(row?.effect_kind ?? "").trim();
+    const spec = REQUIRED_BY_KIND[kind];
+    if (!spec) return null;
+    // Handlers with an escape hatch return BEFORE the guard, so nothing is
+    // required on those rows.
+    const isTrueLoose = (v) => v === true || String(v ?? "").trim().toLowerCase() === "true";
+    if ((spec.unlessTrue ?? []).some((k) => isTrueLoose(row?.[k]))) return new Set();
+    if ((spec.unlessTrueStrict ?? []).some((k) => row?.[k] === true)) return new Set();
+    if ((spec.unlessSet ?? []).some((k) => !chipBlank(row?.[k]))) return new Set();
+    const out = new Set(spec.all ?? []);
+    // An `either` group is satisfied by ANY member; only flag the whole group
+    // when none of them is set, so a row using filter_tag is not nagged about
+    // ae_template_ref.
+    for (const group of spec.either ?? []) {
+      if (!group.some((k) => !chipBlank(row?.[k]))) group.forEach((k) => out.add(k));
+    }
+    return out;
+  };
+
+  // ---------------------------------------------------------------------------
   // Class
   // ---------------------------------------------------------------------------
   class CompactDynamicTable extends DynamicTableBase {
@@ -106,6 +183,12 @@ Hooks.once("customSystemBuilderInit", () => {
     }
 
     async _renderCompact(entity, isEditable, options) {
+      // Per-instance fold memory; see the note at the fold-state read below.
+      this._foldState ??= new Map();
+      // Guarantee the required-field map is in before the first row is built,
+      // so the very first render can flag unset requirements.
+      await REQUIRED_READY;
+
       // Mirror DynamicTable's predefined-line sync.
       if (typeof this._synchronizePredefinedLines === "function") {
         try { await this._synchronizePredefinedLines(entity); }
@@ -156,6 +239,43 @@ Hooks.once("customSystemBuilderInit", () => {
         }
       }
 
+      // Table-level toggle: reveal every foldable chip at once. Useful when
+      // hunting a field across rows instead of editing one row.
+      const anyFoldable = tableEl.find('.oni-compact-more').length > 0;
+      if (anyFoldable) {
+        const allBtn = $('<a class="oni-compact-expand-all custom-system-clickable"></a>');
+        const syncAll = () => {
+          const anyCollapsed = tableEl.find('.oni-compact-row--collapsed').length > 0;
+          allBtn.text(anyCollapsed ? 'Show all fields' : 'Hide unset fields');
+        };
+        allBtn.on('click', (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const rows = tableEl.find('.oni-compact-row');
+          const anyCollapsed = tableEl.find('.oni-compact-row--collapsed').length > 0;
+          rows.toggleClass('oni-compact-row--collapsed', !anyCollapsed);
+          // Each row's own +N/− label is stale after a bulk toggle, and the
+          // fold memory has to follow or the next re-render undoes this.
+          rows.each((_i, r) => {
+            const $r = $(r);
+            const collapsed = $r.hasClass('oni-compact-row--collapsed');
+            const key = $r.attr('data-row-key');
+            if (key !== undefined) this._foldState.set(String(key), collapsed);
+            const $m = $r.find('.oni-compact-more');
+            if (!$m.length) return;
+            $m.text(collapsed ? `+${$r.find('.oni-compact-chip--extra').length}` : '−');
+          });
+          syncAll();
+        });
+        // A per-ROW toggle changes whether any row is collapsed, so this
+        // button's label goes stale unless it re-derives. Without this, opening
+        // every row by hand leaves the button reading "Show all fields" while
+        // clicking it would COLLAPSE them — the opposite of what it says.
+        tableEl.on('oni:foldchanged', syncAll);
+        syncAll();
+        tableEl.append(allBtn);
+      }
+
       if (isEditable && this.canPlayerAdd) {
         const addBtn = $('<button type="button" class="oni-compact-add"><i class="fas fa-plus-circle"></i> Add row</button>');
         addBtn.on('click', async (ev) => {
@@ -175,6 +295,10 @@ Hooks.once("customSystemBuilderInit", () => {
       rowEl.attr('data-row-key', String(line));
 
       const fieldsEl = $('<div class="oni-compact-fields"></div>');
+
+      const rowValues = dynamicProps[line] ?? {};
+      const requiredKeys = requiredKeysFor(rowValues);
+      const chips = [];
 
       for (const component of this.contents) {
         const newCompJson = component.toJSON();
@@ -200,7 +324,73 @@ Hooks.once("customSystemBuilderInit", () => {
           chipEl.append($('<label class="oni-compact-label"></label>').text(colName + ':'));
         }
         chipEl.append(inputEl);
-        fieldsEl.append(chipEl);
+
+        const filled = !chipBlank(rowValues[component.key]);
+        chips.push({
+          el: chipEl,
+          key: component.key,
+          filled,
+          // requiredKeys === null means "no contract known for this kind", which
+          // must not read as "nothing is required" — leave the highlight off
+          // rather than assert a requirement the engine may not have.
+          neededEmpty: !filled && requiredKeys !== null && requiredKeys.has(component.key),
+        });
+      }
+
+      // Classify AFTER the loop: "core" is the first two chips that actually
+      // rendered, which is stable regardless of how the layout is ordered or
+      // which columns a given row's gates admit.
+      const hasNamedIdentity = chips.some((c) => IDENTITY_KEYS.has(c.key));
+      const isIdentity = (c, idx) =>
+        hasNamedIdentity ? IDENTITY_KEYS.has(c.key) : idx < FALLBACK_CORE_CHIPS;
+
+      let extras = 0;
+      let filledBeyondIdentity = false;
+      chips.forEach((c, idx) => {
+        const identity = isIdentity(c, idx);
+        if (!identity && c.filled) filledBeyondIdentity = true;
+        if (c.neededEmpty) c.el.addClass('oni-compact-chip--needed');
+        if (identity || c.filled || c.neededEmpty) { /* always visible */ }
+        else { c.el.addClass('oni-compact-chip--extra'); extras++; }
+        fieldsEl.append(c.el);
+      });
+
+      if (extras > 0) {
+        const moreEl = $('<a class="oni-compact-more custom-system-clickable"></a>');
+        const sync = () => {
+          const collapsed = rowEl.hasClass('oni-compact-row--collapsed');
+          moreEl.text(collapsed ? `+${extras}` : '−');
+          moreEl.attr('title', collapsed
+            ? `Show ${extras} more field(s) available on this row`
+            : 'Hide the fields that are not set');
+        };
+        moreEl.on('click', (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const collapsed = !rowEl.hasClass('oni-compact-row--collapsed');
+          rowEl.toggleClass('oni-compact-row--collapsed', collapsed);
+          this._foldState.set(String(line), collapsed);
+          sync();
+          // The handler stops propagation (a bare click here must not reach
+          // CSB's row handlers), so a delegated listener on the table never
+          // sees it. Notify the table explicitly instead, or its "Show all
+          // fields" label goes stale and ends up doing the opposite.
+          rowEl.closest('.oni-compact-table').trigger('oni:foldchanged');
+        });
+
+        // CSB sheets run submitOnChange, so editing ANY chip re-renders the
+        // whole sheet and rebuilds this DOM. Without a memory the row re-folds
+        // after every keystroke-commit, and filling three fields costs three
+        // +N clicks. This Map lives on the component instance, not on the
+        // document and not on a user flag — it survives re-render and dies with
+        // the sheet, which is the distinction the header comment is drawing.
+        const remembered = this._foldState.get(String(line));
+        // A row with nothing filled past its identity chips is NEW — start it
+        // open, otherwise there is no field to type into.
+        const collapsed = remembered ?? filledBeyondIdentity;
+        rowEl.toggleClass('oni-compact-row--collapsed', collapsed);
+        sync();
+        fieldsEl.append(moreEl);
       }
 
       rowEl.append(fieldsEl);
@@ -359,6 +549,42 @@ Hooks.once("customSystemBuilderInit", () => {
         font-size: .85rem;
         padding: .25rem .5rem;
       }
+
+      /* --- row collapse ------------------------------------------------- */
+      /* The fold is CSS-only over already-rendered DOM: toggling costs no
+         re-render and cannot touch data. */
+      .oni-compact-row--collapsed .oni-compact-chip--extra { display: none; }
+
+      .oni-compact-more {
+        cursor: pointer;
+        font-size: .8rem;
+        line-height: 1;
+        padding: .15rem .4rem;
+        border: 1px dashed #a99a72;
+        border-radius: 999px;
+        opacity: .75;
+        white-space: nowrap;
+        align-self: center;
+      }
+      .oni-compact-more:hover { opacity: 1; background: rgba(0,0,0,.06); }
+
+      /* A field the engine REQUIRES for this row's kind that is still empty:
+         the row will silently do nothing, so it must not read as ordinary. */
+      .oni-compact-chip--needed {
+        outline: 1px solid #b4553d;
+        outline-offset: 1px;
+        border-radius: 4px;
+        background: rgba(180, 85, 61, .08);
+      }
+
+      .oni-compact-expand-all {
+        align-self: flex-start;
+        cursor: pointer;
+        font-size: .8rem;
+        opacity: .7;
+        margin-top: .1rem;
+      }
+      .oni-compact-expand-all:hover { opacity: 1; text-decoration: underline; }
     `;
     document.head.appendChild(style);
   }

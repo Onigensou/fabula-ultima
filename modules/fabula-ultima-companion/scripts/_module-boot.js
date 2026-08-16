@@ -276,8 +276,36 @@ Hooks.once("ready", async () => {
       return null;
     };
 
+    // PRESENTATION fields the registry OWNS on a column it already exists on —
+    // otherwise a registry entry only ever takes effect for a column it happened
+    // to author, and every later fix is inert. That gap is why 320 authored cells
+    // sat invisible: the fix lived in the registry and never reached the template.
+    //
+    // ONE flag governs the whole entry. A tooltip is not "safe because it is only
+    // prose": on an over-narrow entry the prose DESCRIBES the wrong gate, and it
+    // lands on the same rows. `grant_resource` is the case that decided this —
+    // registry says "Blank or All = any", the live field says blank DISABLES the
+    // effect, and it is authored on 176 `grant` rows. Pushing that text while
+    // correctly withholding its gate would be worse than pushing nothing.
+    //
+    //   A visibilityFormula HIDES the data it excludes. Several long-standing
+    //   registry gates are narrower than real usage (grant_amount is gated to
+    //   adjust_grant but authored on 177 `grant` rows; `count` is gated to
+    //   trigger_opportunity but authored on 127 `targeting` rows). They have been
+    //   harmless only because this sync never touched an existing column —
+    //   pushing them wholesale would hide ~750 authored cells at once. So a gate
+    //   is reconciled ONLY when its registry entry opts in with
+    //   `reconcileVis: true`, which means "this gate has been checked against
+    //   live data" — verify with tools/csb-template/bin/visibility-audit.js.
+    //
+    // `type` and `options` are excluded entirely: a type change can strand data,
+    // and options belong to the (3) dropdown sync above.
+    const RECONCILED_FIELDS = ["tooltip", "colName", "visibilityFormula"];
+
     const touched = new Set();
     const detail = [];
+    const retuned = [];
+    const mismatched = [];
     for (const item of game.items.contents) {
       if (item.system?.template) continue; // instance — re-derives from its template
       const sys = foundry.utils.deepClone(item.toObject(false).system ?? {});
@@ -285,16 +313,42 @@ Hooks.once("ready", async () => {
       for (const [tableKey, cols] of Object.entries(byTable)) {
         const node = findTable(sys, tableKey);
         if (!node) continue;
-        const have = new Set(node.rowLayout.map((c) => c?.key));
+        const have = new Map(node.rowLayout.map((c) => [c?.key, c]));
         for (const col of cols) {
-          if (!col?.key || have.has(col.key)) continue;
-          node.rowLayout.push({ ...col });
-          have.add(col.key);
-          changed = true;
-          detail.push(`${item.name}/${tableKey}:${col.key}`);
+          if (!col?.key) continue;
+          const existing = have.get(col.key);
+          if (!existing) {
+            // `reconcileVis` is registry bookkeeping, not a CSB column property —
+            // never let it reach the template.
+            const { reconcileVis, ...colDef } = col;
+            node.rowLayout.push(colDef);
+            have.set(col.key, colDef);
+            changed = true;
+            detail.push(`${item.name}/${tableKey}:${col.key}`);
+            continue;
+          }
+          if (col.reconcileVis !== true) continue;
+          // Same type only — a type change is a migration, not a sync. Say so:
+          // silently skipping made `reconcileVis: true` a no-op with no signal,
+          // so a gate fix could "ship" and change nothing.
+          if (existing.type !== col.type) {
+            mismatched.push(`${item.name}/${tableKey}:${col.key} (template=${existing.type}, registry=${col.type})`);
+            continue;
+          }
+          for (const f of RECONCILED_FIELDS) {
+            const want = col[f] ?? "";
+            if ((existing[f] ?? "") === want) continue;
+            existing[f] = want;
+            changed = true;
+            retuned.push(`${item.name}/${tableKey}:${col.key}.${f}`);
+          }
         }
       }
       if (changed) { await item.update({ system: sys }); touched.add(item.id); }
+    }
+
+    if (mismatched.length) {
+      console.warn(`${FU_BOOT_TAG} Column sync: ${mismatched.length} column(s) opted into reconcile but differ in TYPE — left untouched (a type change is a migration): ${mismatched.join(", ")}`);
     }
 
     if (touched.size) {
@@ -324,10 +378,12 @@ Hooks.once("ready", async () => {
         }
         if (ups.length) await actor.updateEmbeddedDocuments("Item", ups);
       }
-      console.info(`${FU_BOOT_TAG} Column sync: added ${detail.length} column(s) across ${touched.size} template(s): ${detail.join(", ")}`);
-      ui.notifications?.info(`Template columns: added ${detail.length} missing column(s) — see console`);
+      console.info(`${FU_BOOT_TAG} Column sync: added ${detail.length} column(s), retuned ${retuned.length} presentation field(s) across ${touched.size} template(s).`);
+      if (detail.length) console.info(`${FU_BOOT_TAG}   added: ${detail.join(", ")}`);
+      if (retuned.length) console.info(`${FU_BOOT_TAG}   retuned: ${retuned.join(", ")}`);
+      ui.notifications?.info(`Template columns: +${detail.length} column(s), ${retuned.length} retuned — see console`);
     } else {
-      console.info(`${FU_BOOT_TAG} Column sync: all registry columns present.`);
+      console.info(`${FU_BOOT_TAG} Column sync: all registry columns present and in sync.`);
     }
   } catch (e) {
     console.error(`${FU_BOOT_TAG} Template column sync failed:`, e);

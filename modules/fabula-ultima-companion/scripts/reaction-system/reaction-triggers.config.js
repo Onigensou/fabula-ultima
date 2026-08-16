@@ -384,6 +384,69 @@ Hooks.once("ready", () => {
   ];
 
   // ---------------------------------------------------------------------------
+  // Trigger FAMILIES — coarse groupings used only for sheet VISIBILITY.
+  // ---------------------------------------------------------------------------
+  // `filters` above is a per-trigger capability list, which is the right shape
+  // for the narrow payload filters (damage_type, debuff_count, …) but scales
+  // badly for the broad ones: gating `reaction_action_kind` that way would mean
+  // editing ~25 trigger entries, and forgetting ONE silently hides live authored
+  // config (measured 2026-08-16: 320 authored cells were invisible for exactly
+  // this class of mistake). A family is ONE list per axis instead, so the
+  // membership is reviewable in a single place.
+  //
+  // Families are deliberately GENEROUS supersets: a filter cell showing on a
+  // trigger where it happens to be a no-op costs a little noise; a cell HIDDEN
+  // on a trigger someone authored against costs uneditable data. Every family
+  // below is a strict superset of the triggers those cells are measurably
+  // authored against in the live corpus.
+  const TRIGGER_FAMILIES = {
+    // "how a resource moved" — resource/cause/origin filters.
+    resource: [
+      "creature_lose_resource", "creature_gain_resource",
+      "creature_recovers_hp", "creature_recovers_mp", "creature_lose_mp",
+      "creature_takes_damage", "creature_deals_damage", "creature_will_deal_damage",
+      "creature_shield_break", "creature_enter_crisis", "creature_exit_crisis",
+      "creature_defeated"
+    ],
+    // "which status changed" — status filter. Crisis enter/exit are status
+    // changes too (Crisis is an AE), so a "when Crisis lands" row can scope by name.
+    status: [
+      "creature_status_applied", "creature_status_triggered",
+      "creature_enter_crisis", "creature_exit_crisis"
+    ],
+    // "an action happened" — action-kind / source-skill / responder filters.
+    action: [
+      "creature_performs_action", "creature_performs_check", "creature_targeted_by_action",
+      "creature_hit_by_action", "creature_miss_action", "creature_critical_hit",
+      "creature_fumbles_check", "creature_check_adjusted", "creature_check_outcome_flipped",
+      "accuracy_check", "creature_guards",
+      "creature_deals_damage", "creature_will_deal_damage", "creature_takes_damage",
+      "creature_takes_vulnerable_damage", "creature_takes_weak_damage",
+      "creature_resists_damage", "creature_absorbs_damage", "creature_immune_damage",
+      "creature_completes_action", "creature_completes_skill", "creature_completes_attack",
+      "creature_completes_spell", "creature_completes_item", "creature_uses_item",
+      // A Zero Power is a thing a creature DID, so "when anyone unleashes <name>"
+      // must stay scopable by reaction_source_skill.
+      "creature_unleashes_zero_power"
+    ]
+  };
+
+  // DELIBERATELY in no family: conflict_start / conflict_end / round_start /
+  // round_end / turn_start / turn_end / pre_turn_end. These fire off the clock,
+  // not off anything a creature did, so their payload carries no action, no
+  // resource delta and no status — every family-gated filter would be a no-op
+  // cell. NOTE the engine disagrees in one direction: passesMatchFilters applies
+  // those filters on ANY trigger and several FAIL CLOSED on a missing payload
+  // field, so a lifecycle row that somehow acquired one would never fire. Hiding
+  // the cells is therefore the safer half of that mismatch, but it does mean a
+  // filter authored on a lifecycle row by migration is invisible — check with
+  // tools/csb-template/bin/visibility-audit.js if that is ever suspected.
+
+  const FAMILY_SETS = new Map(
+    Object.entries(TRIGGER_FAMILIES).map(([name, keys]) => [name, new Set(keys)])
+  );
+
+  // ---------------------------------------------------------------------------
   // Indexes built once at install time
   // ---------------------------------------------------------------------------
 
@@ -441,6 +504,35 @@ Hooks.once("ready", () => {
     return entry?.filters ?? [];
   }
 
+  /**
+   * Is `triggerKey` a member of the named visibility family? Unknown family
+   * name → true (fail OPEN: never hide a cell because of a typo here).
+   * Unknown trigger key is handled by the caller (reaction-formulaFunctions),
+   * which shows the cell rather than hiding it.
+   */
+  const WARNED_FAMILIES = new Set();
+  function triggerInFamily(triggerKey, familyName) {
+    const name = String(familyName ?? "").trim();
+    const set = FAMILY_SETS.get(name);
+    if (!set) {
+      // Fail OPEN, but say so once. A typo'd family name is otherwise
+      // undetectable: the gate just renders everywhere and looks like a
+      // deliberately generous one.
+      if (name && !WARNED_FAMILIES.has(name)) {
+        WARNED_FAMILIES.add(name);
+        console.warn(`[ReactionTriggers] Unknown visibility family "${name}" — gate treated as always-visible. Known: ${[...FAMILY_SETS.keys()].join(", ")}`);
+      }
+      return true;
+    }
+    return set.has(resolveKey(triggerKey));
+  }
+
+  /** Families `triggerKey` belongs to (for debugging / the preset picker). */
+  function familiesFor(triggerKey) {
+    const key = resolveKey(triggerKey);
+    return [...FAMILY_SETS.entries()].filter(([, s]) => s.has(key)).map(([n]) => n);
+  }
+
   /** Subject-resolution shape (or null for global triggers). */
   function subjectShapeFor(triggerKey) {
     const entry = getTrigger(resolveKey(triggerKey));
@@ -472,7 +564,9 @@ Hooks.once("ready", () => {
     bucketFor,
     filtersFor,
     subjectShapeFor,
-    damageSourceShapeFor
+    damageSourceShapeFor,
+    triggerInFamily,
+    familiesFor
   };
 
   console.debug("[ReactionTriggers] Installed. %d triggers registered.", TRIGGERS.length);

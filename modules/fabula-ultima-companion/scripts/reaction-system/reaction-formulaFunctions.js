@@ -39,6 +39,17 @@ Hooks.once("ready", () => {
     return window["oni.ReactionTriggers"] ?? null;
   }
 
+  // A trigger key that is non-empty but absent from the registry is NOT the same
+  // as "this trigger declares no filters". The dropdown offers more keys than the
+  // registry lists (15 of 47, measured 2026-08-16), so treating unregistered as
+  // "declares nothing" hid 178 authored cells — reaction_source alone on 155 rows
+  // across 75 skills. Unknown means UNKNOWN: show the cell, exactly as the
+  // "Conservative defaults" note above promises.
+  function isRegistered(reg, key) {
+    if (typeof reg?.isValidKey === "function") return !!reg.isValidKey(key);
+    return typeof reg?.getTrigger === "function" ? reg.getTrigger(key) !== null : false;
+  }
+
   function triggerNeeds(triggerKey, filterName) {
     const key = String(triggerKey ?? "").trim();
     const filter = String(filterName ?? "").trim();
@@ -46,6 +57,7 @@ Hooks.once("ready", () => {
 
     const reg = getRegistry();
     if (!reg?.filtersFor) return 1;
+    if (!isRegistered(reg, key)) return 1;
 
     const filters = reg.filtersFor(key);
     return Array.isArray(filters) && filters.includes(filter) ? 1 : 0;
@@ -57,16 +69,34 @@ Hooks.once("ready", () => {
 
     const reg = getRegistry();
     if (!reg?.subjectShapeFor) return 1;
+    if (!isRegistered(reg, key)) return 1;
 
     return reg.subjectShapeFor(key) !== null ? 1 : 0;
   }
 
+  //   triggerInFamily(triggerKey, familyName)
+  //     → 1 if the trigger belongs to a coarse visibility family
+  //       (resource | status | action), 0 otherwise. Backs the BROAD filter
+  //       cells, where a per-trigger capability list would be ~25 edits and one
+  //       omission silently hides live config.
+  function triggerInFamily(triggerKey, familyName) {
+    const key = String(triggerKey ?? "").trim();
+    const family = String(familyName ?? "").trim();
+    if (!key || !family) return 1;
+
+    const reg = getRegistry();
+    if (typeof reg?.triggerInFamily !== "function") return 1;
+    if (!isRegistered(reg, key)) return 1;
+
+    return reg.triggerInFamily(key, family) ? 1 : 0;
+  }
+
   try {
     globalThis.math.import(
-      { triggerNeeds, triggerHasSubject },
+      { triggerNeeds, triggerHasSubject, triggerInFamily },
       { override: true }
     );
-    console.debug(`${TAG} Installed mathjs functions: triggerNeeds, triggerHasSubject.`);
+    console.debug(`${TAG} Installed mathjs functions: triggerNeeds, triggerHasSubject, triggerInFamily.`);
   } catch (e) {
     console.error(`${TAG} Failed to register mathjs functions.`, e);
   }
