@@ -3100,7 +3100,12 @@ export function readAdjustment(row, prefix, { defaultOp = "add" } = {}) {
   return {
     op: String(row[`${prefix}_operation`] ?? defaultOp).trim().toLowerCase(),
     amountFormula: String(row[`${prefix}_amount`] ?? "0"),
-    round: String(row[`${prefix}_round`] ?? "up").trim().toLowerCase(),
+    // `||`, not `??`: the column's defaultValue is now "" (a select needs a
+    // falsy default to keep its blank option), and `??` does not catch the
+    // empty string. Inert while the consumer tests `=== "down"`, but the corpus
+    // is moving toward blank, so a later `=== "up" ? ceil : floor` would flip
+    // every blank row silently. Same shape as the blank-monster-range bug.
+    round: String(row[`${prefix}_round`] || "up").trim().toLowerCase(),
     stage: String(row[`${prefix}_stage`] ?? "outgoing").trim().toLowerCase(),
     scope: String(row[`${prefix}_scope`] ?? "per_target").trim().toLowerCase(),
   };

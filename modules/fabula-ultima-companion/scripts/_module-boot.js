@@ -157,7 +157,21 @@ Hooks.once("ready", async () => {
 // is hand-maintained option lists drifting from the values actually in use. This
 // sync makes the engine + authored data authoritative and backfills the template
 // every boot, so it self-heals for ALL dropdowns + any future value.
+// Boot (3) and (3b) write the SAME template documents, and Foundry does NOT
+// await hook listeners — it just calls them in registration order. Both take a
+// snapshot (`toObject(false)` / deepClone) and later `update()` from it, so run
+// concurrently the second write reverts whatever the first one added: (3)'s
+// backfilled dropdown options vanish, or (3b)'s column/gate work does. Steady
+// state hides it (both no-op), which is why it has never been seen — but a boot
+// where both have work, like a migration boot, is exactly when it fires.
+//
+// (3b) awaits this latch. It MUST settle on every exit path of (3), including
+// the early returns, or (3b) would hang forever instead.
+let markDropdownSyncDone;
+const DROPDOWN_SYNC_DONE = new Promise((resolve) => { markDropdownSyncDone = resolve; });
+
 Hooks.once("ready", async () => {
+  try {
   if (!game.user?.isGM) return;
   if (globalThis.__FU_DISABLE_DROPDOWN_SYNC__) {
     console.info(`${FU_BOOT_TAG} Dropdown-options sync skipped (__FU_DISABLE_DROPDOWN_SYNC__ set).`);
@@ -245,6 +259,7 @@ Hooks.once("ready", async () => {
   } catch (e) {
     console.error(`${FU_BOOT_TAG} Dropdown-options sync failed:`, e);
   }
+  } finally { markDropdownSyncDone(); }
 });
 
 // ---------------------------------------------------------------------------
@@ -262,6 +277,8 @@ Hooks.once("ready", async () => {
 Hooks.once("ready", async () => {
   if (!game.user?.isGM) return;
   if (globalThis.__FU_DISABLE_DROPDOWN_SYNC__) return;
+  // Serialize against (3) — see the latch above.
+  await DROPDOWN_SYNC_DONE;
   const MODULE_ID = "fabula-ultima-companion";
   try {
     const reg = await import(`${window.location.origin}/modules/${MODULE_ID}/scripts/battle-director/template-field-registry.js?t=${Date.now()}`);

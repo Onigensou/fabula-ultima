@@ -6084,6 +6084,26 @@ function openGmEditCard(context) {
       // writing the other. The halves can no longer diverge.
       const prior = normalizeGmOverride(context.gmOverride);
       const targets = targetsSec ? readTargetLists() : prior.targets;
+
+      // The same rule the target list already follows, applied PER KEY.
+      // `perTarget` and `reactions` are reduced over rendered DOM rows, and Save
+      // replaces both sections wholesale — so a bag entry whose row this client
+      // could not render reads as "the GM cleared it" and is erased. A target
+      // off this client's canvas, or a candidate filtered out of the reaction
+      // list, is enough.
+      //
+      // Carry forward only keys that produced NO row. A row that rendered and
+      // was deliberately dropped (fudGmDrop) or left on "keep" is a real
+      // decision and must still win.
+      // (the reactions half runs after that list is built, below)
+      // Match the build loop's own test (it skips a row with no `hit` select),
+      // not merely "a row exists": an extraAdds / extraRemoved row renders the
+      // token attribute with no controls, and treating that as rendered would
+      // drop a prior override instead of carrying it.
+      for (const [key, val] of Object.entries(prior.perTarget ?? {})) {
+        const sel = `[data-fud-gm-token="${CSS.escape(key)}"] [data-fud-gm-field="hit"]`;
+        if (!card.querySelector(sel)) perTarget[key] = val;
+      }
       // Reactions. Only real verdicts are sent — a "keep" row contributes NO key,
       // so an untouched candidate can never be mistaken for a suppressed one.
       // (Save replaces this section wholesale, so an omitted key IS the clear.)
@@ -6108,6 +6128,11 @@ function openGmEditCard(context) {
         else if (v === "skip") reactions[key] = false;
         else if (v === "ask") { reopen.push(key); reactions[key] = "ask"; }
         else if (row.dataset.fudGmRxPrev === "ask") reactions[key] = "ask";
+      }
+      // Second half of the un-rendered-row rule (see perTarget above): a stored
+      // verdict whose candidate row this client never drew must survive Save.
+      for (const [key, val] of Object.entries(prior.reactions ?? {})) {
+        if (!card.querySelector(`[data-fud-gm-rx="${CSS.escape(key)}"]`)) reactions[key] = val;
       }
       return { roll, damage, perTarget, reactions, reopen, targets };
     };
@@ -7007,6 +7032,14 @@ export async function postActionCard({ director, kind, payload }) {
       // A candidate the GM sent back to undecided must NOT re-arm itself on a
       // re-post — the auto-apply below runs on every card build, so without this
       // an F5 silently undid the un-decision.
+      // Honour the same editability filter gmReactionDecisionChanges applies
+      // (gm-card-override.js). A candidate the GM may no longer edit — an
+      // unaffordable force, say — must not keep steering this build from a
+      // stored verdict: isGmEditableReaction exists so a force cannot bank the
+      // benefit without paying the cost. Unfiltered, a stale "ask" here also
+      // suppresses auto-fire on a candidate the editor will never draw again,
+      // and nothing in the UI can then clear it.
+      if (!isGmEditableReaction(p)) continue;
       if (gmReactionBlocksAutoFire(cardAr?.gmOverride ?? null, p.rowKey, p.carrierUuid)) continue;
       if (isAutoFireReactionMode(p.mode) && p.available !== false) setReactionDecision(key, "apply");
       if (p.mode === "off") setReactionDecision(key, "skip");
@@ -7020,6 +7053,9 @@ export async function postActionCard({ director, kind, payload }) {
     // dropping a force the GM had already made. Seeding straight from the bag is
     // the same absolute-value rule the rest of the layer follows.
     for (const p of cardReactions) {
+      // Same filter as above: seeding straight from the bag must not resurrect a
+      // verdict on a candidate that is no longer GM-editable.
+      if (!isGmEditableReaction(p)) continue;
       const d = gmReactionDecision(cardAr?.gmOverride ?? null, p.rowKey, p.carrierUuid);
       if (d) reactionDecisionMap.set(`${p.rowKey}:${p.carrierUuid}`, d);
     }
