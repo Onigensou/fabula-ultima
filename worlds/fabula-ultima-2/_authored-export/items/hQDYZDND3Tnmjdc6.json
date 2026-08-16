@@ -89,15 +89,18 @@
       "description": "<p>As long as your personal vehicle has a steed frame, it may have up to 2 active weapon modules (instead of 1).</p><p>During a conflict, if you have a <strong>martial armor</strong> or <strong>martial armor module</strong> equipped, you may use an action and spend <strong>30 Mind Points</strong> to choose earth or physical. If you do, you deal <strong>20 damage</strong> of the chosen type to every enemy you can see, and enemies that lose Hit Points this way cannot perform <strong>free attacks</strong> until the start of their next turn.</p><p>This effect deals <strong>+10 damage</strong> if you are driving a personal vehicle with a mech frame and/or have <strong>two shields equipped</strong>, and also deals <strong>+10 damage</strong> if you are <strong>level 30 or higher</strong>.</p>",
       "effect_table": {
         "0": {
-          "chain_steps": "qt_gate,qt_apply_status",
+          "chain_steps": "qt_apply_status",
           "condition_formula": "HAS_MARTIAL_ARMOR == 1",
           "effect_kind": "chain",
           "effect_label": "qt_activate"
         },
         "1": {
           "chain_steps": "",
-          "effect_kind": "chain",
-          "effect_label": "qt_gate"
+          "effect_kind": "prompt_element",
+          "effect_label": "qt_gate",
+          "element_options": "earth|physical",
+          "menu_title": "Quaking Titan — choose a damage type",
+          "prompt_var": "element"
         },
         "2": {
           "ae_duplicate_mode": "replace_per_caster",
@@ -128,10 +131,11 @@
       "max_level": "1",
       "name": "Quaking Titan",
       "on_activate_effect_ref": "qt_activate",
+      "pre_activate_effect_ref": "qt_gate",
       "skill_range": "Scene",
       "skill_target": "Each enemy you can see",
       "skill_type": "Active",
-      "type_damage": "physical"
+      "type_damage": "VAR_ELEMENT"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2788278387,

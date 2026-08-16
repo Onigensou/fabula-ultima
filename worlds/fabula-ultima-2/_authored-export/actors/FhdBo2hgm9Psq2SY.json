@@ -2097,7 +2097,7 @@
             "3": {
               "allow_empty": false,
               "auto_confirm_when_obvious": false,
-              "auto_target": false,
+              "auto_target": "confirm",
               "candidate_source": "combat",
               "category": "ally",
               "category_": "",

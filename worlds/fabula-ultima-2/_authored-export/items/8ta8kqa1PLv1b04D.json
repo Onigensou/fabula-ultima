@@ -95,13 +95,16 @@
       "effect_table": {
         "0": {
           "$deleted": false,
+          "allow_empty": false,
           "auto_confirm_when_obvious": true,
           "auto_target": "confirm",
           "candidate_source": "combat",
           "category": "",
+          "consume_self": false,
           "count": "1",
           "effect_kind": "targeting",
           "effect_label": "cf_pick",
+          "exclude_action_targets": false,
           "exclude_self": true,
           "iteration_mode": "together",
           "mode": "exact",
@@ -113,6 +116,7 @@
           "$deleted": false,
           "ae_duplicate_mode": "replace_per_caster",
           "ae_template_ref": "Cognitive Focus",
+          "consume_self": false,
           "effect_kind": "apply_ae",
           "effect_label": "cf_apply",
           "target_ref": "cf_pick"
@@ -121,13 +125,15 @@
           "$deleted": false,
           "accuracy_amount": "SL",
           "accuracy_operation": "add",
-          "effect_kind": "grant",
+          "consume_self": false,
+          "effect_kind": "adjust_accuracy",
           "effect_label": "cf_acc"
         },
         "3": {
           "$deleted": false,
           "condition_formula": "TARGET_HAS_MY_FOCUS == 1",
-          "effect_kind": "grant",
+          "consume_self": false,
+          "effect_kind": "adjust_grant",
           "effect_label": "cf_heal",
           "grant_amount": "SL * 2",
           "grant_operation": "add"
@@ -164,6 +170,7 @@
           "reaction_ownership": "",
           "reaction_passive_mode": "ask",
           "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
           "reaction_source": "self",
           "reaction_subject_kind": "",
           "reaction_trigger": "turn_start",
@@ -182,6 +189,7 @@
           "reaction_ownership": "",
           "reaction_passive_mode": "force",
           "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
           "reaction_source": "self",
           "reaction_subject_kind": "",
           "reaction_trigger": "creature_performs_action",
@@ -200,6 +208,7 @@
           "reaction_ownership": "",
           "reaction_passive_mode": "force",
           "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
           "reaction_source": "self",
           "reaction_subject_kind": "",
           "reaction_trigger": "creature_performs_action",
@@ -216,7 +225,8 @@
       "skill_type": "Passive",
       "type_damage": "",
       "use_optional_params": false,
-      "uuid": "Item.8ta8kqa1PLv1b04D"
+      "uuid": "Item.8ta8kqa1PLv1b04D",
+      "versatile": false
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2788278387,

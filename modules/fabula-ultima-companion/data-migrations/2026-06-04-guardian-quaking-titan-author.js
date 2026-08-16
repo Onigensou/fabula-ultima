@@ -124,7 +124,13 @@ const PROP_PATCH = {
   // evaluator has no ternary. Comparisons return 1/0, multiplied by 10
   // for the bonus, summed with the base 20.
   damage_bonus:           "20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10",
-  type_damage:            "physical",
+  // RAW: "spend 30 Mind Points to choose earth or physical". VAR_ELEMENT is the
+  // sentinel resolved from the element the player picks; it ONLY resolves from a
+  // prompt captured by the PRE_ACTIVATE hook (state-handlers.js:4104 reads just
+  // fire_points.pre_activate_effect_ref, and action-profile.js:181-190 falls back
+  // to the literal otherwise). Same shape as Elemental Shard / Detonate Phantasm.
+  type_damage:            "VAR_ELEMENT",
+  pre_activate_effect_ref: "qt_gate",
   // Gate the activation on martial armor presence per RAW. condition_formula
   // on on_activate_effect_ref's chain enforces this.
   on_activate_effect_ref: "qt_activate",
@@ -139,17 +145,20 @@ const EFFECT_TABLE = {
   "0": {
     effect_label:      "qt_activate",
     effect_kind:       "chain",
-    chain_steps:       "qt_gate,qt_apply_status",
+    chain_steps:       "qt_apply_status",
     condition_formula: "HAS_MARTIAL_ARMOR == 1",
   },
   "1": {
-    // No-op placeholder for the gate; chain abort happens via the parent
-    // chain's condition_formula (the activation row's gate is checked
-    // before the chain fires). The chain here just sequences the side
-    // effects after damage has resolved through the action pipeline.
+    // RAW's "choose earth or physical". This was an EMPTY chain row until
+    // 2026-08-16 — authored, chained, and doing nothing, so the skill always
+    // dealt its default type. It fires from pre_activate (NOT from the
+    // qt_activate chain) because that is the only hook whose picks reach
+    // ctx.chainVars in time for the damage type to resolve.
     effect_label:      "qt_gate",
-    effect_kind:       "chain",
-    chain_steps:       "",
+    effect_kind:       "prompt_element",
+    prompt_var:        "element",
+    element_options:   "earth|physical",
+    menu_title:        "Quaking Titan — choose a damage type",
   },
   "2": {
     effect_label:      "qt_apply_status",

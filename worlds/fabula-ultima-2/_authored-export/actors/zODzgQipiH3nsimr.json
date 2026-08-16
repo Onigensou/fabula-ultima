@@ -246,7 +246,7 @@
               "damage_amount": "AE_CHARGES_BURN * 10",
               "damage_operation": "add",
               "damage_stage": "outgoing",
-              "effect_kind": "grant",
+              "effect_kind": "adjust_damage",
               "effect_label": "voracious_burn_bonus",
               "grant_amount": "",
               "grant_resource": "",
@@ -357,9 +357,9 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "action_keyword": "pierce",
+              "action_keyword": "crush",
               "condition_formula": "FINAL_DAMAGE >= 100",
-              "effect_kind": "grant",
+              "effect_kind": "apply_action_keyword",
               "effect_label": "chomp_pierce",
               "grant_amount": "",
               "grant_resource": "",
@@ -395,7 +395,7 @@
             },
             "4": {
               "count": "all",
-              "effect_kind": "grant",
+              "effect_kind": "remove_tagged_ae",
               "effect_label": "blaze_consume_target",
               "filter_tag": "burn",
               "grant_amount": "",
@@ -1263,7 +1263,7 @@
               "damage_amount": "TARGET_AE_CHARGES_BURN * 5",
               "damage_operation": "add",
               "damage_stage": "outgoing",
-              "effect_kind": "grant",
+              "effect_kind": "adjust_damage",
               "effect_label": "blaze_damage",
               "grant_amount": "",
               "grant_resource": "",
@@ -1271,7 +1271,7 @@
             },
             "2": {
               "count": "all",
-              "effect_kind": "grant",
+              "effect_kind": "remove_tagged_ae",
               "effect_label": "blaze_consume",
               "filter_tag": "burn",
               "grant_amount": "",

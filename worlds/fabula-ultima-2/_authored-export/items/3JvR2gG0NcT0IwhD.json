@@ -41,7 +41,7 @@
           "$deleted": false,
           "allow_empty": false,
           "auto_confirm_when_obvious": true,
-          "auto_target": true,
+          "auto_target": "skip",
           "candidate_source": "self",
           "category": "",
           "consume_self": false,

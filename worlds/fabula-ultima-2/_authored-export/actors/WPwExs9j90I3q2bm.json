@@ -1305,7 +1305,7 @@
             "3": {
               "allow_empty": false,
               "auto_confirm_when_obvious": false,
-              "auto_target": true,
+              "auto_target": "skip",
               "candidate_source": "combat",
               "category": "enemy",
               "consume_self": false,

@@ -522,7 +522,7 @@
               "damage_amount": "TARGET_AE_CHARGES_BURN * 5",
               "damage_element": "fire",
               "damage_verbosity": "full",
-              "effect_kind": "grant",
+              "effect_kind": "deal_damage",
               "effect_label": "death_burst",
               "target_ref": "burst_targets"
             },
