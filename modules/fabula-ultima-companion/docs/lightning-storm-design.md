@@ -15,9 +15,9 @@ per-activation ruling both hold. Numbers are still unvalidated for BALANCE.
 
 That run also showed Rail Stream never firing, which triggered the
 2026-08-16 rebalance in [Roster interlock](#roster-interlock-valley-of-the-dragon):
-Kirin's MP pool and Rail Stream's cost both dropped to 30 (one Rod strike
-arms it), the Lightning Charge passive was deleted, and the ult stopped
-being a TPK. **Not yet live-tested at the new numbers.**
+Kirin's pool and Rail Stream's cost are now **50**, fed to full by a single
+Rod strike (+30 Rod, +20 Lightning Charge), and the ult stopped being a TPK.
+**Not yet live-tested at the new numbers.**
 
 Supersedes two earlier drafts:
 
@@ -148,10 +148,31 @@ this into the monster-facing notes — it is not obvious from the rules.
 See [[project_lightning_surge_dungeon]] for stat blocks and skill IDs.
 
 **Kirin / Rail Stream is the storm's mouthpiece.** (The actor is named Kirin;
-earlier drafts of this doc called it Qilin.) Kirin starts at 0 MP with a **30
-MP** pool, and Rail Stream costs **30** — so **one Rod strike arms it**, full
-stop. That is deliberate: the Rod pays 30 MP, Kirin resists bolt so the strike
-costs it only 15 HP, and the trade is never in the party's favour.
+earlier drafts of this doc called it Qilin.) Kirin starts at 0 MP with a **50
+MP** pool, and Rail Stream costs **50** — and **one Rod strike still arms it**,
+because the strike pays out twice:
+
+| Source | MP |
+|---|---|
+| `rod_charge` — the Rod's own grant | +30 |
+| **Lightning Charge** — Kirin took Bolt damage | +20 |
+| | **= 50, exactly Rail Stream** |
+
+That is the whole trick. The Rod deals **Bolt** damage to its holder, and
+Lightning Charge fires on `creature_lose_resource` with **no
+`reaction_cause_filter`**, so the `hazard`-cause strike feeds it. Kirin resists
+bolt, so the strike costs it only 15 HP for 50 MP — a trade never in the
+party's favour.
+
+> ⚠ **`reaction_cause_filter` is load-bearing here and must stay BLANK.** It is
+> the dial that decides whether the Rod feeds a passive: Prism's Overcharge sets
+> it to `"damage"` precisely to *exclude* the hazard strike. Setting it on
+> Lightning Charge would drop Kirin to +30 per strike and Rail Stream would
+> never arm — the exact bug this design replaced.
+
+Party bolt damage also feeds the horn at +20 a hit (3 hits arms it alone), so a
+bolt-using party still escalates the fight against itself. The pool caps at 50,
+so Kirin can never bank more than one Rail Stream.
 
 **Rail Stream is meant to land.** It is not a doomsday clock the party is
 supposed to defuse, and it is not a wipe — it is a **heavy** party-wide Bolt hit
@@ -162,14 +183,24 @@ chooses which round Kirin gets fed and who is standing when it fires. Nobody
 dies at neutral affinity from full — Keren at VU bolt is the exception, which is
 the same VU tax the Rod itself charges.
 
-> **Design history.** Rail Stream was originally 50 MP out of a 60 pool at +125
-> damage — ~528 across the party, a TPK. It was fed by a **Lightning Charge**
-> passive (+15 MP per bolt instance, twice a round), so arming it took two
-> rounds of careless attacking and the payoff was a wipe. Both are gone as of
-> 2026-08-16: Lightning Charge was **deleted** (the Rod is the only feed now,
-> which is the whole point of the v3 hazard) and the damage was cut to +45.
-> The old encounter-table ramp existed to keep players away from the wipe;
-> it is no longer load-bearing for that reason.
+> **Design history (all 2026-08-16).** Rail Stream was originally 50 MP out of a
+> 60 pool at **+125** damage — ~528 across the party, a TPK — fed by a Lightning
+> Charge that gave +15 whenever *any* creature dealt Bolt damage (gated
+> `CAUSE_IS_SELF == 0`, capped 2/round). Arming took two rounds of careless
+> attacking and the payoff was a wipe.
+>
+> First pass cut the damage to +45 and dropped the pool and the cost to 30,
+> deleting Lightning Charge so the Rod was the sole feed. That played correctly
+> but priced the spell wrong: **Chimerists can learn monster spells**, and a
+> 30 MP party-wide hit with a 50% Paralyze rider is far too cheap in a PC's
+> hands.
+>
+> Current design restores Lightning Charge in a **narrower** form — "when *the
+> Kirin* takes Bolt damage, +20 MP" (`SUBJECT_IS_SELF`, no self-loop guard
+> needed since Kirin's own AoE never damages Kirin) — and puts the cost back to
+> 50. The monster plays **identically** (one Rod strike still arms it) while the
+> spell costs a PC what it is actually worth. The old encounter-table ramp
+> existed to keep players away from the wipe; it is no longer load-bearing.
 
 **Electro Slime closes the exploit.** The cheapest way to void the Rod is
 to kill its holder — hand it to 45-HP chaff and finish them. But the

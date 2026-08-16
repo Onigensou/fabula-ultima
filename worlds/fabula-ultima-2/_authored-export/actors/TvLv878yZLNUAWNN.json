@@ -88,6 +88,93 @@
       "type": "equippableItem"
     },
     {
+      "_id": "3JBSipAdIt17tf68",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1786848827348,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+      "name": "Lightning Charge",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Kirin takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>The Kirin recovers <strong>20 MP</strong>. It begins the conflict with <strong>0 MP</strong>.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "charge_horn",
+              "grant_amount": "20",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Lightning Charge",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
+              "reaction_effect_ref": "charge_horn",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_lose_resource"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278387,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "zNhzAhg1phFoHW8q",
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
@@ -119,7 +206,7 @@
           "animation_script": "",
           "check_bonus": "9",
           "class": "NPC",
-          "cost": "30 MP",
+          "cost": "50 MP",
           "damage_bonus": "45",
           "defense_target_type": "mdef",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>The Kirin looses the charge gathered in its horn.</p><p>Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to <strong>all enemies</strong>, with a <strong>50%</strong> chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a> on each of them.</p>",
@@ -572,7 +659,7 @@
       "manadrain_value": 0,
       "max_hp": "210",
       "max_ip": "0",
-      "max_mp": "30",
+      "max_mp": "50",
       "max_zero": "6",
       "mdef_mod": "+3",
       "mig_base": "10",
@@ -582,7 +669,7 @@
       "name": "Kirin",
       "normal_spell_list": {
         "zNhzAhg1phFoHW8q": {
-          "cost": "30 MP",
+          "cost": "50 MP",
           "duration": "Instantaneous",
           "id": "${item.id}",
           "name": "Rail Stream",
@@ -609,13 +696,21 @@
       "shield_type": "PHYSICAL",
       "shield_value": "0",
       "showMacro": false,
-      "skill_passive_list": {},
+      "skill_passive_list": {
+        "3JBSipAdIt17tf68": {
+          "id": "${item.id}",
+          "name": "Lightning Charge",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Kirin takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>The Kirin recovers <strong>20 MP</strong>. It begins the conflict with <strong>0 MP</strong>.</p>",
+          "roll": "",
+          "uuid": "Actor.TvLv878yZLNUAWNN.Item.3JBSipAdIt17tf68"
+        }
+      },
       "spear_ef": "125",
       "species": "BEAST",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kirin_Standard.png",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Kirin_Standard.png",
       "steal_percentage_table": {},
-      "study_text": "<p>A serene horned beast that drinks the storm. Let the lightning find it even once and the horn is full; what it swallows comes back down on everyone. <strong>Frost</strong> dulls the horn.</p>",
+      "study_text": "<p>A serene horned beast that drinks the storm. Every <strong>bolt</strong> that touches it fills the horn, and one strike of the storm's own fills it completely; what it swallows comes back down on everyone. <strong>Frost</strong> dulls the horn.</p>",
       "subtype": "Sub-Type",
       "subtype_list": "FEY",
       "sword_ef": "100",
