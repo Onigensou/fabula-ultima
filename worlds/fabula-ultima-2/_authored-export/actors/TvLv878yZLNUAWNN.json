@@ -121,16 +121,28 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Kirin takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>The Kirin recovers <strong>20 MP</strong>. It begins the conflict with <strong>0 MP</strong>.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Kirin takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>The Kirin recovers <strong>20 MP</strong>. It begins the conflict with <strong>0 MP</strong>. Any MP gained beyond its maximum becomes <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a> instead, <strong>stacking with any Shield it already has</strong>.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
               "effect_kind": "grant",
-              "effect_label": "charge_horn",
+              "effect_label": "charge_mp",
               "grant_amount": "20",
               "grant_resource": "mp",
               "target_ref": "self"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "charge_overflow",
+              "grant_amount": "max(0, CUR_MP + 20 - MAX_MP)",
+              "grant_resource": "shield",
+              "target_ref": "self"
+            },
+            "2": {
+              "chain_steps": "charge_overflow, charge_mp",
+              "effect_kind": "chain",
+              "effect_label": "charge_horn"
             }
           },
           "heroic_requirement": "",
@@ -700,7 +712,7 @@
         "3JBSipAdIt17tf68": {
           "id": "${item.id}",
           "name": "Lightning Charge",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Kirin takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>The Kirin recovers <strong>20 MP</strong>. It begins the conflict with <strong>0 MP</strong>.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Kirin takes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage</p></li></ul><p>The Kirin recovers <strong>20 MP</strong>. It begins the conflict with <strong>0 MP</strong>. Any MP gained beyond its maximum becomes <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a> instead, <strong>stacking with any Shield it already has</strong>.</p>",
           "roll": "",
           "uuid": "Actor.TvLv878yZLNUAWNN.Item.3JBSipAdIt17tf68"
         }

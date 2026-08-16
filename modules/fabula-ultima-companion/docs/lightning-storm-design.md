@@ -174,6 +174,36 @@ Party bolt damage also feeds the horn at +20 a hit (3 hits arms it alone), so a
 bolt-using party still escalates the fight against itself. The pool caps at 50,
 so Kirin can never bank more than one Rail Stream.
 
+**Overflow becomes Shield.** The Rod is not the only bolt in the room — an
+Electro Slime death burst hits everyone for 30 — so Kirin rarely lands on a
+clean 50. Lightning Charge is a chain: it grants the excess as **Shield** first,
+then the MP.
+
+```
+charge_horn      chain    charge_overflow, charge_mp
+charge_overflow  grant    shield   max(0, CUR_MP + 20 - MAX_MP)
+charge_mp        grant    mp       20
+```
+
+Order is load-bearing — the overflow step reads `CUR_MP` *before* the MP grant
+writes. At 40 MP a hit gives +10 MP and **+10 Shield**; at 50 it gives 20 Shield
+and no MP. Nothing is wasted, and a Kirin the party keeps shocking while it is
+already charged turns that waste into a damage buffer instead.
+
+> **This is deliberately NOT the RAW Shield ruling.** Shield normally behaves
+> like temp HP — a new one does not stack, you keep the higher. The engine
+> models that as `set_resource` (a raise-only `Math.max(cur, value)` write);
+> `grant` is the additive one. Kirin uses **`grant`**, so overflow Shield
+> **stacks** on whatever it already has. The description says so explicitly,
+> because a player reading the sheet would otherwise assume the normal rule.
+> (Both idioms are in use elsewhere: Golem Soulstone `set_resource` = keep
+> highest, Golem Fragment / Geist's Shadow Wall `grant` = stack.)
+>
+> Only Lightning Charge's own +20 is converted. The Rod's `rod_charge` +30
+> clamps and is still discarded, because that row lives on the **shared**
+> Lightning Rod AE — converting there would hand Shield to every Rod holder,
+> PCs included. That is a hazard-wide change, not a Kirin one.
+
 **Rail Stream is meant to land.** It is not a doomsday clock the party is
 supposed to defuse, and it is not a wipe — it is a **heavy** party-wide Bolt hit
 (~52 per target, ~208 across four) with a **50% chance per target** of
