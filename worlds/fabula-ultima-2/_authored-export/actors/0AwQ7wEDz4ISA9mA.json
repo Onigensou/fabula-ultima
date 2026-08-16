@@ -1384,7 +1384,7 @@
     },
     "detectionModes": [],
     "displayBars": 50,
-    "displayName": 0,
+    "displayName": 50,
     "disposition": -1,
     "flags": {
       "barbrawl": {
@@ -1474,6 +1474,10 @@
             "subdivisionsOwner": false
           }
         }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
       }
     },
     "height": 1,
@@ -1542,8 +1546,8 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1,
-      "scaleY": 1,
+      "scaleX": 2.25,
+      "scaleY": 2.25,
       "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "tint": "#ffffff"
     },
@@ -1743,6 +1747,16 @@
           "name": "Elemental Slash",
           "roll": "",
           "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.ohrbXuZkGB4hNrPp"
+        },
+        "yq9JICuLI4TImXFn": {
+          "active_target": "One Creature",
+          "attack_description": "<p>A single arm's strike. Component of <strong>Quad-Elemental Slash</strong>.</p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Elemental Slash (Arm)",
+          "roll": "",
+          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.yq9JICuLI4TImXFn"
         }
       },
       "attribute": "",

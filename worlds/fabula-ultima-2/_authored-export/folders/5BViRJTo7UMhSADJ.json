@@ -2,7 +2,7 @@
   "_id": "5BViRJTo7UMhSADJ",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1767918567292,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
@@ -13,7 +13,7 @@
   "flags": {},
   "folder": "oVRjRmlshSvb68gK",
   "name": "Shops",
-  "sort": 0,
+  "sort": 400000,
   "sorting": "a",
   "type": "Actor"
 }

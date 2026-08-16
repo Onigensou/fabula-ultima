@@ -77,6 +77,7 @@
           "reaction_config_table": {
             "0": {
               "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
+              "reaction_cause_filter": "damage",
               "reaction_effect_ref": "chain_strike",
               "reaction_passive_mode": "on",
               "reaction_source": "",
@@ -84,6 +85,7 @@
             },
             "1": {
               "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
+              "reaction_cause_filter": "damage",
               "reaction_effect_ref": "chain_strike",
               "reaction_passive_mode": "on",
               "reaction_resource_filter": "hp",
@@ -198,7 +200,7 @@
     },
     "detectionModes": [],
     "displayBars": 50,
-    "displayName": 0,
+    "displayName": 50,
     "disposition": -1,
     "flags": {
       "barbrawl": {
@@ -288,6 +290,10 @@
             "subdivisionsOwner": false
           }
         }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
       }
     },
     "height": 1,
@@ -356,8 +362,8 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1,
-      "scaleY": 1,
+      "scaleX": 1.84,
+      "scaleY": 1.84,
       "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "tint": "#ffffff"
     },

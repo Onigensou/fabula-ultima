@@ -54,6 +54,13 @@
   const SPAWN_POINT_KEY         = "spawnPoint";           // { x, y } — manual spawn for scene travel
   const NAV_NAME_KEY            = "navigationName";       // string: display name in Travel dialog
   const DISABLE_TRANSITION_KEY  = "disableTransition";    // boolean: skip screen-fade when entering this scene
+  // Conflict Event — the additional rule layered onto conflicts fought on this
+  // scene. Only meaningful when sceneMode === "conflict"; one event per scene,
+  // default "none". Choices come from the runtime registry via
+  // FUCompanion.api.conflictEvents (this file is a classic IIFE and cannot
+  // import). Mirrors FLAG_KEY in scripts/conflict-event/conflict-event-binding.js
+  // — keep the two in step.
+  const CONFLICT_EVENT_KEY      = "conflictEvent";         // string: registered conflict-event id
   // Invoker wellsprings present on this scene. Per-element boolean under general
   // (`wellspring_<elem>`); UNSET/true → available, false → absent. Read by the
   // WELLSPRING_<ELEM>_AVAILABLE formula identifier (Invocation menu gating).
@@ -270,6 +277,14 @@
     } catch {
       return fallback;
     }
+  }
+
+  // Escape a string for interpolation into innerHTML. Used by the Conflict
+  // Event dropdown, whose labels come from the runtime registry.
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, (c) => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+    ));
   }
 
   function normalizeBoolean(raw, fallback = false) {
@@ -603,6 +618,23 @@
             </p>
           </div>
 
+          <div class="form-group oni-conflict-event-group">
+            <label>Conflict Event</label>
+            <div class="form-fields">
+              <select name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${CONFLICT_EVENT_KEY}">
+                <option value="none">None</option>
+              </select>
+            </div>
+            <p class="notes oni-conflict-event-desc">
+              An additional rule layered on top of the normal battle for conflicts fought on this
+              scene — a dungeon hazard, an arena gimmick. Battle Director still runs the fight;
+              the event only automates one extra rule inside it.
+              <br>
+              One event per conflict scene. A dungeon with several arenas picks an event for each
+              one separately.
+            </p>
+          </div>
+
           <div class="form-group">
             <label>Scan Mode Radius</label>
             <div class="form-fields">
@@ -874,6 +906,45 @@
         sel.value = mode;
       }
 
+      // Conflict Event prefill — options come from the runtime registry.
+      //
+      // The stored id is ALWAYS given an option, even when the registry does
+      // not know it. A <select> silently drops a value with no matching
+      // option, so without this a scene opened while the registry was empty
+      // (module still booting, an event sub-script that failed to load, an
+      // event since renamed) would save back as "none" and quietly disarm the
+      // hazard. Showing it as unavailable keeps the flag intact and makes the
+      // problem visible instead.
+      const eventSel = generalPanel?.querySelector(`select[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${CONFLICT_EVENT_KEY}"]`);
+      if (eventSel) {
+        const stored = String(safeGet(fabulaData, `${GENERAL_KEY}.${CONFLICT_EVENT_KEY}`, "") ?? "").trim() || "none";
+        let choices = [];
+        try { choices = globalThis.FUCompanion?.api?.conflictEvents?.list?.() ?? []; }
+        catch (e) { warn("conflict-event list failed", e); }
+        if (!choices.length) choices = [{ id: "none", label: "None", description: "" }];
+        if (!choices.some((c) => c.id === stored)) {
+          choices = [...choices, { id: stored, label: `${stored} (unavailable)`, description: "" }];
+        }
+
+        eventSel.innerHTML = choices
+          .map((c) => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.label)}</option>`)
+          .join("");
+        eventSel.value = stored;
+
+        // Show the selected event's own description under the dropdown.
+        const descEl = generalPanel?.querySelector(".oni-conflict-event-desc");
+        const baseDesc = descEl?.innerHTML ?? "";
+        const syncEventDesc = () => {
+          if (!descEl) return;
+          const chosen = choices.find((c) => c.id === eventSel.value);
+          descEl.innerHTML = chosen?.description
+            ? `${baseDesc}<br><b>${escapeHtml(chosen.label)}</b> — ${escapeHtml(chosen.description)}`
+            : baseDesc;
+        };
+        syncEventDesc();
+        eventSel.addEventListener("change", syncEventDesc);
+      }
+
       // Scan radius prefill
       const radiusInput = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCAN_RADIUS_KEY}"]`);
       if (radiusInput) {
@@ -1060,8 +1131,20 @@
 
       }
 
+      // Conflict Event only means anything on a conflict scene, so the
+      // dropdown is hidden elsewhere. Hidden, NOT removed — the field stays in
+      // the form so its stored value round-trips through a save made while
+      // the scene is in another mode.
+      const conflictEventGroup = generalPanel?.querySelector(".oni-conflict-event-group");
+      function syncConflictEventVisibility() {
+        if (!conflictEventGroup) return;
+        conflictEventGroup.style.display = (modeSel?.value ?? "") === "conflict" ? "" : "none";
+      }
+
       syncResetVisibility();
+      syncConflictEventVisibility();
       modeSel?.addEventListener("change", syncResetVisibility);
+      modeSel?.addEventListener("change", syncConflictEventVisibility);
 
       // Spawnpoint arm mode
       tabPanel.querySelector(".oni-set-spawnpoint-btn")?.addEventListener("click", async (ev) => {

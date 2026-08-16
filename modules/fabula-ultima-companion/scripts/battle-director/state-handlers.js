@@ -6830,6 +6830,16 @@ const StandaloneReactionWindow = {
               } catch (e) { warn(`STANDALONE_REACTION_WINDOW: reAddPersistentSummons threw`, e); }
             }
           }
+          // Conflict event (scene-selected additional rule) — seeds at
+          // conflict_start, re-seeds / upkeeps at round_start. Runs AFTER the
+          // sweeps above so the battlefield it reads is reconciled, and BEFORE
+          // the forced dispatch so a status it seeds is visible to the
+          // force-mode reactions in this same window. No-ops unless the
+          // conflict scene selects an event. See [[conflict-event]].
+          try {
+            const { dispatchConflictEventLifecycle } = await import("../conflict-event/conflict-event-runtime.js");
+            await dispatchConflictEventLifecycle(director, trigger);
+          } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} conflict-event dispatch threw`, e); }
           // FORCED pass — auto-fire force/on (Burn commits + populates the
           // ledger; action-creating grants like High Speed enqueue freeActionQueue).
           await dispatchStandaloneTrigger({ director, trigger, payload, phase: "forced" });
