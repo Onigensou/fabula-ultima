@@ -3111,10 +3111,18 @@ export function applyGrantAdjust(amount, adjust) {
   if (!adjust) return a;
   const v = Number(adjust.value);
   if (!Number.isFinite(v)) return a;
-  // Grant ops are {multiply,set,cap,floor}; anything else (incl. "add"/unknown)
-  // is add — matches the legacy switch's default. Multiply rounds up unless "down".
+  // Grant ops are {subtract,multiply,set,cap,floor}; anything else (incl.
+  // "add"/blank/unknown) is add — matches the legacy switch's default.
+  // Multiply rounds up unless "down".
+  //
+  // `subtract` was implemented in applyAdjustOp and reachable from adjust_damage
+  // and adjust_accuracy, but omitted from this whitelist — so the SAME operation
+  // silently meant "add" on a grant row while working everywhere else. The
+  // dropdown offered it, which made it a trap rather than a gap. Additive fix:
+  // blank and unknown still fall through to add, so no authored row changes
+  // (0 cells use subtract today).
   const op = String(adjust.op ?? "add").toLowerCase();
-  const eff = (op === "multiply" || op === "set" || op === "cap" || op === "floor") ? op : "add";
+  const eff = (op === "subtract" || op === "multiply" || op === "set" || op === "cap" || op === "floor") ? op : "add";
   const r = applyAdjustOp(a, eff, v);
   if (eff === "multiply") return String(adjust.round ?? "up").toLowerCase() === "down" ? Math.floor(r) : Math.ceil(r);
   return r;
