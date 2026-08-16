@@ -207,13 +207,26 @@
     try { return window["oni.ReactionTriggers"]?.listTriggers?.() ?? []; }
     catch (_) { return []; }
   }
+  // "Not in the registry" is NOT "declares nothing" — the trigger dropdown offers
+  // more keys than the registry defines, and treating unregistered as
+  // declares-nothing hid live config on ~32% of rows in the CSB sheet. Keep this
+  // editor's rule identical to the sheet's (reaction-formulaFunctions.js): an
+  // unknown key SHOWS the cell.
+  function triggerRegistered(key) {
+    try { return window["oni.ReactionTriggers"]?.isValidKey?.(String(key ?? "").trim()) === true; }
+    catch (_) { return false; }
+  }
   function triggerHasSubject(key) {
-    try { return window["oni.ReactionTriggers"]?.subjectShapeFor?.(key) != null; }
-    catch (_) { return true; }
+    try {
+      if (!String(key ?? "").trim() || !triggerRegistered(key)) return true;
+      return window["oni.ReactionTriggers"]?.subjectShapeFor?.(key) != null;
+    } catch (_) { return true; }
   }
   function triggerNeeds(key, filter) {
-    try { return (window["oni.ReactionTriggers"]?.filtersFor?.(key) ?? []).includes(filter); }
-    catch (_) { return false; }
+    try {
+      if (!String(key ?? "").trim() || !triggerRegistered(key)) return true;
+      return (window["oni.ReactionTriggers"]?.filtersFor?.(key) ?? []).includes(filter);
+    } catch (_) { return true; }
   }
   // effect_kinds the BD director engine (skill-effects.js) handles in
   // effect_table but the legacy reaction-grant.js dispatcher (the source of
@@ -382,7 +395,7 @@
         ${formRow("Kind", `<select data-field="effect_kind">${buildEffectKindOptions(row.effect_kind ?? "grant")}</select>`, "effect_kind")}
 
         ${formRow("Resource", selectHtml("grant_resource", row.grant_resource ?? "", GRANT_RESOURCE_OPTIONS, { includeBlank: true, labelForBlank: "(disabled)" }), "grant_resource")}
-        ${formRow("Amount", inputHtml("grant_amount", row.grant_amount ?? "", { type: "number", step: 1, placeholder: "(positive grants, negative drains)" }), "grant_amount")}
+        ${formRow("Amount", inputHtml("grant_amount", row.grant_amount ?? "", { placeholder: "number or formula, e.g. SL * 2 or floor(MAX_HP / 2)" }), "grant_amount")}
         ${formRow("Target", selectHtml("grant_target", row.grant_target ?? "self", GRANT_TARGET_OPTIONS), "grant_target")}
 
         ${formRow("AE Template Ref", inputHtml("ae_template_ref", row.ae_template_ref ?? "", { placeholder: "AE name or Item.x.ActiveEffect.y UUID" }), "ae_template_ref")}
@@ -391,7 +404,7 @@
 
         ${formRow("Charge Key", inputHtml("charge_key", row.charge_key ?? "", { placeholder: "e.g. protect" }), "charge_key")}
         ${formRow("On Empty", selectHtml("on_empty", row.on_empty ?? "abort", ON_EMPTY_OPTIONS), "on_empty")}
-        ${formRow("Count", inputHtml("count", row.count ?? "1", { type: "number", min: 1, step: 1 }), "count")}
+        ${formRow("Count", inputHtml("count", row.count ?? "", { placeholder: "blank or 'all' = every match; or a number/formula" }), "count")}
 
         ${formRow("Target Slot", selectHtml("target_select", row.target_select ?? "first", TARGET_SELECT_OPTIONS), "target_select")}
         ${formRow("Rebuild Card", checkboxHtml("rebuild_card", row.rebuild_card !== false), "rebuild_card")}
@@ -406,7 +419,7 @@
         ${formRow("Allowed Action Types", inputHtml("allowed_types", row.allowed_types ?? "", { placeholder: "Attack,Spell" }), "allowed_types", "Comma-separated TurnUI labels")}
         ${formRow("Free Mode", checkboxHtml("free_mode", !!row.free_mode), "free_mode")}
         ${formRow("Free: HR as 0", checkboxHtml("free_hr_as_zero", !!row.free_hr_as_zero), "free_hr_as_zero", "Granted free attack treats High Roll as 0 for damage (Hawkeye option b).")}
-        ${formRow("Max MP Cost", inputHtml("max_mp_cost", row.max_mp_cost ?? "", { type: "number", min: 0, step: 1, placeholder: "(no cap)" }), "max_mp_cost")}
+        ${formRow("Max MP Cost", inputHtml("max_mp_cost", row.max_mp_cost ?? "", { placeholder: "(no cap) — number or formula" }), "max_mp_cost")}
       </div>
     `;
   }
@@ -419,10 +432,10 @@
     const hasDamageType  = triggerNeeds(triggerKey, "damage_type");
     const hasDamageAmt   = triggerNeeds(triggerKey, "damage_amount");
     const hasDebuffCount = triggerNeeds(triggerKey, "debuff_count");
-    // passive_target routes the auto-applied effect; only meaningful for the
-    // auto-fire modes (on/force). For ask the player picks via the menu.
+    // passive_target routes the auto-applied effect. Required for the auto-fire
+    // modes (on/force) — see the validation warning below — but authored on ask
+    // rows too, so it is hidden only when the row is off.
     const mode = String(rowEl.querySelector('[data-field="reaction_passive_mode"]')?.value ?? "ask").toLowerCase();
-    const autoFires = mode === "on" || mode === "force";
 
     const visibility = {
       reaction_source:               hasSubject,
@@ -435,7 +448,11 @@
       reaction_action_intent:        hasSubject,
       reaction_bond_presence:        hasSubject,
       reaction_bond_emotion:         hasSubject,
-      reaction_passive_target:       autoFires
+      // Visible unless the row is switched OFF — matching the CSB sheet's gate.
+      // `autoFires` was narrower than real authoring: 40 of the 142 live rows
+      // that set a Passive Target sit on mode "ask", and this editor hid the
+      // field on every one of them.
+      reaction_passive_target:       mode !== "off"
     };
 
     for (const [field, show] of Object.entries(visibility)) {
@@ -576,8 +593,13 @@
   // ---------------------------------------------------------------------------
   // Reconciliation: pull form values back into the blob.
   // ---------------------------------------------------------------------------
-  function readTriggerRowFromDom(rowEl) {
-    const out = { $deleted: false };
+  // Same overlay rule as effect rows, and for the same reason: this editor
+  // renders 14 of a trigger row's keys, so a from-scratch rebuild dropped 6 keys
+  // / 83 cells — including `condition_formula` on 54 rows, which is the row's
+  // gate. Losing it does not disable the reaction; it makes it fire
+  // UNCONDITIONALLY, which is the worse failure.
+  function readTriggerRowFromDom(rowEl, prior = {}) {
+    const out = { ...prior, $deleted: false };
     rowEl.querySelectorAll("[data-field]").forEach(el => {
       const name = el.getAttribute("data-field");
       if (!name) return;
@@ -587,8 +609,19 @@
     return out;
   }
 
-  function readEffectRowFromDom(rowEl) {
-    const out = { $deleted: false };
+  // Overlay the DOM onto the STORED row — never rebuild a row from its widgets.
+  //
+  // This editor renders 22 of the ~66 keys an effect row can carry. Building the
+  // row from the DOM alone therefore DELETED every key without a widget on each
+  // Save: measured 2026-08-16 at 44 keys / 242 authored cells across live
+  // content (Phoenix Dance `change_element`, Mercy/Unbreakable `modify_mode` +
+  // `modify_value`, Beyond the Realms of Death `charge_*`, Hawkeye
+  // `candidate_source`, Hydra Dance's whole `menu_*` block, …). Opening the
+  // panel and pressing Save was enough to silently gut a working reaction.
+  //
+  // `prior` is the row as stored; widget values win where a widget exists.
+  function readEffectRowFromDom(rowEl, prior = {}) {
+    const out = { ...prior, $deleted: false };
     rowEl.querySelectorAll("[data-field]").forEach(el => {
       const name = el.getAttribute("data-field");
       if (!name) return;
@@ -601,21 +634,24 @@
   function rebuildBlobFromDom(panelEl, blob) {
     blob.name = panelEl.querySelector('[data-field="reaction_name"]')?.value ?? "";
 
+    const priorTriggers = blob.reaction_config_table ?? {};
     const triggerRows = panelEl.querySelectorAll(".oni-trigger-row");
     const newTriggers = {};
     triggerRows.forEach(rowEl => {
       const key = rowEl.getAttribute("data-row-key");
       if (!key) return;
-      newTriggers[key] = readTriggerRowFromDom(rowEl);
+      newTriggers[key] = readTriggerRowFromDom(rowEl, priorTriggers[key] ?? {});
     });
     blob.reaction_config_table = newTriggers;
 
+    const priorEffects = blob.effect_table ?? {};
     const effectRows = panelEl.querySelectorAll(".oni-effect-row");
     const newEffects = {};
     effectRows.forEach(rowEl => {
       const key = rowEl.getAttribute("data-row-key");
       if (!key) return;
-      newEffects[key] = readEffectRowFromDom(rowEl);
+      // Pass the stored row so keys this editor has no widget for survive.
+      newEffects[key] = readEffectRowFromDom(rowEl, priorEffects[key] ?? {});
     });
     blob.effect_table = newEffects;
   }
