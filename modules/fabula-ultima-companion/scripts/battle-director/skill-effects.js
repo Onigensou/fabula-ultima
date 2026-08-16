@@ -4481,6 +4481,25 @@ export async function applyEffectRow(row, ctx) {
   // Mirrors the reaction-level gate; lets fire-point / chain rows be conditional
   // (Prepare to Charge: apply Swift only if no Slow; Soul Steal HIT_COUNT>0;
   // Quaking Titan HAS_MARTIAL_ARMOR==1). Evaluated against the reactor + payload.
+  //
+  // `on_condition_fail: "abort"` upgrades that skip into a REFUSAL of the whole
+  // action. Skipping is right for a rider ("apply Swift only if…"); it is wrong
+  // for a REQUIREMENT, and there was no way to express one. Quaking Titan is the
+  // case: RAW makes martial armour a precondition of using the skill, but a
+  // skip-only gate let an unarmoured caster resolve the action and PAY THE COST
+  // for a zeroed effect. `availability_formula` cannot cover it — that is read in
+  // exactly one place (skill-picker.js:380) and only greys a player's picker row,
+  // so GM force, the AI chooser, free-action grants and every harness entry point
+  // walk straight past it.
+  //
+  // Deliberately a row-level option on the EXISTING gate rather than a new effect
+  // kind, so any row at any fire point can state a requirement, and it reuses the
+  // vocabulary consume_charge already established (`on_empty: "abort"`).
+  //
+  // 🪤 Put it on a row that actually RUNS at the fire point you need. This gate is
+  // evaluated ABOVE the captureMode filter, so it fires at pre_activate for any
+  // kind — but pre_activate is the only window that precedes the §1 cost debit.
+  // The same option on an on_activate row aborts AFTER the caster has paid.
   const condRaw = String(row.condition_formula ?? "").trim();
   if (condRaw && !DISPATCH_CONDITION_EXEMPT_KINDS.has(kind)) {
     try {
@@ -4490,6 +4509,11 @@ export async function applyEffectRow(row, ctx) {
       });
       const val = evaluateFormula(condRaw, resolver, 0);
       if (!val) {
+        const onFail = String(row.on_condition_fail ?? "skip").trim().toLowerCase();
+        if (onFail === "abort") {
+          log(`skill-effects: row "${row.effect_label}" condition_formula="${condRaw}" → falsy with on_condition_fail="abort"; REFUSING the action`);
+          return { ok: true, kind, applied: [], skipped: true, reason: "requirement-unmet", abort: true };
+        }
         log(`skill-effects: row "${row.effect_label}" condition_formula="${condRaw}" → falsy; skipping (chain continues)`);
         return { ok: true, kind, applied: [], skipped: true, reason: "condition-false" };
       }

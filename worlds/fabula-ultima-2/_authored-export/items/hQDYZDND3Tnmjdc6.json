@@ -98,10 +98,12 @@
         },
         "1": {
           "chain_steps": "",
+          "condition_formula": "HAS_MARTIAL_ARMOR == 1",
           "effect_kind": "prompt_element",
           "effect_label": "qt_gate",
           "element_options": "earth|physical",
           "menu_title": "Quaking Titan — choose a damage type",
+          "on_condition_fail": "abort",
           "prompt_var": "element"
         },
         "2": {

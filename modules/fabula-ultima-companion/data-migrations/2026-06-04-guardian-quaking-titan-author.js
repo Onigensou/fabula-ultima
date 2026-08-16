@@ -175,6 +175,17 @@ const EFFECT_TABLE = {
     prompt_var:        "element",
     element_options:   "earth|physical",
     menu_title:        "Quaking Titan — choose a damage type",
+    // RAW: "if you have a martial armor or martial armor module equipped, you
+    // MAY USE AN ACTION and spend 30 MP" — a precondition of using the skill,
+    // not a rider on its effect. `on_condition_fail: "abort"` refuses the whole
+    // action; a plain condition_formula would only skip this row.
+    //
+    // It lives HERE, on the pre_activate row, because pre_activate is the only
+    // window that precedes the §1 cost debit (state-handlers.js:406). The same
+    // pair on the qt_activate chain row aborts AFTER the caster has paid 30 MP.
+    // The chain row keeps its own condition as defence in depth.
+    condition_formula:  "HAS_MARTIAL_ARMOR == 1",
+    on_condition_fail:  "abort",
   },
   "2": {
     effect_label:      "qt_apply_status",

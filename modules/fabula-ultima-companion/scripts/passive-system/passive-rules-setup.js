@@ -3,7 +3,15 @@
   const TAG='[PassiveLogicActionSetup]';
   const wants = [
     { keys: ['Ice Mastery (Test)','Ice Mastery'], rules: [{ id:'ice-mastery-flat', label:'Ice Mastery', when:{ all:[{ action:{ elementIn:['ice'] } }] }, effects:[{ type:'flat', scope:'outgoing', element:'ice', amount:9999 }] }] },
-    { keys: ['Cognitive Focus'], rules: [{ id:'focus-outgoing-bonus', label:'Cognitive Focus', when:{ all:[{ actor:{ flagEquals:{ ns:'oni', key:'focus.active', equals:true } } }] }, effects:[{ type:'percent', scope:'outgoing', element:'all', amount:0.25 }], options:{ recalcOnConfirm:'ifElementUnknown' } }] },
+    // ⛔ REMOVED 2026-08-17 — Cognitive Focus seeded a +25% OUTGOING DAMAGE rule
+    // that RAW does not grant (RAW gives an accuracy bonus and a heal rider).
+    // Deleting the prop from the three authored copies was NOT enough: this
+    // seeder runs on EVERY world boot and re-writes the rule wherever the prop
+    // is empty, so blanking it made the doc ELIGIBLE for re-seeding and the next
+    // boot put it straight back. The deletion only sticks with the entry gone.
+    // 🪤 Dormant is not harmless — passive-modifier-engine.js:548 reads this
+    // field for real; the rule fired only because nothing sets the actor flag
+    // oni.focus.active, which is one line away at any time.
     { keys: ['Hypercognition'], rules: [{ id:'hyper-crit-ramp', label:'Hypercognition', when:{ all:[{ actor:{ flagCompare:{ ns:'oni', key:'focus.stacks', op:">=", value:3 } } }] }, effects:[{ type:'critMult', amount:1.5 }, { type:'flat', scope:'outgoing', element:'ice', amount:250 }] }] }
   ];
 
