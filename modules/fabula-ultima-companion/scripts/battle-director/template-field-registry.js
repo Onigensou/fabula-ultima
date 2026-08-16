@@ -321,6 +321,13 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // strippable on a sheet save; register both so boot-3b self-heals them.
   textCol("ae_name_pool", "AE Name Pool", { tooltip: "apply_ae: comma/semicolon/pipe-separated AE names; ONE is picked at random per target instead of Template Ref (Draconic Roar). Prefer AE Pool Tag when you mean \"any status of this kind\".", vis: APPLY_AE_VIS }),
   textCol("ae_pool_tag", "AE Pool Tag", { tooltip: "apply_ae: build the random pool LIVE from every curated status carrying this tag (e.g. \"debuff\"), instead of hand-listing names — so the roll keeps covering the whole library as it grows. Untagged statuses (KO/Death) can never be rolled. Takes precedence over AE Name Pool. Backs Magic Mushroom.", vis: APPLY_AE_VIS }),
+  // Per-TARGET probability gate. Distinct from `effect_kind: "chance"`, which
+  // rolls ONCE for the whole row — on a multi-target row that means every target
+  // shares one coin flip. An AoE "50% chance to inflict X on each creature hit"
+  // has no other home: a Skill/Spell fires creature_deals_damage once per CAST,
+  // so a per-target chance() in a reaction condition_formula only works for
+  // Attacks. See Kirin's Rail Stream.
+  textCol("ae_chance_percent", "Chance %", { tooltip: "apply_ae: percent chance (number or formula, 0–100) rolled INDEPENDENTLY for each target — use this for \"50% chance to inflict X on each creature hit\". The `chance` effect_kind rolls once for the whole row instead. Blank = always applies.", vis: APPLY_AE_VIS }),
   // Per-application duration override. Without it, "for the rest of the scene"
   // could only be expressed by giving the item its own COPY of a shared status,
   // which splits the definition (Blue Bovine vs Milk both grant Strong).

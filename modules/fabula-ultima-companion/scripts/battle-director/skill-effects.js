@@ -5816,6 +5816,20 @@ async function applyApplyAeEffect(row, ctx) {
   const baseMode = isPerCaster ? dupMode.slice(0, -"_per_caster".length) : dupMode;
   const casterUuid = ctx.reactorActor?.uuid ?? null;
 
+  // `ae_chance_percent` — the AoE twin of `effect_kind: "chance"`. That kind
+  // gates the WHOLE row on ONE roll, which on a multi-target row means all
+  // targets share a single coin flip (four Paralyzed or none). This field rolls
+  // INDEPENDENTLY per target inside the loop below, which is what "X% chance to
+  // inflict <status> on each creature hit" actually means.
+  //
+  // Why it has to live here: an Attack fires `creature_deals_damage` once per
+  // hit target, so a per-target `chance(50)` in a reaction's condition_formula
+  // works there (Electro Slime's Static Shot) — but a Skill/Spell fires it ONCE
+  // for the whole cast (state-handlers RESOLVE step 6b), so an AoE spell has no
+  // per-target hook to hang a roll on. Blank/absent = always applies.
+  // First user: Kirin's Rail Stream.
+  const chanceRaw = String(row.ae_chance_percent ?? "").trim();
+
   const targetResult = await resolveTargetRef(row.target_ref, ctx);
   if (!targetResult.ok) return { ok: false, kind: "apply_ae", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   const tokens = targetResult.tokens;
@@ -5904,6 +5918,28 @@ async function applyApplyAeEffect(row, ctx) {
       log(`skill-effects.apply_ae: ${actor.name} immune to "${template.name}" (condition_<slug>=IM)`);
       fireStatusImmuneVfx({ tokenUuid: token?.document?.uuid ?? token?.uuid ?? null, statusName: template.name });
       continue;
+    }
+
+    // Per-target probability gate (see `chanceRaw` above). Deliberately AFTER
+    // the IM check: an immune creature always shows its immune cue rather than
+    // sometimes losing a silent coin flip first, so "why did nothing happen?"
+    // has one answer per target. The formula resolver uses the CASTER with this
+    // target as subject, so a percent can scale off the victim
+    // (e.g. "TARGET_HP_PERCENT < 50 ? 75 : 50").
+    if (chanceRaw) {
+      const chanceResolver = buildSkillResolver({
+        actor: ctx.reactorActor ?? ctx.casterActor ?? null,
+        payload: { ...(ctx.payload ?? {}), subjectActorUuid: actor.uuid },
+        skill: ctx.skill,
+        round: ctx.dCombat?.round ?? 0,
+      });
+      const pct = Math.max(0, Math.min(100, Number(evaluateFormula(chanceRaw, chanceResolver, 0)) || 0));
+      const rolled = Math.random() * 100;
+      if (!(rolled < pct)) {
+        log(`skill-effects.apply_ae: ${actor.name} escaped "${template.name}" — ${pct}% chance, rolled ${rolled.toFixed(1)}`);
+        continue;
+      }
+      log(`skill-effects.apply_ae: ${actor.name} caught "${template.name}" — ${pct}% chance, rolled ${rolled.toFixed(1)}`);
     }
 
     // `replace_same_status` — Hinder semantics. Distinct statuses coexist
