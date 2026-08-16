@@ -593,7 +593,17 @@ async function addItemToActor(actorUuid, itemId) {
 
 // ─── Launch ─────────────────────────────────────────────────────────────
 
-async function launchTestBattle({ playerActorUuid, enemyActorUuid, allyActorUuid, extraEnemies, soloPlayer = false }) {
+// Conflict-event choices for the launcher dropdown. Reads the runtime registry
+// so a newly added event appears here with no edit to this file.
+function conflictEventOptions() {
+  try {
+    const list = globalThis.FUCompanion?.api?.conflictEvents?.list?.() ?? [];
+    if (list.length) return list.map((c) => ({ value: c.id, label: c.label }));
+  } catch (_) { /* registry not up — fall through */ }
+  return [{ value: "none", label: "None" }];
+}
+
+async function launchTestBattle({ playerActorUuid, enemyActorUuid, allyActorUuid, extraEnemies, soloPlayer = false, conflictEvent = null }) {
   const a = api();
   if (!a?.start) { ui.notifications?.warn("Battle Director API not ready."); return; }
   if (a.isRunning?.()) {
@@ -630,13 +640,22 @@ async function launchTestBattle({ playerActorUuid, enemyActorUuid, allyActorUuid
   }
 
   const quantity = 1 + Math.max(0, Number(extraEnemies) | 0);
+  // Training Ground is not a conflict scene and carries no event selection, so
+  // an event has to be passed explicitly or the fight runs without it. This is
+  // also how an event is exercised before its arena scene exists at all.
+  // See [[conflict-event]].
+  const eventId = (conflictEvent && conflictEvent !== "none") ? String(conflictEvent) : null;
+
   const payload = {
-    context: { battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true },
+    context: {
+      battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true,
+      ...(eventId ? { conflictEventId: eventId } : {}),
+    },
     encounterPlan: { mode: "manual", manualPicks: [{ actorUuid: enemy.uuid, name: enemy.name, quantity }] },
     party: { members },
   };
 
-  log(`test-battle: launching — player=${pc.name} enemy=${enemy.name}×${quantity} ally=${allyActor ? "yes" : "no"} solo=${soloPlayer}`);
+  log(`test-battle: launching — player=${pc.name} enemy=${enemy.name}×${quantity} ally=${allyActor ? "yes" : "no"} solo=${soloPlayer} conflictEvent=${eventId ?? "none"}`);
   try {
     await a.start({ payload });
     ui.notifications?.info("Test Battle launching (lean) on Training Ground.");
@@ -825,6 +844,8 @@ function renderSetup(body) {
 
   const extra = document.createElement("input"); extra.type = "number"; extra.min = "0"; extra.value = "0"; extra.className = "tbt-num";
 
+  const eventCombo = makeCombo({ placeholder: "Search conflict event…", options: conflictEventOptions(), value: "none" });
+
   const soloChk = document.createElement("input"); soloChk.type = "checkbox"; soloChk.checked = true; soloChk.className = "tbt-chk";
   const soloRow = document.createElement("label"); soloRow.className = "tbt-checkrow";
   soloRow.append(soloChk, document.createTextNode(" Only main player acts (others get 0 turns)"));
@@ -842,7 +863,7 @@ function renderSetup(body) {
       const allyActorUuid = await resolveSource(allyCombo.getValue());
       if (!playerActorUuid) { ui.notifications?.warn("Test Battle: pick a main player."); throw new Error("no player"); }
       if (!enemyActorUuid) { ui.notifications?.warn("Test Battle: pick a main enemy."); throw new Error("no enemy"); }
-      await launchTestBattle({ playerActorUuid, enemyActorUuid, allyActorUuid, extraEnemies: extra.value, soloPlayer: soloChk.checked });
+      await launchTestBattle({ playerActorUuid, enemyActorUuid, allyActorUuid, extraEnemies: extra.value, soloPlayer: soloChk.checked, conflictEvent: eventCombo.getValue() });
       return; // the roster view will render on fu-director-started
     } catch (e) {
       if (!/no (player|enemy)/.test(String(e?.message))) warn("test-battle: launch threw", e);
@@ -858,6 +879,7 @@ function renderSetup(body) {
     field("Main enemy", enemyCombo.el),
     field("Ally (optional)", allyCombo.el),
     field("Extra enemies (AOE)", extra),
+    field("Conflict event", eventCombo.el),
     soloRow,
     launch,
     hint,

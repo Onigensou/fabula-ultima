@@ -431,6 +431,12 @@ export async function run({
   enemyZp = null,        // Zero Power to charge a boss with — number (all foes) or {ref: value}
   guests = true,         // field the deployed guest roster (cloned, like the party)
   scripts = null,        // skill-under-test directives — force a caster's action(s)
+  // Conflict event (scene-selected additional rule — a dungeon hazard, an arena
+  // gimmick). A sim runs on Training Ground, which is not a conflict scene and
+  // carries no selection, so without this a hazard-bearing encounter is balanced
+  // with its hazard SILENTLY ABSENT. Pass the event id to arm it, e.g.
+  // "lightning-storm". See [[conflict-event]].
+  conflictEvent = null,
 } = {}) {
   const a = api();
   if (!a?.start) { ui.notifications?.error("[SIM] Battle Director API not ready."); return null; }
@@ -515,13 +521,27 @@ export async function run({
     }
 
     const payload = {
-      context: { battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true },
+      context: {
+        battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true,
+        ...(conflictEvent ? { conflictEventId: String(conflictEvent) } : {}),
+      },
       encounterPlan: { mode: "manual", manualPicks },
       party: { members },
     };
 
     const foeLabel = manualPicks.map((p) => `${p.name}×${p.quantity}`).join(" + ");
     SimMode.note("start", `${members.filter((m) => !m.isGuest).length} PC(s) vs ${foeLabel}`);
+    // Recorded unconditionally. A balance run's numbers mean something different
+    // depending on whether a hazard was in play, and a transcript that stays
+    // silent about it is ambiguous in exactly the case that matters — so the
+    // "none" line is as load-bearing as the named one.
+    if (conflictEvent) {
+      const known = !!globalThis.FUCompanion?.api?.conflictEvents?.has?.(conflictEvent);
+      SimMode.note("start", `conflict event: ${conflictEvent}${known ? "" : " — NOT REGISTERED, will not run"}`);
+      if (!known) warn(`[SIM] conflict event "${conflictEvent}" is not registered — the fight will run without it`);
+    } else {
+      SimMode.note("start", "conflict event: none");
+    }
     // Charge any boss ZP on the world actor BEFORE spawn (the unlinked token
     // inherits it); restored in `finally`.
     zpRestore = await chargeEnemyZp(manualPicks, enemyZp);

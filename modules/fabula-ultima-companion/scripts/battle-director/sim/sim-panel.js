@@ -61,6 +61,24 @@ function loadConfig() {
   try { return JSON.parse(localStorage.getItem(LS_KEY) ?? "{}") ?? {}; }
   catch { return {}; }
 }
+// Conflict-event <option> list, read from the runtime registry so a newly added
+// event shows up here with no edit to this file. A previously-saved selection
+// the registry no longer knows is kept as an option rather than silently
+// dropping to "none" — otherwise re-running a saved config would quietly
+// measure the encounter without its hazard.
+function conflictEventChoices(savedId) {
+  const cur = String(savedId ?? "none").trim() || "none";
+  let list = [];
+  try { list = globalThis.FUCompanion?.api?.conflictEvents?.list?.() ?? []; }
+  catch (_) { /* registry not up */ }
+  if (!list.length) list = [{ id: "none", label: "None" }];
+  if (!list.some((c) => c.id === cur)) list = [...list, { id: cur, label: `${cur} (unavailable)` }];
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  return list
+    .map((c) => `<option value="${esc(c.id)}" ${c.id === cur ? "selected" : ""}>${esc(c.label)}</option>`)
+    .join("");
+}
+
 function saveConfig(cfg) {
   try { localStorage.setItem(LS_KEY, JSON.stringify(cfg)); } catch {}
 }
@@ -129,6 +147,11 @@ async function openPanel() {
 
       <label class="fud-sim-lbl">Boss Zero Power <em>(blank = leave as-is; charges every enemy)</em></label>
       <input class="fud-sim-bosszp" type="number" min="0" max="10" placeholder="e.g. 6 to exercise Geist's revive" value="${saved.enemyZp ?? ""}" title="Charge every enemy's Zero Power on the world actor for the run (restored after). Needed to trigger Geist's Blackest Night in a sim.">
+
+      <label class="fud-sim-lbl">Conflict event <em>(a sim runs on Training Ground, which selects none)</em></label>
+      <select class="fud-sim-event" title="Layer a scene-selected additional rule (dungeon hazard, arena gimmick) onto this fight. Without it, a hazard encounter is balanced with its hazard absent.">
+        ${conflictEventChoices(saved.conflictEvent)}
+      </select>
 
       <label class="fud-sim-lbl">Expected rounds <em>(unresolved by here = badly designed)</em></label>
       <input class="fud-sim-exp" type="number" min="2" max="40" value="${Number(saved.expectedRounds) || 7}">
@@ -212,14 +235,16 @@ async function openPanel() {
     const enemyZp = bossZpRaw === "" ? null : Math.max(0, Number(bossZpRaw) || 0);
     const pace = root.querySelector(".fud-sim-pace").value;
     const reactions = root.querySelector(".fud-sim-react").checked ? "apply" : "skip";
+    const conflictEventRaw = root.querySelector(".fud-sim-event")?.value ?? "none";
+    const conflictEvent = conflictEventRaw === "none" ? null : conflictEventRaw;
 
     if (!group.length) { setStatus("Add at least one enemy to the encounter.", "err"); return; }
     if (!party.length) { setStatus("Pick at least one party member.", "err"); return; }
 
-    saveConfig({ enemies: group, party, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, enemyZp, pace, reactions });
+    saveConfig({ enemies: group, party, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, enemyZp, pace, reactions, conflictEvent: conflictEventRaw });
     setStatus("Running… the fight plays itself. Nothing here needs clicking.", "busy");
 
-    const res = await simRun({ enemies: group, party, pace, reactions, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, enemyZp });
+    const res = await simRun({ enemies: group, party, pace, reactions, expectedRounds, phoenixFeathers, startingZp, fabulaPoints, enemyZp, conflictEvent });
     if (!res) { setStatus("Run failed — see the console.", "err"); return; }
 
     const pct = res.partyHpRemaining == null ? "?" : `${Math.round(res.partyHpRemaining * 100)}%`;

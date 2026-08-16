@@ -227,6 +227,38 @@ all pure. Keep them that way.
 Not covered — needs a live world: handler invocation, the AE writes, singleton
 enforcement, and the turn-start strike.
 
+### In an automated battle (sim / test-battle-tool)
+
+Both harnesses run on **Training Ground**, which is not a conflict scene and
+carries no selection — so an event must be passed explicitly or the fight runs
+without it:
+
+```js
+// automated playtest (encounter balancing)
+FUCompanion.api.experimental.sim.run({
+  enemies: [{ uuid: "Actor.…", quantity: 2 }],
+  conflictEvent: "lightning-storm",
+});
+```
+
+The Test Battle tool exposes the same thing as a **Conflict event** dropdown,
+populated from the registry.
+
+This matters for balancing specifically: without it a hazard-bearing encounter
+is measured with its hazard **silently absent**, and the run looks perfectly
+healthy. The sim transcript therefore records the event on every run —
+including `conflict event: none` — because a transcript that stays quiet is
+ambiguous in exactly the case that matters. Naming an unregistered event warns
+rather than failing silently.
+
+What a sim exercises faithfully: seeding, Rod movement on damage, and the
+turn-start strike (a `force`-mode reaction auto-fires regardless of SimMode).
+
+**What a sim does NOT exercise: teardown.** Lean mode skips
+`runBattleEndSequence`, so `onConflictEnd` never fires. Harmless in practice —
+sim clones and unlinked tokens are discarded anyway — but a teardown bug will
+not surface in a sim. Verify cleanup in a real battle.
+
 ---
 
 ## Adding an event
