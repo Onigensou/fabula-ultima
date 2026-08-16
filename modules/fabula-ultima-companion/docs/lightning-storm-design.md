@@ -1,10 +1,11 @@
-# Lightning Surge — Dungeon Hazard Design
+# Lightning Storm — Dungeon Hazard Design
 
 The environmental hazard of **Valley of the Dragon** (and its sub-area,
-Fafnir Castle). "Lightning Surge" is the name of the mechanic; the
+Fafnir Castle). "Lightning Storm" is the name of the mechanic; the
 dungeon's in-world name is Valley of the Dragon.
 
-Status: **RULING SETTLED 2026-08-14. NOT BUILT, NOT LIVE-TESTED.**
+Status: **BUILT 2026-08-16 on branch `feat/conflict-event-system`. NOT
+LIVE-TESTED.** Ruling settled 2026-08-14.
 
 Supersedes two earlier drafts:
 
@@ -37,7 +38,7 @@ Supersedes two earlier drafts:
 
 | Case | Ruling | Why |
 |---|---|---|
-| The Surge's own strike | Does **not** move the Rod | Otherwise it self-refreshes and never leaves its holder. |
+| The Storm's own strike | Does **not** move the Rod | Otherwise it self-refreshes and never leaves its holder. |
 | DoT ticks (Burn, Poison, environmental) | Do **not** move the Rod | Uncontrollable motion dilutes the strategy layer. Free to implement — shares the `hazard` damage-cause with the strike, so one filter excludes both. |
 | Multi-target damage (AoE, death bursts) | **System picks** the recipient | Play speed over agency, by design call. The engine resolves multi-target damage sequentially, so "last target resolved" is free and reads as arbitrary at the table. |
 | Absorb / immune holders | Keep the emergent behaviour | No HP-loss event means an absorbing creature never *gains* the Rod — but it can still *hold* one, and the strike then heals it and hands it MP. Electro Slime (AB bolt) becomes a Rod sponge. Deliberate. |
@@ -154,66 +155,92 @@ Rod ping-pongs during its turns. Noisy but coherent.
 non-bolt monster could never be tagged and the idea died. Under v3 **any**
 damage tags it, so the party's own attacks park the Rod on the wall
 constantly, and a multi-activation build eats a strike at nearly every
-activation. The original vision — "the Surge is the party's silent fourth
+activation. The original vision — "the Storm is the party's silent fourth
 damage source, ~2.5–3 rounds when it lands" — works fully, and the wall
 banking useless MP is fine (arguably the point).
 
 ---
 
-## Implementation notes
+## Implementation — as built (2026-08-16)
 
-**No Battle Director UI work is required.** This is the practical reason
-v3 ships where v2 could not. Everything below is authorable as data.
+Shipped as the first **[Conflict Event](conflict-event-design.md)** — a
+scene-selected additional rule layered on a normal Battle Director conflict.
+Selected on the arena scene at Scene Config → Fabula Configuration → General →
+Conflict Event. No Battle Director UI work was required.
 
-**The status.** A `Lightning Rod` Active Effect carrying its own reaction
-config in `flags.fabula-ultima-companion.reactionConfig` (AEs support this
-— see [ActiveEffectManager-reaction-ui.js](../scripts/active-effect-manager/ActiveEffectManager-reaction-ui.js)):
+**The status.** A `Lightning Rod` Active Effect on the shared Debuff item,
+`Item.XVOWOq9oUmEECGrU.ActiveEffect.79ozpIYE1nzBlTEK`, carrying its own
+reaction config in `flags.fabula-ultima-companion.reactionConfig`:
 
 - `reaction_trigger: turn_start`, `reaction_source: self`,
   `reaction_passive_mode: force` (auto-fires, UI-invisible)
-- → chain `[deal_damage, grant]`
-  - `deal_damage`: `damage_element: bolt`, `damage_amount: 30`,
-    `damage_cause: hazard`
-  - `grant`: `grant_resource: mp`, `grant_amount: 30`, `target_ref: self`
+- → chain `rod_strike, rod_charge`
+  - `rod_strike`: `deal_damage`, `damage_element: bolt`, `damage_amount: 30`,
+    `damage_cause: hazard`, `target_ref: self`
+  - `rod_charge`: `grant`, `grant_resource: mp`, `grant_amount: 30`,
+    `target_ref: self`
 
-Hosting the strike on the AE means it works identically on PCs and NPCs
-with no per-actor authoring.
+`charges: 1` with no `lifetimeMode`, so it is a persistent presence flag rather
+than something that expires — it lives until the Storm moves it.
 
-**The applier.** A hazard host (hidden combatant, or a field AE stamped on
-every combatant at conflict start) listening on `creature_lose_resource` —
-the observer-aware trigger family, which fires per HP-loss event and is
-the only one a bystander can hear. No element filter (v3 is any-damage).
-Damage-cause filter set to creature-inflicted, which excludes both the
-Surge's own strike and all DoT ticks in one field.
+Hosting the strike on the AE means it works identically on PCs and NPCs with no
+per-actor authoring, **and it fires once per activation for free** — the
+multi-activation ruling cost nothing.
 
-- → chain `[strip, apply]`
-  - `strip`: `apply_ae` with `ae_duplicate_mode: "remove"` over a targeting
-    row of `candidate_source: combat, mode: all`. Verified in
-    [ActiveEffectManager-api.js:1419](../scripts/active-effect-manager/ActiveEffectManager-api.js#L1419)
-    — `remove` deletes the existing copy and no-ops when absent.
-  - `apply`: `apply_ae` Lightning Rod to `candidate_source: trigger_subject`.
+**The applier** is [`events/lightning-storm.js`](../scripts/conflict-event/events/lightning-storm.js),
+not a hazard host. A hidden combatant would have to live in the initiative
+order, target surveys and defeat sweeps; a field AE stamped on every combatant
+would hear each HP-loss event N times and stampede on a Skizzik chain. The Rod
+is a battlefield-scoped rule with no owner, and BD's reaction system is
+actor-scoped — that mismatch is what the Conflict Event system exists to fill.
 
-**Seeding.** A `conflict_start` row for rule 1 and a `round_start` row for
-rule 5. Clean up on `conflict_end` so the Rod does not persist between
-fights.
+It rides `registerBuiltinReactor`, so it runs inside `settleInstance`, awaited,
+with the shared dedupe set — **not** the `fu-director-trigger` Hook, which is
+unawaited and would race the settle loop.
 
-### Open engine questions
+Filters: `creature_lose_resource`, `resource: hp`, `cause: damage`, and the
+subject must not be its own cause.
 
-- **Random target selection** — unverified whether a `candidate_source`
-  supports random pick. GM-picks is an acceptable substitute (and lets the
-  seed be placed dramatically) if it needs a script.
-- **"No creature has the Rod" gate** for rule 5's re-seed — needs a
-  formula identifier for "does any combatant have status X." Unverified.
-- Both are small; neither blocks the core mechanic.
+**Seeding** is `onConflictStart` (rule 1) and `onRoundStart` (rule 5), with
+`onConflictEnd` sweeping so the Rod never follows a creature out of the fight.
+
+### Corrections to the pre-build plan
+
+**The strip plan was wrong.** It specified `apply_ae` with
+`ae_duplicate_mode: "remove"` broadcast over all combatants, citing
+`ActiveEffectManager-api.js`. The BD effect dispatcher is a **different code
+path**, and there the remove case sits inside an `if (existing)` guard — on a
+creature *without* the AE, the row falls through to the create branch and
+**grants one**. That plan would have stripped the holder and handed a Rod to
+everybody else: the exact inverse of a singleton. The build uses `remove_ae`,
+which genuinely no-ops when absent.
+
+**Both "open engine questions" dissolved.** Random target selection and the
+"does anybody hold the Rod" gate were hard to express as `candidate_source`
+data; in an event script they are three lines each. Building the system removed
+the questions rather than inheriting them.
+
+**Prism Overcharge and Skizzik Chain Reaction now carry
+`reaction_cause_filter: damage`** on both their lose and gain rows. Without it,
+a Rod parked on either would heal them, hand them 30 MP *and* fire the passive
+every single turn.
 
 ### Not done
 
-- Nothing is built. No numbers have been validated in play.
+- **Never live-tested.** No numbers have been validated in play, and no
+  handler has run against a real battlefield.
+- **No arena scene exists yet.** Valley of the Dragon's conflict scenes are
+  still unbuilt, so nothing can carry the selection. Test through the
+  `payload.context.conflictEventId` override until they exist.
+- The Rod's icon is `Buff Icon/Shock.png` — picked for being in the same
+  set as Burn and otherwise unused. Worth a look during live review.
+- The AE has no entry in `statuses`, so it shows as an effect icon rather
+  than a registered status. Fine for a first pass; revisit if the chip reads
+  poorly.
+- Study text still needs the "the Rod feeds whoever holds it" line before
+  this sees a table.
 - The Valley of the Dragon `- Hazard` roll table (`MN4u8ohWRo25Xj5h`
-  folder) remains the fallback home if this ships as GM-adjudicated rather
-  than automated.
-- Study text and the status tooltip need the "the Rod feeds whoever holds
-  it" line before this sees a table.
+  folder) is no longer needed as the fallback home, but remains empty.
 
 ---
 

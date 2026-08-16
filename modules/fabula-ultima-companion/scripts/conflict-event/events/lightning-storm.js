@@ -2,7 +2,7 @@
 // Conflict Event — Lightning Storm.
 //
 // The environmental hazard of Valley of the Dragon (and its sub-area, Fafnir
-// Castle). Design doc: docs/lightning-surge-design.md.
+// Castle). Design doc: docs/lightning-storm-design.md.
 //
 // The rules:
 //
