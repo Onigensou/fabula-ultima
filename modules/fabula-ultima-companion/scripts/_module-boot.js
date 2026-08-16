@@ -167,8 +167,13 @@ Hooks.once("ready", async () => {
 //
 // (3b) awaits this latch. It MUST settle on every exit path of (3), including
 // the early returns, or (3b) would hang forever instead.
-let markDropdownSyncDone;
-const DROPDOWN_SYNC_DONE = new Promise((resolve) => { markDropdownSyncDone = resolve; });
+// ⚠ This file is a CLASSIC script (module.json `scripts`), NOT an esmodule, and
+// is not IIFE-wrapped — every top-level binding here joins the shared global
+// lexical scope. A collision with any other classic script throws at PARSE time
+// and silently skips this ENTIRE file (macro seeding AND both syncs). Hence the
+// FU_ prefix, matching FU_BOOT_TAG above.
+let FU_MARK_DROPDOWN_SYNC_DONE;
+const FU_DROPDOWN_SYNC_DONE = new Promise((resolve) => { FU_MARK_DROPDOWN_SYNC_DONE = resolve; });
 
 Hooks.once("ready", async () => {
   try {
@@ -259,7 +264,7 @@ Hooks.once("ready", async () => {
   } catch (e) {
     console.error(`${FU_BOOT_TAG} Dropdown-options sync failed:`, e);
   }
-  } finally { markDropdownSyncDone(); }
+  } finally { FU_MARK_DROPDOWN_SYNC_DONE(); }
 });
 
 // ---------------------------------------------------------------------------
@@ -277,10 +282,11 @@ Hooks.once("ready", async () => {
 Hooks.once("ready", async () => {
   if (!game.user?.isGM) return;
   if (globalThis.__FU_DISABLE_DROPDOWN_SYNC__) return;
-  // Serialize against (3) — see the latch above.
-  await DROPDOWN_SYNC_DONE;
   const MODULE_ID = "fabula-ultima-companion";
   try {
+    // Serialize against (3) — see the latch above. Inside the try so a future
+    // rejection is handled here rather than escaping as an unhandled rejection.
+    await FU_DROPDOWN_SYNC_DONE;
     const reg = await import(`${window.location.origin}/modules/${MODULE_ID}/scripts/battle-director/template-field-registry.js?t=${Date.now()}`);
     const byTable = reg.REQUIRED_COLUMNS_BY_TABLE ?? {};
     if (!Object.keys(byTable).length) return;

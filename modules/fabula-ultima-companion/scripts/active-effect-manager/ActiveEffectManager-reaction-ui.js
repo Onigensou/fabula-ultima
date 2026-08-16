@@ -631,6 +631,25 @@
     return out;
   }
 
+  // Carry over any stored row that rendered NO element at all.
+  //
+  // Per-row FIELD survival is handled by the `prior` overlay in the two readers;
+  // this is the row-level half of the same rule. `listLiveRows` renders nothing
+  // for a `$deleted` tombstone or for an entry that is not a plain object — and
+  // a non-object entry is exactly what a partial CSB deep-merge leaves behind
+  // ([[feedback_csb_table_update_deep_merges]]). Rebuilding purely from the DOM
+  // dropped both on the next Save.
+  //
+  // This cannot resurrect a deleted row: the delete action removes the key from
+  // the BLOB (not just the DOM) before re-rendering, so a genuinely deleted row
+  // is absent from `prior` too.
+  const carryUnrendered = (prior, next) => {
+    for (const [key, val] of Object.entries(prior ?? {})) {
+      if (!(key in next)) next[key] = val;
+    }
+    return next;
+  };
+
   function rebuildBlobFromDom(panelEl, blob) {
     blob.name = panelEl.querySelector('[data-field="reaction_name"]')?.value ?? "";
 
@@ -642,7 +661,7 @@
       if (!key) return;
       newTriggers[key] = readTriggerRowFromDom(rowEl, priorTriggers[key] ?? {});
     });
-    blob.reaction_config_table = newTriggers;
+    blob.reaction_config_table = carryUnrendered(priorTriggers, newTriggers);
 
     const priorEffects = blob.effect_table ?? {};
     const effectRows = panelEl.querySelectorAll(".oni-effect-row");
@@ -653,7 +672,7 @@
       // Pass the stored row so keys this editor has no widget for survive.
       newEffects[key] = readEffectRowFromDom(rowEl, priorEffects[key] ?? {});
     });
-    blob.effect_table = newEffects;
+    blob.effect_table = carryUnrendered(priorEffects, newEffects);
   }
 
   function serializeBlobToHiddenInput(panelEl, blob) {
