@@ -217,9 +217,18 @@ for (const { cTok, skill } of window) {
   const p = skill.system?.props || {};
   // Disambiguate same-named skills on one caster (e.g. a gear _skill sharing its
   // container's name) so no fingerprint is silently overwritten. Stable + page
-  // independent: suffix the id only when the name is non-unique for this caster.
+  // independent: suffix only when the name is non-unique for this caster.
+  //
+  // 🪤 The suffix MUST carry the actor id too. Embedded item ids collide across
+  // documents (87 ids sit on 2+ docs), so two DISTINCT actors sharing a name —
+  // `--full` places two `Hellhound (Reanimated)` — produce the same skill.id and
+  // therefore the same suffix, and the second silently overwrote the first. That
+  // cost 3 fingerprints and made the surviving one depend on token iteration
+  // order, i.e. a golden that could churn without any authored change.
   const baseKey = `${actor.name} / ${skill.name}`;
-  const key = nameCounts[baseKey] > 1 ? `${baseKey} #${skill.id.slice(0, 6)}` : baseKey;
+  const key = nameCounts[baseKey] > 1
+    ? `${baseKey} #${actor.id.slice(0, 4)}:${skill.id.slice(0, 6)}`
+    : baseKey;
   if (skipNames.includes(skill.name) || skipNames.includes(key)) {
     skills[key] = { skill: skill.name, skillType: p.skill_type || null, caster: actor.name, ok: false, reason: "skipped" };
     n++; continue;

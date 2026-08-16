@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-08-16T17:58:15.605Z",
- "count": 2074,
+ "capturedAt": "2026-08-16T18:34:47.813Z",
+ "count": 2087,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -1390,6 +1390,16 @@
      ]
     }
    ]
+  },
+  "(world) / Arm of the Law — Equipment Set": {
+   "props": {
+    "set_bonus_table": "{\"0\":{\"pieces\":\"2\",\"bonus_label\":\"+10 damage vs lower-level creatures\",\"bonus_ae_ref\":\"\",\"bonus_skill_ref\":\"Weight of the Law\"}}",
+    "set_name": "Arm of the Law",
+    "set_skill_list": "{\"B4v2XyaNmlFESs2r\":{\"name\":\"Weight of the Law\",\"id\":\"${item.id}\",\"uuid\":\"Item.B4v2XyaNmlFESs2r\"}}"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
   },
   "(world) / Armor of Heroes": {
    "props": {
@@ -3528,6 +3538,16 @@
    "reactions": [
     "condition_formula=HAS_STATUS_CRISIS == 1 && DAMAGE_IS_HP == 1 reaction_effect_ref=bsword_crisis reaction_passive_mode=on reaction_requires_weapon_used=true reaction_source=self reaction_trigger=creature_will_deal_damage"
    ],
+   "aes": []
+  },
+  "(world) / Bloodied Chivalry — Equipment Set": {
+   "props": {
+    "set_bonus_table": "{\"0\":{\"pieces\":\"2\",\"bonus_label\":\"Crisis: +5 damage\",\"bonus_ae_ref\":\"\",\"bonus_skill_ref\":\"Crimson Fervor\"},\"1\":{\"pieces\":\"3\",\"bonus_label\":\"Crisis: -5 damage taken\",\"bonus_ae_ref\":\"\",\"bonus_skill_ref\":\"Crimson Bulwark\"}}",
+    "set_name": "Bloodied Chivalry",
+    "set_skill_list": "{\"LhKeJaeNKyD9TBal\":{\"name\":\"Crimson Bulwark\",\"id\":\"${item.id}\",\"uuid\":\"Item.LhKeJaeNKyD9TBal\"},\"XOz6Gn5rPqYn5R3M\":{\"name\":\"Crimson Fervor\",\"id\":\"${item.id}\",\"uuid\":\"Item.XOz6Gn5rPqYn5R3M\"}}"
+   },
+   "effects": [],
+   "reactions": [],
    "aes": []
   },
   "(world) / Bloodthirster": {
@@ -8794,6 +8814,16 @@
    "effects": [
     "effect_kind=leave_combat effect_label=escape_activate target_ref=self"
    ],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Eternal Traveler — Equipment Set": {
+   "props": {
+    "set_bonus_table": "{\"0\":{\"pieces\":\"3\",\"bonus_label\":\"Once per turn: free Item action\",\"bonus_ae_ref\":\"\",\"bonus_skill_ref\":\"Ready Pack\"}}",
+    "set_name": "Eternal Traveler",
+    "set_skill_list": "{\"fR29CoH9EQ9ySXTs\":{\"name\":\"Ready Pack\",\"id\":\"${item.id}\",\"uuid\":\"Item.fR29CoH9EQ9ySXTs\"}}"
+   },
+   "effects": [],
    "reactions": [],
    "aes": []
   },
@@ -14204,6 +14234,24 @@
    "reactions": [],
    "aes": []
   },
+  "(world) / Lightning Greaves": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "item_cost": "1500",
+    "item_quantity": "1",
+    "item_rarity": "Uncommon",
+    "item_type": "accessory",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
   "(world) / Lightning Rod": {
    "props": {
     "category": "Spear",
@@ -14594,6 +14642,16 @@
    "effects": [
     "ae_template_ref=Charmed effect_kind=apply_ae effect_label=lovepotion_charm target_ref=action_targets"
    ],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Lovely Retainer — Equipment Set": {
+   "props": {
+    "set_bonus_table": "#sha1:42df1da161cba52e (249 chars)",
+    "set_name": "Lovely Retainer",
+    "set_skill_list": "{\"27Jn6EkSRTRbh1Ld\":{\"name\":\"Retainer's Care\",\"id\":\"${item.id}\",\"uuid\":\"Item.27Jn6EkSRTRbh1Ld\"},\"X5wb4066ug6nQtbf\":{\"name\":\"Retainer's Devotion\",\"id\":\"${item.id}\",\"uuid\":\"Item.X5wb4066ug6nQtbf\"}}"
+   },
+   "effects": [],
    "reactions": [],
    "aes": []
   },
@@ -15928,6 +15986,16 @@
    ],
    "aes": []
   },
+  "(world) / Midnight Mistress — Equipment Set": {
+   "props": {
+    "set_bonus_table": "#sha1:9c77f3834ead6420 (252 chars)",
+    "set_name": "Midnight Mistress",
+    "set_skill_list": "{\"MYMsCE7iuo7Wfn1k\":{\"name\":\"Midnight Mending\",\"id\":\"${item.id}\",\"uuid\":\"Item.MYMsCE7iuo7Wfn1k\"},\"iZByhhxBH5BNPj5z\":{\"name\":\"Mistress' Mercy\",\"id\":\"${item.id}\",\"uuid\":\"Item.iZByhhxBH5BNPj5z\"}}"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
   "(world) / Milk #9oUa4n": {
    "props": {
     "defense_target_type": "def",
@@ -15997,6 +16065,16 @@
     "effect_kind=grant effect_label=milk_heal grant_amount=30 grant_resource=hp target_ref=action_targets",
     "ae_duplicate_mode=replace ae_template_ref=Strong effect_kind=apply_ae effect_label=milk_strong target_ref=action_targets"
    ],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Milky Holstein — Equipment Set": {
+   "props": {
+    "set_bonus_table": "#sha1:e2745ee26c245e18 (347 chars)",
+    "set_name": "Milky Holstein",
+    "set_skill_list": "#sha1:a1dab52884aef7cc (277 chars)"
+   },
+   "effects": [],
    "reactions": [],
    "aes": []
   },
@@ -16834,6 +16912,16 @@
     "skill_target": "One Enemy",
     "type_damage": "Earth",
     "weapon_range": "Melee"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Monster of Frankensteiner — Equipment Set": {
+   "props": {
+    "set_bonus_table": "{\"0\":{\"pieces\":\"2\",\"bonus_label\":\"Turn start: 5 Bolt damage to yourself\",\"bonus_ae_ref\":\"\",\"bonus_skill_ref\":\"Galvanic Feedback\"}}",
+    "set_name": "Monster of Frankensteiner",
+    "set_skill_list": "{\"qKDhWuKfcffBKyAF\":{\"name\":\"Galvanic Feedback\",\"id\":\"${item.id}\",\"uuid\":\"Item.qKDhWuKfcffBKyAF\"}}"
    },
    "effects": [],
    "reactions": [],
@@ -19981,6 +20069,16 @@
     }
    ]
   },
+  "(world) / Royal Retainer — Equipment Set": {
+   "props": {
+    "set_bonus_table": "#sha1:6623eaa9a0c1ca58 (245 chars)",
+    "set_name": "Royal Retainer",
+    "set_skill_list": "{\"VnrndvCsBUe2ZrYD\":{\"name\":\"Butler's Care\",\"id\":\"${item.id}\",\"uuid\":\"Item.VnrndvCsBUe2ZrYD\"},\"nc3cFJrRDxj4bFWV\":{\"name\":\"Butler's Devotion\",\"id\":\"${item.id}\",\"uuid\":\"Item.nc3cFJrRDxj4bFWV\"}}"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
   "(world) / Royal Shield": {
    "props": {
     "category": "Arcane",
@@ -22039,6 +22137,16 @@
    "reactions": [],
    "aes": []
   },
+  "(world) / Spirit of Vengeance — Equipment Set": {
+   "props": {
+    "set_bonus_table": "{\"0\":{\"pieces\":\"2\",\"bonus_label\":\"Attacks that hit restore 10 HP\",\"bonus_ae_ref\":\"\",\"bonus_skill_ref\":\"Blood Price\"}}",
+    "set_name": "Spirit of Vengeance",
+    "set_skill_list": "{\"CK038F8YVxknDkKo\":{\"name\":\"Blood Price\",\"id\":\"${item.id}\",\"uuid\":\"Item.CK038F8YVxknDkKo\"}}"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
   "(world) / Sports Bra": {
    "props": {
     "category": "Arcane",
@@ -22723,6 +22831,15 @@
     "ae_duplicate_mode=replace ae_duration_rounds=1 ae_template_ref=Item.XVOWOq9oUmEECGrU.ActiveEffect.jbXGFAky9kNXeW5R effect_kind=apply_ae effect_label=suspot_charm target_ref=action_targets",
     "damage_amount=5 damage_element=fire effect_kind=deal_damage effect_label=suspot_burn target_ref=action_targets"
    ],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Swift Swimmers — Equipment Set": {
+   "props": {
+    "set_bonus_table": "{\"0\":{\"pieces\":\"2\",\"bonus_label\":\"Always Wet\",\"bonus_ae_ref\":\"Wet\",\"bonus_skill_ref\":\"\"}}",
+    "set_name": "Swift Swimmers"
+   },
+   "effects": [],
    "reactions": [],
    "aes": []
   },
@@ -24473,6 +24590,16 @@
     "effect_kind=grant effect_label=uni_heal_ally grant_amount=DEX_CURRENT_DIE + 5 * (CHAR_LEVEL >= 20) + 5 * (CHAR_LEVEL >= 40) grant_resource=hp target_ref=action_targets",
     "effect_kind=grant effect_label=uni_heal_self grant_amount=DEX_CURRENT_DIE + 5 * (CHAR_LEVEL >= 20) + 5 * (CHAR_LEVEL >= 40) grant_resource=hp target_ref=self"
    ],
+   "reactions": [],
+   "aes": []
+  },
+  "(world) / Unordinary Adventurer — Equipment Set": {
+   "props": {
+    "set_bonus_table": "{\"0\":{\"pieces\":\"2\",\"bonus_label\":\"Free Equipment action after your Main Action\",\"bonus_ae_ref\":\"\",\"bonus_skill_ref\":\"Quick Change\"}}",
+    "set_name": "Unordinary Adventurer",
+    "set_skill_list": "{\"5kGlE1KMcq80I7dM\":{\"name\":\"Quick Change\",\"id\":\"${item.id}\",\"uuid\":\"Item.5kGlE1KMcq80I7dM\"}}"
+   },
+   "effects": [],
    "reactions": [],
    "aes": []
   },
@@ -53903,6 +54030,24 @@
    "reactions": [
     "reaction_effect_ref=rend_bleed reaction_passive_mode=on reaction_source=self reaction_source_skill=Rend reaction_trigger=creature_deals_damage"
    ],
+   "aes": []
+  },
+  "⭐️ Fafnir / Ruinous Breath": {
+   "props": {
+    "class": "NPC",
+    "cost": "100 MP",
+    "damage_bonus": "300 / ACTION_TARGET_COUNT",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "ignore_hr": "true",
+    "isOffensiveSpell": "true",
+    "skill_range": "Range",
+    "skill_target": "All Enemy",
+    "skill_type": "Spell",
+    "type_damage": "bolt"
+   },
+   "effects": [],
+   "reactions": [],
    "aes": []
   },
   "⭐️ Fafnir / Searing Brand": {

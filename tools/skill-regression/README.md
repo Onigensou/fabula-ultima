@@ -72,8 +72,23 @@ node bin/skill-regression.js check   --include-types "Active,Spell,Attack,Item" 
 
 `--full` places every actor owning a collectable item (140 actors / **783
 skills**, vs 66 / 489); `--include-types` adds monster basic `Attack`s and
-consumable `Item`s. Runtime ~231 s capture, ~230 s check. Verified reproducible:
-three consecutive runs, 783/783 identical.
+consumable `Item`s. Runtime ~230 s capture, ~230 s check.
+
+**Read "783" honestly.** Of the 783 entries: **44 are failure-only** (43
+`skip.json` entries + 1 timeout) and **400 are `ok` but hollow** — no roll, no
+damage, no healing, empty `perTarget`, which is what COMPUTE legitimately
+produces for a buff/status skill. **339 carry substantive behavioral signal.**
+The other 444 still diff (an entry that starts erroring, or stops being hollow,
+is a real signal) but do not prove the skill works. Coverage of the *config* for
+all of them is `structure`'s job, not this golden's.
+
+🪤 `count` in the header sums tasks RUN, not unique keys. The first cut of this
+golden shipped 780 keys under a 783 header, because `--full` places two distinct
+actors both named `Hellhound (Reanimated)` and embedded item ids collide across
+documents — so the disambiguation suffix collided too and three fingerprints
+were silently overwritten, with the survivor depending on token iteration order.
+The suffix now carries the actor id (`#<actor4>:<skill6>`) and the driver
+**throws** if `keys !== count`, so a short golden can never be written again.
 
 It is a **second golden, not a replacement** — `goldens/skills.json` stays the
 fast everyday tripwire the Stop-hook gate uses, and `skills-wide.json` is the
@@ -157,18 +172,34 @@ That rule calls a finished weapon a shell. Hina's **Dark Orbit** puts its entire
 AE at all, so it was dropped here *and* unreachable by `check` (unowned masters
 are never on the bench). **Nothing watched it.**
 
-Measured: **862 docs** — 439 world gear masters + 423 actor-embedded — were
-implemented purely in stat props, `condition_*`, or `*_logic_*`. That was the
-gear gap. `take()` now also admits a doc carrying any of:
+Measured: **875 docs** were implemented purely in stat props, `condition_*`,
+`*_logic_*`, or a `set_bonus_table`. That was the gear gap. `take()` now also
+admits a doc carrying any of:
 
 `item_def_bonus` `item_mdef_bonus` `check_bonus` `damage_bonus` `item_baseDef`
-`item_baseMdef` `hp_bonus` `mp_bonus` `ip_bonus` `init_bonus` `magic_bonus`,
-any non-blank `condition_*` or `*_logic_*`, or a `*_ef` affinity that differs
-from the default.
+`item_baseMdef`, any non-blank `condition_*` or `*_logic_*`, a `*_ef` affinity
+that differs from the default, or a non-empty **`set_bonus_table`**.
+
+🪤 **`set_bonus_table` is the THIRD authored table**, alongside `effect_table`
+and `reaction_config_table` (`set-bonus.js:110,382`, `set-bonus-hooks.js:61,68`).
+An Equipment Set master carries *nothing else* — no AE, no ref, no stat prop —
+so leaving it out kept **11 shipped set mechanics** (Milky Holstein, Bloodied
+Chivalry, Royal Retainer, …) watched by nothing, in a commit whose whole point
+was to end exactly that.
+
+🪤 **Test the string, not `Number()`.** These props hold FORMULAS as often as
+numbers — Fafnir's Ruinous Breath is `damage_bonus: "300 / ACTION_TARGET_COUNT"`
+— and `Number()` turns a formula into `NaN`, which a `Number.isFinite()` guard
+then rejects. The first cut dropped the richest carriers for that reason.
 
 🪤 `*_ef = 100` is the default on *every* item — presence proves nothing, only a
 value that DIFFERS is a carrier. Admitting on presence would add ~3000 docs of
 pure noise.
+
+🪤 `hp_bonus` / `mp_bonus` / `ip_bonus` / `init_bonus` / `magic_bonus` were in
+the first cut of `STAT_KEYS` and are **not real** — 0 occurrences across 3937
+docs and 0 engine reads. Removed; don't re-add a key without grepping the engine
+for it first.
 
 Because the fingerprint is a **denylist** (everything watched unless declared
 churn), these docs needed no new fingerprint code — only the gate had to stop

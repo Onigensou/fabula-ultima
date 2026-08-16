@@ -5536,7 +5536,7 @@
       "skillType": "Item",
       "targets": 1
     },
-    "Hellhound (Reanimated) / Bite #SZc2mY": {
+    "Hellhound (Reanimated) / Bite #HjOI:SZc2mY": {
       "caster": "Hellhound (Reanimated)",
       "element": "Physical",
       "hasDamage": true,
@@ -5562,7 +5562,33 @@
       "skillType": "Attack",
       "targets": 1
     },
-    "Hellhound (Reanimated) / Flame Breath #u6YRNg": {
+    "Hellhound (Reanimated) / Bite #YcAx:SZc2mY": {
+      "caster": "Hellhound (Reanimated)",
+      "element": "Physical",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 6,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": null
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Bite",
+      "skillType": "Attack",
+      "targets": 1
+    },
+    "Hellhound (Reanimated) / Flame Breath #HjOI:u6YRNg": {
       "caster": "Hellhound (Reanimated)",
       "element": "fire",
       "hasDamage": true,
@@ -5588,7 +5614,59 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hellhound (Reanimated) / Pounce #0v5EYW": {
+    "Hellhound (Reanimated) / Flame Breath #YcAx:u6YRNg": {
+      "caster": "Hellhound (Reanimated)",
+      "element": "fire",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 51,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Flame Breath",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hellhound (Reanimated) / Pounce #HjOI:0v5EYW": {
+      "caster": "Hellhound (Reanimated)",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 0,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Pounce",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Hellhound (Reanimated) / Pounce #YcAx:0v5EYW": {
       "caster": "Hellhound (Reanimated)",
       "element": "",
       "hasDamage": false,
@@ -6484,7 +6562,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Glacies Finis #7vAXk1": {
+    "Hina / Glacies Finis #dafT:7vAXk1": {
       "caster": "Hina",
       "element": "ice",
       "hasDamage": true,
@@ -6510,7 +6588,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Glacies Finis #C3K6l9": {
+    "Hina / Glacies Finis #dafT:C3K6l9": {
       "caster": "Hina",
       "element": "ice",
       "hasDamage": true,
@@ -7137,7 +7215,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Illusionist / Placebo Energy #CqAmHz": {
+    "Illusionist / Placebo Energy #CpCx:CqAmHz": {
       "caster": "Illusionist",
       "element": "",
       "hasDamage": false,
@@ -7150,7 +7228,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Illusionist / Placebo Energy #WHzVR6": {
+    "Illusionist / Placebo Energy #CpCx:WHzVR6": {
       "caster": "Illusionist",
       "element": "",
       "hasDamage": false,
@@ -9717,7 +9795,7 @@
       "skillType": "Item",
       "targets": 1
     },
-    "Pomme / Apple Juice #P98Cda": {
+    "Pomme / Apple Juice #I9sV:P98Cda": {
       "caster": "Pomme",
       "element": "hp",
       "hasDamage": false,
@@ -9739,7 +9817,7 @@
       "skillType": "Item",
       "targets": 1
     },
-    "Pomme / Apple Juice #mgv1hi": {
+    "Pomme / Apple Juice #I9sV:mgv1hi": {
       "caster": "Pomme",
       "element": "hp",
       "hasDamage": false,
@@ -12187,7 +12265,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Weaponmaster / Breach #i3d0y0": {
+    "Weaponmaster / Breach #twJI:i3d0y0": {
       "caster": "Weaponmaster",
       "element": "",
       "hasDamage": false,
@@ -12200,7 +12278,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Weaponmaster / Breach #rQHMta": {
+    "Weaponmaster / Breach #twJI:rQHMta": {
       "caster": "Weaponmaster",
       "element": "",
       "hasDamage": false,

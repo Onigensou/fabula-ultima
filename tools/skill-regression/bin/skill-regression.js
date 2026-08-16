@@ -119,6 +119,18 @@ async function collect(opts, { pageSize = 30, onProgress } = {}) {
     if (!page.hasMore || page.count === 0) break;
     offset = page.nextOffset;
   }
+  // A fingerprint map is only a tripwire if every task it ran is IN it. `count`
+  // sums tasks processed, so count > keys means two tasks produced the same key
+  // and one overwrote the other — silent lost coverage, and the survivor depends
+  // on iteration order. This shipped once (780 keys under a 783 header) because
+  // nothing compared the two. Fail loudly instead of writing a short golden.
+  const keyCount = Object.keys(merged.skills).length;
+  if (keyCount !== merged.count) {
+    throw new Error(
+      `collector key collision: ran ${merged.count} task(s) but produced ${keyCount} key(s) — ` +
+      `${merged.count - keyCount} fingerprint(s) were overwritten. The disambiguation suffix is ` +
+      `not unique for some (caster, skill) pair; do NOT trust or write this golden.`);
+  }
   merged.slowest.sort((a, b) => b.ms - a.ms);
   return {
     ok: true, mode: head.mode, scene: head.scene, casters: head.casters,

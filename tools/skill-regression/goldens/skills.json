@@ -3016,7 +3016,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Glacies Finis #7vAXk1": {
+    "Hina / Glacies Finis #dafT:7vAXk1": {
       "caster": "Hina",
       "element": "ice",
       "hasDamage": true,
@@ -3042,7 +3042,7 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina / Glacies Finis #C3K6l9": {
+    "Hina / Glacies Finis #dafT:C3K6l9": {
       "caster": "Hina",
       "element": "ice",
       "hasDamage": true,
@@ -3612,7 +3612,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Illusionist / Placebo Energy #CqAmHz": {
+    "Illusionist / Placebo Energy #CpCx:CqAmHz": {
       "caster": "Illusionist",
       "element": "",
       "hasDamage": false,
@@ -3625,7 +3625,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Illusionist / Placebo Energy #WHzVR6": {
+    "Illusionist / Placebo Energy #CpCx:WHzVR6": {
       "caster": "Illusionist",
       "element": "",
       "hasDamage": false,
@@ -6565,7 +6565,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Weaponmaster / Breach #i3d0y0": {
+    "Weaponmaster / Breach #twJI:i3d0y0": {
       "caster": "Weaponmaster",
       "element": "",
       "hasDamage": false,
@@ -6578,7 +6578,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Weaponmaster / Breach #rQHMta": {
+    "Weaponmaster / Breach #twJI:rQHMta": {
       "caster": "Weaponmaster",
       "element": "",
       "hasDamage": false,
