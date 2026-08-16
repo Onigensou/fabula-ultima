@@ -20040,6 +20040,26 @@
         "effects": 0
       },
       {
+        "id": "iGc0EUHE9LKWT0Ye",
+        "name": "Mana Ray",
+        "type": "character",
+        "items": [
+          {
+            "id": "nEeldo45VbyKqFpS",
+            "name": "Flying"
+          },
+          {
+            "id": "lK1xNxttDeXzwhVh",
+            "name": "Mana Stinger"
+          },
+          {
+            "id": "qQ1UsyvTJj5TpCqy",
+            "name": "Volt Stinger"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "ZbCSKnZdB2cKlW9H",
         "name": "Marigold",
         "type": "character",
@@ -22946,6 +22966,26 @@
         "type": "character",
         "items": [],
         "effects": 1
+      },
+      {
+        "id": "kAYN54Id3iTAOw1A",
+        "name": "Volt Seahorse",
+        "type": "character",
+        "items": [
+          {
+            "id": "25CGufwQTX7ZHwW6",
+            "name": "Bubble Beam"
+          },
+          {
+            "id": "oN5ck6b98DPZbfPj",
+            "name": "Bubble Splash"
+          },
+          {
+            "id": "IQjzHjHJRozJJ4Oe",
+            "name": "Voltage Discharge"
+          }
+        ],
+        "effects": 0
       },
       {
         "id": "azHtPiPS4M1CnaAa",
