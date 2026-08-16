@@ -123,7 +123,23 @@ const PROP_PATCH = {
   // Bonus-rider formula uses (gate)*amount because the skill-formulas
   // evaluator has no ternary. Comparisons return 1/0, multiplied by 10
   // for the bonus, summed with the base 20.
-  damage_bonus:           "20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10",
+  //
+  // The leading HAS_MARTIAL_ARMOR * is the DAMAGE-side gate, and it is the
+  // load-bearing one. `availability_formula` below is read in exactly one place
+  // (skill-picker.js:380) — it greys the row in a PLAYER's picker and nothing
+  // else. GM force, the AI chooser, free-action grants and every harness entry
+  // point bypass it entirely, so without this factor an unarmoured caster still
+  // dealt the full 20/30/40 on those paths.
+  // 🪤 Verified live: 1 armour / 2 shields / level 30 → 40; unarmoured → hard 0.
+  damage_bonus:           "HAS_MARTIAL_ARMOR * (20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10)",
+  // Player-facing half of the gate: greys the picker row with a cause instead of
+  // offering an action that resolves for zero. Both props are declared on the
+  // skill templates as of 2026-08-17 — before that they were undeclared, and
+  // TemplateSystem.reloadTemplate() (which world-import calls on every doc)
+  // persists a deletion marker for undeclared keys, so they silently vanished on
+  // the next merge.
+  availability_formula:   "HAS_MARTIAL_ARMOR == 1",
+  availability_reason:    "Requires martial armor equipped",
   // RAW: "spend 30 Mind Points to choose earth or physical". VAR_ELEMENT is the
   // sentinel resolved from the element the player picks; it ONLY resolves from a
   // prompt captured by the PRE_ACTIVATE hook (state-handlers.js:4104 reads just

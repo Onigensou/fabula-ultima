@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-08-16T18:34:47.813Z",
+ "capturedAt": "2026-08-16T20:17:03.166Z",
  "count": 2087,
  "structure": {
   "(world) / Absorb MP": {
@@ -5123,12 +5123,14 @@
     "auto_confirm_when_obvious=true auto_target=confirm candidate_source=combat count=1 effect_kind=targeting effect_label=cf_pick exclude_self=true iteration_mode=together mode=exact target_filter=IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED + HAS_STATUS_SHAKEN)",
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Cognitive Focus effect_kind=apply_ae effect_label=cf_apply target_ref=cf_pick",
     "accuracy_amount=SL accuracy_operation=add effect_kind=adjust_accuracy effect_label=cf_acc",
-    "condition_formula=TARGET_HAS_MY_FOCUS == 1 effect_kind=adjust_grant effect_label=cf_heal grant_amount=SL * 2 grant_operation=add"
+    "condition_formula=TARGET_HAS_MY_FOCUS == 1 effect_kind=adjust_grant effect_label=cf_heal_hp grant_amount=SL * 2 grant_operation=add grant_resource=hp",
+    "condition_formula=TARGET_HAS_MY_FOCUS == 1 effect_kind=adjust_grant effect_label=cf_heal_mp grant_amount=SL * 2 grant_operation=add grant_resource=mp"
    ],
    "reactions": [
     "reaction_effect_ref=cf_apply reaction_passive_mode=ask reaction_source=self reaction_trigger=turn_start",
     "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_action_kind=Attack,Spell,Skill reaction_effect_ref=cf_acc reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action",
-    "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_action_kind=Item reaction_effect_ref=cf_heal reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action"
+    "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_effect_ref=cf_heal_hp reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action",
+    "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_effect_ref=cf_heal_mp reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action"
    ],
    "aes": [
     {
@@ -19001,8 +19003,10 @@
   },
   "(world) / Quaking Titan": {
    "props": {
+    "availability_formula": "HAS_MARTIAL_ARMOR == 1",
+    "availability_reason": "Requires martial armor equipped",
     "cost": "30 MP",
-    "damage_bonus": "20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10",
+    "damage_bonus": "HAS_MARTIAL_ARMOR * (20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10)",
     "heroic_requirement": "You must have mastered one or more Classes among Guardian and Pilot.",
     "isHeroic": "true",
     "on_activate_effect_ref": "qt_activate",
@@ -36268,12 +36272,14 @@
     "auto_confirm_when_obvious=true auto_target=confirm candidate_source=combat count=1 effect_kind=targeting effect_label=cf_pick exclude_self=true mode=exact target_filter=IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED + HAS_STATUS_SHAKEN)",
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Cognitive Focus effect_kind=apply_ae effect_label=cf_apply target_ref=cf_pick",
     "accuracy_amount=SL accuracy_operation=add effect_kind=adjust_accuracy effect_label=cf_acc",
-    "condition_formula=TARGET_HAS_MY_FOCUS == 1 effect_kind=adjust_grant effect_label=cf_heal grant_amount=SL * 2 grant_operation=add"
+    "condition_formula=TARGET_HAS_MY_FOCUS == 1 effect_kind=adjust_grant effect_label=cf_heal_hp grant_amount=SL * 2 grant_operation=add grant_resource=hp",
+    "condition_formula=TARGET_HAS_MY_FOCUS == 1 effect_kind=adjust_grant effect_label=cf_heal_mp grant_amount=SL * 2 grant_operation=add grant_resource=mp"
    ],
    "reactions": [
     "reaction_effect_ref=cf_apply reaction_passive_mode=ask reaction_source=self reaction_trigger=turn_start",
     "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_action_kind=Attack,Spell,Skill reaction_effect_ref=cf_acc reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action",
-    "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_action_kind=Item reaction_effect_ref=cf_heal reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action"
+    "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_effect_ref=cf_heal_hp reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action",
+    "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_effect_ref=cf_heal_mp reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action"
    ],
    "aes": [
     {
@@ -44710,12 +44716,14 @@
     "auto_target=confirm candidate_source=combat count=1 effect_kind=targeting effect_label=cf_pick exclude_self=true menu_option_refs=cf_ally, cf_enemy mode=exact target_filter=IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED + HAS_STATUS_SHAKEN)",
     "ae_duplicate_mode=replace_per_caster ae_template_ref=Cognitive Focus candidate_source=combat category=ally count=1 effect_kind=apply_ae effect_label=cf_apply mode=exact target_ref=cf_pick",
     "accuracy_amount=SL accuracy_operation=add effect_kind=adjust_accuracy effect_label=cf_acc",
-    "condition_formula=TARGET_HAS_MY_FOCUS == 1 effect_kind=adjust_grant effect_label=cf_heal grant_amount=SL * 2 grant_operation=add"
+    "condition_formula=TARGET_HAS_MY_FOCUS == 1 effect_kind=adjust_grant effect_label=cf_heal_hp grant_amount=SL * 2 grant_operation=add grant_resource=hp",
+    "condition_formula=TARGET_HAS_MY_FOCUS == 1 effect_kind=adjust_grant effect_label=cf_heal_mp grant_amount=SL * 2 grant_operation=add grant_resource=mp"
    ],
    "reactions": [
     "reaction_effect_ref=cf_apply reaction_passive_mode=ask reaction_source=self reaction_trigger=turn_start",
     "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_action_kind=Attack,Spell,Skill reaction_effect_ref=cf_acc reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action",
-    "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_action_kind=Item reaction_effect_ref=cf_heal reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action"
+    "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_effect_ref=cf_heal_hp reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action",
+    "condition_formula=ANY_TARGET_HAS_MY_FOCUS == 1 reaction_effect_ref=cf_heal_mp reaction_passive_mode=force reaction_source=self reaction_trigger=creature_performs_action"
    ],
    "aes": [
     {

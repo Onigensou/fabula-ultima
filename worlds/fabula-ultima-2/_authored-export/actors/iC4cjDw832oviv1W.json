@@ -700,9 +700,20 @@
               "condition_formula": "TARGET_HAS_MY_FOCUS == 1",
               "consume_self": false,
               "effect_kind": "adjust_grant",
-              "effect_label": "cf_heal",
+              "effect_label": "cf_heal_hp",
               "grant_amount": "SL * 2",
-              "grant_operation": "add"
+              "grant_operation": "add",
+              "grant_resource": "hp"
+            },
+            "4": {
+              "$deleted": false,
+              "condition_formula": "TARGET_HAS_MY_FOCUS == 1",
+              "consume_self": false,
+              "effect_kind": "adjust_grant",
+              "effect_label": "cf_heal_mp",
+              "grant_amount": "SL * 2",
+              "grant_operation": "add",
+              "grant_resource": "mp"
             }
           },
           "heroic_requirement": "",
@@ -746,10 +757,22 @@
             "2": {
               "$deleted": false,
               "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1",
-              "reaction_action_kind": "Item",
+              "reaction_action_kind": "",
               "reaction_damage_amount": "",
               "reaction_damage_type": "",
-              "reaction_effect_ref": "cf_heal",
+              "reaction_effect_ref": "cf_heal_hp",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            },
+            "3": {
+              "$deleted": false,
+              "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1",
+              "reaction_action_kind": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "cf_heal_mp",
               "reaction_passive_mode": "force",
               "reaction_passive_target": "",
               "reaction_source": "self",
