@@ -191,6 +191,18 @@ console during a Skizzik chain.
 
 ## Gotchas found while building
 
+**An AE an event applies will EXPIRE unless it carries `directorPermanent: true`.**
+`tickDirectorAEsForApplier` runs at every creature's turn start and decrements
+the charges of every AE that creature applied. Because an event passes the
+affected creature as `reactorActor`, the AE is stamped as applied by its own
+holder — so a 1-charge status deletes itself at exactly the turn start where it
+was supposed to act. Lightning Storm's strike never fired once until the
+template gained the flag, and nothing warned: the Rod moved around the
+battlefield perfectly the whole time, it just silently evaporated before each
+discharge. `directorPermanent` makes `chargeTickFor` bail before it reads
+`charges`. Found by live testing — the behaviour looked correct from the
+outside, and no amount of code reading had caught it.
+
 **`ae_duplicate_mode: "remove"` does not no-op when the AE is absent.** In the
 BD effect dispatcher the remove case sits inside an `if (existing)` guard; on a
 creature *without* the AE the row falls through to the create branch and grants

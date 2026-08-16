@@ -4,8 +4,14 @@ The environmental hazard of **Valley of the Dragon** (and its sub-area,
 Fafnir Castle). "Lightning Storm" is the name of the mechanic; the
 dungeon's in-world name is Valley of the Dragon.
 
-Status: **BUILT 2026-08-16 on branch `feat/conflict-event-system`. NOT
-LIVE-TESTED.** Ruling settled 2026-08-14.
+Status: **BUILT + LIVE-TESTED 2026-08-16** on branch
+`feat/conflict-event-system`. Ruling settled 2026-08-14.
+
+Live run (3 sims, Kirin / Lightning Prism / Skizzik encounters from the Valley
+of the Dragon table): seeding, singleton movement and the turn-start discharge
+all confirmed. Kirin took **15 damage (30 Bolt halved by its RS bolt) and +30
+MP**, twice in one round on its two activations — so affinity and the
+per-activation ruling both hold. Numbers are still unvalidated for BALANCE.
 
 Supersedes two earlier drafts:
 

@@ -76,10 +76,21 @@ function pickRandom(entries) {
  * resolveTargetRef consults before doing any work — which is how an event
  * chooses targets in code without inventing a second targeting system.
  *
- * `reactorActor` is the affected creature rather than null: every downstream
- * path is then guaranteed a real actor, and the only visible consequence is
- * that the AE records the holder as its own applier. Nothing here uses a
- * per-caster duplicate mode, so that stamp is inert.
+ * `reactorActor` is the affected creature rather than null, so every downstream
+ * path is guaranteed a real actor.
+ *
+ * That choice stamps the AE's `directorAppliedBy` with the holder — i.e. the Rod
+ * records itself as applied by the creature carrying it. This was originally
+ * commented here as "inert". IT IS NOT, and live testing is what caught it:
+ * `tickDirectorAEsForApplier` runs at each creature's turn start and decrements
+ * the charges of every AE THEY applied, so the Rod burned its single charge and
+ * deleted itself at precisely the turn start where it should have discharged.
+ * The strike never fired once.
+ *
+ * The template carries `directorPermanent: true`, which makes `chargeTickFor`
+ * return null before it ever reads `charges` — the Rod lives until the Storm
+ * moves it or the conflict ends, which is the correct lifetime for a status the
+ * event owns. Any future event that applies a lasting AE needs the same flag.
  */
 async function runRow(ctx, row, entries) {
   if (!entries.length) return null;
