@@ -4658,7 +4658,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 51
+        "effects": 52
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -19696,6 +19696,22 @@
             "name": "Hooves"
           },
           {
+            "id": "zNhzAhg1phFoHW8q",
+            "name": "Rail Stream"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "O9hFsuOipHfXwNQx",
+        "name": "Kirin (Reanimated)",
+        "type": "character",
+        "items": [
+          {
+            "id": "0hLD12lSvD3sw40G",
+            "name": "Hooves"
+          },
+          {
             "id": "3JBSipAdIt17tf68",
             "name": "Lightning Charge"
           },
@@ -19705,6 +19721,46 @@
           }
         ],
         "effects": 0
+      },
+      {
+        "id": "ZtgxTfb22rxQrImy",
+        "name": "Kirin (Reanimated)",
+        "type": "character",
+        "items": [
+          {
+            "id": "0hLD12lSvD3sw40G",
+            "name": "Hooves"
+          },
+          {
+            "id": "3JBSipAdIt17tf68",
+            "name": "Lightning Charge"
+          },
+          {
+            "id": "zNhzAhg1phFoHW8q",
+            "name": "Rail Stream"
+          }
+        ],
+        "effects": 2
+      },
+      {
+        "id": "tIL1rvwi1DQpnTFz",
+        "name": "Kirin (Reanimated)",
+        "type": "character",
+        "items": [
+          {
+            "id": "0hLD12lSvD3sw40G",
+            "name": "Hooves"
+          },
+          {
+            "id": "3JBSipAdIt17tf68",
+            "name": "Lightning Charge"
+          },
+          {
+            "id": "zNhzAhg1phFoHW8q",
+            "name": "Rail Stream"
+          }
+        ],
+        "effects": 1
       },
       {
         "id": "zSCt4x8DUTuYUqTa",

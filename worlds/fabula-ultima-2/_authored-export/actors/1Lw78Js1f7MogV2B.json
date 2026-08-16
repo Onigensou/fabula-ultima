@@ -590,7 +590,7 @@
     },
     "detectionModes": [],
     "displayBars": 50,
-    "displayName": 0,
+    "displayName": 50,
     "disposition": -1,
     "flags": {
       "barbrawl": {
@@ -680,6 +680,10 @@
             "subdivisionsOwner": false
           }
         }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
       }
     },
     "height": 1,
@@ -710,7 +714,7 @@
       "shadows": 0
     },
     "lockRotation": false,
-    "name": "Ixion",
+    "name": "Gigas",
     "occludable": {
       "radius": 0
     },
@@ -748,8 +752,8 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1,
-      "scaleY": 1,
+      "scaleX": 2.45,
+      "scaleY": 2.45,
       "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Gigas_Standard.png",
       "tint": "#ffffff"
     },
@@ -1006,6 +1010,22 @@
       "rolled_atr2": "MIG",
       "shield_type": "PHYSICAL",
       "shield_value": "0",
+      "shop_weapon_list": {
+        "VS9Qv9BV3xT38H4E": {
+          "id": "${item.id}",
+          "name": "Giant Club",
+          "uuid": "Actor.1Lw78Js1f7MogV2B.Item.VS9Qv9BV3xT38H4E",
+          "weapon_buy": "",
+          "weapon_category": "Heavy",
+          "weapon_cost": 1800,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_quality": "<p><ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Weighted</strong></a></p></li></ul><p>You are always <a class=\"content-link\" data-uuid=\"JournalEntry.0RscV9vkJNM9dVKQ\" data-id=\"0RscV9vkJNM9dVKQ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Delay</strong></a>.</p></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
+        }
+      },
       "showMacro": false,
       "skill_active_list": {
         "bqAczQJvRTcoQ4KN": {

@@ -464,6 +464,91 @@
       "type": "base"
     },
     {
+      "_id": "79ozpIYE1nzBlTEK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786843123432,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>The storm has singled you out. At the start of your turn, you take <strong>30 Bolt</strong> damage and recover <strong>30 MP</strong>.</p><p>Only one creature carries the Rod at a time. Whenever a creature is dealt damage by another creature, the Rod moves to it.</p><p><em>The Rod feeds whoever holds it — a charge is worth far more than the burn.</em></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "79ozpIYE1nzBlTEK",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.79ozpIYE1nzBlTEK"
+        },
+        "fabula-ultima-companion": {
+          "charges": 1,
+          "directorPermanent": true,
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "rod_strike, rod_charge",
+                "effect_kind": "chain",
+                "effect_label": "rod_discharge"
+              },
+              "1": {
+                "damage_amount": "30",
+                "damage_cause": "hazard",
+                "damage_element": "bolt",
+                "damage_verbosity": "full",
+                "effect_kind": "deal_damage",
+                "effect_label": "rod_strike",
+                "emit_status": "Lightning Rod",
+                "emit_trigger": "creature_status_triggered",
+                "target_ref": "self"
+              },
+              "2": {
+                "effect_kind": "grant",
+                "effect_label": "rod_charge",
+                "grant_amount": "30",
+                "grant_resource": "mp",
+                "target_ref": "self"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "rod_discharge",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          }
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Shock.png",
+      "name": "Lightning Rod",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "lightning-rod"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "7yTJD2T2EHOqMwKz",
       "_stats": {
         "compendiumSource": null,
