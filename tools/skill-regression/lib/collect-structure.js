@@ -12,13 +12,37 @@ const { structureOf } = require("./structure-fingerprint");
 const PULL = `
 const NS = "fabula-ultima-companion";
 const out = [];
+// The SEVENTH carrier — gear that implements itself as NUMBERS.
+//
+// The three tests below (table / ref / AE) are the six-carrier rule, and they
+// call a finished weapon a shell: Hina's Dark Orbit puts its whole "+1 Defense
+// and Magic Defense" in item_def_bonus/item_mdef_bonus with no AE at all. Every
+// such doc was dropped here, so NOTHING watched it — not this golden (dropped)
+// and not the behavioral one (unowned masters are never on the bench). Measured
+// 2026-08-17: 862 docs (439 world masters + 423 actor-embedded) implemented
+// purely in stat props / condition_* / *_logic_*. That was the gear gap.
+//
+// 🪤 *_ef = 100 is the DEFAULT affinity on every item, so presence proves
+// nothing — only a value that DIFFERS is a carrier.
+const STAT_KEYS = ["item_def_bonus", "item_mdef_bonus", "check_bonus", "damage_bonus",
+  "item_baseDef", "item_baseMdef", "hp_bonus", "mp_bonus", "ip_bonus", "init_bonus", "magic_bonus"];
+const hasStatCarrier = (p) => {
+  for (const k of STAT_KEYS) { const v = Number(p[k]); if (Number.isFinite(v) && v !== 0) return true; }
+  for (const k of Object.keys(p)) {
+    if (/^condition_/.test(k) && String(p[k] ?? "").trim()) return true;
+    if (/_logic_/.test(k) && String(p[k] ?? "").trim()) return true;
+    if (/_ef$/.test(k)) { const v = Number(p[k]); if (Number.isFinite(v) && v !== 100) return true; }
+  }
+  return false;
+};
 const take = (doc, owner) => {
   const p = doc.system?.props ?? {};
-  // Skip pure inventory/material shells: no tables, no refs, no AE changes.
+  // Skip pure inventory/material shells: no tables, no refs, no AE changes,
+  // and no stat/condition/logic carrier either.
   const hasTable = Object.keys(p.effect_table ?? {}).length || Object.keys(p.reaction_config_table ?? {}).length;
   const hasRef = String(p.on_activate_effect_ref ?? "").trim() || String(p.pre_activate_effect_ref ?? "").trim();
   const hasAe = (doc.effects ?? []).some(e => (e.changes ?? []).length || e.flags?.[NS]?.reactionConfig);
-  if (!hasTable && !hasRef && !hasAe) return;
+  if (!hasTable && !hasRef && !hasAe && !hasStatCarrier(p)) return;
   out.push({
     name: doc.name,
     owner,

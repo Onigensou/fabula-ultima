@@ -53,6 +53,37 @@ node bin/skill-regression.js capture --scene "Regression Bench" --dummy "Test Ta
      --mode simulate --goldens goldens/skills-simulate.json
 ```
 
+### The `wide` profile — every actor, every activatable type
+
+The backbone deliberately excludes ordinary monsters/NPCs, which left **441
+wired instances unreachable purely because their owner was never placed**, plus
+another 44 blocked by the `Active`/`Spell` type filter. Two flags close that,
+and they must be passed to **`bench` AND `capture`/`check` alike** — passing them
+to only one silently under-covers (the bench places actors whose items are then
+filtered out, or omits actors whose items would have been collected):
+
+```bash
+node bin/skill-regression.js bench   --full --include-types "Active,Spell,Attack,Item"
+node bin/skill-regression.js capture --full --include-types "Active,Spell,Attack,Item" \
+     --scene "Regression Bench" --dummy "Test Target Enemy" --goldens goldens/skills-wide.json
+node bin/skill-regression.js check   --include-types "Active,Spell,Attack,Item" \
+     --scene "Regression Bench" --dummy "Test Target Enemy" --goldens goldens/skills-wide.json
+```
+
+`--full` places every actor owning a collectable item (140 actors / **783
+skills**, vs 66 / 489); `--include-types` adds monster basic `Attack`s and
+consumable `Item`s. Runtime ~231 s capture, ~230 s check. Verified reproducible:
+three consecutive runs, 783/783 identical.
+
+It is a **second golden, not a replacement** — `goldens/skills.json` stays the
+fast everyday tripwire the Stop-hook gate uses, and `skills-wide.json` is the
+long-tail sweep you run after engine work. Executable coverage of wired docs
+went **234 → 510 instances (140 → 300 distinct)**.
+
+`Passive` and blank-`skill_type` docs are deliberately NOT collectable here:
+they have no activation, so COMPUTE would only ever record `ok:false`, which is
+noise rather than coverage. Their config is protected by `structure` instead.
+
 In **bench mode** (`--dummy` set) the dummy is the single offensive target and
 **every other token is a caster regardless of disposition** (ClassTemplates are
 enemy-disposition but still get fingerprinted); support skills target self. A
@@ -112,10 +143,36 @@ node bin/skill-regression.js structure            # diff vs goldens/structure.js
 node bin/skill-regression.js structure --update   # re-baseline
 ```
 
-**1184 docs in under a second** — versus 491 skills in ~5 minutes for `check`,
-and 2.4x the coverage. The Stop-hook gate runs it on every evaluation for that
+**2074 docs in ~4 seconds** — versus 489 skills in ~2 minutes for `check`, and
+4.2x the coverage. The Stop-hook gate runs it on every evaluation for that
 reason; it is never fatal on its own error (a missing golden or a closed bridge
 must not read as drift).
+
+### The seventh carrier — gear that implements itself as NUMBERS
+
+Until 2026-08-17 the collector admitted a doc only if it had `*_table` rows, an
+`on_`/`pre_activate_effect_ref`, or an AE with changes — the six-carrier rule.
+That rule calls a finished weapon a shell. Hina's **Dark Orbit** puts its entire
+"+1 Defense and Magic Defense" in `item_def_bonus` / `item_mdef_bonus` with no
+AE at all, so it was dropped here *and* unreachable by `check` (unowned masters
+are never on the bench). **Nothing watched it.**
+
+Measured: **862 docs** — 439 world gear masters + 423 actor-embedded — were
+implemented purely in stat props, `condition_*`, or `*_logic_*`. That was the
+gear gap. `take()` now also admits a doc carrying any of:
+
+`item_def_bonus` `item_mdef_bonus` `check_bonus` `damage_bonus` `item_baseDef`
+`item_baseMdef` `hp_bonus` `mp_bonus` `ip_bonus` `init_bonus` `magic_bonus`,
+any non-blank `condition_*` or `*_logic_*`, or a `*_ef` affinity that differs
+from the default.
+
+🪤 `*_ef = 100` is the default on *every* item — presence proves nothing, only a
+value that DIFFERS is a carrier. Admitting on presence would add ~3000 docs of
+pure noise.
+
+Because the fingerprint is a **denylist** (everything watched unless declared
+churn), these docs needed no new fingerprint code — only the gate had to stop
+dropping them.
 
 **What it watches is a DENYLIST** — every authored prop, minus a short list of
 churn — plus every `effect_table` / `reaction_config_table` row and every AE's

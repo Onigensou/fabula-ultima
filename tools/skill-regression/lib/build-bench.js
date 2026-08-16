@@ -36,14 +36,26 @@ const DUMMY_ID = opts.dummyActorId || "WJnlTHuNJaILbnrc";
 const GUESTS = Array.isArray(opts.guests) ? opts.guests
   : ["Kalina", "Hako", "Bruce", "Crysta", "Geist (Overworld)"];
 
+// Which skill_types make an actor worth placing. MUST match the collector's
+// includeTypes for the same run, or the bench places actors whose items are
+// then filtered out (or worse, omits actors whose items would have been
+// collected — silent under-coverage that reads as a clean run).
+const INCLUDE_TYPES = Array.isArray(opts.includeTypes) && opts.includeTypes.length
+  ? opts.includeTypes : ["Active", "Spell"];
+
+// FULL roster (opts.fullRoster) drops the backbone predicate: every actor owning
+// at least one collectable item is placed, which is what closes the "owner not
+// on bench" coverage bucket (ordinary monsters/NPCs — 441 instances measured
+// 2026-08-17). It is opt-in because it costs runtime proportional to the whole
+// actor directory; the default backbone stays the fast everyday tripwire.
+const FULL_ROSTER = !!opts.fullRoster;
+
 function hasCastable(actor) {
-  return actor.items.some((i) => {
-    const st = i.system?.props?.skill_type;
-    return st === "Active" || st === "Spell";
-  });
+  return actor.items.some((i) => INCLUDE_TYPES.includes(i.system?.props?.skill_type));
 }
 function isBackbone(actor) {
   if (!hasCastable(actor)) return false;
+  if (FULL_ROSTER) return true;
   const p = actor.system?.props || {};
   const isTemplate = p.class_facet && typeof p.class_facet === "object";
   const isHero = p.char_identity != null || p.bond_1 != null || p.fabula_point != null;
@@ -56,7 +68,8 @@ function roleOf(actor) {
   if (p.class_facet && typeof p.class_facet === "object") return "template";
   if (p.isBoss || p.isVillain) return "boss";
   if (p.char_identity != null || p.bond_1 != null || p.fabula_point != null) return "hero";
-  return "guest";
+  if (GUESTS.includes(actor.name)) return "guest";
+  return "monster";                       // only reachable under FULL_ROSTER
 }
 
 const dummy = game.actors.get(DUMMY_ID);
@@ -156,7 +169,7 @@ let skillTotal = 0;
 for (const a of backbone) {
   const r = roleOf(a);
   roleCounts[r] = (roleCounts[r] || 0) + 1;
-  skillTotal += a.items.filter((it) => ["Active", "Spell"].includes(it.system?.props?.skill_type)).length;
+  skillTotal += a.items.filter((it) => INCLUDE_TYPES.includes(it.system?.props?.skill_type)).length;
 }
 
 return {
@@ -166,11 +179,13 @@ return {
   createdScene,
   collapsedDuplicates,
   dummy: dummy.name,
+  fullRoster: FULL_ROSTER,
+  includeTypes: INCLUDE_TYPES,
   backboneActors: backbone.length,
   skillTotal,
   roleCounts,
   alreadyPlaced: backbone.length - i,
   created: made.map((t) => t.name),
   roster: backbone.map((a) => ({ name: a.name, role: roleOf(a),
-    skills: a.items.filter((it) => ["Active", "Spell"].includes(it.system?.props?.skill_type)).length })),
+    skills: a.items.filter((it) => INCLUDE_TYPES.includes(it.system?.props?.skill_type)).length })),
 };

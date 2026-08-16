@@ -47,6 +47,10 @@ function parseArgs(argv) {
     else if (t === "--json") a.json = true;
     else if (t === "--no-skip") a["no-skip"] = true;
     else if (t === "--teardown") a.teardown = true;
+    // Registered explicitly, not left to the generic fallback below: `--full`
+    // followed by a non-flag value (e.g. a bare scene name) would otherwise
+    // swallow it as this flag's value and silently drop the roster expansion.
+    else if (t === "--full") a.full = true;
     else if (t === "--no-deps-reuse") a["no-deps-reuse"] = true;
     // Generic boolean fallback. Without it an unregistered flag swallows the
     // NEXT argument as its value — which is how a `--no-deps-reuse --goldens
@@ -67,6 +71,13 @@ function optsFrom(a) {
   if (a.limit) o.limit = Number(a.limit);
   if (a.scene) o.sceneName = a.scene;
   if (a.dummy) o.dummy = a.dummy;
+  // Which skill_types to collect. The default (Active/Spell) is the fast
+  // everyday tripwire; the `wide` profile adds Attack/Item to reach monster
+  // attacks and consumables. Passive/blank are deliberately NOT collectable —
+  // they have no activation, so COMPUTE would only ever record ok:false, which
+  // is noise rather than coverage. Their config is protected by `structure`
+  // (1212 docs) and their behavior by the equip witness.
+  if (a["include-types"]) o.includeTypes = String(a["include-types"]).split(",").map((s) => s.trim()).filter(Boolean);
   if (a.forceSimulate) o.forceSimulate = true;
   if (a["no-deps-reuse"]) o.noDepsReuse = true;
   // Auto-load the committed skip list (interactive skills that only ever
@@ -130,7 +141,19 @@ function stable(v) {
 }
 
 function goldenPath(a) {
-  if (a.goldens) return path.resolve(a.goldens);
+  // A RELATIVE --goldens resolves against the tool root, not the shell's CWD.
+  // The README's examples (`--goldens goldens/skills-simulate.json`) assume you
+  // ran `cd tools/skill-regression`; run the same command from the repo root and
+  // path.resolve() silently created a stray `goldens/` directory THERE, so the
+  // capture landed outside the tool and the next `check` compared against a
+  // different file. Anchoring relative paths to ROOT makes the documented form
+  // work from anywhere; an absolute path or an explicit ./ prefix still wins.
+  if (a.goldens) {
+    const g = String(a.goldens);
+    if (path.isAbsolute(g) || g.startsWith("./") || g.startsWith("../")
+        || g.startsWith(".\\") || g.startsWith("..\\")) return path.resolve(g);
+    return path.resolve(path.join(ROOT, g));
+  }
   // The two modes have SEPARATE goldens, and the default has to follow the mode.
   // It used to be skills.json unconditionally, so `capture --mode simulate` with
   // the documented `--goldens goldens/skills-simulate.json` merely forgotten (or
@@ -425,6 +448,11 @@ async function main() {
     const bopts = {};
     if (a.scene) bopts.sceneName = a.scene;
     if (a.dummy) bopts.dummyActorId = a.dummy;
+    // Keep the bench roster and the collector's filter in lock-step — see the
+    // INCLUDE_TYPES note in build-bench.js. Passing --include-types to `bench`
+    // but not to `capture`/`check` (or vice versa) silently under-covers.
+    if (a["include-types"]) bopts.includeTypes = String(a["include-types"]).split(",").map((s) => s.trim()).filter(Boolean);
+    if (a.full) bopts.fullRoster = true;
     const code = `const OPTS = ${JSON.stringify(bopts)};\n${BENCH_SRC}`;
     const r = await evalGM(code, { timeoutSecs: 285 });
     if (!r || r.ok !== true) { console.error("✗ bench build failed: " + (r?.error || JSON.stringify(r))); return 2; }
@@ -432,7 +460,8 @@ async function main() {
     if (r.collapsedDuplicates?.length) {
       console.log(`  ⚠ collapsed ${r.collapsedDuplicates.length} DUPLICATE bench scene(s) — a concurrent build raced; they would have shipped as world data`);
     }
-    console.log(`  backbone: ${r.backboneActors} actors / ${r.skillTotal} skills  (${Object.entries(r.roleCounts).map(([k, v]) => `${k}:${v}`).join(", ")})`);
+    console.log(`  ${r.fullRoster ? "FULL roster" : "backbone"}: ${r.backboneActors} actors / ${r.skillTotal} skills  (${Object.entries(r.roleCounts).map(([k, v]) => `${k}:${v}`).join(", ")})`);
+    if (r.includeTypes) console.log(`  includeTypes: ${r.includeTypes.join(", ")} — pass the SAME --include-types to capture/check`);
     console.log(`  placed ${r.created.length} new token(s)${r.alreadyPlaced ? `, ${r.alreadyPlaced} already present` : ""}.`);
     if (a.json) console.log(JSON.stringify(r.roster, null, 2));
     else console.log(`  (pass --json to list the full roster.)  Now: capture --scene "${r.scene}" --dummy "${r.dummy}"`);
@@ -535,6 +564,10 @@ Options:
   --scene <SceneName>       roster scene (default: active scene / Training Ground; bench: "Regression Bench")
   --dummy <ActorId|Name>    BENCH mode: single target dummy; every other token becomes a caster
   --goldens <path>          golden file (default: goldens/skills.json)
+  --full                    BENCH: place EVERY actor owning a collectable item,
+                            not just the backbone (adds ordinary monsters/NPCs)
+  --include-types <csv>     skill_types to collect (default Active,Spell).
+                            Pass the SAME value to bench AND capture/check.
   --json                    machine-readable check output
 
 Game must be OPEN. See README.md.`);
