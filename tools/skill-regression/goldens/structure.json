@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-08-16T21:04:27.753Z",
+ "capturedAt": "2026-08-16T22:30:01.026Z",
  "count": 2087,
  "structure": {
   "(world) / Absorb MP": {
@@ -19017,8 +19017,7 @@
    "effects": [
     "chain_steps=qt_apply_status condition_formula=HAS_MARTIAL_ARMOR == 1 effect_kind=chain effect_label=qt_activate",
     "condition_formula=HAS_MARTIAL_ARMOR == 1 effect_kind=prompt_element effect_label=qt_gate element_options=earth|physical on_condition_fail=abort prompt_var=element",
-    "ae_duplicate_mode=replace_per_caster ae_template_ref=No Free Attack effect_kind=apply_ae effect_label=qt_apply_status target_ref=qt_visible_enemies",
-    "auto_confirm_when_obvious=true candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=qt_visible_enemies exclude_self=true iteration_mode=together mode=all"
+    "ae_duplicate_mode=replace_per_caster ae_template_ref=No Free Attack effect_kind=apply_ae effect_label=qt_apply_status target_ref=hit_action_targets"
    ],
    "reactions": [],
    "aes": [

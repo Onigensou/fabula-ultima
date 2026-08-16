@@ -32,20 +32,33 @@
  *     approximation for "until start of their next turn"; engine
  *     extension for per-subject-turn expiry deferred).
  *
- * Deferred for follow-up:
- *   - Element picker (earth/physical) — open_action_menu hook exists for
- *     skills (Reinforce/Cleanse) but the active-skill element-override
- *     plumbing isn't yet wired. v1 ships physical only; description
- *     notes the RAW choice.
- *   - Vehicle / mech-frame clause — no vehicle system in BD; out of
- *     scope until that subsystem lands.
- *   - "No Free Attack" ENFORCEMENT — AE applies + token icon shows, but
- *     the actual gating of free-action grants based on this flag needs a
- *     small extension to freeActions.set/get. Migration ships the AE as
- *     a marker; the gate read lands in a separate engine commit.
- *   - "Until start of their next turn" precision — AE expires at
- *     round_end (existing infrastructure). Per-target turn-start expiry
- *     would need a new lifetimeMode; close approximation suffices for v1.
+ * STATUS 2026-08-17 — three of the four deferrals below have since LANDED.
+ * Corrected here because a stale "deferred" note reads as a known gap and
+ * stops the next author from checking:
+ *   - Element picker (earth/physical) — DONE. `qt_gate` is a prompt_element
+ *     fired from pre_activate; type_damage resolves VAR_ELEMENT from the pick.
+ *   - "No Free Attack" ENFORCEMENT — DONE, and it was already done when this
+ *     note was written. free-actions.js `actorHasFreeAttackPrevention` (:47)
+ *     walks appliedEffects for flags["fabula-ultima-companion"].preventFreeAttack
+ *     === true (:59), which the AE carries. 🪤 The STATUS STRING
+ *     `fud-no-free-attack` has no engine reader — grepping it finds nothing and
+ *     suggests the clause is unimplemented. The flag is the mechanism.
+ *   - Rider SCOPE — DONE. RAW limits it to enemies that LOSE HIT POINTS; the
+ *     row now uses the shared `hit_action_targets` idiom (132 authored rows)
+ *     instead of a bespoke every-visible-enemy targeting row.
+ *   - Martial-armour gate — now REFUSES rather than scaling to zero, via
+ *     `on_condition_fail: "abort"` on the pre_activate row (pre_activate is the
+ *     only window preceding the §1 cost debit).
+ *
+ * Still deferred, both blocked on absent subsystems:
+ *   - Vehicle / mech-frame + steed-frame clauses — no vehicle system in BD.
+ *     🪤 RAW's "mech frame and/or two shields" is ONE +10 for either, so with
+ *     the mech term permanently false the formula's shields-only term is the
+ *     faithful reduction. Do NOT add a second `+ HAS_MECH_FRAME * 10`.
+ *   - "Until start of their next turn" precision — the AE expires at round_end
+ *     (duration null / lifetimeMode "round_end"). Per-target turn-start expiry
+ *     needs a new lifetimeMode; for a creature that already acted this round the
+ *     approximation is SHORTER than RAW, not longer.
  *
  * IDEMPOTENT.
  */
@@ -191,20 +204,15 @@ const EFFECT_TABLE = {
     effect_label:      "qt_apply_status",
     effect_kind:       "apply_ae",
     ae_template_ref:   "No Free Attack",
-    target_ref:        "qt_visible_enemies",
+    // RAW scopes the rider to "enemies that LOSE HIT POINTS this way".
+    // `hit_action_targets` is the shared status-on-hit idiom -- 132 authored
+    // rows use it (Torpor, Enrage, Bone Crusher, Weapon Break, Glacies...) --
+    // and it resolves to the set the action actually connected with.
+    // It replaced a bespoke `qt_visible_enemies` targeting row that swept EVERY
+    // visible enemy, so an untargeted or undamaged creature was denied free
+    // attacks too. Measured: status now lands on the damaged creature alone.
+    target_ref:        "hit_action_targets",
     ae_duplicate_mode: "replace_per_caster",
-  },
-  "3": {
-    effect_label:              "qt_visible_enemies",
-    effect_kind:               "targeting",
-    candidate_source:          "combat",
-    category:                  "enemy",
-    mode:                      "all",
-    count:                     1,
-    exclude_self:              true,
-    auto_confirm_when_obvious: true,
-    skip_when_passive:         false,
-    iteration_mode:            "together",
   },
 };
 
