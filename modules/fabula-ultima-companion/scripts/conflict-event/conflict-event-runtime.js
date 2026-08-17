@@ -88,6 +88,41 @@ export function activeConflictEvent(director) {
 }
 
 /**
+ * Every combatant on the battle, defeated included, as [{ actor, token,
+ * combatantId }] — the same shape collectReactors returns.
+ *
+ * Deliberately a near-copy of collectReactors MINUS its defeated skip, rather
+ * than a parameter on that function: it is BD's reactor-collection path, on the
+ * hot path of every reaction dispatch, and a liveness flag threaded through it
+ * is one careless call site away from offering reactions to corpses.
+ *
+ * Entries still require a token on canvas, because everything an event does
+ * with a combatant routes through BD's effect executor, which targets tokens.
+ */
+async function collectAllCombatants(director) {
+  const out = [];
+  const dc = director?.dCombat;
+  if (!dc) return out;
+  const list = Array.isArray(dc.combatants) ? dc.combatants : Object.values(dc.combatants ?? {});
+  for (const dcc of list) {
+    if (!dcc) continue;
+    let actor = dcc.actorDoc ?? null;
+    if (!actor && dcc.actorUuid) {
+      try { actor = await fromUuid(dcc.actorUuid); } catch (_) { actor = null; }
+    }
+    if (!actor) continue;
+    let token = null;
+    if (dcc.tokenId) token = canvas?.tokens?.get(dcc.tokenId) ?? null;
+    if (!token) {
+      token = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid) ?? null;
+    }
+    if (!token) continue;
+    out.push({ actor, token, combatantId: dcc.id });
+  }
+  return out;
+}
+
+/**
  * Build the context handed to every event handler.
  *
  * Deliberately narrow. An event gets the director, the battlefield, and BD's
@@ -125,8 +160,26 @@ async function buildEventCtx(director, eventId) {
      * Live, non-defeated combatants as [{ actor, token, combatantId }].
      * Shared with the reaction dispatcher, so "who is in this conflict" means
      * the same thing to an event as it does to BD.
+     *
+     * This answers "who can ACT or RECEIVE" — it is the right list for picking
+     * a target and the WRONG list for auditing the battlefield. See below.
      */
     combatants: () => collectReactors(director),
+
+    /**
+     * EVERY combatant, defeated included, same shape.
+     *
+     * An event that plants a status on the battlefield needs this, and the
+     * absence of it was a real bug: collectReactors skips the downed, so a
+     * status left on a KO'd creature was invisible to the event that owned it.
+     * Lightning Storm's Rod could not be stripped from a corpse, the round-start
+     * re-seed then read "nobody holds it", and the fight accumulated one extra
+     * Rod per round.
+     *
+     * The rule of thumb: ask `combatants()` who should RECEIVE something, and
+     * `allCombatants()` who currently HAS something.
+     */
+    allCombatants: () => collectAllCombatants(director),
 
     applyEffectRow,
     applyEffectByLabel,

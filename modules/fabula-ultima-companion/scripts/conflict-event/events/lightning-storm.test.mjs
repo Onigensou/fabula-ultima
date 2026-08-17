@@ -16,7 +16,7 @@
 globalThis.game = { user: { isGM: true } };
 globalThis.canvas = null;
 
-const { rodRecipientFor, strikeCinematicFor } = await import("./lightning-storm.js");
+const { rodRecipientFor, strikeCinematicFor, rodDropOnDefeat } = await import("./lightning-storm.js");
 
 let pass = 0, fail = 0;
 const eq = (label, got, want) => {
@@ -118,6 +118,39 @@ eq("no acting actor", sc(null, [HERO]), null);
 eq("no holder list", sc(HERO, null), null);
 eq("no arguments at all", strikeCinematicFor(), null);
 eq("empty object", strikeCinematicFor({}), null);
+
+// ── rodDropOnDefeat — the Rod dies with its holder ──────────────────────────
+// Regression: this was DESIGNED from the start ("holder is defeated → Rod dies
+// with them") and never implemented. The failure was not neutral. From the
+// moment a holder is defeated the strip cannot see them at all (collectReactors
+// omits the downed), so the Rod sat on the corpse while rule 5 — which only
+// counts live holders — seeded a replacement every round. A round-5 playtest
+// had three Rods on three KO'd PCs.
+
+eq("a defeat drops the subject's Rod",
+  rodDropOnDefeat({ trigger: "creature_defeated", payload: { subjectActorUuid: HERO } }), HERO);
+eq("the DEFEATED creature is the subject, not the killer",
+  rodDropOnDefeat({ trigger: "creature_defeated", payload: { subjectActorUuid: HERO, causeActorUuid: MONSTER } }), HERO);
+
+// Only defeat drops it. Every other ledger event in the family must fall
+// through to the rule-3 movement path instead of silently deleting a Rod.
+eq("an hp loss does not drop it", rodDropOnDefeat(hit()), null);
+eq("a status event does not drop it",
+  rodDropOnDefeat({ trigger: "creature_status_applied", payload: { subjectActorUuid: HERO } }), null);
+eq("a gain event does not drop it",
+  rodDropOnDefeat({ trigger: "creature_gain_resource", payload: { subjectActorUuid: HERO } }), null);
+
+// The two predicates must never both claim the same event, or a defeat would
+// move the Rod ONTO the corpse and then drop it (or worse, depending on order).
+const defeatEvent = { trigger: "creature_defeated", payload: { resource: "hp", cause: "damage", subjectActorUuid: HERO, causeActorUuid: MONSTER } };
+eq("defeat is not also a rod-movement event", rodRecipientFor(defeatEvent), null);
+eq("...while it IS a drop event", rodDropOnDefeat(defeatEvent), HERO);
+
+// Malformed input.
+eq("defeat with no subject", rodDropOnDefeat({ trigger: "creature_defeated", payload: {} }), null);
+eq("defeat with no payload", rodDropOnDefeat({ trigger: "creature_defeated" }), null);
+eq("null cfg to the drop predicate", rodDropOnDefeat(null), null);
+eq("empty cfg to the drop predicate", rodDropOnDefeat({}), null);
 
 console.log(`\n${fail === 0 ? "PASS" : "FAIL"} — ${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

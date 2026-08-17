@@ -420,6 +420,56 @@ during this build and is why the registry now says so in a comment.
 The BD dispatch site needed no change: `state-handlers.js` already called
 `dispatchConflictEventLifecycle` for every phased standalone trigger.
 
+### The Rod dies with its holder — implemented 2026-08-18
+
+Rule "holder is defeated → Rod dies with them" was in the ruling from the start
+and was never actually implemented, and the omission was not neutral.
+
+`collectReactors` — which `ctx.combatants()` is — **skips defeated combatants**
+by design (a corpse is not offered reactions). Every Rod query went through it,
+so from the moment a holder went down:
+
+- the strip could not see them, and their Rod stayed on the corpse forever;
+- rule 5's round-start gate saw no *live* holder, and seeded a fresh Rod.
+
+One extra Rod per round. A real playtest hit round 5 with three Rods on three
+KO'd PCs — which is what surfaced it, because the new cursor drew all three.
+
+The fix is in two halves, and the second is the one that matters conceptually:
+
+1. `creature_defeated` now drops the holder's Rod immediately. Nothing is lost —
+   rule 3 puts one back in play on the next damage dealt — and because the
+   cursor is AE-driven, the arrow leaves with its holder for free.
+2. **"Who holds the Rod" is a battlefield question and must not be filtered by
+   liveness.** The event ctx gained `allCombatants()` (every combatant, defeated
+   included) alongside `combatants()`. The rule of thumb, now written at both
+   sites: ask `combatants()` who should RECEIVE something, `allCombatants()` who
+   currently HAS something. Rule 5's re-seed gate deliberately still reads the
+   LIVE list, because a Rod on a corpse must not suppress the re-seed.
+
+Half 2 also self-heals a world that already has stranded Rods: the next seed
+strips them. Verified live, including that exact case.
+
+Stripping a corpse's Rod bypasses BD's effect executor and deletes the AE
+directly — the executor's paths are built around live reactors, and the reason
+everything else here routes through it (affinity, absorb, the ledger, the
+trigger cascade) is about DAMAGE. The Rod is a marker with no rules payload.
+
+### Why the strike is invisible in the playtest sim
+
+It is not a bug and not sim-specific breakage: `sim-mode.js` calls
+`setDwellSuppressed(pace !== "watch")`, and the strike renderer early-returns on
+`shouldRender()`. Skip the show, never the rules — the 30 Bolt still lands, the
+Rod still moves, only the 1.8 s cinematic is dropped, which is the whole reason
+a sim can run a fight in seconds.
+
+The cursor is NOT gated that way, because it is world state rather than dwell —
+hence the cursor-yes/strike-no asymmetry a sim run shows.
+
+**To see the cinematic in a sim, run at `pace: "watch"`.** Measured live: with
+`setDwellSuppressed(true)` the layer and video never mount; with `false` both
+do.
+
 ### Still to tune
 
 - **The bolt is centred on the token with no offset.** JB2A's
