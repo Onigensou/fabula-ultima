@@ -101,16 +101,37 @@
   // used by recipe ITEMS whose CSB itemContainer can only hold one row per item)
   // or a counted list (`ingredients: [{ name, qty }]`, used by _Cooking Config).
   // Counted entries expand to repeated names so a pot of 4 Jellopy can match a
-  // "Jellopy x4" recipe — the matcher below compares exact multisets.
+  // "Jellopy x4" recipe — `ingredients` compares an EXACT multiset.
+  //
+  // `core: [{ name, qty }]` is the partial-match spelling: the pot must CONTAIN
+  // the core, and every remaining slot is free filler. Exact recipes consume the
+  // whole pot, so they can only ever fire for one party size — a 4-slot
+  // "Jellopy x4" is dead the moment a fifth member joins. Core+filler is what
+  // makes a recipe discoverable: two staples plus whatever else was on hand.
+  function _expandCounted(rows) {
+    return (rows ?? []).flatMap(row => {
+      const name = row?.name;
+      const qty = Math.max(1, parseInt(row?.qty) || 1);
+      return name ? Array(qty).fill(name) : [];
+    });
+  }
+
   function _recipeIngredientNames(r) {
-    if (Array.isArray(r?.ingredients) && r.ingredients.length) {
-      return r.ingredients.flatMap(row => {
-        const name = row?.name;
-        const qty = Math.max(1, parseInt(row?.qty) || 1);
-        return name ? Array(qty).fill(name) : [];
-      });
-    }
+    if (Array.isArray(r?.ingredients) && r.ingredients.length) return _expandCounted(r.ingredients);
     return [...(r?.ingredientNames ?? [])].filter(Boolean);
+  }
+
+  function _recipeCoreNames(r) {
+    return Array.isArray(r?.core) ? _expandCounted(r.core) : [];
+  }
+
+  // How many entries of the multiset `req` the pot does NOT cover. 0 = contained.
+  function _missingFrom(potCounts, req) {
+    const need = {};
+    for (const n of req) need[n] = (need[n] ?? 0) + 1;
+    let missing = 0;
+    for (const [n, c] of Object.entries(need)) missing += Math.max(0, c - (potCounts[n] ?? 0));
+    return missing;
   }
 
   // ── Pure resolver ──────────────────────────────────────────────────────────
@@ -140,17 +161,49 @@
       }
     }
 
-    // Exact recipe match (bypasses the taste math and the weirdness/goop check).
+    // Recipe match (bypasses the taste math and the weirdness/goop check).
     // A fumbled cooker check ruins even a unique recipe, so skip matching there.
     const potNames = contribs.map(c => c.name).sort();
+    const potCounts = {};
+    for (const n of potNames) potCounts[n] = (potCounts[n] ?? 0) + 1;
+
+    // "One ingredient short of something" — the discovery tease. Reported on the
+    // result card WITHOUT naming the dish, so a near-miss invites another pot
+    // instead of handing over the answer.
+    let nearMiss = false;
+
     if (!check?.isFumble) {
-      for (const r of recipes) {
+      const exact = [];
+      const partial = [];
+      recipes.forEach((r, idx) => {
         const req = _recipeIngredientNames(r).sort();
-        if (req.length && req.length === potNames.length && req.every((n,i) => n === potNames[i])) {
-          breakdown.push(`Recipe match: ${r.name}`);
-          const dishId = r.dishUuid ?? r.dishId ?? null;
-          return { kind: "recipe", dishId, recipeName: r.name, potency: null, weirdness: 0, breakdown };
+        if (req.length && req.length === potNames.length && req.every((n, i) => n === potNames[i])) {
+          exact.push({ r, idx });
+          return;
         }
+        const core = _recipeCoreNames(r);
+        if (!core.length) return;
+        const missing = _missingFrom(potCounts, core);
+        if (missing === 0) partial.push({ r, idx, size: core.length });
+        else if (missing === 1 && core.length >= 2) nearMiss = true;
+      });
+
+      // An exact full-pot recipe outranks any core+filler one. Among core
+      // matches the MOST SPECIFIC wins — most core items, then author
+      // `priority`, then declaration order. Never rng: the same pot must always
+      // cook the same dish or players can't learn a recipe by repeating it.
+      partial.sort((a, b) =>
+        (b.size - a.size) ||
+        ((b.r.priority ?? 0) - (a.r.priority ?? 0)) ||
+        (a.idx - b.idx));
+      const hit = exact[0] ?? partial[0];
+
+      if (hit) {
+        const r = hit.r;
+        const filler = potNames.length - (hit.size ?? potNames.length);
+        breakdown.push(`Recipe match: ${r.name}${filler > 0 ? ` (+${filler} filler)` : ""}`);
+        const dishId = r.dishUuid ?? r.dishId ?? null;
+        return { kind: "recipe", dishId, recipeName: r.name, potency: null, weirdness: 0, breakdown };
       }
     }
 
@@ -178,7 +231,7 @@
       breakdown.push(check?.isFumble
         ? "Cooker fumbled — the pot is ruined"
         : `Weirdness ${weirdness} ≥ ${cfg.weirdThreshold} — the pot is ruined`);
-      return { kind: "goop", dishId: cfg.goopDishId, potency, weirdness, points, breakdown };
+      return { kind: "goop", dishId: cfg.goopDishId, potency, weirdness, points, breakdown, nearMiss };
     }
 
     const max = Math.max(...Object.values(points));
@@ -189,14 +242,14 @@
       return {
         kind: "mystery", dishId: cfg.mysteryDishId,
         redirectDishId: cfg.matrix?.[family]?.[1] ?? null,
-        redirectFamily: family, potency, weirdness, points, breakdown,
+        redirectFamily: family, potency, weirdness, points, breakdown, nearMiss,
       };
     }
 
     const family = leaders[0];
     const tier = potency >= cfg.tierBreakpoints[1] ? 3 : potency >= cfg.tierBreakpoints[0] ? 2 : 1;
     breakdown.push(`Dominant taste: ${family} — potency ${potency} → tier ${tier}`);
-    return { kind: "dish", dishId: cfg.matrix?.[family]?.[tier] ?? null, family, tier, potency, weirdness, points, breakdown };
+    return { kind: "dish", dishId: cfg.matrix?.[family]?.[tier] ?? null, family, tier, potency, weirdness, points, breakdown, nearMiss };
   }
 
   // ── applyDish ──────────────────────────────────────────────────────────────
@@ -216,6 +269,11 @@
       const oldIds = actor.effects.filter(e => e.getFlag(MODULE_ID, "foodBuff")).map(e => e.id);
       if (oldIds.length) await actor.deleteEmbeddedDocuments("ActiveEffect", oldIds);
 
+      // `conflictStart.shield` rides on the AE as a flag rather than an AE
+      // change: it is not a static modifier but a per-battle grant, re-applied
+      // by the Battle Director's conflict_start sweep (food-conflict-start.js).
+      const conflictShield = Number(meta.conflictStart?.shield ?? 0) || 0;
+
       await actor.createEmbeddedDocuments("ActiveEffect", [{
         name: dish.name, img: dish.img,
         description: srcAe?.description ?? "",
@@ -223,7 +281,11 @@
         changes: foundry.utils.deepClone(srcAe?.changes ?? []),
         statuses: ["permanent"],
         system: { tags: ["food"] },
-        flags: { [MODULE_ID]: { foodBuff: true, campRestCharges: 1, cookingDish: { dishId: dish.id, ...meta } } },
+        flags: { [MODULE_ID]: {
+          foodBuff: true, campRestCharges: 1,
+          ...(conflictShield > 0 ? { conflictStartShield: conflictShield } : {}),
+          cookingDish: { dishId: dish.id, ...meta },
+        } },
       }]);
 
       const shield = Number(meta.instant?.shield ?? 0);

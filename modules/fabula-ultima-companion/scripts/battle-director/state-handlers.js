@@ -6847,6 +6847,13 @@ const StandaloneReactionWindow = {
                 const { reAddPersistentSummons } = await import("./skill-effects.js");
                 await reAddPersistentSummons(director);
               } catch (e) { warn(`STANDALONE_REACTION_WINDOW: reAddPersistentSummons threw`, e); }
+              // Cooking dishes that grant a Shield pool per battle (Golem Stew).
+              // Raise-only, so a re-entry can't stack it. conflict_start only —
+              // the grant is per conflict, not per round.
+              try {
+                const { sweepFoodConflictStart } = await import("./food-conflict-start.js");
+                await sweepFoodConflictStart(director);
+              } catch (e) { warn(`STANDALONE_REACTION_WINDOW: food conflict-start sweep threw`, e); }
             }
           }
           // Conflict event (scene-selected additional rule) — seeds at

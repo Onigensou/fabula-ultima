@@ -127,5 +127,80 @@ r = cooking.resolve([ing("A", "umami"), ing("B", "umami"), ing("C", "umami"), in
   optsR({ cookerCheck: { total: 3, isCrit: false, isFumble: true } }));
 expect("fumble goops dish", [r.kind, r.dishId], ["goop", "goop"]);
 
+// ── core + filler partial matching ──────────────────────────────────────────
+// `core` = ingredients the pot must CONTAIN; every other slot is free filler.
+const CFG_C = {
+  ...CFG,
+  recipes: [
+    { name: "Giga Pudding",  dishId: "gigapudding", ingredients: [{ name: "Jellopy", qty: 4 }] },
+    { name: "Moon Custard",  dishId: "custard",     core: [{ name: "Egg" }, { name: "Fresh Milk" }] },
+    { name: "Lucky Omelette",dishId: "omelette",    core: [{ name: "Egg" }, { name: "Lucky Loach" }] },
+    { name: "Grand Omelette",dishId: "grand",       core: [{ name: "Egg" }, { name: "Lucky Loach" }, { name: "Rice" }] },
+    { name: "Soufflé",       dishId: "souffle",     core: [{ name: "Regret", qty: 2 }] },
+  ],
+};
+const optsC = (extra = {}) => ({ config: CFG_C, rng: () => 0.0, ...extra });
+const egg   = () => ing("Egg", "umami");
+const milk  = () => ing("Fresh Milk", "sweet");
+const loach = () => ing("Lucky Loach", "sweet", "Uncommon");
+const rice  = () => ing("Rice", "sweet");
+
+// 19. Core met + 2 filler → the unique dish, filler ignored
+r = cooking.resolve([egg(), milk(), ing("A", "sour"), ing("B", "bitter")], optsC());
+expect("core+2 filler", [r.kind, r.dishId, r.recipeName], ["recipe", "custard", "Moon Custard"]);
+
+// 20. Core met with NO filler (pot exactly the core) still matches
+r = cooking.resolve([egg(), milk()], optsC());
+expect("core exact, no filler", [r.kind, r.dishId], ["recipe", "custard"]);
+
+// 21. Half the core → no match, falls through to taste math, flags a near-miss
+r = cooking.resolve([egg(), ing("A", "sour"), ing("B", "sour"), ing("C", "sour")], optsC());
+expect("1 short → near-miss", [r.kind, r.nearMiss], ["dish", true]);
+
+// 22. Nothing close → no near-miss tease
+r = cooking.resolve([ing("A", "sour"), ing("B", "sour"), ing("C", "sour"), ing("D", "umami")], optsC());
+expect("no near-miss", [r.kind, r.nearMiss], ["dish", false]);
+
+// 23. Specificity: Egg+Loach+Rice satisfies BOTH omelettes — the 3-core wins
+r = cooking.resolve([egg(), loach(), rice(), ing("F", "sour")], optsC());
+expect("most specific core wins", [r.kind, r.dishId], ["recipe", "grand"]);
+
+// 24. Drop the Rice and the 2-core one takes over
+r = cooking.resolve([egg(), loach(), ing("F", "sour")], optsC());
+expect("2-core fallback", [r.kind, r.dishId], ["recipe", "omelette"]);
+
+// 25. Counted core: 1 Regret is not enough, 2 is
+r = cooking.resolve([ing("Regret", "bitter"), ing("A", "sour"), ing("B", "sour")], optsC());
+expect("1 Regret insufficient", r.kind, "dish");
+r = cooking.resolve([ing("Regret", "bitter"), ing("Regret", "bitter"), ing("A", "sour")], optsC());
+expect("2 Regret matches", [r.kind, r.dishId], ["recipe", "souffle"]);
+
+// 26. Exact full-pot recipe still outranks a core match sharing the pot
+const CFG_X = { ...CFG, recipes: [
+  { name: "Core Dish",  dishId: "core",  core: [{ name: "Jellopy", qty: 2 }] },
+  { name: "Giga Pudding", dishId: "gigapudding", ingredients: [{ name: "Jellopy", qty: 4 }] },
+]};
+r = cooking.resolve([jellopy(), jellopy(), jellopy(), jellopy()], { config: CFG_X, rng: () => 0.0 });
+expect("exact outranks core", [r.kind, r.dishId], ["recipe", "gigapudding"]);
+
+// 27. …but 3 Jellopy (no longer exact) falls to the core recipe
+r = cooking.resolve([jellopy(), jellopy(), jellopy()], { config: CFG_X, rng: () => 0.0 });
+expect("core catches non-exact", [r.kind, r.dishId], ["recipe", "core"]);
+
+// 28. Fumble ruins a core recipe too, and suppresses the near-miss tease
+r = cooking.resolve([egg(), milk(), ing("A", "sour"), ing("B", "sour")],
+  optsC({ cookerCheck: { total: 2, isCrit: false, isFumble: true } }));
+expect("fumble beats core recipe", [r.kind, r.dishId], ["goop", "goop"]);
+
+// 29. Weird ingredients can be filler — a core match bypasses the goop gate
+r = cooking.resolve([egg(), milk(), ing("Coin", "", "Common", false), ing("Nail", "", "Common", false)], optsC());
+expect("core bypasses goop", [r.kind, r.dishId], ["recipe", "custard"]);
+
+// 30. Determinism — the same pot must always cook the same dish
+const potD = [egg(), loach(), rice(), ing("F", "sour")];
+const a = cooking.resolve(potD, { config: CFG_C, rng: () => 0.99 });
+const b = cooking.resolve(potD, { config: CFG_C, rng: () => 0.01 });
+expect("deterministic across rng", [a.dishId, b.dishId], ["grand", "grand"]);
+
 console.log(failures ? `\n${failures} FAILURES` : "\nALL PASS");
 process.exit(failures ? 1 : 0);
