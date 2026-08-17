@@ -15,7 +15,9 @@
  * Notes:
  *   - "Creature" is treated as opposing-side targets for this GM enemy AI flow.
  *   - "Exact X" requires at least X legal targets.
- *   - "Up to X" will choose the maximum legal count up to X.
+ *   - "Up to X" will choose the maximum legal count up to X — but never more
+ *     targets than the performer can PAY for when the cost scales per target
+ *     ("30 x T MP"). See affordableTargetCap.
  *
  * Usage:
  *   import {
@@ -304,7 +306,45 @@ function selectBurnFocusTargets(allCandidates, mode, targetRule) {
     reason: `burn_focus picked among ${top.length} creature(s) with ${maxStacks} Burn.` };
 }
 
-function chooseTargetsFromCandidates(candidates, targetRule, focusCtx = null) {
+/*
+ * How many targets can the performer actually PAY for?
+ *
+ * "Up to X" took the maximum legal count unconditionally, which is right for a
+ * flat cost and wrong for a per-target one. Lightning Prism's Fulgur Finis
+ * ("Up to three creatures", "30 x T MP") picked three targets while holding
+ * 30 MP; the GM-side cost gate then priced the cast at 90, refused it, and the
+ * autopilot re-declared the same action every time — a live sim sat in the loop
+ * until the stall watchdog killed the run. The BD survey DOES compute this cap
+ * (skill-cost.affordableTargetCount) and even toasts it, but a pre-composed AI
+ * pick is trusted verbatim downstream (state-handlers' usingPreComposed branch),
+ * so the count has to already be right when it leaves here.
+ *
+ * Returns Infinity whenever the cost does not scale per target, is free, or sits
+ * in a resource we cannot read: an unknown cost must never narrow targeting.
+ * Never returns 0 — "cannot afford even one" belongs to the feasibility stage
+ * (assessCandidateFeasibility already withholds those actions), and the floor of
+ * 1 mirrors affordableTargetCount so the two answers cannot disagree.
+ */
+function affordableTargetCap(context) {
+  const props = context?.chosenAction?.itemSnapshot?.props
+    ?? context?.chosenAction?.item?.system?.props
+    ?? null;
+  if (!props) return Infinity;
+
+  const cost = AR.parseActionCost(props[AR.keys.cost]);
+  if (cost.free || !cost.perTarget || cost.amount <= 0) return Infinity;
+  if (cost.resource !== "mp" && cost.resource !== "ip") return Infinity;
+
+  const pool = cost.resource === "mp"
+    ? context?.actorData?.resources?.mp
+    : context?.actorData?.resources?.ip;
+  const current = AR.toNumber(pool?.current, NaN);
+  if (!Number.isFinite(current)) return Infinity;
+
+  return Math.max(1, Math.floor(current / cost.amount));
+}
+
+function chooseTargetsFromCandidates(candidates, targetRule, focusCtx = null, affordableCap = Infinity) {
   if (!Array.isArray(candidates) || !candidates.length) {
     return {
       ok: false,
@@ -336,14 +376,16 @@ function chooseTargetsFromCandidates(candidates, targetRule, focusCtx = null) {
   const maxCount = Math.max(1, AR.toInteger(targetRule?.maxCount, exactCount));
 
   if (targetRule?.isUpTo) {
-    const wanted = Math.min(maxCount, candidates.length);
+    const legalWanted = Math.min(maxCount, candidates.length);
+    const wanted = Math.min(legalWanted, affordableCap);
     const chosen = AR.weightedPickMany(candidates, wanted, candidate => focusWeightFor(candidate, focusCtx));
+    const costCapped = wanted < legalWanted;
 
     return {
       ok: chosen.length > 0,
       chosenTargets: chosen,
       reason: chosen.length > 0
-        ? `Up-to rule selected ${chosen.length} target(s) out of ${candidates.length}.`
+        ? `Up-to rule selected ${chosen.length} target(s) out of ${candidates.length}${costCapped ? ` (cost caps it at ${affordableCap}).` : "."}`
         : "Up-to rule could not select any target."
     };
   }
@@ -448,9 +490,10 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
     context.targetCandidatesAll = allCandidates;
     context.targetCandidates = legalCandidates;
 
+    const affordableCap = affordableTargetCap(context);
     const pickResult = creatureWide
       ? selectBurnFocusTargets(legalCandidates, focusCtx.focus, targetRule)
-      : chooseTargetsFromCandidates(legalCandidates, targetRule, focusCtx);
+      : chooseTargetsFromCandidates(legalCandidates, targetRule, focusCtx, affordableCap);
     context.chosenTargets = pickResult.chosenTargets ?? [];
 
     context.targetPickMeta = {
@@ -462,6 +505,9 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
       candidatePoolCount: allCandidates.length,
       legalCandidateCount: legalCandidates.length,
       chosenCount: context.chosenTargets.length,
+      // Infinity does not survive JSON, and this line is read out of the sim
+      // journal — so report "no cap" as null rather than as a dropped key.
+      affordableTargetCap: Number.isFinite(affordableCap) ? affordableCap : null,
       focusMode: focusCtx.focus,
       focusDamageType: focusCtx.damageType || null,
       focusDefenseTarget: focusCtx.defenseTarget || null,
