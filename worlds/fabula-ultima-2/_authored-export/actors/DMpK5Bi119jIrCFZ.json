@@ -26,12 +26,12 @@
         "currentGameActorUuid": "Actor.DMpK5Bi119jIrCFZ",
         "lastControllerUserId": "iLeUVmwqnze8ulOI",
         "lastControllerUserName": "Trinio",
-        "lastResolvedAt": 1786830975300,
+        "lastResolvedAt": 1786992703904,
         "partyActorId": "t6E3CQ0pGxwLgXrn",
         "partyActorName": "EXFURSION Party",
         "partyActorUuid": "Actor.t6E3CQ0pGxwLgXrn",
-        "updateReason": "refreshResolvedController:bootstrap:updateActor",
-        "updatedAt": 1786830975301,
+        "updateReason": "refresh:bootstrap:canvasReady",
+        "updatedAt": 1786992703906,
         "updatedByUserId": "JQGNzKpDPHJmcUIW",
         "version": 1
       }
