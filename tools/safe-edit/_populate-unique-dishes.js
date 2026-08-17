@@ -122,7 +122,7 @@ const DISHES = [
       { key: "condition_confused", mode: AE_OVERRIDE, value: "IM", priority: null },
     ] },
 
-  { id: "Un1qD1shR1ceBa11", ae: "Un1qAER1ceBa110", name: "Rice Ball",
+  { id: "Un1qD1shR1ceBa11", ae: "Un1qAER1ceBa1100", name: "Rice Ball",
     img: `${G}/Item_Jade_Parcels.webp`, core: [{ name: "Rice" }, { name: "Rock Salt" }],
     desc: "<p><em>Rice pressed in salted palms into a shape that fits a hand. No garnish, no ceremony. Somebody made this for you to take with you.</em></p><p>Grants immunity to <strong>Shaken</strong> and <strong>Frightened</strong> until the next rest.</p>",
     changes: [
@@ -247,6 +247,18 @@ function makeAe({ id, parentId, name, icon, desc, changes }) {
   }
   const newNames = new Set(INGREDIENTS.map(i => i.name));
   const problems = [];
+
+  // Foundry document IDs are EXACTLY 16 chars. A 15-char id writes to LevelDB
+  // and reads back fine offline, but Foundry drops the document on load — which
+  // is how Rice Ball shipped with no Active Effect and only turned up in live
+  // verification. Cheap assertion, so it can never happen again.
+  for (const d of DISHES) {
+    if (d.id.length !== 16) problems.push(`dish "${d.name}" id "${d.id}" is ${d.id.length} chars, must be 16`);
+    if (d.ae.length !== 16) problems.push(`dish "${d.name}" AE id "${d.ae}" is ${d.ae.length} chars, must be 16`);
+  }
+  for (const i of INGREDIENTS) {
+    if (i.id.length !== 16) problems.push(`ingredient "${i.name}" id "${i.id}" is ${i.id.length} chars, must be 16`);
+  }
   for (const d of DISHES) {
     for (const c of d.core) {
       if (newNames.has(c.name)) continue;

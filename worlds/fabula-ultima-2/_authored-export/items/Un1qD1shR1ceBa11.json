@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "Un1qAER1ceBa110",
+      "_id": "Un1qAER1ceBa1100",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1786934570872,
+        "createdTime": 1786935351801,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -47,9 +47,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "Un1qAER1ceBa110",
+          "originalId": "Un1qAER1ceBa1100",
           "originalParentId": "Un1qD1shR1ceBa11",
-          "originalUuid": "Item.Un1qD1shR1ceBa11.ActiveEffect.Un1qAER1ceBa110"
+          "originalUuid": "Item.Un1qD1shR1ceBa11.ActiveEffect.Un1qAER1ceBa1100"
         }
       },
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Jade_Parcels.webp",
