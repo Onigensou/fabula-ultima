@@ -57,7 +57,20 @@ function rodOn(actor) {
   } catch { return null; }
 }
 
-/** Every live combatant currently holding the Rod. Normally 0 or 1. */
+/**
+ * Every combatant in `entries` currently holding the Rod. Normally 0 or 1.
+ *
+ * WHICH LIST YOU PASS IS THE WHOLE BUG THIS COMMENT EXISTS FOR. `ctx.combatants()`
+ * omits the defeated, so asking it "who holds the Rod" cannot see a Rod on a
+ * corpse — the strip then misses it, rule 5 reads "nobody holds it" and seeds
+ * another, and the fight gains one Rod per round (observed live: three Rods on
+ * three KO'd PCs by round 5).
+ *
+ *   - stripping / enforcing the singleton → `ctx.allCombatants()`
+ *   - deciding whether to RE-SEED (rule 5) → `ctx.combatants()`, because a Rod
+ *     on a corpse must NOT suppress the re-seed; the ruling is that the Rod
+ *     dies with its holder.
+ */
 function holdersAmong(entries) {
   return entries.filter((e) => rodOn(e.actor));
 }
@@ -139,27 +152,68 @@ async function grantRod(ctx, entry) {
 }
 
 /**
+ * Delete the Rod AE directly, bypassing BD's effect executor.
+ *
+ * Used for holders that are DEFEATED. The executor's paths are built around
+ * live reactors, so a `remove_ae` row aimed at a corpse is not something to
+ * rely on — and the reason the rest of this file routes through the executor
+ * (affinities, absorb, the ledger, the trigger cascade) is about DAMAGE. The
+ * Rod is a marker with no rules payload; deleting it needs none of that.
+ */
+async function deleteRodDirect(actor) {
+  try {
+    const ids = (actor?.effects ?? []).filter((e) => e?.name === ROD_AE_NAME).map((e) => e.id);
+    if (!ids.length) return false;
+    await actor.deleteEmbeddedDocuments("ActiveEffect", ids);
+    return true;
+  } catch { return false; }
+}
+
+/**
  * Move the Rod onto `entry`, enforcing the singleton.
  *
- * Strip-then-grant, and a no-op when the creature already holds it — which is
- * the common case during a multi-hit sequence and saves two document writes
- * per redundant hit.
+ * `allEntries` must be the FULL battlefield (defeated included) — the singleton
+ * is only enforced over creatures we can actually see holding one.
+ *
+ * Strip-then-grant, and a no-op when the creature already holds it and nobody
+ * else does — the common case during a multi-hit sequence, saving two document
+ * writes per redundant hit.
  */
-async function moveRodTo(ctx, entry, entries) {
+async function moveRodTo(ctx, entry, { all, live }) {
   if (!entry?.actor) return;
-  const holders = holdersAmong(entries);
+  const holders = holdersAmong(all);
   if (holders.length === 1 && holders[0].actor.uuid === entry.actor.uuid) return;
 
-  await stripRod(ctx, holders);
+  // "Defeated" is BD's own judgement, not a guess at an HP prop: `live` comes
+  // from collectReactors, which applies exactly that test. A holder present in
+  // `all` but missing from `live` is down.
+  const liveUuids = new Set(live.map((e) => e.actor?.uuid).filter(Boolean));
+  const dead = holders.filter((h) => !liveUuids.has(h.actor?.uuid));
+  const standing = holders.filter((h) => liveUuids.has(h.actor?.uuid));
+
+  // Corpses directly — see deleteRodDirect. Standing holders go through the
+  // executor exactly as before, which is the path proven in play.
+  for (const h of dead) {
+    if (await deleteRodDirect(h.actor)) ctx.log(`stripped a stray Rod from the defeated ${h.actor.name}`);
+  }
+  await stripRod(ctx, standing);
+
   await grantRod(ctx, entry);
   ctx.log(`Rod → ${entry.actor.name}`);
 }
 
+/** Both battlefield views at once — see holdersAmong for why there are two. */
+async function readBattlefield(ctx) {
+  const live = await ctx.combatants();
+  const all = typeof ctx.allCombatants === "function" ? await ctx.allCombatants() : live;
+  return { all, live };
+}
+
 async function seedRandomly(ctx, reason) {
-  const entries = await ctx.combatants();
-  const pick = pickRandom(entries);
+  const field = await readBattlefield(ctx);
+  const pick = pickRandom(field.live);
   if (!pick) { ctx.log(`${reason}: no live combatants to seed`); return; }
-  await moveRodTo(ctx, pick, entries);
+  await moveRodTo(ctx, pick, field);
 }
 
 // ── The rule that decides whether damage moves the Rod ──────────────────────
@@ -171,6 +225,27 @@ async function seedRandomly(ctx, reason) {
  * every subtle ruling in the design lives, and a mistake in any one of these
  * filters is invisible until it has already misfired at a table.
  */
+/**
+ * Given a ledger event, return the actor UUID whose Rod should be REMOVED
+ * because they just went down, or null.
+ *
+ * Rule: the Rod dies with its holder. That was always the design ("holder is
+ * defeated → Rod dies with them, covered by rule 5's round re-seed") but it was
+ * never implemented, and the omission was not visually neutral: the Rod stayed
+ * on the corpse, the strip could not see it (collectReactors omits the downed),
+ * and rule 5 — reading only live holders — seeded a fresh one every round. By
+ * round 5 of a real playtest three KO'd PCs each wore a Rod.
+ *
+ * Removing it here rather than waiting for a strip also keeps the UI honest:
+ * the cursor is driven off this AE, so the arrow leaves the moment its holder
+ * does. Nothing is lost by dropping it — the next damage in the fight puts a
+ * Rod back in play under rule 3.
+ */
+export function rodDropOnDefeat(cfg) {
+  if (cfg?.trigger !== "creature_defeated") return null;
+  return cfg?.payload?.subjectActorUuid ?? null;
+}
+
 export function rodRecipientFor(cfg) {
   if (cfg?.trigger !== "creature_lose_resource") return null;
 
@@ -192,6 +267,45 @@ export function rodRecipientFor(cfg) {
   return subjectUuid;
 }
 
+// ── The strike cinematic ────────────────────────────────────────────────────
+
+/**
+ * Does this turn start owe us a strike cinematic?
+ *
+ * Pure and exported for the same reason `rodRecipientFor` is: the interesting
+ * part is the filtering, and getting it wrong is invisible until it misfires at
+ * a table — a bolt announced on the wrong creature, or one played for every
+ * combatant because `turn_start` is dispatched across all of them.
+ *
+ * `holderUuids` is every live combatant currently holding the Rod (normally
+ * exactly one). Returns the acting creature's uuid when the show should play.
+ */
+export function strikeCinematicFor({ actingActorUuid, holderUuids } = {}) {
+  if (!actingActorUuid) return null;
+  if (!Array.isArray(holderUuids)) return null;
+  return holderUuids.includes(actingActorUuid) ? actingActorUuid : null;
+}
+
+/**
+ * Play the strike sequence for the creature whose turn is starting.
+ *
+ * Awaited, so the Rod AE's own `rod_strike` row — dispatched in the forced pass
+ * immediately after this returns — lands as the lights come back up.
+ *
+ * Failure here must never cost the strike itself: the cinematic is announced by
+ * the damage, not the other way round, so every path swallows and continues.
+ */
+async function playStrike(ctx, entry) {
+  try {
+    const tokenUuid = entry.token?.document?.uuid ?? entry.token?.uuid ?? null;
+    if (!tokenUuid) { ctx.log("strike cinematic: holder has no token uuid, skipping"); return; }
+    const { emitLightningStrike } = await import("../lightning-storm-strike-fx.js");
+    await emitLightningStrike({ tokenUuid });
+  } catch (e) {
+    ctx.warn("strike cinematic threw — the strike still resolves", e);
+  }
+}
+
 // ── The event ───────────────────────────────────────────────────────────────
 
 registerConflictEvent({
@@ -205,22 +319,66 @@ registerConflictEvent({
   // (same scene, new conflict) cannot start with a stale Rod alongside the
   // fresh one.
   async onConflictStart(ctx) {
-    const entries = await ctx.combatants();
-    await stripRod(ctx, holdersAmong(entries));
+    const { all } = await readBattlefield(ctx);
+    // Full battlefield: a stale Rod inherited from a previous fight can be
+    // sitting on a creature that starts this one already down.
+    for (const h of holdersAmong(all)) await deleteRodDirect(h.actor);
     await seedRandomly(ctx, "conflict start");
   },
 
   // Rule 5. The round boundary is the pressure point: the party can suppress
   // the hazard mid-round by only ever damaging already-acted creatures, but
   // that suppression collapses when the pool empties.
+  //
+  // The gate reads LIVE holders only, deliberately: a Rod on a corpse must not
+  // count as "somebody holds it", because the ruling is that the Rod dies with
+  // its holder. (It should not survive to this point anyway — onLedgerEvent
+  // drops it at the moment of defeat — but reading `live` here means the ruling
+  // holds even if some path ever leaves one behind.)
   async onRoundStart(ctx) {
-    const entries = await ctx.combatants();
-    if (holdersAmong(entries).length) return;
+    const field = await readBattlefield(ctx);
+    if (holdersAmong(field.live).length) return;
     await seedRandomly(ctx, "round start");
   },
 
-  // Rules 3 + 4.
+  // Presentation only — rule 2's damage still lives on the Rod AE's own
+  // turn_start/force row, which fires in the forced pass right after this
+  // returns. All this does is announce it, and it is deliberately the ONLY
+  // thing in this file that knows the hazard has a look.
+  async onTurnStart(ctx) {
+    const actingActorUuid = ctx.payload?.actingActorUuid ?? null;
+    const entries = await ctx.combatants();
+    const holders = holdersAmong(entries);
+    const strikeOn = strikeCinematicFor({
+      actingActorUuid,
+      holderUuids: holders.map((e) => e.actor?.uuid).filter(Boolean),
+    });
+    if (!strikeOn) return;
+
+    const entry = holders.find((e) => e.actor?.uuid === strikeOn);
+    if (!entry) return;
+    ctx.log(`strike → ${entry.actor.name}`);
+    await playStrike(ctx, entry);
+  },
+
+  // Rules 3 + 4, plus "the Rod dies with its holder".
   async onLedgerEvent(ctx, cfg) {
+    // ── The holder just went down ────────────────────────────────────────────
+    // Drop the Rod immediately. Waiting for the next strip does not work: from
+    // the moment they are defeated the strip cannot see them at all, so the Rod
+    // would sit on the corpse for the rest of the fight while rule 5 seeded a
+    // replacement every round. Nothing is lost — rule 3 puts a Rod back in play
+    // on the next damage dealt.
+    const defeatedUuid = rodDropOnDefeat(cfg);
+    if (defeatedUuid) {
+      const { all } = await readBattlefield(ctx);
+      const downed = all.find((e) => e.actor?.uuid === defeatedUuid);
+      if (downed && rodOn(downed.actor) && await deleteRodDirect(downed.actor)) {
+        ctx.log(`${downed.actor.name} was defeated holding the Rod — Rod dropped`);
+      }
+      return;
+    }
+
     const subjectUuid = rodRecipientFor(cfg);
     if (!subjectUuid) return;
 
@@ -230,20 +388,26 @@ registerConflictEvent({
     // by the strike. That asymmetry is the design's intent (Electro Slime
     // becomes a Rod sponge), and listening only to the loss family is what
     // preserves it. Deliberate — do not "fix" by adding the gain family.
-    const entries = await ctx.combatants();
-    const subject = entries.find((e) => e.actor?.uuid === subjectUuid);
+    const field = await readBattlefield(ctx);
+    const subject = field.live.find((e) => e.actor?.uuid === subjectUuid);
 
-    // Not found = the damage defeated them (collectReactors drops the downed).
-    // The Rod stays with its current holder and rule 5 re-seeds if that was
-    // the creature who just died.
+    // Not found among the LIVE = the damage defeated them. Their own
+    // creature_defeated event (above) drops the Rod; rule 5 re-seeds next round.
     if (!subject) return;
 
-    await moveRodTo(ctx, subject, entries);
+    await moveRodTo(ctx, subject, field);
   },
 
-  // The Rod must never follow a creature out of the fight.
+  // The Rod must never follow a creature out of the fight — including on the
+  // creatures that ended it face-down, which is why this sweeps the FULL
+  // battlefield rather than the live one.
   async onConflictEnd(ctx) {
-    const entries = await ctx.combatants();
-    await stripRod(ctx, holdersAmong(entries));
+    const { all, live } = await readBattlefield(ctx);
+    const liveUuids = new Set(live.map((e) => e.actor?.uuid).filter(Boolean));
+    const holders = holdersAmong(all);
+    await stripRod(ctx, holders.filter((h) => liveUuids.has(h.actor?.uuid)));
+    for (const h of holders.filter((h) => !liveUuids.has(h.actor?.uuid))) {
+      await deleteRodDirect(h.actor);
+    }
   },
 });

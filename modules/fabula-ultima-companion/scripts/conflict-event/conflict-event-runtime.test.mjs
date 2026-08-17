@@ -22,7 +22,7 @@ globalThis.game = { user: { isGM: true } };
 globalThis.canvas = null;
 
 const { registerConflictEvent, clearConflictEvents } = await import("./conflict-event-registry.js");
-const { activeConflictEvent } = await import("./conflict-event-runtime.js");
+const { activeConflictEvent, LIFECYCLE_HANDLERS } = await import("./conflict-event-runtime.js");
 
 let pass = 0, fail = 0;
 const eq = (label, got, want) => {
@@ -100,6 +100,19 @@ console.warn = () => { warnCount++; };
 activeConflictEvent(directorWith({ scene: sceneWith({ conflictEvent: "gone-missing" }) }));
 console.warn = realWarn;
 eq("a new conflict warns again", warnCount, 1);
+
+// ── Lifecycle trigger → handler mapping ─────────────────────────────────────
+// The dispatch site hands this every phased standalone trigger; the map is the
+// only thing deciding which of them an event can see. `turn_start` is the
+// presentation seam (it runs awaited, BEFORE the forced reaction pass), and a
+// trigger absent from this map silently never reaches an event — which is
+// exactly how a cinematic stops firing with nothing in the log.
+
+eq("conflict_start → onConflictStart", LIFECYCLE_HANDLERS.conflict_start, "onConflictStart");
+eq("round_start → onRoundStart", LIFECYCLE_HANDLERS.round_start, "onRoundStart");
+eq("turn_start → onTurnStart", LIFECYCLE_HANDLERS.turn_start, "onTurnStart");
+eq("turn_end is NOT dispatched", LIFECYCLE_HANDLERS.turn_end, undefined);
+eq("the map is frozen", Object.isFrozen(LIFECYCLE_HANDLERS), true);
 
 console.log(`\n${fail === 0 ? "PASS" : "FAIL"} — ${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

@@ -63,6 +63,16 @@ export const NONE_ID = "none";
  *
  *   onConflictStart(evtCtx)        — the conflict has begun (round 0). Seed here.
  *   onRoundStart(evtCtx)           — a new round has begun. Re-seed / upkeep here.
+ *   onTurnStart(evtCtx)            — a creature's turn is beginning. Dispatched
+ *                                    AWAITED and BEFORE the forced reaction
+ *                                    pass, so this is where a PRESENTATION beat
+ *                                    goes — a cinematic that must play out ahead
+ *                                    of the AE row it announces. The rules beat
+ *                                    of a per-turn effect still belongs on an
+ *                                    Active Effect. `evtCtx.payload` carries
+ *                                    `actingActorUuid` — the trigger fans out
+ *                                    across every combatant, so an event that
+ *                                    cares who is acting must read it.
  *   onLedgerEvent(evtCtx, cfg)     — a resource/status ledger event is settling.
  *                                    Runs INSIDE settleInstance, awaited, with
  *                                    the shared `firedKeys` dedupe set. This is
@@ -72,10 +82,16 @@ export const NONE_ID = "none";
  * The handler names are validated on registration: a typo'd handler would
  * otherwise register cleanly and then simply never fire, which is a miserable
  * class of bug to chase at a live table.
+ *
+ * ⚠ This list and the frozen object built at the bottom of registerConflictEvent
+ * are BOTH authoritative — a handler added to one and not the other is dropped
+ * on registration with only a console warning to show for it. Adding a beat
+ * means editing both, plus LIFECYCLE_HANDLERS in conflict-event-runtime.js.
  */
 export const EVENT_HANDLERS = Object.freeze([
   "onConflictStart",
   "onRoundStart",
+  "onTurnStart",
   "onLedgerEvent",
   "onConflictEnd",
 ]);
@@ -139,6 +155,7 @@ export function registerConflictEvent(event, { warn = console.warn } = {}) {
     description: String(event.description ?? ""),
     onConflictStart: event.onConflictStart ?? null,
     onRoundStart: event.onRoundStart ?? null,
+    onTurnStart: event.onTurnStart ?? null,
     onLedgerEvent: event.onLedgerEvent ?? null,
     onConflictEnd: event.onConflictEnd ?? null,
   }));
