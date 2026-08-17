@@ -24,6 +24,22 @@
 // fingerprints. Formula identifiers (SL/level/bonds) are pinned via `override`.
 // ───────────────────────────────────────────────────────────────────────────
 
+// SESSION RECORDINGS ARE NOT BEHAVIOR. `battle_log` / `battle_log_table` are
+// written by play — and by EVERY sim run — never authored. Left in the simulate
+// fingerprint they made the golden a snapshot of one afternoon's combat log:
+// measured 2026-08-17, a full sweep reported 426 of 482 skills "changed", and
+// the golden's embedded log was stamped 2026-07-18, so the check had been
+// reporting near-total drift for a month and was useless as a signal. Noise that
+// size is exactly what hides the one-line regression the suite exists to catch.
+//
+// Same list, same reason, as world-export's VOLATILE_PROPS
+// (tools/safe-edit/bin/world-export.js:84). Keep the two in step — add any
+// future play-written prop to BOTH.
+const VOLATILE_PROPS = ["battle_log", "battle_log_table"];
+// Patch keys arrive as dotted paths ("system.props.battle_log"), so match the
+// LAST segment rather than the whole key.
+const isVolatileProp = (key) => VOLATILE_PROPS.includes(String(key).split(".").pop());
+
 const opts = (typeof OPTS !== "undefined" && OPTS) ? OPTS : {};
 const mode = opts.mode === "simulate" ? "simulate" : "compute";
 const sceneName = opts.sceneName || null;
@@ -165,7 +181,7 @@ function fingerprint(skill, actor, offensive, targets, r) {
   if (mode === "simulate") {
     fp.writes = (r.perActorWrites || []).map((w) => ({
       actor: w.actorName || null,
-      props: Object.keys(w.propPatches || {}).sort().map((k) => `${k}=${JSON.stringify(w.propPatches[k])}`),
+      props: Object.keys(w.propPatches || {}).filter((k) => !isVolatileProp(k)).sort().map((k) => `${k}=${JSON.stringify(w.propPatches[k])}`),
       aeApplied: (w.aeApplied || []).map((a) => `${a.name}[${(a.changes || []).join(",")}]`).sort(),
       aeRemoved: (w.aeRemoved || []).map((a) => a.name).sort(),
     })).sort((a, b) => (a.actor || "").localeCompare(b.actor || ""));
