@@ -84,8 +84,10 @@
   "sort": 0,
   "system": {
     "props": {
+      "availability_formula": "HAS_MARTIAL_ARMOR == 1",
+      "availability_reason": "Requires martial armor equipped",
       "cost": "30 MP",
-      "damage_bonus": "20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10",
+      "damage_bonus": "HAS_MARTIAL_ARMOR * (20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10)",
       "description": "<p>As long as your personal vehicle has a steed frame, it may have up to 2 active weapon modules (instead of 1).</p><p>During a conflict, if you have a <strong>martial armor</strong> or <strong>martial armor module</strong> equipped, you may use an action and spend <strong>30 Mind Points</strong> to choose earth or physical. If you do, you deal <strong>20 damage</strong> of the chosen type to every enemy you can see, and enemies that lose Hit Points this way cannot perform <strong>free attacks</strong> until the start of their next turn.</p><p>This effect deals <strong>+10 damage</strong> if you are driving a personal vehicle with a mech frame and/or have <strong>two shields equipped</strong>, and also deals <strong>+10 damage</strong> if you are <strong>level 30 or higher</strong>.</p>",
       "effect_table": {
         "0": {
@@ -96,10 +98,12 @@
         },
         "1": {
           "chain_steps": "",
+          "condition_formula": "HAS_MARTIAL_ARMOR == 1",
           "effect_kind": "prompt_element",
           "effect_label": "qt_gate",
           "element_options": "earth|physical",
           "menu_title": "Quaking Titan — choose a damage type",
+          "on_condition_fail": "abort",
           "prompt_var": "element"
         },
         "2": {
@@ -107,19 +111,7 @@
           "ae_template_ref": "No Free Attack",
           "effect_kind": "apply_ae",
           "effect_label": "qt_apply_status",
-          "target_ref": "qt_visible_enemies"
-        },
-        "3": {
-          "auto_confirm_when_obvious": true,
-          "candidate_source": "combat",
-          "category": "enemy",
-          "count": 1,
-          "effect_kind": "targeting",
-          "effect_label": "qt_visible_enemies",
-          "exclude_self": true,
-          "iteration_mode": "together",
-          "mode": "all",
-          "skip_when_passive": false
+          "target_ref": "hit_action_targets"
         }
       },
       "heroic_requirement": "You must have mastered one or more Classes among Guardian and Pilot.",
@@ -132,6 +124,7 @@
       "name": "Quaking Titan",
       "on_activate_effect_ref": "qt_activate",
       "pre_activate_effect_ref": "qt_gate",
+      "reaction_config_table": null,
       "skill_range": "Scene",
       "skill_target": "Each enemy you can see",
       "skill_type": "Active",

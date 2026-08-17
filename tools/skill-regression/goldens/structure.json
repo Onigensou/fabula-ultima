@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-08-16T22:30:01.026Z",
- "count": 2087,
+ "capturedAt": "2026-08-17T01:46:06.886Z",
+ "count": 2088,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -12641,7 +12641,6 @@
   "(world) / Hypercognition": {
    "props": {
     "isReaction": "true",
-    "passive_logic_action": "#sha1:7f0b3ab3cd8355b2 (264 chars)",
     "skill_type": "Passive"
    },
    "effects": [
@@ -36338,7 +36337,6 @@
   "Esper / Hypercognition": {
    "props": {
     "isReaction": "true",
-    "passive_logic_action": "#sha1:7f0b3ab3cd8355b2 (264 chars)",
     "skill_type": "Passive"
    },
    "effects": [
@@ -45041,7 +45039,6 @@
     "class": "Esper",
     "defense_target_type": "def",
     "isReaction": "true",
-    "passive_logic_action": "#sha1:7f0b3ab3cd8355b2 (264 chars)",
     "skill_type": "Passive"
    },
    "effects": [
@@ -46072,7 +46069,7 @@
    "props": {
     "check_bonus": "9",
     "class": "NPC",
-    "damage_bonus": "62",
+    "damage_bonus": "45",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -46083,8 +46080,36 @@
     "skill_type": "Attack",
     "type_damage": "Physical"
    },
-   "effects": [],
-   "reactions": [],
+   "effects": [
+    "ae_duplicate_mode=add_charges ae_template_ref=Slow effect_kind=apply_ae effect_label=hooves_slow target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "condition_formula=TRIGGER_IS_SELF == 1 reaction_effect_ref=hooves_slow reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Hooves reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Kirin / Horn Rush": {
+   "props": {
+    "action_keywords": "execute",
+    "check_bonus": "9",
+    "class": "NPC",
+    "damage_bonus": "62",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Bolt"
+   },
+   "effects": [
+    "damage_amount=2 damage_operation=multiply damage_stage=outgoing effect_kind=adjust_damage effect_label=horn_execute"
+   ],
+   "reactions": [
+    "condition_formula=TARGET_AE_COUNT_CRISIS > 0 reaction_effect_ref=horn_execute reaction_max_scope=round reaction_passive_mode=force reaction_source=self reaction_source_skill=Horn Rush reaction_trigger=creature_will_deal_damage"
+   ],
    "aes": []
   },
   "Kirin / Lightning Charge": {
