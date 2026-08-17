@@ -16,7 +16,7 @@
     }
   },
   "folder": "to3QkbU70EQKKxHW",
-  "formula": "1d12",
+  "formula": "1d20",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon - Encounter",
   "ownership": {
@@ -36,6 +36,20 @@
         11
       ],
       "text": "Skizzik, Kirin, Skizzik",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "2vn4arPfdAgD94Oi",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Mana Ray, Mana Ray",
       "type": "text",
       "weight": 1
     },
@@ -124,6 +138,34 @@
       "weight": 1
     },
     {
+      "_id": "dyTwbs3toeE8UCef",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Gigas, Electro Slime, Electro Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "EGApnh4HY0xGR822",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Volt Seahorse, Skizzik",
+      "type": "text",
+      "weight": 1
+    },
+    {
       "_id": "gIT4bWG1ls8WXF1K",
       "documentId": null,
       "drawn": false,
@@ -166,6 +208,20 @@
       "weight": 1
     },
     {
+      "_id": "tdOngMVYFwxosLjf",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Volt Seahorse, Mana Ray",
+      "type": "text",
+      "weight": 1
+    },
+    {
       "_id": "tpHWn6Gdge7ndXiB",
       "documentId": null,
       "drawn": false,
@@ -176,6 +232,62 @@
         1
       ],
       "text": "Electro Slime, Electro Slime, Electro Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "u7Wz8GSvGMca99H6",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Volt Seahorse, Lightning Prism",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "uv7WFGOVzWLNnC0f",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Mana Ray, Lightning Prism, Mana Ray",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "wN8qcRjjOmZaYClu",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Asura",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "WzFFexCmIH2cztUW",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        18,
+        18
+      ],
+      "text": "Volt Seahorse, Mana Ray, Kirin",
       "type": "text",
       "weight": 1
     },

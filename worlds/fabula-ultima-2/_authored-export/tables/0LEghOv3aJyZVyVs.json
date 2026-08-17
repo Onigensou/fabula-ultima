@@ -16,7 +16,7 @@
     }
   },
   "folder": "AF1TjOn1OTJNHrkx",
-  "formula": "1d4",
+  "formula": "1d8",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon - Enemies",
   "ownership": {
@@ -25,6 +25,36 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "HiJf9Ax3NX4Yj8U3",
+      "documentCollection": "Actor",
+      "documentId": "kAYN54Id3iTAOw1A",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Volt Seahorse",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "hyktnu1kJIqgUXJa",
+      "documentCollection": "Actor",
+      "documentId": "iGc0EUHE9LKWT0Ye",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Mana Ray",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "jijIZgpjNPuzXnYw",
       "documentCollection": "Actor",
@@ -82,6 +112,36 @@
         2
       ],
       "text": "Lightning Prism",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "uRbEFAewVjqXr7iE",
+      "documentCollection": "Actor",
+      "documentId": "0AwQ7wEDz4ISA9mA",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Asura",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "v1EeMn7bjHaAjUJZ",
+      "documentCollection": "Actor",
+      "documentId": "1Lw78Js1f7MogV2B",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Gigas",
       "type": "document",
       "weight": 1
     }
