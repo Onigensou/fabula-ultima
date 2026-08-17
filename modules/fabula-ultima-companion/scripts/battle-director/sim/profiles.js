@@ -28,6 +28,7 @@
 //     unaffordable rather than guessed at, so Blanche's rotation stays thin
 
 import { SimMode } from "./sim-mode.js";
+import { rodDisplacementTarget, noteDisplacement } from "./hazard-brain.js";
 
 // ── Tuning ──────────────────────────────────────────────────────────────────
 // The judgement calls, in one place, so they can be moved from what the fights
@@ -269,6 +270,20 @@ export function refreshFocus(api) {
     }
     api.setFocus(kill.tokenUuid);
     return kill;
+  }
+
+  // ── Hazard: get the Lightning Rod off the party ───────────────────────────
+  // Ranked ABOVE the standing call and below the finisher, and that order is the
+  // whole ruling. Killing something still wins — a corpse takes no turns, and the
+  // damage that kills it moves the Rod there anyway. But a standing call is just
+  // focus-fire inertia, and holding the Rod costs ~30 Bolt every single round;
+  // letting inertia win is precisely how a sim run ate six rounds of free damage
+  // and reported a TPK that no table would ever have played into.
+  const shift = rodDisplacementTarget(api);
+  if (shift) {
+    if (api.focusUuid() !== shift.target.tokenUuid) noteDisplacement(shift);
+    api.setFocus(shift.target.tokenUuid);
+    return shift.target;
   }
 
   // Standing call still alive? Keep it.
