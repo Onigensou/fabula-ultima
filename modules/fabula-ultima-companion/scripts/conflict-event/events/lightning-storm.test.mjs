@@ -16,7 +16,7 @@
 globalThis.game = { user: { isGM: true } };
 globalThis.canvas = null;
 
-const { rodRecipientFor } = await import("./lightning-storm.js");
+const { rodRecipientFor, strikeCinematicFor } = await import("./lightning-storm.js");
 
 let pass = 0, fail = 0;
 const eq = (label, got, want) => {
@@ -97,6 +97,27 @@ eq("null cfg", rodRecipientFor(null), null);
 eq("undefined cfg", rodRecipientFor(undefined), null);
 eq("empty cfg", rodRecipientFor({}), null);
 eq("trigger but no payload", rodRecipientFor({ trigger: "creature_lose_resource" }), null);
+
+// ── strikeCinematicFor — who gets the light show ────────────────────────────
+// `turn_start` is dispatched across EVERY combatant, so the acting-creature
+// filter is the whole thing standing between one cinematic per strike and one
+// cinematic per combatant per turn. The Rod is a singleton, but a strip→grant
+// window or a rewind can briefly show two holders, so the predicate takes a
+// list and answers only about the creature actually taking its turn.
+
+const sc = (actingActorUuid, holderUuids) => strikeCinematicFor({ actingActorUuid, holderUuids });
+
+eq("the holder's own turn plays the strike", sc(HERO, [HERO]), HERO);
+eq("a non-holder's turn plays nothing", sc(MONSTER, [HERO]), null);
+eq("nobody holds it → nothing", sc(HERO, []), null);
+eq("acting creature among several holders still matches", sc(MONSTER, [HERO, MONSTER]), MONSTER);
+eq("a transient double-hold that excludes the actor → nothing", sc("Actor.third", [HERO, MONSTER]), null);
+
+// Malformed input — this runs at the top of every single turn in a Storm.
+eq("no acting actor", sc(null, [HERO]), null);
+eq("no holder list", sc(HERO, null), null);
+eq("no arguments at all", strikeCinematicFor(), null);
+eq("empty object", strikeCinematicFor({}), null);
 
 console.log(`\n${fail === 0 ? "PASS" : "FAIL"} — ${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

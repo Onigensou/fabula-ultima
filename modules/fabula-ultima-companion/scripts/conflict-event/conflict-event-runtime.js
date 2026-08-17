@@ -44,10 +44,21 @@ const TAG = "[FU][ConflictEvent]";
 const log = (...a) => console.debug(TAG, ...a);
 const warn = (...a) => console.warn(TAG, ...a);
 
-/** Lifecycle trigger → event handler name. */
-const LIFECYCLE_HANDLERS = Object.freeze({
+/**
+ * Lifecycle trigger → event handler name.
+ *
+ * `turn_start` is a PRESENTATION seam, not a rules one. The per-turn beat of an
+ * event still belongs on an Active Effect (see dispatchConflictEventLifecycle's
+ * note) — but the dispatch site runs this AWAITED and BEFORE the forced
+ * reaction pass, which is the only place a cinematic can play out *ahead of*
+ * the AE row it announces. Lightning Storm's strike sequence uses it; an event
+ * with no `onTurnStart` no-ops through the same typeof guard as every other
+ * handler.
+ */
+export const LIFECYCLE_HANDLERS = Object.freeze({
   conflict_start: "onConflictStart",
   round_start: "onRoundStart",
+  turn_start: "onTurnStart",
 });
 
 /**
@@ -97,6 +108,18 @@ async function buildEventCtx(director, eventId) {
     eventId,
     dCombat: director?.dCombat ?? null,
     scene: director?.dCombat?.scene ?? canvas?.scene ?? null,
+
+    /**
+     * The standalone trigger's payload — for `turn_start`, this is
+     * `{ actingActorUuid, actingTokenUuid }`, i.e. WHOSE turn is starting.
+     * turn_start is dispatched across every combatant, so an event that only
+     * cares about the acting creature has to read it from here.
+     *
+     * Safe to expose despite the "nothing is cached on ctx" rule in the header:
+     * `standalone*` IS in persistence.js's allowlist, so it survives an F5
+     * mid-turn — and it is re-read on every dispatch anyway, never stored.
+     */
+    payload: director?.ctx?.standalonePayload ?? null,
 
     /**
      * Live, non-defeated combatants as [{ actor, token, combatantId }].

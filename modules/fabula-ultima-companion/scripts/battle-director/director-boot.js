@@ -62,6 +62,8 @@ import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./dam
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
+import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
+import { initLightningStormFx } from "../conflict-event/lightning-storm-strike-fx.js";
 // Damage-number audition (look-only) tool is intentionally not registered as a
 // dev-tool button — consolidated into the live-path tool below to save space.
 import { initDamageNumberLivetest } from "./damage-numbers/damage-number-livetest.js";
@@ -1615,6 +1617,14 @@ Hooks.once("ready", () => {
   // AE-replication-driven on every client.
   try { initDominationCrest(); }
   catch (e) { warn("initDominationCrest on ready threw", e); }
+
+  // Lightning Storm conflict-event UX — the Rod cursor is AE-replication-driven
+  // (no socket) and self-scoping: it costs nothing in a fight with no Storm.
+  // The strike cinematic registers its socketlib handler on every client.
+  try { initLightningRodCursor(); }
+  catch (e) { warn("initLightningRodCursor on ready threw", e); }
+  try { initLightningStormFx(); }
+  catch (e) { warn("initLightningStormFx on ready threw", e); }
 
   // Damage-number dev tool — consolidated to a SINGLE button (the robust
   // live-path version below). The look-only audition tool

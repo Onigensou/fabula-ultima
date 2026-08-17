@@ -192,6 +192,45 @@ export function rodRecipientFor(cfg) {
   return subjectUuid;
 }
 
+// ── The strike cinematic ────────────────────────────────────────────────────
+
+/**
+ * Does this turn start owe us a strike cinematic?
+ *
+ * Pure and exported for the same reason `rodRecipientFor` is: the interesting
+ * part is the filtering, and getting it wrong is invisible until it misfires at
+ * a table — a bolt announced on the wrong creature, or one played for every
+ * combatant because `turn_start` is dispatched across all of them.
+ *
+ * `holderUuids` is every live combatant currently holding the Rod (normally
+ * exactly one). Returns the acting creature's uuid when the show should play.
+ */
+export function strikeCinematicFor({ actingActorUuid, holderUuids } = {}) {
+  if (!actingActorUuid) return null;
+  if (!Array.isArray(holderUuids)) return null;
+  return holderUuids.includes(actingActorUuid) ? actingActorUuid : null;
+}
+
+/**
+ * Play the strike sequence for the creature whose turn is starting.
+ *
+ * Awaited, so the Rod AE's own `rod_strike` row — dispatched in the forced pass
+ * immediately after this returns — lands as the lights come back up.
+ *
+ * Failure here must never cost the strike itself: the cinematic is announced by
+ * the damage, not the other way round, so every path swallows and continues.
+ */
+async function playStrike(ctx, entry) {
+  try {
+    const tokenUuid = entry.token?.document?.uuid ?? entry.token?.uuid ?? null;
+    if (!tokenUuid) { ctx.log("strike cinematic: holder has no token uuid, skipping"); return; }
+    const { emitLightningStrike } = await import("../lightning-storm-strike-fx.js");
+    await emitLightningStrike({ tokenUuid });
+  } catch (e) {
+    ctx.warn("strike cinematic threw — the strike still resolves", e);
+  }
+}
+
 // ── The event ───────────────────────────────────────────────────────────────
 
 registerConflictEvent({
@@ -217,6 +256,26 @@ registerConflictEvent({
     const entries = await ctx.combatants();
     if (holdersAmong(entries).length) return;
     await seedRandomly(ctx, "round start");
+  },
+
+  // Presentation only — rule 2's damage still lives on the Rod AE's own
+  // turn_start/force row, which fires in the forced pass right after this
+  // returns. All this does is announce it, and it is deliberately the ONLY
+  // thing in this file that knows the hazard has a look.
+  async onTurnStart(ctx) {
+    const actingActorUuid = ctx.payload?.actingActorUuid ?? null;
+    const entries = await ctx.combatants();
+    const holders = holdersAmong(entries);
+    const strikeOn = strikeCinematicFor({
+      actingActorUuid,
+      holderUuids: holders.map((e) => e.actor?.uuid).filter(Boolean),
+    });
+    if (!strikeOn) return;
+
+    const entry = holders.find((e) => e.actor?.uuid === strikeOn);
+    if (!entry) return;
+    ctx.log(`strike → ${entry.actor.name}`);
+    await playStrike(ctx, entry);
   },
 
   // Rules 3 + 4.
