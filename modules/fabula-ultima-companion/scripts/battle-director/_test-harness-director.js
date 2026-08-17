@@ -1040,6 +1040,47 @@ async function runDirectorSkillCompute({
   }
 
   const finalAr = synthDirector.ctx.actionResult;
+
+  // Did COMPUTE actually build a card, or did it REFUSE?
+  //
+  // This used to be a hardcoded `ok: true`, which made the guard in
+  // `runDirectorSkillSimulate` (`if (!compute.ok) return compute`) dead code:
+  // simulate walked straight into RESOLVE on an action COMPUTE had bounced,
+  // then reported the writes as if the action had been allowed. That is a false
+  // green in the PERMISSIVE direction — the exact class this project's standing
+  // rule warns about, and it lands precisely on the tests most worth trusting
+  // (a refusal gate is asserted by proving the action does NOT happen).
+  //
+  // The signal is positive, not a refusal blacklist: `Compute` (state-handlers
+  // .js:4063-4413) emits exactly three intents and no others —
+  //   INTERNAL_DONE  (4079 / 4297 / 4397) — card built, advance to CONFIRM
+  //   TARGET_BACK    (4163)               — pre_activate refused or cancelled
+  //   ABORT          (4314 / 4409)        — hard failure
+  // so "success" is INTERNAL_DONE being present, and everything else — a bounce,
+  // an abort, or an empty queue because a throw was swallowed upstream — is a
+  // refusal. Asserting the success token rather than enumerating refusals means
+  // a NEW refusal path added to Compute later fails closed here by default,
+  // instead of silently rejoining the permissive set.
+  const intents = [...enqueued, ...dispatched].map((i) => String(i?.type ?? ""));
+  const advanced = intents.includes(String(INTENTS.INTERNAL_DONE));
+  if (!advanced) {
+    const bounce = intents.find((t) => t && t !== String(INTENTS.INTERNAL_DONE)) ?? "";
+    return {
+      ok: false,
+      // `refused` (not `error`) — this is the engine working correctly. A test
+      // asserting a gate SHOULD land here; read `reason` to tell which.
+      refused: true,
+      reason: bounce
+        ? `compute_refused:${bounce}`
+        : "compute_refused:no_intent",
+      // The card COMPUTE declined to finish. Callers asserting a refusal can
+      // still inspect what got as far as being computed before the bounce.
+      actionResult: finalAr,
+      summary: summarize(finalAr),
+      enqueued, dispatched,
+    };
+  }
+
   return {
     ok: true,
     actionResult: finalAr,

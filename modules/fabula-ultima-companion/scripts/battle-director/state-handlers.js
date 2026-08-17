@@ -4137,10 +4137,29 @@ const Compute = {
           });
           const pre = await SE().fireActivationEffectPre(skill, capCtx);
           if (pre?.abort) {
-            // Player cancelled a choice (element / status pick) → return to the
-            // Action Menu to re-pick, NOT a full abort. The card was never built,
-            // so nothing is spent. (COMPUTE → DECLARE via TARGET_BACK.)
-            log("Skill COMPUTE: pre_activate cancelled by player — back to Action Menu (nothing spent)");
+            // Two ways to land here, and they are NOT the same event:
+            //  • "requirement-unmet" — a row declared `on_condition_fail: "abort"`
+            //    and its condition_formula was false. The actor is not ALLOWED to
+            //    take this action (Quaking Titan without martial armour). Nobody
+            //    chose anything, so reporting a cancellation blamed the player for
+            //    a refusal the rules made, and the caller — which may be the GM,
+            //    the AI chooser or a free-action grant, none of which see the
+            //    picker's availability greying — got the Action Menu back with no
+            //    explanation at all.
+            //  • anything else — the player cancelled a choice (element / status
+            //    pick) and wants to re-pick.
+            // Either way the card was never built, so nothing is spent.
+            // (COMPUTE → DECLARE via TARGET_BACK.)
+            if (pre?.reason === "requirement-unmet") {
+              // availability_reason is authored for exactly this sentence; the
+              // picker already uses it for the greyed-row tooltip.
+              const why = String(skill?.system?.props?.availability_reason ?? "").trim()
+                || `${skill?.name ?? "That action"} cannot be used right now`;
+              log(`Skill COMPUTE: pre_activate REFUSED — requirement unmet (${why}); nothing spent`);
+              try { ui.notifications?.warn(why); } catch (e) { /* headless / no UI */ }
+            } else {
+              log("Skill COMPUTE: pre_activate cancelled by player — back to Action Menu (nothing spent)");
+            }
             director.enqueue({ type: INTENTS.TARGET_BACK });
             return;
           }

@@ -351,6 +351,16 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // "FINAL_DAMAGE >= 100"); on every other kind it's a dispatch-time gate. That
   // late evaluation is exactly why `pierce` cannot be granted this way.
   textCol("condition_formula", "Row Condition", { tooltip: "Generic gate: blank = always. Falsy → skip this row (chain continues); on a menu-option row, falsy also HIDES the option. e.g. GADGET_INFUSION_TIER >= 2, HIT_COUNT > 0. (apply_action_keyword: evaluated post-bonus, may use FINAL_DAMAGE.)", vis: "", reconcileVis: true }),
+  // Turns the gate above from a RIDER into a REQUIREMENT. Skipping is right for
+  // "apply Swift only if no Slow"; it is wrong for "you may only use this with
+  // martial armor equipped", and there was no way to say the latter — an
+  // unarmoured Quaking Titan resolved and PAID for a zeroed effect.
+  // 🪤 Only a pre_activate row precedes the §1 cost debit. The same option on an
+  // on_activate row aborts AFTER the caster has paid.
+  selectCol("on_condition_fail", "On Condition Fail", [
+    { key: "skip",  value: "Skip this row, chain continues (default)" },
+    { key: "abort", value: "Abort — refuse the whole action" },
+  ], { tooltip: "What a falsy Row Condition does. Blank/skip = drop just this row. abort = refuse the action outright; put it on a PRE-ACTIVATE row so the refusal lands before the cost is debited.", vis: "", reconcileVis: true }),
   // notify — surface a short message (stub branches / info toast).
   textCol("notify_message", "Notify Message", { tooltip: "notify: the text shown (chat + UI toast). e.g. \"Alchemy gadgets are not yet implemented.\"", vis: NOTIFY_VIS }),
   selectCol("notify_type", "Notify Type", [

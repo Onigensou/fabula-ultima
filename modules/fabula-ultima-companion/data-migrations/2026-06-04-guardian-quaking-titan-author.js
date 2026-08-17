@@ -32,20 +32,33 @@
  *     approximation for "until start of their next turn"; engine
  *     extension for per-subject-turn expiry deferred).
  *
- * Deferred for follow-up:
- *   - Element picker (earth/physical) — open_action_menu hook exists for
- *     skills (Reinforce/Cleanse) but the active-skill element-override
- *     plumbing isn't yet wired. v1 ships physical only; description
- *     notes the RAW choice.
- *   - Vehicle / mech-frame clause — no vehicle system in BD; out of
- *     scope until that subsystem lands.
- *   - "No Free Attack" ENFORCEMENT — AE applies + token icon shows, but
- *     the actual gating of free-action grants based on this flag needs a
- *     small extension to freeActions.set/get. Migration ships the AE as
- *     a marker; the gate read lands in a separate engine commit.
- *   - "Until start of their next turn" precision — AE expires at
- *     round_end (existing infrastructure). Per-target turn-start expiry
- *     would need a new lifetimeMode; close approximation suffices for v1.
+ * STATUS 2026-08-17 — three of the four deferrals below have since LANDED.
+ * Corrected here because a stale "deferred" note reads as a known gap and
+ * stops the next author from checking:
+ *   - Element picker (earth/physical) — DONE. `qt_gate` is a prompt_element
+ *     fired from pre_activate; type_damage resolves VAR_ELEMENT from the pick.
+ *   - "No Free Attack" ENFORCEMENT — DONE, and it was already done when this
+ *     note was written. free-actions.js `actorHasFreeAttackPrevention` (:47)
+ *     walks appliedEffects for flags["fabula-ultima-companion"].preventFreeAttack
+ *     === true (:59), which the AE carries. 🪤 The STATUS STRING
+ *     `fud-no-free-attack` has no engine reader — grepping it finds nothing and
+ *     suggests the clause is unimplemented. The flag is the mechanism.
+ *   - Rider SCOPE — DONE. RAW limits it to enemies that LOSE HIT POINTS; the
+ *     row now uses the shared `hit_action_targets` idiom (132 authored rows)
+ *     instead of a bespoke every-visible-enemy targeting row.
+ *   - Martial-armour gate — now REFUSES rather than scaling to zero, via
+ *     `on_condition_fail: "abort"` on the pre_activate row (pre_activate is the
+ *     only window preceding the §1 cost debit).
+ *
+ * Still deferred, both blocked on absent subsystems:
+ *   - Vehicle / mech-frame + steed-frame clauses — no vehicle system in BD.
+ *     🪤 RAW's "mech frame and/or two shields" is ONE +10 for either, so with
+ *     the mech term permanently false the formula's shields-only term is the
+ *     faithful reduction. Do NOT add a second `+ HAS_MECH_FRAME * 10`.
+ *   - "Until start of their next turn" precision — the AE expires at round_end
+ *     (duration null / lifetimeMode "round_end"). Per-target turn-start expiry
+ *     needs a new lifetimeMode; for a creature that already acted this round the
+ *     approximation is SHORTER than RAW, not longer.
  *
  * IDEMPOTENT.
  */
@@ -123,7 +136,23 @@ const PROP_PATCH = {
   // Bonus-rider formula uses (gate)*amount because the skill-formulas
   // evaluator has no ternary. Comparisons return 1/0, multiplied by 10
   // for the bonus, summed with the base 20.
-  damage_bonus:           "20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10",
+  //
+  // The leading HAS_MARTIAL_ARMOR * is the DAMAGE-side gate, and it is the
+  // load-bearing one. `availability_formula` below is read in exactly one place
+  // (skill-picker.js:380) — it greys the row in a PLAYER's picker and nothing
+  // else. GM force, the AI chooser, free-action grants and every harness entry
+  // point bypass it entirely, so without this factor an unarmoured caster still
+  // dealt the full 20/30/40 on those paths.
+  // 🪤 Verified live: 1 armour / 2 shields / level 30 → 40; unarmoured → hard 0.
+  damage_bonus:           "HAS_MARTIAL_ARMOR * (20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10)",
+  // Player-facing half of the gate: greys the picker row with a cause instead of
+  // offering an action that resolves for zero. Both props are declared on the
+  // skill templates as of 2026-08-17 — before that they were undeclared, and
+  // TemplateSystem.reloadTemplate() (which world-import calls on every doc)
+  // persists a deletion marker for undeclared keys, so they silently vanished on
+  // the next merge.
+  availability_formula:   "HAS_MARTIAL_ARMOR == 1",
+  availability_reason:    "Requires martial armor equipped",
   // RAW: "spend 30 Mind Points to choose earth or physical". VAR_ELEMENT is the
   // sentinel resolved from the element the player picks; it ONLY resolves from a
   // prompt captured by the PRE_ACTIVATE hook (state-handlers.js:4104 reads just
@@ -159,25 +188,31 @@ const EFFECT_TABLE = {
     prompt_var:        "element",
     element_options:   "earth|physical",
     menu_title:        "Quaking Titan — choose a damage type",
+    // RAW: "if you have a martial armor or martial armor module equipped, you
+    // MAY USE AN ACTION and spend 30 MP" — a precondition of using the skill,
+    // not a rider on its effect. `on_condition_fail: "abort"` refuses the whole
+    // action; a plain condition_formula would only skip this row.
+    //
+    // It lives HERE, on the pre_activate row, because pre_activate is the only
+    // window that precedes the §1 cost debit (state-handlers.js:406). The same
+    // pair on the qt_activate chain row aborts AFTER the caster has paid 30 MP.
+    // The chain row keeps its own condition as defence in depth.
+    condition_formula:  "HAS_MARTIAL_ARMOR == 1",
+    on_condition_fail:  "abort",
   },
   "2": {
     effect_label:      "qt_apply_status",
     effect_kind:       "apply_ae",
     ae_template_ref:   "No Free Attack",
-    target_ref:        "qt_visible_enemies",
+    // RAW scopes the rider to "enemies that LOSE HIT POINTS this way".
+    // `hit_action_targets` is the shared status-on-hit idiom -- 132 authored
+    // rows use it (Torpor, Enrage, Bone Crusher, Weapon Break, Glacies...) --
+    // and it resolves to the set the action actually connected with.
+    // It replaced a bespoke `qt_visible_enemies` targeting row that swept EVERY
+    // visible enemy, so an untargeted or undamaged creature was denied free
+    // attacks too. Measured: status now lands on the damaged creature alone.
+    target_ref:        "hit_action_targets",
     ae_duplicate_mode: "replace_per_caster",
-  },
-  "3": {
-    effect_label:              "qt_visible_enemies",
-    effect_kind:               "targeting",
-    candidate_source:          "combat",
-    category:                  "enemy",
-    mode:                      "all",
-    count:                     1,
-    exclude_self:              true,
-    auto_confirm_when_obvious: true,
-    skip_when_passive:         false,
-    iteration_mode:            "together",
   },
 };
 

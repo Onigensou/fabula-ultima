@@ -3503,13 +3503,9 @@
     },
     "Illusionist / Detonate Phantasm": {
       "caster": "Illusionist",
-      "element": "VAR_ELEMENT",
-      "hasDamage": false,
-      "hasHealing": false,
       "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
       "skill": "Detonate Phantasm",
       "skillType": "Spell",
       "targets": 1
@@ -4065,13 +4061,9 @@
     },
     "Keren / Detonate Phantasm": {
       "caster": "Keren",
-      "element": "VAR_ELEMENT",
-      "hasDamage": false,
-      "hasHealing": false,
       "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
       "skill": "Detonate Phantasm",
       "skillType": "Spell",
       "targets": 1
