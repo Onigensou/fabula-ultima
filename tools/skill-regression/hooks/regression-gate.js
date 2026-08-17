@@ -105,6 +105,25 @@ if (fp.hash && !dataChanged && !marker.kinds?.data && verified && verified.hash 
 // are worth running unprompted: a missing rig field makes a gate PASS under
 // test and refuse in play. Never fatal on their own error — a broken audit must
 // not read as a code regression.
+// ── No silent caps ──────────────────────────────────────────────────────────
+// This summary is capped so it stays readable in a terminal, but a cap that says
+// nothing reads as "that was all of it". Measured 2026-08-17: the 4-diff cap hid
+// two reaction rows from a config-drift report, and only re-running `structure`
+// by hand surfaced them.
+//
+// A REMOVAL is the class this whole suite exists to catch, so its ceiling is set
+// far higher than the others — a truncated list of removals is the one elision
+// that can actually lose content, and the same reasoning drives world-export's
+// separate removal warnings.
+function cap(list, n) {
+  const arr = Array.isArray(list) ? list : [];
+  return { shown: arr.slice(0, n), rest: Math.max(0, arr.length - n) };
+}
+const CAP_REMOVED = 100;
+function more(rest, label) {
+  return `  … +${rest} more ${label} — NOT shown; re-run the command below to see all`;
+}
+
 function staticVerdict() {
   const lines = [];
   for (const [cmd, label] of [["parity", "test-rig payload parity"], ["census", "config-golden coverage"]]) {
@@ -176,12 +195,20 @@ function structureVerdict() {
   const n = (c.changed || 0) + (c.added || 0) + (c.removed || 0);
   if (!n) return { drifted: false, note: ` (config golden clean, ${c.total || 0} docs)`, text: "" };
   const lines = [`⚠ skill-regression CONFIG drift (${c.changed || 0} changed, ${c.added || 0} new, ${c.removed || 0} removed) — a change COMPUTE cannot see:`];
-  for (const ch of (out.changed || []).slice(0, 10)) {
+  const sCh = cap(out.changed, 10);
+  for (const ch of sCh.shown) {
     lines.push(`  ~ ${ch.key}`);
-    for (const d of (ch.diffs || []).slice(0, 4)) lines.push(`      ${d}`);
+    const sD = cap(ch.diffs, 4);
+    for (const d of sD.shown) lines.push(`      ${d}`);
+    if (sD.rest) lines.push(`      … +${sD.rest} more changed field(s) on this doc`);
   }
-  for (const k of (out.removed || []).slice(0, 6)) lines.push(`  - REMOVED ${k}`);
-  for (const k of (out.added || []).slice(0, 6)) lines.push(`  + NEW ${k}`);
+  if (sCh.rest) lines.push(more(sCh.rest, "changed doc(s)"));
+  const sRm = cap(out.removed, CAP_REMOVED);
+  for (const k of sRm.shown) lines.push(`  - REMOVED ${k}`);
+  if (sRm.rest) lines.push(more(sRm.rest, "REMOVED doc(s)"));
+  const sAd = cap(out.added, 6);
+  for (const k of sAd.shown) lines.push(`  + NEW ${k}`);
+  if (sAd.rest) lines.push(more(sAd.rest, "new doc(s)"));
   lines.push(`If intended: node tools/skill-regression/bin/skill-regression.js structure --update`);
   return { drifted: true, note: "", text: lines.join("\n") + "\n" };
 }
@@ -262,13 +289,20 @@ if (!counts.added && !counts.removed && !counts.changed) {
 // Drift — build a concise, review-oriented summary and surface it once.
 const lines = [];
 lines.push(`⚠ skill-regression drift after a ${kinds} edit (${counts.changed} changed, ${counts.added} new, ${counts.removed} removed):`);
-for (const c of (changed || []).slice(0, 12)) {
+const bCh = cap(changed, 12);
+for (const c of bCh.shown) {
   lines.push(`  ~ ${c.key}`);
-  for (const d of (c.diffs || []).slice(0, 4)) lines.push(`      ${d}`);
+  const bD = cap(c.diffs, 4);
+  for (const d of bD.shown) lines.push(`      ${d}`);
+  if (bD.rest) lines.push(`      … +${bD.rest} more changed field(s) on this skill`);
 }
-if ((changed || []).length > 12) lines.push(`  … +${changed.length - 12} more changed`);
-for (const k of (removed || []).slice(0, 8)) lines.push(`  - REMOVED ${k}`);
-for (const k of (added || []).slice(0, 8)) lines.push(`  + NEW ${k}`);
+if (bCh.rest) lines.push(more(bCh.rest, "changed skill(s)"));
+const bRm = cap(removed, CAP_REMOVED);
+for (const k of bRm.shown) lines.push(`  - REMOVED ${k}`);
+if (bRm.rest) lines.push(more(bRm.rest, "REMOVED skill(s)"));
+const bAd = cap(added, 8);
+for (const k of bAd.shown) lines.push(`  + NEW ${k}`);
+if (bAd.rest) lines.push(more(bAd.rest, "new skill(s)"));
 lines.push(`Review whether this is intended. If it is, re-baseline: node tools/skill-regression/bin/skill-regression.js check --update`);
 const sv = structureVerdict();
 if (sv.drifted) lines.push(sv.text.replace(/\n$/, ""));
