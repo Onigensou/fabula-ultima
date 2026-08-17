@@ -121,7 +121,7 @@
       },
       "folder": "S67qnepouidEkCm0",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213409.361.png",
-      "name": "Voltage Discharge",
+      "name": "Volt Counter",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "6DmgigM5jq76r0Gd": 3,
@@ -161,7 +161,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p><strong>Trigger</strong>&nbsp;Whenever the Volt Seahorse takes damage</p><p>The current earths through everything still standing, dealing 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to every other creature in the conflict, its own allies included.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Volt Seahorse is struck by damage and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>The current earths through everything still standing, dealing 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to every other creature in the conflict, its own allies included.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -193,18 +193,18 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Voltage Discharge",
+          "name": "Volt Counter",
           "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "condition_formula": "SUBJECT_IS_SELF == 1",
-              "reaction_cause_filter": "damage",
+              "condition_formula": "SUBJECT_IS_SELF == 1 && INCOMING_DAMAGE > 0 && ATTACK_CHECK_RESULT > 0 && ATTACK_CHECK_RESULT % 2 == 0",
+              "reaction_cause_filter": "",
               "reaction_effect_ref": "vd_damage",
               "reaction_passive_mode": "on",
-              "reaction_resource_filter": "hp",
+              "reaction_resource_filter": "",
               "reaction_source": "self",
-              "reaction_trigger": "creature_lose_resource"
+              "reaction_trigger": "creature_targeted_by_action"
             }
           },
           "rolled_atr1": "-",
@@ -727,18 +727,7 @@
       "mimic": false,
       "minimum_critical_dice": 6,
       "name": "Volt Seahorse",
-      "normal_spell_list": {
-        "IQjzHjHJRozJJ4Oe": {
-          "cost": "10 MP",
-          "duration": "Instantaneous",
-          "id": "${item.id}",
-          "name": "Voltage Discharge",
-          "roll": "",
-          "spell_description": "<p>Raw current floods the field, dealing <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to <strong>every</strong> creature present — the seahorse's own allies included.</p>",
-          "spell_target": "All Enemy",
-          "uuid": "Actor.kAYN54Id3iTAOw1A.Item.IQjzHjHJRozJJ4Oe"
-        }
-      },
+      "normal_spell_list": {},
       "npc_rank": "soldier",
       "override_all_damage_type": "None",
       "override_attack_damage_type": "None",
@@ -768,7 +757,15 @@
           "uuid": "Actor.kAYN54Id3iTAOw1A.Item.oN5ck6b98DPZbfPj"
         }
       },
-      "skill_passive_list": {},
+      "skill_passive_list": {
+        "IQjzHjHJRozJJ4Oe": {
+          "id": "${item.id}",
+          "name": "Volt Counter",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Volt Seahorse is struck by damage and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>The current earths through everything still standing, dealing 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to every other creature in the conflict, its own allies included.</p>",
+          "roll": "",
+          "uuid": "Actor.kAYN54Id3iTAOw1A.Item.IQjzHjHJRozJJ4Oe"
+        }
+      },
       "spear_ef": "125",
       "species": "BEAST",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
