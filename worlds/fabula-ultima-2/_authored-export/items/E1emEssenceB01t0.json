@@ -1,9 +1,9 @@
 {
-  "_id": "F00dStap1eEgg000",
+  "_id": "E1emEssenceB01t0",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1786934570848,
+    "createdTime": 1786934570857,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -14,8 +14,8 @@
     }
   },
   "folder": "36rowiHAcXnIPsKK",
-  "img": "icons/consumables/eggs/eggs-white.webp",
-  "name": "Egg",
+  "img": "icons/commodities/gems/gem-rough-cushion-yellow.webp",
+  "name": "Lightning Essence",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
@@ -24,11 +24,11 @@
   "system": {
     "props": {
       "active_effect_config_table": {},
-      "description": "<p><em>A plain speckled egg. Somebody's breakfast, somebody's masterpiece.</em></p>",
+      "description": "<p><em>Essence that can be obtained from monsters in the storm area in the ecological environment.</em></p>",
       "effect_table": {},
-      "id": "F00dStap1eEgg000",
-      "img": "icons/consumables/eggs/eggs-white.webp",
-      "ingredient_taste": "umami",
+      "id": "E1emEssenceB01t0",
+      "img": "icons/commodities/gems/gem-rough-cushion-yellow.webp",
+      "ingredient_taste": "sour",
       "ingredient_taste2": "",
       "ip_cost": "0",
       "isEquipped": false,
@@ -39,20 +39,20 @@
       "isRelatedItem": false,
       "isSet": false,
       "isUnique": false,
-      "item_cost": "12",
+      "item_cost": "60",
       "item_quantity": "1",
       "item_rarity": "Common",
       "item_type": "material",
-      "name": "Egg",
+      "name": "Lightning Essence",
       "optional_params": {},
       "recipe_dish_uuid": "",
       "recipe_kind": "",
-      "uuid": "Item.F00dStap1eEgg000"
+      "uuid": "Item.E1emEssenceB01t0"
     },
     "template": "ZoiV53VaLzeRsEps",
     "templateSystemUniqueVersion": 3202566307,
     "unique": false,
-    "uniqueId": "F00dStap1eEgg000"
+    "uniqueId": "E1emEssenceB01t0"
   },
   "type": "equippableItem"
 }

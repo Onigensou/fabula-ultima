@@ -2,6 +2,10 @@
 //   • 5 staple ingredients (Egg / Rice / Fresh Milk / Meat / Rock Salt) — cheap
 //     and common ON PURPOSE, because staples are what players toss in casually,
 //     which is what makes a unique recipe discoverable by accident.
+//   • Lightning Essence — NOT a staple; the second member of the elemental
+//     essence material cycle, built to mirror the existing Flame Essence
+//     (Item.SkgnxeQnq4DVhVVU: material, sour, Common, 60z). Add further
+//     essences here with the same shape.
 //   • 11 unique dishes + their Active Effects.
 //   • Registers all 11 as core+filler recipes in _Cooking Config flags.
 //
@@ -45,6 +49,14 @@ const INGREDIENTS = [
   { id: "F00dStap1eSa1t00", name: "Rock Salt",  taste: "salty", cost: "8",
     img: "icons/consumables/food/salt-seasoning-spice-pink.webp",
     desc: "<p><em>Coarse pink crystals chipped from a seam. The oldest seasoning there is.</em></p>" },
+
+  // Elemental essence cycle — mirrors Flame Essence (sour / Common / 60z), whose
+  // description this deliberately echoes so the set reads as one family. The RO
+  // material pack Flame Essence draws from has no lightning stone (its essence
+  // run is fire/water/earth/shadow/gold), hence the core raw-gem icon.
+  { id: "E1emEssenceB01t0", name: "Lightning Essence", taste: "sour", cost: "60",
+    img: "icons/commodities/gems/gem-rough-cushion-yellow.webp",
+    desc: "<p><em>Essence that can be obtained from monsters in the storm area in the ecological environment.</em></p>" },
 ];
 
 // ── Unique dishes ───────────────────────────────────────────────────────────
@@ -70,8 +82,8 @@ const DISHES = [
 
   { id: "Un1qD1shSoda0000", ae: "Un1qAESoda000000", name: "Zesty Soda",
     img: "icons/consumables/drinks/alcohol-spirits-bottle-green.webp",
-    core: [{ name: "Starfruit" }, { name: "Bolt Eel" }],
-    desc: "<p><em>Starfruit pressed over a coil of eel until the whole bottle fizzes and spits. It bites the tongue and wakes the hands.</em></p><p>Increases <strong>Dexterity</strong> by one die size until the next rest.</p>",
+    core: [{ name: "Starfruit" }, { name: "Lightning Essence" }],
+    desc: "<p><em>Starfruit pressed cold, then a shard of storm essence dropped in to do the fizzing. It bites the tongue going down and leaves your hands quick for hours.</em></p><p>Increases <strong>Dexterity</strong> by one die size until the next rest.</p>",
     changes: [{ key: "bonus_dex", mode: AE_ADD, value: "2", priority: null }] },
 
   { id: "Un1qD1shConge000", ae: "Un1qAECongee0000", name: "Sage Congee",
@@ -145,12 +157,18 @@ const DISHES = [
 ];
 
 // --------------------------------------------------------------------------
-function stats() {
+// `createdTime` survives a re-run. world-export strips modifiedTime but NOT
+// createdTime, so regenerating it churns every doc in the review diff on each
+// run — and diff noise is precisely what hides a real removal. Existing docs
+// keep their original timestamp; only genuinely new ones get "now".
+const _created = new Map(); // docId -> original createdTime
+
+function stats(id) {
   const now = Date.now();
   return {
     compendiumSource: null, duplicateSource: null,
     coreVersion: "12.343", systemId: "custom-system-builder", systemVersion: "4.8.5",
-    createdTime: now, modifiedTime: now, lastModifiedBy: GM_USER,
+    createdTime: _created.get(id) ?? now, modifiedTime: now, lastModifiedBy: GM_USER,
   };
 }
 
@@ -184,7 +202,7 @@ function makeItem({ id, name, img, folder, effects = [], props, flags = {} }, tp
       // claiming to be its clone source.
       props: { ...props, id, uuid: `Item.${id}`, img },
     },
-    _stats: stats(),
+    _stats: stats(id),
   };
 }
 
@@ -202,7 +220,7 @@ function makeAe({ id, parentId, name, icon, desc, changes }) {
         originalUuid: `Item.${parentId}.ActiveEffect.${id}`, isFromTemplate: false,
       },
     },
-    sort: 0, _stats: stats(),
+    sort: 0, _stats: stats(id),
   };
 }
 
@@ -219,6 +237,9 @@ function makeAe({ id, parentId, name, icon, desc, changes }) {
   // recipe is silently undiscoverable. Check before writing anything.
   const existing = new Map();
   for await (const [key, val] of db.iterator()) {
+    // Same pass records original createdTime for both items and their AEs, so a
+    // re-run rewrites content without churning timestamps (see stats()).
+    if (val?._id && val?._stats?.createdTime) _created.set(val._id, val._stats.createdTime);
     if (key.startsWith("!items!") && val?.name) {
       if (!existing.has(val.name)) existing.set(val.name, []);
       existing.get(val.name).push({ id: val._id, type: val.system?.props?.item_type });

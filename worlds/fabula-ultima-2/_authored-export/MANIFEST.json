@@ -7673,6 +7673,12 @@
         "effects": 0
       },
       {
+        "id": "E1emEssenceB01t0",
+        "name": "Lightning Essence",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "YJ5lY7F4Y6JIsEw4",
         "name": "Lightning Greaves",
         "type": "equippableItem",

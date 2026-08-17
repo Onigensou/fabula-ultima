@@ -3,7 +3,7 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1786933780599,
+    "createdTime": 1786934570861,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -14,7 +14,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1786933780599,
+        "createdTime": 1786934570861,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -27,7 +27,7 @@
           "value": "2"
         }
       ],
-      "description": "<p><em>Starfruit pressed over a coil of eel until the whole bottle fizzes and spits. It bites the tongue and wakes the hands.</em></p><p>Increases <strong>Dexterity</strong> by one die size until the next rest.</p>",
+      "description": "<p><em>Starfruit pressed cold, then a shard of storm essence dropped in to do the fizzing. It bites the tongue going down and leaves your hands quick for hours.</em></p><p>Increases <strong>Dexterity</strong> by one die size until the next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -84,7 +84,7 @@
   "system": {
     "props": {
       "active_effect_config_table": {},
-      "description": "<p><em>Starfruit pressed over a coil of eel until the whole bottle fizzes and spits. It bites the tongue and wakes the hands.</em></p><p>Increases <strong>Dexterity</strong> by one die size until the next rest.</p>",
+      "description": "<p><em>Starfruit pressed cold, then a shard of storm essence dropped in to do the fizzing. It bites the tongue going down and leaves your hands quick for hours.</em></p><p>Increases <strong>Dexterity</strong> by one die size until the next rest.</p>",
       "effect_table": {},
       "id": "Un1qD1shSoda0000",
       "img": "icons/consumables/drinks/alcohol-spirits-bottle-green.webp",
