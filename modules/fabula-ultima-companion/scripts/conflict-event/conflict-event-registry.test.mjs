@@ -108,9 +108,28 @@ eq("an empty registry still offers none", (clearConflictEvents(), listConflictEv
 // The runtime dispatches by iterating EVENT_HANDLERS. If a handler is added
 // here without a dispatch site (or vice versa) the two drift silently, so the
 // list is pinned.
+//
+// This pin has now earned itself twice over. Adding a handler means editing
+// THREE places — this list, the frozen object registerConflictEvent builds, and
+// LIFECYCLE_HANDLERS in the runtime — and missing the second one registers the
+// event with only a console warning to show for it. That is exactly how
+// onTurnStart came back "registered" but absent from the event object during
+// the 2026-08-18 build; live-testing caught it, this pin would have caught it
+// sooner. Update it deliberately, never reflexively.
 
 eq("handler list is pinned", [...EVENT_HANDLERS],
-  ["onConflictStart", "onRoundStart", "onLedgerEvent", "onConflictEnd"]);
+  ["onConflictStart", "onRoundStart", "onTurnStart", "onLedgerEvent", "onConflictEnd"]);
+
+// The drift this pin exists to catch: a name in the list that registerConflictEvent
+// forgets to copy onto the frozen event. Register an event implementing EVERY
+// handler and assert all of them survive registration.
+const allHandlers = Object.fromEntries(EVENT_HANDLERS.map((k) => [k, noop]));
+clearConflictEvents();
+registerConflictEvent({ id: "every-handler", label: "Every", ...allHandlers }, quiet);
+eq("every pinned handler survives registration",
+  EVENT_HANDLERS.filter((k) => typeof getConflictEvent("every-handler")?.[k] === "function"),
+  [...EVENT_HANDLERS]);
+clearConflictEvents();
 
 // A registered event is frozen: a buggy sub-script must not be able to mutate
 // another event's handlers at runtime.

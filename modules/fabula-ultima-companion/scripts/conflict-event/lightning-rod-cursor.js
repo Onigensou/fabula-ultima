@@ -86,9 +86,10 @@ function ensureStyles() {
   z-index: ${CURSOR_Z_INDEX};
   pointer-events: none;
   transition: opacity .3s ease;
-  /* The bob rides the `translate` PROPERTY, leaving `transform` free to hold
-     the centering above. Composing them this way means the per-frame tracker
-     can keep writing left/top without fighting the animation. */
+  /* The bob rides the CSS "translate" PROPERTY, leaving "transform" free to
+     hold the centering above. Composing them this way means the per-frame
+     tracker can keep writing left/top without fighting the animation.
+     (No backticks in here — this whole block is a template literal.) */
   animation: fud-rod-bob 1.8s ease-in-out infinite;
   filter: drop-shadow(0 0 6px rgba(168,85,247,.85)) drop-shadow(0 2px 3px rgba(0,0,0,.55));
 }

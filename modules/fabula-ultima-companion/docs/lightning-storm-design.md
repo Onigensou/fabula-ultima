@@ -334,6 +334,107 @@ every single turn.
 
 ---
 
+## Presentation (built + live-tested 2026-08-18)
+
+The rules above were correct from the first live run and still read as
+arbitrary at the table, for two reasons: "who holds the Rod" was one effect
+icon in a row of effect icons, and the turn-start strike — the whole point of
+the mechanic — happened as a log line and a number. Both are now shown. No
+rule changed.
+
+### The Rod cursor
+
+`scripts/conflict-event/lightning-rod-cursor.js`. A purple arrow bobs above
+the holder's rendered sprite (slow 1.8s float). Placeholder art: the arrow is
+a CSS triangle, and `ROD_CURSOR_SRC` swaps in a real image when one exists.
+
+It is **derived from the Active Effect, not broadcast.** The Rod *is* an AE,
+Foundry replicates AEs to every client, so each client renders its own cursor
+off `createActiveEffect` / `updateActiveEffect` / `deleteActiveEffect` plus a
+`canvasReady` rescan. There is no socket to desync and no GM to be the source
+of truth; an F5 mid-battle re-derives the cursor from the world rather than
+from a message the client missed. Same contract as the Dominance Crest.
+
+Two details that are not obvious:
+
+- It anchors off `token.mesh.getBounds()` — the *rendered* sprite rect — not
+  the grid square. Token scale, off-center anchors, Contain fit and mirroring
+  all move the art away from its square, and the crest learned this the hard
+  way on Wandering Flame.
+- It follows `token.visible`, which is per-client. A holder a player cannot
+  see is not advertised to them by a floating purple arrow.
+
+It is self-scoping: the AE only exists during a Storm, so the cursor costs
+nothing in every other fight and needs no teardown from `onConflictEnd`.
+
+### The strike cinematic
+
+`scripts/conflict-event/lightning-storm-strike-fx.js`. The battlefield dims,
+the holder stays lit, a JB2A bolt falls with a thunder crack, the lights come
+back up — **and only then does the 30 Bolt land.**
+
+That ordering is the whole reason this hooks `onTurnStart` rather than the
+resource ledger. The runtime dispatches `onTurnStart` awaited and *before* the
+forced reaction pass that fires the Rod AE's own `rod_strike` row, so the
+cinematic completes ahead of its own damage. The ledger event — the obvious
+seam — is post-resolve and would have put the damage number on screen before
+the lightning that caused it. Measured live: the handler blocks 1797 ms for an
+1800 ms cinematic, then returns.
+
+**The dim is a PIXI layer on `canvas.stage`, not a DOM overlay.** Chat, the
+HUD, the sidebar and any open sheet stay lit; only the canvas darkens.
+
+**The struck token is exempted by cloning it above the dim**, not by punching
+a hole (a hole reveals the map background, not the token). The clone copies
+`token.mesh`'s transform wholesale, which is what makes it right for scaled,
+mirrored, rotated and Contain-fitted tokens — and animated `.webm` token art
+keeps playing, because the clone shares the live video texture. This is only
+exact because `canvas.primary`'s world transform is identity relative to the
+stage; verified live (all three intervening canvas groups are identity), and
+worth re-checking on a Foundry major.
+
+The dim is drawn in **world** coordinates over an inflated scene rect, so a
+camera pan or zoom mid-strike needs no per-frame work.
+
+**The watchdog is load-bearing.** The layer carries an unconditional
+self-destruct timer from the moment it mounts. A stranded dim on a player's
+screen is the one failure here that ruins a session, so it cannot depend on
+the timeline finishing, on the socket arriving, or on nothing throwing.
+
+Suppression: `shouldRender()` (hidden tab / occluded window / sim run) and
+`vfxSuppressed()` both skip the show. The rules never skip — the damage is
+applied by the caller either way. One accepted asymmetry: because the GM
+awaits the cinematic to sequence the damage, a GM whose window is hidden
+collapses its dwell to zero while player clients still play the full 1.8 s.
+Every broadcast VFX in this codebase behaves that way.
+
+### Wiring
+
+`turn_start` reaches events through one entry in `LIFECYCLE_HANDLERS`
+(conflict-event-runtime.js) **and** one in `EVENT_HANDLERS` plus the frozen
+object in `registerConflictEvent` (conflict-event-registry.js). Both files are
+authoritative — a handler added to one and not the other registers with only a
+console warning and then silently never fires. That is exactly what happened
+during this build and is why the registry now says so in a comment.
+
+The BD dispatch site needed no change: `state-handlers.js` already called
+`dispatchConflictEventLifecycle` for every phased standalone trigger.
+
+### Still to tune
+
+- **The bolt is centred on the token with no offset.** JB2A's
+  `LightningStrike01` puts its strike in the middle of an 800×800 frame with a
+  lot of empty space, so at `strikeScale: 2.2` it reads small and its impact
+  point sits high. Deliberate first pass — `CFG.strikeScale` and an anchor
+  offset are the knobs.
+- Cursor art is the placeholder triangle.
+- Never yet seen inside a real Battle Director conflict: the handler was
+  driven directly with a stub context (holder / non-holder / nobody-holding
+  all correct). The remaining unknown is the *feel* in a live fight, not the
+  wiring.
+
+---
+
 ## Related
 
 - [[project_lightning_surge_dungeon]] — roster, stat blocks, skill IDs, roll tables
