@@ -373,6 +373,59 @@
     else await item.delete();
   }
 
+  // ── Discovery ──────────────────────────────────────────────────────────────
+  // Unique recipes are never taught, only stumbled into, so the FIRST time a
+  // combination lands we mark it and the card celebrates. Persisted on the
+  // config item so the "new!" banner survives a reload and doesn't re-fire.
+  async function _markDiscovered(recipeName) {
+    if (!recipeName || !game.user?.isGM) return false;
+    const item = game.items?.find?.(i => i.name === "_Cooking Config");
+    if (!item) return false;
+    const seen = item.getFlag(MODULE_ID, "cookingConfig")?.discovered ?? [];
+    if (seen.includes(recipeName)) return false;
+    try {
+      await item.setFlag(MODULE_ID, "cookingConfig.discovered", [...seen, recipeName]);
+      return true;
+    } catch (e) { console.warn(TAG, "could not record discovery", e); return false; }
+  }
+
+  // Shared result-card payload for start() and devSim() — one definition, so a
+  // tweak to the card can't drift between the real flow and the dev harness.
+  const NEAR_MISS_HINT = "…something in that pot almost came together.";
+
+  function _buildResultsPayload({ outcome, applied, cfg, picks, cookerCheck, firstDiscovery }) {
+    const dishItem = applied ? game.items.get(applied.dishId) : null;
+    const isMystery = outcome.kind === "mystery";
+    const dishName = isMystery ? "Mysterious Hot-Pot" : (dishItem?.name ?? "???");
+    const dishImg = (isMystery ? game.items.get(String(cfg.mysteryDishId))?.img : dishItem?.img) ?? "icons/svg/item-bag.svg";
+    const tierStars = outcome.tier ? `<span style="color:#ffd700;font-size:1.25em;letter-spacing:2px">${"★".repeat(outcome.tier)}</span>` : "";
+    let kindLabel = outcome.kind === "dish"    ? `${outcome.family.charAt(0).toUpperCase() + outcome.family.slice(1)} ${tierStars}`
+                  : isMystery                  ? "🎲 Mystery Pot!"
+                  : outcome.kind === "goop"    ? "💀 Abyssal Goop"
+                  : "📖 Recipe Match";
+    if (firstDiscovery) {
+      kindLabel = `<span style="color:#ffd700;font-weight:700;letter-spacing:1px">✦ NEW DISH DISCOVERED ✦</span><br>${kindLabel}`;
+    }
+    // Deliberately never names the dish — a tease that gave the answer away
+    // would end the guessing instead of starting it.
+    if (outcome.nearMiss) {
+      kindLabel += `<br><span style="opacity:.75;font-style:italic;font-size:.85em">${NEAR_MISS_HINT}</span>`;
+    }
+    const rawEffect = dishItem?.system?.props?.description ?? "";
+    // `payload` is what crosses the socket — plain data only, never a Document.
+    const payload = {
+      dishName, dishImg, kindLabel,
+      cookerCheck,
+      dishEffect: rawEffect.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
+      ingredientNames: picks.map(p => ({ actorName: p.entry.actor.name, itemName: p.item.name })),
+      kind: outcome.kind,
+      nearMiss: !!outcome.nearMiss,
+      firstDiscovery: !!firstDiscovery,
+      breakdown: outcome.breakdown,
+    };
+    return { payload, dishItem, isMystery };
+  }
+
   // ── devSim ─────────────────────────────────────────────────────────────────
   // Simulates a complete cooking loop from a single GM client.
   // GM picks ingredients one character at a time via the normal picker UI.
@@ -486,26 +539,10 @@
     }
 
     // --- build results payload ---
-    const dishItem = applied ? game.items.get(applied.dishId) : null;
-    const isMyster = outcome.kind === "mystery";
-    const dishName  = isMyster ? "Mysterious Hot-Pot" : (dishItem?.name ?? "???");
-    const dishImg   = (isMyster ? game.items.get(String(cfg.mysteryDishId))?.img : dishItem?.img) ?? "icons/svg/item-bag.svg";
-    const tierStars = outcome.tier ? `<span style="color:#ffd700;font-size:1.25em;letter-spacing:2px">${"★".repeat(outcome.tier)}</span>` : "";
-    const kindLabel = outcome.kind === "dish"    ? `${outcome.family.charAt(0).toUpperCase()+outcome.family.slice(1)} ${tierStars}`
-                    : outcome.kind === "mystery" ? "🎲 Mystery Pot!"
-                    : outcome.kind === "goop"    ? "💀 Abyssal Goop"
-                    : "📖 Recipe Match";
-    const rawEffect = dishItem?.system?.props?.description ?? "";
-    const dishEffect = rawEffect.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-    const ingredientNames = picks.map(p => ({ actorName: p.entry.actor.name, itemName: p.item.name }));
-    const resultsPayload = {
-      dishName, dishImg, kindLabel,
-      cookerCheck,
-      dishEffect,
-      ingredientNames,
-      kind: outcome.kind,
-      breakdown: outcome.breakdown,
-    };
+    const firstDiscovery = outcome.kind === "recipe" ? await _markDiscovered(outcome.recipeName) : false;
+    const { payload: resultsPayload, dishItem, isMystery: isMyster } =
+      _buildResultsPayload({ outcome, applied, cfg, picks, cookerCheck, firstDiscovery });
+    const { dishName, dishImg } = resultsPayload;
 
     // --- show results locally ---
     globalThis.CookingUI?.showResults(sessionId, resultsPayload);
@@ -531,11 +568,13 @@
           </div>
         </div>
         <ul style="margin:6px 0">${contribLines}</ul>
+        ${firstDiscovery ? `<div style="color:#b8860b;font-weight:700;margin:4px 0">✦ New dish discovered: ${dishName}</div>` : ""}
+        ${outcome.nearMiss ? `<div style="font-style:italic;opacity:.75;margin:4px 0">${NEAR_MISS_HINT}</div>` : ""}
       </div>`,
     });
 
     console.log(TAG, "devSim complete:", outcome);
-    return { ...outcome, appliedDishId: applied?.dishId ?? null, sessionId };
+    return { ...outcome, appliedDishId: applied?.dishId ?? null, firstDiscovery, sessionId };
   }
 
   // ── start ──────────────────────────────────────────────────────────────────
@@ -676,26 +715,10 @@
     if (applyId) applied = await applyDish(applyId, entries.map(e => e.actor.uuid));
 
     // --- build results payload ---
-    const dishItem = applied ? game.items.get(applied.dishId) : null;
-    const isMyster = outcome.kind === "mystery";
-    const dishName = isMyster ? "Mysterious Hot-Pot" : (dishItem?.name ?? "???");
-    const dishImg  = (isMyster ? game.items.get(String(cfg.mysteryDishId))?.img : dishItem?.img) ?? "icons/svg/item-bag.svg";
-    const tierStars = outcome.tier ? `<span style="color:#ffd700;font-size:1.25em;letter-spacing:2px">${"★".repeat(outcome.tier)}</span>` : "";
-    const kindLabel = outcome.kind === "dish"    ? `${outcome.family.charAt(0).toUpperCase()+outcome.family.slice(1)} ${tierStars}`
-                    : outcome.kind === "mystery" ? "🎲 Mystery Pot!"
-                    : outcome.kind === "goop"    ? "💀 Abyssal Goop"
-                    : "📖 Recipe Match";
-    const rawEffect = dishItem?.system?.props?.description ?? "";
-    const dishEffect = rawEffect.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-    const ingredientNames = picks.map(p => ({ actorName: p.entry.actor.name, itemName: p.item.name }));
-    const resultsPayload = {
-      dishName, dishImg, kindLabel,
-      cookerCheck,
-      dishEffect,
-      ingredientNames,
-      kind: outcome.kind,
-      breakdown: outcome.breakdown,
-    };
+    const firstDiscovery = outcome.kind === "recipe" ? await _markDiscovered(outcome.recipeName) : false;
+    const { payload: resultsPayload, dishItem, isMystery: isMyster } =
+      _buildResultsPayload({ outcome, applied, cfg, picks, cookerCheck, firstDiscovery });
+    const { dishName, dishImg } = resultsPayload;
 
     // --- show results ---
     game.socket.emit(SOCKET_CH, { type: "COOKING_RESULTS", sessionId, outcome: resultsPayload });
@@ -723,11 +746,13 @@
           </div>
         </div>
         <ul style="margin:6px 0">${contribLines}</ul>
+        ${firstDiscovery ? `<div style="color:#b8860b;font-weight:700;margin:4px 0">✦ New dish discovered: ${dishName}</div>` : ""}
+        ${outcome.nearMiss ? `<div style="font-style:italic;opacity:.75;margin:4px 0">${NEAR_MISS_HINT}</div>` : ""}
         ${detail}
       </div>`,
     });
 
-    return { ...outcome, appliedDishId: applied?.dishId ?? null, sessionId };
+    return { ...outcome, appliedDishId: applied?.dishId ?? null, firstDiscovery, sessionId };
   }
 
   // ── Socket handler ─────────────────────────────────────────────────────────

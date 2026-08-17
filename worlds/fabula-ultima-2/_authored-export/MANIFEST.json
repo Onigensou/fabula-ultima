@@ -4373,6 +4373,12 @@
         "effects": 1
       },
       {
+        "id": "Un1qD1shCreamSt0",
+        "name": "Cream Stew",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "PdMEWL0xZ4Hqg1D5",
         "name": "Create Phantasm: Dread",
         "type": "equippableItem",
@@ -5005,6 +5011,12 @@
       {
         "id": "UVC0e32PHNjftZqa",
         "name": "Ecdysis",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "F00dStap1eEgg000",
+        "name": "Egg",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5771,6 +5783,12 @@
         "effects": 1
       },
       {
+        "id": "F00dStap1eMi1k00",
+        "name": "Fresh Milk",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "sBYkDhguKM3Mp4Xo",
         "name": "Fresh Water",
         "type": "equippableItem",
@@ -6257,6 +6275,12 @@
         "effects": 0
       },
       {
+        "id": "Un1qD1shGo1emSt0",
+        "name": "Golem Stew",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "Vp2ssK4jo3hm2gp0",
         "name": "Goop",
         "type": "equippableItem",
@@ -6465,6 +6489,12 @@
         "name": "Griffin Dance",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "Un1qD1shSteak000",
+        "name": "Grilled-Hog Steak",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "oxDtzHmuwVnCJsVg",
@@ -6723,6 +6753,12 @@
         "name": "Hellfist",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "Un1qD1shHerba1T0",
+        "name": "Herbal Tea",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "VfwzD91EZjnRnkHE",
@@ -7841,6 +7877,12 @@
         "effects": 0
       },
       {
+        "id": "Un1qD1shOme1ette",
+        "name": "Lucky Omelette",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "B0rR4DCijW1zC3SY",
         "name": "Lucky Seven",
         "type": "equippableItem",
@@ -8197,6 +8239,12 @@
       {
         "id": "ydVLZINWsTRWUIIx",
         "name": "Meanad Dance",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "F00dStap1eMeat00",
+        "name": "Meat",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8739,6 +8787,12 @@
         "name": "Monster of Frankensteiner — Equipment Set",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "Un1qD1shCustard0",
+        "name": "Moon Custard",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "nJXcfE31UpQ0rGJI",
@@ -9713,6 +9767,12 @@
         "effects": 0
       },
       {
+        "id": "Un1qD1shFugu0000",
+        "name": "Pufferfish Sashimi",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "4kHdR99xMncm1xZg",
         "name": "Pulse of the Maggots",
         "type": "equippableItem",
@@ -9959,6 +10019,12 @@
         "effects": 0
       },
       {
+        "id": "Un1qD1shSouff1e0",
+        "name": "Regretful Soufflé",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "ENH0AYNeBYoScQ99",
         "name": "Reinforce",
         "type": "equippableItem",
@@ -10095,6 +10161,18 @@
         "name": "Rewinder",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "F00dStap1eRice00",
+        "name": "Rice",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Un1qD1shR1ceBa11",
+        "name": "Rice Ball",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "tzr1OjK6tqygYWxw",
@@ -10271,6 +10349,12 @@
         "effects": 0
       },
       {
+        "id": "F00dStap1eSa1t00",
+        "name": "Rock Salt",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "TA0NJNscsloAJHqn",
         "name": "Rock your World",
         "type": "equippableItem",
@@ -10407,6 +10491,12 @@
         "name": "Sadistic Whip",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "Un1qD1shConge000",
+        "name": "Sage Congee",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "NHQNneNjKb1Je06v",
@@ -12895,6 +12985,12 @@
       {
         "id": "mEasUD0nS0YKOKjX",
         "name": "Zestfire Grill Platter",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "Un1qD1shSoda0000",
+        "name": "Zesty Soda",
         "type": "equippableItem",
         "effects": 1
       },

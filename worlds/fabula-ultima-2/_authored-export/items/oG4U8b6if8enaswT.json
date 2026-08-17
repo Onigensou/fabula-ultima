@@ -53,6 +53,136 @@
               }
             ],
             "name": "Giga Pudding"
+          },
+          {
+            "core": [
+              {
+                "name": "Meat"
+              },
+              {
+                "name": "Cooking Oil"
+              }
+            ],
+            "dishId": "Un1qD1shSteak000",
+            "name": "Grilled-Hog Steak"
+          },
+          {
+            "core": [
+              {
+                "name": "Starfruit"
+              },
+              {
+                "name": "Bolt Eel"
+              }
+            ],
+            "dishId": "Un1qD1shSoda0000",
+            "name": "Zesty Soda"
+          },
+          {
+            "core": [
+              {
+                "name": "Rice"
+              },
+              {
+                "name": "Mindful Sole"
+              }
+            ],
+            "dishId": "Un1qD1shConge000",
+            "name": "Sage Congee"
+          },
+          {
+            "core": [
+              {
+                "name": "Egg"
+              },
+              {
+                "name": "Fresh Milk"
+              }
+            ],
+            "dishId": "Un1qD1shCustard0",
+            "name": "Moon Custard"
+          },
+          {
+            "core": [
+              {
+                "name": "Toxic Puffer"
+              },
+              {
+                "name": "Rock Salt"
+              }
+            ],
+            "dishId": "Un1qD1shFugu0000",
+            "name": "Pufferfish Sashimi"
+          },
+          {
+            "core": [
+              {
+                "name": "Ember Petal"
+              },
+              {
+                "name": "Fresh Milk"
+              }
+            ],
+            "dishId": "Un1qD1shCreamSt0",
+            "name": "Cream Stew"
+          },
+          {
+            "core": [
+              {
+                "name": "Darkroot Herb"
+              },
+              {
+                "name": "Honey"
+              }
+            ],
+            "dishId": "Un1qD1shHerba1T0",
+            "name": "Herbal Tea"
+          },
+          {
+            "core": [
+              {
+                "name": "Rice"
+              },
+              {
+                "name": "Rock Salt"
+              }
+            ],
+            "dishId": "Un1qD1shR1ceBa11",
+            "name": "Rice Ball"
+          },
+          {
+            "core": [
+              {
+                "name": "Lucky Loach"
+              },
+              {
+                "name": "Egg"
+              }
+            ],
+            "dishId": "Un1qD1shOme1ette",
+            "name": "Lucky Omelette"
+          },
+          {
+            "core": [
+              {
+                "name": "Regret",
+                "qty": 2
+              }
+            ],
+            "dishId": "Un1qD1shSouff1e0",
+            "name": "Regretful Soufflé"
+          },
+          {
+            "core": [
+              {
+                "name": "Golem Heart"
+              },
+              {
+                "name": "Bean Paste"
+              }
+            ],
+            "dishId": "Un1qD1shGo1emSt0",
+            "name": "Golem Stew"
           }
         ]
       }

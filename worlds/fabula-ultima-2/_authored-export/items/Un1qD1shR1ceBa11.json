@@ -1,0 +1,124 @@
+{
+  "_id": "Un1qD1shR1ceBa11",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786933780610,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "Un1qAER1ceBa110",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1786933780610,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "condition_shaken",
+          "mode": 5,
+          "priority": null,
+          "value": "IM"
+        },
+        {
+          "key": "condition_frightened",
+          "mode": 5,
+          "priority": null,
+          "value": "IM"
+        }
+      ],
+      "description": "<p><em>Rice pressed in salted palms into a shape that fits a hand. No garnish, no ceremony. Somebody made this for you to take with you.</em></p><p>Grants immunity to <strong>Shaken</strong> and <strong>Frightened</strong> until the next rest.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Un1qAER1ceBa110",
+          "originalParentId": "Un1qD1shR1ceBa11",
+          "originalUuid": "Item.Un1qD1shR1ceBa11.ActiveEffect.Un1qAER1ceBa110"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Jade_Parcels.webp",
+      "name": "Rice Ball",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "food"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "cookingDish": {
+        "family": "recipe",
+        "instant": {},
+        "tier": 0
+      }
+    }
+  },
+  "folder": "UNuBsFNeuyDDZ5AZ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Jade_Parcels.webp",
+  "name": "Rice Ball",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "description": "<p><em>Rice pressed in salted palms into a shape that fits a hand. No garnish, no ceremony. Somebody made this for you to take with you.</em></p><p>Grants immunity to <strong>Shaken</strong> and <strong>Frightened</strong> until the next rest.</p>",
+      "effect_table": {},
+      "id": "Un1qD1shR1ceBa11",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Jade_Parcels.webp",
+      "ingredient_taste": "",
+      "ingredient_taste2": "",
+      "ip_cost": "0",
+      "isEquipped": false,
+      "isIngredient": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_cost": "0",
+      "item_quantity": "1",
+      "item_rarity": "Common",
+      "item_type": "consumable",
+      "name": "Rice Ball",
+      "optional_params": {},
+      "recipe_dish_uuid": "",
+      "recipe_kind": "",
+      "uuid": "Item.Un1qD1shR1ceBa11"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 3202566307,
+    "unique": false,
+    "uniqueId": "Un1qD1shR1ceBa11"
+  },
+  "type": "equippableItem"
+}

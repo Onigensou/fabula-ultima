@@ -1,0 +1,58 @@
+{
+  "_id": "F00dStap1eMeat00",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1786933780594,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "36rowiHAcXnIPsKK",
+  "img": "icons/consumables/meat/hock-leg-pink-brown.webp",
+  "name": "Meat",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "description": "<p><em>A good honest cut. What it was is between you and the butcher.</em></p>",
+      "effect_table": {},
+      "id": "F00dStap1eMeat00",
+      "img": "icons/consumables/meat/hock-leg-pink-brown.webp",
+      "ingredient_taste": "umami",
+      "ingredient_taste2": "",
+      "ip_cost": "0",
+      "isEquipped": false,
+      "isIngredient": true,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_cost": "45",
+      "item_quantity": "1",
+      "item_rarity": "Common",
+      "item_type": "material",
+      "name": "Meat",
+      "optional_params": {},
+      "recipe_dish_uuid": "",
+      "recipe_kind": "",
+      "uuid": "Item.F00dStap1eMeat00"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 3202566307,
+    "unique": false,
+    "uniqueId": "F00dStap1eMeat00"
+  },
+  "type": "equippableItem"
+}
