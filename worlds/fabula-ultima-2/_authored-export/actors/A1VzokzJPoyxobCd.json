@@ -313,7 +313,7 @@
     },
     "detectionModes": [],
     "displayBars": 50,
-    "displayName": 0,
+    "displayName": 50,
     "disposition": -1,
     "flags": {
       "barbrawl": {
@@ -403,6 +403,10 @@
             "subdivisionsOwner": false
           }
         }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
       }
     },
     "height": 1,
@@ -471,8 +475,8 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1,
-      "scaleY": 1,
+      "scaleX": 0.67,
+      "scaleY": 0.67,
       "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Electro%20Slime_Standard.png",
       "tint": "#ffffff"
     },
