@@ -16,7 +16,7 @@
     }
   },
   "folder": "AF1TjOn1OTJNHrkx",
-  "formula": "1d8",
+  "formula": "1d9",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon - Enemies",
   "ownership": {
@@ -25,6 +25,21 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "1Y4dliBvPhs5D5eH",
+      "documentCollection": "Actor",
+      "documentId": "x8TBsDZaRgoSo5no",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/svg/mystery-man.svg",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Obsidrax",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "HiJf9Ax3NX4Yj8U3",
       "documentCollection": "Actor",
@@ -36,7 +51,7 @@
         6,
         6
       ],
-      "text": "Volt Seahorse",
+      "text": "Ampere",
       "type": "document",
       "weight": 1
     },

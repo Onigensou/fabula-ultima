@@ -14,7 +14,7 @@
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
-  "img": "icons/svg/mystery-man.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
   "items": [
     {
       "_id": "lK1xNxttDeXzwhVh",
@@ -481,7 +481,7 @@
       "rotation": 0,
       "scaleX": 1.84,
       "scaleY": 1.84,
-      "src": "icons/svg/mystery-man.svg",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -595,10 +595,10 @@
       "current_hp": "115",
       "current_ip": "0",
       "current_mp": "30",
-      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
-      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
       "dagger_ef": "125",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
@@ -649,7 +649,7 @@
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
       "init": "10",
       "ins_base": "10",
       "ins_current": 8,
@@ -734,8 +734,8 @@
       },
       "spear_ef": "100",
       "species": "BEAST",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
-      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
       "steal_percentage_table": {},
       "stealable_loot": {},
       "study_text": "<p>A drifting shape that feeds on magic rather than meat. Its sting pulls the mana straight out of a caster and turns it back on them — <strong>the fuller your reserves, the deeper it cuts</strong>. It rides the storm currents gladly; <strong>ice</strong> and <strong>earth</strong> bring it out of the air.</p>",

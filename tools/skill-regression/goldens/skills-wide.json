@@ -137,7 +137,7 @@
       "Valor",
       "Varan",
       "Voidog",
-      "Volt Seahorse",
+      "Ampere",
       "Weaponmaster",
       "Wind Orb",
       "Wind Slime",
@@ -12187,8 +12187,8 @@
       "skillType": "Attack",
       "targets": 1
     },
-    "Volt Seahorse / Bubble Beam": {
-      "caster": "Volt Seahorse",
+    "Ampere / Bubble Beam": {
+      "caster": "Ampere",
       "element": "Physical",
       "hasDamage": true,
       "hasHealing": false,
@@ -12213,8 +12213,8 @@
       "skillType": "Attack",
       "targets": 1
     },
-    "Volt Seahorse / Bubble Splash": {
-      "caster": "Volt Seahorse",
+    "Ampere / Bubble Splash": {
+      "caster": "Ampere",
       "element": "ice",
       "hasDamage": true,
       "hasHealing": false,
@@ -12239,8 +12239,8 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Volt Seahorse / Voltage Discharge": {
-      "caster": "Volt Seahorse",
+    "Ampere / Voltage Discharge": {
+      "caster": "Ampere",
       "element": "",
       "hasDamage": false,
       "hasHealing": false,

@@ -13724,6 +13724,26 @@
         "effects": 1
       },
       {
+        "id": "kAYN54Id3iTAOw1A",
+        "name": "Ampere",
+        "type": "character",
+        "items": [
+          {
+            "id": "25CGufwQTX7ZHwW6",
+            "name": "Bubble Beam"
+          },
+          {
+            "id": "oN5ck6b98DPZbfPj",
+            "name": "Bubble Splash"
+          },
+          {
+            "id": "IQjzHjHJRozJJ4Oe",
+            "name": "Volt Counter"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "oqV7VyKrEptU0xXX",
         "name": "Andrey",
         "type": "character",
@@ -20718,6 +20738,13 @@
         "effects": 0
       },
       {
+        "id": "x8TBsDZaRgoSo5no",
+        "name": "Obsidrax",
+        "type": "character",
+        "items": [],
+        "effects": 0
+      },
+      {
         "id": "dD0JTr0TeHYPjC7d",
         "name": "Oki (Copy)",
         "type": "character",
@@ -23074,26 +23101,6 @@
         "effects": 1
       },
       {
-        "id": "kAYN54Id3iTAOw1A",
-        "name": "Volt Seahorse",
-        "type": "character",
-        "items": [
-          {
-            "id": "25CGufwQTX7ZHwW6",
-            "name": "Bubble Beam"
-          },
-          {
-            "id": "oN5ck6b98DPZbfPj",
-            "name": "Bubble Splash"
-          },
-          {
-            "id": "IQjzHjHJRozJJ4Oe",
-            "name": "Volt Counter"
-          }
-        ],
-        "effects": 0
-      },
-      {
         "id": "azHtPiPS4M1CnaAa",
         "name": "Wagner",
         "type": "character",
@@ -24341,7 +24348,7 @@
       {
         "id": "0LEghOv3aJyZVyVs",
         "name": "Valley of the Dragon - Enemies",
-        "results": 8
+        "results": 9
       },
       {
         "id": "nrt4wbj4Unk8Xi9W",

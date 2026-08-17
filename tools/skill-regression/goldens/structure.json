@@ -51599,7 +51599,7 @@
     }
    ]
   },
-  "Volt Seahorse / Bubble Beam": {
+  "Ampere / Bubble Beam": {
    "props": {
     "check_bonus": "7",
     "class": "NPC",
@@ -51623,7 +51623,7 @@
    ],
    "aes": []
   },
-  "Volt Seahorse / Bubble Splash": {
+  "Ampere / Bubble Splash": {
    "props": {
     "action_keywords": "overflow",
     "check_bonus": "7",
@@ -51649,7 +51649,7 @@
    "reactions": [],
    "aes": []
   },
-  "Volt Seahorse / Voltage Discharge": {
+  "Ampere / Voltage Discharge": {
    "props": {
     "class": "NPC",
     "cost": "10 MP",

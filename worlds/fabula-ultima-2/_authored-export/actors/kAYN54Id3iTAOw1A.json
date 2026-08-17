@@ -14,7 +14,7 @@
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
-  "img": "icons/svg/mystery-man.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ampyr_Standard.png",
   "items": [
     {
       "_id": "25CGufwQTX7ZHwW6",
@@ -161,7 +161,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Volt Seahorse is struck by damage and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>The current earths through everything still standing, dealing 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to every other creature in the conflict, its own allies included.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Ampere is struck by damage and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>The current earths through everything still standing, dealing 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to every other creature in the conflict, its own allies included.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -320,7 +320,7 @@
       "type": "equippableItem"
     }
   ],
-  "name": "Volt Seahorse",
+  "name": "Ampere",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "WQGFvLStTZeWGpak": 3,
@@ -462,7 +462,7 @@
       "shadows": 0
     },
     "lockRotation": false,
-    "name": "Volt Seahorse",
+    "name": "Ampere",
     "occludable": {
       "radius": 0
     },
@@ -502,7 +502,7 @@
       "rotation": 0,
       "scaleX": 1.84,
       "scaleY": 1.84,
-      "src": "icons/svg/mystery-man.svg",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ampyr_Standard.png",
       "tint": "#ffffff"
     },
     "width": 1
@@ -629,10 +629,10 @@
       "current_hp": "175",
       "current_ip": "0",
       "current_mp": "30",
-      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
-      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ampyr_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ampyr_Standard.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ampyr_Standard.png",
       "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
@@ -683,7 +683,7 @@
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ampyr_Standard.png",
       "init": "9",
       "ins_base": "10",
       "ins_current": 8,
@@ -726,7 +726,7 @@
       "mig_current": 8,
       "mimic": false,
       "minimum_critical_dice": 6,
-      "name": "Volt Seahorse",
+      "name": "Ampere",
       "normal_spell_list": {},
       "npc_rank": "soldier",
       "override_all_damage_type": "None",
@@ -761,20 +761,20 @@
         "IQjzHjHJRozJJ4Oe": {
           "id": "${item.id}",
           "name": "Volt Counter",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Volt Seahorse is struck by damage and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>The current earths through everything still standing, dealing 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to every other creature in the conflict, its own allies included.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Ampere is struck by damage and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>The current earths through everything still standing, dealing 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to every other creature in the conflict, its own allies included.</p>",
           "roll": "",
           "uuid": "Actor.kAYN54Id3iTAOw1A.Item.IQjzHjHJRozJJ4Oe"
         }
       },
       "spear_ef": "125",
       "species": "BEAST",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
-      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ampyr_Standard.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ampyr_Standard.png",
       "steal_percentage_table": {},
       "stealable_loot": {},
       "study_text": "<p>It soaks a battlefield before it ever charges one. Anything left <strong>wet</strong> conducts the current beautifully — its own allies included, which it does not appear to mind. <strong>Earth</strong> grounds it for good.</p>",
       "subtype": "Sub-Type",
-      "subtype_list": "AQUATIC",
+      "subtype_list": "DRAGON",
       "sword_ef": "100",
       "tactic_notes": "",
       "thrown_ef": "125",
