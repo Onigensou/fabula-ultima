@@ -180,9 +180,9 @@
   //     cannot lose work.
   //   • A create (item in the save, absent live) still restores the SAVED copy,
   //     definition included, because there is genuinely nothing live to prefer.
-  //     After name re-pairing (below) that is 28 documents on slot 1 and 13 on
-  //     slot 2. Of slot 1's 28: 10 still match a master, 14 diverge from one and
-  //     4 have none — so 18 are not restorable from one. Slot 2's 13 split
+  //     After name re-pairing (below) that is 36 documents on slot 1 and 13 on
+  //     slot 2. Of slot 1's 36: 10 still match a master, 21 diverge from one and
+  //     5 have none — so 26 are not restorable from one. Slot 2's 13 split
   //     3 / 10 / 0. The diverging ones are mostly Hako's gear,
   //     where the difference is per-instance refinement rather than staleness.
   //     Sourcing these from the master instead would restore a current
@@ -190,12 +190,15 @@
   //     the saved copy is kept because it destroys nothing that exists.
   //
   // Deliberately NOT state, though it looks like it: `name`. It differs on 9 of
-  // slot 1's items and every one is a refinement prefix the live world earned
-  // after the save — "Full Plate" against a live "+4 Full Plate". Restoring the
+  // slot 1's items: 5 are refinement prefixes the live world earned after the
+  // save ("Full Plate" against a live "+4 Full Plate"), and 4 are wholesale
+  // renames (Hina's "PROPHETIC DEFENDER STYLE" -> "Prophetic Defender", three of
+  // Geist's Zero Powers). Restoring either would undo authoring. Restoring the
   // saved name would quietly strip the +4; applyActorEmbeds re-points the equip
-  // SLOTS at the live name instead. (`refine_count` / `refine_level` differ on 11
-  // of slot 1's items — 22 prop-instances, two per item — and in every case the
-  // prop is present LIVE and absent from the save, so adding them here would be a no-op under the hasOwnProperty gate
+  // SLOTS at the live name instead. (`refine_count` / `refine_level` differ on 17
+  // of slot 1's items — 34 prop-instances, two per item, counted over ALL four
+  // restored buckets — and in every case the prop is present LIVE and absent
+  // from the save, so adding them here would be a no-op under the hasOwnProperty gate
   // below. Refinement itself lives in the name and the stat props.)
   const ITEM_STATE_PROPS = ["isEquipped", "item_quantity"];
 
@@ -373,7 +376,7 @@
     const m = masterFor(obj);
     if (!m) return false;
     // `uniqueId` is stamped on create and INHERITED by a duplicate, so it is not
-    // per-instance: 13 world items share Amber Pendant's, and 384 embedded items
+    // per-instance: 13 world items share Amber Pendant's, and 382 embedded items
     // resolve to a master carrying a different NAME. None of those currently
     // also matches by signature, so the id alone has been giving the right
     // answer — by luck, not by construction. Requiring the name too closes it
@@ -393,9 +396,12 @@
   // RECURSIVELY here rather than left to the parent update, and `effects` is
   // stripped from the Item body update to keep ownership in one place.
   //
-  // ⚠ That recursion is now DEAD CODE: `guarded` is exactly `type === "Item"`, so
-  // an Item always takes the equip-sync path above it. It is kept as the shape to
-  // restore if the guard ever becomes conditional again.
+  // ⚠ That recursion has been REMOVED, not just bypassed. It was unreachable
+  // (`guarded` is exactly `type === "Item"`), and it was a trap rather than a
+  // spare part: it re-entered with `guarded === false`, which would have routed
+  // an ITEM's effects through the ACTOR-AE keep rule and deleted any item effect
+  // absent from the snapshot — the exact opposite of the invariant below, and it
+  // would drop things like "+4 Full Plate"'s Armor DEF / Armor MDEF.
   async function applyEmbedsDiff(owner, type, savedArr = []) {
     const collection = owner.getEmbeddedCollection(type);
     const liveById   = new Map([...collection.values()].map(d => [d.id, d]));
@@ -530,8 +536,8 @@
       // reactionConfig carrier with no world master: exactly the unrecoverable
       // case this guard exists for. `directorAppliedBy` alone is NOT the
       // discriminator — it means "the director created it", not "it is
-      // disposable", and the author can then mark the result permanent. 3 of the
-      // 4 actor AEs carrying it are also directorPermanent.
+      // disposable", and the author can then mark the result permanent. All FOUR
+      // of slot 1's actor AEs carrying it are also directorPermanent.
       //
       // Borrowing `isTransientAE` WHOLESALE does not work either: it is
       // keep-biased by design (a passive AE with no duration, no buff/debuff tag
@@ -540,6 +546,17 @@
       // case doing nothing at all. So the snapshot stays authoritative and only
       // the explicit opt-outs, plus hand-placed config, are held back: 5 deleted
       // (Campfire Cake x4, Curse (Bad)) and 7 kept.
+      //
+      // ⚖ Declared divergence: those 5 all satisfy `isRestBound` in
+      // shared/ae-lifetime.js — `statuses:["permanent"]` or a numeric
+      // `campRestCharges` — which classes them as surviving every tick until a
+      // Rest, food buffs named as the case. That module exists because three
+      // systems used to answer AE lifetime independently and disagreed, so
+      // differing from it needs saying out loud: a LOAD is not a tick. Restoring
+      // a snapshot means the actor's state becomes the snapshot's, and a camp
+      // buff eaten after the save belongs to the run being discarded — on a party
+      // swap it would be another party's buff. Rest-bound survival is about the
+      // passage of play, not about being restored over.
       for (const [id, live] of liveById) {
         if (savedById.has(id)) continue;
         const f = live.flags?.[MOD] ?? {};
@@ -620,22 +637,16 @@
         for (const saved of toUpdate) {
           const item = owner.getEmbeddedCollection("Item").get(saved._id);
           if (!item) continue;
-          if (guarded) {
-            // An Item's AEs are part of its DEFINITION (a transfer:true gear AE,
-            // a reactionConfig bridge), so they are never created or deleted from
-            // a snapshot. But `disabled` carries the EQUIP toggle, and the update
-            // above restores `isEquipped` — so sync the two, or the load leaves
-            // worn gear inert. Nothing else repairs it: armor-equip-gate.js fires
-            // only for item_type "armor", and reconcileEquip is never called on
-            // the load path. The engine's own helper reads the item's LIVE
-            // isEquipped (just written) and flips its effects, so an AE absent
-            // from an old snapshot is still switched on correctly.
-            if (!Object.prototype.hasOwnProperty.call(saved.system?.props ?? {}, "isEquipped")) continue;
-            nested.update += await syncItemEquipEffects(item);
-            continue;
-          }
-          const fx = await applyEmbedsDiff(item, "ActiveEffect", saved.effects ?? []);
-          nested.update += fx.update; nested.create += fx.create; nested.delete += fx.delete;
+          // An Item's AEs are part of its DEFINITION (a transfer:true gear AE, a
+          // reactionConfig bridge), so they are never created or deleted from a
+          // snapshot. But `disabled` carries the EQUIP toggle, and the update
+          // above restores `isEquipped` — so sync the two, or the load leaves
+          // worn gear inert. Nothing else repairs it: armor-equip-gate.js fires
+          // only for item_type "armor", and reconcileEquip is never called on the
+          // load path. Reads the item's LIVE isEquipped (just written), so an AE
+          // absent from an old snapshot is still switched on correctly.
+          if (!Object.prototype.hasOwnProperty.call(saved.system?.props ?? {}, "isEquipped")) continue;
+          nested.update += await syncItemEquipEffects(item);
         }
       }
     }
