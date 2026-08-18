@@ -1,323 +1,201 @@
-# Rest-Time Save Flow — update proposal
+# Rest-Time Save Ceremony — design
 
-**Status:** proposal, not implemented. Awaiting go-ahead.
-**Scope:** UI/UX + flow orchestration. No change to save/load *logic* — `SaveSystem.Core.save/load`,
-the extractors, and the storage layer are used as-is.
+**Status:** implemented on `feat/rest-save-flow`. **Not live-tested** — see §8.
+**Scope:** UI/UX + flow orchestration. No change to save/load *logic* —
+`SaveSystem.Core.save/load`, the extractors and the storage layer are used as-is.
 
 ---
 
 ## 1. Why
 
-Today the party only ever *touches* the save system from the outside: the title-screen Load lobby
-(`title-load-ui.js` / `title-socket.js`). **Saving** is a GM chore run from
-`SaveSystem.UI.open()` after everyone has left. The table never gets the PS1/PS2 beat of
-"you reach the save point, you choose to save, you choose to stop playing."
+The party only ever *touched* the save system from the outside: the title-screen Load lobby.
+**Saving** was a GM chore run from `SaveSystem.UI.open()` after everyone had left, so the table
+never got the console-JRPG beat of reaching a save point at the end of a session.
 
-The Rest sequence is already the natural save point: it happens once, at the end of a session,
-the screen is already black, and the jingle already marks it as a ceremony.
+The Rest sequence is already that save point: once per session, screen already black, jingle
+already marking it as a ceremony.
 
-## 2. Current sequence (what exists)
-
-| Step | Where |
-|------|-------|
-| Sleep lobby, party readies up, GM presses Start | `camp-ui-button.js:286` → phase `SLEEPING` |
-| All clients fade to black | `camp-ui-sleep.js:13` (`SleepUI.run`) |
-| GM-only: BGM stop → jingle broadcast → 5 s hold → HP/MP restore, AE sweep, rest-charge tick, chat card | `rest-api.js:153` (`RestAPI.perform`) |
-| GM sets phase `SET_OUT_LOBBY`; every client fades back in and shows the Set Out button | `camp-ui-sleep.js:24`, `camp-bootstrap.js:114` |
-
-Save-side facts that constrain the design:
-
-- `SaveSystem.Core.save()` is **primary-GM only** and refuses concurrent save/load
-  (`save-core.js:26-48`). Any player-driven trigger must be routed to the primary GM over socket.
-- The save blob records `game.scenes.active` and re-`activate()`s it on load, deliberately last
-  (`save-extractors.js:964`).
-- The blob **also records every CampSystem world setting verbatim**, including `campPhase`
-  (`save-extractors.js:1253`). This is the single biggest trap in this feature — see §5.
-- `SaveSystemUI` already supports being driven by a remote flow: `openInMode("save")` skips the
-  mode menu, and `_slotClickHook` lets a wrapper redirect a slot click into a socket flow
-  (`save-ui.js:398`, `save-ui.js:405`). The title Load lobby is exactly that wrapper — the save
-  side gets the same treatment instead of a new panel.
-
-## 3. Proposed sequence
+## 2. Sequence
 
 ```
 SLEEP_LOBBY  ──(GM Start)──►  SLEEPING
                                  │  fade to black, jingle, resources restored   [unchanged]
                                  ▼
-                          REST_SAVE_PROMPT      "Save your journey?"   [Yes] / No
+                          REST_SAVE_PROMPT      "RECORD YOUR JOURNEY?"   [YES] / NO
                                  │
                     Yes ─────────┼───────── No
                      │                        │
                      ▼                        │
-              REST_SAVE_SLOT                  │   slot picker (existing SaveSystemUI file screen)
-                     │                        │
+                 REST_SAVING                  │   GM drives the save system's own file screen;
+                     │                        │   everyone else watches a progress panel
+                     ├── fail → GM retries or backs out → recorded as "not written"
                      ▼                        │
-              REST_SAVING                     │   progress bar; primary GM runs Core.save()
-                     │                        │
-                     ├── fail → retry / continue without saving
-                     ▼                        │
-                          REST_TITLE_PROMPT ◄─┘   "Return to the title screen?"   [Yes] / No
+                          REST_TITLE_PROMPT ◄─┘   "RETURN TO THE TITLE SCREEN?"   [YES] / NO
                                  │
                     Yes ─────────┴───────── No
                      │                        │
                      ▼                        ▼
-        activate Title scene            SET_OUT_LOBBY   (existing loop continues)
-        (everyone pulled there)
+        activate the Title scene        SET_OUT_LOBBY   (existing camp loop continues)
+        (Foundry pulls everyone there)
 ```
 
-The screen **stays black** for the whole prompt chain. Panels are drawn on top of the existing
-`#oni-camp-sleep-screen` overlay, so the fade-in only happens on entry to `SET_OUT_LOBBY`
-(or is handed off to the title scene).
+The screen **stays black** for the whole chain — the panels draw on top of the existing
+`#oni-camp-sleep-screen` (z-index 1600 over its 1500), and the fade-in happens only on entry to
+`SET_OUT_LOBBY`, or is handed off to the title scene.
 
-Both branches converge on the title prompt: skipping the save does not skip the "are we done for
-tonight?" question. If the save was declined or failed, the title panel carries a caution line
-(`THIS SESSION HAS NOT BEEN SAVED`) so nobody quits by muscle memory.
+Both branches converge on the title question: skipping the save does not skip "are we done for
+tonight?". When nothing was written the title panel carries `THIS SESSION HAS NOT BEEN SAVED`, so
+nobody quits by muscle memory.
 
----
+## 3. Who drives — the primary GM, and it should look like nobody does
 
-## 4. Decision 1 — who controls the Save menu
+Every client renders all three panels; only the **primary GM** can answer. Other clients get the
+same panel with pointer events off and the cursor position mirrored over `REST_FOCUS`, and nothing
+on screen says who is choosing — so from a player's seat **the game appears to save itself**, which
+is exactly the PS1/PS2 reading the table wanted.
 
-### The options
+Rejected alternatives, and why:
 
-| | Model | Pros | Cons |
-|---|---|---|---|
-| **A** | Primary GM drives, party watches | Zero new plumbing; matches where the write actually happens | Defeats the point — the party still doesn't touch it |
-| **B** | Main Controller (`FUCompanion.api.isCurrentUserMainController`) | Already exists, already persists across scene modes; one unambiguous seat | It's a *map/exploration* seat. At camp nobody has "taken control", so it silently resolves to whoever last drove the overworld — arbitrary, and invisible to the table |
-| **C** | Party-wide vote / ready-check, mirroring the title Load lobby | Consistent with Load; nobody is surprised | Heavy for a Yes/No; a disconnected player deadlocks it |
-| **D** | Open floor — first party client to answer decides | Fastest, most arcade-like | Race between two clicks; no clear "whose turn" affordance |
+| Model | Why not |
+|---|---|
+| Party-wide vote / ready-check, like the title Load lobby | The Load quorum exists to stop two clients loading *different slots* — no analogue for a Yes/No. It would be pure friction, and one disconnected player deadlocks the end of the session. |
+| An elected "steward" (Main Controller, or first party member) | The Main Controller is a *map/exploration* seat; at camp nobody has taken control, so it silently resolves to whoever last drove the overworld. Inventing a second seat for one Yes/No is overblown. |
+| Open floor, first client to answer wins | Two clicks race, and there is no affordance for whose turn it is. |
 
-### Recommendation: **Rest Steward** (B, made explicit, with C only for the title question)
-
-Split the two questions by consequence:
-
-**Save question → one steward drives, everyone spectates.**
-Saving is harmless and reversible-by-repetition; it does not need consensus. Elect a **Rest
-Steward** once, on entry to `REST_SAVE_PROMPT`, on the primary GM:
-
-1. the Main Controller, *if* they are an active party-member client
-   (`isCurrentUserMainController` resolves the stored seat — reuse it, don't invent a second one);
-2. else the first active party member by `member_id_N` slot order (`CAMP.Party.resolve()`);
-3. else the primary GM.
-
-The steward's client owns the panel and the keyboard. Every other client — players, the co-GM,
-spectators — gets the same panel rendered read-only with a `⟨ Name ⟩ IS CHOOSING` banner and live
-cursor mirroring. This is the house pattern already used by the Opportunity spectator flow and
-Treasure Roulette v2 (controller-owned full-screen flow, picker-client broadcasts, GM take-control),
-so it will feel native and reuses proven code shape.
-
-Escape hatches, both required:
-
-- **GM take-control** — a GM-only `TAKE CONTROL` chip on the spectator panel reassigns the steward.
-  Covers a steward who went to make tea.
-- **Auto-default timer** — 45 s of no input resolves to the default (Yes). Prevents the whole table
-  being stranded behind one AFK client, and reads as JRPG-correct ("the cursor is already on YES").
-
-Why not just "the GM does it": the request is explicitly to hand the ritual to the party.
-Why not the full vote: a 4-way quorum for "yes, save" is friction with no safety benefit, and the
-existing Load quorum exists to prevent two clients loading *different slots*, which has no analogue
-here.
-
-**Title question → party ready-check (option C).**
-Returning to title ejects everyone and ends the session — that is not one player's call. Reuse the
-Sleep/Set Out lobby idiom the camp already has: dots per active party client, everyone confirms,
-GM Start commits. Default Yes with the same 45 s auto-confirm; a single `NO` from anyone drops the
-whole table back to `SET_OUT_LOBBY` (the safe branch — you can always ask again next Rest).
+It is also where the write already has to happen: `Core.save()` refuses anyone but the primary GM
+(`save-core.js:26-48`), because two concurrent saves interleave the delete-all/recreate-all in
+`applyActorEmbeds` and corrupt the first party member's items.
 
 ### Slot selection
 
-Do **not** invent a quick-save slot. On `Yes`, the steward gets the existing SaveSystem file screen
-via `SaveSystemUI.openInMode("save")` with `_slotClickHook` set — exactly how `TitleLoadUI` does it
-— so slot cards, overwrite confirm, feather cursor and SFX all come for free and the save menu the
-party sees at Rest is byte-identical to the one they see at the title screen.
+No quick-save slot. On YES the GM gets the save system's existing file screen via
+`SaveSystemUI.openInMode("save", flowHook)` — slot cards, overwrite confirm, feather cursor, SFX all
+reused — so the rest-time save menu **is** the title-screen save menu.
 
----
-
-## 5. Decision 2 — where a load lands
-
-### The trap
-
-`campState` (`save-extractors.js:1253`) snapshots **every** CampSystem setting including `campPhase`,
-and `apply()` writes them all back. A save taken at `REST_SAVING` would restore `campPhase =
-rest_saving`, and on the next `canvasReady` `camp-bootstrap.js:61` would replay that phase — at
-best a dead panel, at worst (if it were `sleeping`) a **second full rest**: another jingle, another
-resource restore, another AE sweep. Silent, and it would look like a save-system bug rather than a
-phase bug.
-
-### Recommendation: normalize the phase at snapshot time
-
-Add a landing-phase normalizer to the camp system and have the `campState` extractor's `extract()`
-call it, rather than special-casing this one feature:
+`_flowHook` is a new extension point on `SaveSystemUI`, a sibling of the `_slotClickHook` that
+`TitleLoadUI` already uses:
 
 ```
-CAMP.LANDING_PHASE = {
-  activity_resolve:  free_roam,        // mid-animation, unreplayable
-  sleeping:          set_out_lobby,
-  rest_save_prompt:  set_out_lobby,
-  rest_save_slot:    set_out_lobby,
-  rest_saving:       set_out_lobby,
-  rest_title_prompt: set_out_lobby,
-}   // every other phase maps to itself
+{ onSaved(slotId, result), onExit() }
 ```
 
-Same pass clears the transient maps that belong to the finished cycle — `campReady`,
-`campSelections`, `campResolved`, `campBondConfirmed`, `campSleepReady`, `campSetOutReady` — so the
-restored Set Out lobby opens with clean dots instead of a stale all-ready state that could
-auto-advance the moment the last player connects.
+`onSaved` fires on a successful write and **consumes** the hook, so the close that follows is not
+also reported as an exit; `onExit` fires on any other close (ESC, BACK, a dismissed failure).
 
-**Result:** load puts the party on the camp scene, screen visible, in `SET_OUT_LOBBY` with the
-Set Out button live — precisely the requested landing spot. No change to `activeScene`: the camp
-scene is already the active scene when the save is taken.
+## 4. Where a load lands
 
-Bonus: this makes *any* future mid-cutscene save safe, not just this one.
+`campState` (`save-extractors.js`) snapshots **every** CampSystem setting including `campPhase`, and
+writes them all back on load. Camp phases like `sleeping` and the three ceremony phases are one-shot
+animations, not resting states — restored verbatim, `camp-bootstrap.js:61` replays them. For
+`sleeping` that is **a second full rest**: another jingle, another resource restore, another
+`campRestCharges` tick. Silent, and it would read as a save-system bug rather than a phase bug.
 
-Two supporting details:
+`CAMP.LANDING_PHASE` + `CAMP.State.landingPhaseFor()` fold every unreplayable phase to where the
+party should wake up:
 
-- The black overlay is created lazily by `_ensureScreen()` at run time, so a freshly-loaded client
-  has no black element at all and `SleepUI.fadeIn()` is a harmless no-op. Nothing to persist.
-- `label`/`thumbnail` on the blob come from the active scene, so rest saves will read
-  `"<Game> — <Camp scene>"`. Worth a small tweak: append a marker (e.g. `⏾`) for rest saves so the
-  slot card reads as an end-of-session save rather than a mid-camp one.
+| live phase | lands as |
+|---|---|
+| `activity_resolve` | `free_roam` |
+| `sleeping`, `rest_save_prompt`, `rest_saving`, `rest_title_prompt` | `set_out_lobby` |
+| anything else (incl. unknown) | itself |
 
----
+The same pass blanks `CAMP.TRANSIENT_SETTINGS` — the finished cycle's ready/selection maps — so the
+restored Set Out lobby does not open already-all-ready and auto-advance when the last player
+connects. `campExplorationDebuffs` is deliberately **not** in that list: rest clears it itself, and a
+save taken before that must keep it.
 
-## 6. Implementation plan
+**Result:** a load lands on the camp scene, screen visible, in `SET_OUT_LOBBY` with the Set Out
+button live. `activeScene` needs no change — the camp scene is already active when the save is taken.
+Any future mid-cutscene save is now safe too, not just this one.
 
-### New phases (`camp-constants.js`)
+The black overlay is created lazily by `_ensureScreen()`, so a freshly-loaded client has no black
+element at all and `SleepUI.fadeIn()` is a harmless no-op. Nothing to persist.
 
-```
-REST_SAVE_PROMPT:  "rest_save_prompt"
-REST_SAVE_SLOT:    "rest_save_slot"
-REST_SAVING:       "rest_saving"
-REST_TITLE_PROMPT: "rest_title_prompt"
-```
+## 5. Three traps fixed along the way
 
-Inserted between `SLEEPING` and `SET_OUT_LOBBY` in: `PHASE_ORDER` (`camp-bootstrap.js:177`),
-the GM panel's label map and order (`camp-ui-gm-panel.js:15-33`).
+1. **Camp BGM resumed over the title screen.** `_scheduleResume` restarts the camp playlist when the
+   jingle ends, or blindly after 35 s — firing long after a return-to-title that looked clean. Added
+   `RestAPI.cancelBgmResume()`, called on that branch. The `"end"` listeners cannot be unregistered
+   portably, so they check a cancellation token instead.
+2. **The rest ran twice with two GMs.** `SleepUI.run()` executes on every client via the phase hook
+   and gated the work on `game.user.isGM` — so both GM clients performed the rest: two jingle
+   broadcasts, two AE sweeps, and `campRestCharges` decremented twice (food buffs quietly expiring a
+   rest early). Now gated on `FUCompanion.isPrimaryGM()`. Pre-existing bug, adjacent to this work.
+3. **Phase-settle ordering.** Settling `campPhase` to `SET_OUT_LOBBY` *before* activating the title
+   scene fired `_onPhaseChange(SET_OUT_LOBBY)` while camp was still active, fading the screen back in
+   to the camp scene for a beat: black → camp → title. The scene now activates first; the phase write
+   lands after every client has run `deactivateCamp()` and is therefore silent. It runs in a
+   `finally`, so the live world is left resumable even if activation throws.
 
-Why phases and not a transient overlay: a phase survives an F5 mid-flow, syncs every client through
-one `updateSetting`, and drops into the GM panel's skip/step controls for free. A transient
-socket-only overlay strands anyone who refreshes.
+## 6. What was built
 
-### New state (`camp-constants.js` `SETTING` + `camp-state.js`)
+**New phases** (`camp-constants.js`, added to `PHASE_ORDER` in `camp-bootstrap.js` and the GM panel):
+`REST_SAVE_PROMPT`, `REST_SAVING`, `REST_TITLE_PROMPT`.
 
-| Key | Shape | Purpose |
-|-----|-------|---------|
-| `campRestSteward` | `{ userId }` | elected steward, so every client can render the right banner |
-| `campSaveChoice` | `{ save: bool, slotId: int\|null, ok: bool\|null, error: str\|null }` | outcome of the save leg; drives the title panel's caution line |
-| `campTitleReady` | `{ [userId]: true }` | ready-check for the title question (same shape as `campSetOutReady`) |
+Phases rather than a transient overlay: a phase survives an F5 mid-ceremony, syncs every client
+through one `updateSetting`, and drops into the GM panel's step controls for free.
 
-All registered in `registerSettings()` and cleared in `State.reset()`.
+**New setting** `campSaveChoice` — `{ asked, save, slotId, ok, label, error }`. Drives the spectator
+result line and the title panel's caution.
 
-### New socket messages (`camp-constants.js` `MSG`, handled in `camp-socket.js`)
+**New message** `CAMP_REST_FOCUS` (primary GM → all) — cursor mirror only. Phase changes and
+`campSaveChoice` carry the actual state.
 
-```
-REST_SAVE_ANSWER    steward → GM   { userId, save: bool }
-REST_SAVE_SLOT_PICK steward → GM   { userId, slotId }
-REST_SAVE_PROGRESS  GM → all       { pct }              spectator progress mirror
-REST_SAVE_RESULT    GM → all       { ok, slotId, error }
-REST_TAKE_CONTROL   GM → all       { userId }           steward reassignment
-REST_TOGGLE_TITLE   any → GM       { userId }           title ready-check toggle
-REST_CURSOR         steward → all  { index }            spectator cursor mirror (ephemeral)
-```
+**New files**
+- `camp-ui-rest-save.js` — the three panels, GM-interactive vs mirrored, keyboard (←/→, Enter, ESC =
+  No), spectator progress animation matching the save system's own 3.2 s curve.
+- `camp-rest-save-flow.js` — primary-GM orchestration: prompts → slot picker → result → title.
 
-Handlers follow the existing camp convention: player→GM requests mutate world settings, Foundry's
-`updateSetting` fans the result out.
+**Touched:** `camp-constants.js`, `camp-state.js`, `camp-socket.js`, `camp-bootstrap.js`,
+`camp-ui-sleep.js`, `camp-ui-gm-panel.js`, `rest-api.js`, `save-extractors.js`, `save-ui.js`,
+`module.json`. No change to `save-core.js` or `save-storage.js`, and no title-screen file was touched.
 
-### New files
+## 7. Edge cases handled
 
-- `scripts/camp-system/camp-ui-rest-save.js` — the three panels (save prompt, saving progress,
-  title prompt), steward vs spectator rendering, keyboard handling, auto-default timer. Visual
-  language copied from `title-quit-ui.js` / `ts-wait-*` (parchment panel) so it sits in the same
-  family as the title screen.
-- `scripts/camp-system/camp-rest-save-flow.js` — GM-side orchestration: steward election, phase
-  advancement, `Core.save()` invocation, title-scene activation.
+- **Save refused up front** (`Core.blockedReason("save")` — poisoned client, load in flight): the
+  YES is greyed with the reason instead of letting the GM pick a slot and hit a wall.
+- **Save fails**: the save system shows its own error and stays open to retry; backing out records
+  `not written` and the title panel warns. A failed save never auto-advances into a return-to-title —
+  that is the one path that loses a session.
+- **F5 mid-ceremony**: the phase is world state, so the client rejoins into the same beat; on the GM
+  the slot picker reopens.
+- **GM steps phases by hand**: entering a prompt beat, or leaving the ceremony, closes any stray save
+  overlay first (clearing the hook so the close is not misread as an exit). Without it a manual
+  Prev/Next strands the table on a black screen behind a dead overlay.
+- **Double answer** (click + keypress in one tick): the panel locks itself on answer and the flow
+  holds a `_busy` re-entrancy guard.
+- **Spectator clients** get `pointer-events: none` on the panel body, so the mirrored cursor cannot
+  be touched.
 
-Registered in `module.json` after `camp-ui-sleep.js` and before `camp-bootstrap.js` (line ~340).
+## 8. Test plan — NOT YET RUN
 
-### Touched files
+Done offline:
+- `node --check` on all 11 edited/added scripts, and `JSON.parse` on `module.json`.
+- `landing-phase-check.js` (scratchpad): `landingPhaseFor()` over every phase including unknown and
+  `undefined`, the transient-map blanking, exploration debuffs surviving, `free_roam` passing
+  through untouched, and the `getSaveChoice()` default shape. All pass. **Caveat:** it exercises the
+  real `camp-constants.js`/`camp-state.js` but *replicates* the extractor's few lines rather than
+  loading `save-extractors.js` (which needs the full Foundry surface) — so it proves the rule, not
+  the wiring of that one call site.
 
-| File | Change |
-|------|--------|
-| `camp-constants.js` | 4 phases, 3 setting keys, 7 messages |
-| `camp-state.js` | register + accessors + reset for the 3 new keys; `CAMP.LANDING_PHASE` + `State.landingPhaseFor()` |
-| `camp-bootstrap.js` | 4 new cases in `_onPhaseChange`, 4 entries in `PHASE_ORDER` |
-| `camp-ui-sleep.js` | `run()` advances to `REST_SAVE_PROMPT` instead of `SET_OUT_LOBBY`; keep the black screen up |
-| `camp-socket.js` | handlers for the 7 new messages |
-| `camp-ui-gm-panel.js` | 4 label/order entries |
-| `save-extractors.js` | `campState.extract()` routes `campPhase` through `landingPhaseFor()` and blanks the transient ready maps |
-| `rest-api.js` | expose the scheduled BGM-resume handle so the flow can cancel it (see §7) |
-| `module.json` | 2 script entries |
-
-No changes to `save-core.js`, `save-storage.js`, `save-ui.js` (only *used*, via `openInMode` +
-`_slotClickHook`), or any title-screen file.
-
----
-
-## 7. Traps and edge cases
-
-1. **BGM resume over the title screen.** `_scheduleResume` (`rest-api.js:127`) re-starts the camp
-   playlist when the jingle ends, or blindly after 35 s. If the party returns to title, that timer
-   fires *over the title BGM*. `RestAPI.perform()` must return (or stash) the resume handle so the
-   flow can cancel it on the return-to-title branch. Easy to miss — it only shows up ~35 s after a
-   correct-looking transition.
-2. **Dual GM.** Both GM clients receive every socket message. Steward election, `Core.save()`, and
-   `scene.activate()` must all be gated on `FUCompanion.isPrimaryGM()`, exactly as
-   `title-socket.js` does. `Core.save()` would refuse a second caller anyway, but the phase writes
-   and the scene activation would not.
-3. **Save failure must not be swallowed.** `Core.save()` returns `{ok:false, error}` when any
-   extractor fails and deliberately writes nothing. The panel shows the error with
-   `RETRY` / `CONTINUE WITHOUT SAVING`, and the title prompt inherits the caution line. Never
-   auto-advance a failed save into a return-to-title — that is the one path that loses a session.
-4. **Save is not instant.** ~15 extractors, party embeds, disk write. Use the existing
-   `_startProgress`/progress-bar in `SaveSystemUI` rather than a spinner, and mirror the percentage
-   to spectators over `REST_SAVE_PROGRESS` so four black screens don't look frozen.
-5. **Steward disconnects mid-prompt.** The auto-default timer covers it; additionally re-elect on
-   `userConnected` if the current steward went inactive, mirroring
-   `TS.Socket.refreshRoster()`'s posture.
-6. **Spectators are not party members.** Use `CAMP.Party.getActiveUserIds()` for both the steward
-   pool and the title ready-check — the camp UI already excludes spectators this way
-   (`camp-ui-button.js:243`), and per house rule "players" here means db-resolved party members.
-7. **Load cannot start while this save runs.** `Core`'s `_inFlight` guard already blocks it on the
-   primary GM, and both paths funnel through the same client — but the title-screen Load lobby is
-   reachable the instant the title scene activates, so the return-to-title branch must only fire
-   *after* `Core.save()` has resolved, never in parallel.
-8. **`_poisoned` state.** If a prior load timed out, `Core.save()` refuses until F5. Check
-   `Core.blockedReason("save")` when entering `REST_SAVE_PROMPT` and grey the `YES` with the reason
-   rather than letting the party pick a slot and hit a wall.
-9. **Returning to title leaves camp phase mid-flow.** Before activating the title scene, write
-   `campPhase = SET_OUT_LOBBY` and clear the transient maps, so the *live* world (not just the save
-   blob) is in the resumable state. Otherwise the next session boots into a dead phase.
-10. **Hidden-tab clients.** These panels are DOM overlays, not broadcast VFX, so the
-    `vfxSuppressed()` guard does not apply — but the jingle and any new SFX broadcast do go through
-    AudioHelper; keep new sound to the steward's own client plus the existing broadcast jingle.
-
----
-
-## 8. Test plan
-
-Offline / code:
-- `node --check` each new script as `.mjs` before relaunch.
-- Unit-ish: `landingPhaseFor()` over every phase value, including unknown input.
-
-Live, 2 clients minimum (CDP dual-client rig):
-1. Rest → save prompt appears black-screened on both; steward banner correct on the non-steward.
-2. `No` → title prompt shows the not-saved caution → `No` → lands in `SET_OUT_LOBBY`, screen fades in.
-3. `Yes` → slot picker → overwrite an occupied slot → progress mirrors on the spectator → success.
-4. Title prompt `Yes` → both clients land on the title scene, title menu open, camp overlay gone,
-   camp BGM does **not** resume 35 s later.
+Still required, live, 2 clients (CDP dual-client rig):
+1. Rest → save panel appears black-screened on both; the GM's cursor moves on the player's screen.
+2. `NO` → title panel shows the not-saved caution → `NO` → lands in `SET_OUT_LOBBY`, screen fades in.
+3. `YES` → slot picker → overwrite an occupied slot → progress mirrors on the spectator → success.
+4. Title `YES` → both clients land on the title scene, menu open, camp overlay gone, and the camp
+   BGM does **not** resume ~35 s later.
 5. Load that slot from the title lobby → camp scene, `SET_OUT_LOBBY`, clean ready dots, Set Out
-   works, **no second jingle / no second resource restore**.
-6. F5 the steward mid-prompt → rejoins into the same phase with the panel intact.
-7. Steward goes inactive → 45 s auto-default fires; GM `TAKE CONTROL` also works.
-8. Force a save failure (temporarily break one extractor) → error panel, retry works, no silent
+   works, **no second jingle and no second resource restore**.
+6. F5 the GM mid-ceremony → rejoins into the same beat.
+7. Force a save failure (break one extractor temporarily) → error panel, retry works, no silent
    pass-through to title.
-9. Run the `preflight` suite + `skill-regression --teardown` before any push, and the full
-   world-export procedure if any world object moved (none expected — this is module-code only).
+8. Confirm with two GM clients that the rest runs **once** (trap #2 above).
+9. `preflight` + `skill-regression --teardown` before any push. No world objects move — module code
+   only — so the world-export procedure is not triggered by this branch.
 
 ## 9. Out of scope
 
-- Any change to what a save *contains* or how it applies (extractors, diff-apply, storage).
-- Mid-session / quick save from anywhere but the Rest sequence.
-- Autosave.
-- Save points as physical objects in dungeon/exploration scenes (a natural sequel — the flow built
-  here is reusable, since only the entry trigger differs).
+- What a save *contains* or how it applies (extractors, diff-apply, storage).
+- Mid-session / quick save from anywhere but the Rest sequence; autosave.
+- Save points as physical objects in dungeon/exploration scenes — a natural sequel, since only the
+  entry trigger differs from the flow built here.

@@ -107,8 +107,8 @@
       case CAMP.PHASE.SLEEPING:
         CAMP.Button.hide();
         await CAMP.SleepUI.run();
-        // After run(): GM has already set phase to SET_OUT_LOBBY
-        // Non-GM clients wait for the updateSetting hook
+        // After run(): the primary GM has set phase to REST_SAVE_PROMPT and the
+        // screen is still black. Non-GM clients wait for the updateSetting hook.
         break;
 
       // ── REST SAVE CEREMONY ────────────────────────────────────────────────

@@ -138,6 +138,19 @@
     return isPrimaryGM() && !!_beat && _beat !== "saving";
   }
 
+  // Close a stray save-system overlay left over from the saving beat — the GM
+  // can step phases at will from the GM panel, and the file screen renders ABOVE
+  // this panel, so without this a manual Prev/Next lands the table on a black
+  // screen behind an overlay that answers to a phase that is no longer current.
+  // The flow hook is cleared first so the close is not reported as an exit and
+  // does not advance the phase back out from under the GM.
+  function _dismissSaveUI() {
+    const ui = globalThis.SaveSystem?.UI;
+    if (!ui?._el) return;
+    ui._flowHook = null;
+    ui.close();
+  }
+
   // ---------------------------------------------------------------------------
   // DOM
   // ---------------------------------------------------------------------------
@@ -320,6 +333,7 @@
       _blocked = globalThis.SaveSystem?.Core?.blockedReason?.("save") ?? null;
       // Only the client that could actually answer cares about the refusal.
       if (!isPrimaryGM()) _blocked = null;
+      _dismissSaveUI();
       _mount();
       _render();
       sfx("open");
@@ -338,6 +352,7 @@
     showTitlePrompt() {
       _beat  = "title";
       _focus = "yes";
+      _dismissSaveUI();
       _mount();
       _render();
       sfx("open");
@@ -348,8 +363,12 @@
       if (_beat !== "saving" && _beat !== "title") return;
       if (_beat === "saving") {
         const c = CAMP.State.getSaveChoice();
-        if (c.ok === true)  sfx("ok");
-        if (c.ok === false) sfx("fail");
+        // The GM is watching the save system's own panel, which already played
+        // its result sting — don't double it up on that one client.
+        if (!isPrimaryGM()) {
+          if (c.ok === true)  sfx("ok");
+          if (c.ok === false) sfx("fail");
+        }
         cancelAnimationFrame(_rafId);
       }
       _render();
@@ -370,8 +389,11 @@
       }
     },
 
-    /** Full teardown — leaving the camp scene. */
+    /** Full teardown — ceremony resolved, or leaving the camp scene. */
     cleanup() {
+      // Only reclaim the save overlay if the ceremony was live on this client —
+      // a GM who opened the save menu by hand keeps it.
+      if (_beat) _dismissSaveUI();
       _beat = null;
       this.hide();
     },
