@@ -159,10 +159,10 @@
   // name. Such a skill looks completely empty. Asking "can a master restore
   // this?" sidesteps the whole question.
   //
-  // Measured over the four PCs (275 items): 263 resolve to a live master, 141 of
-  // those are still identical to it (deletable), 122 have diverged, and 12 have
-  // no master at all — and those 12 are exactly the bespoke ones: Fugitive
-  // Experiment, Starfall Comet, Draconic Roar, Lift off, and the gear-skill
+  // Measured over the four PCs (275 items): 245 resolve to a live master by id
+  // AND name, 86 of those are still identical to it (deletable), 159 have
+  // diverged, and 30 have no master at all — the bespoke ones (Fugitive
+  // Experiment, Starfall Comet, Draconic Roar, Lift off) plus the gear-skill
   // children. Test debris is spawned FROM a master and so is identical to it,
   // which is why the reset use case still works.
   //
@@ -174,22 +174,27 @@
   // Sword, Love Potion, Phoenix Feather), which is what copySubItemTree is for.
   //
   // ⚖ Two accepted costs, stated rather than implied:
-  //   • 114 of the 122 diverged copies differ in VALUES at the same row count.
-  //     They are kept conservatively, so a load will not clear debris that was
-  //     itself customised. That is the direction that cannot lose work.
+  //   • 154 of the 159 diverged copies differ in VALUES at the same row count in
+  //     every authored table. They are kept conservatively, so a load will not
+  //     clear debris that was itself customised. That is the direction that
+  //     cannot lose work.
   //   • A create (item in the save, absent live) still restores the SAVED copy,
   //     definition included, because there is genuinely nothing live to prefer.
-  //     After name re-pairing (below) that is 29 documents on slot 1 and 13 on
-  //     slot 2, of which 5 and 10 differ from their master — mostly Hako's gear,
+  //     After name re-pairing (below) that is 28 documents on slot 1 and 13 on
+  //     slot 2, of which 14 and 10 differ from their master — mostly Hako's gear,
   //     where the difference is per-instance refinement rather than staleness.
   //     Sourcing these from the master instead would restore a current
   //     definition but drop that refinement, so neither side is plainly right;
   //     the saved copy is kept because it destroys nothing that exists.
+  //
   // Deliberately NOT state, though it looks like it: `name`. It differs on 9 of
   // slot 1's items and every one is a refinement prefix the live world earned
   // after the save — "Full Plate" against a live "+4 Full Plate". Restoring the
-  // saved name would quietly strip the +4. (`refine*` props differ nowhere on
-  // either slot, so refinement lives in the name and the stat props.)
+  // saved name would quietly strip the +4; applyActorEmbeds re-points the equip
+  // SLOTS at the live name instead. (`refine_count` / `refine_level` differ on 22
+  // of slot 1's items and in every case the prop is present LIVE and absent from
+  // the save, so adding them here would be a no-op under the hasOwnProperty gate
+  // below. Refinement itself lives in the name and the stat props.)
   const ITEM_STATE_PROPS = ["isEquipped", "item_quantity"];
 
   // "Is this copy still the master's content?" — compared by DENYLIST, never by a
@@ -332,10 +337,10 @@
     // A document deleted and re-created since the save carries a NEW _id, so an
     // id-only diff sees ONE document as a delete plus a create — and the create
     // reintroduces the save's months-old copy in place of the current one. On
-    // the real slots that is the dominant create (9 of 35 on slot 1, 14 of 27 on
-    // slot 2) and the saved twin is badly stale: Elemental Weapon's snapshot
-    // carries no effect_table and no fire point at all, so the swap leaves it
-    // inert.
+    // the real slots this is the dominant create — 15 such documents on slot 1
+    // and 14 on slot 2 — and the saved twin is badly stale: Elemental Weapon's
+    // snapshot carries no effect_table and no fire point at all, so the swap
+    // leaves it inert.
     //
     // Re-pair those by NAME up front, so the pair is treated as what it is — one
     // document present on both sides. It then takes rule 1's path (state only,
@@ -471,7 +476,7 @@
         const sName = String(sp.name ?? ""), lName = String(lp.name ?? "");
         if (sName && lName && sName !== lName) renamed.push([sName, lName]);
         // CSB writes item_quantity as a number down some paths and a string down
-        // others, so a raw compare queues an update that changes nothing — 3 of
+        // others, so a raw compare queues an update that changes nothing — 4 of
         // them on slot 1, each costing a document write plus a CSB re-render
         // (~360 ms of synchronous block). Compare coerced.
         const sameState = (a, b) => String(a ?? "") === String(b ?? "");
@@ -603,12 +608,12 @@
   // campaign state and its extractor promises the snapshot's exact stock. But
   // `isShop` means "sells things", not "holds no authored content": eleven
   // actors carry it and several are characters with real kits. Measured on the
-  // real slots, the opt-out deleted 28 (slot 1) and 33 (slot 2) live-only
+  // real slots, the opt-out deleted 27 (slot 1) and 33 (slot 2) live-only
   // documents unconditionally — including 12 and 7 `_skill` children whose
   // container shell SURVIVED, leaving orphaned gear, and Willy's authored
   // "Lens of Insight (Passive)".
   //
-  // Under the guard those shops instead keep 24 and 21 documents that diverge
+  // Under the guard those shops instead keep 23 and 21 documents that diverge
   // from their master, so a load can leave a shop holding stock the snapshot
   // did not have. That is the accepted cost: leftover stock is visible and a GM
   // can remove it, whereas a deleted gear-skill is silent and unrecoverable.

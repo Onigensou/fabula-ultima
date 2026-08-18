@@ -260,6 +260,13 @@
       // sign that a larger delete set was declined — the console line had the
       // context and the object the test bridge reads did not.
       keptUnique: sum(r => r.item.keptUnique ?? 0),
+      // Same argument for the rest of what the guard did: documents re-paired by
+      // name (a delete+create collapsed into one state-only update), documents
+      // kept but taken OFF the body, and hand-placed reaction-config effects the
+      // actor-AE pass declined to clear.
+      repaired:   sum(r => r.item.repaired   ?? 0),
+      unequipped: sum(r => r.item.unequipped ?? 0),
+      fxKept:     sum(r => r.effect.keptUnique ?? 0),
     };
     SS._lastLoadReport = { slotId, label, totalMs, actors: report, totals };
 
