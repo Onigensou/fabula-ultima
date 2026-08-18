@@ -648,27 +648,32 @@
     clearTimeout(spec.timer);
     document.removeEventListener("keydown", spec.onKey);
 
-    if (silent) { spec.backdrop.remove(); return; }
-
-    if (cancelled) {
-      playSound(SFX_CANCEL, 0.65);
+    // A background tab pauses requestAnimationFrame, so the confirm beat below
+    // would never finish and the mirror would still be sitting there on
+    // refocus. Sockets keep arriving while hidden — take the plain teardown.
+    if (silent || cancelled || document.hidden) {
+      if (!silent) playSound(cancelled ? SFX_CANCEL : SFX_CONFIRM, 0.65);
       spec.backdrop.remove();
       return;
     }
 
-    // Mirror the owner's confirm beat. The live-selection echo has almost always
-    // parked the cursor on the right slot already; correct it (and let the ring
-    // settle) only if a select broadcast went missing.
-    const idx = spec.options.findIndex(o => o.id === optionId);
-    if (idx >= 0 && idx !== spec.sel) {
-      applyLayout(spec.slots, idx, spec.options.length);
-      refreshDesc(spec.descEl, spec.options[idx]);
-      await new Promise(r => setTimeout(r, TRANSITION_MS));
+    try {
+      // Mirror the owner's confirm beat. The live-selection echo has almost
+      // always parked the cursor on the right slot already; correct it (and let
+      // the ring settle) only if a select broadcast went missing.
+      const idx = spec.options.findIndex(o => o.id === optionId);
+      if (idx >= 0 && idx !== spec.sel) {
+        applyLayout(spec.slots, idx, spec.options.length);
+        refreshDesc(spec.descEl, spec.options[idx]);
+        await new Promise(r => setTimeout(r, TRANSITION_MS));
+      }
+      const opt = idx >= 0 ? spec.options[idx] : null;
+      playSound(opt?.hasPrePhase ? SFX_LESSER_CONFIRM : SFX_CONFIRM, 0.8);
+      // Backstop the same rAF hazard for a tab hidden mid-flash.
+      await Promise.race([showFlash(), new Promise(r => setTimeout(r, 1200))]);
+    } finally {
+      spec.backdrop.remove();
     }
-    const opt = idx >= 0 ? spec.options[idx] : null;
-    playSound(opt?.hasPrePhase ? SFX_LESSER_CONFIRM : SFX_CONFIRM, 0.8);
-    await showFlash();
-    spec.backdrop.remove();
   }
 
   /** Abort the live picker on this client (GM take-control). True if one was open. */
