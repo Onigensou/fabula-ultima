@@ -300,7 +300,7 @@
     const liveById   = new Map([...collection.values()].map(d => [d.id, d]));
     const savedById  = new Map((savedArr ?? []).map(d => [d._id, d]));
 
-    const toCreate = [], toUpdate = [], toDelete = [];
+    const toCreate = [], toUpdate = [], toDelete = [], toUnequip = [];
     let skip = 0;
     const nested = { update: 0, create: 0, delete: 0 }; // effect ops on updated items
     const keptUnique = [];
@@ -370,8 +370,18 @@
         // load, so the unit is kept whenever the save wants any member.
         const removable = !unit.some(u => savedById.has(u)) &&
           unit.every(u => restorableFromMaster(objs.get(u)));
-        if (removable) toDelete.push(id);
-        else keptUnique.push(live.name ?? id);
+        if (removable) { toDelete.push(id); continue; }
+        keptUnique.push(live.name ?? id);
+        // The save does not carry this document, so the actor was not wearing it
+        // at save time. Keeping the DEFINITION is the whole point of the guard;
+        // keeping it EQUIPPED is not — equip state is precisely what the save
+        // owns. Before this, Hina finished a slot-1 load wearing BOTH the
+        // restored "+4 Full Plate" and the kept "The Selfless", whose three
+        // enabled transfer AEs (Armor DEF, Armor MDEF, Resistance Bolt) stacked
+        // on top of it. That is a regression the guard itself introduced: the
+        // old code deleted these documents, so equip state used to land exactly
+        // where the snapshot put it. A kept item goes back in the bag, not on.
+        if (live.system?.props?.isEquipped === true) toUnequip.push(id);
       }
     } else {
       for (const id of liveById.keys()) if (!savedById.has(id)) toDelete.push(id);
@@ -467,6 +477,24 @@
       }
     }
 
+    // Kept-but-not-in-the-save documents are unequipped, and their transfer AEs
+    // switched off with them — the same pairing the equip sync above maintains.
+    if (toUnequip.length) {
+      await owner.updateEmbeddedDocuments("Item",
+        toUnequip.map(id => ({ _id: id, system: { props: { isEquipped: false } } })));
+      for (const id of toUnequip) {
+        const item = owner.getEmbeddedCollection("Item").get(id);
+        if (!item) continue;
+        const fx = [...item.getEmbeddedCollection("ActiveEffect").values()]
+          .filter(e => e.transfer === true && e.disabled !== true)
+          .map(e => ({ _id: e.id, disabled: true }));
+        if (fx.length) {
+          await item.updateEmbeddedDocuments("ActiveEffect", fx);
+          nested.update += fx.length;
+        }
+      }
+    }
+
     if (toCreate.length) {
       // Creates carry their nested effects — createEmbeddedDocuments builds those
       // correctly, so no recursion is needed on the create path.
@@ -487,7 +515,7 @@
       // What the guard held back. Counted ALWAYS, not only under DEBUG_LOAD: a
       // load that protected 90 unique documents and one that had nothing to
       // protect must not look identical in the log.
-      keptUnique: keptUnique.length,
+      keptUnique: keptUnique.length, unequipped: toUnequip.length,
       keptNames: keptUnique,
       repaired,
       updated: debug ? toUpdate.map(d => d.name) : [],
