@@ -476,17 +476,33 @@
       // an actor AE from, so a wrong delete here is both unrecoverable and, until
       // now, unreported: this branch deleted every live-only AE outright.
       //
-      // `directorAppliedBy` is the discriminator already in the data. Present
-      // means a director run placed it, so it is session state and goes. Absent
-      // on a reactionConfig carrier means it was placed by hand as configuration
-      // and must survive. On slot 1 that keeps precisely Hina's "Instability"
-      // (AE_CHARGES_INSTABILITY >= 10 -> ins_death, in force mode) and Keren's
-      // "Bodyguard Fatigue", while still clearing Hina's director-placed "Lucky
-      // Number" and the nine plain status effects.
+      // Two of the three keeps come straight from the engine's own contract
+      // (`isTransientAE`, skill-effects.js): `crossScene` and `directorPermanent`
+      // mark an effect that its sweeps must NEVER remove. An earlier rule here
+      // used `reactionConfig && !directorAppliedBy` alone and so ignored them,
+      // deleting five opted-out effects on slot 1 — including Keren's "Wet",
+      // which is the aquatic 2-piece SET BONUS carrier (crossScene +
+      // directorPermanent) that nothing restores, since reconcileSetBonuses is
+      // never called on the load path, and Hina's "Lucky Number", a
+      // reactionConfig carrier with no world master: exactly the unrecoverable
+      // case this guard exists for. `directorAppliedBy` alone is NOT the
+      // discriminator — it means "the director created it", not "it is
+      // disposable", and the author can then mark the result permanent. 3 of the
+      // 4 actor AEs carrying it are also directorPermanent.
+      //
+      // Borrowing `isTransientAE` WHOLESALE does not work either: it is
+      // keep-biased by design (a passive AE with no duration, no buff/debuff tag
+      // and no director stamp falls through to "keep"), and measured against slot
+      // 1 it declines to delete any of the 12, which would leave the reset use
+      // case doing nothing at all. So the snapshot stays authoritative and only
+      // the explicit opt-outs, plus hand-placed config, are held back: 5 deleted
+      // (Campfire Cake x4, Curse (Bad)) and 7 kept.
       for (const [id, live] of liveById) {
         if (savedById.has(id)) continue;
         const f = live.flags?.[MOD] ?? {};
-        if (f.reactionConfig && !f.directorAppliedBy) { keptUnique.push(live.name ?? id); continue; }
+        const keep = f.crossScene === true || f.directorPermanent === true ||
+          (f.reactionConfig && !f.directorAppliedBy);
+        if (keep) { keptUnique.push(live.name ?? id); continue; }
         toDelete.push(id);
       }
     }
@@ -676,8 +692,8 @@
       }
     }
     if (effect.keptUnique) {
-      console.log(`${TAG} ${actor.name}: kept ${effect.keptUnique} hand-placed reaction-config effect(s) ` +
-        `(no directorAppliedBy, so not session state): ${effect.keptNames.join(", ")}`);
+      console.log(`${TAG} ${actor.name}: kept ${effect.keptUnique} effect(s) the snapshot does not carry ` +
+        `(crossScene / directorPermanent / hand-placed config): ${effect.keptNames.join(", ")}`);
     }
     if (item.repaired) {
       console.log(`${TAG} ${actor.name}: re-paired ${item.repaired} document(s) by name —` +
