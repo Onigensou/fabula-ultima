@@ -255,6 +255,11 @@
       itemDelete: sum(r => r.item.delete),   itemSkip:   sum(r => r.item.skip),
       fxUpdate:   sum(r => r.effect.update), fxCreate:   sum(r => r.effect.create),
       fxDelete:   sum(r => r.effect.delete), fxSkip:     sum(r => r.effect.skip),
+      // Documents the load-safety rule kept (no world master, or diverged from
+      // it). Without this the programmatic surface reports `itemDelete` with no
+      // sign that a larger delete set was declined — the console line had the
+      // context and the object the test bridge reads did not.
+      keptUnique: sum(r => r.item.keptUnique ?? 0),
     };
     SS._lastLoadReport = { slotId, label, totalMs, actors: report, totals };
 

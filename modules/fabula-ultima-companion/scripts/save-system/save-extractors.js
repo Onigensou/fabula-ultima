@@ -123,6 +123,152 @@
     return obj;
   }
 
+  // ── Load safety: the LIVE world owns definitions, the SAVE owns state ───────
+  //
+  // The diff below reconciles the live world TO the snapshot. That is right for
+  // both real uses of this system — swapping between two party datasets, and
+  // resetting the world before a session so test debris does not leak into play.
+  // Both NEED deletion to work.
+  //
+  // What it gets wrong is that a save stores whole DOCUMENTS, and in CSB a
+  // document fuses two unrelated things: campaign state (quantity, equipped) and
+  // the item's DEFINITION (effect_table, formulas, fire-point refs). Nothing
+  // marks which is which. So a snapshot of state is also a frozen copy of every
+  // skill definition as it stood that day, and the load faithfully restores it.
+  //
+  // The slots are long-lived by design — slot 1 and slot 2 hold DIFFERENT party
+  // actors (t6E3CQ0pGxwLgXrn / 0Ttg3RYQZUySixH1, no shared members), so they are
+  // swap targets, not session checkpoints. They will always be stale against
+  // ongoing authoring; re-saving is not a fix. Measured 2026-08-18 on slot 1
+  // (2026-06-15): a plain reconcile deletes 150 embedded items across the four
+  // PCs and rewrites definitions on ~50 more, with no textual diff anywhere.
+  //
+  // ── The rule ────────────────────────────────────────────────────────────────
+  //
+  //   1. Definitions are NEVER restored. An item present on both sides receives
+  //      only ITEM_STATE_PROPS; its live definition stands.
+  //   2. A live-only item is deleted only if it — and its container children —
+  //      can be restored from a world master that still exists AND still matches.
+  //      Anything with no master, or diverged from its master, is unique.
+  //
+  // Rule 2 is a RECOVERABILITY test, not a guess about authoring. This matters:
+  // an earlier version of this guard tried to classify documents as content vs
+  // inventory, which cannot work, because two of the nine implementation carriers
+  // are invisible from the document — one is an inbound reference on someone
+  // else's formula (`HAS_SKILL_PERFECT_AIM`), the other is engine code keyed by
+  // name. Such a skill looks completely empty. Asking "can a master restore
+  // this?" sidesteps the whole question.
+  //
+  // Measured over the four PCs (275 items): 263 resolve to a live master, 141 of
+  // those are still identical to it (deletable), 122 have diverged, and 12 have
+  // no master at all — and those 12 are exactly the bespoke ones: Fugitive
+  // Experiment, Starfall Comet, Draconic Roar, Lift off, and the gear-skill
+  // children. Test debris is spawned FROM a master and so is identical to it,
+  // which is why the reset use case still works.
+  //
+  // 🪤 Container pairs. Gear here is two documents — a shell plus a same-named
+  // `_skill` child holding its behaviour — and CSB's CustomItem._preDelete
+  // cascade-deletes children with the parent, UNAWAITED. So the pair must be
+  // decided as a unit. Verified they are recoverable together: 170 world masters
+  // carry their own children (Icarus Wing -> "Icarus Wing (gear skill)", Cursed
+  // Sword, Love Potion, Phoenix Feather), which is what copySubItemTree is for.
+  //
+  // ⚖ Two accepted costs, stated rather than implied:
+  //   • 114 of the 122 diverged copies differ in VALUES at the same row count.
+  //     They are kept conservatively, so a load will not clear debris that was
+  //     itself customised. That is the direction that cannot lose work.
+  //   • A create (item in the save, absent live) still restores the SAVED copy,
+  //     definition included, because there is nothing live to prefer. For a
+  //     consumable coming back this is almost always identical to its master.
+  const ITEM_STATE_PROPS = ["isEquipped", "item_quantity"];
+
+  // "Is this copy still the master's content?" — compared by DENYLIST, never by a
+  // list of props to check. A checked-list fails PERMISSIVE: any prop not on it
+  // differs unnoticed, the copy reads as a pure instance, and it gets deleted.
+  // Caught in exactly that way — a 15-prop list declared Hina/Dark Orbit
+  // identical to its master while `item_def_bonus` and `item_mdef_bonus`
+  // differed, which is carrier-scan's own worked example of an implementation
+  // living purely in stat props.
+  //
+  // Ignored: per-instance identity mirrors CSB recomputes on every load
+  // (`id`/`uuid`/`img`), values it fills lazily (`details_roller`/`check`), and
+  // the two STATE props — a copy is not "diverged" for holding a different
+  // quantity or being equipped.
+  const MASTER_SIG_IGNORE = new Set([
+    "id", "uuid", "img", "details_roller", "check", "item_quantity", "isEquipped",
+  ]);
+
+  // An item's Active Effects are part of its definition — under the equipment
+  // policy a gear item's behaviour lives on a carried transfer:true AE, so a
+  // signature blind to them would call such an item a pure instance and delete
+  // it against a master that cannot restore it. Compared by denylist for the
+  // same reason as the props above.
+  //
+  // Ignored, measured over the 444 name-matched copy/master AE pairs in the
+  // authored export: identity and provenance (`_id`/`_stats`/`origin`/`sort`,
+  // and CSB's `originalId`/`originalUuid`/`originalParentId`, 143 pairs), the
+  // runtime clock (`duration.start*`, 144), cosmetics (`img`), and `disabled` —
+  // the AE-side twin of `isEquipped` (58). Everything else counts, including
+  // `changes`, `statuses`, `system.tags` and the fabula/statuscounter flags.
+  const AE_IGNORE_PATHS = [
+    "_id", "_stats", "origin", "sort", "img", "disabled",
+    "duration.startTime", "duration.startRound", "duration.startTurn",
+    "flags.custom-system-builder.originalId",
+    "flags.custom-system-builder.originalUuid",
+    "flags.custom-system-builder.originalParentId",
+  ];
+
+  // Key-order-insensitive JSON, so two equal documents cannot read as different
+  // just because Foundry rebuilt one of them in another order.
+  function stableJson(v) {
+    if (Array.isArray(v)) return `[${v.map(stableJson).join(",")}]`;
+    if (v && typeof v === "object") {
+      return `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stableJson(v[k])}`).join(",")}}`;
+    }
+    return JSON.stringify(v ?? null);
+  }
+
+  function aeSignature(list) {
+    const sigs = (list ?? []).map(fx => {
+      const e = JSON.parse(JSON.stringify(fx ?? {}));
+      for (const p of AE_IGNORE_PATHS) {
+        const parts = p.split(".");           // no scope in the list contains a dot
+        let cur = e;
+        for (let i = 0; i < parts.length - 1 && cur && typeof cur === "object"; i++) cur = cur[parts[i]];
+        if (cur && typeof cur === "object") delete cur[parts.at(-1)];
+      }
+      return stableJson(e);
+    });
+    return sigs.sort().join("|");             // array order is not content
+  }
+
+  function masterSignature(o) {
+    const p = o?.system?.props ?? {};
+    const keys = Object.keys(p).filter(k => !MASTER_SIG_IGNORE.has(k)).sort();
+    return JSON.stringify([keys.map(k => [k, p[k]]), aeSignature(o?.effects)]);
+  }
+
+  // CSB stamps `system.uniqueId` with the originating world Item's id (verified:
+  // it equals `_stats.compendiumSource` where both are present, and resolves for
+  // 263 of 275 party items). `compendiumSource` is the fallback.
+  function masterFor(obj) {
+    const uid = String(obj?.system?.uniqueId ?? "").trim();
+    const src = String(obj?._stats?.compendiumSource ?? "").replace(/^Item\./, "").trim();
+    for (const id of [uid, src]) {
+      if (!id) continue;
+      const byId = game.items.get(id);
+      if (byId) return byId;
+    }
+    if (!uid) return null;
+    return game.items.find(i => String(i.system?.uniqueId ?? "").trim() === uid) ?? null;
+  }
+
+  function restorableFromMaster(obj) {
+    const m = masterFor(obj);
+    if (!m) return false;
+    return masterSignature(m.toObject()) === masterSignature(obj);
+  }
+
   // Diff one embedded collection of `owner` (an Actor's Items/Effects, or — via
   // recursion — an Item's own Effects) toward the saved snapshot. Returns a
   // summary for the load-level observability rollup.
@@ -132,7 +278,7 @@
   // absent from the array. So an updated Item's effects are reconciled RECURSIVELY
   // here — not left to the parent update — and `effects` is stripped from the Item
   // body update to keep ownership of them in one place.
-  async function applyEmbedsDiff(owner, type, savedArr = []) {
+  async function applyEmbedsDiff(owner, type, savedArr = [], { exactRestore = false } = {}) {
     const collection = owner.getEmbeddedCollection(type);
     const liveById   = new Map([...collection.values()].map(d => [d.id, d]));
     const savedById  = new Map((savedArr ?? []).map(d => [d._id, d]));
@@ -140,15 +286,62 @@
     const toCreate = [], toUpdate = [], toDelete = [];
     let skip = 0;
     const nested = { update: 0, create: 0, delete: 0 }; // effect ops on updated items
+    const keptUnique = [];
 
-    // Present live but not in the save → remove (rare: taken off the PC since save).
-    for (const id of liveById.keys()) {
-      if (!savedById.has(id)) toDelete.push(id);
+    // Present live but not in the save → remove, if it can be restored from a
+    // master. `exactRestore` opts a caller out entirely (shops — see below).
+    const guarded = type === "Item" && !exactRestore;
+    if (guarded) {
+      const objs = new Map([...liveById].map(([id, d]) => [id, d.toObject()]));
+
+      // Decide the container PAIR as one unit: a shell and its `_skill` children
+      // are removable only if every member is independently restorable, because
+      // the CSB cascade takes them together regardless.
+      const childrenOf = new Map();
+      for (const [id, o] of objs) {
+        const parent = String(o?.system?.container ?? "").trim();
+        if (parent) (childrenOf.get(parent) ?? childrenOf.set(parent, []).get(parent)).push(id);
+      }
+      const unitOf = (id, seen = new Set()) => {
+        if (seen.has(id)) return seen;
+        seen.add(id);
+        const parent = String(objs.get(id)?.system?.container ?? "").trim();
+        if (parent && objs.has(parent)) unitOf(parent, seen);
+        for (const c of (childrenOf.get(id) ?? [])) unitOf(c, seen);
+        return seen;
+      };
+
+      for (const [id, live] of liveById) {
+        if (savedById.has(id)) continue;
+        const unit = [...unitOf(id)];
+        const removable = unit.every(u => restorableFromMaster(objs.get(u)));
+        if (removable) toDelete.push(id);
+        else keptUnique.push(live.name ?? id);
+      }
+    } else {
+      for (const id of liveById.keys()) if (!savedById.has(id)) toDelete.push(id);
     }
     // In the save → create if missing, update if changed, skip if identical.
     for (const [id, saved] of savedById) {
       const live = liveById.get(id);
       if (!live) { toCreate.push(saved); continue; }
+      // When only state is applied, only state can make an update necessary.
+      // Comparing whole documents here would queue an update for every item whose
+      // DEFINITION drifted since the save — on slot 1 that is most of them — and
+      // each would resolve to a no-op write plus a CSB re-render (~360ms/doc).
+      if (guarded) {
+        const lp = live.system?.props ?? {}, sp = saved.system?.props ?? {};
+        const stateDiffers = ITEM_STATE_PROPS.some(k =>
+          Object.prototype.hasOwnProperty.call(sp, k) &&
+          JSON.stringify(lp[k]) !== JSON.stringify(sp[k]));
+        // An equip flag present in the snapshot still needs the AE sync pass even
+        // when the flag itself matches, so route those through toUpdate too.
+        const needsEquipSync = Object.prototype.hasOwnProperty.call(sp, "isEquipped") &&
+          [...live.getEmbeddedCollection("ActiveEffect").values()]
+            .some(e => e.transfer === true && e.disabled === (sp.isEquipped === true));
+        if (stateDiffers || needsEquipSync) toUpdate.push(saved); else skip++;
+        continue;
+      }
       if (foundry.utils.objectsEqual(canonicalizeEmbed(live.toObject()), canonicalizeEmbed(saved))) skip++;
       else toUpdate.push(saved); // saved carries _id
     }
@@ -158,6 +351,22 @@
 
     if (toUpdate.length) {
       const updates = toUpdate.map(d => {
+        // Rule 1: an Item that exists on both sides gets STATE ONLY. No
+        // classification — every item is treated the same, which is what makes
+        // this safe by construction rather than by a predicate that can be
+        // incomplete. Its live definition always stands.
+        if (guarded) {
+          const state = { _id: d._id };
+          const sp = d.system?.props;
+          if (sp) {
+            for (const k of ITEM_STATE_PROPS) {
+              if (Object.prototype.hasOwnProperty.call(sp, k)) {
+                ((state.system ??= {}).props ??= {})[k] = sp[k];
+              }
+            }
+          }
+          return state;
+        }
         const c = { ...d };
         delete c._stats;                              // Foundry owns these timestamps
         if (type === "Item") { delete c.effects; delete c.items; } // reconciled separately
@@ -170,6 +379,29 @@
         for (const saved of toUpdate) {
           const item = owner.getEmbeddedCollection("Item").get(saved._id);
           if (!item) continue;
+          if (guarded) {
+            // An Item's AEs are part of its DEFINITION (a transfer:true gear AE,
+            // a reactionConfig bridge), so they are never created or deleted from
+            // a snapshot. But `disabled` carries the EQUIP toggle, and the update
+            // above restores `isEquipped` — so sync the two, or the load leaves
+            // worn gear inert. Nothing else repairs it: armor-equip-gate.js fires
+            // only for item_type "armor", and reconcileEquip is never called on
+            // the load path. Walk the LIVE transfer effects, not the saved ones,
+            // so an AE absent from an old snapshot can still be switched on.
+            if (!Object.prototype.hasOwnProperty.call(saved.system?.props ?? {}, "isEquipped")) continue;
+            const equipped = saved.system.props.isEquipped === true;
+            const fxUpdates = [];
+            for (const lfx of item.getEmbeddedCollection("ActiveEffect").values()) {
+              if (lfx.transfer !== true) continue;
+              if (lfx.disabled === !equipped) continue;
+              fxUpdates.push({ _id: lfx.id, disabled: !equipped });
+            }
+            if (fxUpdates.length) {
+              await item.updateEmbeddedDocuments("ActiveEffect", fxUpdates);
+              nested.update += fxUpdates.length;
+            }
+            continue;
+          }
           const fx = await applyEmbedsDiff(item, "ActiveEffect", saved.effects ?? []);
           nested.update += fx.update; nested.create += fx.create; nested.delete += fx.delete;
         }
@@ -193,18 +425,32 @@
     return {
       type,
       create: toCreate.length, update: toUpdate.length, delete: toDelete.length, skip, nested,
+      // What the guard held back. Counted ALWAYS, not only under DEBUG_LOAD: a
+      // load that protected 90 unique documents and one that had nothing to
+      // protect must not look identical in the log.
+      keptUnique: keptUnique.length,
+      keptNames: keptUnique,
       updated: debug ? toUpdate.map(d => d.name) : [],
       created: debug ? toCreate.map(d => d.name) : [],
       deleted: debug ? toDelete.map(id => liveById.get(id)?.name ?? id) : [],
     };
   }
 
-  async function applyActorEmbeds(actor, { items = [], effects = [] }) {
+  // `exactRestore` opts a caller out of the guard entirely. SHOPS use it: a
+  // shop's catalogue is campaign state a GM rewrites as a story beat, and the
+  // shop extractor's contract is an exact restore of the snapshot's stock.
+  async function applyActorEmbeds(actor, { items = [], effects = [] }, { exactRestore = false } = {}) {
     const t0 = performance.now();
-    const item   = await applyEmbedsDiff(actor, "Item", items);
+    const item   = await applyEmbedsDiff(actor, "Item", items, { exactRestore });
     const effect = await applyEmbedsDiff(actor, "ActiveEffect", effects);
     const ms = Math.round(performance.now() - t0);
     (SS._diffReport ??= []).push({ actor: actor.name, ms, item, effect });
+    if (item.keptUnique) {
+      console.log(`${TAG} ${actor.name}: kept ${item.keptUnique} unique document(s) the save predates` +
+        ` (no world master, or diverged from it): ` +
+        item.keptNames.slice(0, 12).join(", ") +
+        (item.keptNames.length > 12 ? ` … +${item.keptNames.length - 12} more` : ""));
+    }
   }
 
   // Scene mode is stored by the DungeonPathing / Fabula configuration system.
@@ -334,7 +580,11 @@
         if (!actor) { console.warn(TAG, "npcData apply: not found", uuid); continue; }
         await wipeStaleCsbListEntries(actor, actorData.system?.props);
         await actor.update({ system: actorData.system, flags: actorData.flags });
-        await applyActorEmbeds(actor, actorData);
+        // A SHOP routed through npcData needs the shop contract too: 8 of the 11
+        // shop actors are linked NPC-template actors, which shopInventoryData
+        // explicitly skips ("npcData already covers linked NPC template actors").
+        // Opting out only there would reach 3 shops holding 24% of the stock.
+        await applyActorEmbeds(actor, actorData, { exactRestore: actor.system?.props?.isShop === true });
       }
     },
   });
@@ -768,7 +1018,7 @@
         if (!actor) { console.warn(TAG, "shopInventoryData apply: not found", uuid); continue; }
         await wipeStaleCsbListEntries(actor, actorData.system?.props);
         await actor.update({ system: actorData.system, flags: actorData.flags });
-        await applyActorEmbeds(actor, actorData);
+        await applyActorEmbeds(actor, actorData, { exactRestore: true });
       }
     },
   });
