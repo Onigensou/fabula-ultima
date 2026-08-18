@@ -18,6 +18,14 @@
  *     Emit OPP_BOND_EDIT with targetUserId = game.user.id so the bond editor
  *     opens on this client exactly as it would on a player's screen.
  *
+ *   .spectate(actorUuid?)
+ *     Render the read-only spectator mirror on THIS client and walk its cursor.
+ *     Nothing is broadcast — for eyeballing the mirror solo.
+ *
+ *   .broadcastSpectate(actorUuid?)
+ *     Drive a full mirror sequence over the socket so every OTHER client shows
+ *     the spectator wheel. Run on one client, watch the others.
+ *
  *   .setActor(uuid)
  *     Override the default actor UUID for this session.
  *
@@ -28,6 +36,8 @@
  *   oni.OppDevTest.runOption("affliction")
  *   oni.OppDevTest.runOption("bonding")          // bond editor opens GM-side
  *   oni.OppDevTest.simulateBondEdit()            // bond editor opens as if on player client
+ *   oni.OppDevTest.spectate()                    // spectator mirror, this client only
+ *   oni.OppDevTest.broadcastSpectate()           // spectator mirror on every OTHER client
  *   oni.OppDevTest.setActor("Actor.xxx")         // change default actor
  */
 (() => {
@@ -44,6 +54,8 @@
   const SFX_CONFIRM = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/opportunity_confirmed.wav";
 
   // ── Helpers ───────────────────────────────────────────────────────────────
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+
   async function resolveActorInfo(uuid) {
     const doc   = await fromUuid(uuid).catch(() => null);
     const actor = doc?.actor ?? (doc?.documentName === "Actor" ? doc : null);
@@ -195,6 +207,76 @@
         },
       });
       console.debug(TAG, "OPP_BOND_EDIT emitted to self (targetUserId =", game.user.id, ")");
+    },
+
+    /**
+     * Render the read-only spectator mirror on THIS client and walk its cursor,
+     * then land on a pick. Nothing is broadcast — this is for eyeballing the
+     * mirror's own look (no pointer cursor, no hover cue, Spectating tag) without
+     * needing a second client or a real crit.
+     */
+    async spectate(actorUuid) {
+      const uuid = actorUuid ?? _defaultActorUuid;
+      console.log(TAG, "spectate()", { actorUuid: uuid });
+
+      const info   = await resolveActorInfo(uuid);
+      const cfg    = window["oni.OpportunityConfig"];
+      const dialog = window["oni.OpportunityDialog"];
+      if (!info)            { console.error(TAG, "Could not resolve actor:", uuid); return; }
+      if (!cfg || !dialog)  { console.error(TAG, "Config or Dialog not loaded"); return; }
+
+      dialog.showSpectator({
+        actorName:     info.actorName,
+        actorPortrait: info.portrait,
+        options:       cfg.OPTIONS,
+        sel:           0,
+        onTakeControl: game.user?.isGM ? () => console.log(TAG, "Take Control clicked (no-op in dev test)") : null,
+      });
+
+      for (let i = 1; i <= 3; i++) {
+        await wait(750);
+        dialog.applySpectatorSelection({ sel: i });
+      }
+      await wait(900);
+      await dialog.dismissSpectator({ optionId: cfg.OPTIONS[3]?.id ?? null });
+      console.debug(TAG, "spectate() done.");
+    },
+
+    /**
+     * Drive a full mirror sequence over the socket — open, three cursor moves,
+     * confirm — so every OTHER connected client shows the spectator wheel.
+     * Run this on one client and watch the others; no crit required.
+     */
+    async broadcastSpectate(actorUuid) {
+      const uuid = actorUuid ?? _defaultActorUuid;
+      console.log(TAG, "broadcastSpectate()", { actorUuid: uuid });
+
+      const info = await resolveActorInfo(uuid);
+      const cfg  = window["oni.OpportunityConfig"];
+      if (!info) { console.error(TAG, "Could not resolve actor:", uuid); return; }
+      if (!cfg)  { console.error(TAG, "Config not loaded"); return; }
+
+      const offerKey = `devtest-${Date.now()}`;
+      const options  = (cfg.OPTIONS ?? []).map(o => ({
+        id: o.id, label: o.label, description: o.description,
+        icon: o.icon, color: o.color, hasPrePhase: !!o.hasPrePhase,
+      }));
+
+      game.socket.emit(SOCKET_CH, {
+        type:    "OPP_SPEC_OPEN",
+        payload: { offerKey, actorName: info.actorName, actorPortrait: info.portrait, options, title: null, sel: 0 },
+      });
+
+      for (let i = 1; i <= 3; i++) {
+        await wait(800);
+        game.socket.emit(SOCKET_CH, { type: "OPP_SPEC_SEL", payload: { offerKey, sel: i } });
+      }
+      await wait(900);
+      game.socket.emit(SOCKET_CH, {
+        type:    "OPP_SPEC_CLOSE",
+        payload: { offerKey, optionId: options[3]?.id ?? null },
+      });
+      console.debug(TAG, "broadcastSpectate() done — key:", offerKey);
     },
   };
 
