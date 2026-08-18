@@ -195,9 +195,9 @@
   // renames (Hina's "PROPHETIC DEFENDER STYLE" -> "Prophetic Defender", three of
   // Geist's Zero Powers). Restoring either would undo authoring. Restoring the
   // saved name would quietly strip the +4; applyActorEmbeds re-points the equip
-  // SLOTS at the live name instead. (`refine_count` / `refine_level` differ on 17
-  // of slot 1's items — 34 prop-instances, two per item, counted over ALL four
-  // restored buckets — and in every case the prop is present LIVE and absent
+  // SLOTS at the live name instead. (`refine_count` / `refine_level` differ on 19
+  // of slot 1's items — 38 prop-instances, two per item, over all four restored
+  // buckets; an earlier 17/34 missed Hako, who is restored via npcData — and in every case the prop is present LIVE and absent
   // from the save, so adding them here would be a no-op under the hasOwnProperty gate
   // below. Refinement itself lives in the name and the stat props.)
   const ITEM_STATE_PROPS = ["isEquipped", "item_quantity"];
@@ -361,10 +361,22 @@
   //     `disabled` and whose carrier item is not equipped, so its enabled state
   //     is equip state. Hina's Jetpack grants Swift while flying this way, and it
   //     is transfer:false with no `changes` at all.
-  // Anything else is left alone. 544 item AEs are transfer:false and most are
-  // apply_ae templates or status containers.
-  const isEquipLinked = (e) =>
-    e.transfer === true || !!e.flags?.[MOD]?.deriveStatus;
+  // Anything else is left alone. Over the ACTOR-EMBEDDED items this function can
+  // actually reach: 237 effects match the transfer arm, exactly 1 matches the
+  // deriveStatus arm (Hina / Jetpack / "Aerial Swiftness"), and 333 are left
+  // untouched — mostly apply_ae templates and status containers. (World-wide the
+  // same split is 592 / 1 / 543, but 565 of those sit on world items the load
+  // never touches.)
+  const isEquipLinked = (e) => {
+    if (e.transfer === true) return true;
+    // The reactor's equip gate is OPT-OUT (`requireEquipped !== false`), and the
+    // spec may be an array, so read it rather than testing for its presence: a
+    // rule marked `requireEquipped: false` fires while the item is merely held,
+    // and disabling its AE would kill it outright (`:47` returns on `disabled`).
+    const spec = e.flags?.[MOD]?.deriveStatus;
+    if (!spec) return false;
+    return (Array.isArray(spec) ? spec : [spec]).some(r => r?.requireEquipped !== false);
+  };
 
   async function syncItemEquipEffects(item) {
     const equipped = item.system?.props?.isEquipped === true;
@@ -389,9 +401,9 @@
     return masterSignature(m.toObject()) === masterSignature(obj);
   }
 
-  // Diff one embedded collection of `owner` (an Actor's Items/Effects, or — via
-  // recursion — an Item's own Effects) toward the saved snapshot. Returns a
-  // summary for the load-level observability rollup.
+  // Diff one embedded collection of `owner` (an Actor's Items or ActiveEffects)
+  // toward the saved snapshot. Returns a summary for the load-level
+  // observability rollup.
   //
   // IMPORTANT (verified live): updateEmbeddedDocuments on an Item MERGES its
   // embedded `effects` (updates by _id, inserts new) but does NOT delete effects
@@ -533,9 +545,12 @@
       // mark an effect that its sweeps must NEVER remove. An earlier rule here
       // used `reactionConfig && !directorAppliedBy` alone and so ignored them,
       // deleting five opted-out effects on slot 1 — including Keren's "Wet",
-      // which is the aquatic 2-piece SET BONUS carrier (crossScene +
-      // directorPermanent) that nothing restores, since reconcileSetBonuses is
-      // never called on the load path, and Hina's "Lucky Number", a
+      // the aquatic 2-piece SET BONUS carrier (crossScene + directorPermanent).
+      // set-bonus-hooks DOES schedule reconcileSetBonuses off our isEquipped
+      // writes, so a rebuild is racing rather than absent — on a 100 ms debounce,
+      // against a load that also creates 36 and deletes 65 documents. Deleting a
+      // marked-permanent carrier and hoping a debounced rebuild wins is not a
+      // contract. Also deleted was Hina's "Lucky Number", a
       // reactionConfig carrier with no world master: exactly the unrecoverable
       // case this guard exists for. `directorAppliedBy` alone is NOT the
       // discriminator — it means "the director created it", not "it is
@@ -555,11 +570,14 @@
       // `campRestCharges` — which classes them as surviving every tick until a
       // Rest, food buffs named as the case. That module exists because three
       // systems used to answer AE lifetime independently and disagreed, so
-      // differing from it needs saying out loud: a LOAD is not a tick. Restoring
-      // a snapshot means the actor's state becomes the snapshot's, and a camp
-      // buff eaten after the save belongs to the run being discarded — on a party
-      // swap it would be another party's buff. Rest-bound survival is about the
-      // passage of play, not about being restored over.
+      // differing from it needs saying out loud. The reason is RECOVERABILITY,
+      // not lifetime — "a load is not a tick" would excuse overriding
+      // directorPermanent too, and that one is kept. These five are reproducible
+      // session state (all carry BOTH `statuses:["permanent"]` and
+      // `campRestCharges: 0`): four Campfire Cakes and a Curse, acquired after
+      // the save, belonging to the run being discarded — on a party swap they
+      // would be another party's. The opted-out effects are kept because nothing
+      // can put them back.
       for (const [id, live] of liveById) {
         if (savedById.has(id)) continue;
         const f = live.flags?.[MOD] ?? {};
@@ -628,9 +646,11 @@
           }
           return state;
         }
+        // Reached only for ActiveEffects — `guarded` IS `type === "Item"`, so an
+        // Item never gets here and needs no effects/items strip; the guarded
+        // branch above returns a state-only object instead.
         const c = { ...d };
         delete c._stats;                              // Foundry owns these timestamps
-        if (type === "Item") { delete c.effects; delete c.items; } // reconciled separately
         return c;
       });
       await owner.updateEmbeddedDocuments(type, updates);
@@ -644,10 +664,17 @@
           // reactionConfig bridge), so they are never created or deleted from a
           // snapshot. But `disabled` carries the EQUIP toggle, and the update
           // above restores `isEquipped` — so sync the two, or the load leaves
-          // worn gear inert. Nothing else repairs it: armor-equip-gate.js fires
-          // only for item_type "armor", and reconcileEquip is never called on the
-          // load path. Reads the item's LIVE isEquipped (just written), so an AE
-          // absent from an old snapshot is still switched on correctly.
+          // worn gear inert. Reads the item's LIVE isEquipped (just written), so
+          // an AE absent from an old snapshot is still switched on correctly.
+          //
+          // ⚠ For item_type "armor" this is NOT the only writer. Writing
+          // `isEquipped` fires armor-equip-gate's ambient updateItem hook, which
+          // calls the engine's syncItemEffectsToEquip — the BROAD all-owned-
+          // effects scope that isEquipLinked exists to avoid — and the load does
+          // not wrap its writes in withManagedEquip, so the hook does not stand
+          // down. Inert today (no armor in the corpus carries a transfer:false
+          // AE) but it means the narrow scope is not guaranteed on that path;
+          // one authored armor template AE would expose it.
           if (!Object.prototype.hasOwnProperty.call(saved.system?.props ?? {}, "isEquipped")) continue;
           nested.update += await syncItemEquipEffects(item);
         }
