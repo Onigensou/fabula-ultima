@@ -300,7 +300,16 @@
   }
 
   // ── Screen flash ───────────────────────────────────────────────────────────
+  // MUST always settle. Callers await it before resolving the pick or tearing
+  // down a wheel, and a browser pauses requestAnimationFrame while its window is
+  // hidden or fully occluded — so an un-guarded rAF chain here strands the
+  // confirm, which in turn leaves every spectator's mirror up until its 130 s
+  // cap. Confirmed live 2026-08-18: a background window reached spendDisabled
+  // with the flash element still in the DOM and the picker never resolving.
   function showFlash(color = "rgba(255,248,200,0.55)") {
+    // Nobody can see it, and rAF will not run — skip straight to done.
+    if (document.hidden) return Promise.resolve();
+
     return new Promise(res => {
       const el = document.createElement("div");
       Object.assign(el.style, {
@@ -308,6 +317,19 @@
         pointerEvents:"none", background:color, opacity:"0",
       });
       document.body.appendChild(el);
+
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(guard);
+        el.remove();
+        res();
+      };
+      // Backstop for a window hidden mid-animation, which strands the chain the
+      // same way. Comfortably longer than the flash's own ~530 ms.
+      const guard = setTimeout(finish, 1500);
+
       requestAnimationFrame(() => {
         el.style.transition = "opacity 55ms ease-in";
         requestAnimationFrame(() => {
@@ -315,7 +337,7 @@
           setTimeout(() => {
             el.style.transition = "opacity 340ms ease-out";
             el.style.opacity = "0";
-            setTimeout(() => { el.remove(); res(); }, 400);
+            setTimeout(finish, 400);
           }, 78);
         });
       });
@@ -648,9 +670,9 @@
     clearTimeout(spec.timer);
     document.removeEventListener("keydown", spec.onKey);
 
-    // A background tab pauses requestAnimationFrame, so the confirm beat below
-    // would never finish and the mirror would still be sitting there on
-    // refocus. Sockets keep arriving while hidden — take the plain teardown.
+    // Sockets keep arriving while a window is hidden but rAF does not run, so
+    // there is no point animating a beat nobody can see — take the plain
+    // teardown. (showFlash guards itself too; this just skips the busywork.)
     if (silent || cancelled || document.hidden) {
       if (!silent) playSound(cancelled ? SFX_CANCEL : SFX_CONFIRM, 0.65);
       spec.backdrop.remove();
@@ -669,8 +691,7 @@
       }
       const opt = idx >= 0 ? spec.options[idx] : null;
       playSound(opt?.hasPrePhase ? SFX_LESSER_CONFIRM : SFX_CONFIRM, 0.8);
-      // Backstop the same rAF hazard for a tab hidden mid-flash.
-      await Promise.race([showFlash(), new Promise(r => setTimeout(r, 1200))]);
+      await showFlash();
     } finally {
       spec.backdrop.remove();
     }
