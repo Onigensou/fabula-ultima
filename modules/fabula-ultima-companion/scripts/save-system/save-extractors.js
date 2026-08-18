@@ -271,6 +271,13 @@
   function restorableFromMaster(obj) {
     const m = masterFor(obj);
     if (!m) return false;
+    // `uniqueId` is stamped on create and INHERITED by a duplicate, so it is not
+    // per-instance: 12 world items share Amber Pendant's, and 384 embedded items
+    // resolve to a master carrying a different NAME. None of those currently
+    // also matches by signature, so the id alone has been giving the right
+    // answer — by luck, not by construction. Requiring the name too closes it
+    // at zero cost (the world-wide restorable count is 333 either way).
+    if (m.name !== obj?.name) return false;
     return masterSignature(m.toObject()) === masterSignature(obj);
   }
 
