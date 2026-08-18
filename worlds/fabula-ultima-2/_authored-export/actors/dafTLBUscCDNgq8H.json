@@ -489,8 +489,7 @@
       "idleAnimation": {
         "bounce": false,
         "float": false
-      },
-      "opp_lucky": 1
+      }
     },
     "theatre": {
       "baseinsert": "",
