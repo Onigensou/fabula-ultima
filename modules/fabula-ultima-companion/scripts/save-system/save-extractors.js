@@ -270,10 +270,13 @@
   // Ignored alongside them: Foundry/CSB provenance and editor bookkeeping
   // (`core.sourceId` 169 docs, `custom-system-builder.version` 3965 — i.e. every
   // item — and the template undo history), plus three flags written by PLAY
-  // rather than by an author. `hiddenUntilBattleEnd` is the important one: it is
-  // set during a battle and cleared at battle end, so leaving it in makes an item
-  // hidden mid-session read as diverged from its master, become non-restorable,
-  // and survive the reset it was supposed to be cleared by.
+  // rather than by an author: `hiddenUntilBattleEnd`, `activeForm`,
+  // `transformFreeUsedRound`. Unlike the two counts above, those three sit on ONE
+  // document each today, so they are pre-emptive rather than measured. The case
+  // is that a battle sets `hiddenUntilBattleEnd`, and leaving it in the signature
+  // would make an item hidden mid-session read as diverged from its master and so
+  // escape the reset. Note that only bites a live-ONLY item — one the snapshot
+  // also carries takes rule 1 and keeps its live flags either way.
   const FLAG_IGNORE = new Set([
     "core.sourceId",
     "custom-system-builder.version",
