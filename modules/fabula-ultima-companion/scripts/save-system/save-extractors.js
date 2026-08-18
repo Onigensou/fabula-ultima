@@ -339,6 +339,7 @@
     // Since a pair only ever transfers state props, a wrong guess between two
     // same-named siblings costs a quantity or an equip flag, never a definition.
     let repaired = 0;
+    const renamed = [];   // [saved props.name, live props.name] for matched pairs
     if (guarded) {
       const bucket = (m, k, v) => { (m.get(k) ?? m.set(k, []).get(k)).push(v); return m; };
       const unmatchedLive = new Map(), unmatchedSaved = new Map();
@@ -441,6 +442,12 @@
       // each would resolve to a no-op write plus a CSB re-render (~360ms/doc).
       if (guarded) {
         const lp = live.system?.props ?? {}, sp = saved.system?.props ?? {};
+        // Rule 1 does not restore a name, so a document refined since the save
+        // keeps its live one. Record the difference for the equip-slot fixup in
+        // applyActorEmbeds — the actor's slot props were restored from the
+        // snapshot and still name the OLD string.
+        const sName = String(sp.name ?? ""), lName = String(lp.name ?? "");
+        if (sName && lName && sName !== lName) renamed.push([sName, lName]);
         // CSB writes item_quantity as a number down some paths and a string down
         // others, so a raw compare queues an update that changes nothing — 3 of
         // them on slot 1, each costing a document write plus a CSB re-render
@@ -560,7 +567,7 @@
       // What the guard held back. Counted ALWAYS, not only under DEBUG_LOAD: a
       // load that protected 90 unique documents and one that had nothing to
       // protect must not look identical in the log.
-      keptUnique: keptUnique.length, unequipped: toUnequip.length,
+      keptUnique: keptUnique.length, unequipped: toUnequip.length, renamed,
       keptNames: keptUnique,
       repaired,
       updated: debug ? toUpdate.map(d => d.name) : [],
@@ -596,6 +603,31 @@
         ` (no world master, or diverged from it): ` +
         item.keptNames.slice(0, 12).join(", ") +
         (item.keptNames.length > 12 ? ` … +${item.keptNames.length - 12} more` : ""));
+    }
+    // The actor's slot props (main_hand / off_hand / accessory_name /
+    // accessory2_name) say what is WORN, and resolve by the item's
+    // `system.props.name` string — indexByEquippedName in equipment-swap.js.
+    // Those props were just restored wholesale from the snapshot, while rule 1
+    // deliberately does NOT restore an item's name: renaming a live "+4 Titanic
+    // Shield" back to the snapshot's "Titanic Shield" would strip the
+    // refinement. The two then disagree exactly where a refinement happened
+    // after the save, and the slot resolves to nothing — on slot 1 that empties
+    // Blanche's and Zarg's MAIN HAND, taking resolveAttackerWeapon, the sheet's
+    // hand slots and the HAS_RANGED_WEAPON / HAS_MARTIAL_ARMOR gate family with
+    // it. So carry the rename across to the SLOTS instead of into the item.
+    if (item.renamed?.length) {
+      const map   = new Map(item.renamed);
+      const props = actor.system?.props ?? {};
+      const fix   = {};
+      for (const slot of ["main_hand", "off_hand", "accessory_name", "accessory2_name"]) {
+        const cur = props[slot];
+        if (cur && map.has(cur)) fix[`system.props.${slot}`] = map.get(cur);
+      }
+      if (Object.keys(fix).length) {
+        await actor.update(fix);
+        console.log(`${TAG} ${actor.name}: re-pointed ${Object.keys(fix).length} equip slot(s) at renamed items — ` +
+          Object.entries(fix).map(([k, v]) => `${k.split(".").pop()} = "${v}"`).join(", "));
+      }
     }
     if (effect.keptUnique) {
       console.log(`${TAG} ${actor.name}: kept ${effect.keptUnique} hand-placed reaction-config effect(s) ` +
