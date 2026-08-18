@@ -317,23 +317,49 @@
     //
     // Re-pair those by NAME up front, so the pair is treated as what it is — one
     // document present on both sides. It then takes rule 1's path (state only,
-    // live definition stands) instead of being deleted and rolled back. Only
-    // unambiguous names are paired: exactly one unmatched document of that name
-    // on each side. Ambiguity (Blanche carries two documents named "Heal") is
-    // left to the id diff rather than guessed at.
+    // live definition stands) instead of being deleted and rolled back.
+    //
+    // Pairing is POSITIONAL, as many as both sides have of that name. Restricting
+    // it to the unambiguous 1:1 case looked safer and was not: "left to the id
+    // diff" used to mean delete-plus-create, but the diff's delete half is now
+    // the guard, which KEEPS the live copy — so both survived and the saved ones
+    // were created on top. The save carries two documents named "Heal" for
+    // Blanche where the live world has one, and that turned 1 into 3.
+    //
+    // A pair must at least be the same KIND of thing — matching type and CSB
+    // template. That check is load-bearing rather than decorative, because a
+    // container and its `_skill` child SHARE A NAME by construction: Zarg's
+    // "Skull Orb" is a shell (template ZoiV53Va…) plus a gear-skill child
+    // (j0F5Msw5…, the _Skill Template), and the save holds only an older shell.
+    // Each saved document therefore takes the first COMPATIBLE live candidate,
+    // not the positionally first one — pairing by position tried the child,
+    // failed the kind check, and never got to the shell, which left the shell to
+    // be re-created and Zarg holding three Skull Orbs.
+    //
+    // Since a pair only ever transfers state props, a wrong guess between two
+    // same-named siblings costs a quantity or an equip flag, never a definition.
     let repaired = 0;
     if (guarded) {
       const bucket = (m, k, v) => { (m.get(k) ?? m.set(k, []).get(k)).push(v); return m; };
       const unmatchedLive = new Map(), unmatchedSaved = new Map();
       for (const [id, d] of liveById)  if (!savedById.has(id)) bucket(unmatchedLive, d.name, id);
       for (const [id, d] of savedById) if (!liveById.has(id))  bucket(unmatchedSaved, d.name, id);
+      const sameKind = (live, saved) =>
+        live.type === saved.type &&
+        String(live.system?.template ?? "") === String(saved.system?.template ?? "");
       for (const [name, sIds] of unmatchedSaved) {
-        const lIds = unmatchedLive.get(name);
-        if (sIds.length !== 1 || !lIds || lIds.length !== 1) continue;
-        const saved = savedById.get(sIds[0]);
-        savedById.delete(sIds[0]);
-        savedById.set(lIds[0], { ...saved, _id: lIds[0] });
-        repaired++;
+        const lIds = unmatchedLive.get(name) ?? [];
+        const taken = new Set();
+        for (const sid of sIds) {
+          const saved = savedById.get(sid);
+          if (!saved) continue;
+          const lid = lIds.find(x => !taken.has(x) && sameKind(liveById.get(x), saved));
+          if (!lid) continue;
+          taken.add(lid);
+          savedById.delete(sid);
+          savedById.set(lid, { ...saved, _id: lid });
+          repaired++;
+        }
       }
     }
 
