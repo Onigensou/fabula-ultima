@@ -15,8 +15,12 @@
  *   - Only `transform` and `opacity` animate (no left/top transitions).
  *   - Description panel has a fixed height — never shifts the wheel.
  *
+ * Two wheels share one builder:
+ *   showPicker()    — the owner's interactive wheel, resolves a Promise.
+ *   showSpectator() — the read-only mirror everyone else watches.
+ *
  * CSS prefix: oni-opp-   z-index: 100020
- * Public: window["oni.OpportunityDialog"].showPicker(opts) → Promise
+ * Public: window["oni.OpportunityDialog"]
  */
 (() => {
   const TAG      = "[ONI][OpportunitySystem:Dialog]";
@@ -219,6 +223,38 @@
         background: linear-gradient(180deg, #f6ebd3, #d9c4a4);
         border: 2px solid rgba(91,63,38,.75); color: #3b2a19;
       }
+
+      /* ── Spectator mirror ────────────────────────────────────────────────
+         Deliberately identical to the live picker — same backdrop opacity,
+         same wheel geometry, same spawn fan-out. The ONLY difference is that
+         every "you are in control" affordance is stripped: no pointer cursor,
+         no hover cue (showSpectator never wires the hover SFX) and no
+         Spend/Decline. The scroll cue still fires on selection changes, so
+         spectators hear the cursor move exactly as the owner does. */
+      .oni-opp-backdrop.is-spectating .oni-opp-wheel { pointer-events: none; }
+      .oni-opp-backdrop.is-spectating .oni-opp-slot  { cursor: default; }
+      .oni-opp-spectate-tag {
+        display: flex; align-items: center; gap: 9px;
+        padding: 7px 20px; border-radius: 30px;
+        font-family: 'Signika', sans-serif;
+        font-size: .82rem; font-weight: 800; letter-spacing: .04em;
+        color: #f6ebd3;
+        background: rgba(18,12,4,.92);
+        border: 2px solid rgba(252,212,112,.30);
+        user-select: none;
+      }
+      .oni-opp-spectate-tag .dot {
+        width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        background: #fcd470; box-shadow: 0 0 8px #fcd470;
+        animation: oni-opp-spec-pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes oni-opp-spec-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+      .oni-opp-btn-takeover {
+        width: 150px;
+        background: linear-gradient(180deg, #6a4a8a, #4a2a6a);
+        border: 2px solid #4a2a6a; color: #fff;
+        box-shadow: 0 3px 10px rgba(0,0,0,.3);
+      }
     `;
     document.head.appendChild(s);
   }
@@ -286,84 +322,136 @@
     });
   }
 
+  // ── Live state ─────────────────────────────────────────────────────────────
+  // Exactly one wheel exists per client at a time: either the owner's real
+  // picker OR a read-only spectator mirror of somebody else's. They never
+  // coexist — the actor is not a spectator of their own crit.
+  let _picker    = null;  // { abort }
+  let _spectator = null;  // { backdrop, slots, descEl, options, sel, timer, onKey }
+
+  // Hard ceiling on a mirror's lifetime, longer than offer()'s own 120 s safety
+  // timeout — a dropped close broadcast must never strand a spectator behind a
+  // full-screen backdrop.
+  const SPECTATOR_MAX_MS = 130_000;
+
+  function clearSpectator() {
+    const spec = _spectator;
+    if (!spec) return;
+    _spectator = null;
+    clearTimeout(spec.timer);
+    document.removeEventListener("keydown", spec.onKey);
+    spec.backdrop.remove();
+  }
+
+  // ── Shared wheel builder ───────────────────────────────────────────────────
+  // Builds the backdrop / title / wheel / slots / description shell used by BOTH
+  // the live picker and the spectator mirror, so the two can never drift apart
+  // visually. The caller fills the returned (empty) footer.
+  function buildWheel({ actorName, actorPortrait, options, title = null, spectating = false }) {
+    clearSpectator();                                    // never leave a stale mirror behind
+    document.getElementById("oni-opp-backdrop")?.remove();
+
+    const backdrop = document.createElement("div");
+    backdrop.className = `oni-opp-backdrop${spectating ? " is-spectating" : ""}`;
+    backdrop.id = "oni-opp-backdrop";
+
+    const titleEl = document.createElement("div");
+    titleEl.className = "oni-opp-title";
+    titleEl.textContent = title ?? "✦ Critical! — Spend an Opportunity";
+    backdrop.appendChild(titleEl);
+
+    if (actorName) {
+      const sub = document.createElement("div");
+      sub.className = "oni-opp-subtitle";
+      sub.textContent = actorName;
+      backdrop.appendChild(sub);
+    }
+
+    // Wheel
+    const wheel = document.createElement("div");
+    wheel.className = "oni-opp-wheel";
+
+    const center = document.createElement("div");
+    center.className = "oni-opp-center";
+    if (actorPortrait) {
+      const isVid = /\.(webm|mp4|ogg)(\?|$)/i.test(actorPortrait);
+      const media = isVid
+        ? Object.assign(document.createElement("video"), { src: actorPortrait, autoplay: true, loop: true, muted: true, playsInline: true })
+        : Object.assign(document.createElement("img"), { src: actorPortrait, alt: "" });
+      media.onerror = () => { try { media.src = "icons/svg/mystery-man.svg"; } catch(_){} };
+      center.appendChild(media);
+    }
+    wheel.appendChild(center);
+
+    // Slots — start at centre for the spawn animation
+    const slots = options.map((opt, i) => {
+      const slot = document.createElement("div");
+      slot.className = "oni-opp-slot";
+      slot.innerHTML = `<i class="fas ${esc(opt.icon ?? "fa-star")}"></i><span>${esc(opt.label)}</span>`;
+      slot._option = opt;
+      slot._idx    = i;
+      slot.style.left       = "50%";
+      slot.style.top        = "50%";
+      slot.style.transform  = "translate(-50%, -50%) scale(0.35)";
+      slot.style.opacity    = "0";
+      slot.style.transition = "none";
+      wheel.appendChild(slot);
+      return slot;
+    });
+
+    backdrop.appendChild(wheel);
+
+    // Description — fixed height
+    const descEl = document.createElement("div");
+    descEl.className = "oni-opp-desc";
+    descEl.innerHTML = `
+      <div class="oni-opp-desc-header">
+        <div class="oni-opp-desc-icon"></div>
+        <div class="oni-opp-desc-label"></div>
+      </div>
+      <div class="oni-opp-desc-text"></div>`;
+    backdrop.appendChild(descEl);
+
+    const footer = document.createElement("div");
+    footer.className = "oni-opp-footer";
+    backdrop.appendChild(footer);
+
+    return { backdrop, wheel, slots, descEl, footer };
+  }
+
+  // ── Spawn fan-out ──────────────────────────────────────────────────────────
+  // Slots fly from the centre out to the ring, staggered, then settle onto a
+  // uniform transition so later selection changes animate evenly.
+  function runSpawnAnimation(slots, sel, N) {
+    const UNIFORM = `transform ${TRANSITION_MS}ms ease-out, opacity 200ms ease-out`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      slots.forEach((slot, i) => {
+        const d = i * SPAWN_STAGGER;
+        slot.style.transition = `transform ${TRANSITION_MS}ms ease-out ${d}ms, opacity 200ms ease-out ${d}ms`;
+      });
+      applyLayout(slots, sel, N);
+
+      const spawnDone = SPAWN_STAGGER * (N - 1) + TRANSITION_MS + 80;
+      setTimeout(() => slots.forEach(sl => { sl.style.transition = UNIFORM; }), spawnDone);
+    }));
+  }
+
   // ── Main showPicker ────────────────────────────────────────────────────────
-  function showPicker({ actorName, actorPortrait, options, canDecline = true, title = null } = {}) {
+  // `onSelectionChange(idx)` fires on every cursor move so the manager can echo
+  // the live selection out to spectators.
+  function showPicker({ actorName, actorPortrait, options, canDecline = true, title = null, onSelectionChange = null } = {}) {
     applyTunerOverrides(); // pick up any live tuner changes before rebuilding
     ensureStyles();        // always regenerates CSS with current dimension vars
 
     return new Promise(resolve => {
-      document.getElementById("oni-opp-backdrop")?.remove();
-
       const N = options.length;
-      let sel = 0;
+      let sel  = 0;
+      let done = false;
 
-      const backdrop = document.createElement("div");
-      backdrop.className = "oni-opp-backdrop";
-      backdrop.id = "oni-opp-backdrop";
-
-      const titleEl = document.createElement("div");
-      titleEl.className = "oni-opp-title";
-      titleEl.textContent = title ?? "✦ Critical! — Spend an Opportunity";
-      backdrop.appendChild(titleEl);
-
-      if (actorName) {
-        const sub = document.createElement("div");
-        sub.className = "oni-opp-subtitle";
-        sub.textContent = actorName;
-        backdrop.appendChild(sub);
-      }
-
-      // Wheel
-      const wheel = document.createElement("div");
-      wheel.className = "oni-opp-wheel";
-
-      const center = document.createElement("div");
-      center.className = "oni-opp-center";
-      if (actorPortrait) {
-        const isVid = /\.(webm|mp4|ogg)(\?|$)/i.test(actorPortrait);
-        const media = isVid
-          ? Object.assign(document.createElement("video"), { src: actorPortrait, autoplay: true, loop: true, muted: true, playsInline: true })
-          : Object.assign(document.createElement("img"), { src: actorPortrait, alt: "" });
-        media.onerror = () => { try { media.src = "icons/svg/mystery-man.svg"; } catch(_){} };
-        center.appendChild(media);
-      }
-      wheel.appendChild(center);
-
-      // Slots — start at centre for spawn animation
-      const UNIFORM = `transform ${TRANSITION_MS}ms ease-out, opacity 200ms ease-out`;
-
-      const slots = options.map((opt, i) => {
-        const slot = document.createElement("div");
-        slot.className = "oni-opp-slot";
-        slot.innerHTML = `<i class="fas ${esc(opt.icon ?? "fa-star")}"></i><span>${esc(opt.label)}</span>`;
-        slot._option = opt;
-        slot._idx    = i;
-        slot.style.left      = "50%";
-        slot.style.top       = "50%";
-        slot.style.transform = "translate(-50%, -50%) scale(0.35)";
-        slot.style.opacity   = "0";
-        slot.style.transition = "none";
-        wheel.appendChild(slot);
-        return slot;
-      });
-
-      backdrop.appendChild(wheel);
-
-      // Description — fixed height
-      const descEl = document.createElement("div");
-      descEl.className = "oni-opp-desc";
-      descEl.innerHTML = `
-        <div class="oni-opp-desc-header">
-          <div class="oni-opp-desc-icon"></div>
-          <div class="oni-opp-desc-label"></div>
-        </div>
-        <div class="oni-opp-desc-text"></div>`;
-      backdrop.appendChild(descEl);
+      const { backdrop, slots, descEl, footer } = buildWheel({ actorName, actorPortrait, options, title });
 
       // Footer
-      const footer   = document.createElement("div");
-      footer.className = "oni-opp-footer";
-      const spendBtn  = document.createElement("button");
+      const spendBtn = document.createElement("button");
       spendBtn.className = "oni-opp-btn oni-opp-btn-spend";
       spendBtn.textContent = "✦ Spend";
       footer.appendChild(spendBtn);
@@ -375,23 +463,31 @@
         declineBtn.textContent = "Decline";
         footer.appendChild(declineBtn);
       }
-      backdrop.appendChild(footer);
+
       document.body.appendChild(backdrop);
       playSound(SFX_OPEN, 0.75);
 
       refreshDesc(descEl, options[sel]);
+      runSpawnAnimation(slots, sel, N);
 
-      // ── Spawn fan-out ──────────────────────────────────────────────────────
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        slots.forEach((slot, i) => {
-          const d = i * SPAWN_STAGGER;
-          slot.style.transition = `transform ${TRANSITION_MS}ms ease-out ${d}ms, opacity 200ms ease-out ${d}ms`;
-        });
-        applyLayout(slots, sel, N);
+      // Single exit point, so a GM take-control abort can never race a click.
+      function finish(result) {
+        if (done) return;
+        done   = true;
+        _picker = null;
+        cleanup();
+        resolve(result);
+      }
 
-        const spawnDone = SPAWN_STAGGER * (N - 1) + TRANSITION_MS + 80;
-        setTimeout(() => slots.forEach(sl => { sl.style.transition = UNIFORM; }), spawnDone);
-      }));
+      // Exposed so the manager can hand this wheel over to a GM mid-decision.
+      _picker = {
+        abort: () => {
+          if (done) return false;
+          playSound(SFX_CANCEL, 0.5);
+          finish({ takenOver: true });
+          return true;
+        },
+      };
 
       // ── Selection ─────────────────────────────────────────────────────────
       function changeSel(newIdx, sfx = true) {
@@ -401,6 +497,7 @@
         if (sfx) playSound(SFX_SCROLL, 0.6);
         applyLayout(slots, sel, N);
         refreshDesc(descEl, options[sel]);
+        try { onSelectionChange?.(sel); } catch (e) { console.error(TAG, "onSelectionChange threw:", e); }
       }
 
       // Mouse wheel
@@ -436,23 +533,22 @@
 
       // Spend
       spendBtn.addEventListener("click", async () => {
-        if (spendBtn.disabled) return;
+        if (spendBtn.disabled || done) return;
         spendBtn.disabled = true;
         if (declineBtn) declineBtn.disabled = true;
         // If this option has a targeting/pre phase, play lesser confirm here;
         // the full confirm plays after the pre phase completes (just before banner).
         playSound(options[sel].hasPrePhase ? SFX_LESSER_CONFIRM : SFX_CONFIRM, 0.8);
         await showFlash();
-        cleanup();
-        resolve({ optionId: options[sel].id });
+        finish({ optionId: options[sel].id });
       });
 
       // Decline
       if (declineBtn) {
         declineBtn.addEventListener("click", () => {
+          if (done) return;
           playSound(SFX_CANCEL, 0.65);
-          cleanup();
-          resolve({ cancelled: true });
+          finish({ cancelled: true });
         });
       }
 
@@ -463,6 +559,132 @@
     });
   }
 
-  window["oni.OpportunityDialog"] = Object.freeze({ showPicker });
-  console.debug(`${TAG} Ready (Wheel UI v7 — no ring, larger layout, stagger-ready).`);
+  // ── Spectator mirror ───────────────────────────────────────────────────────
+  // Shown on every OTHER client while the owner decides. Same wheel, same
+  // backdrop, same spawn fan-out, same open cue — but no interaction: the slots
+  // carry no click/hover handlers (so no hover SFX, no pointer cursor) and the
+  // footer holds a "Spectating" tag instead of Spend/Decline. Torn down by
+  // dismissSpectator() when the owner commits or declines.
+  //
+  // `onTakeControl` (GM only) adds the one deliberate control on this panel: a
+  // Take Control button for when the owner cannot operate their own menu.
+  function showSpectator({ actorName, actorPortrait, options, title = null, sel = 0, onTakeControl = null } = {}) {
+    if (!Array.isArray(options) || !options.length) return null;
+    // Never mirror ourselves — if a real picker is up on this client then we ARE
+    // the actor and the broadcast is stray.
+    if (_picker) { console.debug(TAG, "showSpectator ignored — a live picker is open here."); return null; }
+
+    applyTunerOverrides();
+    ensureStyles();
+
+    const N  = options.length;
+    const s0 = ((Number(sel) || 0) % N + N) % N;
+
+    const { backdrop, slots, descEl, footer } = buildWheel({ actorName, actorPortrait, options, title, spectating: true });
+
+    const tag = document.createElement("div");
+    tag.className = "oni-opp-spectate-tag";
+    tag.innerHTML = `<span class="dot"></span><span class="oni-opp-spectate-text"></span>`;
+    tag.querySelector(".oni-opp-spectate-text").textContent =
+      actorName ? `Spectating — ${actorName} is choosing…` : "Spectating…";
+    footer.appendChild(tag);
+
+    if (typeof onTakeControl === "function") {
+      const btn = document.createElement("button");
+      btn.className = "oni-opp-btn oni-opp-btn-takeover";
+      btn.textContent = "⚙ Take Control";
+      btn.addEventListener("click", () => {
+        btn.disabled    = true;
+        btn.textContent = "Requesting…";
+        try { onTakeControl(); } catch (e) { console.error(TAG, "onTakeControl threw:", e); }
+      });
+      footer.appendChild(btn);
+    }
+
+    document.body.appendChild(backdrop);
+    playSound(SFX_OPEN, 0.75);
+
+    refreshDesc(descEl, options[s0]);
+    runSpawnAnimation(slots, s0, N);
+
+    // Local escape hatch — a spectator is never trapped behind the backdrop,
+    // even if the close broadcast is lost.
+    const onKey = e => {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      dismissSpectator({ silent: true });
+    };
+    document.addEventListener("keydown", onKey);
+
+    const timer = setTimeout(() => dismissSpectator({ silent: true }), SPECTATOR_MAX_MS);
+
+    _spectator = { backdrop, slots, descEl, options, sel: s0, timer, onKey };
+    return backdrop;
+  }
+
+  // Reflect the owner's in-progress cursor onto this client's mirror. The scroll
+  // cue plays here too — hearing the cursor move is part of watching.
+  function applySpectatorSelection({ sel = 0 } = {}) {
+    if (!_spectator) return;
+    const N  = _spectator.options.length;
+    const ns = ((Number(sel) || 0) % N + N) % N;
+    if (ns === _spectator.sel) return;
+    _spectator.sel = ns;
+    playSound(SFX_SCROLL, 0.6);
+    applyLayout(_spectator.slots, ns, N);
+    refreshDesc(_spectator.descEl, _spectator.options[ns]);
+  }
+
+  /**
+   * Tear down the spectator mirror.
+   *   { optionId }        → owner spent it: land on that slot, confirm cue, flash.
+   *   { cancelled: true } → owner declined: cancel cue.
+   *   { silent: true }    → superseded / timed out / local Escape: no cue at all.
+   */
+  async function dismissSpectator({ optionId = null, cancelled = false, silent = false } = {}) {
+    const spec = _spectator;
+    if (!spec) return;
+    _spectator = null;
+    clearTimeout(spec.timer);
+    document.removeEventListener("keydown", spec.onKey);
+
+    if (silent) { spec.backdrop.remove(); return; }
+
+    if (cancelled) {
+      playSound(SFX_CANCEL, 0.65);
+      spec.backdrop.remove();
+      return;
+    }
+
+    // Mirror the owner's confirm beat. The live-selection echo has almost always
+    // parked the cursor on the right slot already; correct it (and let the ring
+    // settle) only if a select broadcast went missing.
+    const idx = spec.options.findIndex(o => o.id === optionId);
+    if (idx >= 0 && idx !== spec.sel) {
+      applyLayout(spec.slots, idx, spec.options.length);
+      refreshDesc(spec.descEl, spec.options[idx]);
+      await new Promise(r => setTimeout(r, TRANSITION_MS));
+    }
+    const opt = idx >= 0 ? spec.options[idx] : null;
+    playSound(opt?.hasPrePhase ? SFX_LESSER_CONFIRM : SFX_CONFIRM, 0.8);
+    await showFlash();
+    spec.backdrop.remove();
+  }
+
+  /** Abort the live picker on this client (GM take-control). True if one was open. */
+  function abortPicker() { return _picker?.abort() ?? false; }
+
+  const isPickerOpen = () => !!_picker;
+  const isSpectating = () => !!_spectator;
+
+  window["oni.OpportunityDialog"] = Object.freeze({
+    showPicker,
+    showSpectator,
+    applySpectatorSelection,
+    dismissSpectator,
+    abortPicker,
+    isPickerOpen,
+    isSpectating,
+  });
+  console.debug(`${TAG} Ready (Wheel UI v8 — shared builder + spectator mirror).`);
 })();
