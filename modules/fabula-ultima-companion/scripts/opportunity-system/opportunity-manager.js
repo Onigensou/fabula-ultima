@@ -98,6 +98,33 @@
     hasPrePhase: !!o.hasPrePhase,
   }));
 
+  // Live-selection echo. Leading edge fires immediately so the mirrored cursor
+  // feels attached to the owner's input; further moves inside the window
+  // collapse into one trailing emit, so spinning the wheel can't flood the
+  // socket (a fast scroll is already throttled to ~5/s client-side, but the
+  // keyboard isn't).
+  function makeSelectionEmitter(offerKey) {
+    if (!offerKey) return null;
+    const MIN_GAP = 120;
+    let lastAt = 0, timer = null, queued = null;
+
+    const send = sel => {
+      lastAt = Date.now();
+      game.socket.emit(SOCKET_CH, { type: MSG_SPEC_SEL, payload: { offerKey, sel } });
+    };
+
+    return sel => {
+      queued = sel;
+      if (timer) return;
+      const wait = MIN_GAP - (Date.now() - lastAt);
+      if (wait <= 0) { send(queued); queued = null; return; }
+      timer = setTimeout(() => {
+        timer = null;
+        if (queued !== null) { send(queued); queued = null; }
+      }, wait);
+    };
+  }
+
   // ── Actor portrait resolution ───────────────────────────────────────────────
   async function resolvePortrait(actorUuid) {
     if (!actorUuid) return "icons/svg/mystery-man.svg";
@@ -387,6 +414,7 @@
       options,
       canDecline:    true,
       title,
+      onSelectionChange: makeSelectionEmitter(offerKey),
     });
 
     // Tear the mirror down the instant our own wheel closes. A take-over abort
@@ -677,6 +705,14 @@
         // showSpectator returns null when this client is itself running a
         // picker (stray broadcast) — don't claim a key we didn't render.
         _specOfferKey = opened ? (p.offerKey ?? null) : null;
+        return;
+      }
+
+      // OPP_SPEC_SEL — the owner moved their cursor; follow it
+      if (msg.type === MSG_SPEC_SEL) {
+        const p = msg.payload ?? {};
+        if (p.offerKey && _specOfferKey && p.offerKey !== _specOfferKey) return;  // stale
+        getDialog()?.applySpectatorSelection({ sel: p.sel ?? 0 });
         return;
       }
 
