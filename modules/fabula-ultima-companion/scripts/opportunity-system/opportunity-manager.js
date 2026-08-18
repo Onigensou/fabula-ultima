@@ -33,6 +33,10 @@
   const MSG_CANCELLED = "OPP_CANCELLED";
   const MSG_DRAMATIC   = "OPP_DRAMATIC";
   const MSG_LOG_BANNER = "OPP_LOG_BANNER";
+  // Spectator mirror — pure UI, carries no authority over the outcome.
+  const MSG_SPEC_OPEN  = "OPP_SPEC_OPEN";
+  const MSG_SPEC_SEL   = "OPP_SPEC_SEL";
+  const MSG_SPEC_CLOSE = "OPP_SPEC_CLOSE";
 
   const DRAMATIC_DURATION = 2800; // ms — must match the CSS animation duration
 
@@ -72,6 +76,27 @@
   function makeOfferKey(actorUuid, actionCardId) {
     return `${actionCardId ?? actorUuid}-${Date.now()}`;
   }
+
+  // ── Spectator mirror ────────────────────────────────────────────────────────
+  // Whoever runs the picker broadcasts open/select/close; every OTHER client
+  // renders a read-only wheel so the table can watch the pick instead of sitting
+  // through a silent pause.
+  //
+  // The picker client broadcasts directly — this is NOT relayed through the GM.
+  // A player client already emits OPP_DRAMATIC the same way, and the mirror has
+  // to work outside combat (CheckRoller / CheckRequester) where BD's GM-owned
+  // intent channel doesn't exist.
+  let _specOfferKey = null;   // offerKey of the mirror currently up on THIS client
+
+  // Only the fields the wheel actually renders — keeps the broadcast small.
+  const specOptions = options => (options ?? []).map(o => ({
+    id:          o.id,
+    label:       o.label,
+    description: o.description,
+    icon:        o.icon,
+    color:       o.color,
+    hasPrePhase: !!o.hasPrePhase,
+  }));
 
   // ── Actor portrait resolution ───────────────────────────────────────────────
   async function resolvePortrait(actorUuid) {
@@ -316,7 +341,7 @@
   }
 
   // ── Local dialog flow ───────────────────────────────────────────────────────
-  async function showDialogLocally({ actorName, actorUuid, excludeIds = [], title = null }) {
+  async function showDialogLocally({ actorName, actorUuid, excludeIds = [], title = null, offerKey = null }) {
     const cfg = getConfig();
     if (!cfg) { console.error(TAG, "OpportunityConfig not loaded"); return { cancelled: true }; }
     const dialog = getDialog();
@@ -344,13 +369,38 @@
     const options = (cfg.OPTIONS ?? [])
       .filter(o => !ex.has(o.id) && (!o.requiresFlag || hasOptionFlag(o.requiresFlag)));
 
-    return dialog.showPicker({
+    // Open the read-only mirror on every other client. Broadcast the ALREADY
+    // FILTERED option list (post excludeIds + requiresFlag) — a mirror built
+    // from the unfiltered list would have different wheel geometry — and the
+    // resolved portrait URL, so a spectator without read access to the actor
+    // still sees the right sprite.
+    if (offerKey) {
+      game.socket.emit(SOCKET_CH, {
+        type:    MSG_SPEC_OPEN,
+        payload: { offerKey, actorName, actorPortrait: portrait, options: specOptions(options), title, sel: 0 },
+      });
+    }
+
+    const result = await dialog.showPicker({
       actorName,
       actorPortrait: portrait,
       options,
       canDecline:    true,
       title,
     });
+
+    // Tear the mirror down the instant our own wheel closes. A take-over abort
+    // closes it silently — the GM re-opens a fresh one under the same offerKey.
+    if (offerKey) {
+      game.socket.emit(SOCKET_CH, {
+        type:    MSG_SPEC_CLOSE,
+        payload: result?.takenOver
+          ? { offerKey, silent: true }
+          : { offerKey, optionId: result?.optionId ?? null, cancelled: !!result?.cancelled },
+      });
+    }
+
+    return result;
   }
 
   // ── Prompt phase: picker + pre handler ─────────────────────────────────────
@@ -358,8 +408,10 @@
   // the effect's pre handler. Returns { optionId, preResult } on success or
   // { cancelled: true } if the player declined or the pre handler cancelled.
   // Shared between the local owner path and the socket OPP_OFFER handler.
-  async function runPromptPhase({ actorName, actorUuid, context = {}, excludeIds = [], title = null }) {
-    const result = await showDialogLocally({ actorName, actorUuid, excludeIds, title });
+  async function runPromptPhase({ actorName, actorUuid, context = {}, excludeIds = [], title = null, offerKey = null }) {
+    const result = await showDialogLocally({ actorName, actorUuid, excludeIds, title, offerKey });
+    // A GM took the wheel off us — the pick (and its resolution) is theirs now.
+    if (result?.takenOver) return { takenOver: true };
     if (result?.cancelled || !result?.optionId) return { cancelled: true };
 
     const handler = getEffects()?.[result.optionId];
@@ -456,7 +508,7 @@
 
       // Step 3 — prompt phase: picker + pre handler (all user decisions happen here)
       const offerKey = makeOfferKey(actorUuid, actionCardId);
-      const picked   = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title });
+      const picked   = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title, offerKey });
 
       if (picked.cancelled) {
         if (!amGM) game.socket.emit(SOCKET_CH, { type: MSG_CANCELLED, payload: { offerKey, actorUuid } });
@@ -546,7 +598,7 @@
         const { offerKey, actorUuid, actorName, context, targetUserId, excludeIds, title } = msg.payload ?? {};
         if (game.user.id !== targetUserId) return;
 
-        const picked = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title })
+        const picked = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title, offerKey })
           .catch(e => { console.error(TAG, "Socket prompt phase error:", e); return { cancelled: true }; });
 
         if (picked.cancelled) {
@@ -604,6 +656,40 @@
       // OPP_LOG_BANNER — every client plays the confirmation banner locally
       if (msg.type === MSG_LOG_BANNER) {
         playLogBanner(msg.payload ?? {});
+        return;
+      }
+
+      // ── Spectator mirror ────────────────────────────────────────────────
+      // Read-only. Nothing here can influence the outcome; the picker client
+      // remains the only one that resolves the offer.
+
+      // OPP_SPEC_OPEN — open the mirror of somebody else's wheel
+      if (msg.type === MSG_SPEC_OPEN) {
+        const p = msg.payload ?? {};
+        if (!p.options?.length) return;
+        const opened = getDialog()?.showSpectator({
+          actorName:     p.actorName,
+          actorPortrait: p.actorPortrait,
+          options:       p.options,
+          title:         p.title ?? null,
+          sel:           p.sel ?? 0,
+        });
+        // showSpectator returns null when this client is itself running a
+        // picker (stray broadcast) — don't claim a key we didn't render.
+        _specOfferKey = opened ? (p.offerKey ?? null) : null;
+        return;
+      }
+
+      // OPP_SPEC_CLOSE — the owner committed, declined, or handed over
+      if (msg.type === MSG_SPEC_CLOSE) {
+        const p = msg.payload ?? {};
+        if (p.offerKey && _specOfferKey && p.offerKey !== _specOfferKey) return;  // superseded
+        _specOfferKey = null;
+        getDialog()?.dismissSpectator({
+          optionId:  p.optionId ?? null,
+          cancelled: !!p.cancelled,
+          silent:    !!p.silent,
+        });
         return;
       }
     });
