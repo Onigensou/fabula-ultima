@@ -17,8 +17,14 @@
 (() => {
   const CAMP     = globalThis.CampSystem ??= {};
   const TAG      = "[CampSystem][RestSaveUI]";
-  const ID       = "oni-camp-rest-save";
-  const STYLE_ID = "oni-camp-rest-save-css";
+  const ID        = "oni-camp-rest-save";
+  const CURSOR_ID = "oni-camp-rest-cursor";
+  const STYLE_ID  = "oni-camp-rest-save-css";
+  const FEATHER   = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
+  // How far left of the focused button's right edge the feather parks. 0 is the
+  // save system's exact anchor; see the note in _updateCursor for why a
+  // side-by-side button row needs the inset.
+  const ANCHOR_INSET_PX = 16;
 
   const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() ?? false;
 
@@ -114,6 +120,39 @@
     }
     #${ID} .rs-breathe { animation: rs-breathe 1.4s ease-in-out infinite; }
     @keyframes rs-breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+    /* === feather cursor ===
+       Lifted from the save system (#ss-feather-cursor) so the ceremony reads as
+       the same menu. Its own id, because on the primary GM this panel and the
+       save system's file screen can be alive at the same moment and each owns
+       its own feather.
+       z-index 1601: above this panel (1600), below the save overlay (max int).
+       The border/outline/background resets are load-bearing — a global sheet in
+       this world puts a box around every <img>. */
+    #${CURSOR_ID} {
+      position: fixed; z-index: 1601;
+      width: 52px; height: 52px;
+      pointer-events: none;
+      transform: translate(-38%, -92%) rotate(20deg) translateY(0px);
+      transition:
+        left    0.20s cubic-bezier(0.22, 1, 0.36, 1),
+        top     0.20s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.12s ease;
+      opacity: 0;
+      border: none !important; outline: none !important;
+      box-shadow: none !important; background: transparent !important;
+    }
+    #${CURSOR_ID}.is-visible {
+      opacity: 1;
+      animation: rs-cursor-float 2.2s ease-in-out infinite;
+    }
+    /* Suppresses the glide so the feather can be PLACED on first paint instead
+       of flying in from the viewport origin. */
+    #${CURSOR_ID}.no-anim { transition: none !important; }
+    @keyframes rs-cursor-float {
+      0%, 100% { transform: translate(-38%, -92%) rotate(20deg) translateY(0px);  }
+      50%      { transform: translate(-38%, -92%) rotate(20deg) translateY(-7px); }
+    }
   `;
 
   function _ensureStyle() {
@@ -133,6 +172,10 @@
   let _progress  = 0;
   let _rafId     = 0;
   let _keyFn     = null;
+  let _cursorEl  = null;
+  let _cursorPlaced = false; // false until the feather has a real position
+  let _resizeFn  = null;
+  let _settleTimer = 0;
 
   function _canAnswer() {
     return isPrimaryGM() && !!_beat && _beat !== "saving";
@@ -167,7 +210,66 @@
       _keyFn = _onKey;
       document.addEventListener("keydown", _keyFn, { capture: true });
     }
+    if (!_cursorEl) {
+      _cursorEl = document.createElement("img");
+      _cursorEl.id = CURSOR_ID;
+      _cursorEl.src = FEATHER;
+      document.body.appendChild(_cursorEl);
+      _cursorPlaced = false;
+    }
+    // The panel is centred, so any viewport change invalidates the coordinates
+    // the feather was parked at. Paired with the removal in hide().
+    if (!_resizeFn) {
+      _resizeFn = () => _updateCursor({ instant: true });
+      window.addEventListener("resize", _resizeFn);
+    }
     return el;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Feather cursor
+  //
+  // Parks the feather on the focused choice. This is the whole point of the
+  // mirrored focus: a spectator does not just see the highlight flip, they watch
+  // the cursor travel between YES and NO exactly as the GM drives it.
+  // ---------------------------------------------------------------------------
+  function _updateCursor({ instant = false } = {}) {
+    if (!_cursorEl) return;
+    const el = document.getElementById(ID);
+    // The saving beat has no choices — nothing to point at.
+    const target = el?.querySelector(`[data-choice="${_focus}"]`) ?? null;
+    if (!target) {
+      _cursorEl.classList.remove("is-visible");
+      _cursorPlaced = false;
+      return;
+    }
+
+    const rect = target.getBoundingClientRect();
+    // A panel mid-entry-animation measures at its pre-animation position; parking
+    // the feather there would strand it. Wait for a real box.
+    if (!rect.width && !rect.height) return;
+
+    const place = () => {
+      // Anchored to the focused button's bottom-right, like the save system —
+      // but inset. The save system stacks its slot cards VERTICALLY, so a
+      // feather hanging off the right edge overlaps nothing. These two choices
+      // sit SIDE BY SIDE, and at the save system's exact anchor the plume fans
+      // across the neighbouring button, which is precisely the ambiguity this
+      // cursor exists to remove. Pull it back over its own button instead.
+      _cursorEl.style.left = `${rect.right - ANCHOR_INSET_PX}px`;
+      _cursorEl.style.top  = `${rect.bottom}px`;
+      _cursorEl.classList.add("is-visible");
+    };
+
+    if (!_cursorPlaced || instant) {
+      // First placement (or a resize): jump, don't glide in from the origin.
+      _cursorEl.classList.add("no-anim");
+      place();
+      requestAnimationFrame(() => _cursorEl?.classList.remove("no-anim"));
+      _cursorPlaced = true;
+    } else {
+      place();
+    }
   }
 
   function _render() {
@@ -176,6 +278,13 @@
     el.classList.toggle("is-remote", !isPrimaryGM());
     el.innerHTML = `<div class="rs-inner">${_body()}</div>`;
     _bind(el);
+    // rAF so the replaced DOM is laid out before getBoundingClientRect runs.
+    requestAnimationFrame(() => _updateCursor());
+    // …then correct once the panel's entry animation has settled. Measured
+    // mid-animation the buttons sit up to 14px low (rs-in translates Y), which
+    // would park the feather off the button until the next focus change.
+    clearTimeout(_settleTimer);
+    _settleTimer = setTimeout(() => _updateCursor({ instant: true }), 300);
   }
 
   function _body() {
@@ -268,6 +377,7 @@
     if (!el) return;
     el.querySelectorAll("[data-choice]").forEach(b =>
       b.classList.toggle("is-focus", b.dataset.choice === _focus));
+    _updateCursor();
   }
 
   function _answer(choice) {
@@ -382,10 +492,18 @@
 
     hide() {
       cancelAnimationFrame(_rafId);
+      clearTimeout(_settleTimer);
       document.getElementById(ID)?.remove();
+      _cursorEl?.remove();
+      _cursorEl     = null;
+      _cursorPlaced = false;
       if (_keyFn) {
         document.removeEventListener("keydown", _keyFn, { capture: true });
         _keyFn = null;
+      }
+      if (_resizeFn) {
+        window.removeEventListener("resize", _resizeFn);
+        _resizeFn = null;
       }
     },
 
