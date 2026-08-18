@@ -5657,6 +5657,15 @@ const Confirm = {
               actionIntent: "harmful", actionKind: "Attack",
               actionName: fullWeapon?.name ?? "Attack", weaponUuid: fullWeapon?.uuid ?? null,
               weaponRange: fullWeapon?.range ?? fullWeapon?.weapon_range ?? null,
+              // Eligibility ceiling for any targeting row inside this add_target
+              // chain. director.ctx.eligibleTargets is the attack's OWN pool,
+              // already range-gated by applyAttackRangeGate — so the picker can
+              // no longer offer a target this apply would silently drop below
+              // ("snap not found" -> cancelled, with no user-facing message).
+              // Matters for MELEE add_target (Bladestorm): Cover and Flying both
+              // block melee only, so the ranged precedent (Barrage) never hit it.
+              _eligibleTokenUuids: (director.ctx.eligibleTargets ?? [])
+                .map((e) => e?.tokenUuid).filter(Boolean),
               _preRoll: sink,
             };
             const { firePreAcceptedCandidate } = await getSkillEffectsExtras();

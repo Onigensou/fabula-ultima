@@ -277,6 +277,47 @@ async function resolveTargetingRow(row, ctx) {
   let pool = await buildCandidatePool(candidateSource, ctx);
   if (!pool.length) return emptyResult();
 
+  // 1b. Action eligibility ceiling. When the driving action supplies the list of
+  // targets it can actually reach, the pool may not exceed it — what the picker
+  // OFFERS must equal what the apply can ACCEPT.
+  //
+  // Why this exists: an attack's own target list is range-gated by
+  // applyAttackRangeGate (Cover blocks melee, Flying blocks melee), but
+  // candidate_source "combat" is filtered only by hasUnconditionalTargetBlock,
+  // which fires solely on `ranges.has("any")`. So a melee add_target (Bladestorm)
+  // would list a Covered or Flying enemy, and onAddTargetApply — which resolves
+  // picks against director.ctx.eligibleTargets — would silently drop the pick
+  // ("cancelled", pill stays pending, no notification). Barrage never exposed
+  // this because it is ranged and both blocks are melee-only.
+  //
+  // Deliberately a general ceiling rather than a range check here: the targeting
+  // row stays ignorant of range, and any caller that knows its own reach can
+  // impose it. Absent or empty ⇒ no ceiling, so every existing caller is
+  // unaffected.
+  //
+  // SCOPE — the ceiling applies ONLY to the broad combat pool. Every other
+  // candidate_source is an already-DERIVED set (self, the trigger actor, my own
+  // summons, the action targets already picked); ceilinging those is wrong, and
+  // it was actively BREAKING Barrage. Its chain is "barrage_add, barrage_cost",
+  // and barrage_cost is an adjust_cost row with target_ref "self". The reserved
+  // ref "self" resolves through THIS function, and an attacker is never in its
+  // own attack's eligible-target list — so the pool emptied, the row returned
+  // ok:false, and the chain aborted AFTER the pick: pill left pending, no cost
+  // charged. A probe cannot see this (it discovers candidates, it never runs
+  // the chain), which is why the change read as green.
+  const eligibleCeiling = candidateSource === "combat"
+    ? ctx.payload?._eligibleTokenUuids
+    : null;
+  if (Array.isArray(eligibleCeiling) && eligibleCeiling.length) {
+    const allowed = new Set(eligibleCeiling);
+    const before = pool.length;
+    pool = pool.filter((t) => allowed.has(t.uuid));
+    if (pool.length !== before) {
+      log(`targeting: eligibility ceiling dropped ${before - pool.length} unreachable candidate(s)`);
+    }
+    if (!pool.length) return emptyResult();
+  }
+
   // 2. Category filter (disposition vs reactor).
   if (category) {
     pool = pool.filter((t) => matchesCategory(t, category, ctx));
