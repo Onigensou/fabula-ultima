@@ -19,6 +19,9 @@
     [CAMP.PHASE.BOND_SUMMARY]:     "📜 Bond Summary",
     [CAMP.PHASE.SLEEP_LOBBY]:      "💤 Sleep Lobby",
     [CAMP.PHASE.SLEEPING]:         "🌙 Sleeping",
+    [CAMP.PHASE.REST_SAVE_PROMPT]: "💾 Save Prompt",
+    [CAMP.PHASE.REST_SAVING]:      "💾 Saving",
+    [CAMP.PHASE.REST_TITLE_PROMPT]:"🏛 Title Prompt",
     [CAMP.PHASE.SET_OUT_LOBBY]:    "👣 Set Out Lobby",
   };
 
@@ -30,6 +33,9 @@
     CAMP.PHASE.BOND_SUMMARY,
     CAMP.PHASE.SLEEP_LOBBY,
     CAMP.PHASE.SLEEPING,
+    CAMP.PHASE.REST_SAVE_PROMPT,
+    CAMP.PHASE.REST_SAVING,
+    CAMP.PHASE.REST_TITLE_PROMPT,
     CAMP.PHASE.SET_OUT_LOBBY,
   ];
 

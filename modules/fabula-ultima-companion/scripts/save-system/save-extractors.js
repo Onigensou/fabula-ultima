@@ -1250,6 +1250,15 @@
 
   // ── 12. Camp State ────────────────────────────────────────────────────────
   // Captures all CampSystem world settings (phase, selections, bonds, etc.)
+  //
+  // The phase is NORMALISED on the way out. Camp phases like `sleeping` and the
+  // rest-time save ceremony are one-shot animations, not resting states: stored
+  // verbatim, a load would replay them — for `sleeping` that means a SECOND full
+  // rest (another jingle, another resource restore, another campRestCharges
+  // tick) which reads as a save-system bug and is anything but. CAMP.LANDING_PHASE
+  // maps each one to where the party should actually wake up, and the ready /
+  // selection maps of the finished cycle are blanked so the restored lobby does
+  // not open already-all-ready.
   SS.registerExtractor({
     key:   "campState",
     label: "Camp State",
@@ -1261,6 +1270,18 @@
       for (const key of Object.values(CAMP.SETTING)) {
         try { result[key] = game.settings.get(MOD, key); }
         catch { /* not yet registered — skip */ }
+      }
+
+      const phaseKey = CAMP.SETTING.PHASE;
+      const landing  = CAMP.State?.landingPhaseFor?.(result[phaseKey]) ?? result[phaseKey];
+      if (landing !== result[phaseKey]) {
+        console.debug("[SaveSystem][campState]",
+          `phase "${result[phaseKey]}" is transient — saving as "${landing}".`);
+        result[phaseKey] = landing;
+        for (const name of (CAMP.TRANSIENT_SETTINGS ?? [])) {
+          const key = CAMP.SETTING[name];
+          if (key && key in result) result[key] = "{}";
+        }
       }
       return result;
     },

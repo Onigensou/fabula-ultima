@@ -338,6 +338,8 @@
     "scripts/camp-system/camp-ui-bond-summary.js",
     "scripts/camp-system/rest-api.js",
     "scripts/camp-system/camp-ui-sleep.js",
+    "scripts/camp-system/camp-ui-rest-save.js",
+    "scripts/camp-system/camp-rest-save-flow.js",
     "scripts/camp-system/camp-ui-gm-panel.js",
     "scripts/camp-system/camp-ui-hider.js",
     "scripts/camp-system/camp-bootstrap.js",

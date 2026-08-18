@@ -24,6 +24,7 @@
       { key: CAMP.SETTING.SLEEP_READY,         type: String,  default: "{}" },
       { key: CAMP.SETTING.SET_OUT_READY,       type: String,  default: "{}" },
       { key: CAMP.SETTING.EXPLORATION_DEBUFFS, type: String,  default: "{}" },
+      { key: CAMP.SETTING.SAVE_CHOICE,         type: String,  default: "{}" },
     ];
 
     for (const { key, type, default: def } of defs) {
@@ -174,6 +175,24 @@
     },
     async clearExplorationDebuffs() { await setJSON(CAMP.SETTING.EXPLORATION_DEBUFFS, {}); },
 
+    // ── Rest-time save choice ───────────────────────────────────────────────
+    getSaveChoice() {
+      return { ...CAMP.SAVE_CHOICE_EMPTY, ...getJSON(CAMP.SETTING.SAVE_CHOICE) };
+    },
+    async setSaveChoice(patch) {
+      await setJSON(CAMP.SETTING.SAVE_CHOICE, { ...this.getSaveChoice(), ...patch });
+    },
+    async clearSaveChoice() { await setJSON(CAMP.SETTING.SAVE_CHOICE, {}); },
+
+    // ── Landing phase (see CAMP.LANDING_PHASE) ──────────────────────────────
+    // Where a save taken during `phase` should resume. Unknown/absent phases
+    // map to themselves, so a new phase is safe by default and only needs an
+    // entry once it becomes a one-shot animation.
+    landingPhaseFor(phase) {
+      const p = phase ?? CAMP.PHASE.FREE_ROAM;
+      return CAMP.LANDING_PHASE[p] ?? p;
+    },
+
     // ── Set Out lobby ready ─────────────────────────────────────────────────
     getSetOutReady() { return getJSON(CAMP.SETTING.SET_OUT_READY); },
     async toggleSetOutReady(userId) {
@@ -199,6 +218,7 @@
       await setJSON(CAMP.SETTING.SLEEP_READY, {});
       await setJSON(CAMP.SETTING.SET_OUT_READY, {});
       await setJSON(CAMP.SETTING.EXPLORATION_DEBUFFS, {});
+      await setJSON(CAMP.SETTING.SAVE_CHOICE, {});
       console.debug(TAG, "State reset to FREE_ROAM.");
     },
   };
