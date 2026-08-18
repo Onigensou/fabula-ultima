@@ -1791,7 +1791,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .replace(/_/g, " ")
             .toLowerCase()
             .trim();
-          const species = String(actor?.system?.props?.species ?? "")
+          const species = String(speciesOf(actor))
             .replace(/_/g, " ")
             .toLowerCase()
             .trim();
@@ -1851,7 +1851,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           if (!attacker) return 0;
           const raw = isRank
             ? attacker?.system?.props?.npc_rank
-            : attacker?.system?.props?.species;
+            : speciesOf(attacker);
           const val = String(raw ?? "").replace(/_/g, " ").toLowerCase().trim();
           return val && val === needle ? 1 : 0;
         }
@@ -1872,7 +1872,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           if (!subjectUuid) return 0;
           const subject = _resolveActorByUuidSync(subjectUuid);
           if (!subject) return 0;
-          const species = String(subject?.system?.props?.species ?? "")
+          const species = String(speciesOf(subject))
             .replace(/_/g, " ")
             .toLowerCase()
             .trim();
@@ -2292,6 +2292,30 @@ function _resolveActorByUuidSync(uuid) {
 // name normalize to spaces (runs collapse) before comparing.
 function aeNameForNeedle(name) {
   return String(name ?? "").replace(/-/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+// The creature's species FOR RULES PURPOSES — its own, unless an effect has
+// overridden it (Petrify: "this creature is treated as Construct").
+//
+// The override lives on a FLAG, not on `system.props.species`, for two reasons:
+//   1. An AE simply cannot write that prop on a PC — the CSB character template
+//      has no `species` field, so the change is dropped at prepareData. Measured,
+//      not assumed: an OVERRIDE-mode change left species null on a PC while the
+//      same AE moved an NPC ELEMENTAL → CONSTRUCT.
+//   2. Adding the field to close (1) would be actively harmful. The ABSENCE of a
+//      species prop is how `isAdvancementSubject` and the sim / test-battle actor
+//      pickers tell a PC from an NPC — both are Foundry "character" documents with
+//      no other distinguishing mark. Give PCs a species and every PC silently
+//      stops being eligible to level up.
+// Same problem and same shape as the `affinity_class_{strike,magic}` flags in
+// apply-damage-core.js, whose comment gives the identical rationale.
+//
+// ONLY the SPECIES_IS_* identifier family consults this. The PC/NPC
+// discriminators keep reading the raw prop and are deliberately untouched.
+// Subtype has no override — Petrify changes species, not sub-species.
+function speciesOf(actor) {
+  const override = actor?.flags?.["fabula-ultima-companion"]?.species_override;
+  return String(override ?? actor?.system?.props?.species ?? "");
 }
 
 // True if the actor carries a non-disabled status/AE matching `needle`

@@ -16,7 +16,7 @@
     }
   },
   "folder": "to3QkbU70EQKKxHW",
-  "formula": "1d20",
+  "formula": "1d23",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon - Encounter",
   "ownership": {
@@ -82,6 +82,20 @@
       "weight": 1
     },
     {
+      "_id": "AR8B4bAJxUYHsKts",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        22,
+        22
+      ],
+      "text": "Skizzik, Obsidrax",
+      "type": "text",
+      "weight": 1
+    },
+    {
       "_id": "b8UDhBPQTLIeH3TL",
       "documentId": null,
       "drawn": false,
@@ -120,6 +134,20 @@
         8
       ],
       "text": "Skizzik, Lightning Prism, Skizzik",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "cHsumRtb0xA1ZukF",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        23,
+        23
+      ],
+      "text": "Obsidrax, Kirin, Skizzik",
       "type": "text",
       "weight": 1
     },
@@ -190,6 +218,20 @@
         2
       ],
       "text": "Electro Slime, Electro Slime, Electro Slime, Electro Slime",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "N9WmvMbdjc9mrfP9",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        21,
+        21
+      ],
+      "text": "Electro Slime, Obsidrax, Lightning Prism, Electro Slime",
       "type": "text",
       "weight": 1
     },

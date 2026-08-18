@@ -2183,7 +2183,20 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "affinity_5",
+          "mode": 0,
+          "priority": 1,
+          "value": "VU"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.species_override",
+          "mode": 5,
+          "priority": 20,
+          "value": "CONSTRUCT"
+        }
+      ],
       "description": "<p>Gain <strong>Earth </strong>vulnerability and become the <strong>Construct </strong>type</p>",
       "disabled": false,
       "duration": {
@@ -2210,6 +2223,12 @@
           "isDynamic": false,
           "isTemporary": false,
           "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "petrify",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
         },
         "statuscounter": {
           "config": {
