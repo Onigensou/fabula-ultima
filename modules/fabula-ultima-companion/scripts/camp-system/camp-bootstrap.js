@@ -47,6 +47,7 @@
     CAMP.Button.hide();
     CAMP.GMPanel?.hide();
     _closeOverlay();
+    CAMP.RestSaveUI?.cleanup();
     CAMP.SleepUI.cleanup();
   }
 
@@ -106,12 +107,30 @@
       case CAMP.PHASE.SLEEPING:
         CAMP.Button.hide();
         await CAMP.SleepUI.run();
-        // After run(): GM has already set phase to SET_OUT_LOBBY
-        // Non-GM clients wait for the updateSetting hook
+        // After run(): the primary GM has set phase to REST_SAVE_PROMPT and the
+        // screen is still black. Non-GM clients wait for the updateSetting hook.
+        break;
+
+      // ── REST SAVE CEREMONY ────────────────────────────────────────────────
+      // All three draw over the still-black sleep screen — no fadeIn until the
+      // ceremony resolves into SET_OUT_LOBBY (or the title scene takes over).
+      case CAMP.PHASE.REST_SAVE_PROMPT:
+        CAMP.Button.hide();
+        CAMP.RestSaveUI.showSavePrompt();
+        break;
+
+      case CAMP.PHASE.REST_SAVING:
+        CAMP.RestSaveUI.showSaving();
+        CAMP.RestSaveFlow.beginSave();   // no-op off the primary GM
+        break;
+
+      case CAMP.PHASE.REST_TITLE_PROMPT:
+        CAMP.RestSaveUI.showTitlePrompt();
         break;
 
       // ── SET OUT LOBBY ─────────────────────────────────────────────────────
       case CAMP.PHASE.SET_OUT_LOBBY:
+        CAMP.RestSaveUI.cleanup();   // ceremony over (or skipped past by the GM)
         CAMP.SleepUI.fadeIn();   // ensure screen is visible again
         await CAMP.Button.show();    // show() refreshes the party cache, then renders
         break;
@@ -156,6 +175,12 @@
       return;
     }
 
+    // Save-ceremony result — refreshes the progress/result lines in place.
+    if (key === `${MOD}.${CAMP.SETTING.SAVE_CHOICE}`) {
+      CAMP.RestSaveUI?.onSaveChoiceUpdate?.();
+      return;
+    }
+
     // Refresh button UI on any ready-map change
     if ([
       `${MOD}.${CAMP.SETTING.READY}`,
@@ -182,6 +207,9 @@
     CAMP.PHASE.BOND_SUMMARY,
     CAMP.PHASE.SLEEP_LOBBY,
     CAMP.PHASE.SLEEPING,
+    CAMP.PHASE.REST_SAVE_PROMPT,
+    CAMP.PHASE.REST_SAVING,
+    CAMP.PHASE.REST_TITLE_PROMPT,
     CAMP.PHASE.SET_OUT_LOBBY,
   ];
 

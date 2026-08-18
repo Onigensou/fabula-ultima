@@ -120,19 +120,35 @@
     catch (e) { console.warn(TAG, "BGM resume failed:", e); }
   }
 
+  // Pending camp-BGM resume from the last perform(). The rest ceremony can end
+  // somewhere the camp playlist must NOT come back — returning to the title
+  // screen — and the resume is scheduled up to 35s out on a path nobody is
+  // watching. Keep a handle so that branch can cancel it.
+  //   { cancelled: bool, timeoutId: number|null }
+  let _pendingResume = null;
+
   /**
    * Schedule BGM resume once the jingle sound ends.
    * Falls back to a fixed timeout if the Sound object has no event API.
+   * Cancellable via CAMP.RestAPI.cancelBgmResume().
    */
   function _scheduleResume(jingleSound, playlist, sound, fallbackMs = 35_000) {
+    _pendingResume = null;
     if (!playlist || !sound) return;
 
+    const token = { cancelled: false, timeoutId: null };
+    _pendingResume = token;
+
+    // The "end" listeners cannot be unregistered portably, so they check the
+    // token instead — cancelling makes the callback a no-op.
+    const resume = () => { if (!token.cancelled) _resumeBgm(playlist, sound); };
+
     if (typeof jingleSound?.once === "function") {
-      jingleSound.once("end", () => _resumeBgm(playlist, sound));
+      jingleSound.once("end", resume);
     } else if (typeof jingleSound?.addEventListener === "function") {
-      jingleSound.addEventListener("end", () => _resumeBgm(playlist, sound), { once: true });
+      jingleSound.addEventListener("end", resume, { once: true });
     } else {
-      setTimeout(() => _resumeBgm(playlist, sound), fallbackMs);
+      token.timeoutId = setTimeout(resume, fallbackMs);
     }
   }
 
@@ -141,6 +157,20 @@
   // ---------------------------------------------------------------------------
   CAMP.RestAPI = {
     jingle: DEFAULT_JINGLE,
+
+    /**
+     * Cancel the camp-BGM resume scheduled by the last perform().
+     * Call this on any branch that leaves the camp scene behind (return to
+     * title), or the camp playlist starts up over the new scene's music when
+     * the jingle ends — up to 35s after a transition that looked perfect.
+     */
+    cancelBgmResume() {
+      if (!_pendingResume) return;
+      _pendingResume.cancelled = true;
+      if (_pendingResume.timeoutId) clearTimeout(_pendingResume.timeoutId);
+      _pendingResume = null;
+      console.debug(TAG, "Pending BGM resume cancelled.");
+    },
 
     /**
      * Run the full rest sequence. Must be called from GM context.

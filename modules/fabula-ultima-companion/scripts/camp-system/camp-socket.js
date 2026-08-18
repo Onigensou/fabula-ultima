@@ -43,6 +43,12 @@
           return;
         }
 
+        // ── Rest save ceremony: cursor mirror (primary GM → all) ─────────
+        if (type === CAMP.MSG.REST_FOCUS) {
+          CAMP.RestSaveUI?.onRemoteFocus?.(payload?.choice);
+          return;
+        }
+
         // ── Exploration roulette (any client, processed by all) ──────────
         if (type === CAMP.MSG.EXPLORATION_START) {
           CAMP.ExplorationUI?.show(payload?.actorId, payload?.actorName);

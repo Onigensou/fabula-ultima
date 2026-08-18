@@ -14,17 +14,23 @@
       _ensureScreen();
       await _fadeToBlack();
 
-      if (game.user?.isGM) {
+      // PRIMARY GM only. run() executes on every client via the phase hook, so
+      // an `isGM` gate lets BOTH GM clients perform the rest: two jingle
+      // broadcasts, two AE sweeps, and campRestCharges decremented twice (food
+      // buffs silently expiring a rest early). See shared/primary-gm.js.
+      if (globalThis.FUCompanion?.isPrimaryGM?.()) {
         try {
           await CAMP.RestAPI.perform();
         } catch (e) {
           console.error("[CampSystem][SleepUI]", "RestAPI.perform() failed:", e);
         }
         await new Promise(r => setTimeout(r, 500));
-        await CAMP.State.setPhase(CAMP.PHASE.SET_OUT_LOBBY);
+        // The screen STAYS black: the save ceremony plays out on top of it and
+        // hands off to SET_OUT_LOBBY (or the title screen) when it resolves.
+        await CAMP.State.setPhase(CAMP.PHASE.REST_SAVE_PROMPT);
       }
       // Non-GM clients wait for the updateSetting hook to change the phase,
-      // which triggers camp-bootstrap to fade back in and show the Set Out button.
+      // which triggers camp-bootstrap to draw the save panel over the black.
     },
 
     fadeIn() {

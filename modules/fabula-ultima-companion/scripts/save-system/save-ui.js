@@ -396,17 +396,26 @@
       // Optional hook: if set, slot click/Enter calls this(slotId) instead of opening confirm.
       // Used by the title screen load UI to redirect clicks into the ready-check vote flow.
       this._slotClickHook = null;
+      // Optional hook: lets a caller that OPENED this UI as one step of a larger
+      // sequence learn how the step ended, without reimplementing the file screen.
+      //   { onSaved(slotId, result), onExit() }
+      // onSaved fires on a successful write and CONSUMES the hook (so the close
+      // that follows is not also reported as an exit); onExit fires when the UI
+      // closes any other way — ESC, BACK, or a declined overwrite.
+      // Used by the camp rest-save ceremony (camp-rest-save-flow.js).
+      this._flowHook = null;
     }
 
     // ── Lifecycle ──────────────────────────────────────────────────────────────
 
     // Opens directly in file/slot screen for the given mode, skipping mode selection.
     // Used by the title screen so players see the exact same UI but in load-only mode.
-    openInMode(mode) {
+    openInMode(mode, flowHook = null) {
       if (this._el) return;
       this._injectCSS();
       sfx("fileOpen");
 
+      this._flowHook    = flowHook;
       this._screen      = "file";
       this._mode        = mode;
       this._focusArea   = "main";
@@ -477,6 +486,11 @@
       this._focusArea   = "main";
       this._sel         = null;
       document.removeEventListener("keydown", this._keyFn, { capture: true });
+
+      // Report the exit LAST and only once: the hook may reopen this UI.
+      const hook = this._flowHook;
+      this._flowHook = null;
+      hook?.onExit?.();
     }
 
     _injectCSS() {
@@ -934,6 +948,11 @@
           this._statusCls = "is-ok";
           sfx("opOk");
           this._render();
+          // Consume the flow hook here: the write succeeded, so the close that
+          // follows is a completion, not an exit.
+          const hook = this._flowHook;
+          this._flowHook = null;
+          hook?.onSaved?.(this._sel, res);
           setTimeout(() => {
             if (!this._el) return;
             this._status    = "";

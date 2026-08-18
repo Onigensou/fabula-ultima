@@ -18,8 +18,38 @@
     BOND_SUMMARY:     "bond_summary",     // animated group bond reveal
     SLEEP_LOBBY:      "sleep_lobby",      // "Sleep" button with ready lobby
     SLEEPING:         "sleeping",         // sleep animation + macro
+    // ── Rest-time save ceremony (screen stays black through all three) ──────
+    REST_SAVE_PROMPT: "rest_save_prompt", // "Save your journey?"  YES / no
+    REST_SAVING:      "rest_saving",      // GM drives the slot picker; others watch
+    REST_TITLE_PROMPT:"rest_title_prompt",// "Return to the title screen?"  YES / no
     SET_OUT_LOBBY:    "set_out_lobby",    // "Set Out" button with ready lobby
   });
+
+  // ---------------------------------------------------------------------------
+  // Landing phase — where a LOADED save resumes.
+  //
+  // campState (save-extractors.js) snapshots campPhase verbatim, so a save taken
+  // mid-ceremony would restore a phase whose UI is a one-shot animation. Replayed
+  // on load that is at best a dead panel and at worst — for `sleeping` — a SECOND
+  // full rest: another jingle, another resource restore, another AE sweep.
+  //
+  // Every unreplayable phase therefore maps to the phase the party should wake up
+  // in. Anything absent maps to itself.
+  // ---------------------------------------------------------------------------
+  CAMP.LANDING_PHASE = Object.freeze({
+    [CAMP.PHASE.ACTIVITY_RESOLVE]:  CAMP.PHASE.FREE_ROAM,
+    [CAMP.PHASE.SLEEPING]:          CAMP.PHASE.SET_OUT_LOBBY,
+    [CAMP.PHASE.REST_SAVE_PROMPT]:  CAMP.PHASE.SET_OUT_LOBBY,
+    [CAMP.PHASE.REST_SAVING]:       CAMP.PHASE.SET_OUT_LOBBY,
+    [CAMP.PHASE.REST_TITLE_PROMPT]: CAMP.PHASE.SET_OUT_LOBBY,
+  });
+
+  // Ready/selection maps that belong to the camp cycle being wrapped up. A save
+  // taken mid-ceremony must not restore an all-ready lobby, or the Set Out phase
+  // can auto-advance the moment the last player connects.
+  CAMP.TRANSIENT_SETTINGS = Object.freeze([
+    "READY", "SELECTIONS", "RESOLVED", "BOND_CONFIRMED", "SLEEP_READY", "SET_OUT_READY",
+  ]);
 
   // ---------------------------------------------------------------------------
   // World setting keys  (registered under MODULE_ID scope)
@@ -34,6 +64,16 @@
     SLEEP_READY:          "campSleepReady",           // JSON { [userId]: true }
     SET_OUT_READY:        "campSetOutReady",          // JSON { [userId]: true }
     EXPLORATION_DEBUFFS:  "campExplorationDebuffs",   // JSON { [actorId]: { halfRest: true } }
+    SAVE_CHOICE:          "campSaveChoice",           // JSON RestSaveChoice (below)
+  });
+
+  // SAVE_CHOICE shape — the outcome of the rest-time save leg. Written by the
+  // primary GM, read by every client's spectator panel and by the title prompt
+  // (which warns when the session was never written to a slot).
+  //   { asked: bool, save: bool|null, slotId: int|null,
+  //     ok: bool|null, label: string|null, error: string|null }
+  CAMP.SAVE_CHOICE_EMPTY = Object.freeze({
+    asked: false, save: null, slotId: null, ok: null, label: null, error: null,
   });
 
   // ---------------------------------------------------------------------------
@@ -52,6 +92,10 @@
     TOGGLE_SET_OUT:     "CAMP_TOGGLE_SET_OUT",
     // Ephemeral broadcast (any → all)
     HOVER_ACTIVITY:     "CAMP_HOVER_ACTIVITY",
+    // Rest-time save ceremony — the primary GM drives, everyone else watches.
+    // Phase changes and SAVE_CHOICE carry the state; this only mirrors the
+    // cursor so the spectator panel feels alive while the GM decides.
+    REST_FOCUS:         "CAMP_REST_FOCUS",            // primary GM → all { choice: "yes"|"no" }
     // Exploration roulette (GM → all, owner → GM)
     EXPLORATION_START:   "CAMP_EXPLORATION_START",
     EXPLORATION_RESULT:  "CAMP_EXPLORATION_RESULT",
