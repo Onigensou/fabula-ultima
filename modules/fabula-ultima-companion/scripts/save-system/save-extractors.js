@@ -300,6 +300,38 @@
       String(i.system?.uniqueId ?? "").trim() === uid && i.name === obj?.name) ?? null;
   }
 
+  // Use the engine's own equip/AE primitive instead of a local copy. It resolves
+  // an item's effect docs the way the rest of the system does — configured
+  // `item_activeEffect` refs when present, otherwise ALL owned effects — whereas
+  // this file used to flip only `transfer:true` ones. Measured: no world item
+  // carries those refs, so the engine always takes the all-effects path, and 334
+  // of 571 item AEs are not transfer:true. The local version was a strict subset,
+  // so armor-equip-gate's ready sweep would flip the remainder on the next
+  // reload and the two passes would disagree about the same state.
+  //
+  // It reads the item's OWN `isEquipped`, so it must be called AFTER that prop is
+  // written. This file is a classic script, hence the dynamic import; the
+  // fallback keeps a load working if the module ever moves.
+  let _syncEquipFx = null;
+  async function syncItemEquipEffects(item) {
+    if (_syncEquipFx === null) {
+      try {
+        ({ syncItemEffectsToEquip: _syncEquipFx } =
+          await import("/modules/fabula-ultima-companion/scripts/battle-director/equipment-swap.js"));
+      } catch (e) {
+        console.warn(TAG, "equipment-swap import failed; using a local AE flip", e);
+        _syncEquipFx = false;
+      }
+    }
+    if (_syncEquipFx) return await _syncEquipFx(item);
+    const equipped = item.system?.props?.isEquipped === true;
+    const fx = [...item.getEmbeddedCollection("ActiveEffect").values()]
+      .filter(e => !!e.disabled === equipped)
+      .map(e => ({ _id: e.id, disabled: !equipped }));
+    if (fx.length) await item.updateEmbeddedDocuments("ActiveEffect", fx);
+    return fx.length;
+  }
+
   function restorableFromMaster(obj) {
     const m = masterFor(obj);
     if (!m) return false;
@@ -484,9 +516,12 @@
           Object.prototype.hasOwnProperty.call(sp, k) && !sameState(lp[k], sp[k]));
         // An equip flag present in the snapshot still needs the AE sync pass even
         // when the flag itself matches, so route those through toUpdate too.
+        // Wrong-way test matches syncItemEffectsToEquip's, over ALL owned
+        // effects — not just transfer:true ones, which is the subset that let
+        // the two passes disagree.
         const needsEquipSync = Object.prototype.hasOwnProperty.call(sp, "isEquipped") &&
           [...live.getEmbeddedCollection("ActiveEffect").values()]
-            .some(e => e.transfer === true && e.disabled === (sp.isEquipped === true));
+            .some(e => !!e.disabled === (sp.isEquipped === true));
         if (stateDiffers || needsEquipSync) toUpdate.push(saved); else skip++;
         continue;
       }
@@ -534,20 +569,11 @@
             // above restores `isEquipped` — so sync the two, or the load leaves
             // worn gear inert. Nothing else repairs it: armor-equip-gate.js fires
             // only for item_type "armor", and reconcileEquip is never called on
-            // the load path. Walk the LIVE transfer effects, not the saved ones,
-            // so an AE absent from an old snapshot can still be switched on.
+            // the load path. The engine's own helper reads the item's LIVE
+            // isEquipped (just written) and flips its effects, so an AE absent
+            // from an old snapshot is still switched on correctly.
             if (!Object.prototype.hasOwnProperty.call(saved.system?.props ?? {}, "isEquipped")) continue;
-            const equipped = saved.system.props.isEquipped === true;
-            const fxUpdates = [];
-            for (const lfx of item.getEmbeddedCollection("ActiveEffect").values()) {
-              if (lfx.transfer !== true) continue;
-              if (lfx.disabled === !equipped) continue;
-              fxUpdates.push({ _id: lfx.id, disabled: !equipped });
-            }
-            if (fxUpdates.length) {
-              await item.updateEmbeddedDocuments("ActiveEffect", fxUpdates);
-              nested.update += fxUpdates.length;
-            }
+            nested.update += await syncItemEquipEffects(item);
             continue;
           }
           const fx = await applyEmbedsDiff(item, "ActiveEffect", saved.effects ?? []);
@@ -556,21 +582,15 @@
       }
     }
 
-    // Kept-but-not-in-the-save documents are unequipped, and their transfer AEs
-    // switched off with them — the same pairing the equip sync above maintains.
+    // Kept-but-not-in-the-save documents are unequipped, and their effects
+    // switched off with them — the same primitive the equip sync above uses,
+    // called after the flag is written because it reads the item's own state.
     if (toUnequip.length) {
       await owner.updateEmbeddedDocuments("Item",
         toUnequip.map(id => ({ _id: id, system: { props: { isEquipped: false } } })));
       for (const id of toUnequip) {
         const item = owner.getEmbeddedCollection("Item").get(id);
-        if (!item) continue;
-        const fx = [...item.getEmbeddedCollection("ActiveEffect").values()]
-          .filter(e => e.transfer === true && e.disabled !== true)
-          .map(e => ({ _id: e.id, disabled: true }));
-        if (fx.length) {
-          await item.updateEmbeddedDocuments("ActiveEffect", fx);
-          nested.update += fx.length;
-        }
+        if (item) nested.update += await syncItemEquipEffects(item);
       }
     }
 
