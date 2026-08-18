@@ -20805,7 +20805,28 @@
         "id": "x8TBsDZaRgoSo5no",
         "name": "Obsidrax",
         "type": "character",
-        "items": [],
+        "items": [
+          {
+            "id": "tln7B8f8cmuOjBTO",
+            "name": "Basalt Crush"
+          },
+          {
+            "id": "blW2o4tFoB0oVzEM",
+            "name": "Lodestone Core"
+          },
+          {
+            "id": "DV5xg2tEq1zFsIFx",
+            "name": "Miasma Nova"
+          },
+          {
+            "id": "YXM7WD2ZekwmlDQg",
+            "name": "Tectonic Collapse"
+          },
+          {
+            "id": "GEFXVqk8i6Sk2sHC",
+            "name": "Venomstone Spines"
+          }
+        ],
         "effects": 0
       },
       {
@@ -24407,7 +24428,7 @@
       {
         "id": "Oijx8ksubxq9pc1R",
         "name": "Valley of the Dragon - Encounter",
-        "results": 20
+        "results": 23
       },
       {
         "id": "0LEghOv3aJyZVyVs",

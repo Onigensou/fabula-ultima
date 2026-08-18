@@ -3020,7 +3020,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -3088,7 +3088,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
