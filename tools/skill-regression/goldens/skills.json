@@ -71,7 +71,7 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 489,
+    "count": 484,
     "engineVersion": "1.0.423",
     "override": {
       "SL": 5,
@@ -1849,19 +1849,6 @@
       "perTarget": [],
       "roll": null,
       "skill": "Atmokinesis",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Fjord / Bladestorm": {
-      "caster": "Fjord",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Bladestorm",
       "skillType": "Active",
       "targets": 1
     },
@@ -4197,19 +4184,6 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Kiki / Bladestorm": {
-      "caster": "Kiki",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Bladestorm",
-      "skillType": "Active",
-      "targets": 1
-    },
     "Kiki / Breach": {
       "caster": "Kiki",
       "element": "",
@@ -4815,19 +4789,6 @@
       "perTarget": [],
       "roll": null,
       "skill": "Toxicophora",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Oki (Copy) / Bladestorm": {
-      "caster": "Oki (Copy)",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Bladestorm",
       "skillType": "Active",
       "targets": 1
     },
@@ -5913,19 +5874,6 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Surtur / Bladestorm": {
-      "caster": "Surtur",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Bladestorm",
-      "skillType": "Active",
-      "targets": 1
-    },
     "Surtur / Shadow Strike": {
       "caster": "Surtur",
       "element": "",
@@ -6542,19 +6490,6 @@
       },
       "skill": "Iceberg",
       "skillType": "Spell",
-      "targets": 1
-    },
-    "Weaponmaster / Bladestorm": {
-      "caster": "Weaponmaster",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Bladestorm",
-      "skillType": "Active",
       "targets": 1
     },
     "Weaponmaster / Breach #twJI:i3d0y0": {

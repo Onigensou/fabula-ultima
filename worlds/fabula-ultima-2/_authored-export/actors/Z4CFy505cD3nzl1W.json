@@ -724,11 +724,11 @@
         "container": "leAYO9ruiIajUdhU",
         "props": {
           "cost": "-",
-          "description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+          "description": "<p>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by <strong>10</strong> instead.</p>",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "effect_kind": "set_resource",
+              "effect_kind": "grant",
               "effect_label": "golemstone_shield",
               "grant_amount": "10",
               "grant_resource": "shield",
@@ -1722,6 +1722,99 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "5tKJ2deCPP1hhqD5",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787064019273,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "5tKJ2deCPP1hhqD5",
+              "originalParentId": "7EGpAPJU0BSBxeWK",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.7EGpAPJU0BSBxeWK.ActiveEffect.5tKJ2deCPP1hhqD5"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "chain_steps": "lifecharm_cap,lifecharm_heal,lifecharm_spend",
+                    "effect_kind": "chain",
+                    "effect_label": "lifecharm_save"
+                  },
+                  "1": {
+                    "damage_amount": "CUR_HP - 1",
+                    "damage_operation": "cap",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "lifecharm_cap",
+                    "modify_mode": "set_hp_floor",
+                    "modify_value": 1
+                  },
+                  "2": {
+                    "effect_kind": "grant",
+                    "effect_label": "lifecharm_heal",
+                    "grant_amount": "floor(MAX_HP / 2) - 1",
+                    "grant_resource": "hp",
+                    "target_ref": "self"
+                  },
+                  "3": {
+                    "consume_item_name": "Life Charm",
+                    "effect_kind": "consume_item",
+                    "effect_label": "lifecharm_spend"
+                  }
+                },
+                "name": "Life Charm",
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_damage_outcome": "would_reduce_to_zero",
+                    "reaction_effect_ref": "lifecharm_save",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_takes_damage"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+          "name": "Life Charm",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
@@ -3432,6 +3525,116 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "nr4XpIN6qCM1AibB",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787064018997,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "nr4XpIN6qCM1AibB",
+              "originalParentId": "bik5TL6rLy0NerM9",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.bik5TL6rLy0NerM9.ActiveEffect.nr4XpIN6qCM1AibB"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dancing",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "rWFDpj5TVw5TheCS",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787064018997,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "rWFDpj5TVw5TheCS",
+              "originalParentId": "bik5TL6rLy0NerM9",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.bik5TL6rLy0NerM9.ActiveEffect.rWFDpj5TVw5TheCS"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dancing Ouroboros Dance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "core": {
           "sourceId": "Item.eAUaGhDdy3uogln7"
@@ -3575,7 +3778,7 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "chain_steps": "syl_leave",
+              "chain_steps": "syl_confirm,syl_cost,syl_leave",
               "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "syl_root",
@@ -3598,7 +3801,7 @@
               "menu_label": "",
               "to_resource": ""
             },
-            "3": {
+            "2": {
               "consume_self": false,
               "effect_kind": "leave_combat",
               "effect_label": "syl_leave",
@@ -3606,6 +3809,14 @@
               "menu_label": "",
               "target_ref": "self",
               "to_resource": ""
+            },
+            "3": {
+              "consume_amount": "1",
+              "consume_resource": "fp",
+              "effect_kind": "consume_resource",
+              "effect_label": "syl_cost",
+              "on_empty": "abort",
+              "target_ref": "self"
             }
           },
           "gadget_alchemy_tier": "",
@@ -4627,7 +4838,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278387,
         "unique": false,
-        "uniqueId": "04XUHlRJhyvJIaGb"
+        "uniqueId": "uaGIN00QQ5WoJRmI"
       },
       "type": "equippableItem"
     },
@@ -5303,7 +5514,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278387,
         "unique": false,
-        "uniqueId": "tGgGFGEavGVjJVAz"
+        "uniqueId": "xWSJekUpNxlS8Fld"
       },
       "type": "equippableItem"
     },
@@ -6139,7 +6350,7 @@
           "dragon_ef": "100",
           "effect_table": {
             "0": {
-              "effect_kind": "set_resource",
+              "effect_kind": "grant",
               "effect_label": "golemstone_shield",
               "grant_amount": "10",
               "grant_resource": "shield",
@@ -7057,7 +7268,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278387,
         "unique": false,
-        "uniqueId": "tGgGFGEavGVjJVAz"
+        "uniqueId": "xOuzir5B9xUCx9P6"
       },
       "type": "equippableItem"
     },
@@ -8421,6 +8632,116 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "OKHpmpxIHTZpDwSF",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787064018699,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "OKHpmpxIHTZpDwSF",
+              "originalParentId": "RJUqK88OOv4WUmKH",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.RJUqK88OOv4WUmKH.ActiveEffect.OKHpmpxIHTZpDwSF"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dancing",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "TUqTteuMw3oE521E",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787064018699,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "TUqTteuMw3oE521E",
+              "originalParentId": "RJUqK88OOv4WUmKH",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.RJUqK88OOv4WUmKH.ActiveEffect.TUqTteuMw3oE521E"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dancing Lion Dance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "core": {
           "sourceId": "Item.MEdEKpPNgKTtkE7Z"

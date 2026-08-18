@@ -37,35 +37,57 @@
       "effect_table": {
         "0": {
           "chain_steps": "pr_add,pr_halve",
+          "consume_self": false,
           "effect_kind": "chain",
-          "effect_label": "pr_do"
+          "effect_label": "pr_do",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
         },
         "1": {
+          "consume_self": false,
           "effect_kind": "add_target",
           "effect_label": "pr_add",
+          "from_resource": "",
           "menu_description": "Spread the potion to up to 2 allies — each creature heals half.",
           "menu_label": "Potion Rain",
-          "target_ref": "pr_pick"
+          "target_ref": "pr_pick",
+          "to_resource": ""
         },
         "2": {
+          "consume_self": false,
           "effect_kind": "adjust_grant",
           "effect_label": "pr_halve",
+          "from_resource": "",
           "grant_amount": "0.5",
           "grant_operation": "multiply",
           "grant_round": "up",
+          "menu_label": "",
           "scale_factor": "0.5",
-          "scale_round": "up"
+          "scale_round": "up",
+          "to_resource": ""
         },
         "3": {
+          "allow_empty": false,
           "auto_confirm_when_obvious": false,
+          "auto_target": "skip",
           "candidate_source": "combat",
           "category": "ally",
+          "consume_self": false,
           "count": "SL",
           "effect_kind": "targeting",
           "effect_label": "pr_pick",
+          "exclude": "",
           "exclude_action_targets": true,
+          "exclude_self": false,
+          "from_resource": "",
+          "iteration_mode": "together",
+          "menu_label": "",
           "mode": "up_to",
-          "skip_when_passive": false
+          "skip_when_passive": false,
+          "target_filter": "",
+          "target_prompt": "",
+          "to_resource": ""
         }
       },
       "heroic_requirement": "",
@@ -81,22 +103,30 @@
       "level": "2",
       "max_level": "2",
       "name": "Potion Rain",
+      "on_activate_effect_ref": "",
       "optional_params": {},
       "reaction_config_table": {
         "0": {
           "condition_formula": "ACTION_TARGET_COUNT == 1",
           "reaction_action_intent": "aid",
           "reaction_action_kind": "Item",
-          "reaction_damage_amount": "",
-          "reaction_damage_type": "",
-          "reaction_debuff_count_min": "",
-          "reaction_debuff_count_target": "",
-          "reaction_effect_ref": "",
-          "reaction_isPassive": false,
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "pr_do",
+          "reaction_max_per_round": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
           "reaction_passive_mode": "ask",
-          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
           "reaction_source": "self",
-          "reaction_trigger": "creature_performs_action"
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_performs_action",
+          "requires_skill": ""
         }
       },
       "reaction_effect_table": {},

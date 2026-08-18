@@ -8,6 +8,81 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "lspy3CxKezXwSH1a",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1787066647490,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "lspy3CxKezXwSH1a",
+          "originalParentId": "8o1tS1YwcrSoe4et",
+          "originalUuid": "Item.8o1tS1YwcrSoe4et.ActiveEffect.lspy3CxKezXwSH1a"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "effect_kind": "grant",
+                "effect_label": "ror_heal",
+                "grant_amount": "5",
+                "grant_resource": "hp",
+                "target_ref": "self"
+              }
+            },
+            "name": "Ring of Regeneration",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "ror_heal",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          },
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2616.gif",
+      "name": "Ring of Regeneration",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"

@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-08-17T01:46:06.886Z",
- "count": 2088,
+ "capturedAt": "2026-08-18T19:35:25.275Z",
+ "count": 2116,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -3222,6 +3222,25 @@
     }
    ]
   },
+  "(world) / Bladestorm": {
+   "props": {
+    "class": "Weaponmaster",
+    "cost": "10 MP",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=bladestorm_add,bladestorm_cost effect_kind=chain effect_label=bladestorm_do",
+    "effect_kind=add_target effect_label=bladestorm_add target_ref=bladestorm_pick",
+    "consume_amount=10 consume_resource=mp cost_amount=10 cost_operation=add cost_resource=mp effect_kind=adjust_cost effect_label=bladestorm_cost on_empty=abort target_ref=self",
+    "auto_target=skip candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=bladestorm_pick exclude=action_targets iteration_mode=together mode=exact"
+   ],
+   "reactions": [
+    "condition_formula=ATTACK_IS_MELEE == 1 && ACTION_TARGET_COUNT < 3 reaction_action_kind=Attack reaction_effect_ref=bladestorm_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_performs_action"
+   ],
+   "aes": []
+  },
   "(world) / Blarthor": {
    "props": {
     "category": "Spear",
@@ -5313,7 +5332,7 @@
     "effect_kind=grant effect_label=cs_do grant_amount=SL * 2 grant_resource=mp target_ref=cs_self"
    ],
    "reactions": [
-    "condition_formula=ACTION_IS_SPELL == 1 && (HAS_ARCANE_WEAPON == 1 || HAS_WEAPON_CATEGORY_DAGGER == 1 || HAS_WEAPON_CATEGORY_FLAIL == 1) reaction_effect_ref=cs_do reaction_passive_mode=on reaction_passive_target=self reaction_source=self"
+    "condition_formula=ACTION_IS_SPELL == 1 && (HAS_ARCANE_WEAPON == 1 || HAS_WEAPON_CATEGORY_DAGGER == 1 || HAS_WEAPON_CATEGORY_FLAIL == 1) reaction_effect_ref=cs_do reaction_passive_mode=on reaction_passive_target=self reaction_source=self reaction_trigger=creature_completes_action"
    ],
    "aes": []
   },
@@ -5506,6 +5525,34 @@
      "charges": null,
      "changes": [
       "max_hp mode2 = ${isEquipped ? 20 : 0}$"
+     ]
+    }
+   ]
+  },
+  "(world) / Cream Stew": {
+   "props": {
+    "check": "Check",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Cream Stew",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "food"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "condition_burn mode5 = IM",
+      "condition_hypothermia mode5 = IM"
      ]
     }
    ]
@@ -11255,6 +11302,33 @@
     }
    ]
   },
+  "(world) / Grilled-Hog Steak": {
+   "props": {
+    "check": "Check",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Grilled-Hog Steak",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "food"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "bonus_mig mode2 = 2"
+     ]
+    }
+   ]
+  },
   "(world) / Guard": {
    "props": {
     "defense_target_type": "def",
@@ -11669,6 +11743,7 @@
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
+    "skill_target": "Up to three creatures",
     "skill_type": "Spell",
     "type_damage": "healing"
    },
@@ -11982,6 +12057,34 @@
    "effects": [],
    "reactions": [],
    "aes": []
+  },
+  "(world) / Herbal Tea": {
+   "props": {
+    "check": "Check",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Herbal Tea",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "food"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "condition_confused mode5 = IM",
+      "condition_dazed mode5 = IM"
+     ]
+    }
+   ]
   },
   "(world) / Herd's Vigil": {
    "props": {
@@ -13241,6 +13344,7 @@
    "props": {
     "duration": "Instantaneous",
     "isReaction": "true",
+    "skill_target": "One Creature",
     "skill_type": "Spell",
     "uniqueId": "MfBexg3RMmrBmeyO"
    },
@@ -14800,6 +14904,33 @@
     "condition_formula=ATTACK_IS_CRIT == 1 && DAMAGE_IS_HP == 1 reaction_effect_ref=lmallet_crit reaction_passive_mode=on reaction_requires_weapon_used=true reaction_source=self reaction_trigger=creature_will_deal_damage"
    ],
    "aes": []
+  },
+  "(world) / Lucky Omelette": {
+   "props": {
+    "check": "Check",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Lucky Omelette",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "food"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "critical_dice_range mode2 = 1"
+     ]
+    }
+   ]
   },
   "(world) / Lunar Bow": {
    "props": {
@@ -16926,6 +17057,33 @@
    "reactions": [],
    "aes": []
   },
+  "(world) / Moon Custard": {
+   "props": {
+    "check": "Check",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Moon Custard",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "food"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "bonus_wlp mode2 = 2"
+     ]
+    }
+   ]
+  },
   "(world) / Moon Dancer Chakram": {
    "props": {
     "category": "Thrown",
@@ -18418,6 +18576,26 @@
    "reactions": [],
    "aes": []
   },
+  "(world) / Poison": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "item_cost": "50",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "ae_template_ref=Envenomed effect_kind=apply_ae effect_label=poison_envenom target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
   "(world) / Poison Lash": {
    "props": {
     "active_effect_config_table": "#sha1:9670006ee86a8319 (303 chars)",
@@ -18505,10 +18683,10 @@
     "chain_steps=pr_add,pr_halve effect_kind=chain effect_label=pr_do",
     "effect_kind=add_target effect_label=pr_add target_ref=pr_pick",
     "effect_kind=adjust_grant effect_label=pr_halve grant_amount=0.5 grant_operation=multiply grant_round=up scale_factor=0.5 scale_round=up",
-    "candidate_source=combat category=ally count=SL effect_kind=targeting effect_label=pr_pick exclude_action_targets=true mode=up_to"
+    "auto_target=skip candidate_source=combat category=ally count=SL effect_kind=targeting effect_label=pr_pick exclude_action_targets=true iteration_mode=together mode=up_to"
    ],
    "reactions": [
-    "condition_formula=ACTION_TARGET_COUNT == 1 reaction_action_intent=aid reaction_action_kind=Item reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_performs_action"
+    "condition_formula=ACTION_TARGET_COUNT == 1 reaction_action_intent=aid reaction_action_kind=Item reaction_effect_ref=pr_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_performs_action"
    ],
    "aes": []
   },
@@ -18978,6 +19156,34 @@
     }
    ]
   },
+  "(world) / Pufferfish Sashimi": {
+   "props": {
+    "check": "Check",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Pufferfish Sashimi",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "food"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "condition_envenomed mode5 = IM",
+      "condition_poisoned mode5 = IM"
+     ]
+    }
+   ]
+  },
   "(world) / Punishment": {
    "props": {
     "category": "Heavy",
@@ -19430,6 +19636,34 @@
    "reactions": [],
    "aes": []
   },
+  "(world) / Regretful Soufflé": {
+   "props": {
+    "check": "Check",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Regretful Soufflé",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "food"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "damage_receiving_mod_physical mode2 = -3",
+      "extra_damage_mod_all mode2 = 5"
+     ]
+    }
+   ]
+  },
   "(world) / Reinforce": {
    "props": {
     "class": "Spiritist",
@@ -19704,6 +19938,34 @@
    "reactions": [],
    "aes": []
   },
+  "(world) / Rice Ball": {
+   "props": {
+    "check": "Check",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Rice Ball",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "food"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "condition_frightened mode5 = IM",
+      "condition_shaken mode5 = IM"
+     ]
+    }
+   ]
+  },
   "(world) / Rich Cream": {
    "props": {
     "isReaction": "true",
@@ -19768,6 +20030,44 @@
      "changes": [
       "affinity_6 mode5 = AB",
       "affinity_7 mode5 = VU"
+     ]
+    }
+   ]
+  },
+  "(world) / Ring of Regeneration": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "item_cost": "1000",
+    "item_quantity": "1",
+    "item_rarity": "Uncommon",
+    "item_type": "accessory",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "set_name": "<Set Name>",
+    "skill_target": "One Enemy",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Ring of Regeneration",
+     "transfer": true,
+     "disabled": true,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [],
+     "aeReactions": [
+      "reaction_effect_ref=ror_heal reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+     ],
+     "aeEffects": [
+      "effect_kind=grant effect_label=ror_heal grant_amount=5 grant_resource=hp target_ref=self"
      ]
     }
    ]
@@ -20453,6 +20753,33 @@
    "effects": [],
    "reactions": [],
    "aes": []
+  },
+  "(world) / Sage Congee": {
+   "props": {
+    "check": "Check",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Sage Congee",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "food"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "bonus_ins mode2 = 2"
+     ]
+    }
+   ]
   },
   "(world) / Sage Robe": {
    "props": {
@@ -22574,13 +22901,16 @@
     "isCheck": "true",
     "isFacet": "true",
     "isOffensiveSpell": "true",
+    "on_activate_effect_ref": "stop_slow",
     "rolled_atr1": "INS",
     "rolled_atr2": "WLP",
     "skill_range": "Range",
     "skill_target": "One creature",
     "skill_type": "Spell"
    },
-   "effects": [],
+   "effects": [
+    "effect_kind=modify_turns effect_label=stop_slow target_ref=hit_action_targets turns_delta=-1 turns_floor=0"
+   ],
    "reactions": [],
    "aes": [
     {
@@ -26163,6 +26493,33 @@
     }
    ]
   },
+  "(world) / Zesty Soda": {
+   "props": {
+    "check": "Check",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Zesty Soda",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "food"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "bonus_dex mode2 = 2"
+     ]
+    }
+   ]
+  },
   "(world) / Zombie Armor": {
    "props": {
     "category": "Arcane",
@@ -26354,6 +26711,72 @@
      "changes": []
     }
    ]
+  },
+  "Ampere / Bubble Beam": {
+   "props": {
+    "check_bonus": "7",
+    "class": "NPC",
+    "damage_bonus": "22",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isReaction": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "DEX",
+    "skill_range": "Range",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Ice"
+   },
+   "effects": [
+    "ae_chance_percent=50 ae_duplicate_mode=skip ae_template_ref=Wet effect_kind=apply_ae effect_label=bb_wet target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=bb_wet reaction_passive_mode=force reaction_source=self reaction_source_skill=Bubble Beam reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Ampere / Bubble Splash": {
+   "props": {
+    "action_keywords": "overflow",
+    "check_bonus": "7",
+    "class": "NPC",
+    "cost": "30 MP",
+    "damage_bonus": "40",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "on_activate_effect_ref": "bs_chain",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "All Enemy",
+    "skill_type": "Active",
+    "type_damage": "Ice"
+   },
+   "effects": [
+    "chain_steps=bs_save,bs_wet effect_kind=chain effect_label=bs_chain",
+    "effect_kind=save_check effect_label=bs_save save_attr1=dex save_attr2=mig save_dl=13 save_mode=interactive target_ref=action_targets",
+    "ae_duplicate_mode=skip ae_template_ref=Wet effect_kind=apply_ae effect_label=bs_wet target_ref=save_failed_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Ampere / Volt Counter": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "candidate_source=combat category=creature effect_kind=targeting effect_label=vd_targets exclude_self=true mode=all",
+    "damage_amount=10 damage_element=bolt damage_verbosity=full effect_kind=deal_damage effect_label=vd_damage target_ref=vd_targets"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && INCOMING_DAMAGE > 0 && ATTACK_CHECK_RESULT > 0 && ATTACK_CHECK_RESULT % 2 == 0 reaction_effect_ref=vd_damage reaction_passive_mode=on reaction_source=self reaction_trigger=creature_targeted_by_action"
+   ],
+   "aes": []
   },
   "Ape / Ground Slam": {
    "props": {
@@ -28398,7 +28821,7 @@
     {
      "name": "Frightened",
      "transfer": false,
-     "disabled": true,
+     "disabled": false,
      "statuses": [
       "v2vFlETIgMnff5o8"
      ],
@@ -28411,7 +28834,7 @@
     {
      "name": "Stagger",
      "transfer": false,
-     "disabled": true,
+     "disabled": false,
      "statuses": [
       "1QPHKNWo17z0bBmX"
      ],
@@ -29138,6 +29561,7 @@
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
+    "skill_target": "Up to three creatures",
     "skill_type": "Spell",
     "type_damage": "healing"
    },
@@ -29434,11 +29858,35 @@
     }
    ]
   },
-  "Blanche / Mega-Remedy": {
+  "Blanche / Mega-Remedy #JFKwNv": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "ip_cost": "6",
+    "item_cost": "600",
+    "item_quantity": "1",
+    "item_rarity": "Rare",
+    "item_skill_active": "#sha1:93e37ccb7cf9f7b7 (247 chars)",
+    "item_type": "consumable",
+    "related_item_list": "{\"qGDOMAtenjvpbAeC\":{\"name\":\"Mega-Remedy\",\"id\":\"${item.id}\",\"uuid\":\"Actor.uJFaNQCSvwwsr2AW.Item.qGDOMAtenjvpbAeC\",\"related_item_description\":\"<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>\"}}",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Blanche / Mega-Remedy #qGDOMA": {
    "props": {
     "damage_bonus": "100",
     "defense_target_type": "def",
     "duration": "Instnataneous",
+    "on_activate_effect_ref": "megaremedy_heal",
     "skill_range": "Any",
     "skill_tags": "potion",
     "skill_target": "One Creature",
@@ -31057,6 +31505,7 @@
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
+    "skill_target": "Up to three creatures",
     "skill_type": "Spell",
     "type_damage": "healing"
    },
@@ -32863,7 +33312,7 @@
    },
    "effects": [
     "candidate_source=self effect_kind=targeting effect_label=d_self",
-    "chain_steps=d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse effect_kind=chain effect_label=d_root",
+    "chain_steps=lion_cleanse effect_kind=chain effect_label=d_root",
     "consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
     "count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
@@ -33005,7 +33454,7 @@
    },
    "effects": [
     "candidate_source=self effect_kind=targeting effect_label=d_self",
-    "chain_steps=d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn effect_kind=chain effect_label=d_root",
+    "chain_steps=ouro_turn effect_kind=chain effect_label=d_root",
     "consume_amount=10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0) consume_resource=mp effect_kind=consume_resource effect_label=d_cost on_empty=abort target_ref=self",
     "count=all effect_kind=remove_tagged_ae effect_label=d_untoken filter_tag=dance-token target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Dancing effect_kind=apply_ae effect_label=d_mark_gen target_ref=d_self",
@@ -36350,6 +36799,7 @@
   "Esper / Life Transference": {
    "props": {
     "isReaction": "true",
+    "skill_target": "One ally",
     "skill_type": "Active"
    },
    "effects": [
@@ -36969,6 +37419,24 @@
      ]
     }
    ]
+  },
+  "Fjord / Bladestorm": {
+   "props": {
+    "class": "Weaponmaster",
+    "cost": "10 MP",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=bladestorm_add,bladestorm_cost effect_kind=chain effect_label=bladestorm_do",
+    "effect_kind=add_target effect_label=bladestorm_add target_ref=bladestorm_pick",
+    "consume_amount=10 consume_resource=mp cost_amount=10 cost_operation=add cost_resource=mp effect_kind=adjust_cost effect_label=bladestorm_cost on_empty=abort target_ref=self",
+    "auto_target=skip candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=bladestorm_pick exclude=action_targets iteration_mode=together mode=exact"
+   ],
+   "reactions": [
+    "condition_formula=ATTACK_IS_MELEE == 1 && ACTION_TARGET_COUNT < 3 reaction_action_kind=Attack reaction_effect_ref=bladestorm_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_performs_action"
+   ],
+   "aes": []
   },
   "Fjord / Bone Crusher": {
    "props": {
@@ -39171,6 +39639,7 @@
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
+    "skill_target": "Up to three creatures",
     "skill_type": "Spell",
     "type_damage": "healing"
    },
@@ -42172,6 +42641,34 @@
    "reactions": [],
    "aes": [
     {
+     "name": "Armor DEF",
+     "transfer": true,
+     "disabled": true,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "base_defense mode4 = ${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$",
+      "bonus_defense mode2 = ${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+     ]
+    },
+    {
+     "name": "Armor MDEF",
+     "transfer": true,
+     "disabled": true,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "base_magic_defense mode4 = ${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$",
+      "bonus_magic_defense mode2 = ${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+     ]
+    },
+    {
      "name": "Ghostly Sheet",
      "transfer": true,
      "disabled": true,
@@ -42628,11 +43125,35 @@
     }
    ]
   },
-  "Hina / Mega-Remedy": {
+  "Hina / Mega-Remedy #LdxJgE": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "ip_cost": "6",
+    "item_cost": "600",
+    "item_quantity": "1",
+    "item_rarity": "Rare",
+    "item_skill_active": "#sha1:15c6ab3a5181bbc0 (247 chars)",
+    "item_type": "consumable",
+    "related_item_list": "{\"peoXVGo2UIvAnZfE\":{\"name\":\"Mega-Remedy\",\"id\":\"${item.id}\",\"uuid\":\"Actor.dafTLBUscCDNgq8H.Item.peoXVGo2UIvAnZfE\",\"related_item_description\":\"<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>\"}}",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=megaremedy_heal grant_amount=100 grant_resource=hp target_ref=action_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Hina / Mega-Remedy #peoXVG": {
    "props": {
     "damage_bonus": "100",
     "defense_target_type": "def",
     "duration": "Instnataneous",
+    "on_activate_effect_ref": "megaremedy_heal",
     "skill_range": "Any",
     "skill_tags": "potion",
     "skill_target": "One Creature",
@@ -42802,7 +43323,7 @@
    "reactions": [],
    "aes": [
     {
-     "name": "DEF Up",
+     "name": "Armor DEF",
      "transfer": true,
      "disabled": true,
      "statuses": [],
@@ -42811,12 +43332,12 @@
      "lifetime": null,
      "charges": null,
      "changes": [
-      "defense mode2 = ${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0)$",
-      "defense mode4 = ${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+      "base_defense mode4 = ${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$",
+      "bonus_defense mode2 = ${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
      ]
     },
     {
-     "name": "MDEF Up",
+     "name": "Armor MDEF",
      "transfer": true,
      "disabled": true,
      "statuses": [],
@@ -42825,8 +43346,8 @@
      "lifetime": null,
      "charges": null,
      "changes": [
-      "magic_defense mode2 = ${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$",
-      "magic_defense mode4 = ${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+      "base_magic_defense mode4 = ${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$",
+      "bonus_magic_defense mode2 = ${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
      ]
     }
    ]
@@ -43225,6 +43746,7 @@
    "props": {
     "duration": "Instantaneous",
     "isReaction": "true",
+    "skill_target": "One Creature",
     "skill_type": "Spell"
    },
    "effects": [
@@ -45196,7 +45718,7 @@
     "weapon_range": "Melee"
    },
    "effects": [
-    "effect_kind=grant effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
+    "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
    "aes": []
@@ -45633,6 +46155,25 @@
     }
    ]
   },
+  "Kiki / Bladestorm": {
+   "props": {
+    "class": "Weaponmaster",
+    "cost": "10 MP",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=bladestorm_add,bladestorm_cost effect_kind=chain effect_label=bladestorm_do",
+    "effect_kind=add_target effect_label=bladestorm_add target_ref=bladestorm_pick",
+    "consume_amount=10 consume_resource=mp cost_amount=10 cost_operation=add cost_resource=mp effect_kind=adjust_cost effect_label=bladestorm_cost on_empty=abort target_ref=self",
+    "auto_target=skip candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=bladestorm_pick exclude=action_targets iteration_mode=together mode=exact"
+   ],
+   "reactions": [
+    "condition_formula=ATTACK_IS_MELEE == 1 && ACTION_TARGET_COUNT < 3 reaction_action_kind=Attack reaction_effect_ref=bladestorm_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_performs_action"
+   ],
+   "aes": []
+  },
   "Kiki / Bone Crusher": {
    "props": {
     "class": "Weaponmaster",
@@ -46063,6 +46604,96 @@
    },
    "effects": [],
    "reactions": [],
+   "aes": []
+  },
+  "Kirin (Reanimated) / Hooves": {
+   "props": {
+    "check_bonus": "9",
+    "class": "NPC",
+    "damage_bonus": "45",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [
+    "ae_duplicate_mode=add_charges ae_template_ref=Slow effect_kind=apply_ae effect_label=hooves_slow target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "condition_formula=TRIGGER_IS_SELF == 1 reaction_effect_ref=hooves_slow reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Hooves reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Kirin (Reanimated) / Horn Rush": {
+   "props": {
+    "action_keywords": "execute",
+    "check_bonus": "9",
+    "class": "NPC",
+    "damage_bonus": "62",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Bolt"
+   },
+   "effects": [
+    "damage_amount=2 damage_operation=multiply damage_stage=outgoing effect_kind=adjust_damage effect_label=horn_execute"
+   ],
+   "reactions": [
+    "condition_formula=TARGET_AE_COUNT_CRISIS > 0 reaction_effect_ref=horn_execute reaction_max_scope=round reaction_passive_mode=force reaction_source=self reaction_source_skill=Horn Rush reaction_trigger=creature_will_deal_damage"
+   ],
+   "aes": []
+  },
+  "Kirin (Reanimated) / Lightning Charge": {
+   "props": {
+    "class": "NPC",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "effect_kind=grant effect_label=charge_mp grant_amount=20 grant_resource=mp target_ref=self",
+    "effect_kind=grant effect_label=charge_overflow grant_amount=max(0, CUR_MP + 20 - MAX_MP) grant_resource=shield target_ref=self",
+    "chain_steps=charge_overflow, charge_mp effect_kind=chain effect_label=charge_horn"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_effect_ref=charge_horn reaction_passive_mode=on reaction_source=self reaction_trigger=creature_lose_resource"
+   ],
+   "aes": []
+  },
+  "Kirin (Reanimated) / Rail Stream": {
+   "props": {
+    "action_keywords": "pierce, overflow",
+    "check_bonus": "9",
+    "class": "NPC",
+    "cost": "50 MP",
+    "damage_bonus": "45",
+    "defense_target_type": "mdef",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isOffensiveSpell": "true",
+    "isReaction": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "All Enemies",
+    "skill_type": "Spell",
+    "type_damage": "Bolt"
+   },
+   "effects": [
+    "ae_chance_percent=50 ae_duplicate_mode=replace ae_template_ref=Paralyzed effect_kind=apply_ae effect_label=apply_paralyzed target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=apply_paralyzed reaction_passive_mode=on reaction_source=self reaction_source_skill=Rail Stream reaction_trigger=creature_deals_damage"
+   ],
    "aes": []
   },
   "Kirin / Hooves": {
@@ -46501,6 +47132,71 @@
    },
    "effects": [],
    "reactions": [],
+   "aes": []
+  },
+  "Mana Ray (Reanimated) / Flying #nEeldo": {
+   "props": {
+    "class": "NPC",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "ae_duplicate_mode=skip ae_template_ref=Flying effect_kind=apply_ae effect_label=fly_apply target_ref=self"
+   ],
+   "reactions": [
+    "reaction_effect_ref=fly_apply reaction_passive_mode=force reaction_trigger=conflict_start"
+   ],
+   "aes": []
+  },
+  "Mana Ray (Reanimated) / Mana Stinger #lK1xNx": {
+   "props": {
+    "check_bonus": "8",
+    "class": "NPC",
+    "damage_bonus": "24",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isReaction": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Dark"
+   },
+   "effects": [
+    "damage_amount=min(ceil(TARGET_MAX_MP * 0.2), TARGET_CURRENT_MP) damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=stinger_bonus",
+    "damage_amount=min(ceil(TARGET_MAX_MP * 0.2), TARGET_CURRENT_MP) damage_resource=mp damage_verbosity=full effect_kind=deal_damage effect_label=stinger_burn target_ref=trigger_subject"
+   ],
+   "reactions": [
+    "reaction_effect_ref=stinger_bonus reaction_passive_mode=force reaction_source=self reaction_source_skill=Mana Stinger reaction_trigger=creature_will_deal_damage",
+    "reaction_effect_ref=stinger_burn reaction_passive_mode=force reaction_source=self reaction_source_skill=Mana Stinger reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Mana Ray (Reanimated) / Volt Stinger #qQ1Usy": {
+   "props": {
+    "check_bonus": "8",
+    "class": "NPC",
+    "cost": "10 MP",
+    "damage_bonus": "40",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isReaction": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Active",
+    "type_damage": "Bolt"
+   },
+   "effects": [
+    "ae_duplicate_mode=skip ae_template_ref=Paralyzed effect_kind=apply_ae effect_label=vs_paralyze target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=vs_paralyze reaction_passive_mode=force reaction_source=self reaction_source_skill=Volt Stinger reaction_trigger=creature_deals_damage"
+   ],
    "aes": []
   },
   "Mana Ray / Flying": {
@@ -47791,6 +48487,24 @@
    ],
    "reactions": [
     "condition_formula=TARGET_AE_CHARGES_PETRIFY > 0 reaction_effect_ref=dive_double reaction_passive_mode=on reaction_source=self reaction_trigger=creature_will_deal_damage"
+   ],
+   "aes": []
+  },
+  "Oki (Copy) / Bladestorm": {
+   "props": {
+    "class": "Weaponmaster",
+    "cost": "10 MP",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=bladestorm_add,bladestorm_cost effect_kind=chain effect_label=bladestorm_do",
+    "effect_kind=add_target effect_label=bladestorm_add target_ref=bladestorm_pick",
+    "consume_amount=10 consume_resource=mp cost_amount=10 cost_operation=add cost_resource=mp effect_kind=adjust_cost effect_label=bladestorm_cost on_empty=abort target_ref=self",
+    "auto_target=skip candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=bladestorm_pick exclude=action_targets iteration_mode=together mode=exact"
+   ],
+   "reactions": [
+    "condition_formula=ATTACK_IS_MELEE == 1 && ACTION_TARGET_COUNT < 3 reaction_action_kind=Attack reaction_effect_ref=bladestorm_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_performs_action"
    ],
    "aes": []
   },
@@ -49970,6 +50684,7 @@
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
+    "skill_target": "Up to three creatures",
     "skill_type": "Spell",
     "type_damage": "healing"
    },
@@ -50761,6 +51476,25 @@
    ],
    "reactions": [
     "reaction_effect_ref=agony_recover reaction_passive_mode=ask reaction_passive_target=self reaction_source=self reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Surtur / Bladestorm": {
+   "props": {
+    "class": "Weaponmaster",
+    "cost": "10 MP",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=bladestorm_add,bladestorm_cost effect_kind=chain effect_label=bladestorm_do",
+    "effect_kind=add_target effect_label=bladestorm_add target_ref=bladestorm_pick",
+    "consume_amount=10 consume_resource=mp cost_amount=10 cost_operation=add cost_resource=mp effect_kind=adjust_cost effect_label=bladestorm_cost on_empty=abort target_ref=self",
+    "auto_target=skip candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=bladestorm_pick exclude=action_targets iteration_mode=together mode=exact"
+   ],
+   "reactions": [
+    "condition_formula=ATTACK_IS_MELEE == 1 && ACTION_TARGET_COUNT < 3 reaction_action_kind=Attack reaction_effect_ref=bladestorm_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_performs_action"
    ],
    "aes": []
   },
@@ -51599,75 +52333,6 @@
     }
    ]
   },
-  "Ampere / Bubble Beam": {
-   "props": {
-    "check_bonus": "7",
-    "class": "NPC",
-    "damage_bonus": "22",
-    "defense_target_type": "def",
-    "duration": "Instantaneous",
-    "isCheck": "true",
-    "isReaction": "true",
-    "rolled_atr1": "INS",
-    "rolled_atr2": "DEX",
-    "skill_range": "Range",
-    "skill_target": "One Creature",
-    "skill_type": "Attack",
-    "type_damage": "Ice"
-   },
-   "effects": [
-    "ae_chance_percent=50 ae_duplicate_mode=skip ae_template_ref=Wet effect_kind=apply_ae effect_label=bb_wet target_ref=hit_action_targets"
-   ],
-   "reactions": [
-    "reaction_effect_ref=bb_wet reaction_passive_mode=force reaction_source=self reaction_source_skill=Bubble Beam reaction_trigger=creature_deals_damage"
-   ],
-   "aes": []
-  },
-  "Ampere / Bubble Splash": {
-   "props": {
-    "action_keywords": "overflow",
-    "check_bonus": "7",
-    "class": "NPC",
-    "cost": "30 MP",
-    "damage_bonus": "40",
-    "defense_target_type": "def",
-    "duration": "Instantaneous",
-    "isCheck": "true",
-    "on_activate_effect_ref": "bs_chain",
-    "rolled_atr1": "INS",
-    "rolled_atr2": "WLP",
-    "skill_range": "Range",
-    "skill_target": "All Enemy",
-    "skill_type": "Active",
-    "type_damage": "Ice"
-   },
-   "effects": [
-    "chain_steps=bs_save,bs_wet effect_kind=chain effect_label=bs_chain",
-    "effect_kind=save_check effect_label=bs_save save_attr1=dex save_attr2=mig save_dl=13 save_mode=interactive target_ref=action_targets",
-    "ae_duplicate_mode=skip ae_template_ref=Wet effect_kind=apply_ae effect_label=bs_wet target_ref=save_failed_targets"
-   ],
-   "reactions": [],
-   "aes": []
-  },
-  "Ampere / Voltage Discharge": {
-   "props": {
-    "class": "NPC",
-    "cost": "10 MP",
-    "defense_target_type": "def",
-    "duration": "Instantaneous",
-    "isOffensiveSpell": "true",
-    "on_activate_effect_ref": "vd_damage",
-    "skill_range": "Range",
-    "skill_target": "All Enemy",
-    "skill_type": "Spell"
-   },
-   "effects": [
-    "candidate_source=combat category=creature effect_kind=targeting effect_label=vd_targets mode=all",
-    "damage_amount=10 damage_element=bolt damage_verbosity=full effect_kind=deal_damage effect_label=vd_damage target_ref=vd_targets"
-   ],
-   "reactions": [],
-   "aes": []
-  },
   "Wagner / Artisan Mallet": {
    "props": {
     "category": "Heavy",
@@ -51906,6 +52571,24 @@
      ]
     }
    ]
+  },
+  "Weaponmaster / Bladestorm": {
+   "props": {
+    "class": "Weaponmaster",
+    "cost": "10 MP",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=bladestorm_add,bladestorm_cost effect_kind=chain effect_label=bladestorm_do",
+    "effect_kind=add_target effect_label=bladestorm_add target_ref=bladestorm_pick",
+    "consume_amount=10 consume_resource=mp cost_amount=10 cost_operation=add cost_resource=mp effect_kind=adjust_cost effect_label=bladestorm_cost on_empty=abort target_ref=self",
+    "auto_target=skip candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=bladestorm_pick exclude=action_targets iteration_mode=together mode=exact"
+   ],
+   "reactions": [
+    "condition_formula=ATTACK_IS_MELEE == 1 && ACTION_TARGET_COUNT < 3 reaction_action_kind=Attack reaction_effect_ref=bladestorm_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_performs_action"
+   ],
+   "aes": []
   },
   "Weaponmaster / Bone Crusher": {
    "props": {
@@ -53209,7 +53892,7 @@
     "skill_type": "Item"
    },
    "effects": [
-    "effect_kind=set_resource effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
+    "effect_kind=grant effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
    ],
    "reactions": [],
    "aes": []
@@ -53222,16 +53905,16 @@
     "item_cost": "50",
     "item_quantity": "1",
     "item_rarity": "Common",
-    "item_skill_active": "#sha1:ea66def23b754c54 (258 chars)",
+    "item_skill_active": "#sha1:abdf33e074760974 (330 chars)",
     "item_type": "consumable",
-    "related_item_list": "{\"32rYly1hH9JwHQrH\":{\"name\":\"Golem Soulstone\",\"id\":\"${item.id}\",\"uuid\":\"Actor.Z4CFy505cD3nzl1W.Item.32rYly1hH9JwHQrH\",\"related_item_description\":\"<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>\"}}",
+    "related_item_list": "#sha1:3e60ed3f9b6ca3db (300 chars)",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
     "skill_target": "One Ally",
     "weapon_range": "Melee"
    },
    "effects": [
-    "effect_kind=set_resource effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
+    "effect_kind=grant effect_label=golemstone_shield grant_amount=10 grant_resource=shield target_ref=action_targets"
    ],
    "reactions": [],
    "aes": []
@@ -53397,6 +54080,45 @@
     }
    ]
   },
+  "Zarg / Life Charm": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "item_cost": "1000",
+    "item_quantity": "1",
+    "item_rarity": "Rare",
+    "item_type": "consumable",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Life Charm",
+     "transfer": true,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [],
+     "aeReactions": [
+      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lifecharm_save reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_takes_damage"
+     ],
+     "aeEffects": [
+      "chain_steps=lifecharm_cap,lifecharm_heal,lifecharm_spend effect_kind=chain effect_label=lifecharm_save",
+      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lifecharm_cap modify_mode=set_hp_floor modify_value=1",
+      "effect_kind=grant effect_label=lifecharm_heal grant_amount=floor(MAX_HP / 2) - 1 grant_resource=hp target_ref=self",
+      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lifecharm_spend"
+     ]
+    }
+   ]
+  },
   "Zarg / Lion Dance": {
    "props": {
     "class": "Dancer",
@@ -53419,7 +54141,30 @@
     "count=1 effect_kind=remove_tagged_ae effect_label=lion_cleanse filter_tag=debuff target_ref=self"
    ],
    "reactions": [],
-   "aes": []
+   "aes": [
+    {
+     "name": "Dancing",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": "target_turn_end",
+     "charges": null,
+     "changes": []
+    },
+    {
+     "name": "Dancing Lion Dance",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": "target_turn_end",
+     "charges": null,
+     "changes": []
+    }
+   ]
   },
   "Zarg / Love Potion #A3VqPJ": {
    "props": {
@@ -53611,7 +54356,30 @@
     "effect_kind=take_turn_next effect_label=ouro_turn target_ref=action_targets"
    ],
    "reactions": [],
-   "aes": []
+   "aes": [
+    {
+     "name": "Dancing",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": "target_turn_end",
+     "charges": null,
+     "changes": []
+    },
+    {
+     "name": "Dancing Ouroboros Dance",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": "target_turn_end",
+     "charges": null,
+     "changes": []
+    }
+   ]
   },
   "Zarg / Phoenix Feather #8wPV7Y": {
    "props": {
@@ -53746,9 +54514,10 @@
     "skill_type": "Active"
    },
    "effects": [
-    "chain_steps=syl_leave effect_kind=chain effect_label=syl_root",
+    "chain_steps=syl_confirm,syl_cost,syl_leave effect_kind=chain effect_label=syl_root",
     "confirm_cancel_label=Stay confirm_cancel_style=default confirm_message=Leave the battle for 1 Fabula Point? You'll slip away from this scene and reappear in a later one. confirm_ok_label=See you later! confirm_ok_style=danger confirm_title=See you later? effect_kind=confirm effect_label=syl_confirm",
-    "effect_kind=leave_combat effect_label=syl_leave target_ref=self"
+    "effect_kind=leave_combat effect_label=syl_leave target_ref=self",
+    "consume_amount=1 consume_resource=fp effect_kind=consume_resource effect_label=syl_cost on_empty=abort target_ref=self"
    ],
    "reactions": [],
    "aes": []

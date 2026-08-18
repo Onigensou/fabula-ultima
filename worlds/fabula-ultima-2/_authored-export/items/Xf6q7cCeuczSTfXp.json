@@ -108,6 +108,20 @@
       "description": "<p>You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn <em>(to a minimum of 0 actions).</em></p>",
       "details_roller": "Show",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "consume_self": false,
+          "effect_kind": "modify_turns",
+          "effect_label": "stop_slow",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "hit_action_targets",
+          "to_resource": "",
+          "turns_delta": "-1",
+          "turns_floor": "0"
+        }
+      },
       "heroic_requirement": "",
       "id": "z1GsqcJC8bh4TOAs",
       "ignore_hr": false,
@@ -121,6 +135,7 @@
       "level": "1",
       "max_level": "1",
       "name": "Stop",
+      "on_activate_effect_ref": "stop_slow",
       "optional_params": {},
       "reaction_config_table": {},
       "reaction_effect_table": {},

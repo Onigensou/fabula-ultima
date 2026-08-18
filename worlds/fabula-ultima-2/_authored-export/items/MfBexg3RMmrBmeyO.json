@@ -91,6 +91,7 @@
           "requires_skill": ""
         }
       },
+      "skill_target": "One Creature",
       "skill_type": "Spell",
       "uniqueId": "MfBexg3RMmrBmeyO"
     },

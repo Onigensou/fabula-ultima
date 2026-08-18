@@ -2667,6 +2667,15 @@
           "demon_ef": "100",
           "description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "megaremedy_heal",
+              "grant_amount": "100",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -3537,7 +3546,7 @@
           "skill_information": "",
           "skill_range": "Range",
           "skill_tags": "",
-          "skill_target": "",
+          "skill_target": "Up to three creatures",
           "skill_type": "Spell",
           "target_eligibility": "",
           "type_damage": "healing",
@@ -4232,6 +4241,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Mega-Remedy",
+          "on_activate_effect_ref": "megaremedy_heal",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",

@@ -4620,7 +4620,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278387,
         "unique": false,
-        "uniqueId": "WNWoQrisHlUuxSny"
+        "uniqueId": "dLnk3JUUeBISkOmp"
       },
       "type": "equippableItem"
     },
@@ -4929,6 +4929,154 @@
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
           "name": "Ghostly Sheet",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "QIEjB6JWwX3oUEJD",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787064019562,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_magic_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_magic_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "QIEjB6JWwX3oUEJD",
+              "originalParentId": "GLE6h2EmyLBSYgRX",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.GLE6h2EmyLBSYgRX.ActiveEffect.QIEjB6JWwX3oUEJD"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-mdef-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+          "name": "Armor MDEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "vXQ2BsXrqNuEIgko",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787064019562,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "vXQ2BsXrqNuEIgko",
+              "originalParentId": "GLE6h2EmyLBSYgRX",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.GLE6h2EmyLBSYgRX.ActiveEffect.vXQ2BsXrqNuEIgko"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-def-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Armor DEF",
           "origin": null,
           "sort": 0,
           "statuses": [],
@@ -5599,7 +5747,7 @@
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
-        "uniqueId": "KoC4PHdQrp7r4rM9"
+        "uniqueId": "PsBBWgj9RkzEIKtF"
       },
       "type": "equippableItem"
     },
@@ -7282,7 +7430,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278387,
         "unique": false,
-        "uniqueId": "AQqb37jPpVi1h6j6"
+        "uniqueId": "8rxdGdcaGpaqA7mc"
       },
       "type": "equippableItem"
     },
@@ -7728,6 +7876,15 @@
           "demon_ef": "100",
           "description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "megaremedy_heal",
+              "grant_amount": "100",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -9689,6 +9846,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Mega-Remedy",
+          "on_activate_effect_ref": "megaremedy_heal",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -10658,27 +10816,27 @@
       },
       "effects": [
         {
-          "_id": "BpomIlkMF5defL6f",
+          "_id": "1vfQYuPbNEwRulVc",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": null,
+            "createdTime": 1787065062902,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
           "changes": [
             {
-              "key": "defense",
-              "mode": 2,
+              "key": "base_defense",
+              "mode": 4,
               "priority": 1,
-              "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0)$"
+              "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
             },
             {
-              "key": "defense",
-              "mode": 4,
+              "key": "bonus_defense",
+              "mode": 2,
               "priority": 2,
-              "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
             }
           ],
           "description": "",
@@ -10687,9 +10845,9 @@
             "combat": null,
             "rounds": null,
             "seconds": null,
-            "startRound": 1,
-            "startTime": 298800,
-            "startTurn": 2,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
             "turns": null
           },
           "flags": {
@@ -10699,9 +10857,9 @@
             "custom-system-builder": {
               "isFromTemplate": false,
               "isPredefined": true,
-              "originalId": "83eTxDPjJ8Hh9IfC",
-              "originalParentId": "0gIBYzSpjdXS6f25",
-              "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
+              "originalId": "1vfQYuPbNEwRulVc",
+              "originalParentId": "SAMjPDBx3kmr7zU4",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.SAMjPDBx3kmr7zU4.ActiveEffect.1vfQYuPbNEwRulVc"
             },
             "dfreds-convenient-effects": {
               "ceEffectId": "ce-def-up",
@@ -10721,7 +10879,7 @@
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
-          "name": "DEF Up",
+          "name": "Armor DEF",
           "origin": null,
           "sort": 0,
           "statuses": [],
@@ -10733,27 +10891,27 @@
           "type": "base"
         },
         {
-          "_id": "UWkENSrX9qe717kz",
+          "_id": "sYFvRXuuaA0bDaAJ",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": null,
+            "createdTime": 1787065062902,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
           "changes": [
             {
-              "key": "magic_defense",
-              "mode": 2,
+              "key": "base_magic_defense",
+              "mode": 4,
               "priority": 1,
-              "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
             },
             {
-              "key": "magic_defense",
-              "mode": 4,
+              "key": "bonus_magic_defense",
+              "mode": 2,
               "priority": 2,
-              "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
             }
           ],
           "description": "",
@@ -10762,9 +10920,9 @@
             "combat": null,
             "rounds": null,
             "seconds": null,
-            "startRound": 1,
-            "startTime": 298800,
-            "startTurn": 2,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
             "turns": null
           },
           "flags": {
@@ -10774,9 +10932,9 @@
             "custom-system-builder": {
               "isFromTemplate": false,
               "isPredefined": true,
-              "originalId": "83eTxDPjJ8Hh9IfC",
-              "originalParentId": "0gIBYzSpjdXS6f25",
-              "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
+              "originalId": "sYFvRXuuaA0bDaAJ",
+              "originalParentId": "SAMjPDBx3kmr7zU4",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.SAMjPDBx3kmr7zU4.ActiveEffect.sYFvRXuuaA0bDaAJ"
             },
             "dfreds-convenient-effects": {
               "ceEffectId": "ce-mdef-up",
@@ -10796,7 +10954,7 @@
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
-          "name": "MDEF Up",
+          "name": "Armor MDEF",
           "origin": null,
           "sort": 0,
           "statuses": [],
@@ -13565,7 +13723,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278387,
         "unique": false,
-        "uniqueId": "WNWoQrisHlUuxSny"
+        "uniqueId": "Ymvl5y6DJMEUTzv1"
       },
       "type": "equippableItem"
     },

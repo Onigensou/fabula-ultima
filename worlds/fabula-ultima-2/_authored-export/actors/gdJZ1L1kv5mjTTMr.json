@@ -7026,7 +7026,7 @@
           "dragon_ef": "100",
           "effect_table": {
             "0": {
-              "effect_kind": "grant",
+              "effect_kind": "set_resource",
               "effect_label": "phoenix_revive",
               "grant_amount": "MAX_HP / 2",
               "grant_resource": "hp",

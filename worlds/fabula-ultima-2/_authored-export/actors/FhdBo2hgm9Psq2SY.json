@@ -1588,7 +1588,7 @@
               "effect_label": "d_self"
             },
             "1": {
-              "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse",
+              "chain_steps": "lion_cleanse",
               "effect_kind": "chain",
               "effect_label": "d_root"
             },
@@ -2747,7 +2747,7 @@
               "effect_label": "d_self"
             },
             "1": {
-              "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn",
+              "chain_steps": "ouro_turn",
               "effect_kind": "chain",
               "effect_label": "d_root"
             },

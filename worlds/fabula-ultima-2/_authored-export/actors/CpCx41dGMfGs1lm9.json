@@ -112,6 +112,7 @@
               "requires_skill": ""
             }
           },
+          "skill_target": "One Creature",
           "skill_type": "Spell"
         },
         "template": "j0F5Msw5RZ8aIB3j",
