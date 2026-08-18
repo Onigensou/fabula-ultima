@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-08-18T19:35:25.275Z",
+ "capturedAt": "2026-08-18T20:09:47.779Z",
  "count": 2116,
  "structure": {
   "(world) / Absorb MP": {
@@ -7873,7 +7873,7 @@
    "props": {
     "class": "Entropist",
     "cost": "5 MP",
-    "damage_bonus": "15",
+    "damage_bonus": "20",
     "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -36479,7 +36479,7 @@
    "props": {
     "class": "Entropist",
     "cost": "5 MP",
-    "damage_bonus": "15",
+    "damage_bonus": "20",
     "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -37082,7 +37082,7 @@
    "props": {
     "class": "Entropist",
     "cost": "5 MP",
-    "damage_bonus": "15",
+    "damage_bonus": "20",
     "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -40636,7 +40636,7 @@
    "props": {
     "class": "Entropist",
     "cost": "5 MP",
-    "damage_bonus": "15",
+    "damage_bonus": "20",
     "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -42297,7 +42297,7 @@
    "props": {
     "class": "Entropist",
     "cost": "5 MP",
-    "damage_bonus": "15",
+    "damage_bonus": "20",
     "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",

@@ -33,7 +33,7 @@
       "cost": "5 MP",
       "custom_logic_action": "",
       "custom_logic_resolution": "",
-      "damage_bonus": "15",
+      "damage_bonus": "20",
       "defense_target_type": "mdef",
       "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 20】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
       "duration": "Instantaneous",
