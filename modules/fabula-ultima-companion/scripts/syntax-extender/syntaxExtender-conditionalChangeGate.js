@@ -1378,6 +1378,46 @@ function getBaseValueForChange(actor, change) {
       for (const t of ["air", "bolt", "earth", "fire", "ice", "light", "dark", "poison", "physical"]) {
         foundry.utils.setProperty(actor, `flags.fabula-ultima-companion.damage_taken_increased_${t}`, 0);
       }
+      // Check-modifier family (Cat Ears +1 DEX checks, Swimsuit +2 while Wet).
+      // Bounded set — the four rolled attributes.
+      for (const a of ["dex", "ins", "mig", "wlp"]) {
+        foundry.utils.setProperty(actor, `flags.fabula-ultima-companion.check_mod_${a}`, 0);
+      }
+      // Opportunity-luck toggle, written by a mode-5 change. Seeded so that
+      // DISABLING its effect actually clears it instead of leaving the last
+      // value stranded on the actor forever.
+      foundry.utils.setProperty(actor, "flags.fabula-ultima-companion.opp_lucky", 0);
+
+      // Open-ended ADD-mode families. `skill_level_bonus_<slug>` cannot be
+      // enumerated the way the lists above can — the slug is whatever skill the
+      // effect names — so the base is derived from the effects themselves:
+      // every ADD-mode change this actor carries against a fu flag gets a 0
+      // base, unless one of the explicit seeds above already claimed the key
+      // (those encode a specific identity: 1 for MULTIPLY, 0 for ADD).
+      //
+      // Without this, Blanche's "Provoke SL+1" compounded once per derivation:
+      // measured 12 -> 13 -> 14 across three prepareData() calls, and the value
+      // stored on disk climbed 1 -> 11 over five weeks as successive sessions
+      // captured the inflated number. `system` never had this problem because
+      // Foundry rebuilds it from _source every pass; `flags` is cloned once at
+      // _initialize and reused, so it is the one place a base must be re-seeded
+      // by hand.
+      const NS = "fabula-ultima-companion";
+      const PREFIX = `flags.${NS}.`;
+      for (const effect of actor?.allApplicableEffects?.() ?? []) {
+        for (const change of effect?.changes ?? []) {
+          const key = String(change?.key ?? "");
+          if (Number(change?.mode) !== 2) continue;      // ADD only
+          if (!key.startsWith(PREFIX)) continue;
+          const leaf = key.slice(PREFIX.length);
+          if (!leaf || leaf.includes(".")) continue;
+          if (leaf === "damage_taken_mult") continue;
+          if (leaf.startsWith("damage_dealt_mult_")) continue;
+          if (leaf.startsWith("damage_taken_increased_")) continue;
+          if (leaf.startsWith("check_mod_")) continue;
+          foundry.utils.setProperty(actor, key, 0);
+        }
+      }
     } catch (_) { /* non-fatal: ruleset defaults to 1/0 on read */ }
   }
 
