@@ -252,10 +252,28 @@
     return sigs.sort().join("|");             // array order is not content
   }
 
+  // Item FLAGS carry real content in this world — `coreAction`, `weaponForms`,
+  // `orbment.slots`, `helperSkill`, `isArcanum`, `setId`, `cookingDish` — so they
+  // belong in the signature. The only flags that differ between a restorable copy
+  // and its master today are past migrations' `…Backup_v1` blobs, which are
+  // bookkeeping about a patch rather than content.
+  const flagSignature = (flags) => {
+    const f = JSON.parse(JSON.stringify(flags ?? {}));
+    for (const scope of Object.keys(f)) {
+      if (!f[scope] || typeof f[scope] !== "object") continue;
+      for (const key of Object.keys(f[scope])) if (/Backup/i.test(key)) delete f[scope][key];
+    }
+    return stableJson(f);
+  };
+
   function masterSignature(o) {
     const p = o?.system?.props ?? {};
     const keys = Object.keys(p).filter(k => !MASTER_SIG_IGNORE.has(k)).sort();
-    return JSON.stringify([keys.map(k => [k, p[k]]), aeSignature(o?.effects)]);
+    // stableJson, not JSON.stringify: sorting `keys` orders only the TOP level,
+    // and most of these props are objects (effect_table, related_item_list…).
+    // The export key-sorts everything so this is invisible offline, but a live
+    // `toObject()` does not, and an order-only difference would read as diverged.
+    return stableJson([keys.map(k => [k, p[k]]), aeSignature(o?.effects), flagSignature(o?.flags)]);
   }
 
   // CSB stamps `system.uniqueId` with the originating world Item's id (verified:
@@ -270,7 +288,11 @@
       if (byId) return byId;
     }
     if (!uid) return null;
-    return game.items.find(i => String(i.system?.uniqueId ?? "").trim() === uid) ?? null;
+    // The name check belongs in the PREDICATE, not after the scan: 13 items share
+    // Amber Pendant's uniqueId, and taking the first hit would surface a
+    // wrong-named sibling and discard a correct master that sorts behind it.
+    return game.items.find(i =>
+      String(i.system?.uniqueId ?? "").trim() === uid && i.name === obj?.name) ?? null;
   }
 
   function restorableFromMaster(obj) {
