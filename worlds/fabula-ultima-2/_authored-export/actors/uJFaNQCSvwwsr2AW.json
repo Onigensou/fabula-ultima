@@ -115,8 +115,7 @@
       "idleAnimation": {
         "bounce": false,
         "float": false
-      },
-      "skill_level_bonus_provoke": 11
+      }
     },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/5faea496f17c50c47382d838/Blanche%201.png",
