@@ -262,11 +262,31 @@
   // belong in the signature. The only flags that differ between a restorable copy
   // and its master today are past migrations' `…Backup_v1` blobs, which are
   // bookkeeping about a patch rather than content.
+  // Ignored alongside them: Foundry/CSB provenance and editor bookkeeping
+  // (`core.sourceId` 169 docs, `custom-system-builder.version` 3965 — i.e. every
+  // item — and the template undo history), plus three flags written by PLAY
+  // rather than by an author. `hiddenUntilBattleEnd` is the important one: it is
+  // set during a battle and cleared at battle end, so leaving it in makes an item
+  // hidden mid-session read as diverged from its master, become non-restorable,
+  // and survive the reset it was supposed to be cleared by.
+  const FLAG_IGNORE = new Set([
+    "core.sourceId",
+    "custom-system-builder.version",
+    "custom-system-builder.templateHistory",
+    "custom-system-builder.templateHistoryRedo",
+    "fabula-ultima-companion.hiddenUntilBattleEnd",
+    "fabula-ultima-companion.activeForm",
+    "fabula-ultima-companion.transformFreeUsedRound",
+  ]);
+
   const flagSignature = (flags) => {
     const f = JSON.parse(JSON.stringify(flags ?? {}));
     for (const scope of Object.keys(f)) {
       if (!f[scope] || typeof f[scope] !== "object") continue;
-      for (const key of Object.keys(f[scope])) if (/Backup/i.test(key)) delete f[scope][key];
+      for (const key of Object.keys(f[scope])) {
+        if (/Backup/i.test(key) || FLAG_IGNORE.has(`${scope}.${key}`)) delete f[scope][key];
+      }
+      if (!Object.keys(f[scope]).length) delete f[scope];
     }
     return stableJson(f);
   };
@@ -678,10 +698,26 @@
     // hand slots and the HAS_RANGED_WEAPON / HAS_MARTIAL_ARMOR gate family with
     // it. So carry the rename across to the SLOTS instead of into the item.
     if (item.renamed?.length) {
-      const map   = new Map(item.renamed);
+      // Keyed on the SAVED props.name, which is not guaranteed unique on one
+      // actor — EXFURSION Party carries three "Ring of the Pupil", Hina two
+      // "Arch Ice Wand". No slot collides on either real slot, but a plain Map
+      // would be last-write-wins, so refining one of a duplicated pair after a
+      // save could re-point the slot at the wrong twin. Ambiguous names are
+      // dropped instead of guessed.
+      const map = new Map();
+      const ambiguous = new Set();
+      for (const [from, to] of item.renamed) {
+        if (map.has(from) && map.get(from) !== to) ambiguous.add(from);
+        map.set(from, to);
+      }
+      for (const k of ambiguous) map.delete(k);
       const props = actor.system?.props ?? {};
       const fix   = {};
-      for (const slot of ["main_hand", "off_hand", "accessory_name", "accessory2_name"]) {
+      // `armor_name` is display-only (the CSB sheet's armor rollMessage reads it)
+      // where the other four drive indexByEquippedName, but it goes stale the
+      // same way — on slot 1 Hina, Keren and Zarg all end with one naming an item
+      // that no longer exists.
+      for (const slot of ["main_hand", "off_hand", "accessory_name", "accessory2_name", "armor_name"]) {
         const cur = props[slot];
         if (cur && map.has(cur)) fix[`system.props.${slot}`] = map.get(cur);
       }
