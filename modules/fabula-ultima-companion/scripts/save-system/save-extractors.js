@@ -178,8 +178,13 @@
   //     They are kept conservatively, so a load will not clear debris that was
   //     itself customised. That is the direction that cannot lose work.
   //   • A create (item in the save, absent live) still restores the SAVED copy,
-  //     definition included, because there is nothing live to prefer. For a
-  //     consumable coming back this is almost always identical to its master.
+  //     definition included, because there is genuinely nothing live to prefer.
+  //     After name re-pairing (below) that is 29 documents on slot 1 and 13 on
+  //     slot 2, of which 5 and 10 differ from their master — mostly Hako's gear,
+  //     where the difference is per-instance refinement rather than staleness.
+  //     Sourcing these from the master instead would restore a current
+  //     definition but drop that refinement, so neither side is plainly right;
+  //     the saved copy is kept because it destroys nothing that exists.
   const ITEM_STATE_PROPS = ["isEquipped", "item_quantity"];
 
   // "Is this copy still the master's content?" — compared by DENYLIST, never by a
@@ -288,9 +293,41 @@
     const nested = { update: 0, create: 0, delete: 0 }; // effect ops on updated items
     const keptUnique = [];
 
-    // Present live but not in the save → remove, if it can be restored from a
-    // master. `exactRestore` opts a caller out entirely (shops — see below).
+    // `exactRestore` opts a caller out of the guard entirely (shops — see below).
     const guarded = type === "Item" && !exactRestore;
+
+    // A document deleted and re-created since the save carries a NEW _id, so an
+    // id-only diff sees ONE document as a delete plus a create — and the create
+    // reintroduces the save's months-old copy in place of the current one. On
+    // the real slots that is the dominant create (9 of 35 on slot 1, 14 of 27 on
+    // slot 2) and the saved twin is badly stale: Elemental Weapon's snapshot
+    // carries no effect_table and no fire point at all, so the swap leaves it
+    // inert.
+    //
+    // Re-pair those by NAME up front, so the pair is treated as what it is — one
+    // document present on both sides. It then takes rule 1's path (state only,
+    // live definition stands) instead of being deleted and rolled back. Only
+    // unambiguous names are paired: exactly one unmatched document of that name
+    // on each side. Ambiguity (Blanche carries two documents named "Heal") is
+    // left to the id diff rather than guessed at.
+    let repaired = 0;
+    if (guarded) {
+      const bucket = (m, k, v) => { (m.get(k) ?? m.set(k, []).get(k)).push(v); return m; };
+      const unmatchedLive = new Map(), unmatchedSaved = new Map();
+      for (const [id, d] of liveById)  if (!savedById.has(id)) bucket(unmatchedLive, d.name, id);
+      for (const [id, d] of savedById) if (!liveById.has(id))  bucket(unmatchedSaved, d.name, id);
+      for (const [name, sIds] of unmatchedSaved) {
+        const lIds = unmatchedLive.get(name);
+        if (sIds.length !== 1 || !lIds || lIds.length !== 1) continue;
+        const saved = savedById.get(sIds[0]);
+        savedById.delete(sIds[0]);
+        savedById.set(lIds[0], { ...saved, _id: lIds[0] });
+        repaired++;
+      }
+    }
+
+    // Present live but not in the save → remove, if it can be restored from a
+    // master.
     if (guarded) {
       const objs = new Map([...liveById].map(([id, d]) => [id, d.toObject()]));
 
@@ -430,6 +467,7 @@
       // protect must not look identical in the log.
       keptUnique: keptUnique.length,
       keptNames: keptUnique,
+      repaired,
       updated: debug ? toUpdate.map(d => d.name) : [],
       created: debug ? toCreate.map(d => d.name) : [],
       deleted: debug ? toDelete.map(id => liveById.get(id)?.name ?? id) : [],
@@ -450,6 +488,10 @@
         ` (no world master, or diverged from it): ` +
         item.keptNames.slice(0, 12).join(", ") +
         (item.keptNames.length > 12 ? ` … +${item.keptNames.length - 12} more` : ""));
+    }
+    if (item.repaired) {
+      console.log(`${TAG} ${actor.name}: re-paired ${item.repaired} document(s) by name —` +
+        ` re-created since the save under a new id, so the live definition stands`);
     }
   }
 
