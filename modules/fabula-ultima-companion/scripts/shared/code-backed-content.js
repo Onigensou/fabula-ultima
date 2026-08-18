@@ -80,6 +80,16 @@ const ENTRIES = [
     note: "Wayfarer: recover SL Inventory Points after a travel/gathering roll.",
   },
   {
+    name: "Well-Traveled", kind: "skill", match: "id+name",
+    module: "scripts/travel-roll/travel-roll-api.js", symbol: "getWellTraveledHolder",
+    note: "Wayfarer: reduces the party's travel die by one size (min d6); not cumulative. NOTE: no entry point invokes TravelRoll.performRoll yet, so this is API-only in play.",
+  },
+  {
+    name: "Treasure Hunter", kind: "skill", match: "id+name",
+    module: "scripts/travel-roll/travel-roll-api.js", symbol: "getTreasureHunterHolder",
+    note: "Wayfarer: travel-roll discovery on SL+1 or lower instead of only on a 1. NOTE: no entry point invokes TravelRoll.performRoll yet, so this is API-only in play.",
+  },
+  {
     name: "Dual Shieldbearer", kind: "skill", match: "exact",
     module: "scripts/battle-director/equipment-swap.js", symbol: "DUAL_SHIELDBEARER_NAME",
     note: "Guardian: permits a shield in the MAIN hand (UI filter + apply-side gate).",
