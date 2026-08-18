@@ -267,6 +267,12 @@
       repaired:   sum(r => r.item.repaired   ?? 0),
       unequipped: sum(r => r.item.unequipped ?? 0),
       fxKept:     sum(r => r.effect.keptUnique ?? 0),
+      // Renames observed, and equip slots actually re-pointed at them. Without
+      // the second number the test bridge cannot assert the slot fixup RAN --
+      // it existed only in a console line.
+      renamed:        sum(r => r.item.renamed?.length ?? 0),
+      slotsRepointed: sum(r => r.slotsRepointed ?? 0),
+      nestedFx:       sum(r => (r.item.nested?.update ?? 0) + (r.item.nested?.create ?? 0) + (r.item.nested?.delete ?? 0)),
     };
     SS._lastLoadReport = { slotId, label, totalMs, actors: report, totals };
 

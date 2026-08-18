@@ -181,7 +181,9 @@
   //   • A create (item in the save, absent live) still restores the SAVED copy,
   //     definition included, because there is genuinely nothing live to prefer.
   //     After name re-pairing (below) that is 28 documents on slot 1 and 13 on
-  //     slot 2, of which 14 and 10 differ from their master — mostly Hako's gear,
+  //     slot 2. Of slot 1's 28: 10 still match a master, 14 diverge from one and
+  //     4 have none — so 18 are not restorable from one. Slot 2's 13 split
+  //     3 / 10 / 0. The diverging ones are mostly Hako's gear,
   //     where the difference is per-instance refinement rather than staleness.
   //     Sourcing these from the master instead would restore a current
   //     definition but drop that refinement, so neither side is plainly right;
@@ -191,9 +193,9 @@
   // slot 1's items and every one is a refinement prefix the live world earned
   // after the save — "Full Plate" against a live "+4 Full Plate". Restoring the
   // saved name would quietly strip the +4; applyActorEmbeds re-points the equip
-  // SLOTS at the live name instead. (`refine_count` / `refine_level` differ on 22
-  // of slot 1's items and in every case the prop is present LIVE and absent from
-  // the save, so adding them here would be a no-op under the hasOwnProperty gate
+  // SLOTS at the live name instead. (`refine_count` / `refine_level` differ on 11
+  // of slot 1's items — 22 prop-instances, two per item — and in every case the
+  // prop is present LIVE and absent from the save, so adding them here would be a no-op under the hasOwnProperty gate
   // below. Refinement itself lives in the name and the stat props.)
   const ITEM_STATE_PROPS = ["isEquipped", "item_quantity"];
 
@@ -303,7 +305,8 @@
 
   // CSB stamps `system.uniqueId` with the originating world Item's id (verified:
   // it equals `_stats.compendiumSource` where both are present, and resolves for
-  // 263 of 275 party items). `compendiumSource` is the fallback.
+  // 263 of 275 party items by id alone — 245 once the name must match too).
+  // `compendiumSource` is the fallback.
   function masterFor(obj) {
     const uid = String(obj?.system?.uniqueId ?? "").trim();
     const src = String(obj?._stats?.compendiumSource ?? "").replace(/^Item\./, "").trim();
@@ -355,11 +358,12 @@
     const m = masterFor(obj);
     if (!m) return false;
     // `uniqueId` is stamped on create and INHERITED by a duplicate, so it is not
-    // per-instance: 12 world items share Amber Pendant's, and 384 embedded items
+    // per-instance: 13 world items share Amber Pendant's, and 384 embedded items
     // resolve to a master carrying a different NAME. None of those currently
     // also matches by signature, so the id alone has been giving the right
     // answer — by luck, not by construction. Requiring the name too closes it
-    // at zero cost (the world-wide restorable count is 333 either way).
+    // at zero cost — the world-wide restorable count was 333 either way when this
+    // was added (332 today; the one flip comes from the flag signature).
     if (m.name !== obj?.name) return false;
     return masterSignature(m.toObject()) === masterSignature(obj);
   }
@@ -370,9 +374,13 @@
   //
   // IMPORTANT (verified live): updateEmbeddedDocuments on an Item MERGES its
   // embedded `effects` (updates by _id, inserts new) but does NOT delete effects
-  // absent from the array. So an updated Item's effects are reconciled RECURSIVELY
-  // here — not left to the parent update — and `effects` is stripped from the Item
-  // body update to keep ownership of them in one place.
+  // absent from the array. An updated Item's effects were therefore reconciled
+  // RECURSIVELY here rather than left to the parent update, and `effects` is
+  // stripped from the Item body update to keep ownership in one place.
+  //
+  // ⚠ That recursion is now DEAD CODE: `guarded` is exactly `type === "Item"`, so
+  // an Item always takes the equip-sync path above it. It is kept as the shape to
+  // restore if the guard ever becomes conditional again.
   async function applyEmbedsDiff(owner, type, savedArr = []) {
     const collection = owner.getEmbeddedCollection(type);
     const liveById   = new Map([...collection.values()].map(d => [d.id, d]));
@@ -679,7 +687,8 @@
     const item   = await applyEmbedsDiff(actor, "Item", items);
     const effect = await applyEmbedsDiff(actor, "ActiveEffect", effects);
     const ms = Math.round(performance.now() - t0);
-    (SS._diffReport ??= []).push({ actor: actor.name, ms, item, effect });
+    const record = { actor: actor.name, ms, item, effect, slotsRepointed: 0 };
+    (SS._diffReport ??= []).push(record);
     if (item.keptUnique) {
       console.log(`${TAG} ${actor.name}: kept ${item.keptUnique} unique document(s) the save predates` +
         ` (no world master, or diverged from it): ` +
@@ -723,6 +732,7 @@
       }
       if (Object.keys(fix).length) {
         await actor.update(fix);
+        record.slotsRepointed = Object.keys(fix).length;
         console.log(`${TAG} ${actor.name}: re-pointed ${Object.keys(fix).length} equip slot(s) at renamed items — ` +
           Object.entries(fix).map(([k, v]) => `${k.split(".").pop()} = "${v}"`).join(", "));
       }
