@@ -362,7 +362,14 @@
       for (const [id, live] of liveById) {
         if (savedById.has(id)) continue;
         const unit = [...unitOf(id)];
-        const removable = unit.every(u => restorableFromMaster(objs.get(u)));
+        // A unit can span the two sides — a live-only shell holding a child the
+        // save keeps. Deleting the shell cascades onto that child, and the
+        // update pass would then write to a document that no longer exists,
+        // taking the whole load down with it. Neither slot hits this today (0 of
+        // 61 and 0 of 14 deletes), but the cost of being wrong is the entire
+        // load, so the unit is kept whenever the save wants any member.
+        const removable = !unit.some(u => savedById.has(u)) &&
+          unit.every(u => restorableFromMaster(objs.get(u)));
         if (removable) toDelete.push(id);
         else keptUnique.push(live.name ?? id);
       }
