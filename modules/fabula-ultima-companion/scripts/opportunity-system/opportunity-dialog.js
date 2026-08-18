@@ -674,6 +674,14 @@
   /** Abort the live picker on this client (GM take-control). True if one was open. */
   function abortPicker() { return _picker?.abort() ?? false; }
 
+  /** Re-arm (or re-label) the mirror's Take Control button after a failed request. */
+  function setSpectatorTakeControl({ enabled = true, label = "⚙ Take Control" } = {}) {
+    const btn = _spectator?.backdrop?.querySelector(".oni-opp-btn-takeover");
+    if (!btn) return;
+    btn.disabled    = !enabled;
+    btn.textContent = label;
+  }
+
   const isPickerOpen = () => !!_picker;
   const isSpectating = () => !!_spectator;
 
@@ -682,6 +690,7 @@
     showSpectator,
     applySpectatorSelection,
     dismissSpectator,
+    setSpectatorTakeControl,
     abortPicker,
     isPickerOpen,
     isSpectating,

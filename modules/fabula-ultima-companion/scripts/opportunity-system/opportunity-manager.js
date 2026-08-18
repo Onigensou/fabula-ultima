@@ -37,6 +37,10 @@
   const MSG_SPEC_OPEN  = "OPP_SPEC_OPEN";
   const MSG_SPEC_SEL   = "OPP_SPEC_SEL";
   const MSG_SPEC_CLOSE = "OPP_SPEC_CLOSE";
+  // GM take-control hand-over (request / ack / final result)
+  const MSG_TAKEOVER     = "OPP_TAKEOVER";
+  const MSG_TAKEOVER_ACK = "OPP_TAKEOVER_ACK";
+  const MSG_RESOLVED     = "OPP_RESOLVED";
 
   const DRAMATIC_DURATION = 2800; // ms — must match the CSS animation duration
 
@@ -73,8 +77,13 @@
   // ── In-flight offer tracking ────────────────────────────────────────────────
   const _pending = new Map(); // offerKey → { resolve, actorUuid }
 
+  // A monotonic suffix keeps chained offers distinct even inside one millisecond
+  // (A Million Possibility fires three pickers off the same action card). The key
+  // is now an identity the mirror, the hand-over and the resolution guard all
+  // key off — collisions there would cross-wire two separate opportunities.
+  let _offerSeq = 0;
   function makeOfferKey(actorUuid, actionCardId) {
-    return `${actionCardId ?? actorUuid}-${Date.now()}`;
+    return `${actionCardId ?? actorUuid}-${Date.now()}-${++_offerSeq}`;
   }
 
   // ── Spectator mirror ────────────────────────────────────────────────────────
@@ -97,6 +106,94 @@
     color:       o.color,
     hasPrePhase: !!o.hasPrePhase,
   }));
+
+  // ── GM take-control hand-over ───────────────────────────────────────────────
+  // When the owner can't operate their own menu, a GM claims the wheel. Exactly
+  // one client drives at any moment, enforced by an explicit request → ack
+  // handshake rather than by letting both wheels run and racing the confirm:
+  //
+  //   GM  OPP_TAKEOVER ──▶ picker client aborts its wheel
+  //   GM ◀── OPP_TAKEOVER_ACK  granted + the offer's context
+  //   GM  opens its own wheel under the SAME offerKey (everyone re-mirrors)
+  //   GM  OPP_RESOLVED ──▶ releases whoever was awaiting the offer
+  //
+  // A granted ack is the ONLY thing that lets the GM open a wheel, so an owner
+  // who confirms first simply answers granted:false and keeps their pick.
+  const TAKEOVER_ACK_MS  = 4_000;    // how long the GM waits for the owner's ack
+  const TAKEOVER_WAIT_MS = 180_000;  // how long a handed-over caller awaits the result
+
+  let _liveOffer   = null;  // this client's own in-flight prompt phase
+  let _takeoverReq = null;  // { offerKey, timer } — this GM's outstanding request
+
+  const _awaitingTakeover = new Map(); // offerKey → { resolve, timer }
+
+  // One resolution per offer, ever. The hand-over path can in principle reach
+  // applyAndAnnounce from two directions (the GM that claimed the wheel, and an
+  // owner whose confirm landed in the same tick as the abort).
+  const _resolvedKeys = new Set();
+  function claimResolution(offerKey) {
+    if (!offerKey) return true;                    // keyless local calls (test helpers)
+    if (_resolvedKeys.has(offerKey)) return false;
+    _resolvedKeys.add(offerKey);
+    if (_resolvedKeys.size > 200) {                // bounded — one key per crit
+      const it = _resolvedKeys.values();
+      for (let i = 0; i < 50; i++) _resolvedKeys.delete(it.next().value);
+    }
+    return true;
+  }
+
+  // Keep a handed-over caller's await alive until the GM reports back, so the
+  // pipeline that asked for this opportunity still sees the real result.
+  function waitForTakeover(offerKey) {
+    return new Promise(resolve => {
+      const timer = setTimeout(() => {
+        _awaitingTakeover.delete(offerKey);
+        console.warn(TAG, `take-over never reported back for key=${offerKey}`);
+        resolve({ cancelled: true });
+      }, TAKEOVER_WAIT_MS);
+      _awaitingTakeover.set(offerKey, { resolve, timer });
+    });
+  }
+
+  function requestTakeover(offerKey) {
+    if (!offerKey || !game.user?.isGM || _takeoverReq) return;
+    const timer = setTimeout(() => {
+      _takeoverReq = null;
+      ui.notifications?.warn("[Opportunity] No answer from the picker's client — take-control cancelled.");
+      getDialog()?.setSpectatorTakeControl?.({ enabled: true });
+    }, TAKEOVER_ACK_MS);
+    _takeoverReq = { offerKey, timer };
+    game.socket.emit(SOCKET_CH, {
+      type:    MSG_TAKEOVER,
+      payload: { offerKey, gmUserId: game.user.id, gmName: game.user.name },
+    });
+  }
+
+  // Release every promise waiting on this offer — the local one (if this GM
+  // routed it) and any remote one (the ex-owner, or the other GM).
+  function announceResolved({ offerKey, optionId = null, cancelled = false }) {
+    const result  = cancelled ? { cancelled: true } : { optionId };
+    const pending = _pending.get(offerKey);
+    if (pending) { _pending.delete(offerKey); pending.resolve(result); }
+    game.socket.emit(SOCKET_CH, { type: MSG_RESOLVED, payload: { offerKey, optionId, cancelled } });
+  }
+
+  // Runs on the GM once the owner has granted the wheel.
+  async function runTakeover({ offerKey, actorUuid, actorName, context = {}, excludeIds = [], title = null }) {
+    const picked = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title, offerKey })
+      .catch(e => { console.error(TAG, "Take-over prompt phase error:", e); return { cancelled: true }; });
+
+    if (picked.takenOver) return;   // the other GM took it off us — it's theirs now
+
+    if (picked.cancelled) {
+      announceResolved({ offerKey, cancelled: true });
+      return;
+    }
+
+    await applyAndAnnounce({ actorUuid, actorName, optionId: picked.optionId, context, preResult: picked.preResult, offerKey })
+      .catch(e => console.error(TAG, "applyAndAnnounce error (take-over):", e));
+    announceResolved({ offerKey, optionId: picked.optionId });
+  }
 
   // Live-selection echo. Leading edge fires immediately so the mirrored cursor
   // feels attached to the owner's input; further moves inside the window
@@ -417,14 +514,16 @@
       onSelectionChange: makeSelectionEmitter(offerKey),
     });
 
-    // Tear the mirror down the instant our own wheel closes. A take-over abort
-    // closes it silently — the GM re-opens a fresh one under the same offerKey.
-    if (offerKey) {
+    // Tear the mirror down the instant our own wheel closes.
+    //
+    // A hand-over is the one case that must NOT broadcast a close: the GM
+    // re-opens under the SAME offerKey, and a close arriving after that open
+    // would kill the GM's fresh mirror. Superseding does the teardown instead —
+    // buildWheel() clears any live mirror before spawning the new wheel.
+    if (offerKey && !result?.takenOver) {
       game.socket.emit(SOCKET_CH, {
         type:    MSG_SPEC_CLOSE,
-        payload: result?.takenOver
-          ? { offerKey, silent: true }
-          : { offerKey, optionId: result?.optionId ?? null, cancelled: !!result?.cancelled },
+        payload: { offerKey, optionId: result?.optionId ?? null, cancelled: !!result?.cancelled },
       });
     }
 
@@ -437,32 +536,48 @@
   // { cancelled: true } if the player declined or the pre handler cancelled.
   // Shared between the local owner path and the socket OPP_OFFER handler.
   async function runPromptPhase({ actorName, actorUuid, context = {}, excludeIds = [], title = null, offerKey = null }) {
-    const result = await showDialogLocally({ actorName, actorUuid, excludeIds, title, offerKey });
-    // A GM took the wheel off us — the pick (and its resolution) is theirs now.
-    if (result?.takenOver) return { takenOver: true };
-    if (result?.cancelled || !result?.optionId) return { cancelled: true };
+    // Published so a GM's OPP_TAKEOVER can find (and abort) this wheel, and so
+    // the ack can hand the GM the context it needs to finish the job. Cleared in
+    // `finally` — while it points at a prompt phase whose wheel has already
+    // closed (the pre phase), abortPicker() fails and the hand-over is refused.
+    _liveOffer = offerKey ? { offerKey, actorUuid, actorName, context, excludeIds, title } : null;
+    try {
+      const result = await showDialogLocally({ actorName, actorUuid, excludeIds, title, offerKey });
+      // A GM took the wheel off us — the pick, and its resolution, are theirs.
+      if (result?.takenOver) return { takenOver: true };
+      if (result?.cancelled || !result?.optionId) return { cancelled: true };
 
-    const handler = getEffects()?.[result.optionId];
-    if (handler?.pre) {
-      const option    = getConfig()?.OPTIONS?.find(o => o.id === result.optionId);
-      const preResult = await handler.pre({ actorUuid, actorName, optionId: result.optionId, option, context })
-        .catch(e => { console.error(TAG, "Pre phase error:", e); return null; });
-      if (preResult === null) return { cancelled: true };
+      const handler = getEffects()?.[result.optionId];
+      if (handler?.pre) {
+        const option    = getConfig()?.OPTIONS?.find(o => o.id === result.optionId);
+        const preResult = await handler.pre({ actorUuid, actorName, optionId: result.optionId, option, context })
+          .catch(e => { console.error(TAG, "Pre phase error:", e); return null; });
+        if (preResult === null) return { cancelled: true };
+        playSound(SFX_CONFIRM, 0.8);
+        return { optionId: result.optionId, preResult };
+      }
+
       playSound(SFX_CONFIRM, 0.8);
-      return { optionId: result.optionId, preResult };
+      return { optionId: result.optionId, preResult: undefined };
+    } finally {
+      if (_liveOffer?.offerKey === offerKey) _liveOffer = null;
     }
-
-    playSound(SFX_CONFIRM, 0.8);
-    return { optionId: result.optionId, preResult: undefined };
   }
 
   // ── Resolution phase: banner + post handler + chat card ────────────────────
   // No user interaction — purely resolves the result of the prompt phase.
   // preResult: undefined if no pre handler; serialized object if pre ran.
-  async function applyAndAnnounce({ actorUuid, actorName, optionId, context, preResult }) {
+  async function applyAndAnnounce({ actorUuid, actorName, optionId, context, preResult, offerKey = null }) {
     const cfg      = getConfig();
     const effects  = getEffects();
     const chatCard = getChatCard();
+
+    // Real mutations live below (AEs, clocks, chat cards) — never twice for one
+    // offer, whichever client ends up driving it.
+    if (!claimResolution(offerKey)) {
+      console.debug(TAG, `applyAndAnnounce skipped — already resolved (key=${offerKey})`);
+      return;
+    }
 
     const option = cfg?.OPTIONS?.find(o => o.id === optionId);
     if (!option) { console.warn(TAG, `Unknown option id: ${optionId}`); return; }
@@ -538,6 +653,11 @@
       const offerKey = makeOfferKey(actorUuid, actionCardId);
       const picked   = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title, offerKey });
 
+      // A GM claimed the wheel mid-decision. They resolve the offer; we keep our
+      // caller's await alive until their OPP_RESOLVED lands, so a pipeline that
+      // asked for this opportunity still gets the real answer.
+      if (picked.takenOver) return await waitForTakeover(offerKey);
+
       if (picked.cancelled) {
         if (!amGM) game.socket.emit(SOCKET_CH, { type: MSG_CANCELLED, payload: { offerKey, actorUuid } });
         return { cancelled: true };
@@ -545,7 +665,7 @@
 
       // Step 4 — resolution phase (GM runs directly; player sends to GM via socket)
       if (amGM) {
-        await applyAndAnnounce({ actorUuid, actorName, optionId: picked.optionId, context, preResult: picked.preResult });
+        await applyAndAnnounce({ actorUuid, actorName, optionId: picked.optionId, context, preResult: picked.preResult, offerKey });
       } else {
         game.socket.emit(SOCKET_CH, {
           type:    MSG_PICKED,
@@ -629,6 +749,10 @@
         const picked = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title, offerKey })
           .catch(e => { console.error(TAG, "Socket prompt phase error:", e); return { cancelled: true }; });
 
+        // A GM claimed the wheel — they own the resolution and the GM that
+        // routed this offer still holds its _pending entry, so say nothing.
+        if (picked.takenOver) return;
+
         if (picked.cancelled) {
           game.socket.emit(SOCKET_CH, { type: MSG_CANCELLED, payload: { offerKey, actorUuid } });
           return;
@@ -660,7 +784,7 @@
         const pending = _pending.get(offerKey);
         if (gmInitiated ? !pending : !isPrimaryGM()) return;
 
-        await applyAndAnnounce({ actorUuid, actorName, optionId, context, preResult })
+        await applyAndAnnounce({ actorUuid, actorName, optionId, context, preResult, offerKey })
           .catch(e => console.error(TAG, "applyAndAnnounce error:", e));
 
         if (pending) { _pending.delete(offerKey); pending.resolve({ optionId }); }
@@ -701,6 +825,9 @@
           options:       p.options,
           title:         p.title ?? null,
           sel:           p.sel ?? 0,
+          // The one deliberate control on this panel, GM only: claim the wheel
+          // when the owner can't work their own menu.
+          onTakeControl: (game.user?.isGM && p.offerKey) ? () => requestTakeover(p.offerKey) : null,
         });
         // showSpectator returns null when this client is itself running a
         // picker (stray broadcast) — don't claim a key we didn't render.
@@ -726,6 +853,75 @@
           cancelled: !!p.cancelled,
           silent:    !!p.silent,
         });
+        return;
+      }
+
+      // ── GM take-control hand-over ───────────────────────────────────────
+
+      // OPP_TAKEOVER — a GM wants our wheel. Only the client actually running
+      // that offer's prompt phase answers.
+      if (msg.type === MSG_TAKEOVER) {
+        const p = msg.payload ?? {};
+        if (!_liveOffer || _liveOffer.offerKey !== p.offerKey) return;
+
+        // Refused once the wheel is gone (we're mid pre-phase or already
+        // committed) — the choice is made and it stays ours.
+        if (!(getDialog()?.abortPicker?.() ?? false)) {
+          game.socket.emit(SOCKET_CH, {
+            type:    MSG_TAKEOVER_ACK,
+            payload: { offerKey: p.offerKey, gmUserId: p.gmUserId, granted: false },
+          });
+          return;
+        }
+
+        ui.notifications?.info(`[Opportunity] ${p.gmName ?? "The GM"} is taking over this Opportunity.`);
+        game.socket.emit(SOCKET_CH, {
+          type:    MSG_TAKEOVER_ACK,
+          payload: {
+            offerKey:   p.offerKey,
+            gmUserId:   p.gmUserId,
+            granted:    true,
+            actorUuid:  _liveOffer.actorUuid,
+            actorName:  _liveOffer.actorName,
+            context:    _liveOffer.context,
+            excludeIds: _liveOffer.excludeIds,
+            title:      _liveOffer.title,
+          },
+        });
+        return;
+      }
+
+      // OPP_TAKEOVER_ACK — only the requesting GM acts on it. A granted ack is
+      // the sole authority to open a replacement wheel, so two GMs asking at
+      // once can't both end up driving: the second gets granted:false.
+      if (msg.type === MSG_TAKEOVER_ACK) {
+        const p = msg.payload ?? {};
+        if (p.gmUserId !== game.user?.id) return;
+        const req = _takeoverReq;
+        if (!req || req.offerKey !== p.offerKey) return;
+        clearTimeout(req.timer);
+        _takeoverReq = null;
+
+        if (!p.granted) {
+          ui.notifications?.warn("[Opportunity] Too late — that choice has already been made.");
+          getDialog()?.setSpectatorTakeControl?.({ enabled: true });
+          return;
+        }
+        runTakeover(p).catch(e => console.error(TAG, "runTakeover error:", e));
+        return;
+      }
+
+      // OPP_RESOLVED — a handed-over offer finished; release anyone still
+      // awaiting it (the ex-owner's caller, or the GM that routed the offer).
+      if (msg.type === MSG_RESOLVED) {
+        const { offerKey, optionId = null, cancelled = false } = msg.payload ?? {};
+        const result  = cancelled ? { cancelled: true } : { optionId };
+
+        const waiting = _awaitingTakeover.get(offerKey);
+        if (waiting) { _awaitingTakeover.delete(offerKey); clearTimeout(waiting.timer); waiting.resolve(result); }
+
+        const pending = _pending.get(offerKey);
+        if (pending) { _pending.delete(offerKey); pending.resolve(result); }
         return;
       }
     });
