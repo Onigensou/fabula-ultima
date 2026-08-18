@@ -185,6 +185,11 @@
   //     Sourcing these from the master instead would restore a current
   //     definition but drop that refinement, so neither side is plainly right;
   //     the saved copy is kept because it destroys nothing that exists.
+  // Deliberately NOT state, though it looks like it: `name`. It differs on 9 of
+  // slot 1's items and every one is a refinement prefix the live world earned
+  // after the save — "Full Plate" against a live "+4 Full Plate". Restoring the
+  // saved name would quietly strip the +4. (`refine*` props differ nowhere on
+  // either slot, so refinement lives in the name and the stat props.)
   const ITEM_STATE_PROPS = ["isEquipped", "item_quantity"];
 
   // "Is this copy still the master's content?" — compared by DENYLIST, never by a
@@ -374,9 +379,13 @@
       // each would resolve to a no-op write plus a CSB re-render (~360ms/doc).
       if (guarded) {
         const lp = live.system?.props ?? {}, sp = saved.system?.props ?? {};
+        // CSB writes item_quantity as a number down some paths and a string down
+        // others, so a raw compare queues an update that changes nothing — 3 of
+        // them on slot 1, each costing a document write plus a CSB re-render
+        // (~360 ms of synchronous block). Compare coerced.
+        const sameState = (a, b) => String(a ?? "") === String(b ?? "");
         const stateDiffers = ITEM_STATE_PROPS.some(k =>
-          Object.prototype.hasOwnProperty.call(sp, k) &&
-          JSON.stringify(lp[k]) !== JSON.stringify(sp[k]));
+          Object.prototype.hasOwnProperty.call(sp, k) && !sameState(lp[k], sp[k]));
         // An equip flag present in the snapshot still needs the AE sync pass even
         // when the flag itself matches, so route those through toUpdate too.
         const needsEquipSync = Object.prototype.hasOwnProperty.call(sp, "isEquipped") &&
