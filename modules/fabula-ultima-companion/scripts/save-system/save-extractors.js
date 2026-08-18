@@ -283,7 +283,7 @@
   // absent from the array. So an updated Item's effects are reconciled RECURSIVELY
   // here — not left to the parent update — and `effects` is stripped from the Item
   // body update to keep ownership of them in one place.
-  async function applyEmbedsDiff(owner, type, savedArr = [], { exactRestore = false } = {}) {
+  async function applyEmbedsDiff(owner, type, savedArr = []) {
     const collection = owner.getEmbeddedCollection(type);
     const liveById   = new Map([...collection.values()].map(d => [d.id, d]));
     const savedById  = new Map((savedArr ?? []).map(d => [d._id, d]));
@@ -293,8 +293,7 @@
     const nested = { update: 0, create: 0, delete: 0 }; // effect ops on updated items
     const keptUnique = [];
 
-    // `exactRestore` opts a caller out of the guard entirely (shops — see below).
-    const guarded = type === "Item" && !exactRestore;
+    const guarded = type === "Item";
 
     // A document deleted and re-created since the save carries a NEW _id, so an
     // id-only diff sees ONE document as a delete plus a create — and the create
@@ -474,12 +473,25 @@
     };
   }
 
-  // `exactRestore` opts a caller out of the guard entirely. SHOPS use it: a
-  // shop's catalogue is campaign state a GM rewrites as a story beat, and the
-  // shop extractor's contract is an exact restore of the snapshot's stock.
-  async function applyActorEmbeds(actor, { items = [], effects = [] }, { exactRestore = false } = {}) {
+  // The guard applies to EVERY actor, shops included. Shops briefly had an
+  // "exact restore" opt-out, on the reasoning that a shop's catalogue is
+  // campaign state and its extractor promises the snapshot's exact stock. But
+  // `isShop` means "sells things", not "holds no authored content": eleven
+  // actors carry it and several are characters with real kits. Measured on the
+  // real slots, the opt-out deleted 28 (slot 1) and 33 (slot 2) live-only
+  // documents unconditionally — including 12 and 7 `_skill` children whose
+  // container shell SURVIVED, leaving orphaned gear, and Willy's authored
+  // "Lens of Insight (Passive)".
+  //
+  // Under the guard those shops instead keep 24 and 21 documents that diverge
+  // from their master, so a load can leave a shop holding stock the snapshot
+  // did not have. That is the accepted cost: leftover stock is visible and a GM
+  // can remove it, whereas a deleted gear-skill is silent and unrecoverable.
+  // Stock spawned straight from a master is still identical to it and is still
+  // cleared, which is what the reset use case actually needs.
+  async function applyActorEmbeds(actor, { items = [], effects = [] }) {
     const t0 = performance.now();
-    const item   = await applyEmbedsDiff(actor, "Item", items, { exactRestore });
+    const item   = await applyEmbedsDiff(actor, "Item", items);
     const effect = await applyEmbedsDiff(actor, "ActiveEffect", effects);
     const ms = Math.round(performance.now() - t0);
     (SS._diffReport ??= []).push({ actor: actor.name, ms, item, effect });
@@ -626,7 +638,7 @@
         // shop actors are linked NPC-template actors, which shopInventoryData
         // explicitly skips ("npcData already covers linked NPC template actors").
         // Opting out only there would reach 3 shops holding 24% of the stock.
-        await applyActorEmbeds(actor, actorData, { exactRestore: actor.system?.props?.isShop === true });
+        await applyActorEmbeds(actor, actorData);
       }
     },
   });
@@ -1029,8 +1041,10 @@
   // ── 15. Shop NPC Inventory ────────────────────────────────────────────────
   // Captures the full item list (stock quantities + all props) for every world
   // actor flagged as a shop NPC via system.props.isShop === true.
-  // On load: each shop's items are deleted and recreated from the saved snapshot
-  // so quantities reflect the exact state at save time.
+  // On load: stock quantities are restored from the snapshot, and stock the save
+  // does not have is cleared where a world master can put it back. Stock that
+  // has diverged from its master is KEPT — see applyActorEmbeds for why several
+  // of these eleven shop actors are also characters with authored kits.
   SS.registerExtractor({
     key:   "shopInventoryData",
     label: "Shop NPC Inventory",
@@ -1060,7 +1074,7 @@
         if (!actor) { console.warn(TAG, "shopInventoryData apply: not found", uuid); continue; }
         await wipeStaleCsbListEntries(actor, actorData.system?.props);
         await actor.update({ system: actorData.system, flags: actorData.flags });
-        await applyActorEmbeds(actor, actorData, { exactRestore: true });
+        await applyActorEmbeds(actor, actorData);
       }
     },
   });
