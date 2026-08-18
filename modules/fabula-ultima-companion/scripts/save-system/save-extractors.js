@@ -300,33 +300,32 @@
       String(i.system?.uniqueId ?? "").trim() === uid && i.name === obj?.name) ?? null;
   }
 
-  // Use the engine's own equip/AE primitive instead of a local copy. It resolves
-  // an item's effect docs the way the rest of the system does — configured
-  // `item_activeEffect` refs when present, otherwise ALL owned effects — whereas
-  // this file used to flip only `transfer:true` ones. Measured: no world item
-  // carries those refs, so the engine always takes the all-effects path, and 334
-  // of 571 item AEs are not transfer:true. The local version was a strict subset,
-  // so armor-equip-gate's ready sweep would flip the remainder on the next
-  // reload and the two passes would disagree about the same state.
+  // Flip an item's EQUIP-BONUS effects to match its own `isEquipped`. Scoped to
+  // `transfer === true` deliberately, and this scope is the whole correctness
+  // argument — do not widen it.
   //
-  // It reads the item's OWN `isEquipped`, so it must be called AFTER that prop is
-  // written. This file is a classic script, hence the dynamic import; the
-  // fallback keeps a load working if the module ever moves.
-  let _syncEquipFx = null;
+  // A previous version called the engine's syncItemEffectsToEquip, on the
+  // reasoning that a local copy of a primitive is a smell. That helper resolves
+  // ALL owned effects when an item declares no `item_activeEffect` refs (no world
+  // item does), and an item's non-transfer AEs are not equip bonuses at all —
+  // they are TEMPLATES that `apply_ae` clones. `resolveAeTemplate` returns such a
+  // template regardless of `disabled`, and the clone path deletes `_id` without
+  // resetting `disabled`, so disabling one poisons every future grant.
+  //
+  // Measured on slot 1: it disabled "Adrenaline Potion"'s own `Adrenaline` AE
+  // (transfer:false, carrying the adr_soak reactionConfig that subtracts 15 from
+  // incoming damage) and "Invisibility Cloak"'s `Hidden`. A consumable's
+  // isEquipped is never true, so nothing ever flips it back — every future
+  // potion would grant an inert effect, permanently.
+  //
+  // The "two passes would disagree" justification for widening was also wrong:
+  // armor-equip-gate's ready sweep runs `if (isArmor(item))` only, so it never
+  // touches the weapons, shields, accessories and consumables where all the
+  // newly-flipped effects live.
   async function syncItemEquipEffects(item) {
-    if (_syncEquipFx === null) {
-      try {
-        ({ syncItemEffectsToEquip: _syncEquipFx } =
-          await import("/modules/fabula-ultima-companion/scripts/battle-director/equipment-swap.js"));
-      } catch (e) {
-        console.warn(TAG, "equipment-swap import failed; using a local AE flip", e);
-        _syncEquipFx = false;
-      }
-    }
-    if (_syncEquipFx) return await _syncEquipFx(item);
     const equipped = item.system?.props?.isEquipped === true;
     const fx = [...item.getEmbeddedCollection("ActiveEffect").values()]
-      .filter(e => !!e.disabled === equipped)
+      .filter(e => e.transfer === true && !!e.disabled === equipped)
       .map(e => ({ _id: e.id, disabled: !equipped }));
     if (fx.length) await item.updateEmbeddedDocuments("ActiveEffect", fx);
     return fx.length;
@@ -516,12 +515,12 @@
           Object.prototype.hasOwnProperty.call(sp, k) && !sameState(lp[k], sp[k]));
         // An equip flag present in the snapshot still needs the AE sync pass even
         // when the flag itself matches, so route those through toUpdate too.
-        // Wrong-way test matches syncItemEffectsToEquip's, over ALL owned
-        // effects — not just transfer:true ones, which is the subset that let
-        // the two passes disagree.
+        // Wrong-way test, scoped to the same transfer:true effects the sync
+        // touches — widening it is what pulled consumables onto the update path
+        // and let their template AEs be disabled.
         const needsEquipSync = Object.prototype.hasOwnProperty.call(sp, "isEquipped") &&
           [...live.getEmbeddedCollection("ActiveEffect").values()]
-            .some(e => !!e.disabled === (sp.isEquipped === true));
+            .some(e => e.transfer === true && !!e.disabled === (sp.isEquipped === true));
         if (stateDiffers || needsEquipSync) toUpdate.push(saved); else skip++;
         continue;
       }
