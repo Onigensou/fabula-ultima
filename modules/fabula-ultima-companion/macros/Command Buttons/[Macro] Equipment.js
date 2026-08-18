@@ -176,6 +176,19 @@
     return null;
   };
 
+  // Mirror of isEquipLinkedEffect in scripts/battle-director/equipment-swap.js —
+  // keep the two in step. Only equip-LINKED effects track equip state: a
+  // transfer:true bonus, or a `deriveStatus` rule (whose reactor gates on both
+  // `disabled` and the carrier's isEquipped, opt-out). An item's other AEs are
+  // TEMPLATES that `apply_ae` clones, and that path never resets `disabled`, so
+  // disabling one makes every future grant inert.
+  const isEquipLinkedEffect = (e) => {
+    if (e?.transfer === true) return true;
+    const spec = e?.flags?.["fabula-ultima-companion"]?.deriveStatus;
+    if (!spec) return false;
+    return (Array.isArray(spec) ? spec : [spec]).some((r) => r?.requireEquipped !== false);
+  };
+
   const resolveEquipmentEffectDocs = (item) => {
     const ownedEffects = item?.effects?.contents ?? [];
     if (!ownedEffects.length) return [];
@@ -183,7 +196,7 @@
     // Prefer the configured item_activeEffect list if it exists.
     const configuredRefs = getConfiguredItemEffectRefs(item);
     if (!configuredRefs.length) {
-      return ownedEffects;
+      return ownedEffects.filter(isEquipLinkedEffect);
     }
 
     const out = new Map();
@@ -192,8 +205,9 @@
       if (live) out.set(live.id, live);
     }
 
-    // Fallback: if configured refs did not resolve cleanly, just use all owned item effects.
-    return out.size ? [...out.values()] : ownedEffects;
+    // Fallback: if configured refs did not resolve cleanly, use the owned
+    // equip-linked effects — NOT every owned effect.
+    return out.size ? [...out.values()] : ownedEffects.filter(isEquipLinkedEffect);
   };
 
   const activeEffectUpdateMap = new Map(); // itemId -> Map(effectId -> update)

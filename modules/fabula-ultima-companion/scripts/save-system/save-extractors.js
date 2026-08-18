@@ -351,8 +351,13 @@
   // armor-equip-gate's ready sweep runs `if (isArmor(item))` only, so it never
   // touches the weapons, shields, accessories and consumables where all the
   // newly-flipped effects live.
-  // Positive list of EQUIP-LINKED roles, because neither blanket answer works and
-  // no single field proxies for it. Invisibility Cloak and Jetpack are both
+  // Positive list of EQUIP-LINKED roles. Mirror of `isEquipLinkedEffect` in
+  // scripts/battle-director/equipment-swap.js (which now applies the same rule
+  // inside resolveItemEffectDocs, so the engine's equip paths and this one agree)
+  // — keep the two in step. Copied rather than imported because this file is a
+  // classic script and a load must not depend on a dynamic import resolving.
+  //
+  // Neither blanket answer works and no single field proxies for it. Invisibility Cloak and Jetpack are both
   // accessories: the Cloak's `Hidden` is a template that must NOT be flipped, the
   // Jetpack's `Aerial Swiftness` is a carrier that MUST be. So ask what the
   // effect is for:

@@ -600,17 +600,43 @@ function findOwnedEffectMatch(item, ref) {
   return null;
 }
 
+// An item's own AEs serve two unrelated purposes, and only one of them tracks
+// equip state:
+//
+//   • EQUIP-LINKED — a `transfer:true` bonus, or a `deriveStatus` rule (the
+//     reactor gates on BOTH `disabled` and the carrier's isEquipped, and its
+//     equip gate is opt-out, so read the spec rather than testing for it).
+//     These must be enabled iff the item is worn.
+//   • TEMPLATES — the AE an `apply_ae` row clones onto a target. That path copies
+//     the template verbatim and never resets `disabled` (skill-effects.js:6062),
+//     so disabling one silently makes every FUTURE grant inert.
+//
+// Flipping the second kind is a real defect with real damage: Blacksmith Shade's
+// "Muscly Arm" was found in live world data with its "Frightened" and "Stagger"
+// templates disabled against a master that has both enabled. 544 of 1136 item
+// AEs are transfer:false and all but one are templates or status containers, so
+// the untargeted fallback below was flipping ~48% of the corpus for no reason.
+export function isEquipLinkedEffect(e) {
+  if (e?.transfer === true) return true;
+  const spec = e?.flags?.[FLAG_NS]?.deriveStatus;
+  if (!spec) return false;
+  return (Array.isArray(spec) ? spec : [spec]).some((r) => r?.requireEquipped !== false);
+}
+
 function resolveItemEffectDocs(item) {
   const owned = item?.effects?.contents ?? [];
   if (!owned.length) return [];
   const refs = getConfiguredItemEffectRefs(item);
-  if (!refs.length) return owned;
+  // Explicit `item_activeEffect` refs are author intent and are honoured as
+  // given. The FALLBACK is what needed narrowing — "every owned effect" swept up
+  // templates alongside bonuses.
+  if (!refs.length) return owned.filter(isEquipLinkedEffect);
   const out = new Map();
   for (const ref of refs) {
     const live = findOwnedEffectMatch(item, ref);
     if (live) out.set(live.id, live);
   }
-  return out.size ? [...out.values()] : owned;
+  return out.size ? [...out.values()] : owned.filter(isEquipLinkedEffect);
 }
 
 // Sync an item's resident AE `disabled` state to its OWN `isEquipped` prop.
