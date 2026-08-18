@@ -461,6 +461,8 @@
     // Since a pair only ever transfers state props, a wrong guess between two
     // same-named siblings costs a quantity or an equip flag, never a definition.
     let repaired = 0;
+    let supersededCreates = 0;
+    const keptNames = new Set();   // live-only ActiveEffects the keep rule held back
     const renamed = [];   // [saved props.name, live props.name] for matched pairs
     if (guarded) {
       const bucket = (m, k, v) => { (m.get(k) ?? m.set(k, []).get(k)).push(v); return m; };
@@ -583,14 +585,24 @@
         const f = live.flags?.[MOD] ?? {};
         const keep = f.crossScene === true || f.directorPermanent === true ||
           (f.reactionConfig && !f.directorAppliedBy);
-        if (keep) { keptUnique.push(live.name ?? id); continue; }
+        if (keep) { keptUnique.push(live.name ?? id); keptNames.add(live.name); continue; }
         toDelete.push(id);
       }
     }
     // In the save → create if missing, update if changed, skip if identical.
     for (const [id, saved] of savedById) {
       const live = liveById.get(id);
-      if (!live) { toCreate.push(saved); continue; }
+      if (!live) {
+        // An actor AE re-created since the save carries a NEW _id, so the keep
+        // rule holds the live one back AND this branch adds the snapshot's twin —
+        // a duplicate, not a restore. Found in the live slot-1 run: Zarg ended
+        // with two "Emergency Item Ready", both directorPermanent. Items solve
+        // this by re-pairing on name; an actor AE has no world master to reconcile
+        // against, so the kept live effect simply wins and the create is dropped.
+        if (type === "ActiveEffect" && keptNames.has(saved.name)) { supersededCreates++; continue; }
+        toCreate.push(saved);
+        continue;
+      }
       // When only state is applied, only state can make an update necessary.
       // Comparing whole documents here would queue an update for every item whose
       // DEFINITION drifted since the save — on slot 1 that is most of them — and
@@ -713,7 +725,7 @@
       // What the guard held back. Counted ALWAYS, not only under DEBUG_LOAD: a
       // load that protected 90 unique documents and one that had nothing to
       // protect must not look identical in the log.
-      keptUnique: keptUnique.length, unequipped: toUnequip.length, renamed,
+      keptUnique: keptUnique.length, unequipped: toUnequip.length, renamed, supersededCreates,
       keptNames: keptUnique,
       repaired,
       updated: debug ? toUpdate.map(d => d.name) : [],

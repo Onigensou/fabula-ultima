@@ -272,6 +272,7 @@
       // it existed only in a console line.
       renamed:        sum(r => r.item.renamed?.length ?? 0),
       slotsRepointed: sum(r => r.slotsRepointed ?? 0),
+      fxSuperseded:   sum(r => r.effect.supersededCreates ?? 0),
       nestedFx:       sum(r => (r.item.nested?.update ?? 0) + (r.item.nested?.create ?? 0) + (r.item.nested?.delete ?? 0)),
     };
     SS._lastLoadReport = { slotId, label, totalMs, actors: report, totals };
