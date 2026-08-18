@@ -410,7 +410,26 @@
         if (live.system?.props?.isEquipped === true) toUnequip.push(id);
       }
     } else {
-      for (const id of liveById.keys()) if (!savedById.has(id)) toDelete.push(id);
+      // Actor-level AEs are mostly session state — statuses, Campfire Cake, Wet,
+      // Dance — and clearing them is exactly what the reset use case is for. But
+      // an AE carrying `reactionConfig` is an implementation carrier under this
+      // project's canon, and unlike an Item there is no world master to restore
+      // an actor AE from, so a wrong delete here is both unrecoverable and, until
+      // now, unreported: this branch deleted every live-only AE outright.
+      //
+      // `directorAppliedBy` is the discriminator already in the data. Present
+      // means a director run placed it, so it is session state and goes. Absent
+      // on a reactionConfig carrier means it was placed by hand as configuration
+      // and must survive. On slot 1 that keeps precisely Hina's "Instability"
+      // (AE_CHARGES_INSTABILITY >= 10 -> ins_death, in force mode) and Keren's
+      // "Bodyguard Fatigue", while still clearing Hina's director-placed "Lucky
+      // Number" and the nine plain status effects.
+      for (const [id, live] of liveById) {
+        if (savedById.has(id)) continue;
+        const f = live.flags?.[MOD] ?? {};
+        if (f.reactionConfig && !f.directorAppliedBy) { keptUnique.push(live.name ?? id); continue; }
+        toDelete.push(id);
+      }
     }
     // In the save → create if missing, update if changed, skip if identical.
     for (const [id, saved] of savedById) {
@@ -577,6 +596,10 @@
         ` (no world master, or diverged from it): ` +
         item.keptNames.slice(0, 12).join(", ") +
         (item.keptNames.length > 12 ? ` … +${item.keptNames.length - 12} more` : ""));
+    }
+    if (effect.keptUnique) {
+      console.log(`${TAG} ${actor.name}: kept ${effect.keptUnique} hand-placed reaction-config effect(s) ` +
+        `(no directorAppliedBy, so not session state): ${effect.keptNames.join(", ")}`);
     }
     if (item.repaired) {
       console.log(`${TAG} ${actor.name}: re-paired ${item.repaired} document(s) by name —` +
