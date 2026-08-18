@@ -323,9 +323,9 @@
       String(i.system?.uniqueId ?? "").trim() === uid && i.name === obj?.name) ?? null;
   }
 
-  // Flip an item's EQUIP-BONUS effects to match its own `isEquipped`. Scoped to
-  // `transfer === true` deliberately, and this scope is the whole correctness
-  // argument — do not widen it.
+  // Flip an item's EQUIP-LINKED effects to match its own `isEquipped`. The scope
+  // is the whole correctness argument here, and it is wrong in BOTH obvious
+  // directions — see isEquipLinked below before changing it.
   //
   // A previous version called the engine's syncItemEffectsToEquip, on the
   // reasoning that a local copy of a primitive is a smell. That helper resolves
@@ -345,10 +345,25 @@
   // armor-equip-gate's ready sweep runs `if (isArmor(item))` only, so it never
   // touches the weapons, shields, accessories and consumables where all the
   // newly-flipped effects live.
+  // Positive list of EQUIP-LINKED roles, because neither blanket answer works and
+  // no single field proxies for it. Invisibility Cloak and Jetpack are both
+  // accessories: the Cloak's `Hidden` is a template that must NOT be flipped, the
+  // Jetpack's `Aerial Swiftness` is a carrier that MUST be. So ask what the
+  // effect is for:
+  //   • transfer:true — an equip bonus; enabled iff worn.
+  //   • a `deriveStatus` spec — derived-status-reactor skips a rule whose AE is
+  //     `disabled` and whose carrier item is not equipped, so its enabled state
+  //     is equip state. Hina's Jetpack grants Swift while flying this way, and it
+  //     is transfer:false with no `changes` at all.
+  // Anything else is left alone. 544 item AEs are transfer:false and most are
+  // apply_ae templates or status containers.
+  const isEquipLinked = (e) =>
+    e.transfer === true || !!e.flags?.[MOD]?.deriveStatus;
+
   async function syncItemEquipEffects(item) {
     const equipped = item.system?.props?.isEquipped === true;
     const fx = [...item.getEmbeddedCollection("ActiveEffect").values()]
-      .filter(e => e.transfer === true && !!e.disabled === equipped)
+      .filter(e => isEquipLinked(e) && !!e.disabled === equipped)
       .map(e => ({ _id: e.id, disabled: !equipped }));
     if (fx.length) await item.updateEmbeddedDocuments("ActiveEffect", fx);
     return fx.length;
@@ -564,7 +579,7 @@
         // and let their template AEs be disabled.
         const needsEquipSync = Object.prototype.hasOwnProperty.call(sp, "isEquipped") &&
           [...live.getEmbeddedCollection("ActiveEffect").values()]
-            .some(e => e.transfer === true && !!e.disabled === (sp.isEquipped === true));
+            .some(e => isEquipLinked(e) && !!e.disabled === (sp.isEquipped === true));
         if (stateDiffers || needsEquipSync) toUpdate.push(saved); else skip++;
         continue;
       }
