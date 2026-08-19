@@ -108,6 +108,10 @@ async function loadDeps(reuseToken = null) {
     applyAffinityToDamage: snapshot.applyAffinityToDamage,
     classifyActionIntent: skillIntent.classifyActionIntent,
     findPassiveCandidates: skillEffects.findPassiveCandidates,
+    // Needed by probeTargetedReactions to fire a defender-side candidate through
+    // the same entrypoint the live accept path uses.
+    firePreAcceptedCandidate: skillEffects.firePreAcceptedCandidate,
+    resolvesVsMagicDefense: snapshot.resolvesVsMagicDefense,
     // The single post-decision recompute (matches production CONFIRM); replaces
     // the retired computeSenderDamageBonuses + recomputePerTargetDamages overlay.
     recomputeActionProfile: actionProfile.recomputeActionProfile,
@@ -149,7 +153,13 @@ async function loadDeps(reuseToken = null) {
 // 0/blank, which for a `== 0` gate is the PERMISSIVE answer. That is exactly how
 // an instantaneous-only gate passed a Scene spell under test and refused it in
 // play; two probes drifting apart would reintroduce it one field at a time.
-async function buildReactionScanPayloads(ar) {
+// The ACTION-LEVEL half of a scan payload, hoisted so the defender-side probe
+// can spread the SAME base live spreads into creature_targeted_by_action
+// (state-handlers ~5155) WITHOUT also inheriting the attacker per-target keys
+// (rawDamage / hitMargin / affinity / hitTargets) that live never sends there.
+// Those extras read as REAL values under test and 0 in play - the permissive
+// failure inverted. Found by review 2026-08-19.
+async function buildHarnessActionBase(ar) {
   const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
   const hitTargetUuids = (ar.perTargetResults ?? [])
     .filter((r) => r?.hit)
@@ -198,6 +208,18 @@ async function buildReactionScanPayloads(ar) {
     costMp: Number(ar.costSerialized?.mp ?? 0) || 0,
     costIp: Number(ar.costSerialized?.ip ?? 0) || 0,
   };
+
+
+  return harnessActionBase;
+}
+
+async function buildReactionScanPayloads(ar) {
+  const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+  const hitTargetUuids = (ar.perTargetResults ?? [])
+    .filter((r) => r?.hit)
+    .map((r) => r.tokenUuid ?? (ar.targets ?? []).find((t) => t?.actorUuid === r?.actorUuid)?.tokenUuid)
+    .filter(Boolean);
+  const harnessActionBase = await buildHarnessActionBase(ar);
 
   const out = [];
   for (const entry of (ar.perTargetResults ?? [])) {
@@ -629,6 +651,404 @@ async function probeCardReactions({
         ? `${forcedOnly.length} candidate(s) would fire but are unavailable here (${forcedOnly.map((r) => `${r.carrierName}: ${r.unavailableReason}`).join("; ")}). In play the card never accepts those — only a GM force can.`
         : "Every scanned candidate left the action unchanged. Usually the carrier's owner is not the attacker (performer-side reactions only fire for their own actor), or the row's effect chain does nothing at this stage.",
     baseline, candidates: results, fired, forcedOnly, scanLog,
+  };
+}
+
+// ─── Target-SIDE reaction probe ─────────────────────────────────────────────
+//
+// `probeCardReactions` scans `findPassiveCandidates({ casterActor: attackerActor })`
+// for EVERY trigger, so it can only surface the ATTACKER's carriers. The
+// defender-side family — `creature_targeted_by_action` — was structurally
+// invisible to it: probing "Zarg attacks Hina" returned Zarg's Barrage and ZERO
+// Hina reactions for every pairing, while a weaponless defender reported
+// `no_main_weapon`, which reads like a rig fault and hides the real limit.
+//
+// Mirrors CONFIRM's third-party loop (state-handlers ~5098-5245) as closely as a
+// harness can. Every deviation found by review is called out at its line.
+//
+// Two observation channels, because a defender reaction lands in either:
+//   * card mutation  - adjust_defense / accuracy / redirect (probeOneAcceptedSet)
+//   * document write - apply_ae / grant / charge (installWriteCaptures around
+//                      the real firePreAcceptedCandidate)
+// `fired` = EITHER moved AND the candidate was available. A candidate that moves
+// nothing is not a pass; the baseline runs with an empty accepted-set so the
+// comparison can fail.
+//
+// ⚠ NOT covered: `findTargetOwnedCandidates` — the acting SKILL can grant the
+// TARGET a reaction (Condemn / Torment style redirects), which live scans in the
+// same loop (~5245). Those rows will report `no_candidates_scanned` here. Out of
+// scope deliberately; do not read a null result as "that skill is dormant".
+async function probeTargetedReactions({
+  attackerTokenUuid = null, targetTokenUuids = null,
+  skillUuid = null, attack = true, attackMode = "main",
+  force = null, round = 1,
+  reactorNames = null,
+  trigger = "creature_targeted_by_action",
+  // Menu picks for an open_action_menu inside a defender chain. Without these a
+  // chain containing one PROMPTS FOR REAL and hangs the run — installHeadlessGates
+  // deliberately does not cover open_action_menu.
+  picks = null,
+  preApply = null, seed = null, override = null,
+  depsToken = null,
+} = {}) {
+  if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
+  if (!attackerTokenUuid || !targetTokenUuids?.length) {
+    return { ok: false, reason: "missing_args",
+      hint: "attackerTokenUuid + targetTokenUuids[], plus skillUuid when attack:false" };
+  }
+  const deps = await loadDeps(depsToken);
+  const RD = await import(`./reaction-derive.js?harness=${Date.now()}`);
+
+  // World-state fixtures are installed ONCE, around EVERYTHING — the scan, both
+  // mutation probes and every fire. Installing them only around the fire (the
+  // first version of this function) meant `available` / `unavailableReason` and
+  // the whole card channel were computed against the UN-seeded world while the
+  // fire saw the seeded one: two channels, two world states, one verdict.
+  const formulaOverrides = installFormulaOverrides(override);
+  const preApplied = await installPreAppliedAEs(preApply);
+  const seeded = await installSeededProps(seed);
+  const headlessGates = installHeadlessGates();
+  const passiveAcceptor = installPassiveAutoAcceptor(true);
+  try {
+    const computed = attack
+      ? await runDirectorAttackCompute({ attackerTokenUuid, targetTokenUuids, mode: attackMode, force, depsToken })
+      : await runDirectorSkillCompute({ skillUuid, casterTokenUuid: attackerTokenUuid, targetTokenUuids, force, depsToken });
+    if (!computed?.ok) return { ok: false, reason: "compute_failed", computed };
+    const ar = computed.actionResult;
+    const attackerActor = ar?.attackerActorRef ? await fromUuid(ar.attackerActorRef).catch(() => null) : null;
+    if (!attackerActor) return { ok: false, reason: "attacker_actor_not_found" };
+
+    // ── Scope gate — mirrors state-handlers ~5098 ────────────────────────────
+    // CONFIRM only runs this scan for an Attack, an Item, or a Skill that deals
+    // damage / heals / is harmful. Without this the probe scans a path the game
+    // never enters and reports a green result for it.
+    const inScope = Array.isArray(ar.targets) && ar.targets.length > 0
+      && (ar.kind === "Attack" || ar.kind === "Item"
+        || (ar.kind === "Skill" && (ar.hasDamage || ar.hasHealing || ar.actionIntent === "harmful")));
+    if (trigger === "creature_targeted_by_action" && !inScope) {
+      return { ok: false, reason: "out_of_scope_for_trigger", actionKind: ar.kind,
+        hint: "CONFIRM fires creature_targeted_by_action only for Attack / Item / (Skill with damage, healing or harmful intent). This action does not qualify, so the scan never runs in play either." };
+    }
+
+    const effectiveIntent = ar.actionIntent ?? (ar.kind === "Attack" ? "harmful" : null);
+    const cardCtx = {
+      targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
+      attackerActorUuid: ar.attackerActorRef ?? null,
+      attackerTokenUuid: ar.attacker?.tokenUuid ?? null,
+      actionIntent: effectiveIntent,
+      actionKind: ar.kind ?? null,
+      actionName: ar.skillName ?? ar.weapon?.name ?? ar.kind ?? null,
+      sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
+      checkTotal: Number(ar.roll?.total ?? 0) || 0,
+      isCrit: !!ar.roll?.isCrit,
+      isFumble: !!ar.roll?.isFumble,
+      weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+      weaponType: ar.weapon?.weaponType ?? null,
+      damageType: ar.damageType ?? ar.damage?.element ?? null,
+      // Gate on ar.canMiss, NOT ar.defenseTargetType. defenseTargetType is the
+      // EMPTY STRING for any weapon with no authored value, so keying off it
+      // sent null for the ordinary weapon-Attack case and Verónica's
+      // `ATTACK_VS_DEF == 1` read 0 — dormant under test, firing in play.
+      defenseResolved: ar.canMiss
+        ? (deps.resolvesVsMagicDefense?.({ defenseTargetType: ar.defenseTargetType,
+            isSpell: String(ar.skillType ?? "").toLowerCase() === "spell" }) ? "mdef" : "def")
+        : null,
+    };
+
+    // ── Reactor set — mirrors state-handlers ~5115-5126 ──────────────────────
+    // Live walks dCombat combatants, skipping the DEFEATED and the ATTACKER.
+    // Taking every canvas placeable instead let the attacker react to its own
+    // action, which makes a `reaction_source: enemy` row match on a carrier
+    // CONFIRM structurally cannot produce — a fired:true for something
+    // unreachable in play.
+    const attackerActorUuid = attackerActor.uuid;
+    const reactorActors = new Map();
+    // A harness run has no live DirectorCombat, so the canvas walk below IS the
+    // path here. Both live exclusions are kept so the candidate set stays
+    // reachable-in-play.
+    const combatants = [];
+    const addReactor = (a, defeated) => {
+      if (!a || defeated) return;
+      if (a.uuid === attackerActorUuid) return;                    // live: skip the attacker
+      if (reactorNames && !reactorNames.includes(a.name)) return;
+      reactorActors.set(a.uuid, a);
+    };
+    if (combatants.length) {
+      for (const c of combatants) addReactor(c?.actorDoc ?? null, !!c?.defeated);
+    } else {
+      // No live combat in a harness run — fall back to canvas tokens, but keep
+      // BOTH live exclusions so the candidate set stays reachable-in-play.
+      for (const t of (canvas?.tokens?.placeables ?? [])) {
+        const a = t?.actor;
+        const defeated = !!(t?.document?.overlayEffect) || !!a?.statuses?.has?.("dead");
+        addReactor(a, defeated);
+      }
+    }
+    if (!reactorActors.size) return { ok: false, reason: "no_reactors_available" };
+
+    // ── One payload per SUBJECT ──────────────────────────────────────────────
+    // Base = the ACTION-LEVEL half only. Spreading the full per-target
+    // scanPayload also injected rawDamage / hitMargin / affinity / valueType /
+    // hitTargets — attacker-side keys live NEVER sends to this trigger. Those
+    // read as real values under test and 0 in play (RAW_DAMAGE, HIT_MARGIN), and
+    // hitTargetTokenUuids changed which creatures `hit_action_targets` resolved
+    // to inside a defender chain.
+    const actionBase = await buildHarnessActionBase(ar);
+    const subjects = [];
+    for (const target of (ar.targets ?? [])) {
+      const actorUuid = target?.actorUuid; if (!actorUuid) continue;
+      const pt = (ar.perTargetResults ?? []).find((r) => r?.actorUuid === actorUuid
+        || (r?.tokenUuid && r.tokenUuid === target?.tokenUuid));
+      subjects.push({
+        actorUuid, tokenUuid: target?.tokenUuid ?? pt?.tokenUuid ?? null,
+        name: target?.name ?? pt?.name ?? null,
+        incomingDamage: pt?.hit ? Math.max(0, Number(pt.damage ?? 0) || 0) : 0,
+        hit: !!pt?.hit,
+      });
+    }
+    // Contract check that can actually FAIL: compare the ASSEMBLED payload
+    // against the union live sends (TARGETED_PAYLOAD_KEYS + the action base),
+    // in BOTH directions. Checking buildTargetedPayload against the list it is
+    // written to satisfy was a tautology — it reported ok:true unconditionally
+    // and was exactly the reassurance that hid the four real payload defects.
+    const expected = new Set([...(RD.TARGETED_PAYLOAD_KEYS ?? []), ...Object.keys(actionBase ?? {})]);
+    const payloads = subjects.map((s) => ({
+      subject: s, payload: { ...actionBase, ...RD.buildTargetedPayload(s, cardCtx) },
+    }));
+    const sample = payloads[0]?.payload ?? {};
+    const missingKeys = [...expected].filter((k) => !(k in sample));
+    const extraKeys = Object.keys(sample).filter((k) => !expected.has(k));
+
+    // ── Discover, per reactor ────────────────────────────────────────────────
+    const scanLog = [];
+    const byKey = new Map();
+    for (const { subject, payload } of payloads) {
+      for (const reactor of reactorActors.values()) {
+        let scanned = null;
+        try {
+          scanned = await deps.findPassiveCandidates({
+            casterActor: reactor, trigger, payload, includeUnavailable: true,
+          });
+        } catch (e) { scanLog.push({ reactor: reactor.name, threw: String(e?.message ?? e) }); continue; }
+        for (const c of scanned ?? []) {
+          const key = `${c?.rowKey}::${c?.carrierUuid}::${reactor.uuid}::${subject.actorUuid}`;
+          if (byKey.has(key)) continue;
+          byKey.set(key, { cand: c, reactor, subject, payload });
+          scanLog.push({ reactor: reactor.name, subject: subject.name, carrierName: c?.carrierName ?? null,
+            rowKey: c?.rowKey ?? null, ref: c?.ref ?? null, available: c?.available !== false,
+            unavailableReason: c?.unavailableReason ?? null });
+        }
+      }
+    }
+    const payloadContract = { missingKeys, extraKeys, ok: missingKeys.length === 0 && extraKeys.length === 0 };
+    if (!byKey.size) {
+      return { ok: false, reason: "no_candidates_scanned", scanLog, payloadContract,
+        reactorsScanned: [...reactorActors.values()].map((a) => a.name),
+        hint: "No reactor owns a carrier for this trigger under this payload. Note this probe does NOT cover skill-granted target-owned rows (findTargetOwnedCandidates)." };
+    }
+
+    const baseline = await probeOneAcceptedSet({ ar, accepted: [], attackerActor, round, deps });
+    const results = [];
+    for (const { cand, reactor, subject, payload } of byKey.values()) {
+      const stamped = { ...cand, reactorActorUuid: reactor.uuid, reactorActorName: reactor.name,
+        subjectActorUuid: subject.actorUuid, payloadAtFire: payload,
+        ...(Array.isArray(picks) && picks.length ? { chosenMenuPicks: [...picks] } : {}) };
+
+      const after = await probeOneAcceptedSet({ ar, accepted: [stamped], attackerActor, round, deps });
+      const mutDiff = probeDiff(baseline, after);
+
+      const { captures, restore } = await installWriteCaptures();
+      let fireErr = null, fireRes = null;
+      try {
+        // TIMEOUT is not optional here: an unanswered prompt inside this await
+        // means restore() never runs, and from then on every update() in the
+        // page is captured instead of committed while still reporting success.
+        // Every later measurement in the session would be void.
+        fireRes = await withHarnessTimeout(
+          deps.firePreAcceptedCandidate({ director: null, casterActor: reactor, candidate: stamped, payload }),
+          `targeted reaction ${reactor.name}/${cand.carrierName}`,
+        );
+      } catch (e) { fireErr = String(e?.message ?? e); }
+      finally { restore(); }
+
+      const writes = summarizeWrites(captures);
+      // summarizeWrites drops aeUpdates + itemUpdates, so a reaction whose whole
+      // effect is a charge/intensity write (skill-charges) or an equip flip read
+      // as "changed nothing" and got reported as broken data.
+      const wrote = writes.some((w) =>
+        Object.keys(w.propPatches ?? {}).length || (w.aeApplied ?? []).length || (w.aeRemoved ?? []).length)
+        || (captures.aeUpdates ?? []).length > 0
+        || (captures.itemUpdates ?? []).length > 0;
+      const moved = !!mutDiff.changed || wrote;
+
+      results.push({
+        key: `${cand.rowKey}::${cand.carrierUuid}::${reactor.uuid}`,
+        reactor: reactor.name, reactorUuid: reactor.uuid,
+        subject: subject.name, subjectUuid: subject.actorUuid,
+        carrierName: cand.carrierName ?? null, carrierKind: cand.carrierKind ?? null,
+        rowKey: cand.rowKey ?? null, ref: cand.ref ?? null, mode: cand.mode ?? null, trigger,
+        available: cand.available !== false,
+        unavailableReason: cand.available === false ? (cand.unavailableReason ?? null) : null,
+        fired: moved && cand.available !== false,
+        firesIfForced: moved && cand.available === false,
+        changed: moved,
+        changedFields: mutDiff.fields ?? [],
+        wroteDocuments: wrote,
+        writes,
+        aeUpdates: (captures.aeUpdates ?? []).length,
+        itemUpdates: (captures.itemUpdates ?? []).length,
+        fireOk: fireRes?.ok ?? null, fireReason: fireRes?.reason ?? null, fireError: fireErr,
+        probe: after,
+      });
+    }
+    const fired = results.filter((r) => r.fired);
+    const forcedOnly = results.filter((r) => r.firesIfForced);
+    return {
+      ok: fired.length > 0,
+      reason: fired.length ? null : (forcedOnly.length ? "only_fires_if_forced" : "no_reaction_fired"),
+      hint: fired.length ? null
+        : forcedOnly.length
+          ? `${forcedOnly.length} candidate(s) would fire but are unavailable here.`
+          : "Every scanned candidate left both the card AND the documents unchanged.",
+      payloadContract,
+      reactorsScanned: [...reactorActors.values()].map((a) => a.name),
+      baseline, candidates: results, fired, forcedOnly, scanLog,
+    };
+  } finally {
+    passiveAcceptor.restore();
+    headlessGates.restore();
+    await seeded.cleanup();
+    await preApplied.cleanup();
+    formulaOverrides.restore();
+  }
+}
+
+// ─── Per-reactor, any-trigger reaction probe ───────────────────────────────
+//
+// Covers the LIFECYCLE + subject-side families (conflict_start, turn_start,
+// round_start, turn_end, creature_lose_resource, creature_deals_damage, …)
+// that neither `probeCardReactions` (attacker-only) nor
+// `probeTargetedReactions` (targeted payload) reaches.
+//
+// ⚠ Why this does NOT go through `firePassiveTriggers`:
+// `runDirectorPassiveTriggerTest` calls it with `director: null`, and
+// `standalone-reactions.dispatchReactionMenu` opens with
+//     if (!director || !reactor || !token || !trigger) return { fired: [] };
+// so that entry point returns an EMPTY `fired` list for every input — it can
+// never observe a reaction firing, and a sweep through it reports "nothing
+// fires" for a party whose scan shows five available force-mode rows. Measured
+// 2026-08-19 across 4 actors x 4 triggers: 16/16 empty, while
+// findPassiveCandidates returned candidates for the same actor+trigger+payload.
+//
+// So this scans with the real `findPassiveCandidates` and then fires each
+// candidate ALONE through the real `firePreAcceptedCandidate`, with write
+// captures installed — the same two-step `probeTargetedReactions` uses. No menu,
+// no director required, and every candidate is isolated so one cannot mask
+// another.
+async function probeReactorTrigger({
+  reactorName = null, reactorActorUuid = null,
+  trigger = null, payload = null,
+  // Extra payload keys merged OVER the self-default (e.g. a resource-loss
+  // amount, or a cause actor). Explicit keys always win.
+  payloadExtra = null,
+  preApply = null, seed = null, override = null,
+  depsToken = null,
+} = {}) {
+  if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
+  if (!trigger) return { ok: false, reason: "missing_trigger" };
+  const deps = await loadDeps(depsToken);
+
+  let reactor = null;
+  if (reactorActorUuid) reactor = await fromUuid(reactorActorUuid).catch(() => null);
+  if (!reactor && reactorName) {
+    const t = (canvas?.tokens?.placeables ?? []).find((x) => x.actor?.name === reactorName);
+    reactor = t?.actor ?? game.actors?.find((a) => a.name === reactorName) ?? null;
+  }
+  if (!reactor) return { ok: false, reason: "reactor_not_found", reactorName, reactorActorUuid };
+
+  const token = (canvas?.tokens?.placeables ?? []).find((x) => x.actor?.uuid === reactor.uuid)?.document ?? null;
+
+  // Default payload: the reactor is BOTH source and subject, which is what every
+  // lifecycle trigger means ("my conflict started", "my turn began").
+  const basePayload = {
+    sourceActorUuid: reactor.uuid, subjectActorUuid: reactor.uuid,
+    sourceTokenUuid: token?.uuid ?? null, subjectTokenUuid: token?.uuid ?? null,
+  };
+  const finalPayload = { ...basePayload, ...(payload ?? {}), ...(payloadExtra ?? {}) };
+
+  // Fixtures wrap EVERYTHING (scan + every fire), so availability and the fire
+  // see the SAME world. Installing them per-candidate meant the scan verdict was
+  // computed against an un-seeded world.
+  const formulaOverrides = installFormulaOverrides(override);
+  const preApplied = await installPreAppliedAEs(preApply);
+  const seeded = await installSeededProps(seed);
+  const headlessGates = installHeadlessGates();
+  const passiveAcceptor = installPassiveAutoAcceptor(true);
+  const teardown = async () => {
+    passiveAcceptor.restore(); headlessGates.restore();
+    await seeded.cleanup(); await preApplied.cleanup(); formulaOverrides.restore();
+  };
+
+  let scanned = null;
+  try {
+    scanned = await deps.findPassiveCandidates({
+      casterActor: reactor, trigger, payload: finalPayload, includeUnavailable: true,
+    });
+  } catch (e) {
+    await teardown();
+    return { ok: false, reason: "scan_threw", error: String(e?.message ?? e), payload: finalPayload };
+  }
+  const cands = scanned ?? [];
+  if (!cands.length) {
+    await teardown();
+    return { ok: false, reason: "no_candidates_scanned", reactor: reactor.name, trigger,
+      payload: finalPayload, candidates: [],
+      hint: "No row on this actor declares this reaction_trigger, or a filter rejected the payload. Check reaction_trigger spelling and that the reactor has a token on the CANVAS scene." };
+  }
+
+  const results = [];
+  for (const cand of cands) {
+    const { captures, restore } = await installWriteCaptures();
+    let fireErr = null, fireRes = null;
+    try {
+      // A bare await here is a poisoned-client hazard: an unanswered prompt means
+      // restore() never runs and every later update() in the page is captured
+      // instead of committed, while still reporting success.
+      fireRes = await withHarnessTimeout(
+        deps.firePreAcceptedCandidate({ director: null, casterActor: reactor, candidate: cand, payload: finalPayload }),
+        `reactor trigger ${reactor.name}/${cand.carrierName}`,
+      );
+    } catch (e) { fireErr = String(e?.message ?? e); }
+    finally { restore(); }
+    const writes = summarizeWrites(captures);
+    // summarizeWrites drops aeUpdates + itemUpdates; a charge/equip-only reaction
+    // would otherwise report as having done nothing.
+    const wrote = writes.some((w) =>
+      Object.keys(w.propPatches ?? {}).length || (w.aeApplied ?? []).length || (w.aeRemoved ?? []).length)
+      || (captures.aeUpdates ?? []).length > 0
+      || (captures.itemUpdates ?? []).length > 0;
+    results.push({
+      carrierName: cand.carrierName ?? null, carrierKind: cand.carrierKind ?? null,
+      rowKey: cand.rowKey ?? null, ref: cand.ref ?? null, mode: cand.mode ?? null, trigger,
+      available: cand.available !== false,
+      unavailableReason: cand.available === false ? (cand.unavailableReason ?? null) : null,
+      // An UNAVAILABLE row is never accepted in play, so it can only be forced.
+      fired: wrote && cand.available !== false,
+      firesIfForced: wrote && cand.available === false,
+      wroteDocuments: wrote, writes,
+      aeUpdates: (captures.aeUpdates ?? []).length,
+      itemUpdates: (captures.itemUpdates ?? []).length,
+      fireOk: fireRes?.ok ?? null, fireReason: fireRes?.reason ?? null, fireError: fireErr,
+    });
+  }
+  await teardown();
+  const fired = results.filter((r) => r.fired);
+  return {
+    ok: fired.length > 0,
+    reason: fired.length ? null
+      : (results.some((r) => r.firesIfForced) ? "only_fires_if_forced" : "no_reaction_fired"),
+    reactor: reactor.name, trigger, payload: finalPayload,
+    candidates: results, fired,
   };
 }
 
@@ -2373,6 +2793,13 @@ function registerHarness() {
   // one fires nothing and every with-vs-without assertion then passes on 0===0.
   root.api.test.probeCardReactions        = probeCardReactions;
   root.api.test.probeGmReactionOverride   = probeGmReactionOverride;
+  // Defender-side family. probeCardReactions scans the ATTACKER only, so
+  // creature_targeted_by_action carriers are invisible to it.
+  root.api.test.probeTargetedReactions    = probeTargetedReactions;
+  // Lifecycle + subject-side families. NOTE runDirectorPassiveTriggerTest
+  // cannot fire anything (it passes director:null and dispatchReactionMenu
+  // early-returns on that) - use this instead.
+  root.api.test.probeReactorTrigger       = probeReactorTrigger;
   // Golden-snapshot helpers (render-capture regression).
   root.api.test.diffCardGolden            = diffCardGolden;
   root.api.test.normalizeCardHtml         = normalizeCardHtml;
