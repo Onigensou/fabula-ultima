@@ -76,6 +76,24 @@ intermediate `ceil` at each step the order is observable, not cosmetic.
 - **Affinity bypass** (`ignore_resistance` / `ignore_immunity` / `ignore_absorption`) is a
   *clamp*, not a step: everything at or below the named rung collapses to NE.
 
+### 2c. The PC modifier systems
+Three sheet-driven modifier families sit outside the damage pipeline proper and were
+each worth a large share of the first calibration failure:
+
+| Family | Props | Applies |
+|---|---|---|
+| Accuracy | `check_mod_all` · `_accuracy` · `_melee` · `_ranged` · `_magic` | `all` + `accuracy` always, then one contextual term: `magic` when the action resolves vs MDEF, else `melee`/`ranged` by the weapon's own `weapon_range` |
+| Outgoing damage | `extra_damage_mod_all` · `_spell` · `_<element>` · `_<family>` | added to the base before the incoming pipeline |
+| Incoming reduction | `damage_receiving_mod_all` · `_<element>` | feeds step 1 (flat DR) |
+
+Live values: Zarg carries accuracy 3 + ranged 4 = **+7** on a bow shot, Hina magic **+6**
+on a spell, Keren reduces every physical hit by **5**, Blanche reduces everything by **4**.
+Ignoring these made the party both miss constantly and die far too fast.
+
+**Weapon family comes from the equipped item's `category`**, not the actor sheet. Without
+it the weapon-efficiency axis never fires — and it is worth ±50–75% (Zarg's bow is 150%
+into Centuaros and 75% into Inferex).
+
 ## Part 3 — Combat structure
 
 - Rounds; within a round each combatant takes its turns.

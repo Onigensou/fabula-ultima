@@ -130,17 +130,54 @@ function refreshFocus(state) {
 }
 
 // ── Resolving one action ────────────────────────────────────────────────────
+// Accuracy bonus for one action. `check_mod_all` applies to everything; the rest
+// are contextual and stack with it — Zarg carries accuracy 3 + ranged 4 on a bow
+// shot, Hina magic 6 on a spell. Ignoring these made the party miss constantly
+// and was a large part of why the first calibration run reported a slaughter.
+function checkBonusFor(actor, action) {
+  const own = action.checkBonus ?? 0;
+  const m = actor.actor.checkMods;
+  if (!m) return own;
+
+  let bonus = own + m.all + m.accuracy;
+  // A spell is anything resolved against Magic Defense; everything else is a
+  // weapon action, melee or ranged by the weapon's own range.
+  if (action.defenseTarget === "mdef") bonus += m.magic;
+  else bonus += (actor.actor.weapon?.range === "ranged" ? m.ranged : m.melee);
+  return bonus;
+}
+
+// Flat outgoing damage bonus from the sheet's extra_damage_mod_* family.
+function extraDamageFor(actor, action) {
+  const x = actor.actor.extraDamage;
+  if (!x) return 0;
+  let bonus = x.all;
+  if (action.defenseTarget === "mdef") bonus += x.spell;
+  bonus += x.byElement?.[action.element] ?? 0;
+  if (action.weaponFamily) bonus += x.byFamily?.[action.weaponFamily] ?? 0;
+  return bonus;
+}
+
+// Flat incoming reduction: the universal band plus the per-element one.
+function reductionFor(target, element) {
+  const d = target.actor.damageReduction;
+  if (!d) return { flat: 0, percent: 0 };
+  return { flat: (d.flat ?? 0) + (d.byElement?.[element] ?? 0), percent: d.percent ?? 0 };
+}
+
 function resolveAction(state, actor, action, targets) {
   const a = attrs(actor);
   const dieA = a[action.attrA] ?? 8;
   const dieB = a[action.attrB] ?? 8;
+  const bonus = checkBonusFor(actor, action);
+  const extra = extraDamageFor(actor, action);
 
   pay(actor, action, targets.length);
 
   for (const target of targets) {
     if (!target.alive) continue;
     const dl = action.defenseTarget === "mdef" ? target.actor.mdef : target.actor.def;
-    const check = R.accuracyCheck(state.rng, { dieA, dieB, bonus: action.checkBonus ?? 0, dl });
+    const check = R.accuracyCheck(state.rng, { dieA, dieB, bonus, dl });
 
     if (!check.hit) {
       state.log.push({ round: state.round, actor: actor.name, action: action.name, target: target.name, miss: true });
@@ -151,13 +188,16 @@ function resolveAction(state, actor, action, targets) {
     // Opportunity, which the model does not resolve (spec Part 6 — the party
     // always taking Advantage is a live-sim simplification with no offline
     // analogue yet). So a crit here is only an auto-hit. Flagged, not silent.
-    const base = R.outgoingDamage({ hr: check.hr, damageBonus: action.damageBonus });
-    const out = R.incomingDamage(target.actor, {
-      base,
-      element: action.element,
-      weaponFamily: action.weaponFamily,
-      keywords: action.keywords,
-    });
+    const base = R.outgoingDamage({ hr: check.hr, damageBonus: action.damageBonus + extra });
+    const out = R.incomingDamage(
+      { ...target.actor, damageReduction: reductionFor(target, action.element) },
+      {
+        base,
+        element: action.element,
+        weaponFamily: action.weaponFamily,
+        keywords: action.keywords,
+      },
+    );
 
     if (out.direction === "recover") {
       target.hp = Math.min(target.maxHp, target.hp + out.damage);
@@ -230,7 +270,7 @@ function weaponAction(actor) {
     target: { side: "enemy", count: 1 },
     cost: { resource: null, amount: 0 },
     keywords: null,
-    weaponFamily: actor.actor.weaponFamily ?? null,
+    weaponFamily: actor.actor.weapon?.family ?? null,
     checkBonus: 0,
   };
 }

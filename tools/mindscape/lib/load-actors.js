@@ -34,6 +34,10 @@ const AFFINITY_KEY = Object.freeze({
 });
 
 const ELEMENTS = Object.freeze(Object.keys(AFFINITY_KEY));
+// Element names as they appear in the per-element modifier prop suffixes
+// (`damage_receiving_mod_fire`, `extra_damage_mod_ice`, …). "physical" is
+// included because the sheets carry `damage_receiving_mod_physical`.
+const ELEMENT_NAMES = ELEMENTS;
 
 // Weapon families that carry an `<family>_ef` percent on a target sheet.
 const WEAPON_FAMILIES = Object.freeze([
@@ -183,6 +187,10 @@ function toCombatModel(doc) {
     statuses:    readStatuses(props),
 
     // Weapon damage is per-weapon on the sheet, not one flat `damage_bonus`.
+    // `family` is filled in by loadAll from the equipped item's `category`, and
+    // it matters: without it the weapon-efficiency axis is entirely inert, which
+    // silently discards a ±50-75% swing (Zarg's bow is 150% into Centuaros and
+    // 75% into Inferex).
     weapon: {
       name:       String(props.main_hand ?? "").trim() || null,
       baseDamage: num(props.weapon1_base_damage),
@@ -190,6 +198,43 @@ function toCombatModel(doc) {
       element:    String(props.weapon1_damagetype ?? "").trim() || null,
       attrA:      String(props.main_attrib_1 ?? "").trim() || null,
       attrB:      String(props.main_attrib_2 ?? "").trim() || null,
+      family:     null,
+    },
+
+    // ── Accuracy modifiers ────────────────────────────────────────────────
+    // A whole system the first engine ignored, and the party missed constantly
+    // because of it. `all` applies to every check; the rest are contextual —
+    // Zarg carries accuracy 3 + ranged 4 = +7 on a bow shot, Hina magic 6.
+    checkMods: {
+      all:      num(props.check_mod_all),
+      accuracy: num(props.check_mod_accuracy),
+      melee:    num(props.check_mod_melee),
+      ranged:   num(props.check_mod_ranged),
+      magic:    num(props.check_mod_magic),
+    },
+
+    // ── Flat incoming damage reduction ────────────────────────────────────
+    // `damage_receiving_mod_*`. The party was dying far too fast without it:
+    // Keren reduces every physical hit by 5, Blanche reduces everything by 4.
+    damageReduction: {
+      flat: num(props.damage_receiving_mod_all),
+      percent: 0,
+      byElement: Object.fromEntries(ELEMENT_NAMES.map((el) =>
+        [el, num(props[`damage_receiving_mod_${el}`])])),
+      melee: num(props.damage_receiving_mod_melee),
+      ranged: num(props.damage_receiving_mod_range),
+    },
+
+    // ── Flat outgoing damage bonuses ──────────────────────────────────────
+    extraDamage: {
+      all:   num(props.extra_damage_mod_all),
+      melee: num(props.extra_damage_mod_melee),
+      ranged: num(props.extra_damage_mod_ranged),
+      spell: num(props.extra_damage_mod_spell),
+      byElement: Object.fromEntries(ELEMENT_NAMES.map((el) =>
+        [el, num(props[`extra_damage_mod_${el}`])])),
+      byFamily: Object.fromEntries(WEAPON_FAMILIES.map((f) =>
+        [f, num(props[`extra_damage_mod_${f}`])])),
     },
 
     turnsPerRound: turnsPerRound(props),
@@ -248,6 +293,23 @@ async function loadAll({ world = DEFAULT_WORLD } = {}) {
 
     for (const [actorId, model] of actors) {
       model.items = itemsByActor.get(actorId) ?? [];
+
+      // Resolve the equipped weapon's FAMILY from its item `category`
+      // ("Bow", "Dagger", "Arcane"). The actor sheet names the weapon but not
+      // its family, and without the family the weapon-efficiency axis never
+      // fires at all.
+      const w = model.weapon;
+      if (w?.name) {
+        const item = model.items.find((i) => i.name === w.name);
+        const cat = String(item?.props?.category ?? "").trim().toLowerCase();
+        if (cat && WEAPON_FAMILIES.includes(cat)) w.family = cat;
+        // A shield in the main hand is not a weapon, so it gets no family and
+        // (via its SHI+SHI attributes) no attack either.
+        w.itemType = String(item?.props?.item_type ?? "").trim().toLowerCase() || null;
+        // Melee vs ranged decides WHICH contextual accuracy modifier applies —
+        // Zarg's +4 check_mod_ranged only reaches his bow through this field.
+        w.range = /ranged/i.test(String(item?.props?.weapon_range ?? "")) ? "ranged" : "melee";
+      }
     }
     return [...actors.values()];
   });
