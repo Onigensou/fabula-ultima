@@ -1,6 +1,7 @@
 # Asura — Adaptive Affinity (the VU→RS toggle)
 
-**Status: ANALYSIS ONLY. Nothing built. For review.**
+**Status: APPROVED + BUILT + SIM-VERIFIED 2026-08-19** (commit `06bf8470`).
+See §8 for what shipped, the settled decisions, and the results.
 2026-08-19, against the post-live-test state (`1a6c2c6c`). Companion to
 [asura-rework-proposal.md](asura-rework-proposal.md) and
 [asura-live-test-report.md](asura-live-test-report.md).
@@ -271,3 +272,79 @@ Related: [asura-live-test-report.md](asura-live-test-report.md) ·
 [asura-rework-proposal.md](asura-rework-proposal.md) ·
 [monster-balance-design.md](monster-balance-design.md) ·
 [lightning-storm-design.md](lightning-storm-design.md)
+
+---
+
+## 8. As built (2026-08-19, commit `06bf8470`)
+
+### Settled decisions
+
+| # | Decision |
+|---|---|
+| 1 | **Unified rule** — Asura's own Sword Enchants light a blade exactly as a foe's spell does, and grant the resistance. My proposed enchant/party split was withdrawn: legibility wins, and decision 3 solved the pacing problem it existed to solve. |
+| 2 | **Bolt stays in** the toggle. |
+| 3 | **Quad clears everything** — marks, the hidden counter, and the Aspect. |
+| 4 | **Mark and Aspect stay separate data, one merged rule.** Mark is a *set* (which blades are lit → RS, +8 damage, clock); Aspect is a *pointer* (which lit blade is forward → retypes the attack, adds the rider, flips accuracy to Magic). One player-facing sentence covers both because both fire on the same event. |
+| + | Sword Enchants dropped **priority 8 → 5** so re-arming competes with attacking. |
+
+### What that produced
+
+`Elemental Slash (Sweep)`-style bookkeeping stays invisible: the player reads
+four blades; the engine reads a counter that is definitionally equal to the
+number lit. Because Quad also strips `asura_state`, the blade reverts to
+**Physical / Strike** after each ultimate — one window per cycle where a
+Ghostly-Sheet party's immunity actually works.
+
+**§4.1 is resolved, not worked around.** I had flagged that the VU phase would
+last under a round. With Quad clearing everything, the weak window *recurs every
+cycle by construction* — sample 1 opened round 1 with all four back at VU and no
+marks. The mood arrives more often than the original ask.
+
+**Decision 3 also structurally retires the cooldown-bypass bug** from the live
+test. Quad's gate is now a consumable resource rather than a cooldown counter:
+it fired once in round 1 and once in round 2, then had to re-earn its clock and
+did not fire again. That is exactly the fix the action-pattern notes prescribed.
+
+### ⚠ The bug this pass actually turned up
+
+`selectAEsOnActor` ([`skill-effects.js:9651`](../scripts/battle-director/skill-effects.js#L9651))
+**skips `lifetimeMode: "persistent_counter"` AEs unless `include_persistent` is
+set.** Every clock AE on Asura is `persistent_counter` (deliberately — it is what
+stops the applier-turn tick reaping them), so:
+
+- Quad's brand-new reset rows were **silent no-ops**;
+- and so was the Aspect's own `aspect_clear` — which is the root cause of the
+  **Aspect-stacking bug left open in the live-test report**, not a separate
+  problem. I introduced it in the first rework when I set the Aspects to
+  `persistent_counter`.
+
+Untreated, Asura stayed RS to all four elements from round 1 onward and **TPK'd
+the party**. All four clear rows now carry `include_persistent: true`. Note also
+that `remove_ae` and `remove_tagged_ae` are the same handler under two spellings —
+a filter on one misses rows written with the other.
+
+### Results — solo Asura, Lightning Storm armed, 4-PC party
+
+| Run | State | Result | Party HP |
+|---|---|---|---|
+| 5 | reset broken (persistent-counter bug) | **DEFEAT — TPK in 5 rounds** | 0% |
+| 6 | fixed | VICTORY, 4 rounds, **no deaths** | **66%** — "a real fight" |
+| 7 | fixed | VICTORY, 4 rounds | **84%** — "too easy" |
+
+Against the earlier passes (86% / 89% trivial, then 21% with three PCs dead
+twice), **the swing between trivial and lethal is gone.** Quad landed once per
+round in the first two rounds of sample 1 and then stopped; the Rod held at
+~3.25 strikes/round throughout.
+
+### Still open
+
+- **Mean ~75% vs a 40–60% target — it is now on the EASY side**, with a wide
+  66–84% spread across two samples. Two runs is not a distribution and I did not
+  tune on it. HP left at **900**.
+- The cleanest dials, in order: Quad's per-beat damage (45), then HP (raising it
+  lengthens the fight, which is what actually converts into party damage taken).
+- **Hina is still untouched in most runs** — she absorbs Fire, and Overflow is
+  still Fire-locked. Quad's four elements now reach her, which is why she is no
+  longer invulnerable, but §4.2's Overflow question is unresolved.
+- The `M_effective` table in §3 has not been re-derived against measured cycle
+  length; observed cadence was ~2 rounds, which the table puts at ~1.30.
