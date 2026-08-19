@@ -46,17 +46,35 @@ over an incomplete picture, so every path that could approximate instead **stops
 
 `--force` overrides the coverage bar and says so loudly in the output.
 
-## Status
+## Status — calibrated against live, with a known bias
 
-**Not yet calibrated. Do not tune monsters from its numbers.**
+Measured head-to-head on **Inferex + Centuaros**, 2026-08-19
+(`expectations/inferex-centuaros.json`):
 
-The calibration target is Inferex + Centuaros at **2–3 rounds, 85–100% party HP** (the
-live sim's own result, matched to the real table). Current: median 7 rounds, 27% HP,
-41% victory. The distance is structural — healing, Protect, free actions, Blanche's
-Adoration kit and the reaction layer are all still unmodelled, which is what the 68%
-coverage figure is reporting.
+| | rounds | party HP | outcome |
+|---|---|---|---|
+| live sim (n=3) | **2** (median) | **82%** | 3/3 victory |
+| Mindscape (n=2000) | **3** | **53%** | 100% victory |
 
-Calibration converges as the registry fills in, and that is the intended loop.
+**Mindscape runs about one round long and ~25–30 points low on party HP.** The bias is
+consistent and in the *safe* direction — it under-rates the party, so a fight it calls
+hard is genuinely hard. Do not close the gap by inflating party output.
+
+**How to read a verdict:** subtract a round, add ~25–30 points of party HP. "3 rounds at
+53%" corresponds to a real fight of roughly 2 rounds at 80%.
+
+Known causes of the remaining gap, none arithmetic: summons (live fields 1–2 Fox fire
+phantasms that soak and deal damage), the reaction layer, Zero Power, and Fabula Point
+invokes. All are in the spec's Not Modelled list.
+
+### Conflict events are NOT modelled — and the live sim drops them too
+Training Ground carries `conflictEvent: "lightning-storm"`, but `sim.run()` only arms an
+event when you **pass one explicitly** — it never reads the scene's own flag. Every live
+run above logged `conflict event: none`. Measured separately, the storm barely moves the
+outcome (it damages both sides; 2 rounds, 73%/89%) but it did KO Zarg in one run.
+
+If you are balancing a hazard scene, pass `conflictEvent` to `sim.run()` — otherwise the
+hazard is silently absent on **both** sides of this comparison.
 
 ## Layout
 
