@@ -1,7 +1,8 @@
 # Skizzik Rework Proposal — "the one that acts twice"
 
 `Actor.I2sSkVIQ4FCunZBE` · L48 ELEMENTAL **soldier** · Valley of the Dragon
-Status: **PROPOSAL — nothing built.** Desk-calculated, not simmed.
+Status: **BUILT 2026-08-20** — see [§10 As built](#10--as-built-2026-08-20).
+Offline-verified; **not simmed, not live-tested.**
 
 Balance frame: `docs/monster-balance-design.md` (Play Efficiency).
 Party frame: L36, PartyHP **436** (`project_party_stat_snapshot`).
@@ -401,6 +402,81 @@ unless the flat 30 drops to ~12.
 - The skill-regression golden gains rows for the new items and MODIFIES Thunder
   Strike + Chain Reaction; accept with `--update`.
 - Action animations for the riposte and the detonation — deferred as usual.
+
+---
+
+## 10 — As built (2026-08-20)
+
+`Actor.I2sSkVIQ4FCunZBE`, written offline via safe-edit (`db.put`, full replace —
+never `patch`, which deep-merges and would have left the old tables live).
+Backup: `tools/safe-edit/backups/20260820-010728-fabula-ultima-2-actors`.
+
+| Doc | Id | Change |
+|---|---|---|
+| Skizzik | `I2sSkVIQ4FCunZBE` | HP 195 → **130**, study text, item list, passive mirrors |
+| Thunder Strike | `vBuHp8f6NHuYNojr` | `damage_bonus` 48 → **30** |
+| Chain Reaction | `IbE6lOJCeAs8Bb4n` | `reaction_cause_filter` → **blank** (both rows) |
+| Thunder Strike (Riposte) | `SkzRiposteA02bR` | NEW · Attack, `damage_bonus` 12, **off `attack_list`** |
+| Overload Riposte | `SkzRiposteP01aQ` | NEW · the uncapped counter |
+| Static Buildup | `SkzStaticP03cT` | NEW · 2 rows, 5 effect rows |
+| `Static` AE | `SkzStaticAE04dU` | NEW · `persistent_counter`, charges 1 / max 3, tag `static` |
+
+DEF 12 / MDEF 8 / init 14 / affinities / EF / conditions — **untouched**.
+
+### One code change was required
+
+The `TRIGGER_DAMAGE_IS_BOLT == 0` gate could not work as authored:
+`TRIGGER_DAMAGE_IS_<EL>` reads **only** `payload.element`, and
+`creature_targeted_by_action` stamps the element as `damageType`. The gate
+therefore **failed OPEN** — it would have excluded nothing, and an even-accuracy
+bolt attack would have bought the party two free strikes plus a heal.
+
+`element` is now stamped alongside `damageType` on that payload:
+
+- `state-handlers.js` — the CONFIRM third-party scan
+- `reaction-derive.js` — `buildTargetedPayload` (the sibling builder for mid-card
+  new targets) **and** `TARGETED_PAYLOAD_KEYS` (the contract check that catches
+  the two drifting apart)
+
+**Audited before writing: 0 of 32 authored `creature_targeted_by_action` rows use
+`TRIGGER_DAMAGE_IS_*`**, so this is a pure addition — no existing behaviour
+changes. `reaction_damage_type` reads `damageType` before `element`, so that
+filter is unaffected too. Latent bug fixed for every future author.
+
+### Verification done
+
+- **Gate smoke test** — `evaluateFormula(expr, buildSkillResolver(…))`, not the
+  bare identifier resolver (which returns 0 for a whole expression and passes
+  every assertion vacuously). 12/12 pass, including the two that matter:
+  *even-accuracy **bolt** → does not fire* (proves the payload fix) and
+  *no roll info → does not fire* (proves `ATTACK_CHECK_RESULT > 0` guards the
+  `0 % 2 == 0` always-true failure mode).
+- **Gate exclusivity** — detonate/build asserted mutually exclusive at
+  0/1/2/3 charges and with no AE at all. Cadence: 9 damage instances → exactly
+  3 discharges.
+- **Reference integrity** — every `reaction_effect_ref`, `chain_step`,
+  `target_ref` and `action_ref` resolves to a real label / item name.
+- **`node --check`** on both edited ESM files (as `.mjs` — a `.js` check misses
+  ESM syntax errors).
+- **preflight** — zero Skizzik findings. The one FAIL is pre-existing post-play
+  scene drift (`AncientTemple_Map002`, a Hina token), unrelated.
+- **world-export report** — 5 added / 2 modified / **0 removed**. The export
+  emits `Static Buildup → effects: ["Static"]`, which is the cheap tell that the
+  AE is a real embedded doc and not the dropped-on-load inline-object trap.
+
+### Still to do
+
+1. **Live/sim test** — the one genuine unknown is `free_action` fired from
+   `creature_targeted_by_action` (pre-resolve). No in-repo precedent: Ampere uses
+   `deal_damage` off this trigger, and every other `free_action` counter hangs
+   off a post-resolve trigger. **Fallback if the nested card misbehaves:** swap
+   `riposte_strike` to `deal_damage` 20 Bolt on `riposte_target` — moves Pressure
+   ~0.01 and is exactly Ampere's proven shape.
+2. **skill-regression** — needs Foundry open. Will show 3 added rows + 2
+   modified; accept with `--update`.
+3. Action animations for the riposte and the discharge — deferred as usual.
+
+---
 
 Related: `project_lightning_surge_dungeon`, `docs/lightning-storm-design.md`,
 `reference_bd_monster_automation`, `reference_monster_actor_setup`,

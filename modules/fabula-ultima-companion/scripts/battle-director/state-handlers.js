@@ -5182,6 +5182,15 @@ const Confirm = {
             weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
             weaponType: ar.weapon?.weaponType ?? null,
             damageType: ar.damageType ?? ar.damage?.element ?? null,
+            // Canonical spelling of the same element. `TRIGGER_DAMAGE_IS_<EL>`
+            // reads ONLY `payload.element`, so on this trigger every such gate
+            // silently read 0 — i.e. a `== 0` "not this element" gate failed
+            // OPEN and a `== 1` gate could never fire. `damageType` above is
+            // what the `reaction_damage_type` row filter reads (it checks
+            // damageType before element, so this alias changes nothing there).
+            // Audited 2026-08-20: 0 of 32 authored rows on this trigger used
+            // the identifier, so nothing silently changes behaviour.
+            element: ar.damageType ?? ar.damage?.element ?? null,
             // Which Defense this action's accuracy Check resolves against —
             // "def" (strike) | "mdef" (magic) | null (no Check / auto-hit).
             // SAME resolution the hit test + card labels use

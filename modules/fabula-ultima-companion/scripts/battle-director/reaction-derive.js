@@ -108,7 +108,7 @@ export const TARGETED_PAYLOAD_KEYS = Object.freeze([
   "sourceActorUuid", "subjectActorUuid", "subjectTokenUuid", "incomingDamage",
   "targetTokenUuids", "attackerActorUuid", "attackerTokenUuid", "actionIntent",
   "actionKind", "actionName", "sourceSkillName", "checkTotal", "isCrit", "isFumble",
-  "weaponRange", "weaponType", "damageType", "defenseResolved",
+  "weaponRange", "weaponType", "damageType", "element", "defenseResolved",
 ]);
 
 // Build the `creature_targeted_by_action` payload for ONE subject (a creature
@@ -146,6 +146,11 @@ export function buildTargetedPayload(subject, cardCtx) {
     weaponRange:       cardCtx?.weaponRange ?? null,
     weaponType:        cardCtx?.weaponType ?? null,
     damageType:        cardCtx?.damageType ?? null,
+    // Canonical twin of damageType — `TRIGGER_DAMAGE_IS_<EL>` reads only
+    // `element`. Must stay in lockstep with the CONFIRM scan or an element
+    // gate goes dead for mid-card new targets only, which is the worst kind
+    // of drift to debug.
+    element:           cardCtx?.damageType ?? null,
     // "def" | "mdef" | null — read by ATTACK_VS_DEF / ATTACK_VS_MDEF so a
     // Defense-specific reaction (Verónica's +2 DEF) fires only on attacks its
     // Defense would actually touch. Was absent here, so those gates read 0 for
