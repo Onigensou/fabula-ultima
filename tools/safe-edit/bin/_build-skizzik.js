@@ -1,7 +1,7 @@
 // Skizzik rework build — docs/skizzik-rework-proposal.md rev2
 // Run from tools/safe-edit.  --apply to write; default is dry-run.
-const { openCollection, getByKey, putByKey } = require("./lib/db");
-const { snapshotCollection } = require("./lib/backup");
+const { openCollection, getByKey, putByKey } = require("../lib/db");
+const { snapshotCollection } = require("../lib/backup");
 
 const APPLY = process.argv.includes("--apply");
 const A = "I2sSkVIQ4FCunZBE";                 // Skizzik
