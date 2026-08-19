@@ -37,7 +37,14 @@
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
+          "changes": [
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
           "description": "<p>The Asura's blades are aspected to bolt.</p>",
           "disabled": false,
           "duration": {
@@ -125,7 +132,14 @@
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
+          "changes": [
+            {
+              "key": "affinity_2",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
           "description": "<p>The Asura's blades are aspected to bolt.</p>",
           "disabled": false,
           "duration": {
@@ -169,7 +183,14 @@
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
+          "changes": [
+            {
+              "key": "affinity_7",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
           "description": "<p>The Asura's blades are aspected to bolt.</p>",
           "disabled": false,
           "duration": {
@@ -213,7 +234,14 @@
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
+          "changes": [
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 3,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
           "description": "<p>The Asura's blades are aspected to bolt.</p>",
           "disabled": false,
           "duration": {
@@ -273,7 +301,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Asura suffers damage of an element it has not yet collected.</p></li></ul><p>It keeps that element for the rest of the conflict, and strikes harder for every element it holds. Once it holds all four, its blades are ready to fall together.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Asura suffers <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;or <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage.</p></li></ul><p>That blade lights, and stays lit. The Asura is <strong>Vulnerable</strong> to each of its four elements until the matching blade is lit, and <strong>Resistant</strong> to it afterwards — and it strikes harder for every blade alight. Its own <strong>Sword Enchants</strong> light a blade the same way a foe's spell does.</p><p>When all four burn together, the Asura may unleash <strong>Quad-Elemental Slash</strong> — which spends every blade at once and leaves it dark and vulnerable again.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -719,13 +747,13 @@
           "cost": "60 MP",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>The Asura's four blades fall in a single flurry. Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a> and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage — four separate strikes, each landing automatically on a random foe.</p>",
+          "description": "<p>The Asura's four blades fall in a single flurry. Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage — four separate strikes, each landing automatically on a random foe.</p><p>Every blade goes dark afterwards: the Asura loses all of its elemental aspects and is left <strong>Vulnerable</strong> to all four elements once more.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "quad_bolt,quad_fire,quad_ice,quad_air",
+              "chain_steps": "quad_bolt,quad_fire,quad_ice,quad_air,quad_reset_marks,quad_reset_clock,quad_reset_aspect",
               "effect_kind": "chain",
               "effect_label": "quad_chain"
             },
@@ -820,6 +848,33 @@
               "effect_kind": "deal_damage",
               "effect_label": "quad_air",
               "target_ref": "quad_t_air"
+            },
+            "9": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "quad_reset_marks",
+              "filter_tag": "asura_mark",
+              "include_persistent": true,
+              "target_ref": "self"
+            },
+            "10": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "quad_reset_clock",
+              "filter_tag": "asura_clock",
+              "include_persistent": true,
+              "target_ref": "self"
+            },
+            "11": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "quad_reset_aspect",
+              "filter_tag": "asura_state",
+              "include_persistent": true,
+              "target_ref": "self"
             }
           },
           "heroic_requirement": "",
@@ -1268,6 +1323,7 @@
               "effect_kind": "remove_ae",
               "effect_label": "aspect_clear",
               "filter_tag": "asura_state",
+              "include_persistent": true,
               "target_ref": "self"
             },
             "9": {
@@ -2439,7 +2495,7 @@
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Sword Enchant - Fire",
-          "action_pattern_priority": "8",
+          "action_pattern_priority": "5",
           "action_pattern_string": "Fire Mark",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
@@ -2452,7 +2508,7 @@
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Sword Enchant - Bolt",
-          "action_pattern_priority": "8",
+          "action_pattern_priority": "5",
           "action_pattern_string": "Bolt Mark",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
@@ -2465,7 +2521,7 @@
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Sword Enchant - Ice",
-          "action_pattern_priority": "8",
+          "action_pattern_priority": "5",
           "action_pattern_string": "Ice Mark",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
@@ -2478,7 +2534,7 @@
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Sword Enchant - Air",
-          "action_pattern_priority": "8",
+          "action_pattern_priority": "5",
           "action_pattern_string": "Air Mark",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
@@ -2526,13 +2582,13 @@
       },
       "activation": "4",
       "affinity_1": "NA",
-      "affinity_2": "NA",
-      "affinity_3": "NA",
-      "affinity_4": "RS",
-      "affinity_5": "VU",
-      "affinity_6": "RS",
-      "affinity_7": "NA",
-      "affinity_8": "VU",
+      "affinity_2": "VU",
+      "affinity_3": "VU",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "VU",
+      "affinity_7": "VU",
+      "affinity_8": "NA",
       "affinity_9": "NA",
       "animation_table": {},
       "arcane_ef": "100",
@@ -2741,7 +2797,7 @@
       "skill_active_list": {
         "NFruWlBHrgfNSJmM": {
           "active_cost": "60 MP",
-          "active_description": "<p>The Asura's four blades fall in a single flurry. Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a> and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage — four separate strikes, each landing automatically on a random foe.</p>",
+          "active_description": "<p>The Asura's four blades fall in a single flurry. Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage — four separate strikes, each landing automatically on a random foe.</p><p>Every blade goes dark afterwards: the Asura loses all of its elemental aspects and is left <strong>Vulnerable</strong> to all four elements once more.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
@@ -2794,7 +2850,7 @@
         "0bN7A6pXFG2cX2q9": {
           "id": "${item.id}",
           "name": "Ascension",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Asura suffers damage of an element it has not yet collected.</p></li></ul><p>It keeps that element for the rest of the conflict, and strikes harder for every element it holds. Once it holds all four, its blades are ready to fall together.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Asura suffers <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;or <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage.</p></li></ul><p>That blade lights, and stays lit. The Asura is <strong>Vulnerable</strong> to each of its four elements until the matching blade is lit, and <strong>Resistant</strong> to it afterwards — and it strikes harder for every blade alight. Its own <strong>Sword Enchants</strong> light a blade the same way a foe's spell does.</p><p>When all four burn together, the Asura may unleash <strong>Quad-Elemental Slash</strong> — which spends every blade at once and leaves it dark and vulnerable again.</p>",
           "roll": "",
           "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.0bN7A6pXFG2cX2q9"
         },
@@ -2819,7 +2875,7 @@
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "steal_percentage_table": {},
       "stealable_loot": {},
-      "study_text": "<p>Not a demon — a <strong>demi-god</strong>, and it will say so between blows. It wanders looking for a fight worth losing and has never found one. Every element it has ever tasted stays with it: strike it with fire and it remembers fire, and in this valley it remembers <strong>lightning</strong> even when nobody swung. When it has gathered all four, step back.</p>",
+      "study_text": "<p>Not a demon — a <strong>demi-god</strong>, and it will say so between blows. Strike it with an element and one of its four blades takes the flame: it will never be caught by that element twice, but a blade it has not yet lit is still an open wound. In this valley the <strong>storm</strong> lights one for it before the fight even starts. When all four burn at once, step back — and when they go out, that is your moment.</p>",
       "subtype": "Sub-Type",
       "subtype_list": "DEMI-HUMAN",
       "sword_ef": "50",
