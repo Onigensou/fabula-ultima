@@ -1,6 +1,11 @@
 # Asura — Rework Proposal
 
-**Status: APPROVED + BUILT 2026-08-19. NOT LIVE-TESTED.**
+**Status: APPROVED + BUILT + LIVE-TESTED 2026-08-19.**
+> ⚠ **Superseded in parts by [asura-live-test-report.md](asura-live-test-report.md).**
+> The live pass found that `creature_takes_damage` never fires on an item, so the
+> Aspect machine (and the new Mark clock) were inert; it also reworked Quad into a
+> single-card auto-hit flurry and split Elemental Slash into Physical/Magic modes.
+> Read the report before trusting §4 (the kit) or §5.3 (Pressure) below.
 Written and implemented against the live world (`Actor.0AwQ7wEDz4ISA9mA`, game
 closed, via safe-edit). §9 records what actually shipped, including three
 deviations from this proposal and one bug found during the build.
