@@ -1515,7 +1515,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 21,
+          "damage": 26,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -1797,7 +1797,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 21,
+          "damage": 26,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -2594,7 +2594,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 21,
+          "damage": 26,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -2921,7 +2921,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 21,
+          "damage": 26,
           "grant": null,
           "grantRes": null,
           "hit": true,

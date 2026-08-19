@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-08-18T20:09:47.779Z",
- "count": 2116,
+ "capturedAt": "2026-08-19T16:28:32.766Z",
+ "count": 2123,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -6742,9 +6742,12 @@
       "debuff"
      ],
      "family": null,
-     "lifetime": null,
-     "charges": null,
-     "changes": []
+     "lifetime": "target_turn_end",
+     "charges": 3,
+     "changes": [
+      "affinity_5 mode0 = VU",
+      "flags.fabula-ultima-companion.species_override mode5 = CONSTRUCT"
+     ]
     },
     {
      "name": "Poisoned",
@@ -18970,11 +18973,34 @@
     "skill_target": "One Creature",
     "skill_type": "Active"
    },
-   "effects": [],
-   "reactions": [
-    "reaction_action_intent=harmful reaction_passive_mode=ask reaction_source=ally reaction_trigger=creature_targeted_by_action"
+   "effects": [
+    "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
+    "ae_duplicate_mode=replace ae_template_ref=Protect count=1 effect_kind=apply_ae effect_label=protect_refill on_empty=abort target_ref=protect_self",
+    "ae_duplicate_mode=replace count=1 destination_ref=protect_self effect_kind=redirect_target effect_label=protect_redirect on_empty=abort rebuild_card=true target_ref=protect_incoming",
+    "chain_steps=protect_redirect, protect_gate effect_kind=chain effect_label=protect_react",
+    "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=protect_self iteration_mode=together mode=exact skip_when_passive=true",
+    "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=protect_incoming exclude_self=true iteration_mode=together mode=exact skip_when_passive=true"
    ],
-   "aes": []
+   "reactions": [
+    "reaction_action_intent=harmful reaction_effect_ref=protect_react reaction_passive_mode=ask reaction_source=ally reaction_trigger=creature_targeted_by_action",
+    "reaction_effect_ref=protect_refill reaction_passive_mode=force reaction_passive_target=self reaction_source=self reaction_trigger=turn_start",
+    "reaction_effect_ref=protect_refill reaction_passive_mode=force reaction_trigger=conflict_start"
+   ],
+   "aes": [
+    {
+     "name": "Protect",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [
+      "fud-protect-ready"
+     ],
+     "tags": [],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 1,
+     "changes": []
+    }
+   ]
   },
   "(world) / Psychic Dagger": {
    "props": {
@@ -26814,6 +26840,110 @@
    "reactions": [],
    "aes": []
   },
+  "Asura / Ascension": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=fire_ae,asc_up effect_kind=chain effect_label=mark_fire",
+    "ae_duplicate_mode=skip ae_template_ref=Fire Mark effect_kind=apply_ae effect_label=fire_ae target_ref=self",
+    "chain_steps=bolt_ae,asc_up effect_kind=chain effect_label=mark_bolt",
+    "ae_duplicate_mode=skip ae_template_ref=Bolt Mark effect_kind=apply_ae effect_label=bolt_ae target_ref=self",
+    "chain_steps=ice_ae,asc_up effect_kind=chain effect_label=mark_ice",
+    "ae_duplicate_mode=skip ae_template_ref=Ice Mark effect_kind=apply_ae effect_label=ice_ae target_ref=self",
+    "chain_steps=air_ae,asc_up effect_kind=chain effect_label=mark_air",
+    "ae_duplicate_mode=skip ae_template_ref=Air Mark effect_kind=apply_ae effect_label=air_ae target_ref=self",
+    "ae_duplicate_mode=add_charges ae_initial_charges=1 ae_template_ref=Ascension effect_kind=apply_ae effect_label=asc_up target_ref=self",
+    "damage_amount=AE_CHARGES_ASCENSION * 8 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=ascension_bonus"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_FIRE == 1 && AE_COUNT_FIRE_MARK == 0 reaction_effect_ref=mark_fire reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && AE_COUNT_BOLT_MARK == 0 reaction_effect_ref=mark_bolt reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_ICE == 1 && AE_COUNT_ICE_MARK == 0 reaction_effect_ref=mark_ice reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_AIR == 1 && AE_COUNT_AIR_MARK == 0 reaction_effect_ref=mark_air reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=AE_CHARGES_ASCENSION > 0 reaction_effect_ref=ascension_bonus reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_CHARGES_ASCENSION > 0 reaction_effect_ref=ascension_bonus reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash: Overflow reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_CHARGES_ASCENSION > 0 reaction_effect_ref=ascension_bonus reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage"
+   ],
+   "aes": [
+    {
+     "name": "Air Mark",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "asura_mark"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 1,
+     "changes": [
+      "affinity_2 mode5 = aeAffinityFloor(\"RS\")"
+     ]
+    },
+    {
+     "name": "Ascension",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "asura_clock"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 4,
+     "changes": []
+    },
+    {
+     "name": "Bolt Mark",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "asura_mark"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 1,
+     "changes": [
+      "affinity_3 mode5 = aeAffinityFloor(\"RS\")"
+     ]
+    },
+    {
+     "name": "Fire Mark",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "asura_mark"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 1,
+     "changes": [
+      "affinity_6 mode5 = aeAffinityFloor(\"RS\")"
+     ]
+    },
+    {
+     "name": "Ice Mark",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "asura_mark"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 1,
+     "changes": [
+      "affinity_7 mode5 = aeAffinityFloor(\"RS\")"
+     ]
+    }
+   ]
+  },
   "Asura / Elemental Aspect": {
    "props": {
     "class": "NPC",
@@ -26822,15 +26952,15 @@
     "skill_type": "Passive"
    },
    "effects": [
-    "chain_steps=aspect_clear,aspect_on_fire effect_kind=chain effect_label=aspect_set_fire",
+    "chain_steps=aspect_clear,aspect_on_fire,aspect_ench effect_kind=chain effect_label=aspect_set_fire",
     "ae_duplicate_mode=replace ae_template_ref=Fire Aspect effect_kind=apply_ae effect_label=aspect_on_fire target_ref=self",
-    "chain_steps=aspect_clear,aspect_on_bolt effect_kind=chain effect_label=aspect_set_bolt",
+    "chain_steps=aspect_clear,aspect_on_bolt,aspect_ench effect_kind=chain effect_label=aspect_set_bolt",
     "ae_duplicate_mode=replace ae_template_ref=Bolt Aspect effect_kind=apply_ae effect_label=aspect_on_bolt target_ref=self",
-    "chain_steps=aspect_clear,aspect_on_ice effect_kind=chain effect_label=aspect_set_ice",
+    "chain_steps=aspect_clear,aspect_on_ice,aspect_ench effect_kind=chain effect_label=aspect_set_ice",
     "ae_duplicate_mode=replace ae_template_ref=Ice Aspect effect_kind=apply_ae effect_label=aspect_on_ice target_ref=self",
-    "chain_steps=aspect_clear,aspect_on_air effect_kind=chain effect_label=aspect_set_air",
+    "chain_steps=aspect_clear,aspect_on_air,aspect_ench effect_kind=chain effect_label=aspect_set_air",
     "ae_duplicate_mode=replace ae_template_ref=Air Aspect effect_kind=apply_ae effect_label=aspect_on_air target_ref=self",
-    "count=all effect_kind=remove_ae effect_label=aspect_clear filter_tag=asura_state target_ref=self",
+    "count=all effect_kind=remove_ae effect_label=aspect_clear filter_tag=asura_state include_persistent=true target_ref=self",
     "chain_steps=slash_el_fire,slash_bonus effect_kind=chain effect_label=slash_fire",
     "change_element=fire effect_kind=change_damage_element effect_label=slash_el_fire",
     "chain_steps=slash_el_bolt,slash_bonus effect_kind=chain effect_label=slash_bolt",
@@ -26842,20 +26972,28 @@
     "damage_amount=10 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=slash_bonus",
     "ae_duplicate_mode=replace ae_template_ref=Paralyzed effect_kind=apply_ae effect_label=mark_bolt target_ref=hit_action_targets",
     "ae_duplicate_mode=replace ae_template_ref=Disarmed effect_kind=apply_ae effect_label=mark_ice target_ref=hit_action_targets",
-    "ae_duplicate_mode=replace ae_template_ref=Silence effect_kind=apply_ae effect_label=mark_air target_ref=hit_action_targets"
+    "ae_duplicate_mode=replace ae_template_ref=Silence effect_kind=apply_ae effect_label=mark_air target_ref=hit_action_targets",
+    "ae_duplicate_mode=replace ae_template_ref=Enchanted effect_kind=apply_ae effect_label=aspect_ench target_ref=self"
    ],
    "reactions": [
-    "condition_formula=TRIGGER_DAMAGE_IS_FIRE == 1 reaction_effect_ref=aspect_set_fire reaction_passive_mode=on reaction_source=self reaction_trigger=creature_takes_damage",
-    "condition_formula=TRIGGER_DAMAGE_IS_BOLT == 1 reaction_effect_ref=aspect_set_bolt reaction_passive_mode=on reaction_source=self reaction_trigger=creature_takes_damage",
-    "condition_formula=TRIGGER_DAMAGE_IS_ICE == 1 reaction_effect_ref=aspect_set_ice reaction_passive_mode=on reaction_source=self reaction_trigger=creature_takes_damage",
-    "condition_formula=TRIGGER_DAMAGE_IS_AIR == 1 reaction_effect_ref=aspect_set_air reaction_passive_mode=on reaction_source=self reaction_trigger=creature_takes_damage",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_FIRE == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_fire reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_bolt reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_ICE == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_ice reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_AIR == 1 reaction_cause_filter=damage reaction_effect_ref=aspect_set_air reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_lose_resource",
     "condition_formula=AE_COUNT_FIRE_ASPECT > 0 reaction_effect_ref=slash_fire reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
     "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=slash_bolt reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
     "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=slash_ice reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
     "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=slash_air reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
     "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=mark_bolt reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_deals_damage",
     "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=mark_ice reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_deals_damage",
-    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=mark_air reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_deals_damage"
+    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=mark_air reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_deals_damage",
+    "condition_formula=AE_COUNT_FIRE_ASPECT > 0 reaction_effect_ref=slash_fire reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=slash_bolt reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=slash_ice reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=slash_air reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_BOLT_ASPECT > 0 reaction_effect_ref=mark_bolt reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_deals_damage",
+    "condition_formula=AE_COUNT_ICE_ASPECT > 0 reaction_effect_ref=mark_ice reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_deals_damage",
+    "condition_formula=AE_COUNT_AIR_ASPECT > 0 reaction_effect_ref=mark_air reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_deals_damage"
    ],
    "aes": [
     {
@@ -26867,7 +27005,7 @@
       "asura_state"
      ],
      "family": null,
-     "lifetime": null,
+     "lifetime": "persistent_counter",
      "charges": 1,
      "changes": []
     },
@@ -26880,7 +27018,20 @@
       "asura_state"
      ],
      "family": null,
-     "lifetime": null,
+     "lifetime": "persistent_counter",
+     "charges": 1,
+     "changes": []
+    },
+    {
+     "name": "Enchanted",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "asura_state"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
      "charges": 1,
      "changes": []
     },
@@ -26893,7 +27044,7 @@
       "asura_state"
      ],
      "family": null,
-     "lifetime": null,
+     "lifetime": "persistent_counter",
      "charges": 1,
      "changes": []
     },
@@ -26906,7 +27057,7 @@
       "asura_state"
      ],
      "family": null,
-     "lifetime": null,
+     "lifetime": "persistent_counter",
      "charges": 1,
      "changes": []
     }
@@ -26916,14 +27067,14 @@
    "props": {
     "check_bonus": "5",
     "class": "NPC",
-    "damage_bonus": "62",
+    "damage_bonus": "42",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
     "rolled_atr1": "DEX",
     "rolled_atr2": "MIG",
     "skill_range": "Melee",
-    "skill_target": "Up to two creatures",
+    "skill_target": "One Creature",
     "skill_type": "Attack",
     "type_damage": "Physical"
    },
@@ -26931,12 +27082,12 @@
    "reactions": [],
    "aes": []
   },
-  "Asura / Elemental Slash (Arm)": {
+  "Asura / Elemental Slash (Enchanted)": {
    "props": {
     "check_bonus": "5",
     "class": "NPC",
-    "damage_bonus": "62",
-    "defense_target_type": "def",
+    "damage_bonus": "42",
+    "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
     "rolled_atr1": "DEX",
@@ -26955,7 +27106,8 @@
     "action_keywords": "overflow",
     "check_bonus": "5",
     "class": "NPC",
-    "damage_bonus": "30",
+    "cost": "30 MP",
+    "damage_bonus": "20",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
@@ -26970,6 +27122,22 @@
    "reactions": [],
    "aes": []
   },
+  "Asura / Four-Armed Fury": {
+   "props": {
+    "class": "NPC",
+    "defense_target_type": "def",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "damage_amount=20 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=fury_crisis"
+   ],
+   "reactions": [
+    "condition_formula=AE_COUNT_CRISIS > 0 reaction_effect_ref=fury_crisis reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_CRISIS > 0 reaction_effect_ref=fury_crisis reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash: Overflow reaction_trigger=creature_will_deal_damage",
+    "condition_formula=AE_COUNT_CRISIS > 0 reaction_effect_ref=fury_crisis reaction_passive_mode=on reaction_source=self reaction_source_skill=Elemental Slash (Enchanted) reaction_trigger=creature_will_deal_damage"
+   ],
+   "aes": []
+  },
   "Asura / Quad-Elemental Slash": {
    "props": {
     "class": "NPC",
@@ -26982,14 +27150,18 @@
     "skill_type": "Active"
    },
    "effects": [
-    "chain_steps=quad_bolt,quad_fire,quad_ice,quad_air effect_kind=chain effect_label=quad_chain",
-    "action_ref=Elemental Slash (Arm) damage_bonus_formula=10 effect_kind=free_action effect_label=quad_bolt element_override=bolt free_of_cost=true on_hit_effect_refs=quad_mark_bolt",
-    "action_ref=Elemental Slash (Arm) damage_bonus_formula=10 effect_kind=free_action effect_label=quad_fire element_override=fire free_of_cost=true",
-    "action_ref=Elemental Slash (Arm) damage_bonus_formula=10 effect_kind=free_action effect_label=quad_ice element_override=ice free_of_cost=true on_hit_effect_refs=quad_mark_ice",
-    "action_ref=Elemental Slash (Arm) damage_bonus_formula=10 effect_kind=free_action effect_label=quad_air element_override=air free_of_cost=true on_hit_effect_refs=quad_mark_air",
-    "ae_duplicate_mode=replace ae_template_ref=Paralyzed effect_kind=apply_ae effect_label=quad_mark_bolt target_ref=hit_action_targets",
-    "ae_duplicate_mode=replace ae_template_ref=Disarmed effect_kind=apply_ae effect_label=quad_mark_ice target_ref=hit_action_targets",
-    "ae_duplicate_mode=replace ae_template_ref=Silence effect_kind=apply_ae effect_label=quad_mark_air target_ref=hit_action_targets"
+    "chain_steps=quad_bolt,quad_fire,quad_ice,quad_air,quad_reset_marks,quad_reset_clock,quad_reset_aspect effect_kind=chain effect_label=quad_chain",
+    "auto_confirm_when_obvious=true candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=quad_t_bolt exclude_self=true iteration_mode=together mode=random target_filter=CUR_HP > 0",
+    "damage_amount=45 damage_cause=damage damage_element=bolt effect_kind=deal_damage effect_label=quad_bolt target_ref=quad_t_bolt",
+    "auto_confirm_when_obvious=true candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=quad_t_fire exclude_self=true iteration_mode=together mode=random target_filter=CUR_HP > 0",
+    "damage_amount=45 damage_cause=damage damage_element=fire effect_kind=deal_damage effect_label=quad_fire target_ref=quad_t_fire",
+    "auto_confirm_when_obvious=true candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=quad_t_ice exclude_self=true iteration_mode=together mode=random target_filter=CUR_HP > 0",
+    "damage_amount=45 damage_cause=damage damage_element=ice effect_kind=deal_damage effect_label=quad_ice target_ref=quad_t_ice",
+    "auto_confirm_when_obvious=true candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=quad_t_air exclude_self=true iteration_mode=together mode=random target_filter=CUR_HP > 0",
+    "damage_amount=45 damage_cause=damage damage_element=air effect_kind=deal_damage effect_label=quad_air target_ref=quad_t_air",
+    "count=all effect_kind=remove_tagged_ae effect_label=quad_reset_marks filter_tag=asura_mark include_persistent=true target_ref=self",
+    "count=all effect_kind=remove_tagged_ae effect_label=quad_reset_clock filter_tag=asura_clock include_persistent=true target_ref=self",
+    "count=all effect_kind=remove_tagged_ae effect_label=quad_reset_aspect filter_tag=asura_state include_persistent=true target_ref=self"
    ],
    "reactions": [],
    "aes": []
@@ -27005,12 +27177,27 @@
    },
    "effects": [
     "chain_steps=enchant_air_bleed,enchant_air_buff,enchant_air_mp effect_kind=chain effect_label=enchant_air",
-    "damage_amount=10 damage_element=air effect_kind=deal_damage effect_label=enchant_air_bleed target_ref=self",
+    "damage_amount=10 damage_cause=damage damage_element=air effect_kind=deal_damage effect_label=enchant_air_bleed target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Awake effect_kind=apply_ae effect_label=enchant_air_buff target_ref=self",
-    "effect_kind=grant effect_label=enchant_air_mp grant_amount=15 grant_resource=mp target_ref=self"
+    "effect_kind=grant effect_label=enchant_air_mp grant_amount=15 grant_resource=mp target_ref=self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Whetted effect_kind=apply_ae effect_label=enchant_air_whet target_ref=self"
    ],
    "reactions": [],
-   "aes": []
+   "aes": [
+    {
+     "name": "Whetted",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "asura_whet"
+     ],
+     "family": null,
+     "lifetime": "round_end",
+     "charges": 1,
+     "changes": []
+    }
+   ]
   },
   "Asura / Sword Enchant - Bolt": {
    "props": {
@@ -27023,12 +27210,27 @@
    },
    "effects": [
     "chain_steps=enchant_bolt_bleed,enchant_bolt_buff,enchant_bolt_mp effect_kind=chain effect_label=enchant_bolt",
-    "damage_amount=10 damage_element=bolt effect_kind=deal_damage effect_label=enchant_bolt_bleed target_ref=self",
+    "damage_amount=10 damage_cause=damage damage_element=bolt effect_kind=deal_damage effect_label=enchant_bolt_bleed target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Swift effect_kind=apply_ae effect_label=enchant_bolt_buff target_ref=self",
-    "effect_kind=grant effect_label=enchant_bolt_mp grant_amount=15 grant_resource=mp target_ref=self"
+    "effect_kind=grant effect_label=enchant_bolt_mp grant_amount=15 grant_resource=mp target_ref=self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Whetted effect_kind=apply_ae effect_label=enchant_bolt_whet target_ref=self"
    ],
    "reactions": [],
-   "aes": []
+   "aes": [
+    {
+     "name": "Whetted",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "asura_whet"
+     ],
+     "family": null,
+     "lifetime": "round_end",
+     "charges": 1,
+     "changes": []
+    }
+   ]
   },
   "Asura / Sword Enchant - Fire": {
    "props": {
@@ -27041,12 +27243,27 @@
    },
    "effects": [
     "chain_steps=enchant_fire_bleed,enchant_fire_buff,enchant_fire_mp effect_kind=chain effect_label=enchant_fire",
-    "damage_amount=10 damage_element=fire effect_kind=deal_damage effect_label=enchant_fire_bleed target_ref=self",
+    "damage_amount=10 damage_cause=damage damage_element=fire effect_kind=deal_damage effect_label=enchant_fire_bleed target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Strong effect_kind=apply_ae effect_label=enchant_fire_buff target_ref=self",
-    "effect_kind=grant effect_label=enchant_fire_mp grant_amount=15 grant_resource=mp target_ref=self"
+    "effect_kind=grant effect_label=enchant_fire_mp grant_amount=15 grant_resource=mp target_ref=self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Whetted effect_kind=apply_ae effect_label=enchant_fire_whet target_ref=self"
    ],
    "reactions": [],
-   "aes": []
+   "aes": [
+    {
+     "name": "Whetted",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "asura_whet"
+     ],
+     "family": null,
+     "lifetime": "round_end",
+     "charges": 1,
+     "changes": []
+    }
+   ]
   },
   "Asura / Sword Enchant - Ice": {
    "props": {
@@ -27059,12 +27276,27 @@
    },
    "effects": [
     "chain_steps=enchant_ice_bleed,enchant_ice_buff,enchant_ice_mp effect_kind=chain effect_label=enchant_ice",
-    "damage_amount=10 damage_element=ice effect_kind=deal_damage effect_label=enchant_ice_bleed target_ref=self",
+    "damage_amount=10 damage_cause=damage damage_element=ice effect_kind=deal_damage effect_label=enchant_ice_bleed target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Focus effect_kind=apply_ae effect_label=enchant_ice_buff target_ref=self",
-    "effect_kind=grant effect_label=enchant_ice_mp grant_amount=15 grant_resource=mp target_ref=self"
+    "effect_kind=grant effect_label=enchant_ice_mp grant_amount=15 grant_resource=mp target_ref=self",
+    "$deleted=true ae_duplicate_mode=replace ae_template_ref=Whetted effect_kind=apply_ae effect_label=enchant_ice_whet target_ref=self"
    ],
    "reactions": [],
-   "aes": []
+   "aes": [
+    {
+     "name": "Whetted",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "asura_whet"
+     ],
+     "family": null,
+     "lifetime": "round_end",
+     "charges": 1,
+     "changes": []
+    }
+   ]
   },
   "Bandit (Overworld) / Bandit Jacket": {
    "props": {
@@ -28750,7 +28982,7 @@
     {
      "name": "DEF UP",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -28763,7 +28995,7 @@
     {
      "name": "MDEF UP",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -28966,7 +29198,7 @@
     {
      "name": "DEF UP",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -28979,7 +29211,7 @@
     {
      "name": "MDEF UP",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -29012,7 +29244,7 @@
     {
      "name": "DEF UP",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -29025,7 +29257,7 @@
     {
      "name": "MDEF UP",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -30760,7 +30992,7 @@
     {
      "name": "DEF UP",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -34406,7 +34638,7 @@
     {
      "name": "Black Belt",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -34726,7 +34958,7 @@
     {
      "name": "Enchanted Delayed Blast Remote",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -35432,7 +35664,7 @@
     {
      "name": "Winter Kolossus — Hypothermia Immunity",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -39373,7 +39605,7 @@
     {
      "name": "DEF UP",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -39386,7 +39618,7 @@
     {
      "name": "MDEF UP",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -43264,11 +43496,34 @@
     "skill_target": "One Creature",
     "skill_type": "Active"
    },
-   "effects": [],
-   "reactions": [
-    "reaction_action_intent=harmful reaction_passive_mode=ask reaction_source=ally reaction_trigger=creature_targeted_by_action"
+   "effects": [
+    "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
+    "ae_duplicate_mode=replace ae_template_ref=Protect count=1 effect_kind=apply_ae effect_label=protect_refill on_empty=abort target_ref=protect_self",
+    "ae_duplicate_mode=replace count=1 destination_ref=protect_self effect_kind=redirect_target effect_label=protect_redirect on_empty=abort rebuild_card=true target_ref=protect_incoming",
+    "chain_steps=protect_redirect, protect_gate effect_kind=chain effect_label=protect_react",
+    "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=protect_self iteration_mode=together mode=exact skip_when_passive=true",
+    "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=protect_incoming exclude_self=true iteration_mode=together mode=exact skip_when_passive=true"
    ],
-   "aes": []
+   "reactions": [
+    "reaction_action_intent=harmful reaction_effect_ref=protect_react reaction_passive_mode=ask reaction_source=ally reaction_trigger=creature_targeted_by_action",
+    "reaction_effect_ref=protect_refill reaction_passive_mode=force reaction_passive_target=self reaction_source=self reaction_trigger=turn_start",
+    "reaction_effect_ref=protect_refill reaction_passive_mode=force reaction_trigger=conflict_start"
+   ],
+   "aes": [
+    {
+     "name": "Protect",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [
+      "fud-protect-ready"
+     ],
+     "tags": [],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 1,
+     "changes": []
+    }
+   ]
   },
   "Hina / Ring of Magma": {
    "props": {
@@ -48487,6 +48742,115 @@
    ],
    "reactions": [
     "condition_formula=TARGET_AE_CHARGES_PETRIFY > 0 reaction_effect_ref=dive_double reaction_passive_mode=on reaction_source=self reaction_trigger=creature_will_deal_damage"
+   ],
+   "aes": []
+  },
+  "Obsidrax / Basalt Crush": {
+   "props": {
+    "action_intent": "harmful",
+    "check_bonus": "8",
+    "class": "NPC",
+    "damage_bonus": "38",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isReaction": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "DEX",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Physical"
+   },
+   "effects": [
+    "ae_chance_percent=35 ae_duplicate_mode=skip ae_template_ref=Petrify effect_kind=apply_ae effect_label=bc_petrify target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=bc_petrify reaction_passive_mode=force reaction_source=self reaction_source_skill=Basalt Crush reaction_trigger=creature_deals_damage"
+   ],
+   "aes": []
+  },
+  "Obsidrax / Lodestone Core": {
+   "props": {
+    "action_intent": "harmful",
+    "class": "NPC",
+    "defense_target_type": "def",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=lc_target,lc_damage effect_kind=chain effect_label=lc_chain",
+    "candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=lc_target mode=random",
+    "damage_amount=30 damage_cause=damage damage_element=earth damage_verbosity=full effect_kind=deal_damage effect_label=lc_damage target_ref=lc_target"
+   ],
+   "reactions": [
+    "condition_formula=AE_COUNT_LIGHTNING_ROD > 0 reaction_effect_ref=lc_chain reaction_passive_mode=force reaction_source=self reaction_trigger=turn_start"
+   ],
+   "aes": []
+  },
+  "Obsidrax / Miasma Nova": {
+   "props": {
+    "action_intent": "harmful",
+    "class": "NPC",
+    "cost": "30 MP",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "on_activate_effect_ref": "mn_chain",
+    "skill_range": "Range",
+    "skill_target": "All Enemy",
+    "skill_type": "Active"
+   },
+   "effects": [
+    "chain_steps=mn_save,mn_poison effect_kind=chain effect_label=mn_chain",
+    "effect_kind=save_check effect_label=mn_save save_attr1=mig save_attr2=wlp save_dl=13 save_mode=interactive target_ref=action_targets",
+    "ae_duplicate_mode=skip ae_template_ref=Poisoned effect_kind=apply_ae effect_label=mn_poison target_ref=save_failed_targets"
+   ],
+   "reactions": [],
+   "aes": []
+  },
+  "Obsidrax / Tectonic Collapse": {
+   "props": {
+    "action_intent": "harmful",
+    "check_bonus": "8",
+    "class": "NPC",
+    "cost": "30 MP",
+    "damage_bonus": "22",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "MIG",
+    "rolled_atr2": "WLP",
+    "skill_range": "Range",
+    "skill_target": "All Enemy",
+    "skill_type": "Active",
+    "type_damage": "Earth"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Obsidrax / Venomstone Spines": {
+   "props": {
+    "action_intent": "harmful",
+    "check_bonus": "8",
+    "class": "NPC",
+    "damage_bonus": "22",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "isReaction": "true",
+    "rolled_atr1": "INS",
+    "rolled_atr2": "MIG",
+    "skill_range": "Range",
+    "skill_target": "Up to three creatures",
+    "skill_type": "Attack",
+    "type_damage": "Poison"
+   },
+   "effects": [
+    "ae_chance_percent=60 ae_duplicate_mode=skip ae_template_ref=Envenomed effect_kind=apply_ae effect_label=vs_envenom target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "reaction_effect_ref=vs_envenom reaction_passive_mode=force reaction_source=self reaction_source_skill=Venomstone Spines reaction_trigger=creature_deals_damage"
    ],
    "aes": []
   },
@@ -54100,7 +54464,7 @@
     {
      "name": "Life Charm",
      "transfer": true,
-     "disabled": false,
+     "disabled": true,
      "statuses": [],
      "tags": [],
      "family": null,
