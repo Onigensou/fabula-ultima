@@ -194,30 +194,62 @@ function toCombatModel(doc) {
 
     turnsPerRound: turnsPerRound(props),
 
-    // Item names only at this stage. Resolving them into modelled actions is the
-    // coverage manifest's job (see docs/mindscape-ruleset.md Part 7) and must
-    // stay separate: the loader may not decide that an unrecognised skill is
-    // absent, because that is exactly the silent approximation this tool exists
-    // to refuse.
-    items: (doc.items ?? []).map((i) => ({
-      id: i._id,
-      name: i.name,
-      props: i.system?.props ?? {},
-    })),
+    // Filled in by loadAll from the !actors.items! keyspace — the actor document's
+    // own `items` array holds only ID STRINGS, not embedded documents.
+    //
+    // Resolving these into modelled actions is the coverage manifest's job (see
+    // docs/mindscape-ruleset.md Part 7) and must stay separate: the loader may
+    // not decide that an unrecognised skill is absent, because that is exactly
+    // the silent approximation this tool exists to refuse.
+    items: [],
+    itemIds: Array.isArray(doc.items) ? doc.items.filter((x) => typeof x === "string") : [],
 
     _rawProps: props,
   };
 }
 
-// Every actor in the world, as combat models, keyed by name.
+// ── Key namespaces ──────────────────────────────────────────────────────────
+// The `actors` collection is NOT just actors. Measured on this world:
+//
+//   !actors!               x298    the actor documents
+//   !actors.items!         x2186   embedded items, keyed <actorId>.<itemId>
+//   !actors.items.effects! x588    effects on those items
+//   !actors.effects!       x58     effects on the actors
+//
+// Iterating the collection and keeping everything with a `name` therefore yields
+// ~2800 non-actors that all look like actors — an embedded item has a name, an
+// id and a system.props, so nothing downstream would notice. Filter by KEY.
+const ACTOR_KEY = /^!actors!([^!.]+)$/;
+const ITEM_KEY  = /^!actors\.items!([^!.]+)\.([^!.]+)$/;
+
+// Every actor in the world, as combat models, with embedded items attached.
 async function loadAll({ world = DEFAULT_WORLD } = {}) {
   return withCollection("actors", world, async (db) => {
-    const out = [];
-    for await (const [, value] of db.iterator()) {
-      if (!value?.name) continue;
-      out.push(toCombatModel(value));
+    const actors = new Map();     // actorId -> model
+    const itemsByActor = new Map();
+
+    for await (const [key, value] of db.iterator()) {
+      const a = ACTOR_KEY.exec(key);
+      if (a) {
+        if (value?.name) actors.set(a[1], toCombatModel(value));
+        continue;
+      }
+      const i = ITEM_KEY.exec(key);
+      if (i && value?.name) {
+        if (!itemsByActor.has(i[1])) itemsByActor.set(i[1], []);
+        itemsByActor.get(i[1]).push({
+          id: i[2],
+          name: value.name,
+          type: value.type ?? null,
+          props: value.system?.props ?? {},
+        });
+      }
     }
-    return out;
+
+    for (const [actorId, model] of actors) {
+      model.items = itemsByActor.get(actorId) ?? [];
+    }
+    return [...actors.values()];
   });
 }
 
