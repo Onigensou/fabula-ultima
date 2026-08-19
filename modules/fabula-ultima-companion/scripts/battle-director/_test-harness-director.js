@@ -1981,11 +1981,24 @@ function attachCardHelpers(result, cards) {
 // integers. Unknown keys ignored.
 function installFormulaOverrides(override) {
   if (!override || typeof override !== "object") return { restore() {} };
-  const KEYS = ["SL", "CHAR_LEVEL", "BOND_COUNT", "BOND_STRENGTH"];
+  // The resolver consults this registry generically —
+  // `hasOwnProperty(ov, name)` for ANY identifier (skill-formulas.js ~L470) — so
+  // there is no reason to allowlist. This used to accept only
+  // SL / CHAR_LEVEL / BOND_COUNT / BOND_STRENGTH and DROP everything else in
+  // silence, which is fail-permissive in the worst way: pinning e.g.
+  // ANY_TARGET_HAS_MY_FOCUS did nothing, the gated row reported
+  // "Conditions not met", and that reads as a BROKEN SKILL rather than an
+  // ignored override. Now any identifier can be pinned, and anything we cannot
+  // use is reported instead of dropped.
   const map = {};
-  for (const k of KEYS) {
-    const v = Number(override[k]);
+  const rejected = [];
+  for (const [k, raw] of Object.entries(override)) {
+    const v = Number(raw);
     if (Number.isFinite(v)) map[k] = v;
+    else rejected.push(`${k}=${JSON.stringify(raw)}`);
+  }
+  if (rejected.length) {
+    warn(`harness: formula override(s) IGNORED (not a finite number): ${rejected.join(", ")} — the gated row will evaluate against real actor state, not your pin`);
   }
   if (!Object.keys(map).length) return { restore() {} };
   const prev = globalThis.__FU_HARNESS_FORMULA_OVERRIDES__;
