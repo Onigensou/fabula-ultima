@@ -17,7 +17,11 @@
 
 const { evaluate: evaluateFormula } = require("./formula");
 
-const ACTION_SKILL_TYPES = new Set(["active", "spell"]);
+// "Attack" is the MONSTER action type and was missing from this set at first.
+// Its absence gave Asura zero damage actions — a boss that could not attack —
+// while the coverage manifest reported no damage gaps at all, because a row it
+// never classified as an action could not be counted as a missing one.
+const ACTION_SKILL_TYPES = new Set(["active", "spell", "attack"]);
 const PASSIVE_SKILL_TYPES = new Set(["passive"]);
 
 function s(v) { return String(v ?? "").trim(); }
@@ -168,6 +172,14 @@ function extractAction(item, actor = null) {
     attrB: ATTR[a2],
     damageBonus: dmg.value,
     damageBonusApproximate: !!dmg.approximate,
+    // Accuracy modifier. Monster rows carry an explicit `check_bonus`; when
+    // absent, an NPC falls back to the official floor(Level/10) and a PC to 0.
+    // Assumption, flagged: where check_bonus IS present it is taken as the whole
+    // bonus rather than added to the level term, since the sheets author it as a
+    // finished number.
+    checkBonus: s(p.check_bonus)
+      ? (Number(p.check_bonus) || 0)
+      : (actor?.isNpc ? Math.floor((Number(actor.level) || 0) / 10) : 0),
     element,
     // "mdef" | "def" — which score is the DL.
     defenseTarget: s(p.defense_target_type).toLowerCase() === "mdef" ? "mdef" : "def",
