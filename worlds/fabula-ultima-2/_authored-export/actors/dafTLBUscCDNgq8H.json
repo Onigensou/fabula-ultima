@@ -13547,6 +13547,7 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
+          "skill_target": "One Creature",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",

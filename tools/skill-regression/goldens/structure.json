@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-08-19T16:28:32.766Z",
+ "capturedAt": "2026-08-19T19:05:29.161Z",
  "count": 2123,
  "structure": {
   "(world) / Absorb MP": {
@@ -18590,6 +18590,7 @@
     "item_type": "consumable",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
+    "skill_target": "One Creature",
     "type_damage": "Physical",
     "weapon_range": "Melee"
    },
@@ -43424,6 +43425,7 @@
     "item_type": "consumable",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
+    "skill_target": "One Creature",
     "type_damage": "Physical",
     "weapon_range": "Melee"
    },
