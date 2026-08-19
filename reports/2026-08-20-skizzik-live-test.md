@@ -5,8 +5,25 @@
 **Build under test:** `docs/skizzik-rework-proposal.md` §10 (HP 130 · Thunder Strike 30 ·
 Overload Riposte · Static Buildup · storm-fed Chain Reaction)
 
-**Verdict: 2 of 3 new mechanics work. The counter does not fire, and the cause is an
-engine defect in shared card infrastructure — not in the monster's authoring.**
+**Verdict: all 3 new mechanics fire. The counter works but is RARE and mis-targets.**
+
+> ## ⚠ CORRECTION (same day, after user challenge)
+> **An earlier revision of this report said the counter never fires. That was wrong.**
+> `Thunder Strike (Riposte)` was captured resolving live (§2). The error was
+> methodological and worth recording:
+>
+> - I concluded "0 firings" from the sim journal showing no riposte entries plus four
+>   `Overload Riposte unavailable (Conditions not met)` notes.
+> - **The journal does not log enemy free actions at all.** Control: `Chain Reaction`
+>   fired at 21:17:20.206 and grants a free Thunder Strike — and produced **no**
+>   `free-action` entry, while the same journal logged `free-action` for Zarg, Blanche
+>   and Kalina. Absence of evidence, treated as evidence of absence.
+> - The "unavailable" notes were real but partial: the counter *is* correctly gated off
+>   on odd-accuracy hits. I read a partial record as a complete one.
+> - The battle log could not arbitrate either — it stores `sourceType`, not item names.
+>
+> Settled by instrumenting the once-per-action resolve point to capture the item name.
+> **Check what a log does not record before concluding from its silence.**
 
 ---
 
@@ -31,7 +48,7 @@ output never happens.**
 |---|---|---|
 | **Static Buildup** | ✅ **works** | 4–7 `reaction-fired` entries per run. Both gate rows evaluate, exactly one is available each time — the mutual-exclusion design holds under real conditions |
 | **Chain Reaction (storm-fed)** | ✅ **works** | run 1: `Lightning Rod [turn_start]` → `Chain Reaction [creature_gain_resource]`. The absorbed Rod strike buys the free Thunder Strike, exactly as designed |
-| **Overload Riposte** | ❌ **never fires** | 0 firings across all 4 runs; surfaces as `unavailable (Conditions not met)` |
+| **Overload Riposte** | ⚠️ **fires, but rare + mis-targets** | captured live as `Thunder Strike (Riposte)`; **1 of 6** Skizzik actions in the measured run |
 | Lightning Storm itself | ✅ armed | journal: `conflict event: lightning-storm` |
 
 **The `reaction_cause_filter` fix is confirmed working in a real battle.** That was the
@@ -40,52 +57,54 @@ Kirin precedent predicted.
 
 ---
 
-## 2. The counter — root cause
+## 2. The counter — it fires, and here is the captured proof
 
-Not the monster. The gate is correct; the engine loses it between two steps.
+Instrumenting the once-per-action resolve point to record the resolving item name gave
+the full Skizzik action list for one run:
 
-### The gate evaluates TRUE at scan time — measured
+| # | item resolved | targets | damage |
+|---|---|---|---|
+| 1 | Thunder Strike | Keren | 41 |
+| 2 | Thunder Strike | Blanche, Fox fire | 0, 39 |
+| 3 | **Thunder Strike (Riposte)** | **Blanche, Fox fire** | **1, 14** |
+| 4 | Thunder Strike | Keren | 36 |
+| 5 | Thunder Strike | Keren | 82 |
+| 6 | Thunder Strike | Keren | 74 |
 
-Temporary instrumentation captured every clause at the moment the CONFIRM scan builds
-the payload. Three separate evaluations in one run had **all five clauses satisfied**:
+**The riposte resolves.** Two problems remain, and both are real:
 
-```
-reactorUuid === subjectUuid   (same token)  →  SUBJECT_IS_SELF        = 1
-                                               INCOMING_DAMAGE        = 48
-                                               ATTACK_CHECK_RESULT    = 26   (even)
-                                               TRIGGER_DAMAGE_IS_BOLT = 0
-```
+### 2a. It is far rarer than designed — 1 of 6 actions
 
-Independently, calling `findPassiveCandidates` directly with a well-formed payload
-returns `available: true`. **The authoring is right.**
+The proposal budgeted the counter at **~51% of the monster's swings** (roughly 4–6 per
+fight); it delivered **one**. The gate is verifiably correct — instrumentation measured
+all five clauses TRUE at CONFIRM scan time
+(`SUBJECT_IS_SELF 1 · INCOMING_DAMAGE 48 · ATTACK_CHECK_RESULT 26 · TRIGGER_DAMAGE_IS_BOLT 0`)
+on three separate evaluations in one run, and `findPassiveCandidates` returns
+`available: true` in isolation. Yet the four `unavailable (Conditions not met)` notes are
+also real. So the gate passes sometimes and is rejected other times under conditions that
+look equivalent — **the firing rate, not the wiring, is the open question.**
 
-### But it reaches the apply layer as unavailable
+Part of the shortfall is legitimate: an odd Accuracy Result correctly suppresses it, which
+is half of all attacks by design.
 
-The sim's reaction-brain does not re-evaluate — it reads the `available` flag stamped on
-the candidate (`sim/reaction-brain.js:447`). It consistently sees
-`available: false, "Conditions not met"`.
+### 2b. It targets the wrong creatures — the actual defect
 
-So the reaction passes its gate during the CONFIRM scan and is nevertheless marked
-unavailable by the time anything can apply it. The payload-only identifiers
-(`ATTACK_CHECK_RESULT`, `INCOMING_DAMAGE`) read 0 in a later evaluation pass — and
-`ATTACK_CHECK_RESULT > 0` then correctly fails, which is the guard doing its job on a
-payload that should not have been empty. Run 1's journal shows a second pass explicitly
-tagged `"phase":"ask"`, so multiple evaluation passes over the same candidate do happen.
+Row 3 hit **Blanche + Fox fire** — the *previous* action's target pair — not the creature
+that attacked Skizzik. A counter must strike its attacker and nothing else.
 
-`payloadAtFire` is threaded through `action-card.js` and `card-mutations.js` in a dozen
-places, so the infrastructure exists; something on this path is not carrying it.
+`riposte_target` is a `targeting` row with `candidate_source: "trigger_attacker"`, which
+reads `payload.attackerTokenUuid`. On a free action spawned from the card the resolved
+token list is evidently not being applied — the spawned attack inherited the parent
+action's targets instead. Its damage (1 and 14) is also below the riposte's own profile.
 
-### Blast radius — this is not a Skizzik problem
+**This is the higher-priority fix**: a mis-targeting counter is worse than a missing one,
+because it silently converts a single-target riposte into a second AoE.
 
-Any reaction on `creature_targeted_by_action` whose gate depends on payload-only
-identifiers has the same shape. **Ampere's Volt Counter is the same construction**
-(`ATTACK_CHECK_RESULT % 2 == 0`, shipped content) and is very likely equally inert —
-untested, but structurally identical. `Crossfire` (2 actors) spends MP equal to
-`ATTACK_CHECK_RESULT` and is in the same family.
+### Where the earlier wrong conclusion came from
 
-> This is the class of failure the live sim exists to catch, and the reason a clean
-> offline result is never permission to skip it. Mindscape modelled the counter
-> perfectly and scored it at 61% party HP; the engine never fires it.
+Recorded because the method matters more than the result: the sim journal **does not log
+enemy free actions**, and I read its silence as absence. See the correction box at the
+top.
 
 ---
 
@@ -103,26 +122,31 @@ did not exist against a caster.
 The sibling damage-window scan (`state-handlers.js:4714`) already had
 `(Skill || Spell)`, which is what identifies this as an oversight rather than a rule.
 
-**Fixed** — commit `6453744f`. Found only because Skizzik's counter never fired and half
-this party attacks with Spells, so the trigger was rarely even reached.
+**Fixed** — commit `6453744f`. Found only because Skizzik's counter was firing far less
+than designed, and half this party attacks with Spells — so for those attacks the trigger
+was never reached at all. Real bug, found for a partly wrong reason.
 
 ---
 
 ## 4. Where the balance actually stands
 
-**Unknown, and deliberately not estimated.** With ~half the monster's output not
-happening, run 3's 75% measures a different monster than the one on the sheet. The three
-prior estimates now read:
+**Still not safe to re-tune.** The counter fires roughly **1/5th as often as designed**,
+so live is measuring a weaker monster than the sheet — just not a counter-less one.
 
 | Source | Party HP | What it was measuring |
 |---|---|---|
-| desk model | Pressure 0.62 | all mechanics working |
-| Mindscape | 61% | all mechanics working (modelled) |
-| **live** | **75–96%** | **counter absent** |
+| desk model | Pressure 0.62 | counter at ~51% of swings |
+| Mindscape | 61% | counter at ~51% of swings (modelled) |
+| **live** | **74–96%** | **counter at ~17% of swings, mis-targeted** |
 
-Mindscape and the desk model agree with each other and disagree with live in exactly the
-way the missing counter predicts. **Re-run live once the counter fires before touching
-any number.** The HP/damage cuts should not be revisited on this evidence.
+Across six runs live spans 74–96% party HP — consistently "trivial" to "too easy". The
+desk model and Mindscape agree with each other and sit well below live, which is the
+direction a 5× under-firing counter predicts.
+
+**Fix the targeting and the firing rate first, then re-measure.** The HP/damage cuts were
+sized against a counter carrying half the monster's output; judging them now would
+re-tune against a bug. Note the offline models are *not* discredited — they modelled the
+design faithfully; the engine is under-delivering it.
 
 ---
 
@@ -139,24 +163,23 @@ any number.** The HP/damage cuts should not be revisited on this evidence.
 
 ## 6. Recommended next steps
 
-1. **Decide how to make the counter fire.** Two options, materially different:
-   - **(a) Pre-authorised fallback** (proposal §6): swap `riposte_strike` to a flat
-     `deal_damage` 20 Bolt on `trigger_attacker`, matching Ampere's shape. Fast, but it
-     inherits the same availability path — **verify it actually fires before trusting
-     it**, since Volt Counter may be broken the same way.
-   - **(b) Fix the engine** so the CONFIRM-time payload survives to the apply step.
-     Larger, touches shared card infrastructure, but repairs Volt Counter and Crossfire
-     too and keeps the riposte a real rolled attack.
+1. **Fix the riposte's targeting** (highest priority). A free action spawned from a card
+   reaction is not applying its `targeting` row's resolved token — it inherits the parent
+   action's target list. Start at the `free_action` grant's `target_ref` handling and how
+   the spawned action composes targets. A mis-targeting counter is worse than a missing
+   one: it turns a single-target riposte into an unintended second AoE.
 
-   **(b) is the better fix** — (a) may not work, and the defect is shipped-content-wide.
+2. **Find why the firing rate is ~1/5th of design.** The gate provably passes at scan
+   time on evaluations that then read `unavailable`. Instrument `evaluateAvailability`
+   (`skill-effects.js:1831`) to log which of the two gates rejects it, and on which pass.
 
-2. **Audit Ampere's Volt Counter live.** If it is also inert, this is a long-standing
-   content bug, not a regression.
+3. **Then re-run and re-measure.** Only after 1 and 2 is the live number comparable to
+   Mindscape's 61% — and only then should the HP/damage numbers be revisited.
 
-3. **Re-run this encounter** once the counter fires, then compare against Mindscape's 61%
-   to calibrate the reaction layer.
+4. **Add enemy free actions to the sim journal.** Their absence is what produced the wrong
+   conclusion in the first revision of this report; PC free actions are already logged.
 
-4. Not started: skill-regression (`--update` for 3 added + 2 modified rows), action
+5. Not started: skill-regression (`--update` for 3 added + 2 modified rows), action
    animations.
 
 ---
