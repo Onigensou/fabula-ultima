@@ -21991,8 +21991,20 @@
             "name": "Chain Reaction"
           },
           {
+            "id": "oezr2w4m0LMEFM6F",
+            "name": "Overload Riposte"
+          },
+          {
+            "id": "2nHv9Fvn5En9wL3S",
+            "name": "Static Buildup"
+          },
+          {
             "id": "vBuHp8f6NHuYNojr",
             "name": "Thunder Strike"
+          },
+          {
+            "id": "4XkAxScm0Tj8sBjv",
+            "name": "Thunder Strike (Riposte)"
           }
         ],
         "effects": 0

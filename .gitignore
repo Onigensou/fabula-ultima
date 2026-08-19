@@ -35,6 +35,15 @@
 !/worlds/fabula-ultima-2/
 !/worlds/fabula-ultima-2/**
 
+# Save blobs are PERSONAL — never track, never push. The negation above
+# un-ignores everything under the world, so before this rule a save slot was
+# protected only by a per-file `skip-worktree` on the slots that happened to be
+# tracked already. A NEW slot had no protection at all: `git add -A worlds/`
+# staged slot-3.json on 2026-08-20. This makes the protection structural.
+# (index.json / slot-1 / slot-2 remain tracked-but-skip-worktree from before;
+# an ignore cannot untrack them, and untracking is a separate decision.)
+/worlds/*/fu-saves/
+
 # NOTE: Co-dev transfer scope (ship only actors+items+folders) is enforced
 # LOCALLY on this clone, NOT here — a committed ignore would also block the
 # co-dev from pushing those collections back to us. The local-only exclusion

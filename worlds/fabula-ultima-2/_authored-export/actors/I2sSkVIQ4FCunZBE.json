@@ -17,6 +17,236 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
   "items": [
     {
+      "_id": "2nHv9Fvn5En9wL3S",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1785582429842,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "caLqUKUMBeJxH8kK",
+          "changes": [],
+          "description": "<p>Gathered charge. At three, it earths out.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 3,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+          "name": "Static",
+          "origin": "Actor.I2sSkVIQ4FCunZBE.Item.2nHv9Fvn5En9wL3S",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "static"
+            ]
+          },
+          "transfer": false
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+      "name": "Static Buildup",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Skizzik deals damage to an enemy</p></li></ul><p>It gathers a charge of <strong>Static</strong>. On the <strong>third</strong>, the charge earths out through that creature, dealing <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "chain_steps": "static_blast, static_clear",
+              "effect_kind": "chain",
+              "effect_label": "static_discharge"
+            },
+            "1": {
+              "candidate_source": "trigger_subject",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "static_victim",
+              "mode": "exact"
+            },
+            "2": {
+              "damage_amount": "30",
+              "damage_element": "bolt",
+              "damage_verbosity": "full",
+              "effect_kind": "deal_damage",
+              "effect_label": "static_blast",
+              "target_ref": "static_victim"
+            },
+            "3": {
+              "ae_template_ref": "Static",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "static_clear",
+              "include_persistent": true,
+              "target_ref": "self"
+            },
+            "4": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_template_ref": "Static",
+              "effect_kind": "apply_ae",
+              "effect_label": "static_build",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Static Buildup",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "AE_CHARGES_STATIC >= 2",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "static_discharge",
+              "reaction_passive_mode": "on",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_deals_damage"
+            },
+            "1": {
+              "condition_formula": "AE_CHARGES_STATIC < 2",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "static_build",
+              "reaction_passive_mode": "on",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.I2sSkVIQ4FCunZBE.Item.2nHv9Fvn5En9wL3S"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278387,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "4XkAxScm0Tj8sBjv",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1785582429842,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Thunder Strike (Riposte)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "10",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "12",
+          "defense_target_type": "def",
+          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to one creature.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Thunder Strike (Riposte)",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Bolt",
+          "use_optional_params": false,
+          "uuid": "Actor.I2sSkVIQ4FCunZBE.Item.4XkAxScm0Tj8sBjv"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278387,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "IbE6lOJCeAs8Bb4n",
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
@@ -77,7 +307,7 @@
           "reaction_config_table": {
             "0": {
               "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
-              "reaction_cause_filter": "damage",
+              "reaction_cause_filter": "",
               "reaction_effect_ref": "chain_strike",
               "reaction_passive_mode": "on",
               "reaction_source": "",
@@ -85,7 +315,7 @@
             },
             "1": {
               "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
-              "reaction_cause_filter": "damage",
+              "reaction_cause_filter": "",
               "reaction_effect_ref": "chain_strike",
               "reaction_passive_mode": "on",
               "reaction_resource_filter": "hp",
@@ -103,6 +333,103 @@
           "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278387,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "oezr2w4m0LMEFM6F",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1785582429842,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+      "name": "Overload Riposte",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When an attack strikes the Skizzik and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>It answers before the blow has landed, striking that creature with a <strong>free</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;riposte.</p><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage does not provoke it — that is <strong>Chain Reaction</strong>'s business.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "candidate_source": "trigger_attacker",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "riposte_target",
+              "mode": "exact"
+            },
+            "1": {
+              "action_ref": "Thunder Strike (Riposte)",
+              "effect_kind": "free_action",
+              "effect_label": "riposte_strike",
+              "target_ref": "riposte_target"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Overload Riposte",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SUBJECT_IS_SELF == 1 && INCOMING_DAMAGE > 0 && ATTACK_CHECK_RESULT > 0 && ATTACK_CHECK_RESULT % 2 == 0 && TRIGGER_DAMAGE_IS_BOLT == 0",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "riposte_strike",
+              "reaction_passive_mode": "on",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_targeted_by_action"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.I2sSkVIQ4FCunZBE.Item.oezr2w4m0LMEFM6F"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278387,
@@ -143,7 +470,7 @@
           "check_bonus": "10",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "48",
+          "damage_bonus": "30",
           "defense_target_type": "def",
           "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to one creature.</p>",
           "details_roller": "Show",
@@ -462,7 +789,7 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "195",
+      "current_hp": "130",
       "current_ip": "0",
       "current_mp": "60",
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
@@ -554,7 +881,7 @@
       "magic_defense": 8,
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": "195",
+      "max_hp": "130",
       "max_ip": "0",
       "max_mp": "60",
       "max_zero": "6",
@@ -583,12 +910,26 @@
       "shield_value": "0",
       "showMacro": false,
       "skill_passive_list": {
+        "2nHv9Fvn5En9wL3S": {
+          "id": "${item.id}",
+          "name": "Static Buildup",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Whenever the Skizzik deals damage to an enemy</p></li></ul><p>It gathers a charge of <strong>Static</strong>. On the <strong>third</strong>, the charge earths out through that creature, dealing <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage.</p>",
+          "roll": "",
+          "uuid": "Actor.I2sSkVIQ4FCunZBE.Item.2nHv9Fvn5En9wL3S"
+        },
         "IbE6lOJCeAs8Bb4n": {
           "id": "${item.id}",
           "name": "Chain Reaction",
           "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Skizzik, whether it lands or is absorbed</p></li></ul><p>It immediately performs a <strong>free Thunder Strike</strong>.</p>",
           "roll": "",
           "uuid": "Actor.I2sSkVIQ4FCunZBE.Item.IbE6lOJCeAs8Bb4n"
+        },
+        "oezr2w4m0LMEFM6F": {
+          "id": "${item.id}",
+          "name": "Overload Riposte",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When an attack strikes the Skizzik and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>It answers before the blow has landed, striking that creature with a <strong>free</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;riposte.</p><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage does not provoke it — that is <strong>Chain Reaction</strong>'s business.</p>",
+          "roll": "",
+          "uuid": "Actor.I2sSkVIQ4FCunZBE.Item.oezr2w4m0LMEFM6F"
         }
       },
       "spear_ef": "100",
@@ -596,7 +937,7 @@
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "steal_percentage_table": {},
-      "study_text": "<p>Living lightning, quicker than the eye can follow — <strong>bolt</strong> only rouses it, and it repays every jolt with a strike of its own. <strong>Earth</strong> grounds it dead.</p>",
+      "study_text": "<p>Living lightning, quicker than the eye can follow — <strong>bolt</strong> only rouses it, and it repays every jolt with a strike of its own. Strike it cleanly or not at all: a sloppy blow earns a riposte, and the charge it gathers has to go somewhere. <strong>Earth</strong> grounds it dead.</p>",
       "subtype": "Sub-Type",
       "subtype_list": "SPIRIT",
       "sword_ef": "100",

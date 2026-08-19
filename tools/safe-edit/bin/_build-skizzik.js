@@ -8,11 +8,17 @@ const A = "I2sSkVIQ4FCunZBE";                 // Skizzik
 const TS = "vBuHp8f6NHuYNojr";                // Thunder Strike
 const CR = "IbE6lOJCeAs8Bb4n";                // Chain Reaction
 
-// new ids (16-char alphanumeric, Foundry style)
-const RIP_P = "SkzRiposteP01aQ";              // Overload Riposte   (passive carrier)
-const RIP_A = "SkzRiposteA02bR";              // Thunder Strike (Riposte)  (damage vehicle)
-const STA_P = "SkzStaticP03cT";               // Static Buildup     (passive carrier)
-const STA_AE = "SkzStaticAE04dU";             // "Static" AE template
+// ⚠ A Foundry document id must be EXACTLY 16 chars of [A-Za-z0-9]. The mnemonic
+// ids this script first used ("SkzRiposteP01aQ") were 14-15 chars, so on the next
+// world load Foundry re-created each document under a fresh valid id, repointed
+// actor.items at those, and left the originals as orphan rows nothing referenced —
+// functionally inert, but they exported as DUPLICATE items and would have shipped
+// that way. Caught only by the world-export report, never by inspection.
+// Never hand-author a short id; use foundry.utils.randomID() or a real 16-char one.
+const RIP_P = "oezr2w4m0LMEFM6F";             // Overload Riposte   (passive carrier)
+const RIP_A = "4XkAxScm0Tj8sBjv";             // Thunder Strike (Riposte)  (damage vehicle)
+const STA_P = "2nHv9Fvn5En9wL3S";             // Static Buildup     (passive carrier)
+const STA_AE = "caLqUKUMBeJxH8kK";            // "Static" AE template
 
 const BOLT = 'Item.5XAuMMbDPlLzhJLw';
 const TRIG = 'JournalEntry.P7eaFojxra2gTRTG';
