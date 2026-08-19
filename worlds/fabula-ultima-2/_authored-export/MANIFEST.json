@@ -18030,78 +18030,6 @@
         "effects": 0
       },
       {
-        "id": "HjOIH2Bmj485C18Y",
-        "name": "Hellhound (Reanimated)",
-        "type": "character",
-        "items": [
-          {
-            "id": "weOyBRmuXnvzycl9",
-            "name": "(Empty)"
-          },
-          {
-            "id": "lV74fYrlQPN2CeGd",
-            "name": "Animal Fang"
-          },
-          {
-            "id": "3pOyST3Pn3p18oSb",
-            "name": "Animal Fur"
-          },
-          {
-            "id": "SZc2mYVhrmtOMSVm",
-            "name": "Bite"
-          },
-          {
-            "id": "u6YRNgn4WzJXDqLb",
-            "name": "Flame Breath"
-          },
-          {
-            "id": "9N0IWdt3BWjcLd8x",
-            "name": "On the Hunt"
-          },
-          {
-            "id": "0v5EYWSTa4pdAU8U",
-            "name": "Pounce"
-          }
-        ],
-        "effects": 1
-      },
-      {
-        "id": "YcAx35co9fXIpsOS",
-        "name": "Hellhound (Reanimated)",
-        "type": "character",
-        "items": [
-          {
-            "id": "weOyBRmuXnvzycl9",
-            "name": "(Empty)"
-          },
-          {
-            "id": "lV74fYrlQPN2CeGd",
-            "name": "Animal Fang"
-          },
-          {
-            "id": "3pOyST3Pn3p18oSb",
-            "name": "Animal Fur"
-          },
-          {
-            "id": "SZc2mYVhrmtOMSVm",
-            "name": "Bite"
-          },
-          {
-            "id": "u6YRNgn4WzJXDqLb",
-            "name": "Flame Breath"
-          },
-          {
-            "id": "9N0IWdt3BWjcLd8x",
-            "name": "On the Hunt"
-          },
-          {
-            "id": "0v5EYWSTa4pdAU8U",
-            "name": "Pounce"
-          }
-        ],
-        "effects": 1
-      },
-      {
         "id": "OYFcMSkBHGLXlFwq",
         "name": "Hellir",
         "type": "character",
@@ -19837,30 +19765,6 @@
         "effects": 0
       },
       {
-        "id": "sQDc6qnCpo0PeoTT",
-        "name": "Kirin (Reanimated)",
-        "type": "character",
-        "items": [
-          {
-            "id": "IIkAGJ0BQxtk1sBt",
-            "name": "Hooves"
-          },
-          {
-            "id": "0hLD12lSvD3sw40G",
-            "name": "Horn Rush"
-          },
-          {
-            "id": "3JBSipAdIt17tf68",
-            "name": "Lightning Charge"
-          },
-          {
-            "id": "zNhzAhg1phFoHW8q",
-            "name": "Rail Stream"
-          }
-        ],
-        "effects": 1
-      },
-      {
         "id": "zSCt4x8DUTuYUqTa",
         "name": "Koshka",
         "type": "character",
@@ -20212,46 +20116,6 @@
           }
         ],
         "effects": 0
-      },
-      {
-        "id": "4dqL2DMd1zeGAvnB",
-        "name": "Mana Ray (Reanimated)",
-        "type": "character",
-        "items": [
-          {
-            "id": "nEeldo45VbyKqFpS",
-            "name": "Flying"
-          },
-          {
-            "id": "lK1xNxttDeXzwhVh",
-            "name": "Mana Stinger"
-          },
-          {
-            "id": "qQ1UsyvTJj5TpCqy",
-            "name": "Volt Stinger"
-          }
-        ],
-        "effects": 2
-      },
-      {
-        "id": "ekzIixF6QeTdug9I",
-        "name": "Mana Ray (Reanimated)",
-        "type": "character",
-        "items": [
-          {
-            "id": "nEeldo45VbyKqFpS",
-            "name": "Flying"
-          },
-          {
-            "id": "lK1xNxttDeXzwhVh",
-            "name": "Mana Stinger"
-          },
-          {
-            "id": "qQ1UsyvTJj5TpCqy",
-            "name": "Volt Stinger"
-          }
-        ],
-        "effects": 1
       },
       {
         "id": "ZbCSKnZdB2cKlW9H",
