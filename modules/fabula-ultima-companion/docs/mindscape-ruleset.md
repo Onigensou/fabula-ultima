@@ -271,14 +271,48 @@ The loader **refuses** to load the older-template party rather than substituting
 maximum. That refusal is the coverage principle applied to data loading: a plausible number
 from an incomplete sheet is worse than an error.
 
-## Open questions for review
+## Settled decisions
 
-1. **Which party does balance work target?** The model defaults to **EXFURSION Party** — it
-   matches every balance memory and every monster tuned so far. Confirm, or say when Zenit
-   Crisis should be modelled instead (it needs a sheet-template migration first).
-2. **`icebergKoHp` 60 is an absolute HP threshold** standing in for "can this finish them?".
-   At L41 against 900 HP bosses it will essentially never fire. Should it become a fraction
-   of max HP, or is the absolute value deliberate?
-3. **`BaselineDPR` re-derivation** — should the strict definition exclude free actions
-   (then `RD` multiplies them back in), or include them (then `RD` must be 1.0)?
-   Double-counting here corrupts every downstream HP number.
+### D1 — The party is resolved dynamically, never named
+The party under test is whatever the **Current Game** sheet points at:
+
+```
+"Current Game" actor (DMpK5Bi119jIrCFZ) → props.game_id → DB actor → member_id_1..8
+```
+
+An offline mirror of `FUCompanion.api.getCurrentGameDb`
+([db-resolver.js:56-86](../scripts/db-resolver.js#L56-L86)). Today that resolves to
+*"The Legend of Dragonslayer" → EXFURSION Party*, but no party name is baked into the tool —
+the campaign is multi-party and the pointer is the authority. An explicit `partyName`
+override exists for deliberately modelling a different roster.
+
+### D2 — `icebergKoHp` becomes a real projection, not a threshold
+**Deliberate divergence from `profiles.js`, and the only one.** The constant exists because
+the live sim *cannot* project damage before COMPUTE runs, so `60` is a proxy for "can Iceberg
+finish them?". At L41 against 900 HP bosses that proxy never fires.
+
+The offline model has no such limitation — it computes damage itself — so it asks the real
+question: **is the target's current HP at or below Iceberg's projected damage against
+that target?** (projection through the full Part 2 pipeline, so affinity and EF count).
+
+Two guards keep this honest:
+- Use the **average** roll, never the maximum, so the finisher fires only when it reliably
+  lands. Over-firing would make the party stronger than the live sim and break the
+  "simplifications read weaker" asymmetry in Part 6.
+- This divergence is **the** thing to check first if calibration drifts on a fight where
+  Hina is landing kills.
+
+### D3 — `BaselineDPR` excludes free actions; `RD` carries them
+The strict definition in `monster-balance-design.md` already says *"4 actors × 1 action each,
+no free actions"* — the legacy `90` simply may not have honoured it. Keeping the two separate
+is the right call because:
+
+- `RD` stays a **meaningful, inspectable number** — "the party takes 1.4× its headcount in
+  actions per round" is diagnostic on its own.
+- Folding free actions into DPR forces `RD = 1.0` and destroys the ability to see action
+  economy as a lever — which is the single most important finding from live runs.
+
+**The model therefore counts two action classes separately**: actions from base `activation`,
+and actions from grants. `BaselineDPR` is derived from the first only; `RD` is
+`(base + granted) / (headcount × rounds)`. Double-counting is structurally impossible rather
+than merely discouraged.

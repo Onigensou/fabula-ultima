@@ -266,27 +266,68 @@ async function listParties({ world = DEFAULT_WORLD, _all = null } = {}) {
     });
 }
 
-// Resolve ONE named party. `partyName` is required and there is deliberately no
-// default: an arbitrary pick is exactly how the first probe of this loader ended
-// up reporting the wrong four characters at the wrong level as "the party", and
-// every stat read off them looked plausible. Never guess which party is the one
-// under test. NEVER hasPlayerOwner ([[feedback_players_means_party]]).
-async function loadParty({ partyName, world = DEFAULT_WORLD } = {}) {
-  const all = await loadAll({ world });
-  const parties = await listParties({ world, _all: all });
+// The "Current Game" pointer actor. A fixed UUID by design — it is the one stable
+// anchor the whole world resolves through. Mirrors CURRENT_GAME_ACTOR_UUID in
+// scripts/db-resolver.js; if that constant ever changes, this must follow.
+const CURRENT_GAME_ACTOR_ID = "DMpK5Bi119jIrCFZ";
 
-  if (!partyName) {
+// Resolve which party is CURRENTLY in play, the same way the game does:
+//
+//   "Current Game" actor → props.game_id → the DB actor → member_id_1..8
+//
+// Offline mirror of FUCompanion.api.getCurrentGameDb (scripts/db-resolver.js:56-86).
+// This is what keeps the tool dynamic: the campaign is multi-party, so the party
+// under test is whatever the Current Game sheet points at today, never a name
+// baked into a balance tool.
+async function resolveCurrentGame({ world = DEFAULT_WORLD, _all = null } = {}) {
+  const all = _all ?? await loadAll({ world });
+  const byId = new Map(all.map((a) => [a.id, a]));
+
+  const cg = byId.get(CURRENT_GAME_ACTOR_ID);
+  if (!cg) {
     throw new Error(
-      `Mindscape: partyName is required — this world has ${parties.length}: ` +
-      parties.map((p) => `"${p.name}"`).join(", ")
+      `Mindscape: "Current Game" actor ${CURRENT_GAME_ACTOR_ID} not found in world "${world}". ` +
+      `If the sheet moved, update CURRENT_GAME_ACTOR_ID here and in scripts/db-resolver.js.`
     );
   }
 
-  const want = String(partyName).trim().toLowerCase();
+  const raw = String(cg._rawProps.game_id ?? "").trim();
+  if (!raw) {
+    throw new Error(`Mindscape: "Current Game" has no props.game_id — nothing points at a party.`);
+  }
+
+  const dbId = raw.includes(".") ? raw.split(".").pop() : raw;
+  const db = byId.get(dbId);
+  if (!db) {
+    throw new Error(`Mindscape: "Current Game" game_id "${raw}" does not resolve to an actor.`);
+  }
+
+  return {
+    gameName: String(db._rawProps.game_name ?? "").trim() || db.name,
+    partyName: db.name,
+    dbActorId: db.id,
+  };
+}
+
+// Resolve a party's members. With no `partyName` this follows the Current Game
+// pointer, so the tool tracks whichever campaign is in play.
+//
+// What it will NOT do is pick one arbitrarily. The first probe of this loader did
+// exactly that and reported the wrong four characters at the wrong level as "the
+// party" — with stats that all looked perfectly plausible. Every failure path here
+// throws and names the alternatives instead.
+// NEVER hasPlayerOwner ([[feedback_players_means_party]]).
+async function loadParty({ partyName = null, world = DEFAULT_WORLD } = {}) {
+  const all = await loadAll({ world });
+  const parties = await listParties({ world, _all: all });
+
+  const wantName = partyName ?? (await resolveCurrentGame({ world, _all: all })).partyName;
+
+  const want = String(wantName).trim().toLowerCase();
   const party = parties.find((p) => p.name.trim().toLowerCase() === want);
   if (!party) {
     throw new Error(
-      `Mindscape: no party named "${partyName}". Available: ` +
+      `Mindscape: no party named "${wantName}". Available: ` +
       parties.map((p) => `"${p.name}"`).join(", ")
     );
   }
@@ -326,6 +367,7 @@ function validate(actor) {
 }
 
 module.exports = {
-  AFFINITY_KEY, ELEMENTS, WEAPON_FAMILIES, STATUS_STEPS,
-  loadAll, loadNamed, loadParty, listParties, validate, toCombatModel, isNpc,
+  AFFINITY_KEY, ELEMENTS, WEAPON_FAMILIES, STATUS_STEPS, CURRENT_GAME_ACTOR_ID,
+  loadAll, loadNamed, loadParty, listParties, resolveCurrentGame,
+  validate, toCombatModel, isNpc,
 };
