@@ -369,35 +369,39 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1 && AE_COUNT_FIRE_MARK == 0",
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_FIRE == 1 && AE_COUNT_FIRE_MARK == 0",
               "reaction_effect_ref": "mark_fire",
               "reaction_passive_mode": "on",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_takes_damage"
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_lose_resource"
             },
             "1": {
               "$deleted": false,
-              "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1 && AE_COUNT_BOLT_MARK == 0",
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && AE_COUNT_BOLT_MARK == 0",
               "reaction_effect_ref": "mark_bolt",
               "reaction_passive_mode": "on",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_takes_damage"
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_lose_resource"
             },
             "2": {
               "$deleted": false,
-              "condition_formula": "TRIGGER_DAMAGE_IS_ICE == 1 && AE_COUNT_ICE_MARK == 0",
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_ICE == 1 && AE_COUNT_ICE_MARK == 0",
               "reaction_effect_ref": "mark_ice",
               "reaction_passive_mode": "on",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_takes_damage"
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_lose_resource"
             },
             "3": {
               "$deleted": false,
-              "condition_formula": "TRIGGER_DAMAGE_IS_AIR == 1 && AE_COUNT_AIR_MARK == 0",
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_AIR == 1 && AE_COUNT_AIR_MARK == 0",
               "reaction_effect_ref": "mark_air",
               "reaction_passive_mode": "on",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_takes_damage"
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_lose_resource"
             },
             "4": {
               "$deleted": false,
@@ -415,6 +419,15 @@
               "reaction_passive_mode": "on",
               "reaction_source": "self",
               "reaction_source_skill": "Elemental Slash: Overflow",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "6": {
+              "$deleted": false,
+              "condition_formula": "AE_CHARGES_ASCENSION > 0",
+              "reaction_effect_ref": "ascension_bonus",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash (Enchanted)",
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
@@ -524,13 +537,14 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "enchant_bolt_bleed,enchant_bolt_buff,enchant_bolt_mp,enchant_bolt_whet",
+              "chain_steps": "enchant_bolt_bleed,enchant_bolt_buff,enchant_bolt_mp",
               "effect_kind": "chain",
               "effect_label": "enchant_bolt"
             },
             "1": {
               "$deleted": false,
               "damage_amount": "10",
+              "damage_cause": "damage",
               "damage_element": "bolt",
               "effect_kind": "deal_damage",
               "effect_label": "enchant_bolt_bleed",
@@ -553,7 +567,7 @@
               "target_ref": "self"
             },
             "4": {
-              "$deleted": false,
+              "$deleted": true,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Whetted",
               "effect_kind": "apply_ae",
@@ -705,7 +719,7 @@
           "cost": "60 MP",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>All four blades fall at once. Deal <strong>devastating</strong> damage to all enemies four times over — as <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>.</p>",
+          "description": "<p>The Asura's four blades fall in a single flurry. Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a> and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage — four separate strikes, each landing automatically on a random foe.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -717,35 +731,95 @@
             },
             "1": {
               "$deleted": false,
-              "action_ref": "Elemental Slash (Sweep)",
-              "effect_kind": "free_action",
-              "effect_label": "quad_bolt",
-              "element_override": "bolt",
-              "free_of_cost": true
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "combat",
+              "category": "enemy",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "quad_t_bolt",
+              "exclude_self": true,
+              "iteration_mode": "together",
+              "mode": "random",
+              "skip_when_passive": false,
+              "target_filter": "CUR_HP > 0"
             },
             "2": {
               "$deleted": false,
-              "action_ref": "Elemental Slash (Sweep)",
-              "effect_kind": "free_action",
-              "effect_label": "quad_fire",
-              "element_override": "fire",
-              "free_of_cost": true
+              "damage_amount": "45",
+              "damage_cause": "damage",
+              "damage_element": "bolt",
+              "effect_kind": "deal_damage",
+              "effect_label": "quad_bolt",
+              "target_ref": "quad_t_bolt"
             },
             "3": {
               "$deleted": false,
-              "action_ref": "Elemental Slash (Sweep)",
-              "effect_kind": "free_action",
-              "effect_label": "quad_ice",
-              "element_override": "ice",
-              "free_of_cost": true
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "combat",
+              "category": "enemy",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "quad_t_fire",
+              "exclude_self": true,
+              "iteration_mode": "together",
+              "mode": "random",
+              "skip_when_passive": false,
+              "target_filter": "CUR_HP > 0"
             },
             "4": {
               "$deleted": false,
-              "action_ref": "Elemental Slash (Sweep)",
-              "effect_kind": "free_action",
+              "damage_amount": "45",
+              "damage_cause": "damage",
+              "damage_element": "fire",
+              "effect_kind": "deal_damage",
+              "effect_label": "quad_fire",
+              "target_ref": "quad_t_fire"
+            },
+            "5": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "combat",
+              "category": "enemy",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "quad_t_ice",
+              "exclude_self": true,
+              "iteration_mode": "together",
+              "mode": "random",
+              "skip_when_passive": false,
+              "target_filter": "CUR_HP > 0"
+            },
+            "6": {
+              "$deleted": false,
+              "damage_amount": "45",
+              "damage_cause": "damage",
+              "damage_element": "ice",
+              "effect_kind": "deal_damage",
+              "effect_label": "quad_ice",
+              "target_ref": "quad_t_ice"
+            },
+            "7": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "combat",
+              "category": "enemy",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "quad_t_air",
+              "exclude_self": true,
+              "iteration_mode": "together",
+              "mode": "random",
+              "skip_when_passive": false,
+              "target_filter": "CUR_HP > 0"
+            },
+            "8": {
+              "$deleted": false,
+              "damage_amount": "45",
+              "damage_cause": "damage",
+              "damage_element": "air",
+              "effect_kind": "deal_damage",
               "effect_label": "quad_air",
-              "element_override": "air",
-              "free_of_cost": true
+              "target_ref": "quad_t_air"
             }
           },
           "heroic_requirement": "",
@@ -784,6 +858,80 @@
       "type": "equippableItem"
     },
     {
+      "_id": "NkLZkuMIVqAZJgXl",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1787130086385,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Elemental Slash (Enchanted)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "42",
+          "defense_target_type": "mdef",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p><p>The Asura's blades carry whatever element last bit it, striking harder and leaving a mark:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Silence</strong></a>d.</p></li></ul>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "NkLZkuMIVqAZJgXl",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Elemental Slash (Enchanted)",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false,
+          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.NkLZkuMIVqAZJgXl"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278387,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "nYbYx0X2yfIdteZ7",
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
@@ -794,6 +942,64 @@
         "systemVersion": "4.8.5"
       },
       "effects": [
+        {
+          "_id": "7WH5QaGAUdhq2DHu",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787130086166,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to fire.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "7WH5QaGAUdhq2DHu",
+              "originalParentId": "nYbYx0X2yfIdteZ7",
+              "originalUuid": "Actor.0AwQ7wEDz4ISA9mA.Item.nYbYx0X2yfIdteZ7.ActiveEffect.7WH5QaGAUdhq2DHu"
+            },
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20UP.png",
+          "name": "Enchanted",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_state"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
         {
           "_id": "E4bUsoF04hjcvHEn",
           "_stats": {
@@ -1002,7 +1208,7 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "aspect_clear,aspect_on_fire",
+              "chain_steps": "aspect_clear,aspect_on_fire,aspect_ench",
               "effect_kind": "chain",
               "effect_label": "aspect_set_fire"
             },
@@ -1016,7 +1222,7 @@
             },
             "2": {
               "$deleted": false,
-              "chain_steps": "aspect_clear,aspect_on_bolt",
+              "chain_steps": "aspect_clear,aspect_on_bolt,aspect_ench",
               "effect_kind": "chain",
               "effect_label": "aspect_set_bolt"
             },
@@ -1030,7 +1236,7 @@
             },
             "4": {
               "$deleted": false,
-              "chain_steps": "aspect_clear,aspect_on_ice",
+              "chain_steps": "aspect_clear,aspect_on_ice,aspect_ench",
               "effect_kind": "chain",
               "effect_label": "aspect_set_ice"
             },
@@ -1044,7 +1250,7 @@
             },
             "6": {
               "$deleted": false,
-              "chain_steps": "aspect_clear,aspect_on_air",
+              "chain_steps": "aspect_clear,aspect_on_air,aspect_ench",
               "effect_kind": "chain",
               "effect_label": "aspect_set_air"
             },
@@ -1143,6 +1349,14 @@
               "effect_kind": "apply_ae",
               "effect_label": "mark_air",
               "target_ref": "hit_action_targets"
+            },
+            "21": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Enchanted",
+              "effect_kind": "apply_ae",
+              "effect_label": "aspect_ench",
+              "target_ref": "self"
             }
           },
           "heroic_requirement": "",
@@ -1163,39 +1377,43 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_FIRE == 1",
               "reaction_cause_filter": "damage",
               "reaction_effect_ref": "aspect_set_fire",
               "reaction_passive_mode": "on",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_takes_damage"
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_lose_resource"
             },
             "1": {
               "$deleted": false,
-              "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
               "reaction_cause_filter": "damage",
               "reaction_effect_ref": "aspect_set_bolt",
               "reaction_passive_mode": "on",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_takes_damage"
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_lose_resource"
             },
             "2": {
               "$deleted": false,
-              "condition_formula": "TRIGGER_DAMAGE_IS_ICE == 1",
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_ICE == 1",
               "reaction_cause_filter": "damage",
               "reaction_effect_ref": "aspect_set_ice",
               "reaction_passive_mode": "on",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_takes_damage"
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_lose_resource"
             },
             "3": {
               "$deleted": false,
-              "condition_formula": "TRIGGER_DAMAGE_IS_AIR == 1",
+              "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_AIR == 1",
               "reaction_cause_filter": "damage",
               "reaction_effect_ref": "aspect_set_air",
               "reaction_passive_mode": "on",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_takes_damage"
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_lose_resource"
             },
             "4": {
               "$deleted": false,
@@ -1259,6 +1477,69 @@
               "reaction_source": "self",
               "reaction_source_skill": "Elemental Slash",
               "reaction_trigger": "creature_deals_damage"
+            },
+            "11": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_FIRE_ASPECT > 0",
+              "reaction_effect_ref": "slash_fire",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash (Enchanted)",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "12": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_BOLT_ASPECT > 0",
+              "reaction_effect_ref": "slash_bolt",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash (Enchanted)",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "13": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_ICE_ASPECT > 0",
+              "reaction_effect_ref": "slash_ice",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash (Enchanted)",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "14": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_AIR_ASPECT > 0",
+              "reaction_effect_ref": "slash_air",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash (Enchanted)",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "15": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_BOLT_ASPECT > 0",
+              "reaction_effect_ref": "mark_bolt",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash (Enchanted)",
+              "reaction_trigger": "creature_deals_damage"
+            },
+            "16": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_ICE_ASPECT > 0",
+              "reaction_effect_ref": "mark_ice",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash (Enchanted)",
+              "reaction_trigger": "creature_deals_damage"
+            },
+            "17": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_AIR_ASPECT > 0",
+              "reaction_effect_ref": "mark_air",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash (Enchanted)",
+              "reaction_trigger": "creature_deals_damage"
             }
           },
           "rolled_atr1": "-",
@@ -1313,7 +1594,7 @@
           "check_bonus": "5",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "32",
+          "damage_bonus": "42",
           "defense_target_type": "def",
           "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p><p>The Asura's blades carry whatever element last bit it, striking harder and leaving a mark:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Silence</strong></a>d.</p></li></ul>",
           "details_roller": "Show",
@@ -1441,13 +1722,14 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "enchant_ice_bleed,enchant_ice_buff,enchant_ice_mp,enchant_ice_whet",
+              "chain_steps": "enchant_ice_bleed,enchant_ice_buff,enchant_ice_mp",
               "effect_kind": "chain",
               "effect_label": "enchant_ice"
             },
             "1": {
               "$deleted": false,
               "damage_amount": "10",
+              "damage_cause": "damage",
               "damage_element": "ice",
               "effect_kind": "deal_damage",
               "effect_label": "enchant_ice_bleed",
@@ -1470,7 +1752,7 @@
               "target_ref": "self"
             },
             "4": {
-              "$deleted": false,
+              "$deleted": true,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Whetted",
               "effect_kind": "apply_ae",
@@ -1594,6 +1876,15 @@
               "reaction_source": "self",
               "reaction_source_skill": "Elemental Slash: Overflow",
               "reaction_trigger": "creature_will_deal_damage"
+            },
+            "2": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_CRISIS > 0",
+              "reaction_effect_ref": "fury_crisis",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash (Enchanted)",
+              "reaction_trigger": "creature_will_deal_damage"
             }
           },
           "rolled_atr1": "-",
@@ -1607,80 +1898,6 @@
           "type_damage": "",
           "use_optional_params": false,
           "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.wUfS7SWAocoznK0n"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2788278387,
-        "unique": false,
-        "uniqueId": "yWlkWZC2vLf4J5Pv"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "yq9JICuLI4TImXFn",
-      "_stats": {
-        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
-        "coreVersion": "12.343",
-        "createdTime": null,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.4"
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-      "name": "Elemental Slash (Sweep)",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "action_keywords": "",
-          "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "5",
-          "class": "NPC",
-          "cost": "-",
-          "damage_bonus": "8",
-          "defense_target_type": "def",
-          "description": "<p>One sweep of all four arms. Component of <strong>Quad-Elemental Slash</strong>.</p>",
-          "details_roller": "Show",
-          "duration": "Instantaneous",
-          "effect_table": {},
-          "heroic_requirement": "",
-          "id": "yq9JICuLI4TImXFn",
-          "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-          "isCheck": true,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "isZeroPower": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Elemental Slash (Sweep)",
-          "on_activate_effect_ref": "",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "MIG",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Melee",
-          "skill_target": "All Enemy",
-          "skill_type": "Attack",
-          "type_damage": "Physical",
-          "use_optional_params": false,
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.yq9JICuLI4TImXFn"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2788278387,
@@ -1776,13 +1993,14 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "enchant_air_bleed,enchant_air_buff,enchant_air_mp,enchant_air_whet",
+              "chain_steps": "enchant_air_bleed,enchant_air_buff,enchant_air_mp",
               "effect_kind": "chain",
               "effect_label": "enchant_air"
             },
             "1": {
               "$deleted": false,
               "damage_amount": "10",
+              "damage_cause": "damage",
               "damage_element": "air",
               "effect_kind": "deal_damage",
               "effect_label": "enchant_air_bleed",
@@ -1805,7 +2023,7 @@
               "target_ref": "self"
             },
             "4": {
-              "$deleted": false,
+              "$deleted": true,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Whetted",
               "effect_kind": "apply_ae",
@@ -1935,13 +2153,14 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "enchant_fire_bleed,enchant_fire_buff,enchant_fire_mp,enchant_fire_whet",
+              "chain_steps": "enchant_fire_bleed,enchant_fire_buff,enchant_fire_mp",
               "effect_kind": "chain",
               "effect_label": "enchant_fire"
             },
             "1": {
               "$deleted": false,
               "damage_amount": "10",
+              "damage_cause": "damage",
               "damage_element": "fire",
               "effect_kind": "deal_damage",
               "effect_label": "enchant_fire_bleed",
@@ -1964,7 +2183,7 @@
               "target_ref": "self"
             },
             "4": {
-              "$deleted": false,
+              "$deleted": true,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Whetted",
               "effect_kind": "apply_ae",
@@ -2207,7 +2426,7 @@
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Quad-Elemental Slash",
-          "action_pattern_priority": "12",
+          "action_pattern_priority": "6",
           "action_pattern_string": "Ascension",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "4",
@@ -2221,7 +2440,7 @@
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Sword Enchant - Fire",
           "action_pattern_priority": "8",
-          "action_pattern_string": "Whetted",
+          "action_pattern_string": "Fire Mark",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "0"
@@ -2234,7 +2453,7 @@
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Sword Enchant - Bolt",
           "action_pattern_priority": "8",
-          "action_pattern_string": "Whetted",
+          "action_pattern_string": "Bolt Mark",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "0"
@@ -2247,7 +2466,7 @@
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Sword Enchant - Ice",
           "action_pattern_priority": "8",
-          "action_pattern_string": "Whetted",
+          "action_pattern_string": "Ice Mark",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "0"
@@ -2260,7 +2479,7 @@
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Sword Enchant - Air",
           "action_pattern_priority": "8",
-          "action_pattern_string": "Whetted",
+          "action_pattern_string": "Air Mark",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "0"
@@ -2272,7 +2491,7 @@
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Elemental Slash: Overflow",
-          "action_pattern_priority": "4",
+          "action_pattern_priority": "5",
           "action_pattern_string": "Fire Aspect",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
@@ -2280,13 +2499,26 @@
         },
         "6": {
           "$deleted": false,
-          "action_pattern_condition": "always",
+          "action_pattern_condition": "self_lacks_status",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Elemental Slash",
-          "action_pattern_priority": "2",
-          "action_pattern_string": "",
+          "action_pattern_priority": "4",
+          "action_pattern_string": "Enchanted",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "0"
+        },
+        "7": {
+          "$deleted": false,
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Elemental Slash (Enchanted)",
+          "action_pattern_priority": "4",
+          "action_pattern_string": "Enchanted",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
@@ -2314,6 +2546,16 @@
           "name": "Elemental Slash: Overflow",
           "roll": "",
           "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.KRyhs4RfM7AK7DUJ"
+        },
+        "NkLZkuMIVqAZJgXl": {
+          "active_target": "One Creature",
+          "attack_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p><p>The Asura's blades carry whatever element last bit it, striking harder and leaving a mark:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Silence</strong></a>d.</p></li></ul>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Elemental Slash (Enchanted)",
+          "roll": "",
+          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.NkLZkuMIVqAZJgXl"
         },
         "ohrbXuZkGB4hNrPp": {
           "active_target": "One Creature",
@@ -2499,7 +2741,7 @@
       "skill_active_list": {
         "NFruWlBHrgfNSJmM": {
           "active_cost": "60 MP",
-          "active_description": "<p>All four blades fall at once. Deal <strong>devastating</strong> damage to all enemies four times over — as <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>.</p>",
+          "active_description": "<p>The Asura's four blades fall in a single flurry. Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a> and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage — four separate strikes, each landing automatically on a random foe.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
