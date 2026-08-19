@@ -1,0 +1,54 @@
+{
+  "id": "inferex-centuaros",
+  "encounter": ["Inferex", "Centuaros"],
+  "party": "<current game>",
+  "capturedAt": "2026-08-19",
+  "conflictEvent": null,
+
+  "live": {
+    "source": "FUCompanion.api.experimental.sim.run, pace=batch, guests=false, ZP 0, FP 3, no feathers",
+    "runs": [
+      { "rounds": 2, "partyHpRemaining": 0.82 },
+      { "rounds": 2, "partyHpRemaining": 0.94 },
+      { "rounds": 3, "partyHpRemaining": 0.54 }
+    ],
+    "medianRounds": 2,
+    "medianHp": 0.82,
+    "note": "All three logged 'conflict event: none' — sim.run does not read the scene's own conflictEvent flag, so these are storm-free."
+  },
+
+  "liveWithStorm": {
+    "conflictEvent": "lightning-storm",
+    "runs": [
+      { "rounds": 2, "partyHpRemaining": 0.73, "downs": ["Zarg"] },
+      { "rounds": 2, "partyHpRemaining": 0.89 }
+    ],
+    "note": "The storm damages BOTH sides, so it barely moves the outcome — but it did KO Zarg in one run. Round count unchanged."
+  },
+
+  "mindscape": {
+    "runs": 2000,
+    "seed": "calib-2026-08-19",
+    "medianRounds": 3,
+    "medianHp": 0.53,
+    "victoryRate": 1.0,
+    "baselineDpr": 165.5,
+    "roundDensity": 1.06
+  },
+
+  "bias": {
+    "rounds": "+1 round vs live (3 vs 2)",
+    "partyHp": "-29 points vs live (53% vs 82%)",
+    "direction": "PESSIMISTIC — Mindscape consistently under-rates the party",
+    "safe": true,
+    "reason": "This is the intended direction (spec Part 6): a fight Mindscape calls hard is genuinely hard. Do not 'fix' it by inflating party output.",
+    "knownCauses": [
+      "summons not modelled — live fields 1-2 Fox fire phantasms on the party side that soak and deal damage",
+      "reaction layer not modelled — Prophetic Defender, damage reducers, and the conflict_start passives (Psychic Gifts, Beyond the Realms of Death, Heart of Darkness, Lucky Number) all fired live",
+      "Zero Power not modelled",
+      "Opportunities and Fabula Point invokes not modelled"
+    ]
+  },
+
+  "howToRead": "Treat a Mindscape verdict as roughly one round LONG and ~25-30 points LOW on party HP. A Mindscape result of '3 rounds at 53%' corresponds to a real fight of about 2 rounds at 80%."
+}
