@@ -10,8 +10,10 @@
 // The game must be CLOSED — Foundry holds an exclusive lock on the world DB.
 
 const { loadParty, loadNamed, validate, resolveCurrentGame } = require("../lib/load-actors");
-const { buildCoverage } = require("../lib/skills");
+const { buildCoverage, extractActions } = require("../lib/skills");
 const { runBattle } = require("../lib/engine");
+const { resolveEvent } = require("../lib/conflict-events");
+const RX = require("../lib/reactions");
 const { Rng } = require("../lib/rng");
 
 function parseArgs(argv) {
@@ -26,6 +28,7 @@ function parseArgs(argv) {
     else if (a === "--expected") out.expectedRounds = Number(next());
     else if (a === "--force") out.force = true;
     else if (a === "--verbose" || a === "-v") out.verbose = true;
+    else if (a === "--conflict-event" || a === "-c") out.conflictEvent = next();
     else if (a === "--help" || a === "-h") out.help = true;
   }
   return out;
@@ -69,6 +72,10 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
   --expected     round budget before "unresolved" (default 7)
   --force        report even when coverage is below the bar
   --verbose, -v  print every coverage warning
+  --conflict-event, -c  scene rule to layer on (e.g. lightning-storm).
+                 NEVER auto-read from the scene — pass it explicitly, or the
+                 hazard is silently absent. The whole Valley of the Dragon
+                 roster is built around one.
 `);
     process.exit(args.help ? 0 : 1);
   }
@@ -102,6 +109,30 @@ Mindscape — offline Monte Carlo balance runs (game must be CLOSED)
   }
   if (args.verbose) { console.log(); for (const w of cov.warnings) console.log(`  ⚠ ${w}`); }
 
+  // Reaction coverage, reported SEPARATELY from the turn-spendable bar. A
+  // reaction is not turn-spendable, so folding it into that percentage would
+  // change what the bar means; but leaving it out of the printout entirely is
+  // how the whole layer stayed invisible in the first place.
+  const rxLines = [];
+  for (const c of combatants) {
+    const ex = extractActions(c.actor);
+    const declared = RX.declaredReactions(ex.passives).map((r) => r.name);
+    const undeclared = RX.undeclaredReactions(ex.passives);
+    if (declared.length || undeclared.length) rxLines.push({ name: c.actor.name, declared, undeclared });
+  }
+  const totDeclared = rxLines.reduce((s, r) => s + r.declared.length, 0);
+  if (totDeclared || rxLines.some((r) => r.undeclared.length)) {
+    console.log(`\nReactions: ${totDeclared} modelled`
+      + `, ${rxLines.reduce((s, r) => s + r.undeclared.length, 0)} not in the registry (lib/reactions.js)`);
+    for (const r of rxLines) {
+      if (r.declared.length) console.log(`  ✓ ${r.name.padEnd(11)} ${r.declared.join(", ")}`);
+      if (r.undeclared.length && args.verbose) console.log(`  · ${r.name.padEnd(11)} unmodelled: ${r.undeclared.join(", ")}`);
+    }
+  }
+
+  const conflictEvent = args.conflictEvent ? resolveEvent(args.conflictEvent) : null;
+  console.log(`\nConflict event: ${conflictEvent ? conflictEvent.label : "none"}`);
+
   if (cov.refuse && !args.force) {
     console.error(`
 REFUSING TO REPORT — ${cov.summary}, over the ${pct(cov.threshold)} bar.
@@ -121,7 +152,7 @@ if you accept a partial model. Use --verbose to see every gap.`);
 
   for (let i = 0; i < args.runs; i++) {
     const rng = new Rng(`${args.seed}:${i}`);
-    const r = runBattle({ party, enemies, rng, expectedRounds: args.expectedRounds });
+    const r = runBattle({ party, enemies, rng, expectedRounds: args.expectedRounds, conflictEvent });
     outcomes[r.outcome] = (outcomes[r.outcome] ?? 0) + 1;
     rounds.push(r.rounds);
     if (r.partyHpRemaining != null) hps.push(r.partyHpRemaining);

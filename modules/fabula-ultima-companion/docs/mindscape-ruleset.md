@@ -222,6 +222,63 @@ difficulty, never toward declaring a fight safe.
 - no mid-fight equipment swaps
 - costs the engine can't price (Adoration) are treated as unaffordable
 
+## Part 6b — Reactions (added 2026-08-20)
+
+Until this part existed, `skill_type: "Passive"` rows were extracted, counted in the
+coverage printout, and **never consulted** — `engine.js` had no notion of a reaction.
+The consequence was structural, not cosmetic: a monster whose kit lives in
+`reaction_config_table` was evaluated on its HP and its base attack alone, so a rework
+that *adds* reactions and pays for them with HP and damage read as a **pure nerf**.
+Measured on Skizzik: 89% party HP with the layer off, 75% with it on, 60% with the
+Lightning Storm as well.
+
+Reactions are **declared** in `lib/reactions.js`, for the same reason utility actions
+are: what a reaction does is structural (grant an attack, accumulate a counter, burst)
+and none of it is legible from the sheet. Undeclared passives are reported on their own
+line — they are **not** folded into the turn-spendable coverage bar, because a reaction
+is not turn-spendable and folding it in would change what that percentage means.
+
+### Trigger points
+A deliberately short list — three real hook points in `resolveAction`, not a
+transcription of the live engine's trigger taxonomy (whose distinctions this model has
+no way to honour). Mapping a live trigger onto one of these is a modelling decision and
+is recorded in the registry entry's `note`.
+
+| trigger | fires on | context |
+|---|---|---|
+| `on_targeted` | the DEFENDER, once the check is rolled | `accuracyResult, hit, damage, element, attacker` |
+| `on_deal_damage` | the ATTACKER, per damaged victim | `victim, element, damage` |
+| `on_take_element` | the DEFENDER when an element moves its HP — **including a heal from an absorb** | `element, damage, direction, cause` |
+
+### Two properties that are deliberate, not incidental
+- **`on_targeted` is COLLECTED before the HP write.** The live counter fires
+  pre-resolve, so it lands on the killing blow; collecting after the write would
+  silently delete the property that makes such a counter immune to the focus-fire
+  discount (its output scales with party *attacks*, not enemy *turns alive*).
+- **`on_take_element` fires on a heal.** An absorbed hit is still an element event.
+  This is the entire Chain Reaction / Lightning Rod interaction: measured 0.00 firings
+  per run without the storm, 0.86 with it — exactly matching the 0.86 Rod strikes that
+  land on the absorbing monster.
+
+### Recursion
+A free attack can deal damage and fire further reactions. Real chains terminate, but a
+registry edit could introduce a loop, and an infinite loop inside a 2000-run Monte Carlo
+is indistinguishable from a hang. Depth is capped at **2**.
+
+## Part 6c — Conflict events (added 2026-08-20)
+
+Layered scene rules, in `lib/conflict-events.js`. **Never auto-read from the scene** —
+passed with `--conflict-event`, matching `sim.run()`'s explicit-only behaviour. Omitting
+it means the hazard is silently absent, which for the Valley of the Dragon roster
+evaluates a different monster than the one on the sheet.
+
+**Lightning Storm** implements the five rules in `lightning-storm-design.md`. The
+exclusion that matters most: the Storm's own strike carries the `hazard` cause and
+therefore does **not** move the Rod. With it defaulted to `damage` the holder keeps the
+Rod forever and eats 30 Bolt every turn — a spec violation that inflates a squishy PC's
+down-rate. The strike resolves through the normal incoming pipeline, so an absorbing
+holder is healed and still registers a bolt event for its passives.
+
 ## Part 7 — NOT MODELLED
 
 **This section is load-bearing.** The previous log-only attempt failed by *silently
@@ -232,12 +289,13 @@ the threshold **refuses to emit a verdict** rather than returning a plausible nu
 - **Clock mechanics** — Asura's element collection, any `clock-system` boss gate
 - **Summon lifecycles** beyond Keren's phantasm (Birth of the Cruel's minions, overrides)
 - **Undying / revive bosses** (Geist's Blackest Night) — changes the shape of the end
-- **Conflict events / hazard tiles** except the Lightning Rod displacement rule
+- **Conflict events / hazard tiles** — except the Lightning Storm (Part 6c); hazard tiles remain unmodelled
 - **Boss Ultima actions**, Dominance Points, Super Armor
 - **Positioning / range** — the engine has no grid combat, but reach-gated skills exist
 - **Shields** as a separate resource band
 - **Status effects beyond the six die-steppers** and the damage-relevant ones
 - **Multi-phase transitions**
+- **Reactions not declared in the registry** — reported per-actor, never silently skipped (Part 6b)
 - **Every engine bug, by construction** (Part 0)
 
 ## Part 8 — Calibration targets

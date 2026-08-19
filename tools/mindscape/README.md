@@ -67,26 +67,31 @@ Known causes of the remaining gap, none arithmetic: summons (live fields 1–2 F
 phantasms that soak and deal damage), the reaction layer, Zero Power, and Fabula Point
 invokes. All are in the spec's Not Modelled list.
 
-### Conflict events are NOT modelled — and the live sim drops them too
-Training Ground carries `conflictEvent: "lightning-storm"`, but `sim.run()` only arms an
-event when you **pass one explicitly** — it never reads the scene's own flag. Every live
-run above logged `conflict event: none`. Measured separately, the storm barely moves the
-outcome (it damages both sides; 2 rounds, 73%/89%) but it did KO Zarg in one run.
+### Conflict events — pass them explicitly, here and in the live sim
+Training Ground carries `conflictEvent: "lightning-storm"`, but neither `sim.run()` nor
+this tool reads the scene's own flag; both only arm an event when **passed one**. The
+calibration runs above logged `conflict event: none`.
 
-If you are balancing a hazard scene, pass `conflictEvent` to `sim.run()` — otherwise the
-hazard is silently absent on **both** sides of this comparison.
+Mindscape models the Lightning Storm as of 2026-08-20 — use `--conflict-event
+lightning-storm`. It is worth a lot on the Valley roster: on `Skizzik,Skizzik` it moves
+the fight from 75% party HP to 60% and turns a 0% defeat rate into 13%, because those
+monsters are *built* to be fed by it. If you are balancing a hazard scene and you omit
+the flag, you are evaluating a different monster than the one on the sheet.
 
 ## Layout
 
 ```
-bin/mindscape.js    CLI: load → validate → coverage gate → Monte Carlo → report
-lib/load-actors.js  offline LevelDB read (reuses tools/safe-edit/lib/db.js)
-lib/skills.js       item → action extraction, utility registry, coverage manifest
-lib/formula.js      safe evaluator for sheet formulas; refuses runtime state
-lib/rules.js        checks + the damage pipeline (spec Parts 1-2), pure
-lib/engine.js       the combat loop
-lib/rng.js          seeded RNG — same seed, same run
-test/rules.test.js  30 tests, plain node
+bin/mindscape.js       CLI: load → validate → coverage gate → Monte Carlo → report
+lib/load-actors.js     offline LevelDB read (reuses tools/safe-edit/lib/db.js)
+lib/skills.js          item → action extraction, utility registry, coverage manifest
+lib/formula.js         safe evaluator for sheet formulas; refuses runtime state
+lib/rules.js           checks + the damage pipeline (spec Parts 1-2), pure
+lib/reactions.js       reaction registry + gates (spec Part 6b), pure
+lib/conflict-events.js layered scene rules — Lightning Storm (spec Part 6c)
+lib/engine.js          the combat loop
+lib/rng.js             seeded RNG — same seed, same run
+test/rules.test.js     30 tests, plain node
+test/reactions.test.js 22 tests, plain node
 ```
 
 `node_modules` is resolved from `tools/safe-edit`; this directory must never carry one.
@@ -98,6 +103,14 @@ they do is structural (grant an action, redirect a hit, strip an activation) and
 it is on the sheet — so they are declared in `UTILITY_REGISTRY` in `lib/skills.js`. That
 registry is an allowlist: anything not in it counts as a gap. Filling it in is the main
 route to a calibrated model.
+
+**Monster reactions work the same way**, in `REACTION_REGISTRY` in `lib/reactions.js`.
+Each entry names one of three trigger points, a `gate(ctx)` predicate, and an effect
+(`free_attack` / `stack_burst` / `burst` / `grant_mp`). Undeclared passives are listed
+on their own line and are *not* folded into the turn-spendable coverage bar — a reaction
+is not turn-spendable, so counting it there would change what that percentage means.
+Adding a monster's reactions is usually the difference between a verdict that means
+something and one that measures its HP bar.
 
 Party policy is transcribed from
 [`sim/profiles.js`](../../modules/fabula-ultima-companion/scripts/battle-director/sim/profiles.js),

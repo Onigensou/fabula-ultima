@@ -15,6 +15,7 @@
 const R = require("./rules");
 const { extractActions } = require("./skills");
 const U = require("./utility");
+const RX = require("./reactions");
 
 const ATTR_KEYS = { DEX: "dex", INS: "ins", MIG: "mig", WLP: "wlp" };
 
@@ -35,6 +36,12 @@ function makeCombatant(actor, side) {
     protectedThisRound: 0,
     actions: ex.actions,
     utility: ex.utility,
+    // Declared reactions (reactions.js). `ex.passives` was write-only before —
+    // extracted, counted, never consulted.
+    reactions: RX.declaredReactions(ex.passives),
+    undeclaredReactions: RX.undeclaredReactions(ex.passives),
+    counters: {},          // stack_burst accumulators, keyed by counter name
+    shield: 0,
     alive: true,
     // Per-run accounting, split per spec D3.
     baseActionsTaken: 0,
@@ -174,7 +181,128 @@ function reductionFor(target, element) {
   return { flat: (d.flat ?? 0) + (d.byElement?.[element] ?? 0), percent: d.percent ?? 0 };
 }
 
-function resolveAction(state, actor, action, targets) {
+// ── Reactions ───────────────────────────────────────────────────────────────
+// Execute one reaction descriptor produced by reactions.js. Split out of
+// resolveAction so the decision side stays pure and the recursion budget lives
+// in exactly one place.
+//
+// A reactor that has just been killed STILL acts here. That is not a bug: the
+// live Overload Riposte fires at CONFIRM, before the incoming damage resolves,
+// so it lands on the killing blow — and modelling it otherwise would quietly
+// delete the property that makes the mechanic immune to the focus-fire discount.
+function fireReactions(state, reactor, trigger, ctx) {
+  if (!reactor?.reactions?.length) return;
+  if ((state.reactionDepth ?? 0) >= RX.MAX_REACTION_DEPTH) return;
+
+  const fired = RX.collect(reactor, trigger, ctx);
+  if (!fired.length) return;
+
+  state.reactionDepth = (state.reactionDepth ?? 0) + 1;
+  try {
+    for (const r of fired) runReactionEffect(state, reactor, r, ctx);
+  } finally {
+    state.reactionDepth--;
+  }
+}
+
+function runReactionEffect(state, reactor, reaction, ctx) {
+  const e = reaction.effect;
+  reactor.reactionsFired = (reactor.reactionsFired ?? 0) + 1;
+
+  switch (e.kind) {
+    case "free_attack": {
+      const action = (reactor.actions ?? []).find((x) => x.name === e.actionName);
+      if (!action) return;                        // not extractable → silently unmodelled
+      let targets = [];
+      if (e.target === "attacker" && ctx.attacker?.alive) targets = [ctx.attacker];
+      else if (e.target === "victim" && ctx.victim?.alive) targets = [ctx.victim];
+      else if (e.target === "hostile") targets = chooseTargets(state, reactor, action);
+      if (!targets.length) return;
+      // An ANNOUNCE row: it names the reaction that granted the attack, and
+      // carries no target/damage of its own — the resolveAction below logs the
+      // actual swing. `announce` is the flag a log reader must skip on; without
+      // it a formatter prints "-> undefined -undefined".
+      state.log.push({ round: state.round, actor: reactor.name, action: reaction.name, reaction: true, announce: true });
+      resolveAction(state, reactor, action, targets, { free: true });
+      return;
+    }
+
+    case "stack_burst": {
+      const n = (reactor.counters[e.counter] ?? 0) + 1;
+      if (n < e.threshold) { reactor.counters[e.counter] = n; return; }
+      reactor.counters[e.counter] = 0;
+      const victim = ctx.victim;
+      if (!victim?.alive) return;
+      applyFlatDamage(state, reactor, victim, e.damage, e.element, reaction.name);
+      return;
+    }
+
+    case "burst": {
+      // Indiscriminate — hits everything else in the conflict, allies included.
+      for (const c of state.combatants) {
+        if (c === reactor || !c.alive) continue;
+        applyFlatDamage(state, reactor, c, e.damage, e.element, reaction.name);
+      }
+      return;
+    }
+
+    case "grant_mp": {
+      const before = reactor.mp;
+      const cap = reactor.actor.mp.max ?? before;
+      reactor.mp = Math.min(cap, before + e.amount);
+      if (e.overflowToShield) reactor.shield += Math.max(0, before + e.amount - cap);
+      return;
+    }
+
+    default:
+      return;
+  }
+}
+
+// Flat, unrolled damage through the normal incoming pipeline (affinity + DR),
+// which is what makes an absorbing target heal instead of taking it.
+//
+// `cause` is NOT cosmetic: "hazard" is what stops the Lightning Rod's own strike
+// from re-pinning the Rod to its current holder. With it defaulted to "damage"
+// the holder kept the Rod forever and ate 30 Bolt every single turn — Hina's
+// down-rate read 50% off that alone.
+function applyFlatDamage(state, source, target, amount, element, label, cause = "damage") {
+  const out = R.incomingDamage(
+    { ...target.actor, damageReduction: reductionFor(target, element) },
+    { base: amount, element },
+  );
+  if (out.direction === "recover") {
+    target.hp = Math.min(target.maxHp, target.hp + out.damage);
+  } else {
+    target.hp -= out.damage;
+    if (source.side !== target.side) source.damageDealt += out.damage;
+    if (target.hp <= 0) { target.hp = 0; target.alive = false; target.downedOnRound = state.round; }
+  }
+  state.log.push({
+    round: state.round, actor: source.name, action: label, target: target.name,
+    damage: out.damage, affinity: out.affinity, direction: out.direction, reaction: true,
+  });
+  onHpMoved(state, source, target, out, element, cause);
+}
+
+// One funnel for "an element moved this creature's HP" so the storm strike, a
+// burst and a normal hit all feed the same passives. `cause` distinguishes
+// creature-inflicted ("damage") from hazard/tick, which the Rod rule needs.
+function onHpMoved(state, source, target, out, element, cause) {
+  if (state.event?.onDamage && out.direction !== "recover") {
+    state.event.onDamage(state, target, cause);
+  }
+  fireReactions(state, target, RX.TRIGGERS.ON_TAKE_ELEMENT, {
+    element, damage: out.damage, direction: out.direction, cause, attacker: source,
+  });
+  if (source && source !== target && out.direction !== "recover") {
+    fireReactions(state, source, RX.TRIGGERS.ON_DEAL_DAMAGE, {
+      victim: target, element, damage: out.damage,
+    });
+  }
+}
+
+function resolveAction(state, actor, action, targets, { free = false } = {}) {
   const a = attrs(actor);
   const dieA = a[action.attrA] ?? 8;
   const dieB = a[action.attrB] ?? 8;
@@ -220,6 +348,14 @@ function resolveAction(state, actor, action, targets) {
       }
     }
 
+    // ON_TARGETED is COLLECTED here — before the HP write — because the live
+    // trigger is pre-resolve. Deferring the collection past the write would
+    // silently drop every riposte to a lethal hit.
+    const targetedCtx = {
+      accuracyResult: check.result, hit: true, damage: out.damage,
+      element: action.element, attacker: actor, victim,
+    };
+
     if (out.direction === "recover") {
       target.hp = Math.min(target.maxHp, target.hp + out.damage);
     } else {
@@ -237,6 +373,9 @@ function resolveAction(state, actor, action, targets) {
       round: state.round, actor: actor.name, action: action.name, target: target.name,
       damage: out.damage, affinity: out.affinity, crit: check.crit, direction: out.direction,
     });
+
+    fireReactions(state, victim, RX.TRIGGERS.ON_TARGETED, targetedCtx);
+    onHpMoved(state, actor, victim, out, action.element, "damage");
   }
 }
 
@@ -249,6 +388,10 @@ function resolveAction(state, actor, action, targets) {
 // fires a finisher it cannot land.
 function chooseAction(state, actor) {
   const affordable = actor.actions.filter((act) => {
+    // A counter's payload exists only to be fired BY the reaction. It sits on
+    // the actor as a normal Attack item (and off the sheet's attack_list), so
+    // without this it would be offered as a turn action.
+    if (RX.REACTION_ONLY_ACTIONS.has(act.name)) return false;
     const t = chooseTargets(state, actor, act);
     return t.length > 0 && canAfford(actor, act, t.length);
   });
@@ -299,6 +442,24 @@ function weaponAction(actor) {
 
 function takeTurn(state, actor, { granted = false } = {}) {
   if (!actor.alive) return;
+
+  // Conflict-event turn-start hook. The Lightning Rod discharges here, through
+  // the normal incoming pipeline — so an ABSORBING holder is healed and still
+  // registers a bolt event for its passives, which is the interaction the
+  // Valley roster is built on. Fires per ACTIVATION, not per round.
+  if (state.event?.onTurnStart) {
+    const strike = state.event.onTurnStart(state, actor);
+    if (strike) {
+      // cause "hazard" — the Storm's own strike must NOT move the Rod, or it
+      // self-refreshes and never leaves its holder (lightning-storm-design.md,
+      // Exclusions). Same filter covers DoT ticks.
+      applyFlatDamage(state, actor, actor, strike.damage, strike.element, state.event.label, "hazard");
+      const cap = actor.actor.mp.max ?? actor.mp;
+      actor.mp = Math.min(cap, actor.mp + strike.mp);
+      if (!actor.alive) return;
+    }
+  }
+
   if (actor.side === "party") refreshFocus(state);
 
   // Utility pre-empts the rotation, as it does in profiles.js: a turn spent
@@ -346,13 +507,17 @@ function takeTurn(state, actor, { granted = false } = {}) {
 }
 
 // ── The run ─────────────────────────────────────────────────────────────────
-function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30 }) {
+function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, conflictEvent = null }) {
   const combatants = [
     ...party.map((a) => makeCombatant(a, "party")),
     ...enemies.map((a) => makeCombatant(a, "enemy")),
   ];
 
-  const state = { combatants, round: 0, rng, log: [], focus: null };
+  const state = {
+    combatants, round: 0, rng, log: [], focus: null,
+    event: conflictEvent, rod: null, reactionDepth: 0,
+  };
+  if (state.event?.init) state.event.init(state);
 
   const order = combatants.slice().sort((a, b) => initiative(b) - initiative(a));
 
@@ -362,6 +527,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30 }) 
 
   for (state.round = 1; state.round <= maxRounds; state.round++) {
     for (const c of combatants) c.protectedThisRound = 0;
+    if (state.event?.onRoundStart) state.event.onRoundStart(state);
     for (const c of order) {
       if (!c.alive) continue;
       for (let t = 0; t < c.baseTurns; t++) {
@@ -422,7 +588,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30 }) 
       : 0,
     combatants: combatants.map((c) => ({
       name: c.name, side: c.side, hp: c.hp, maxHp: c.maxHp, alive: c.alive,
-      damageDealt: c.damageDealt,
+      damageDealt: c.damageDealt, reactionsFired: c.reactionsFired ?? 0,
     })),
     log: state.log,
   };
