@@ -32,7 +32,20 @@ const VOLATILE_PATHS = [
   "flags.fabula-ultima-companion.dungeonPathing.tileStates",
   "flags.fabula-ultima-companion.dungeonPathing.visitedTiles",
   "flags.fabula-ultima-companion.dungeonPathing.fogRevealed",
+  // Battle Director per-battle save snapshots (schemaVersion / dCombat / actors /
+  // pendingAction / runtimeContinuation …). Pure runtime state: it grows by one
+  // entry per battle and is never authored. On Training Ground it had reached 50
+  // entries / 6.2 MB, which flattened to 215,751 leaf paths against a golden's 852
+  // — 214,899 findings from ONE scene, and the crash below. Same category as the
+  // dungeonPathing maps above.
+  "flags.fabula-ultima-companion.directorHistory",
 ];
+
+// Defence in depth for the next unbounded blob nobody has thought of yet. A diff
+// this large is never actionable output, and before the non-variadic push in
+// checks/scenes.js it was fatal. Capped findings are ANNOUNCED, never dropped
+// silently — that is the same contract VOLATILE_PATHS carries.
+const MAX_FINDINGS_PER_SCENE = 200;
 
 function isVolatile(path) {
   return VOLATILE_PATHS.some((v) => path === v || path.startsWith(v + "."));
@@ -97,7 +110,25 @@ function compareSceneConfig(gold, live, sceneName, sceneId) {
     }
   }
 
+  // Cap AFTER the structural checks above, so a genuine FAIL (embedded collection
+  // shrank — the thing this suite exists to catch) can never be pushed out of the
+  // report by a flood of scalar WARNs.
+  if (out.length > MAX_FINDINGS_PER_SCENE) {
+    const fails = out.filter((f) => f.severity === SEVERITY.FAIL);
+    const rest = out.filter((f) => f.severity !== SEVERITY.FAIL);
+    const keep = rest.slice(0, Math.max(0, MAX_FINDINGS_PER_SCENE - fails.length));
+    const hidden = out.length - fails.length - keep.length;
+    return [
+      ...fails,
+      ...keep,
+      finding(ID, SEVERITY.WARN,
+        `Scene "${sceneName}": +${hidden} more config differences not shown (capped at ${MAX_FINDINGS_PER_SCENE}). `
+        + `A diff this large usually means the golden is stale or a runtime blob needs adding to VOLATILE_PATHS — re-bless this scene.`,
+        ref),
+    ];
+  }
+
   return out;
 }
 
-module.exports = { compareSceneConfig, VOLATILE_PATHS, EMBEDDED_ARRAYS };
+module.exports = { compareSceneConfig, VOLATILE_PATHS, EMBEDDED_ARRAYS, MAX_FINDINGS_PER_SCENE };

@@ -96,7 +96,10 @@ function run(world, opts = {}) {
 
   if (drifts.length) {
     if (opts.showDrift) {
-      out.push(...drifts);
+      // Non-variadic: a spread passes each element as an argument and overflows
+      // the stack on a large array (see checks/scenes.js). Bounded today, but
+      // this list grows with content and the failure mode is a hard crash.
+      for (const d of drifts) out.push(d);
     } else {
       out.push(finding(ID, SEVERITY.INFO,
         `${drifts.length} action(s) differ from their source item — expected for customised copies; pass --show-drift to list (useful when hunting one stale actor)`,

@@ -134,8 +134,13 @@ function run(world) {
 
     // Full-scene config drift (lighting, vision, walls, ownership, dungeon
     // config, network, …). Only for goldens blessed with a full capture.
+    // NOT `out.push(...arr)` — spreading passes every element as a function
+    // ARGUMENT, so a large findings array blows V8's argument limit and throws
+    // `RangeError: Maximum call stack size exceeded`. One scene reached 214,899
+    // findings (a 6.2 MB directorHistory blob flattened per leaf) and took the
+    // whole preflight run down with it.
     if (gold.full) {
-      out.push(...compareSceneConfig(gold.full, scene, gold.name, gold.sceneId));
+      for (const f of compareSceneConfig(gold.full, scene, gold.name, gold.sceneId)) out.push(f);
     }
   }
 

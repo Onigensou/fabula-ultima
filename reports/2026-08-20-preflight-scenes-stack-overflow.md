@@ -1,11 +1,16 @@
 ---
 id: 2026-08-20-preflight-scenes-stack-overflow
 title: preflight crashes with a stack overflow when scene goldens are far from the world
-status: open
+status: fixed
 severity: minor
 reporter: onigensou
 component: tools/safe-edit/preflight
 ---
+
+> **FIXED same day.** Root cause was not "stale goldens" as first written — it was a
+> **6.2 MB `directorHistory` blob** the Battle Director persists on the scene, which
+> flattened to 215,751 leaf paths. See [Root cause](#root-cause-the-first-diagnosis-was-incomplete)
+> and [Fix](#what-was-actually-changed). Training Ground: **214,899 findings → 201**.
 
 # `preflight run` dies instead of reporting when scene drift is large
 
@@ -48,19 +53,59 @@ healthy suites never report either. Verified by running them directly:
 
 `--only` does not help: it filters findings *after* every check has run.
 
-## Suggested fixes
+## Root cause — the first diagnosis was incomplete
 
-1. **The crash** — replace the spread with a non-variadic append:
-   `for (const f of compareSceneConfig(...)) out.push(f);` (or
-   `out = out.concat(...)`). One line, removes the ceiling entirely.
-2. **Blast radius** — wrap each `c.run(...)` in `cmdRun` so one throwing suite
-   degrades to a reported error for that suite instead of killing the run.
-3. **Ergonomics** — cap per-scene config findings (e.g. first 50 + "and N more").
-   A 100k-line scene diff is not actionable output even when it does print.
+The initial write-up blamed stale goldens generally. Measuring per scene showed it
+was one scene and one field:
 
-## Not a blocker for world pushes
+| scene | findings |
+|---|---|
+| **Training Ground** | **214,899** |
+| Loading Screen | 102 |
+| AncientTemple_Map009 | 102 |
+| …95 others | ≤ 99 |
 
-Scene goldens are local state, and the drift here is expected rather than damage:
-the pre-commit `world-export` gate (0 added / 0 removed) and the
-`CURRENT → MANIFEST` integrity check both passed independently. Re-bless scenes
-locally (`preflight bless`) to clear it — see the post-session bless-drift note.
+Training Ground's golden flattens to **852** scalar leaf paths; the live scene to
+**215,751**. The entire difference is
+`flags.fabula-ultima-companion.directorHistory` — Battle Director per-battle save
+snapshots (`schemaVersion` / `dCombat` / `actors` / `pendingAction` /
+`runtimeContinuation` …), **50 entries totalling 6.18 MB**, on that scene alone
+because it is the sim bench. It grows by one entry per battle and is never
+authored, so comparing it is pure noise — the same category as the
+`dungeonPathing` maps already listed in `VOLATILE_PATHS`.
+
+## What was actually changed
+
+1. **`scene-diff.js` — root cause.** `flags.fabula-ultima-companion.directorHistory`
+   added to `VOLATILE_PATHS`.
+2. **`checks/scenes.js:138` — the crash.** `out.push(...arr)` → `for (const f of arr) out.push(f)`.
+   Removes the argument-count ceiling entirely.
+3. **`checks/automation.js:99`** — same spread, same fix. Bounded today (220 drifts),
+   but it grows with content and the failure mode is a hard crash.
+4. **`scene-diff.js` — defence in depth.** `MAX_FINDINGS_PER_SCENE = 200`, applied
+   **after** the structural checks so a genuine FAIL (an embedded collection
+   shrank — the thing this suite exists to catch) can never be pushed out of the
+   report by a flood of scalar WARNs. Truncation is announced, never silent.
+5. **`bin/preflight.js:73` — blast radius.** Each `c.run(...)` is wrapped; a throwing
+   suite degrades to its own FAIL finding instead of taking the run down.
+
+## Result
+
+```
+Training Ground findings   214,899  →  201   (200 shown + 1 cap notice)
+preflight run              CRASH    →  1 FAIL · 443 WARN · 523 INFO, exit 1
+```
+
+The surviving FAIL is the pre-existing post-play token drift on
+`AncientTemple_Map002`, which is what the suite is supposed to report.
+
+Verified the cap cannot mask a FAIL: a synthetic scene with one `walls dropped
+10 → 0` FAIL buried under 5,000 scalar WARNs still returns the FAIL first, bounded
+to cap + 1 findings, with the truncation notice attached.
+
+## Follow-up worth considering (not done here)
+
+**6.2 MB of `directorHistory` living on a scene document** is a payload concern in
+its own right — see the world-payload-limit note. Excluding it from the diff stops
+the noise; it does not stop the growth. Worth a retention cap (keep the last N
+battles) if it keeps climbing.

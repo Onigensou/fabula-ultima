@@ -29,6 +29,7 @@ const { DEFAULT_WORLD } = require("../lib/paths");
 const { loadWorld } = require("../preflight/loader");
 const { CHECKS } = require("../preflight/registry");
 const { renderConsole, writeHtml, tally } = require("../preflight/report");
+const { SEVERITY, finding } = require("../preflight/util");
 const scenesCheck = require("../preflight/checks/scenes");
 
 const FIXERS = {
@@ -70,7 +71,23 @@ async function cmdRun(argv, world, allowLocked) {
   const only = arg(argv, "--only");
   const model = await loadWorld({ world, allowLocked });
 
-  let results = CHECKS.map((c) => ({ id: c.id, title: c.title, findings: c.run(model, opts) }));
+  // Isolate each suite. A check that throws used to take the WHOLE run with it —
+  // the four healthy suites never reported, so a crash in one looked like a
+  // broken validator rather than one broken check. A thrown suite now degrades
+  // to a FAIL finding of its own, which is both visible and non-zero-exit.
+  let results = CHECKS.map((c) => {
+    try {
+      return { id: c.id, title: c.title, findings: c.run(model, opts) };
+    } catch (e) {
+      return {
+        id: c.id,
+        title: c.title,
+        findings: [finding(c.id, SEVERITY.FAIL,
+          `check "${c.id}" threw and was skipped: ${e.message}`,
+          { doc: "preflight", id: c.id })],
+      };
+    }
+  });
   if (only) {
     const needle = only.toLowerCase();
     const hit = (f) => String(f.ref?.id ?? "").toLowerCase() === needle
