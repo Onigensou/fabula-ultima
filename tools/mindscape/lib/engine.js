@@ -14,6 +14,7 @@
 
 const R = require("./rules");
 const { extractActions } = require("./skills");
+const U = require("./utility");
 
 const ATTR_KEYS = { DEX: "dex", INS: "ins", MIG: "mig", WLP: "wlp" };
 
@@ -30,6 +31,8 @@ function makeCombatant(actor, side) {
     zp: actor.zp ?? 0,
     baseTurns: actor.turnsPerRound ?? 1,
     grantedTurns: 0,
+    accelerated: false,
+    protectedThisRound: 0,
     actions: ex.actions,
     utility: ex.utility,
     alive: true,
@@ -58,14 +61,20 @@ function initiative(c) {
 function canAfford(c, action, targetCount = 1) {
   const cost = action.cost;
   if (!cost || !cost.resource) return true;
+  if (cost.resource === "adoration") return true;   // see pay()
   const amount = cost.perTarget ? cost.amount * Math.max(1, targetCount) : cost.amount;
   const pool = cost.resource === "mp" ? c.mp : cost.resource === "ip" ? c.ip : c.zp;
   return pool >= amount;
 }
 
+// Adoration is charged as free. The sheet exposes no pool to read (Blanche's
+// resource_value_* are all 0) yet profiles.js keeps Muleta in her rotation, so
+// the live engine pays it somehow. Treating it as unaffordable made her deal
+// literally zero damage, which is a worse model of real play than this is.
+// ROUGH BY CHOICE -- flagged in the report.
 function pay(c, action, targetCount = 1) {
   const cost = action.cost;
-  if (!cost || !cost.resource) return;
+  if (!cost || !cost.resource || cost.resource === "adoration") return;
   const amount = cost.perTarget ? cost.amount * Math.max(1, targetCount) : cost.amount;
   if (cost.resource === "mp") c.mp -= amount;
   else if (cost.resource === "ip") c.ip -= amount;
@@ -199,15 +208,28 @@ function resolveAction(state, actor, action, targets) {
       },
     );
 
+    // PROTECT: a defensive redirect resolved here rather than on a turn -- the
+    // protector steps in front and takes the hit instead.
+    let victim = target;
+    if (out.direction !== "recover" && actor.side === "enemy") {
+      const prot = U.findProtector(state, target, out.damage);
+      if (prot) {
+        prot.protectedThisRound++;
+        victim = prot;
+        state.log.push({ round: state.round, actor: prot.name, action: "Protect", target: target.name, protect: true });
+      }
+    }
+
     if (out.direction === "recover") {
       target.hp = Math.min(target.maxHp, target.hp + out.damage);
     } else {
-      target.hp -= out.damage;
+      // `victim` is the target unless a protector stepped in front.
+      victim.hp -= out.damage;
       actor.damageDealt += out.damage;
-      if (target.hp <= 0) {
-        target.hp = 0;
-        target.alive = false;
-        target.downedOnRound = state.round;
+      if (victim.hp <= 0) {
+        victim.hp = 0;
+        victim.alive = false;
+        victim.downedOnRound = state.round;
       }
     }
 
@@ -279,13 +301,38 @@ function takeTurn(state, actor, { granted = false } = {}) {
   if (!actor.alive) return;
   if (actor.side === "party") refreshFocus(state);
 
+  // Utility pre-empts the rotation, as it does in profiles.js: a turn spent
+  // keeping somebody alive or handing out an extra action beats a turn of
+  // damage. Free (granted) actions are attacks only -- they never re-spend the
+  // support layer, which would let one Acceleration cascade into infinite heals.
+  if (!granted && actor.side === "party") {
+    const heal = U.tryHeal(state, actor);
+    if (heal) {
+      state.log.push({ round: state.round, actor: actor.name, action: "Heal", heal: heal.healed, amount: heal.amount });
+      actor.baseActionsTaken++;
+      return;
+    }
+    const acc = U.tryAccelerate(state, actor);
+    if (acc) {
+      state.log.push({ round: state.round, actor: actor.name, action: "Acceleration", target: acc.target });
+      actor.baseActionsTaken++;
+      return;
+    }
+  }
+
   const pick = chooseAction(state, actor);
   let action = pick?.action ?? null;
   let targets = pick?.targets ?? null;
 
   if (!action) {
-    const w = weaponAction(actor);
-    if (w) { action = w; targets = chooseTargets(state, actor, w); }
+    let w = weaponAction(actor);
+    if (w) {
+      // Barrage buys REACH on a ranged shot, so it fires whenever payable.
+      const barraged = U.tryBarrage(actor, w);
+      if (barraged) w = barraged;
+      action = w;
+      targets = chooseTargets(state, actor, w);
+    }
   }
 
   if (!action || !targets?.length) {
@@ -310,13 +357,21 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30 }) 
   const order = combatants.slice().sort((a, b) => initiative(b) - initiative(a));
 
   let outcome = "inconclusive";
+  // High Speed: a one-off free attack before the first round.
+  for (const c of combatants) if (U.tryHighSpeed(c)) c.grantedTurns++;
+
   for (state.round = 1; state.round <= maxRounds; state.round++) {
+    for (const c of combatants) c.protectedThisRound = 0;
     for (const c of order) {
       if (!c.alive) continue;
       for (let t = 0; t < c.baseTurns; t++) {
         if (!c.alive) break;
         takeTurn(state, c);
       }
+      // Acceleration is a RECURRING grant ("at the end of each of their turns,
+      // perform a free attack"), so it is added every round rather than once.
+      if (c.accelerated) c.grantedTurns++;
+
       // Granted turns are taken AFTER the base ones and counted separately, so
       // BaselineDPR (base only) and RD (both) cannot double-count. Spec D3.
       for (let t = 0; t < c.grantedTurns; t++) {
