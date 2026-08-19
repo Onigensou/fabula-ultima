@@ -79,9 +79,15 @@ intermediate `ceil` at each step the order is observable, not cosmetic.
 ## Part 3 — Combat structure
 
 - Rounds; within a round each combatant takes its turns.
-- **Turns per round: 1** for PCs, soldiers **and Elites**. Multi-turn economy is a
-  **Champion-only** trait — typically 4/round at the party's current tier.
-  (`project_monster_design_rules`, user-authoritative correction.)
+- **Turns per round comes from `props.activation` + `props.bonus_activation`**, never from
+  rank. Mirrors [director-combat.js:31-69](../scripts/battle-director/director-combat.js#L31-L69).
+  An explicit `0` is meaningful (an effect can zero a creature's turn); only a blank value
+  falls through to the default of 1.
+
+  > **Verified against the world, and it overturns the rank rule.** Every boss checked is
+  > rank `elite` — Asura `activation=4`, but Kirin, Gigas, Inferex and Centuaros all `=1`.
+  > A rank-derived rule would read Asura as 1 turn/round and under-rate that fight fourfold.
+  > Rank is *descriptive*; activation is *authoritative*.
 - **Free actions are actions.** Acceleration, High Speed, Dance, Counter Pass, Barrage's free
   attack. This is the model's single most important structural rule: the live sim's headline
   finding is that fights are decided on **action economy, not DPR**, and a model that counts
@@ -241,13 +247,38 @@ placeholder `1.00` while free actions demonstrably dominate):
 
 ---
 
+---
+
+## Appendix — what loading the real world corrected
+
+Findings from running the loader against `fabula-ultima-2` with the game closed. Each one
+would have silently skewed the model.
+
+| Assumption | Reality |
+|---|---|
+| one party | **two** — "EXFURSION Party" (Hina/Keren/Blanche/Zarg) and "Zenit Crisis Party" (RaiRai/Surtur/Varan/Moses), on **different sheet templates** |
+| party is L30 / L36 | **L41** — every published constant is two tiers stale |
+| turns/round from rank | from `props.activation` (see Part 3) |
+| PC `max_hp` derivable | **not derivable** — the formula undershoots by 17–60 HP (Hina: formula 81, sheet 98) because class-list and equipment bonuses aren't in props. Read the stored value; refuse when absent |
+| attributes at `dex` / `dex_current` | `dex_base` … `wlp_base`; status die-steps live in `is<Status>` flags |
+| DEF/MDEF at `def` / `mdef` | `defense` / `magic_defense` (+ base/bonus/override components) |
+
+**Party affinities are not what the coverage map says.** Hina **absorbs fire** and is
+**VU to ice** — her own primary element. Keren is **VU to bolt**. All four carry weapon
+efficiency 100 across every family, so EF is a monster-side stat in practice.
+
+The loader **refuses** to load the older-template party rather than substituting a derived
+maximum. That refusal is the coverage principle applied to data loading: a plausible number
+from an incomplete sheet is worse than an error.
+
 ## Open questions for review
 
-1. **`icebergKoHp` 60 is an absolute HP threshold** standing in for "can this finish them?".
-   At L36 against 800 HP bosses it will essentially never fire. Should it become a fraction
+1. **Which party does balance work target?** The model defaults to **EXFURSION Party** — it
+   matches every balance memory and every monster tuned so far. Confirm, or say when Zenit
+   Crisis should be modelled instead (it needs a sheet-template migration first).
+2. **`icebergKoHp` 60 is an absolute HP threshold** standing in for "can this finish them?".
+   At L41 against 900 HP bosses it will essentially never fire. Should it become a fraction
    of max HP, or is the absolute value deliberate?
-2. **`BaselineDPR` re-derivation** — should the strict definition exclude free actions
-   (then `RD` multiplies them back in), or include them (then `RD` must be 1.0)? Double-counting
-   here corrupts every downstream HP number.
-3. **Champion turn count** — 4/round at the current tier is recorded as "typically". Is that
-   fixed for the model, or read per-actor?
+3. **`BaselineDPR` re-derivation** — should the strict definition exclude free actions
+   (then `RD` multiplies them back in), or include them (then `RD` must be 1.0)?
+   Double-counting here corrupts every downstream HP number.

@@ -88,6 +88,13 @@
 !/tools/hot-reload-map/**
 !/tools/bug-report/
 !/tools/bug-report/**
+# mindscape — offline Monte Carlo combat model. Shared: it is a balance tool
+# with no local state, and its ruleset spec (docs/mindscape-ruleset.md) is
+# meant to be reviewed and disagreed with by whoever is tuning a fight.
+!/tools/mindscape/
+!/tools/mindscape/**
+# node_modules is resolved from tools/safe-edit — mindscape must never carry one
+/tools/mindscape/node_modules/
 
 # -----------------------------
 # Shared bug reports (see reports/README.md)
