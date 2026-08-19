@@ -1387,6 +1387,19 @@ function getBaseValueForChange(actor, change) {
       // DISABLING its effect actually clears it instead of leaving the last
       // value stranded on the actor forever.
       foundry.utils.setProperty(actor, "flags.fabula-ultima-companion.opp_lucky", 0);
+      // Damage-class affinities (Ghostly Sheet: immune to Strike). Same mode-5
+      // stranding as opp_lucky, and worse on equip-gated gear: `equipment-swap`
+      // syncs an item's AE `disabled` to its own isEquipped, so on UNEQUIP the
+      // effect stops applying entirely and the `'NA'` branch of its own
+      // `${isEquipped ? 'IM' : 'NA'}$` guard can never run. Nothing un-writes the
+      // last equipped value. Measured 2026-08-19: Hina kept affinity_class_strike
+      // "IM" with the Sheet unequipped and took 0 from every weapon attack
+      // (rawDamage 23 -> damage 0) while Hina (Backup), same item, same unequipped
+      // state, read null. "NA" is the identity — classAffinityCode only honours
+      // RS/VU/IM/AB, so a seeded "NA" is inert.
+      for (const c of ["strike", "magic"]) {
+        foundry.utils.setProperty(actor, `flags.fabula-ultima-companion.affinity_class_${c}`, "NA");
+      }
 
       // Open-ended ADD-mode families. `skill_level_bonus_<slug>` cannot be
       // enumerated the way the lists above can — the slug is whatever skill the

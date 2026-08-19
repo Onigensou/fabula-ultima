@@ -455,7 +455,6 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
-      "affinity_class_strike": "IM",
       "attributeAdvance": {
         "claimed": 2,
         "legacy": true,
