@@ -13890,6 +13890,10 @@
         "type": "character",
         "items": [
           {
+            "id": "0bN7A6pXFG2cX2q9",
+            "name": "Ascension"
+          },
+          {
             "id": "nYbYx0X2yfIdteZ7",
             "name": "Elemental Aspect"
           },
@@ -13899,7 +13903,7 @@
           },
           {
             "id": "yq9JICuLI4TImXFn",
-            "name": "Elemental Slash (Arm)"
+            "name": "Elemental Slash (Sweep)"
           },
           {
             "id": "KRyhs4RfM7AK7DUJ",

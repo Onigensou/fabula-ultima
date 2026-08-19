@@ -17,6 +17,427 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
   "items": [
     {
+      "_id": "0bN7A6pXFG2cX2q9",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1787126045880,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "8f3RJmMLCP3dQdD1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787126045881,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to bolt.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Shock.png",
+          "name": "Bolt Mark",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_mark"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "ib83MVkieUvWjmD8",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787126045881,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to bolt.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 4,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATTACK%20DOUBLE%20UP.png",
+          "name": "Ascension",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_clock"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "KdF347KyOwBY8ptE",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787126045881,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to bolt.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png",
+          "name": "Air Mark",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_mark"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "KOZ3O8IlTHWQxSxX",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787126045881,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to bolt.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png",
+          "name": "Ice Mark",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_mark"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "zLQmZ8HXQqX5yxCz",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787126045881,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to bolt.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
+          "name": "Fire Mark",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_mark"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+      "name": "Ascension",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Asura suffers damage of an element it has not yet collected.</p></li></ul><p>It keeps that element for the rest of the conflict, and strikes harder for every element it holds. Once it holds all four, its blades are ready to fall together.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "fire_ae,asc_up",
+              "effect_kind": "chain",
+              "effect_label": "mark_fire"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Fire Mark",
+              "effect_kind": "apply_ae",
+              "effect_label": "fire_ae",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "chain_steps": "bolt_ae,asc_up",
+              "effect_kind": "chain",
+              "effect_label": "mark_bolt"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Bolt Mark",
+              "effect_kind": "apply_ae",
+              "effect_label": "bolt_ae",
+              "target_ref": "self"
+            },
+            "4": {
+              "$deleted": false,
+              "chain_steps": "ice_ae,asc_up",
+              "effect_kind": "chain",
+              "effect_label": "mark_ice"
+            },
+            "5": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Ice Mark",
+              "effect_kind": "apply_ae",
+              "effect_label": "ice_ae",
+              "target_ref": "self"
+            },
+            "6": {
+              "$deleted": false,
+              "chain_steps": "air_ae,asc_up",
+              "effect_kind": "chain",
+              "effect_label": "mark_air"
+            },
+            "7": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Air Mark",
+              "effect_kind": "apply_ae",
+              "effect_label": "air_ae",
+              "target_ref": "self"
+            },
+            "8": {
+              "$deleted": false,
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_template_ref": "Ascension",
+              "effect_kind": "apply_ae",
+              "effect_label": "asc_up",
+              "target_ref": "self"
+            },
+            "9": {
+              "$deleted": false,
+              "damage_amount": "AE_CHARGES_ASCENSION * 8",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "ascension_bonus"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "0bN7A6pXFG2cX2q9",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ascension",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1 && AE_COUNT_FIRE_MARK == 0",
+              "reaction_effect_ref": "mark_fire",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_takes_damage"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1 && AE_COUNT_BOLT_MARK == 0",
+              "reaction_effect_ref": "mark_bolt",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_takes_damage"
+            },
+            "2": {
+              "$deleted": false,
+              "condition_formula": "TRIGGER_DAMAGE_IS_ICE == 1 && AE_COUNT_ICE_MARK == 0",
+              "reaction_effect_ref": "mark_ice",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_takes_damage"
+            },
+            "3": {
+              "$deleted": false,
+              "condition_formula": "TRIGGER_DAMAGE_IS_AIR == 1 && AE_COUNT_AIR_MARK == 0",
+              "reaction_effect_ref": "mark_air",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_takes_damage"
+            },
+            "4": {
+              "$deleted": false,
+              "condition_formula": "AE_CHARGES_ASCENSION > 0",
+              "reaction_effect_ref": "ascension_bonus",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "5": {
+              "$deleted": false,
+              "condition_formula": "AE_CHARGES_ASCENSION > 0",
+              "reaction_effect_ref": "ascension_bonus",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash: Overflow",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.0bN7A6pXFG2cX2q9"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2788278387,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "aGPAPP5VKu0e8yLg",
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
@@ -26,6 +447,52 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "wbIwxzdE2qHuawcO",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787126045882,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to bolt.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false,
+              "lifetimeMode": "round_end"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png",
+          "name": "Whetted",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_whet"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -51,13 +518,13 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage, gains <strong>Swift</strong>, and recovers 15 MP.</p>",
+          "description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage, gains <strong>Swift</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "enchant_bolt_bleed,enchant_bolt_buff,enchant_bolt_mp",
+              "chain_steps": "enchant_bolt_bleed,enchant_bolt_buff,enchant_bolt_mp,enchant_bolt_whet",
               "effect_kind": "chain",
               "effect_label": "enchant_bolt"
             },
@@ -83,6 +550,14 @@
               "effect_label": "enchant_bolt_mp",
               "grant_amount": "15",
               "grant_resource": "mp",
+              "target_ref": "self"
+            },
+            "4": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Whetted",
+              "effect_kind": "apply_ae",
+              "effect_label": "enchant_bolt_whet",
               "target_ref": "self"
             }
           },
@@ -153,8 +628,8 @@
           "animation_script": "",
           "check_bonus": "5",
           "class": "NPC",
-          "cost": "-",
-          "damage_bonus": "30",
+          "cost": "30 MP",
+          "damage_bonus": "20",
           "defense_target_type": "def",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to all enemies.</p>",
           "details_roller": "Show",
@@ -230,7 +705,7 @@
           "cost": "60 MP",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>Perform <strong>Elemental Slash</strong> four times — once as <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— each strike falling on a single foe and carrying that element's mark.</p>",
+          "description": "<p>All four blades fall at once. Deal <strong>devastating</strong> damage to all enemies four times over — as <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -242,18 +717,15 @@
             },
             "1": {
               "$deleted": false,
-              "action_ref": "Elemental Slash (Arm)",
-              "damage_bonus_formula": "10",
+              "action_ref": "Elemental Slash (Sweep)",
               "effect_kind": "free_action",
               "effect_label": "quad_bolt",
               "element_override": "bolt",
-              "free_of_cost": true,
-              "on_hit_effect_refs": "quad_mark_bolt"
+              "free_of_cost": true
             },
             "2": {
               "$deleted": false,
-              "action_ref": "Elemental Slash (Arm)",
-              "damage_bonus_formula": "10",
+              "action_ref": "Elemental Slash (Sweep)",
               "effect_kind": "free_action",
               "effect_label": "quad_fire",
               "element_override": "fire",
@@ -261,47 +733,19 @@
             },
             "3": {
               "$deleted": false,
-              "action_ref": "Elemental Slash (Arm)",
-              "damage_bonus_formula": "10",
+              "action_ref": "Elemental Slash (Sweep)",
               "effect_kind": "free_action",
               "effect_label": "quad_ice",
               "element_override": "ice",
-              "free_of_cost": true,
-              "on_hit_effect_refs": "quad_mark_ice"
+              "free_of_cost": true
             },
             "4": {
               "$deleted": false,
-              "action_ref": "Elemental Slash (Arm)",
-              "damage_bonus_formula": "10",
+              "action_ref": "Elemental Slash (Sweep)",
               "effect_kind": "free_action",
               "effect_label": "quad_air",
               "element_override": "air",
-              "free_of_cost": true,
-              "on_hit_effect_refs": "quad_mark_air"
-            },
-            "5": {
-              "$deleted": false,
-              "ae_duplicate_mode": "replace",
-              "ae_template_ref": "Paralyzed",
-              "effect_kind": "apply_ae",
-              "effect_label": "quad_mark_bolt",
-              "target_ref": "hit_action_targets"
-            },
-            "6": {
-              "$deleted": false,
-              "ae_duplicate_mode": "replace",
-              "ae_template_ref": "Disarmed",
-              "effect_kind": "apply_ae",
-              "effect_label": "quad_mark_ice",
-              "target_ref": "hit_action_targets"
-            },
-            "7": {
-              "$deleted": false,
-              "ae_duplicate_mode": "replace",
-              "ae_template_ref": "Silence",
-              "effect_kind": "apply_ae",
-              "effect_label": "quad_mark_air",
-              "target_ref": "hit_action_targets"
+              "free_of_cost": true
             }
           },
           "heroic_requirement": "",
@@ -376,7 +820,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "chargesMax": 1,
-              "crossScene": false
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Paralyze.png",
@@ -419,7 +864,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "chargesMax": 1,
-              "crossScene": false
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png",
@@ -462,7 +908,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "chargesMax": 1,
-              "crossScene": false
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png",
@@ -505,7 +952,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "chargesMax": 1,
-              "crossScene": false
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
@@ -716,6 +1164,7 @@
             "0": {
               "$deleted": false,
               "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
+              "reaction_cause_filter": "damage",
               "reaction_effect_ref": "aspect_set_fire",
               "reaction_passive_mode": "on",
               "reaction_source": "self",
@@ -724,6 +1173,7 @@
             "1": {
               "$deleted": false,
               "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
+              "reaction_cause_filter": "damage",
               "reaction_effect_ref": "aspect_set_bolt",
               "reaction_passive_mode": "on",
               "reaction_source": "self",
@@ -732,6 +1182,7 @@
             "2": {
               "$deleted": false,
               "condition_formula": "TRIGGER_DAMAGE_IS_ICE == 1",
+              "reaction_cause_filter": "damage",
               "reaction_effect_ref": "aspect_set_ice",
               "reaction_passive_mode": "on",
               "reaction_source": "self",
@@ -740,6 +1191,7 @@
             "3": {
               "$deleted": false,
               "condition_formula": "TRIGGER_DAMAGE_IS_AIR == 1",
+              "reaction_cause_filter": "damage",
               "reaction_effect_ref": "aspect_set_air",
               "reaction_passive_mode": "on",
               "reaction_source": "self",
@@ -861,9 +1313,9 @@
           "check_bonus": "5",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "62",
+          "damage_bonus": "32",
           "defense_target_type": "def",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to up to two creatures.</p><p>The Asura's blades carry whatever element last bit it, striking harder and leaving a mark:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Silence</strong></a>d.</p></li></ul>",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p><p>The Asura's blades carry whatever element last bit it, striking harder and leaving a mark:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Silence</strong></a>d.</p></li></ul>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
@@ -889,7 +1341,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Melee",
-          "skill_target": "Up to two creatures",
+          "skill_target": "One Creature",
           "skill_type": "Attack",
           "type_damage": "Physical",
           "use_optional_params": false,
@@ -912,6 +1364,52 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "7dWumssDYPnKY4TG",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787126045883,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to bolt.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false,
+              "lifetimeMode": "round_end"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png",
+          "name": "Whetted",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_whet"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -937,13 +1435,13 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;damage, gains <strong>Focus</strong>, and recovers 15 MP.</p>",
+          "description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;damage, gains <strong>Focus</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "enchant_ice_bleed,enchant_ice_buff,enchant_ice_mp",
+              "chain_steps": "enchant_ice_bleed,enchant_ice_buff,enchant_ice_mp,enchant_ice_whet",
               "effect_kind": "chain",
               "effect_label": "enchant_ice"
             },
@@ -969,6 +1467,14 @@
               "effect_label": "enchant_ice_mp",
               "grant_amount": "15",
               "grant_resource": "mp",
+              "target_ref": "self"
+            },
+            "4": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Whetted",
+              "effect_kind": "apply_ae",
+              "effect_label": "enchant_ice_whet",
               "target_ref": "self"
             }
           },
@@ -1042,10 +1548,19 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>The Asura acts twice each round, and enters every conflict with no MP.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;While the Asura is in Crisis.</p></li></ul><p>The Asura acts four times each round and enters every conflict with no MP. Wounded, it only fights harder — its blades bite deeper.</p>",
           "details_roller": "Show",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "damage_amount": "20",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "fury_crisis"
+            }
+          },
           "heroic_requirement": "",
           "id": "wUfS7SWAocoznK0n",
           "ignore_hr": false,
@@ -1061,7 +1576,26 @@
           "name": "Four-Armed Fury",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_CRISIS > 0",
+              "reaction_effect_ref": "fury_crisis",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_CRISIS > 0",
+              "reaction_effect_ref": "fury_crisis",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Elemental Slash: Overflow",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -1098,7 +1632,7 @@
       },
       "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-      "name": "Elemental Slash (Arm)",
+      "name": "Elemental Slash (Sweep)",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 0
@@ -1114,9 +1648,9 @@
           "check_bonus": "5",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "62",
+          "damage_bonus": "8",
           "defense_target_type": "def",
-          "description": "<p>A single arm's strike. Component of <strong>Quad-Elemental Slash</strong>.</p>",
+          "description": "<p>One sweep of all four arms. Component of <strong>Quad-Elemental Slash</strong>.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
@@ -1132,7 +1666,7 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Elemental Slash (Arm)",
+          "name": "Elemental Slash (Sweep)",
           "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {},
@@ -1142,7 +1676,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Melee",
-          "skill_target": "One Creature",
+          "skill_target": "All Enemy",
           "skill_type": "Attack",
           "type_damage": "Physical",
           "use_optional_params": false,
@@ -1165,6 +1699,52 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "PC3yA18HcAww2J55",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787126045883,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to bolt.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false,
+              "lifetimeMode": "round_end"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png",
+          "name": "Whetted",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_whet"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -1190,13 +1770,13 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage, gains <strong>Awake</strong>, and recovers 15 MP.</p>",
+          "description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage, gains <strong>Awake</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "enchant_air_bleed,enchant_air_buff,enchant_air_mp",
+              "chain_steps": "enchant_air_bleed,enchant_air_buff,enchant_air_mp,enchant_air_whet",
               "effect_kind": "chain",
               "effect_label": "enchant_air"
             },
@@ -1222,6 +1802,14 @@
               "effect_label": "enchant_air_mp",
               "grant_amount": "15",
               "grant_resource": "mp",
+              "target_ref": "self"
+            },
+            "4": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Whetted",
+              "effect_kind": "apply_ae",
+              "effect_label": "enchant_air_whet",
               "target_ref": "self"
             }
           },
@@ -1270,6 +1858,52 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "qf2VUuMdIesx9Tvd",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1787126045882,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>The Asura's blades are aspected to bolt.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": false,
+              "lifetimeMode": "round_end"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png",
+          "name": "Whetted",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "asura_whet"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -1295,13 +1929,13 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage, gains <strong>Strong</strong>, and recovers 15 MP.</p>",
+          "description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage, gains <strong>Strong</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "enchant_fire_bleed,enchant_fire_buff,enchant_fire_mp",
+              "chain_steps": "enchant_fire_bleed,enchant_fire_buff,enchant_fire_mp,enchant_fire_whet",
               "effect_kind": "chain",
               "effect_label": "enchant_fire"
             },
@@ -1327,6 +1961,14 @@
               "effect_label": "enchant_fire_mp",
               "grant_amount": "15",
               "grant_resource": "mp",
+              "target_ref": "self"
+            },
+            "4": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Whetted",
+              "effect_kind": "apply_ae",
+              "effect_label": "enchant_fire_whet",
               "target_ref": "self"
             }
           },
@@ -1560,162 +2202,97 @@
       "action_pattern_table": {
         "0": {
           "$deleted": false,
-          "action_pattern_condition": "mp",
-          "action_pattern_cooldown": "0",
+          "action_pattern_condition": "effect_stacks",
+          "action_pattern_cooldown": "3",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Quad-Elemental Slash",
-          "action_pattern_priority": "10",
-          "action_pattern_string": "",
+          "action_pattern_priority": "12",
+          "action_pattern_string": "Ascension",
           "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "100",
-          "action_pattern_value_2": "100"
+          "action_pattern_value_1": "4",
+          "action_pattern_value_2": "0"
         },
         "1": {
           "$deleted": false,
-          "action_pattern_condition": "random",
+          "action_pattern_condition": "self_lacks_status",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Elemental Slash",
-          "action_pattern_priority": "9",
-          "action_pattern_string": "",
+          "action_pattern_name": "Sword Enchant - Fire",
+          "action_pattern_priority": "8",
+          "action_pattern_string": "Whetted",
           "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "20",
+          "action_pattern_value_1": "0",
           "action_pattern_value_2": "0"
         },
         "2": {
           "$deleted": false,
-          "action_pattern_condition": "mp",
-          "action_pattern_cooldown": "4",
-          "action_pattern_hp_ceiling": "0",
-          "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Fire",
-          "action_pattern_priority": "8",
-          "action_pattern_string": "",
-          "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "0",
-          "action_pattern_value_2": "25"
-        },
-        "3": {
-          "$deleted": false,
-          "action_pattern_condition": "mp",
-          "action_pattern_cooldown": "4",
-          "action_pattern_hp_ceiling": "0",
-          "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Bolt",
-          "action_pattern_priority": "8",
-          "action_pattern_string": "",
-          "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "0",
-          "action_pattern_value_2": "25"
-        },
-        "4": {
-          "$deleted": false,
-          "action_pattern_condition": "mp",
-          "action_pattern_cooldown": "4",
-          "action_pattern_hp_ceiling": "0",
-          "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Ice",
-          "action_pattern_priority": "8",
-          "action_pattern_string": "",
-          "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "0",
-          "action_pattern_value_2": "25"
-        },
-        "5": {
-          "$deleted": false,
-          "action_pattern_condition": "mp",
-          "action_pattern_cooldown": "4",
-          "action_pattern_hp_ceiling": "0",
-          "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Air",
-          "action_pattern_priority": "8",
-          "action_pattern_string": "",
-          "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "0",
-          "action_pattern_value_2": "25"
-        },
-        "6": {
-          "$deleted": false,
-          "action_pattern_condition": "activation",
-          "action_pattern_cooldown": "4",
-          "action_pattern_hp_ceiling": "0",
-          "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Fire",
-          "action_pattern_priority": "6",
-          "action_pattern_string": "",
-          "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "1",
-          "action_pattern_value_2": "1"
-        },
-        "7": {
-          "$deleted": false,
-          "action_pattern_condition": "activation",
-          "action_pattern_cooldown": "4",
-          "action_pattern_hp_ceiling": "0",
-          "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Bolt",
-          "action_pattern_priority": "6",
-          "action_pattern_string": "",
-          "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "1",
-          "action_pattern_value_2": "1"
-        },
-        "8": {
-          "$deleted": false,
-          "action_pattern_condition": "activation",
-          "action_pattern_cooldown": "4",
-          "action_pattern_hp_ceiling": "0",
-          "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Ice",
-          "action_pattern_priority": "6",
-          "action_pattern_string": "",
-          "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "1",
-          "action_pattern_value_2": "1"
-        },
-        "9": {
-          "$deleted": false,
-          "action_pattern_condition": "activation",
-          "action_pattern_cooldown": "4",
-          "action_pattern_hp_ceiling": "0",
-          "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Air",
-          "action_pattern_priority": "6",
-          "action_pattern_string": "",
-          "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "1",
-          "action_pattern_value_2": "1"
-        },
-        "10": {
-          "$deleted": false,
-          "action_pattern_condition": "self_has_status",
+          "action_pattern_condition": "self_lacks_status",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Sword Enchant - Bolt",
+          "action_pattern_priority": "8",
+          "action_pattern_string": "Whetted",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "0"
+        },
+        "3": {
+          "$deleted": false,
+          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Sword Enchant - Ice",
+          "action_pattern_priority": "8",
+          "action_pattern_string": "Whetted",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "0"
+        },
+        "4": {
+          "$deleted": false,
+          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Sword Enchant - Air",
+          "action_pattern_priority": "8",
+          "action_pattern_string": "Whetted",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "0"
+        },
+        "5": {
+          "$deleted": false,
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "2",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Elemental Slash: Overflow",
-          "action_pattern_priority": "2",
+          "action_pattern_priority": "4",
           "action_pattern_string": "Fire Aspect",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
         },
-        "11": {
+        "6": {
           "$deleted": false,
           "action_pattern_condition": "always",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Elemental Slash",
-          "action_pattern_priority": "1",
+          "action_pattern_priority": "2",
           "action_pattern_string": "",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
         }
       },
-      "activation": "2",
+      "activation": "4",
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
@@ -1726,7 +2303,7 @@
       "affinity_8": "VU",
       "affinity_9": "NA",
       "animation_table": {},
-      "arcane_ef": "125",
+      "arcane_ef": "100",
       "attack_list": {
         "KRyhs4RfM7AK7DUJ": {
           "active_target": "All Enemy",
@@ -1739,32 +2316,22 @@
           "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.KRyhs4RfM7AK7DUJ"
         },
         "ohrbXuZkGB4hNrPp": {
-          "active_target": "Up to two creatures",
-          "attack_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to up to two creatures.</p><p>The Asura's blades carry whatever element last bit it, striking harder and leaving a mark:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Silence</strong></a>d.</p></li></ul>",
+          "active_target": "One Creature",
+          "attack_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p><p>The Asura's blades carry whatever element last bit it, striking harder and leaving a mark:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Silence</strong></a>d.</p></li></ul>",
           "attribute_die1": "DEX",
           "attribute_die2": "MIG",
           "id": "${item.id}",
           "name": "Elemental Slash",
           "roll": "",
           "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.ohrbXuZkGB4hNrPp"
-        },
-        "yq9JICuLI4TImXFn": {
-          "active_target": "One Creature",
-          "attack_description": "<p>A single arm's strike. Component of <strong>Quad-Elemental Slash</strong>.</p>",
-          "attribute_die1": "DEX",
-          "attribute_die2": "MIG",
-          "id": "${item.id}",
-          "name": "Elemental Slash (Arm)",
-          "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.yq9JICuLI4TImXFn"
         }
       },
       "attribute": "",
       "battle_facing_direction": "left",
       "bonus_hp": 0,
       "bonus_mp": 0,
-      "bow_ef": "50",
-      "brawling_ef": "50",
+      "bow_ef": "150",
+      "brawling_ef": "100",
       "check_mod_all": 0,
       "check_mod_magic": 0,
       "check_mod_melee": 0,
@@ -1785,7 +2352,7 @@
       "condition_doom": "NA",
       "condition_enraged": "RS",
       "condition_envenomed": "NA",
-      "condition_fatigue": "NA",
+      "condition_fatigue": "IM",
       "condition_frightened": "IM",
       "condition_grappled": "NA",
       "condition_hypothermia": "NA",
@@ -1809,14 +2376,14 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "420",
+      "current_hp": "900",
       "current_ip": "0",
       "current_mp": "0",
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "cut_in_offset_y": "",
       "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
-      "dagger_ef": "150",
+      "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
       "damage_receiving_mod_bolt": 0,
@@ -1868,7 +2435,7 @@
       "icon_scale": "",
       "id": "0AwQ7wEDz4ISA9mA",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
-      "init": "11",
+      "init": "13",
       "ins_base": "8",
       "ins_current": 8,
       "isAlmighty": false,
@@ -1901,7 +2468,7 @@
       "magic_defense": 13,
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": "420",
+      "max_hp": "900",
       "max_ip": "0",
       "max_mp": "60",
       "max_zero": "6",
@@ -1932,7 +2499,7 @@
       "skill_active_list": {
         "NFruWlBHrgfNSJmM": {
           "active_cost": "60 MP",
-          "active_description": "<p>Perform <strong>Elemental Slash</strong> four times — once as <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— each strike falling on a single foe and carrying that element's mark.</p>",
+          "active_description": "<p>All four blades fall at once. Deal <strong>devastating</strong> damage to all enemies four times over — as <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
@@ -1942,7 +2509,7 @@
         },
         "ZAKzWPxyVEz9MvYH": {
           "active_cost": "-",
-          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage, gains <strong>Awake</strong>, and recovers 15 MP.</p>",
+          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage, gains <strong>Awake</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
@@ -1952,7 +2519,7 @@
         },
         "ZpFMS4l2FcHKz89q": {
           "active_cost": "-",
-          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage, gains <strong>Strong</strong>, and recovers 15 MP.</p>",
+          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage, gains <strong>Strong</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
@@ -1962,7 +2529,7 @@
         },
         "aGPAPP5VKu0e8yLg": {
           "active_cost": "-",
-          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage, gains <strong>Swift</strong>, and recovers 15 MP.</p>",
+          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage, gains <strong>Swift</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
@@ -1972,7 +2539,7 @@
         },
         "vhv7GLSTsduE1KLU": {
           "active_cost": "-",
-          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;damage, gains <strong>Focus</strong>, and recovers 15 MP.</p>",
+          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;damage, gains <strong>Focus</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
@@ -1982,6 +2549,13 @@
         }
       },
       "skill_passive_list": {
+        "0bN7A6pXFG2cX2q9": {
+          "id": "${item.id}",
+          "name": "Ascension",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Asura suffers damage of an element it has not yet collected.</p></li></ul><p>It keeps that element for the rest of the conflict, and strikes harder for every element it holds. Once it holds all four, its blades are ready to fall together.</p>",
+          "roll": "",
+          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.0bN7A6pXFG2cX2q9"
+        },
         "nYbYx0X2yfIdteZ7": {
           "id": "${item.id}",
           "name": "Elemental Aspect",
@@ -1992,23 +2566,23 @@
         "wUfS7SWAocoznK0n": {
           "id": "${item.id}",
           "name": "Four-Armed Fury",
-          "passive_description": "<p>The Asura acts twice each round, and enters every conflict with no MP.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;While the Asura is in Crisis.</p></li></ul><p>The Asura acts four times each round and enters every conflict with no MP. Wounded, it only fights harder — its blades bite deeper.</p>",
           "roll": "",
           "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.wUfS7SWAocoznK0n"
         }
       },
-      "spear_ef": "50",
+      "spear_ef": "100",
       "species": "DEMON",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "steal_percentage_table": {},
       "stealable_loot": {},
-      "study_text": "<p>A demon that carries four blades and no patience — it will challenge anything that walks upright and call the challenge a courtesy. Scholars note its steel takes on whatever <strong>element</strong> last struck it, which makes a careless mage its best armourer.</p>",
+      "study_text": "<p>Not a demon — a <strong>demi-god</strong>, and it will say so between blows. It wanders looking for a fight worth losing and has never found one. Every element it has ever tasted stays with it: strike it with fire and it remembers fire, and in this valley it remembers <strong>lightning</strong> even when nobody swung. When it has gathered all four, step back.</p>",
       "subtype": "Sub-Type",
       "subtype_list": "DEMI-HUMAN",
       "sword_ef": "50",
       "tactic_notes": "",
-      "thrown_ef": "150",
+      "thrown_ef": "100",
       "token_option_persist": false,
       "traits": "Four-Armed Duelist",
       "ultima_point": "0",
@@ -2016,8 +2590,8 @@
       "uuid": "Actor.0AwQ7wEDz4ISA9mA",
       "wlp_base": "6",
       "wlp_current": 6,
-      "zenit_reward_max": "450",
-      "zenit_reward_min": "350",
+      "zenit_reward_max": "900",
+      "zenit_reward_min": "700",
       "zero_power_value": ""
     },
     "statusEffects": {},
