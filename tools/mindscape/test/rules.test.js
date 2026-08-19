@@ -200,4 +200,43 @@ test("die faces are uniform enough for statistics", () => {
   }
 });
 
+console.log("\nformula evaluation");
+const F = require("../lib/formula");
+const L41 = { level: 41 };
+
+test("plain numbers pass through", () => {
+  assert.deepStrictEqual(F.evaluate("25", L41), { ok: true, value: 25 });
+  assert.strictEqual(F.evaluate("", L41).value, 0);
+});
+test("the (CHAR_LEVEL>=N)*M idiom resolves", () => {
+  // Create Phantasm: Strike at L41 = 12 + 4 + 2 = 18. This shipped as 0.
+  assert.strictEqual(F.evaluate("12 + (CHAR_LEVEL >= 20) * 4 + (CHAR_LEVEL >= 40) * 2", L41).value, 18);
+  assert.strictEqual(F.evaluate("10 + (CHAR_LEVEL>=20)*10 + (CHAR_LEVEL>=40)*10", L41).value, 30);
+});
+test("floor() resolves", () => {
+  assert.strictEqual(F.evaluate("30 + floor(CHAR_LEVEL/2)", L41).value, 50);
+});
+test("level gates actually gate", () => {
+  const low = { level: 10 };
+  assert.strictEqual(F.evaluate("10 + (CHAR_LEVEL>=20)*5 + (CHAR_LEVEL>=40)*5", low).value, 10);
+});
+test("runtime state is REFUSED, never defaulted", () => {
+  const r = F.evaluate("(OWN_SUMMON_COUNT * 20) + 20", L41);
+  assert.strictEqual(r.ok, false);
+  assert.match(r.reason, /OWN_SUMMON_COUNT/);
+  assert.strictEqual(r.value, undefined, "a refused formula must not carry a value");
+});
+test("an unknown identifier refuses rather than evaluating to NaN or 0", () => {
+  assert.strictEqual(F.evaluate("SOME_NEW_VAR + 5", L41).ok, false);
+});
+test("non-arithmetic input is rejected before evaluation", () => {
+  assert.strictEqual(F.evaluate("process.exit(1)", L41).ok, false);
+  assert.strictEqual(F.evaluate("'a'+'b'", L41).ok, false);
+});
+test("SL use is flagged approximate rather than hidden", () => {
+  const r = F.evaluate("SL * 5", L41);
+  assert.strictEqual(r.ok, true);
+  assert.strictEqual(r.approximate, true, "an SL assumption must surface, not hide");
+});
+
 console.log(`\n${passed} passed${process.exitCode ? " (with failures)" : ""}\n`);

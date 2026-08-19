@@ -15,6 +15,8 @@
 // The line that matters: an unparseable ACTION is a coverage gap; a piece of
 // Animal Fur is not. Only Active/Spell rows are held to the modelling bar.
 
+const { evaluate: evaluateFormula } = require("./formula");
+
 const ACTION_SKILL_TYPES = new Set(["active", "spell"]);
 const PASSIVE_SKILL_TYPES = new Set(["passive"]);
 
@@ -94,7 +96,7 @@ function parseTarget(raw) {
 // a readable target and a priceable cost. Anything missing makes it unmodelled —
 // with the specific reason, because "Zarg won't use Gadgets" and "Gadgets could
 // not be priced" look identical from outside and have different fixes.
-function extractAction(item) {
+function extractAction(item, actor = null) {
   const p = item.props ?? {};
   const skillType = s(p.skill_type).toLowerCase();
 
@@ -124,6 +126,12 @@ function extractAction(item) {
 
   const element = s(p.type_damage).toLowerCase();
   if (!element) reasons.push("no type_damage");
+
+  // damage_bonus is frequently a FORMULA, not a number. Resolve it or refuse —
+  // `Number(x) || 0` silently zeroed Muleta, Descabello, Tafallera and
+  // Create Phantasm: Strike while still reporting them as fully modelled.
+  const dmg = evaluateFormula(p.damage_bonus, actor);
+  if (!dmg.ok) reasons.push(dmg.reason);
 
   if (reasons.length) {
     // Separate a DAMAGE action we failed to parse from a UTILITY action that was
@@ -158,7 +166,8 @@ function extractAction(item) {
     skillType: s(p.skill_type),
     attrA: ATTR[a1],
     attrB: ATTR[a2],
-    damageBonus: Number(p.damage_bonus) || 0,
+    damageBonus: dmg.value,
+    damageBonusApproximate: !!dmg.approximate,
     element,
     // "mdef" | "def" — which score is the DL.
     defenseTarget: s(p.defense_target_type).toLowerCase() === "mdef" ? "mdef" : "def",
@@ -207,7 +216,7 @@ function extractActions(actor) {
     nonActions: 0,
   };
   for (const item of actor.items ?? []) {
-    const r = extractAction(item);
+    const r = extractAction(item, actor);
 
     if (r.kind === "action")  { out.actions.push(r); continue; }
     if (r.kind === "passive") { out.passives.push(r); continue; }
