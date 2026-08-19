@@ -5082,9 +5082,19 @@ const Confirm = {
     // RESOLVE-side firing routes the chain to the reactor's actor
     // instead of the action-taker.
     //
-    // Scope: Attack + damaging Skill kinds (the actions that have a
-    // target list someone might intercept). Guard/Study/Hinder/Item/
-    // Equipment don't fire this trigger.
+    // Scope: Attack + Item + damaging Skill/Spell kinds (the actions that have
+    // a target list someone might intercept). Guard/Study/Hinder/Equipment
+    // don't fire this trigger.
+    //
+    // ⚠ `Spell` was MISSING here until 2026-08-20, and it is a distinct
+    // `ar.kind` — not a flavour of "Skill". Every reaction on this trigger was
+    // therefore inert against enemy spells: **Protect** (4 actors), Verónica,
+    // Prophetic Defender, Illusory Shield, Crossfire, Fafnir's Condemn/Torment
+    // — 23 authored rows. The party's core defensive tool simply did not exist
+    // against a caster. Found by a live sim in which Skizzik's counter never
+    // fired: half the party attacks with Spells, so the trigger never ran.
+    // The sibling damage-window scan (L4714) had `(Skill || Spell)` correctly,
+    // which is what made the omission here readable as an oversight.
     //
     // Iteration: for each action target T, scan every combat
     // participant P (except the action-taker) and call findPassiveCandidates
@@ -5101,7 +5111,8 @@ const Confirm = {
       ar.targets.length > 0 &&
       (ar.kind === "Attack"
         || ar.kind === "Item"   // item-use is reactable ("targeted by an item"); payload carries actionKind
-        || (ar.kind === "Skill" && (ar.hasDamage || ar.hasHealing || ar.actionIntent === "harmful")));
+        || ((ar.kind === "Skill" || ar.kind === "Spell")
+            && (ar.hasDamage || ar.hasHealing || ar.actionIntent === "harmful")));
     if (fireCreatureTargetedByAction) {
       try {
         const { findPassiveCandidates, findTargetOwnedCandidates } = await getSkillEffectsExtras();
