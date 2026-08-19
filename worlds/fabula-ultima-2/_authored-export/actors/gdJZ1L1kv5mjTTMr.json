@@ -5306,7 +5306,7 @@
         "container": "05OeWaPbNYmWjD0T",
         "props": {
           "cost": "",
-          "description": "<p>Equipped passive: +2 to Study Checks.</p>",
+          "description": "<p>Equipped passive: +2 to Stealth Checks.</p>",
           "effect_table": {
             "0": {
               "check_buff_action": "stealth",

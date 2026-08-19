@@ -538,6 +538,7 @@ async function probeCardReactions({
   actionResult = null,
   depsToken = null,
 } = {}) {
+  const _wg = _guardWrites("probeCardReactions");
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
   const deps = await loadDeps(depsToken);
 
@@ -691,6 +692,7 @@ async function probeTargetedReactions({
   preApply = null, seed = null, override = null,
   depsToken = null,
 } = {}) {
+  const _wg = _guardWrites("probeTargetedReactions");
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
   if (!attackerTokenUuid || !targetTokenUuids?.length) {
     return { ok: false, reason: "missing_args",
@@ -954,6 +956,7 @@ async function probeReactorTrigger({
   preApply = null, seed = null, override = null,
   depsToken = null,
 } = {}) {
+  const _wg = _guardWrites("probeReactorTrigger");
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
   if (!trigger) return { ok: false, reason: "missing_trigger" };
   const deps = await loadDeps(depsToken);
@@ -1350,6 +1353,7 @@ async function runDirectorSkillCompute({
   // run of calls (see loadDeps). Omitted = per-call cache-bust, as before.
   depsToken = null,
 } = {}) {
+  const _wg = _guardWrites("runDirectorSkillCompute");
   if (!game.user?.isGM) {
     return { ok: false, reason: "gm_only" };
   }
@@ -1525,6 +1529,104 @@ async function runDirectorSkillCompute({
 //   - Hooks (callAll) still fire — UI bindings observe captured writes.
 //     The captures themselves are the source of truth for assertions.
 //   - Chat messages are not suppressed; ui.notifications fires.
+// ── Write-capture poisoning guard ────────────────────────────────────────
+//
+// installWriteCaptures() used to snapshot `originals` from the CURRENT
+// prototypes on every call. That is only correct while the patch is NOT already
+// installed: a re-entrant install (a nested harness call, or a
+// withHarnessTimeout that abandons an inner chain still holding the patch)
+// snapshots the STUBS as "originals", and the outer restore() then reinstalls
+// them PERMANENTLY. From that moment every update() in the page returns `this`
+// and commits nothing, while still reporting success — so the world silently
+// stops accepting writes and every later measurement is void.
+//
+// Measured 2026-08-20: after a probeReactorTrigger batch, every actor/item/AE
+// write in the session was swallowed. `doc.update()` resolved with no error and
+// even `setFlag` was inert. Reads were unaffected, so it looked like the data
+// was fine and the WRITES were wrong.
+//
+// Fix: snapshot the pristine natives ONCE, only while provably unpatched, and
+// always restore from that. A depth counter means only the outermost restore
+// un-patches. `harnessWriteCaptureState()` / `healHarnessWrites()` expose the
+// invariant so a caller can assert it instead of trusting it.
+let _pristineDocMethods = null;
+let _captureDepth = 0;
+
+function _docClasses() {
+  return { ActorCls: CONFIG.Actor.documentClass, ItemCls: CONFIG.Item.documentClass, AECls: CONFIG.ActiveEffect.documentClass };
+}
+// A stub is recognisable: it closes over `captures.` and never calls through.
+function _looksCaptured(fn) {
+  try { return /captures\s*\./.test(Function.prototype.toString.call(fn)); } catch { return false; }
+}
+function harnessWriteCaptureState() {
+  const { ActorCls, ItemCls, AECls } = _docClasses();
+  return {
+    depth: _captureDepth,
+    havePristine: !!_pristineDocMethods,
+    actorPatched: _looksCaptured(ActorCls.prototype.update),
+    itemPatched:  _looksCaptured(ItemCls.prototype.update),
+    aePatched:    _looksCaptured(AECls.prototype.update),
+    get poisoned() { return this.depth === 0 && (this.actorPatched || this.itemPatched || this.aePatched); },
+  };
+}
+// Force the page back to committing writes. Safe to call at any time; a no-op
+// when nothing is patched. Returns what it did.
+function healHarnessWrites() {
+  const st = harnessWriteCaptureState();
+  if (!st.actorPatched && !st.itemPatched && !st.aePatched) return { healed: false, reason: "not patched", state: st };
+  if (!_pristineDocMethods) return { healed: false, reason: "no pristine snapshot — reload the client", state: st };
+  _restorePristine();
+  _captureDepth = 0;
+  return { healed: true, state: harnessWriteCaptureState() };
+}
+// Every public entry point calls this FIRST. If a previous run leaked its
+// capture patch, the page is silently swallowing writes and any measurement
+// taken now is void — so repair it and say so, rather than returning confident
+// wrong numbers.
+function _guardWrites(label) {
+  const st = harnessWriteCaptureState();
+  if (!st.poisoned) return null;
+  const r = healHarnessWrites();
+  const msg = `harness: page was POISONED (a previous run leaked its write-capture patch; every write since was swallowed). ${r.healed ? "Healed" : "COULD NOT HEAL — reload the client"} before ${label}.`;
+  warn(msg);
+  ui?.notifications?.warn?.(msg);
+  return { poisonedOnEntry: true, healed: !!r.healed };
+}
+
+function _snapshotPristine() {
+  const { ActorCls, ItemCls, AECls } = _docClasses();
+  if (_looksCaptured(ActorCls.prototype.update) || _looksCaptured(ItemCls.prototype.update) || _looksCaptured(AECls.prototype.update)) {
+    // Refuse to snapshot a patched prototype — that is exactly the bug.
+    warn("harness: refusing to snapshot pristine document methods while a capture patch is installed");
+    return false;
+  }
+  _pristineDocMethods = {
+    actorUpdate: ActorCls.prototype.update,
+    actorCreateEmbedded: ActorCls.prototype.createEmbeddedDocuments,
+    actorDeleteEmbedded: ActorCls.prototype.deleteEmbeddedDocuments,
+    itemUpdate: ItemCls.prototype.update,
+    itemCreateEmbedded: ItemCls.prototype.createEmbeddedDocuments,
+    itemDeleteEmbedded: ItemCls.prototype.deleteEmbeddedDocuments,
+    aeUpdate: AECls.prototype.update,
+    aeDelete: AECls.prototype.delete,
+  };
+  return true;
+}
+function _restorePristine() {
+  if (!_pristineDocMethods) return;
+  const { ActorCls, ItemCls, AECls } = _docClasses();
+  const o = _pristineDocMethods;
+  ActorCls.prototype.update                  = o.actorUpdate;
+  ActorCls.prototype.createEmbeddedDocuments = o.actorCreateEmbedded;
+  ActorCls.prototype.deleteEmbeddedDocuments = o.actorDeleteEmbedded;
+  ItemCls.prototype.update                   = o.itemUpdate;
+  ItemCls.prototype.createEmbeddedDocuments  = o.itemCreateEmbedded;
+  ItemCls.prototype.deleteEmbeddedDocuments  = o.itemDeleteEmbedded;
+  AECls.prototype.update                     = o.aeUpdate;
+  AECls.prototype.delete                     = o.aeDelete;
+}
+
 async function installWriteCaptures() {
   const captures = {
     actorUpdates: [],   // { actorUuid, actorName, patch }
@@ -1589,16 +1691,19 @@ async function installWriteCaptures() {
   const ItemCls  = CONFIG.Item.documentClass;
   const AECls    = CONFIG.ActiveEffect.documentClass;
 
-  const originals = {
-    actorUpdate:               ActorCls.prototype.update,
-    actorCreateEmbedded:       ActorCls.prototype.createEmbeddedDocuments,
-    actorDeleteEmbedded:       ActorCls.prototype.deleteEmbeddedDocuments,
-    itemUpdate:                ItemCls.prototype.update,
-    itemCreateEmbedded:        ItemCls.prototype.createEmbeddedDocuments,
-    itemDeleteEmbedded:        ItemCls.prototype.deleteEmbeddedDocuments,
-    aeUpdate:                  AECls.prototype.update,
-    aeDelete:                  AECls.prototype.delete,
-  };
+  // Pristine natives are snapshotted ONCE, and only while provably unpatched —
+  // see the poisoning guard above. Never snapshot from the live prototypes here:
+  // a re-entrant install would record the stubs and restore() would make them
+  // permanent.
+  if (_captureDepth === 0 && !_pristineDocMethods) _snapshotPristine();
+  if (_captureDepth > 0) {
+    // Nested install. The outer stub stays installed, so THIS sink records
+    // nothing. Non-destructive (restore is depth-counted) but the inner run's
+    // captures would read as "wrote nothing" — a fail-permissive answer — so say
+    // so loudly rather than returning a silently empty capture set.
+    warn(`harness: NESTED installWriteCaptures (depth ${_captureDepth}) — this sink will record nothing; the enclosing capture owns the patch`);
+  }
+  _captureDepth += 1;
 
   // Build a fake AE doc with .id, .name, .delete, .update. Used as the
   // return value of createEmbeddedDocuments("ActiveEffect", ...).
@@ -1718,16 +1823,17 @@ async function installWriteCaptures() {
     return this;
   };
 
+  let _restored = false;
   function restore() {
+    // Idempotent: a double restore() (e.g. an explicit call plus the `finally`)
+    // must not drive the depth negative and un-patch an enclosing capture.
+    if (_restored) return;
+    _restored = true;
     restoreFreeActions();
-    ActorCls.prototype.update                  = originals.actorUpdate;
-    ActorCls.prototype.createEmbeddedDocuments = originals.actorCreateEmbedded;
-    ActorCls.prototype.deleteEmbeddedDocuments = originals.actorDeleteEmbedded;
-    ItemCls.prototype.update                   = originals.itemUpdate;
-    ItemCls.prototype.createEmbeddedDocuments  = originals.itemCreateEmbedded;
-    ItemCls.prototype.deleteEmbeddedDocuments  = originals.itemDeleteEmbedded;
-    AECls.prototype.update                     = originals.aeUpdate;
-    AECls.prototype.delete                     = originals.aeDelete;
+    _captureDepth = Math.max(0, _captureDepth - 1);
+    // Only the OUTERMOST restore un-patches, and it always restores the pristine
+    // natives rather than whatever happened to be on the prototype at install.
+    if (_captureDepth === 0) _restorePristine();
   }
 
   return { captures, restore };
@@ -2057,6 +2163,7 @@ async function installSeededProps(seed) {
 }
 
 async function runDirectorSkillSimulate(args = {}) {
+  const _wg = _guardWrites("runDirectorSkillSimulate");
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
 
   // Step 0a — install identifier overrides (SL / BOND_COUNT /
@@ -2314,6 +2421,7 @@ async function runDirectorAttackCompute({
 }
 
 async function runDirectorAttackSimulate(args = {}) {
+  const _wg = _guardWrites("runDirectorAttackSimulate");
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
 
   const formulaOverrides = installFormulaOverrides(args.override);
@@ -2800,6 +2908,12 @@ function registerHarness() {
   // cannot fire anything (it passes director:null and dispatchReactionMenu
   // early-returns on that) - use this instead.
   root.api.test.probeReactorTrigger       = probeReactorTrigger;
+  // Write-capture invariant. `harnessWriteCaptureState().poisoned` is true when a
+  // previous run leaked its patch and the page is swallowing every write while
+  // reporting success — assert it before trusting ANY run, and before making a
+  // world edit through the bridge. `healHarnessWrites()` repairs it in place.
+  root.api.test.harnessWriteCaptureState  = harnessWriteCaptureState;
+  root.api.test.healHarnessWrites         = healHarnessWrites;
   // Golden-snapshot helpers (render-capture regression).
   root.api.test.diffCardGolden            = diffCardGolden;
   root.api.test.normalizeCardHtml         = normalizeCardHtml;
