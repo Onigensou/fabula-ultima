@@ -28,7 +28,13 @@ const STYLE_ID = "gacha-panel-style";
 // currency reads identically everywhere. Icon only — never a "z" suffix.
 const COIN_SRC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png";
 const COIN_ICON    = `<img class="gp-coin" src="${COIN_SRC}" alt="Zenit">`;
-const COIN_ICON_LG = `<img class="gp-coin is-lg" src="${COIN_SRC}" alt="Zenit">`;
+
+// The prinny stands for the PARTY STASH, distinct from a character's own purse.
+const STASH_SRC  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/prin.png";
+const STASH_ICON = `<img class="gp-coin is-stash" src="${STASH_SRC}" alt="Party stash">`;
+
+// Hako himself, for the confirmation when the party's money is on the line.
+const HAKO_SRC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hako/Hako%20Standard.png";
 
 /**
  * Tween an integer readout, for the purse ticking down on a purchase.
@@ -182,31 +188,43 @@ const CSS = `
 }
 .gp-coin.is-lg { width: 30px; height: 30px; }
 
-/* The buyer's purse, shown before they commit to anything. */
-.gp-purse {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 12px 16px; margin-bottom: 16px; border-radius: var(--gc-radius);
+.gp-coin.is-stash { width: 30px; height: 30px; }
+
+/* Quantity row — icon, stepper, price. No prose. */
+.gp-shoprow {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 12px 18px; border-radius: var(--gc-radius);
   background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel));
   border: 1px solid var(--gc-line-2);
 }
-.gp-purse-label {
-  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--gc-ink-3);
-}
-.gp-purse-amount {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 26px; font-weight: 700; color: var(--gc-title);
-  font-variant-numeric: tabular-nums;
-  transition: color .2s;
-}
-.gp-purse-amount.is-spending { color: #a8412f; }
-
-.gp-buy { display: flex; align-items: center; justify-content: center; gap: 12px; }
-.gp-buy label { font-size: 13px; }
-.gp-buy .gp-coupon-icon {
-  width: 30px; height: 30px; object-fit: contain;
+.gp-coupon-icon {
+  width: 46px; height: 46px; object-fit: contain; flex: 0 0 auto;
   border: none !important; box-shadow: none !important; background: transparent;
 }
+.gp-stepper { display: flex; align-items: center; gap: 8px; }
+.gp-step {
+  width: 30px; height: 30px; cursor: pointer; line-height: 1; font-size: 12px;
+  border-radius: 50%; border: 1px solid var(--gc-line-3);
+  background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel));
+  color: var(--gc-ink-2);
+}
+.gp-step:hover { background: #fffaec; border-color: var(--gc-gold); }
+
+/* Balances + action, one line. */
+.gp-balances {
+  display: flex; align-items: center; gap: 18px;
+  padding: 14px 18px 2px;
+}
+.gp-bal {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 22px; font-weight: 700; color: var(--gc-ink);
+  font-variant-numeric: tabular-nums;
+  transition: color .2s, opacity .2s;
+}
+.gp-bal[data-stash-box] { opacity: .5; }
+.gp-bal[data-stash-box].is-tapped { opacity: 1; color: var(--gc-title); }
+.gp-bal.is-spending { color: #a8412f; }
+.gp-balances .gc-btn { margin-left: auto; }
 /* Explicit and scoped: this panel is appended to document.body, so Foundry's
    global input rules apply and will otherwise take the field to 100%. */
 #${PANEL_ID} input.gp-qty {
@@ -221,18 +239,6 @@ const CSS = `
   font-variant-numeric: tabular-nums;
 }
 
-/* Purchase confirmation, in-panel. The Foundry toast alone is easy to miss and
-   appears far from where the click happened. */
-.gp-receipt {
-  margin-top: 14px; padding: 10px 14px; border-radius: var(--gc-radius);
-  background: linear-gradient(180deg, var(--gc-panel), var(--gc-sunk));
-  border-left: 4px solid var(--gc-gold);
-  font-size: 12.5px; color: var(--gc-ink); line-height: 1.6;
-  animation: gp-pop .22s cubic-bezier(.2,.8,.3,1) both;
-}
-.gp-receipt b { color: var(--gc-title); }
-.gp-receipt.is-bad { border-left-color: #a8412f; color: #7c2718; }
-@keyframes gp-pop { from { opacity: 0; transform: translateY(-6px); } }
 
 /* ── exchange board ────────────────────────────────────────────────────── */
 /* Bookmark rail down the left edge; the active tab merges into the board so it
@@ -322,6 +328,50 @@ const CSS = `
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .gp-warn.is-block { color: #7c2718; }
+
+/* ── purchase confirmation ─────────────────────────────────────────────── */
+/* Deliberately NOT scoped under #gacha-panel: Foundry's Dialog renders into its
+   own application window elsewhere in the DOM. */
+.gh-confirm { font-family: 'Lucida Console', 'Courier New', monospace; color: var(--gc-ink); }
+.gh-head { font-size: 14px; margin-bottom: 10px; }
+.gh-head b, .gh-line b { color: var(--gc-title); }
+.gh-line {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 13px; padding: 4px 0;
+}
+.gh-line.is-stash { color: #8a4b16; }
+.gh-confirm .gp-coin { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; }
+.gh-confirm .gp-coin.is-stash { width: 22px; height: 22px; }
+
+.gh-hako {
+  display: flex; align-items: flex-start; gap: 10px; margin-top: 14px;
+}
+.gh-hako-img {
+  width: 92px; flex: 0 0 auto; object-fit: contain;
+  border: 0 !important; background: transparent;
+  filter: drop-shadow(0 4px 10px rgba(60,40,14,.4));
+}
+.gh-bubble {
+  position: relative; flex: 1 1 auto;
+  padding: 11px 14px; border-radius: 10px;
+  background: var(--gc-parch); border: 2px solid var(--gc-line-3);
+  font-size: 12px; line-height: 1.6; color: var(--gc-ink);
+}
+.gh-bubble b { color: var(--gc-title); }
+/* Tail pointing back at Hako. */
+.gh-bubble::before,
+.gh-bubble::after {
+  content: ""; position: absolute; top: 22px; width: 0; height: 0;
+  border-style: solid;
+}
+.gh-bubble::before {
+  left: -12px; border-width: 8px 12px 8px 0;
+  border-color: transparent var(--gc-line-3) transparent transparent;
+}
+.gh-bubble::after {
+  left: -9px; border-width: 6px 10px 6px 0;
+  border-color: transparent var(--gc-parch) transparent transparent;
+}
 
 /* ── tooltip ───────────────────────────────────────────────────────────── */
 #${TIP_ID} {
@@ -498,74 +548,88 @@ function details({ banner }) {
 
 async function shop({ state, refresh }) {
   const buyer = game.user?.character;
+  const party = state?.actor ?? null;
   const cost  = state.cost;
 
   if (!buyer) {
     frame("Buy Hako Coupons", `
       <div class="gp-empty">
-        No character is assigned to this client, so there is no Zenit to spend.<br>
-        Coupons are bought by a party member from their own purse.
+        No character is assigned to this client, so there is no Zenit to spend.
       </div>`, { width: 460 });
     return;
   }
 
-  // Local mirror of the purse so the panel can update the moment a purchase
-  // lands, rather than waiting for the actor sync to come back around.
-  let zenit = Math.max(0, Number(buyer.system?.props?.zenit ?? 0));
-
   const couponImg = game.items?.get(COUPON_ITEM_UUID.replace(/^Item\./, ""))?.img ?? FALLBACK_IMG;
 
+  // Local mirrors so both readouts can move the instant a purchase lands.
+  let purse = Math.max(0, Number(buyer.system?.props?.zenit ?? 0));
+  let stash = Math.max(0, Number(party?.system?.props?.zenit ?? 0));
+
   const body = frame("Buy Hako Coupons", `
-    <div class="gp-purse">
-      <div class="gp-purse-label">${esc(buyer.name)}'s Zenit</div>
-      <div class="gp-purse-amount" data-zenit>
-        ${COIN_ICON_LG}<span data-zenit-n>${zenit.toLocaleString()}</span>
-      </div>
-    </div>
-
-    <div class="gp-buy">
+    <div class="gp-shoprow">
       <img class="gp-coupon-icon" src="${couponImg}" alt="">
-      <label for="gp-qty">Quantity</label>
-      <input id="gp-qty" class="gp-qty" type="number" min="1" max="99" value="10" data-qty>
-      <span class="gp-total" data-total>${COIN_ICON}<span>${(cost * 10).toLocaleString()}</span></span>
+      <div class="gp-stepper">
+        <button class="gp-step" data-step="-1">&#9664;</button>
+        <input class="gp-qty" type="number" min="1" max="99" value="2" data-qty>
+        <button class="gp-step" data-step="1">&#9654;</button>
+      </div>
+      <span class="gp-total">${COIN_ICON}<span data-total>${(cost * 2).toLocaleString()}</span></span>
     </div>
 
-    <div class="gp-note">
-      ${cost.toLocaleString()} each. The coupons go to the <b>shared party pool</b>,
-      not your inventory: spending is personal, the currency is the party's.
-    </div>
-    <div data-receipt></div>`, {
-      width: 500,
-      foot: `<button class="gc-btn is-primary" data-confirm>Purchase</button>`,
-    });
+    <div class="gp-balances">
+      <span class="gp-bal" data-purse-box>${COIN_ICON}<span data-purse>${purse.toLocaleString()}</span></span>
+      <span class="gp-bal" data-stash-box>${STASH_ICON}<span data-stash>${stash.toLocaleString()}</span></span>
+      <button class="gc-btn is-primary" data-confirm>Purchase</button>
+    </div>`, { width: 520 });
 
   const root     = body.closest(".gp-frame");
   const qty      = root.querySelector("[data-qty]");
-  const totalN   = root.querySelector("[data-total] span");
-  const purseEl  = root.querySelector("[data-zenit]");
-  const purseN   = root.querySelector("[data-zenit-n]");
-  const receipt  = root.querySelector("[data-receipt]");
+  const totalN   = root.querySelector("[data-total]");
+  const purseN   = root.querySelector("[data-purse]");
+  const stashN   = root.querySelector("[data-stash]");
+  const purseBox = root.querySelector("[data-purse-box]");
+  const stashBox = root.querySelector("[data-stash-box]");
   const confirm  = root.querySelector("[data-confirm]");
 
+  const amount = () => Math.max(1, Math.min(99, Math.floor(Number(qty.value) || 1)));
+
   const sync = () => {
-    const n = Math.max(1, Math.floor(Number(qty.value) || 1));
-    totalN.textContent = (cost * n).toLocaleString();
-    confirm.disabled = cost * n > zenit;
-    confirm.title = cost * n > zenit ? "Not enough Zenit" : "";
+    const n = amount();
+    qty.value = n;
+    const total = cost * n;
+    totalN.textContent = total.toLocaleString();
+
+    // Preview which purses this would touch, so the split is visible before
+    // the confirmation rather than only inside it.
+    const fromBuyer = Math.min(purse, total);
+    const fromStash = total - fromBuyer;
+    stashBox.classList.toggle("is-tapped", fromStash > 0);
+    confirm.disabled = fromStash > stash;
   };
+
   qty.addEventListener("input", sync);
+  root.querySelectorAll("[data-step]").forEach((b) =>
+    b.addEventListener("click", () => {
+      qty.value = amount() + Number(b.dataset.step);
+      sync();
+      window.FUCompanion?.shopSound?.playItemSelect?.();
+    })
+  );
   sync();
 
-  const say = (html, bad = false) => {
-    receipt.innerHTML = `<div class="gp-receipt${bad ? " is-bad" : ""}">${html}</div>`;
-  };
-
   confirm.addEventListener("click", async () => {
+    const n = amount();
+    const total = cost * n;
+    const fromBuyer = Math.min(purse, total);
+    const fromStash = total - fromBuyer;
+
+    const ok = await confirmPurchase({ n, total, fromBuyer, fromStash, buyerName: buyer.name });
+    if (!ok) return;
+
     const label = confirm.textContent;
     confirm.disabled = true;
     confirm.textContent = "Buying…";
 
-    const n = Math.max(1, Math.floor(Number(qty.value) || 1));
     const res = await request(GACHA.MSG.BUY_REQ, {
       buyerActorUuid: buyer.uuid, quantity: n, requesterUserId: game.user.id,
     });
@@ -573,32 +637,66 @@ async function shop({ state, refresh }) {
     confirm.textContent = label;
 
     if (res?.ok) {
-      // Same feedback shape the main shop gives: the purchase SFX, a written
-      // confirmation, and the purse updated on the spot.
       window.FUCompanion?.shopSound?.playPurchase();
 
-      const from = zenit;
-      zenit = Math.max(0, zenit - (res.totalCost ?? 0));
-      rollNumber(purseN, from, zenit, 620);
-      purseEl.classList.add("is-spending");
-      setTimeout(() => purseEl.classList.remove("is-spending"), 700);
+      const p0 = purse, s0 = stash;
+      purse = Math.max(0, purse - (res.fromBuyer ?? 0));
+      stash = Math.max(0, stash - (res.fromStash ?? 0));
 
-      say(`Bought <b>${res.quantity}</b> Hako Coupon${res.quantity === 1 ? "" : "s"}
-           for ${COIN_ICON}<b>${(res.totalCost ?? 0).toLocaleString()}</b>.<br>
-           Party pool is now <b>${res.pool?.coupons ?? "?"}</b>.`);
+      rollNumber(purseN, p0, purse, 620);
+      if (s0 !== stash) rollNumber(stashN, s0, stash, 620);
+
+      purseBox.classList.add("is-spending");
+      if (s0 !== stash) stashBox.classList.add("is-spending");
+      setTimeout(() => {
+        purseBox.classList.remove("is-spending");
+        stashBox.classList.remove("is-spending");
+      }, 700);
 
       ui.notifications?.info(`Bought ${res.quantity} coupon(s) for ${res.totalCost}z.`);
       refresh?.(res.pool);
-
-      // Stay open, like the shop window does — buying once usually means
-      // buying again, and closing hides the confirmation you just earned.
       sync();
       return;
     }
 
-    say(buyFailureText(res, cost, n), true);
-    ui.notifications?.warn(buyFailureText(res, cost, n).replace(/<[^>]+>/g, ""));
+    ui.notifications?.warn(buyFailureText(res, cost, n));
     sync();
+  });
+}
+
+/**
+ * Second gate before any Zenit moves.
+ *
+ * When the party stash is being tapped, Hako turns up to say so. A split
+ * payment spends money that is not only the buyer's, and that deserves more
+ * than a number quietly changing colour.
+ */
+async function confirmPurchase({ n, total, fromBuyer, fromStash, buyerName }) {
+  const lines = fromStash > 0
+    ? `<div class="gh-line">${esc(buyerName)} pays ${COIN_ICON}<b>${fromBuyer.toLocaleString()}</b></div>
+       <div class="gh-line is-stash">Party stash pays ${STASH_ICON}<b>${fromStash.toLocaleString()}</b></div>`
+    : `<div class="gh-line">${esc(buyerName)} pays ${COIN_ICON}<b>${fromBuyer.toLocaleString()}</b></div>`;
+
+  const hako = fromStash > 0 ? `
+    <div class="gh-hako">
+      <img class="gh-hako-img" src="${HAKO_SRC}" alt="Hako">
+      <div class="gh-bubble">
+        Ahh — that's more than you're carrying, friend.
+        Hako will take the rest from the <b>party's</b> purse, yes?
+        Everyone shares in the fortune. Everyone shares in the cost.
+      </div>
+    </div>` : "";
+
+  return Dialog.confirm({
+    title: "Confirm Purchase",
+    content: `
+      <div class="gh-confirm">
+        <div class="gh-head">Buy <b>${n}</b> Hako Coupon${n === 1 ? "" : "s"}
+          for ${COIN_ICON}<b>${total.toLocaleString()}</b>?</div>
+        ${lines}
+        ${hako}
+      </div>`,
+    defaultYes: false,
   });
 }
 
@@ -606,14 +704,14 @@ async function shop({ state, refresh }) {
 function buyFailureText(res, cost, n) {
   switch (res?.reason) {
     case "insufficient_funds":
-      return `Not enough Zenit — need <b>${res.needed ?? cost * n}z</b>, have <b>${res.have ?? 0}z</b>.`;
-    case "buyer_not_found":        return "Your character could not be resolved.";
-    case "party_actor_missing":    return "The party sheet could not be resolved.";
-    case "coupon_template_missing":return "The Hako Coupon item is missing from the world.";
-    case "transfer_core_missing":  return "Item transfer system is not ready yet.";
-    case "not_primary_gm":         return "No GM is available to process the purchase.";
-    case "timeout":                return "Purchase timed out — is the GM online?";
-    default:                       return `Purchase failed (${esc(res?.reason ?? "unknown")}).`;
+      return `Not enough Zenit — need ${res.needed ?? cost * n}, have ${res.have ?? 0} between purse and stash.`;
+    case "buyer_not_found":         return "Your character could not be resolved.";
+    case "party_actor_missing":     return "The party sheet could not be resolved.";
+    case "coupon_template_missing": return "The Hako Coupon item is missing from the world.";
+    case "transfer_core_missing":   return "Item transfer system is not ready yet.";
+    case "not_primary_gm":          return "No GM is available to process the purchase.";
+    case "timeout":                 return "Purchase timed out — is the GM online?";
+    default:                        return `Purchase failed (${res?.reason ?? "unknown"}).`;
   }
 }
 

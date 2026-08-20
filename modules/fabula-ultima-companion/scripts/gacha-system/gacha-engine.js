@@ -245,21 +245,64 @@ export async function executeBuy({ buyerActorUuid, quantity, requesterUserId }) 
 
   const unit  = await couponCost();
   const total = unit * n;
-  const have  = Math.max(0, Number(buyer.system?.props?.zenit ?? 0));
-  if (have < total) return { ok: false, reason: "insufficient_funds", needed: total, have };
+
+  const split = splitCost(buyer, actor, total);
+  if (!split.ok) return { ok: false, ...split };
 
   const tc = window["oni.ItemTransferCore"];
   if (!tc) return { ok: false, reason: "transfer_core_missing" };
 
-  await tc.adjustZenit({ actorUuid: buyer.uuid, delta: -total, requestedByUserId: requesterUserId });
+  // Purse first, stash for the remainder. Sequential rather than parallel:
+  // both legs can land on the same document when the buyer IS the party actor.
+  if (split.fromBuyer > 0) {
+    await tc.adjustZenit({ actorUuid: buyer.uuid, delta: -split.fromBuyer, requestedByUserId: requesterUserId });
+  }
+  if (split.fromStash > 0) {
+    await tc.adjustZenit({ actorUuid: actor.uuid, delta: -split.fromStash, requestedByUserId: requesterUserId });
+  }
 
   const granted = await grantCoupons(actor, n);
   if (!granted.ok) {
-    // Refund rather than leave the buyer short of both Zenit and coupons.
-    await tc.adjustZenit({ actorUuid: buyer.uuid, delta: total, requestedByUserId: requesterUserId });
+    // Refund both legs rather than leave them short of Zenit AND coupons.
+    if (split.fromBuyer > 0) {
+      await tc.adjustZenit({ actorUuid: buyer.uuid, delta: split.fromBuyer, requestedByUserId: requesterUserId });
+    }
+    if (split.fromStash > 0) {
+      await tc.adjustZenit({ actorUuid: actor.uuid, delta: split.fromStash, requestedByUserId: requesterUserId });
+    }
     return { ok: false, ...granted };
   }
 
-  log(`${buyer.name} bought ${n} coupon(s) for ${total}z → party pool`);
-  return { ok: true, quantity: n, totalCost: total, pool: readPool(actor) };
+  log(`${buyer.name} bought ${n} coupon(s) for ${total}z ` +
+      `(${split.fromBuyer} purse + ${split.fromStash} stash) → party pool`);
+
+  return {
+    ok: true, quantity: n, totalCost: total,
+    fromBuyer: split.fromBuyer, fromStash: split.fromStash,
+    pool: readPool(actor),
+    buyerZenitAfter: split.buyerHas - split.fromBuyer,
+    stashZenitAfter: split.stashHas - split.fromStash,
+  };
+}
+
+const zenitOf = (a) => Math.max(0, Number(a?.system?.props?.zenit ?? 0));
+
+/**
+ * Who pays what.
+ *
+ * The buyer's own purse is always drained first; only the shortfall comes out
+ * of the party stash. Exported so the confirmation dialog can show the same
+ * breakdown the engine will actually apply, rather than guessing at it.
+ */
+export function splitCost(buyer, party, total) {
+  const buyerHas = zenitOf(buyer);
+  const stashHas = zenitOf(party);
+
+  const fromBuyer = Math.min(buyerHas, total);
+  const fromStash = total - fromBuyer;
+
+  if (fromStash > stashHas) {
+    return { ok: false, reason: "insufficient_funds", needed: total, have: buyerHas + stashHas, buyerHas, stashHas };
+  }
+  return { ok: true, fromBuyer, fromStash, buyerHas, stashHas };
 }
