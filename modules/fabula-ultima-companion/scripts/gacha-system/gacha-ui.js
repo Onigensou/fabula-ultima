@@ -32,8 +32,21 @@ const STYLE_ID = "gacha-ui-style";
 const SFX_SCROLL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_3.wav";
 const sfx = (src) => { try { AudioHelper?.play({ src, volume: 0.5, loop: false }, false); } catch {} };
 
-const THUMB_W = 132;   // thumbnail + gap, used to centre the rail strip
-const THUMB_GAP = 12;
+const THUMB_W = 96;    // thumbnail + gap, used to centre the rail strip
+const THUMB_GAP = 10;
+
+// Small-print parody, filling the column under the banner copy. Deliberately
+// static and shared by every banner — it is set dressing, not banner data. If
+// it ever wants to be per-banner, it belongs in a RollTable field next to the
+// epithet rather than here.
+const FILLER_COPY = `
+  Wishes made upon the Gachapon are final and non-refundable. Hako Coupons carry
+  no monetary value outside this machine and may not be exchanged for zenit,
+  favours, or emotional support. Duplicate pieces are a feature of fortune, not
+  a defect. The proprietors accept no liability for oaths sworn, debts incurred,
+  or friendships strained in pursuit of a complete set. Participation implies
+  acceptance that fortune is a fickle patron. Void where prohibited by narrative
+  causality.`;
 
 const CSS = `
 #${ROOT_ID} {
@@ -51,15 +64,18 @@ const CSS = `
 /* ── banner rail ────────────────────────────────────────────────────────── */
 .gu-rail {
   position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: var(--gc-radius-lg);
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--gc-radius-lg);
   background: linear-gradient(180deg, rgba(247,240,223,.93), rgba(226,211,182,.93));
   border: 1px solid var(--gc-line-2);
   box-shadow: 0 10px 26px -12px rgba(40,26,10,.7);
-  max-width: 100%;
+  /* Reserve the corners so the centred rail can never crowd the currency
+     console on the right — which it did once the sidebar was expanded and the
+     overlay narrowed. */
+  max-width: calc(100% - 420px);
 }
 .gu-arrow {
-  flex: 0 0 auto; width: 42px; height: 84px; cursor: pointer;
+  flex: 0 0 auto; width: 32px; height: 62px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--gc-radius); border: 1px solid var(--gc-line-2);
   background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel));
@@ -74,8 +90,10 @@ const CSS = `
   display: flex; gap: ${THUMB_GAP}px;
   transition: transform .34s cubic-bezier(.22,.61,.36,1);
 }
+/* No label: the set name is the headline of the card below, and repeating it
+   here only crowded the rail. The lead item's icon is the identifier. */
 .gu-thumb {
-  flex: 0 0 auto; width: ${THUMB_W - THUMB_GAP}px; height: 84px;
+  flex: 0 0 auto; width: ${THUMB_W - THUMB_GAP}px; height: 62px;
   cursor: pointer; position: relative; overflow: hidden;
   border-radius: var(--gc-radius); border: 2px solid var(--gc-line);
   background: linear-gradient(180deg, var(--gc-parch), var(--gc-sunk));
@@ -89,12 +107,7 @@ const CSS = `
   box-shadow: 0 0 0 2px var(--gc-gold-soft), 0 6px 16px -8px rgba(60,40,14,.7);
   transform: translateY(-2px);
 }
-.gu-thumb img { width: 60px; height: 60px; object-fit: contain; }
-.gu-thumb-name {
-  position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 4px;
-  font-size: 9px; line-height: 1.15; text-align: center; color: var(--gc-ink-2);
-  background: linear-gradient(to top, rgba(247,240,223,.95), rgba(247,240,223,0));
-}
+.gu-thumb img { width: 46px; height: 46px; object-fit: contain; }
 
 /* ── console (wallet + pity) ────────────────────────────────────────────── */
 .gu-console {
@@ -163,20 +176,25 @@ const CSS = `
   color: var(--gc-title); word-break: break-word;
   text-shadow: 0 1px 0 rgba(255,255,255,.5);
 }
-/* The parody of Genshin's "Probability increased!" callout. */
+/* The banner headline only — a short highlighted bar, as Genshin does it. The
+   guarantee wording sits outside it, as plain body copy. */
 .gu-promo {
-  margin-top: 6px; padding: 12px 14px; border-radius: var(--gc-radius);
+  align-self: flex-start; margin-top: 4px;
+  padding: 8px 16px; border-radius: var(--gc-radius);
   background: linear-gradient(180deg, var(--gc-panel), var(--gc-sunk));
   border-left: 4px solid var(--gc-gold);
-  font-size: 13px; line-height: 1.6; color: var(--gc-ink-2);
+  font-size: 14px; font-weight: 700; letter-spacing: 1px; color: var(--gc-title);
 }
-.gu-promo b { color: var(--gc-title); }
-.gu-promo .lede {
-  display: block; font-weight: 700; color: var(--gc-title);
-  letter-spacing: 1px; margin-bottom: 5px;
-}
+.gu-guarantee { font-size: 13px; line-height: 1.7; color: var(--gc-ink-2); }
+.gu-guarantee b { color: var(--gc-title); }
+
 .gu-setline { font-size: 13px; color: var(--gc-ink-3); line-height: 1.8; }
 .gu-setline b { color: var(--gc-ink); }
+
+.gu-filler {
+  font-size: 11px; line-height: 1.75; color: var(--gc-ink-soft);
+  border-top: 1px solid var(--gc-line); padding-top: 12px; margin-top: 4px;
+}
 .gu-hint {
   margin-top: auto; font-size: 12px; font-style: italic; color: var(--gc-ink-soft);
 }
@@ -220,16 +238,25 @@ const CSS = `
 
 /* Name rides the bottom of the plate, over the art — this IS the case the
    Level-Up stroke treatment exists for. */
-/* Rides the bottom of the plate, over the art.
+/* Softens the bottom edge of the art into the card instead of ending on a hard
+   line. Sits above the image, below the name. */
+.gu-lead-plate::after {
+  content: ""; position: absolute; left: 10px; right: 10px; bottom: 10px;
+  height: 38%; z-index: 2; pointer-events: none; border-radius: 0 0 6px 6px;
+  background: linear-gradient(to bottom,
+    rgba(255,253,246,0) 0%, rgba(255,253,246,.72) 62%, rgba(255,253,246,.96) 100%);
+}
+
+/* Rides the bottom of the plate, offset RIGHT of centre.
    Outlined with layered text-shadows rather than -webkit-text-stroke: a stroke
    is drawn centred on the glyph outline and eats inward, which on a thin
    italic face at this size consumed the fill entirely and left ghost text.
    Shadows sit strictly OUTSIDE the glyph, so the dark fill stays solid over
    both pale and busy artwork. */
 .gu-lead-name {
-  position: absolute; left: -14px; right: -14px; bottom: -18px; text-align: center;
+  position: absolute; left: 18%; right: -30px; bottom: -10px; text-align: right;
   font-family: "Trebuchet MS", "Segoe UI", Verdana, sans-serif;
-  font-size: 34px; font-weight: 800; font-style: italic; letter-spacing: .5px;
+  font-size: 32px; font-weight: 800; font-style: italic; letter-spacing: .5px;
   color: var(--gc-ink); pointer-events: none; z-index: 3;
   -webkit-text-stroke: 0;
   text-shadow:
@@ -239,14 +266,21 @@ const CSS = `
     -2px  0   0 #fffdf6,  2px  0   0 #fffdf6,
      0    4px 8px rgba(60,40,14,.45);
 }
+/* Steps further right again, below the name. */
 .gu-lead-stars {
-  margin-top: 16px; font-size: 22px; letter-spacing: 4px; color: var(--gc-r5);
+  align-self: flex-end; margin: 20px 0 0 0; padding-right: 6px;
+  font-size: 22px; letter-spacing: 4px; color: var(--gc-r5);
   text-shadow: 0 1px 2px rgba(90,60,20,.4);
 }
 
+/* The overlay root is pointer-events:none so the canvas stays usable, and
+   children opt back in. These chips are hover targets, so they must opt in —
+   without it the hover preview silently never fires for a real cursor (a
+   synthetic mouseenter still "works", which is exactly how it passed a test
+   while being broken in the game). */
 .gu-support {
   display: flex; gap: 9px; flex-wrap: wrap; justify-content: center;
-  max-width: 100%;
+  max-width: 100%; pointer-events: auto;
 }
 .gu-support img {
   width: 52px; height: 52px; object-fit: contain; padding: 4px; cursor: pointer;
@@ -481,7 +515,6 @@ function paintRail() {
     .map((b, i) => `
       <div class="gu-thumb${i === S.index ? " is-active" : ""}" data-i="${i}" title="${esc(b.title)}">
         <img src="${imgOf(b.lead)}" alt="" data-fallback>
-        <div class="gu-thumb-name">${esc(b.title)}</div>
       </div>`)
     .join("");
 
@@ -509,8 +542,10 @@ function layoutRail() {
   // sized by its content, so reading its width here would be circular: a
   // narrow view makes a narrow rail, which then computes an even narrower
   // view. After a sidebar toggle that collapsed the rail to one thumbnail.
-  const ARROWS = 2 * 42, GAPS = 20, PAD = 24;
-  const avail = Math.max(THUMB_W, S.el.clientWidth - ARROWS - GAPS - PAD);
+  // RESERVE matches the rail's max-width clamp, which keeps it clear of the
+  // currency console.
+  const ARROWS = 2 * 32, GAPS = 16, PAD = 20, RESERVE = 420;
+  const avail = Math.max(THUMB_W, S.el.clientWidth - RESERVE - ARROWS - GAPS - PAD);
   const fit = Math.max(1, Math.min(S.banners.length, Math.floor(avail / THUMB_W)));
   view.style.width = `${fit * THUMB_W - THUMB_GAP}px`;
 
@@ -567,8 +602,8 @@ function paintStage(dir) {
       <div class="gu-card-text">
         ${b.epithet ? `<div class="gu-epithet">${esc(b.epithet)}</div>` : ""}
         <div class="gu-title">${esc(b.title)}</div>
-        <div class="gu-promo">
-          <span class="lede">Probability increased!</span>
+        <div class="gu-promo">Probability increased!</div>
+        <div class="gu-guarantee">
           Every 10 wishes is guaranteed to include at least one
           <b>${RARITY.four.label} or higher</b> item.<br>
           A <b>${RARITY.five.label}</b> is guaranteed within <b>${remaining}</b> more.
@@ -577,6 +612,7 @@ function paintStage(dir) {
           Featured set — <b>${esc(b.mainSet?.setName ?? b.title)}</b> (${mainCount} pieces)
           ${fillerNames ? `<br>Also featuring — <b>${esc(fillerNames)}</b>` : ""}
         </div>
+        <div class="gu-filler">${FILLER_COPY}</div>
         <div class="gu-hint">View Details for more…</div>
       </div>
       <div class="gu-card-art">

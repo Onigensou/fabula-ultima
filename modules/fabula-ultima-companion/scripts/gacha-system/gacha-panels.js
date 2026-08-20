@@ -60,12 +60,14 @@ const CSS = `
 }
 .gp-x:hover { background: #fffaec; border-color: var(--gc-gold); }
 .gp-body { padding: 16px 18px; overflow-y: auto; overflow-x: hidden; }
+/* Actions sit bottom-RIGHT; any status text is pushed left of them. */
 .gp-foot {
   padding: 12px 18px; border-top: 2px solid var(--gc-line-2);
-  display: flex; justify-content: center; gap: 10px;
+  display: flex; justify-content: flex-end; align-items: center; gap: 14px;
   background: var(--gc-panel);
   border-radius: 0 0 10px 10px;
 }
+.gp-foot > .gp-pick { margin-right: auto; }
 
 /* ── shared item chip ───────────────────────────────────────────────────── */
 .gp-chip {
@@ -146,16 +148,37 @@ const CSS = `
 .gp-mark .n { float: right; opacity: .6; font-weight: 400; }
 .gp-mark.is-sep { margin-top: 10px; }
 
+/* Fixed height, not content height: switching between a 3-piece and a 4-piece
+   set was making the whole window jump. The rows scroll inside instead. */
 .gp-board {
-  flex: 1 1 auto; min-width: 0; padding: 16px;
+  flex: 1 1 auto; min-width: 0; padding: 14px 16px;
+  display: flex; flex-direction: column; height: 468px;
   border: 1px solid var(--gc-line-2); border-radius: 0 var(--gc-radius) var(--gc-radius) var(--gc-radius);
   background: var(--gc-parch);
 }
-.gp-board-title {
-  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--gc-title); margin-bottom: 12px; padding-bottom: 7px;
+.gp-board-head {
+  flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 12px; padding-bottom: 7px;
   border-bottom: 1px solid var(--gc-line);
 }
+.gp-board-title {
+  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gc-title);
+}
+/* Modal switch, not a peer of the set tabs — so it lives opposite them. */
+.gp-modaltab {
+  flex: 0 0 auto; padding: 7px 14px; cursor: pointer;
+  font-family: inherit; font-size: 11px; letter-spacing: 1px;
+  border-radius: var(--gc-radius); border: 1px solid var(--gc-line-3);
+  background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel));
+  color: var(--gc-ink-2); white-space: nowrap;
+}
+.gp-modaltab:hover { background: #fffaec; border-color: var(--gc-gold); }
+.gp-modaltab.is-on {
+  background: linear-gradient(180deg, var(--gc-deep), var(--gc-deep-2));
+  color: var(--gc-deep-ink); border-color: var(--gc-deep-2);
+}
+.gp-board-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-right: 4px; }
 .gp-chip.is-picked {
   border-color: var(--gc-title);
   box-shadow: 0 0 0 3px rgba(92,31,46,.22);
@@ -163,7 +186,7 @@ const CSS = `
 }
 .gp-pick {
   font-size: 12px; color: var(--gc-ink-2);
-  display: flex; align-items: center; gap: 8px; justify-content: center;
+  display: flex; align-items: center; gap: 8px;
 }
 .gp-pick b { color: var(--gc-title); }
 .gp-pick .none { color: var(--gc-ink-soft); font-style: italic; }
@@ -451,15 +474,13 @@ async function exchange(ctx) {
 
   const S = { view: board[0]?.setName ?? "__redeem", src: null, dst: null };
 
+  // Set bookmarks only. Ticket Redemption is a MODE switch, not a peer of the
+  // sets, so it lives opposite them in the board header.
   const paintMarks = () => {
-    marks.innerHTML = `
-      ${board.map((s) => `
-        <button class="gp-mark${S.view === s.setName ? " is-active" : ""}" data-view="${esc(s.setName)}">
-          ${esc(s.setName)}<span class="n">${s.ownedCount}/${s.pieces.length}</span>
-        </button>`).join("")}
-      <button class="gp-mark is-sep${S.view === "__redeem" ? " is-active" : ""}" data-view="__redeem">
-        ★ Ticket Redemption
-      </button>`;
+    marks.innerHTML = board.map((s) => `
+      <button class="gp-mark${S.view === s.setName ? " is-active" : ""}" data-view="${esc(s.setName)}">
+        ${esc(s.setName)}<span class="n">${s.ownedCount}/${s.pieces.length}</span>
+      </button>`).join("");
     marks.querySelectorAll("[data-view]").forEach((n) =>
       n.addEventListener("click", () => { S.view = n.dataset.view; S.src = S.dst = null; paint(); })
     );
@@ -479,12 +500,33 @@ async function exchange(ctx) {
 
   const paint = () => {
     paintMarks();
-    if (S.view === "__redeem") {
-      redeemView(board_, ctx);
-    } else {
-      const set = board.find((s) => s.setName === S.view);
-      paintSwapBoard(board_, set, S, () => { paintFoot(); });
-    }
+
+    const redeeming = S.view === "__redeem";
+    const set = redeeming ? null : board.find((s) => s.setName === S.view);
+
+    board_.innerHTML = `
+      <div class="gp-board-head">
+        <div class="gp-board-title">${
+          redeeming ? "Ticket Redemption"
+                    : `${esc(set?.setName ?? "")} — ${set?.ownedCount ?? 0} of ${set?.pieces.length ?? 0} held`
+        }</div>
+        <button class="gp-modaltab${redeeming ? " is-on" : ""}" data-modal>
+          ${redeeming ? "← Gift Exchange" : "★ Ticket Redemption"}
+        </button>
+      </div>
+      <div class="gp-board-scroll"></div>`;
+
+    board_.querySelector("[data-modal]").addEventListener("click", () => {
+      S.view = redeeming ? (S.lastSet ?? board[0]?.setName) : "__redeem";
+      if (!redeeming) S.lastSet = set?.setName;
+      S.src = S.dst = null;
+      paint();
+    });
+
+    const scroll = board_.querySelector(".gp-board-scroll");
+    if (redeeming) redeemView(scroll, ctx);
+    else paintSwapBoard(scroll, set, S, () => paintFoot());
+
     paintFoot();
   };
 
@@ -533,20 +575,23 @@ async function exchange(ctx) {
 function paintSwapBoard(host, set, S, onPick) {
   if (!set) { host.innerHTML = `<div class="gp-empty">Set not found.</div>`; return; }
 
-  host.innerHTML = `
-    <div class="gp-board-title">${esc(set.setName)} — ${set.ownedCount} of ${set.pieces.length} held</div>
-    ${set.pieces.map((p) => rowHTML(set, p, S)).join("")}
-    <div class="gp-note">
-      A trade is free and one-for-one, <b>within this set only</b>.
-      The piece you trade in is <b>destroyed</b> — refinement and installed orbment augments go with it.
-    </div>`;
+  // No standing rules blurb. The destructive terms are shown on the pieces they
+  // actually apply to (and again on the confirm dialog), the same way the
+  // equipped block is — a permanent notice reads as chrome and gets ignored.
+  host.innerHTML = set.pieces.map((p) => rowHTML(set, p, S)).join("");
 
   host.querySelectorAll("[data-pick-src]").forEach((n) =>
     n.addEventListener("click", () => {
-      S.src = n.dataset.pickSrc;
-      S.dst = n.dataset.pickDst;
+      const same = S.src === n.dataset.pickSrc && S.dst === n.dataset.pickDst;
       host.querySelectorAll(".gp-chip").forEach((c) => c.classList.remove("is-picked"));
-      n.classList.add("is-picked");
+
+      if (same) {            // clicking the current pick clears it
+        S.src = S.dst = null;
+      } else {
+        S.src = n.dataset.pickSrc;
+        S.dst = n.dataset.pickDst;
+        n.classList.add("is-picked");
+      }
       onPick?.();
     })
   );
