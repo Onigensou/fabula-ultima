@@ -517,7 +517,22 @@ export async function pickFromList({
   // (which element to conjure against a resistant enemy) that is a weaker play
   // than a human would make — so it biases fights HARDER, not easier, and never
   // silently flatters the party.
-  if (SimMode.active) {
+  // Also auto-pick under the HEADLESS harness flag, not just SimMode.
+  //
+  // These were two separate gates for the same situation: "nobody is at the
+  // keyboard". `noHumanToAsk` (skill-effects.js) already checks BOTH SimMode and
+  // __FU_HARNESS_HEADLESS__; this picker checked only SimMode, so every
+  // open_action_menu chain run through the director harness opened a real dialog
+  // and waited forever. Measured 2026-08-20: it hung Zarg's Barrage / Warning
+  // Shot / Hawkeye / Potion Rain / Quick-change / Follow my lead / Dance and
+  // Hina's Fugitive Experiment past a 120 s deadline apiece, and a hung picker is
+  // exactly what leaks a write-capture patch and poisons the whole client.
+  //
+  // Widening audit (a widened branch arms latent mis-gating): the flag is set and
+  // restored ONLY by installHeadlessGates() in _test-harness-director.js, so live
+  // play never reaches this. The guard in that file now also clears a STALE flag,
+  // so a leaked one cannot silently turn real player prompts into auto-picks.
+  if (SimMode.active || globalThis.__FU_HARNESS_HEADLESS__ === true) {
     const rows = groups.flatMap((g) => (Array.isArray(g?.items) ? g.items : []));
     const enabled = rows.filter((r) => !r?.disabled);
 
@@ -527,9 +542,9 @@ export async function pickFromList({
     // No explicit hint, but this LOOKS like an element menu? Use the card's
     // best-element fallback rather than blindly taking option one — picking the
     // element the target absorbs is worse than not augmenting at all.
-    let hint = SimMode.takePickHint();
+    let hint = SimMode.active ? SimMode.takePickHint() : null;
     if (!hint) {
-      const fallback = SimMode.elementFallback?.();
+      const fallback = SimMode.active ? SimMode.elementFallback?.() : null;
       const looksElemental = fallback && enabled.some((r) =>
         new RegExp(`\\b${fallback}\\b`, "i").test(String(r?.primary ?? "").replace(/<[^>]*>/g, ""))
       );
@@ -565,7 +580,7 @@ export async function pickFromList({
     if (!pick) { log("[SIM] list-picker: every row disabled — cancelling"); return multiSelect ? [] : null; }
     const shown = String(pick.primary ?? pick.value ?? "?").replace(/<[^>]*>/g, "").trim();
     log(`[SIM] list-picker "${title}" → auto-picked "${shown}"`);
-    SimMode.note("choice", `${title}: took "${shown}" (first option)`);
+    if (SimMode.active) SimMode.note("choice", `${title}: took "${shown}" (first option)`);
     return multiSelect ? [pick.value] : pick.value;
   }
 

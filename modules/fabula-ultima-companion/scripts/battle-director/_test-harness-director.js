@@ -1559,10 +1559,18 @@ function _docClasses() {
 function _looksCaptured(fn) {
   try { return /captures\s*\./.test(Function.prototype.toString.call(fn)); } catch { return false; }
 }
+// Harness globals that a leaked run can strand. A stale __FU_HARNESS_HEADLESS__
+// is now load-bearing in PLAY: list-picker.js auto-picks under it, so a leaked
+// flag would turn real player menus into silent first-option picks.
+const _HARNESS_GLOBALS = ["__FU_HARNESS_HEADLESS__", "__FU_HARNESS_ACCEPT_PASSIVES__", "__FU_HARNESS_FORMULA_OVERRIDES__"];
+function _staleHarnessGlobals() {
+  return _HARNESS_GLOBALS.filter((k) => globalThis[k] !== undefined);
+}
 function harnessWriteCaptureState() {
   const { ActorCls, ItemCls, AECls } = _docClasses();
   return {
     depth: _captureDepth,
+    staleGlobals: _captureDepth === 0 ? _staleHarnessGlobals() : [],
     havePristine: !!_pristineDocMethods,
     actorPatched: _looksCaptured(ActorCls.prototype.update),
     itemPatched:  _looksCaptured(ItemCls.prototype.update),
@@ -1574,7 +1582,15 @@ function harnessWriteCaptureState() {
 // when nothing is patched. Returns what it did.
 function healHarnessWrites() {
   const st = harnessWriteCaptureState();
-  if (!st.actorPatched && !st.itemPatched && !st.aePatched) return { healed: false, reason: "not patched", state: st };
+  // Clear stranded harness globals whenever no capture is in flight — they are
+  // as dangerous as the prototype patch now that the picker reads one of them.
+  const clearedGlobals = [];
+  if (_captureDepth === 0) {
+    for (const k of _staleHarnessGlobals()) { delete globalThis[k]; clearedGlobals.push(k); }
+  }
+  if (!st.actorPatched && !st.itemPatched && !st.aePatched) {
+    return { healed: clearedGlobals.length > 0, clearedGlobals, reason: clearedGlobals.length ? "cleared stale globals" : "not patched", state: harnessWriteCaptureState() };
+  }
   if (!_pristineDocMethods) return { healed: false, reason: "no pristine snapshot — reload the client", state: st };
   _restorePristine();
   _captureDepth = 0;
@@ -1586,7 +1602,12 @@ function healHarnessWrites() {
 // wrong numbers.
 function _guardWrites(label) {
   const st = harnessWriteCaptureState();
-  if (!st.poisoned) return null;
+  if (!st.poisoned && !(st.staleGlobals ?? []).length) return null;
+  if (!st.poisoned) {
+    const r = healHarnessWrites();
+    warn(`harness: cleared stranded global(s) before ${label}: ${(r.clearedGlobals ?? []).join(", ")}`);
+    return { staleGlobalsCleared: r.clearedGlobals ?? [] };
+  }
   const r = healHarnessWrites();
   const msg = `harness: page was POISONED (a previous run leaked its write-capture patch; every write since was swallowed). ${r.healed ? "Healed" : "COULD NOT HEAL — reload the client"} before ${label}.`;
   warn(msg);
