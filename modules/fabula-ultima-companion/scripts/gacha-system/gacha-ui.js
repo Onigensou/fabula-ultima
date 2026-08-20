@@ -18,9 +18,9 @@
 // screen. Only party members (and the GM) get the interactive controls.
 // ============================================================================
 
-import { GACHA, RARITY, PITY_FIVE, log } from "./gacha-const.js";
+import { GACHA, RARITY, log } from "./gacha-const.js";
 import { listBanners, imgOf, FALLBACK_IMG } from "./gacha-banners.js";
-import { partyActor, readPool, readPity, isPartyMemberClient, couponCost } from "./gacha-state.js";
+import { partyActor, readPool, isPartyMemberClient, couponCost } from "./gacha-state.js";
 import { request, announceStart } from "./gacha-net.js";
 import { beginReveal, stop as stopFx } from "./gacha-fx.js";
 import { renderPanel } from "./gacha-panels.js";
@@ -162,10 +162,10 @@ const CSS = `
    high-contrast ink. The gc-over stroke is for labels floating on top of an
    item icon; used here it just eats the glyphs and washes the text out. */
 /* Title block sits TOP-left; the column no longer centres its content. */
+/* No divider: the card should read as one surface, not two panes. */
 .gu-card-text {
   flex: 0 0 42%; padding: 34px 34px; display: flex; flex-direction: column;
   justify-content: flex-start; gap: 12px; min-width: 0; z-index: 2;
-  border-right: 1px solid var(--gc-line);
 }
 .gu-epithet {
   font-size: 14px; letter-spacing: 4px; text-transform: uppercase;
@@ -193,7 +193,7 @@ const CSS = `
 
 .gu-filler {
   font-size: 11px; line-height: 1.75; color: var(--gc-ink-soft);
-  border-top: 1px solid var(--gc-line); padding-top: 12px; margin-top: 4px;
+  padding-top: 6px; margin-top: 4px;
 }
 .gu-hint {
   margin-top: auto; font-size: 12px; font-style: italic; color: var(--gc-ink-soft);
@@ -216,9 +216,16 @@ const CSS = `
    them at intrinsic size — which scales DOWN but never UP, so a small icon sat
    as a postage stamp in the middle of the card. Fix the plate and let the image
    contain itself into it. */
+/* Plate and stars share one block so the stars can hang directly under the
+   name. Anchoring them to the art COLUMN instead pushed them out to its far
+   right edge, well clear of the name they belong to. */
+.gu-lead-block {
+  flex: 0 0 auto; width: min(38vh, 340px);
+  display: flex; flex-direction: column;
+}
 .gu-lead-plate {
   flex: 0 0 auto; position: relative;
-  width: min(38vh, 340px); height: min(38vh, 340px);
+  width: 100%; height: min(38vh, 340px);
   display: flex; align-items: center; justify-content: center;
   padding: 10px; border-radius: var(--gc-radius-lg);
   border: 2px solid var(--gc-line-2);
@@ -266,9 +273,10 @@ const CSS = `
     -2px  0   0 #fffdf6,  2px  0   0 #fffdf6,
      0    4px 8px rgba(60,40,14,.45);
 }
-/* Steps further right again, below the name. */
+/* Directly beneath the name — same right edge, so the two read as one label.
+   The -30px matches .gu-lead-name's right offset. */
 .gu-lead-stars {
-  align-self: flex-end; margin: 20px 0 0 0; padding-right: 6px;
+  margin: 22px -30px 0 0; text-align: right;
   font-size: 22px; letter-spacing: 4px; color: var(--gc-r5);
   text-shadow: 0 1px 2px rgba(90,60,20,.4);
 }
@@ -590,8 +598,6 @@ function paintStage(dir) {
   const anim = dir > 0 ? "in-right" : dir < 0 ? "in-left" : "";
   const mainCount = b.mainSet?.entries?.length ?? 0;
   const fillerNames = b.fillerSets.map((g) => g.setName).join(", ");
-  const pity = readPity(S.actor, b.id);
-  const remaining = Math.max(0, PITY_FIVE - pity.five);
 
   // Every piece the card can feature, lead first. Index 0 is the resting state.
   const showable = [b.lead, ...(b.mainSet?.entries ?? []).slice(1),
@@ -605,8 +611,7 @@ function paintStage(dir) {
         <div class="gu-promo">Probability increased!</div>
         <div class="gu-guarantee">
           Every 10 wishes is guaranteed to include at least one
-          <b>${RARITY.four.label} or higher</b> item.<br>
-          A <b>${RARITY.five.label}</b> is guaranteed within <b>${remaining}</b> more.
+          <b>${RARITY.four.label} or higher</b> item.
         </div>
         <div class="gu-setline">
           Featured set — <b>${esc(b.mainSet?.setName ?? b.title)}</b> (${mainCount} pieces)
@@ -616,11 +621,13 @@ function paintStage(dir) {
         <div class="gu-hint">View Details for more…</div>
       </div>
       <div class="gu-card-art">
-        <div class="gu-lead-plate">
-          <img class="gu-lead" src="${imgOf(b.lead)}" alt="" data-fallback>
-          <div class="gu-lead-name gc-over">${esc(b.lead?.name ?? "")}</div>
+        <div class="gu-lead-block">
+          <div class="gu-lead-plate">
+            <img class="gu-lead" src="${imgOf(b.lead)}" alt="" data-fallback>
+            <div class="gu-lead-name gc-over">${esc(b.lead?.name ?? "")}</div>
+          </div>
+          <div class="gu-lead-stars">${"★".repeat(RARITY.five.stars)}</div>
         </div>
-        <div class="gu-lead-stars">${"★".repeat(RARITY.five.stars)}</div>
         <div class="gu-support">
           ${showable.slice(1).map((e, i) => {
             const filler = i >= mainCount - 1;
@@ -779,7 +786,7 @@ async function wish(count) {
 
   paintActions();
   paintConsole();
-  paintStage(0);   // the promo block carries the pity countdown, which just moved
+  paintStage(0);   // repaint the card against the new pool state
 }
 
 function failureText(res) {

@@ -36,12 +36,36 @@ const CSS = `
 #${PANEL_ID} * { box-sizing: border-box; }
 #${PANEL_ID} img { border: 0 !important; outline: 0 !important; background: transparent; }
 
+.gp-stack { display: flex; flex-direction: column; align-items: stretch; }
 .gp-frame {
   width: var(--gp-w, 900px); max-width: 94vw; max-height: 88vh;
   display: flex; flex-direction: column;
   background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel-2));
   border: 2px solid var(--gc-line-3); border-radius: var(--gc-radius-lg);
   box-shadow: var(--gc-shadow);
+}
+
+/* Mode tabs that sit ABOVE the window, right-aligned, like folder tabs. The
+   active one drops its bottom edge so it reads as continuous with the panel. */
+.gp-toptabs {
+  display: flex; gap: 6px; justify-content: flex-end;
+  padding-right: 22px; margin-bottom: -2px; position: relative; z-index: 2;
+}
+.gp-toptab {
+  padding: 9px 20px 10px; cursor: pointer;
+  font-family: inherit; font-size: 12px; letter-spacing: 1px;
+  color: var(--gc-ink-3);
+  background: linear-gradient(180deg, var(--gc-panel-2), var(--gc-panel));
+  border: 2px solid var(--gc-line-3); border-bottom: none;
+  border-radius: var(--gc-radius) var(--gc-radius) 0 0;
+  transform: translateY(2px);
+  transition: background .12s, color .12s, transform .12s;
+}
+.gp-toptab:hover { background: #fffaec; color: var(--gc-ink); }
+.gp-toptab.is-on {
+  background: var(--gc-parch); color: var(--gc-title); font-weight: 700;
+  transform: translateY(0);
+  box-shadow: 0 -3px 10px -6px rgba(40,26,10,.6);
 }
 .gp-head {
   display: flex; align-items: center; justify-content: space-between;
@@ -165,19 +189,7 @@ const CSS = `
   font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
   color: var(--gc-title);
 }
-/* Modal switch, not a peer of the set tabs — so it lives opposite them. */
-.gp-modaltab {
-  flex: 0 0 auto; padding: 7px 14px; cursor: pointer;
-  font-family: inherit; font-size: 11px; letter-spacing: 1px;
-  border-radius: var(--gc-radius); border: 1px solid var(--gc-line-3);
-  background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel));
-  color: var(--gc-ink-2); white-space: nowrap;
-}
-.gp-modaltab:hover { background: #fffaec; border-color: var(--gc-gold); }
-.gp-modaltab.is-on {
-  background: linear-gradient(180deg, var(--gc-deep), var(--gc-deep-2));
-  color: var(--gc-deep-ink); border-color: var(--gc-deep-2);
-}
+.gp-board.is-solo { border-radius: var(--gc-radius); }
 .gp-board-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-right: 4px; }
 .gp-chip.is-picked {
   border-color: var(--gc-title);
@@ -280,20 +292,23 @@ export function closePanel() {
   _ctx = null;
 }
 
-function frame(title, bodyHTML, { width = 900, foot = "" } = {}) {
+function frame(title, bodyHTML, { width = 900, foot = "", topTabs = "" } = {}) {
   closePanel();
   ensureStyle();
 
   const el = document.createElement("div");
   el.id = PANEL_ID;
   el.innerHTML = `
-    <div class="gp-frame" style="--gp-w:${width}px">
-      <div class="gp-head">
-        <div class="gp-title">${esc(title)}</div>
-        <button class="gp-x" data-close>×</button>
+    <div class="gp-stack" style="--gp-w:${width}px">
+      ${topTabs ? `<div class="gp-toptabs">${topTabs}</div>` : ""}
+      <div class="gp-frame" style="--gp-w:${width}px">
+        <div class="gp-head">
+          <div class="gp-title">${esc(title)}</div>
+          <button class="gp-x" data-close>×</button>
+        </div>
+        <div class="gp-body">${bodyHTML}</div>
+        ${foot ? `<div class="gp-foot">${foot}</div>` : ""}
       </div>
-      <div class="gp-body">${bodyHTML}</div>
-      ${foot ? `<div class="gp-foot">${foot}</div>` : ""}
     </div>`;
 
   document.body.appendChild(el);
@@ -462,15 +477,30 @@ async function exchange(ctx) {
       <div class="gp-board"><div class="gp-empty">Loading…</div></div>
     </div>`, {
       width: 1020,
+      topTabs: `
+        <button class="gp-toptab" data-mode="swap">Gift Exchange</button>
+        <button class="gp-toptab" data-mode="__redeem">Redeem Ticket</button>`,
       foot: `<div class="gp-pick" data-pick></div>
              <button class="gc-btn is-primary" data-exchange disabled>Exchange</button>`,
     });
 
-  const root  = body.closest(".gp-frame");
-  const marks = body.querySelector(".gp-marks");
+  const stack  = body.closest(".gp-stack");
+  const root   = body.closest(".gp-frame");
+  const marks  = body.querySelector(".gp-marks");
   const board_ = body.querySelector(".gp-board");
   const pickEl = root.querySelector("[data-pick]");
   const goBtn  = root.querySelector("[data-exchange]");
+
+  stack.querySelectorAll("[data-mode]").forEach((t) =>
+    t.addEventListener("click", () => {
+      const wantRedeem = t.dataset.mode === "__redeem";
+      if (wantRedeem === (S.view === "__redeem")) return;
+      if (wantRedeem) S.lastSet = S.view;
+      S.view = wantRedeem ? "__redeem" : (S.lastSet ?? board[0]?.setName);
+      S.src = S.dst = null;
+      paint();
+    })
+  );
 
   const S = { view: board[0]?.setName ?? "__redeem", src: null, dst: null };
 
@@ -504,24 +534,20 @@ async function exchange(ctx) {
     const redeeming = S.view === "__redeem";
     const set = redeeming ? null : board.find((s) => s.setName === S.view);
 
+    stack.querySelectorAll("[data-mode]").forEach((t) =>
+      t.classList.toggle("is-on", (t.dataset.mode === "__redeem") === redeeming)
+    );
+    marks.style.display = redeeming ? "none" : "";
+    board_.classList.toggle("is-solo", redeeming);
+
     board_.innerHTML = `
       <div class="gp-board-head">
         <div class="gp-board-title">${
           redeeming ? "Ticket Redemption"
                     : `${esc(set?.setName ?? "")} — ${set?.ownedCount ?? 0} of ${set?.pieces.length ?? 0} held`
         }</div>
-        <button class="gp-modaltab${redeeming ? " is-on" : ""}" data-modal>
-          ${redeeming ? "← Gift Exchange" : "★ Ticket Redemption"}
-        </button>
       </div>
       <div class="gp-board-scroll"></div>`;
-
-    board_.querySelector("[data-modal]").addEventListener("click", () => {
-      S.view = redeeming ? (S.lastSet ?? board[0]?.setName) : "__redeem";
-      if (!redeeming) S.lastSet = set?.setName;
-      S.src = S.dst = null;
-      paint();
-    });
 
     const scroll = board_.querySelector(".gp-board-scroll");
     if (redeeming) redeemView(scroll, ctx);
