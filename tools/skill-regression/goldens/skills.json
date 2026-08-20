@@ -302,7 +302,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 35,
+          "damage": 36,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -312,7 +312,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 5
+        "hr": 6
       },
       "skill": "Tafallera",
       "skillType": "Active",

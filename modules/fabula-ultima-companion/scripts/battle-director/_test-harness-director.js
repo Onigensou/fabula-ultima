@@ -105,6 +105,12 @@ async function loadDeps(reuseToken = null) {
     readAffinities: snapshot.readAffinities,
     freezeActionResult: snapshot.freezeActionResult,
     resolveAttackerWeapon: snapshot.resolveAttackerWeapon,
+    // Virtual attacks (Dual Shieldbearer's Twin Shields, Brawling, ...) are
+    // weapon-shaped attack sources exposed by an AE flag rather than by an
+    // equipped item. The live Attack flow offers them as `virtual:<N>` and
+    // Skill COMPUTE reaches them via resolvePrimaryAttackWeapon.
+    resolveVirtualAttacks: snapshot.resolveVirtualAttacks,
+    resolvePrimaryAttackWeapon: snapshot.resolvePrimaryAttackWeapon,
     applyAffinityToDamage: snapshot.applyAffinityToDamage,
     classifyActionIntent: skillIntent.classifyActionIntent,
     findPassiveCandidates: skillEffects.findPassiveCandidates,
@@ -1123,8 +1129,33 @@ const TAG = "[FUCompanion][DirectorTest]";
 // Build an attacker snapshot from a token document, matching the shape
 // snapshotCombatant returns. Used as the synthetic turnSnapshot for
 // COMPUTE — no active combat required.
+// Mirror of live COMPUTE's "WEAPON" sentinel resolution (state-handlers.js).
+// Returns the actionResult fragment { rolledA1, rolledA2, damageType, skillRange }.
+// Keep in lock-step with that block — a divergence here silently mis-scores
+// every weapon-based skill.
+function resolveWeaponSentinels(p, attackerSnap, deps) {
+  const usesWeapon = (v) => String(v ?? "").toUpperCase() === "WEAPON";
+  let a1 = String(p.rolled_atr1 ?? "").toUpperCase();
+  let a2 = String(p.rolled_atr2 ?? "").toUpperCase();
+  let damageType = String(p.type_damage ?? "");
+  let skillRange = String(p.skill_range ?? "");
+  const wants = usesWeapon(p.rolled_atr1) || usesWeapon(p.type_damage) || usesWeapon(p.skill_range);
+  if (!wants) return { rolledA1: a1, rolledA2: a2, damageType, skillRange };
+  // main -> off -> virtual[0]; virtualAttacks is what lets a shield-only build
+  // (Dual Shieldbearer's Twin Shields) resolve at all.
+  const w = attackerSnap?.weapon ?? attackerSnap?.offWeapon ?? attackerSnap?.virtualAttacks?.[0] ?? null;
+  if (!w) warn(`harness: "WEAPON" sentinel set but no attack weapon (incl. virtual) — using fallbacks`);
+  if (a1 === "WEAPON") {
+    // Live falls back to MIG/MIG, never the INS/INS default, for a weapon skill.
+    if (w?.A1) { a1 = w.A1; a2 = w.A2; } else { a1 = "MIG"; a2 = "MIG"; }
+  }
+  if (usesWeapon(damageType)) damageType = w?.damageType ?? "Physical";
+  if (usesWeapon(skillRange)) skillRange = w?.range ?? "Melee";
+  return { rolledA1: a1, rolledA2: a2, damageType, skillRange };
+}
+
 function buildAttackerSnapshot(tokenDoc, deps) {
-  const { readPropNum, attrDieSize, resolveAttackerWeapon } = deps;
+  const { readPropNum, attrDieSize, resolveAttackerWeapon, resolveVirtualAttacks } = deps;
   const actor = tokenDoc?.actor;
   if (!actor) return null;
   return Object.freeze({
@@ -1153,6 +1184,14 @@ function buildAttackerSnapshot(tokenDoc, deps) {
     // (not wrapped in `{ weapon }`). Mirror snapshot.js buildWeaponBundle.
     weapon: resolveAttackerWeapon(actor, { which: "main" }) ?? null,
     offWeapon: resolveAttackerWeapon(actor, { which: "off" }) ?? null,
+    // A weaponless-looking actor may still have a real attack. Blanche equips
+    // two shields and NO weapon, and the harness reported `no_main_weapon` --
+    // which read as "that is her build" and was recorded as such. It is not:
+    // resolveVirtualAttacks(Blanche) returns "Twin Shields" (MIG+MIG, +9), and
+    // the live flow offers it. Carrying it here is what lets the attack path
+    // reach a virtual-weapon build at all.
+    virtualAttacks: Object.freeze(
+      (typeof resolveVirtualAttacks === "function" ? (resolveVirtualAttacks(actor) ?? []) : []).slice()),
   });
 }
 
@@ -1201,12 +1240,19 @@ function buildInitialActionResult(skill, attackerSnap, targetSnaps, deps) {
     // checks vs DEF), both for the hit test and the strike/magic damage class.
     defenseTargetType: String(p.defense_target_type ?? "").toLowerCase(),
     isCheck: !!p.isCheck,
-    rolledA1: String(p.rolled_atr1 ?? "").toUpperCase(),
-    rolledA2: String(p.rolled_atr2 ?? "").toUpperCase(),
+    // Resolve the "WEAPON" sentinel exactly as live COMPUTE does
+    // (state-handlers.js ~L3426): a weapon-based skill inherits its accuracy
+    // pair, damage element and range from the weapon the Attack action reaches
+    // FIRST — main hand -> off hand -> first exposed VIRTUAL attack.
+    //
+    // The harness used to skip this entirely, so the literal string "WEAPON"
+    // leaked into the roll: Blanche's Tafallera rolled A1="WEAPON" (defaulting
+    // to a d8) + A2="INS" for a total of 6 vs defense 8 and reported hit=false.
+    // That reads as a BROKEN SKILL and it is not — in play it rolls Twin
+    // Shields' MIG/MIG. Fails PESSIMISTIC, which is just as wrong as permissive.
+    ...resolveWeaponSentinels(p, attackerSnap, deps),
     checkBonus: Number(p.check_bonus ?? 0) || 0,
     damageBonus: p.damage_bonus ?? 0,
-    damageType: String(p.type_damage ?? ""),
-    skillRange: String(p.skill_range ?? ""),
     skillTarget: String(p.skill_target ?? "").toLowerCase(),
     sourceItemUuid: null,
     descriptionHtml: String(p.description ?? ""),
@@ -2398,9 +2444,33 @@ async function runDirectorAttackCompute({
   } else if (mode === "off") {
     if (!attackerSnap.offWeapon) return { ok: false, reason: "no_off_weapon" };
     queue = [attackerSnap.offWeapon];
+  } else if (String(mode ?? "").startsWith("virtual:")) {
+    // Mirrors the live weapon-mode picker's "virtual:<N>" selection.
+    const idx = Number(String(mode).slice("virtual:".length));
+    const v = attackerSnap.virtualAttacks?.[idx];
+    if (!v) {
+      return { ok: false, reason: "no_such_virtual_attack",
+        available: (attackerSnap.virtualAttacks ?? []).map((x, i) => `virtual:${i} = ${x?.name ?? "?"}`) };
+    }
+    queue = [v];
   } else {
-    if (!attackerSnap.weapon) return { ok: false, reason: "no_main_weapon" };
-    queue = [attackerSnap.weapon];
+    // Fall back to a VIRTUAL attack when neither hand holds a weapon — the same
+    // order snapshot.resolvePrimaryAttackWeapon uses (main -> off -> virtual[0]),
+    // which is what live Skill COMPUTE does. Without this the harness reported
+    // `no_main_weapon` for any virtual-weapon build and its skills read as
+    // broken; Blanche's whole kit was mis-scored that way.
+    const fallback = attackerSnap.weapon
+      ?? attackerSnap.offWeapon
+      ?? attackerSnap.virtualAttacks?.[0]
+      ?? null;
+    if (!fallback) {
+      return { ok: false, reason: "no_main_weapon",
+        hint: "No main hand, no off hand, and no exposed virtual attack. Check resolveVirtualAttacks(actor)." };
+    }
+    if (!attackerSnap.weapon && fallback?.name) {
+      log(`harness: no equipped weapon — using virtual attack "${fallback.name}"`);
+    }
+    queue = [fallback];
   }
 
   const synthDirector = {
