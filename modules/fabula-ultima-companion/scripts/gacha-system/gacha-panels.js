@@ -20,9 +20,10 @@ import { listSetBoard } from "./gacha-exchange.js";
 import { request } from "./gacha-net.js";
 import { ensureTheme } from "./gacha-theme.js";
 
-const PANEL_ID = "gacha-panel";
-const TIP_ID   = "gacha-tip";
-const STYLE_ID = "gacha-panel-style";
+const PANEL_ID   = "gacha-panel";
+const TIP_ID     = "gacha-tip";
+const CONFIRM_ID = "gacha-confirm";
+const STYLE_ID   = "gacha-panel-style";
 
 // The house Zenit coin, shared with the shop, sell and refinement windows so
 // currency reads identically everywhere. Icon only — never a "z" suffix.
@@ -329,10 +330,43 @@ const CSS = `
 }
 .gp-warn.is-block { color: #7c2718; }
 
-/* ── purchase confirmation ─────────────────────────────────────────────── */
-/* Deliberately NOT scoped under #gacha-panel: Foundry's Dialog renders into its
-   own application window elsewhere in the DOM. */
-.gh-confirm { font-family: 'Lucida Console', 'Courier New', monospace; color: var(--gc-ink); }
+/* ── confirmation modal ────────────────────────────────────────────────── */
+/* Ours, not Foundry's Dialog. A core dialog drops a grey Windows-ish frame in
+   the middle of a parchment screen and breaks the illusion; this keeps every
+   surface in the system on the same material. */
+#${CONFIRM_ID} {
+  position: fixed; inset: 0; z-index: 95; pointer-events: auto;
+  background: rgba(30,20,8,.55); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Lucida Console', 'Courier New', monospace; color: var(--gc-ink);
+  animation: gp-fade .14s ease-out both;
+}
+#${CONFIRM_ID} * { box-sizing: border-box; }
+#${CONFIRM_ID} img { border: 0 !important; outline: 0 !important; background: transparent; }
+.gcf-frame {
+  width: min(520px, 92vw); display: flex; flex-direction: column;
+  background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel-2));
+  border: 2px solid var(--gc-line-3); border-radius: var(--gc-radius-lg);
+  box-shadow: var(--gc-shadow);
+  animation: gcf-in .18s cubic-bezier(.2,.8,.3,1) both;
+}
+@keyframes gcf-in { from { opacity: 0; transform: scale(.95) translateY(8px); } }
+.gcf-head {
+  padding: 13px 18px; border-bottom: 2px solid var(--gc-line-2);
+  background: linear-gradient(180deg, var(--gc-panel), var(--gc-panel-2));
+  border-radius: 10px 10px 0 0;
+  font-size: 13px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--gc-title); font-weight: 700;
+}
+.gcf-body { padding: 16px 18px; }
+.gcf-foot {
+  padding: 12px 18px; border-top: 2px solid var(--gc-line-2);
+  background: var(--gc-panel); border-radius: 0 0 10px 10px;
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* ── purchase confirmation body ────────────────────────────────────────── */
+.gh-confirm { color: var(--gc-ink); }
 .gh-head { font-size: 14px; margin-bottom: 10px; }
 .gh-head b, .gh-line b { color: var(--gc-title); }
 .gh-line {
@@ -398,6 +432,69 @@ function ensureStyle() {
 }
 
 const esc = (s) => foundry.utils.escapeHTML?.(String(s ?? "")) ?? String(s ?? "");
+
+// ── Confirmation modal ──────────────────────────────────────────────────────
+
+/**
+ * A yes/no gate in the system's own material.
+ *
+ * Replaces Dialog.confirm everywhere in the gacha system: a core Foundry dialog
+ * drops a grey application frame into the middle of a parchment screen, which
+ * breaks the illusion at exactly the moment the player is being asked to commit
+ * to something irreversible.
+ *
+ * @returns {Promise<boolean>}
+ */
+function confirmModal({ title, body, yes = "Confirm", no = "Cancel" }) {
+  ensureStyle();
+  document.getElementById(CONFIRM_ID)?.remove();
+
+  return new Promise((resolve) => {
+    const el = document.createElement("div");
+    el.id = CONFIRM_ID;
+    el.innerHTML = `
+      <div class="gcf-frame">
+        <div class="gcf-head">${esc(title)}</div>
+        <div class="gcf-body">${body}</div>
+        <div class="gcf-foot">
+          <button class="gc-btn" data-no>${esc(no)}</button>
+          <button class="gc-btn is-primary" data-yes>${esc(yes)}</button>
+        </div>
+      </div>`;
+
+    document.body.appendChild(el);
+
+    let settled = false;
+    const done = (v) => {
+      if (settled) return;
+      settled = true;
+      window.removeEventListener("keydown", onKey, true);
+      el.remove();
+      resolve(v);
+    };
+
+    // The panel underneath also listens for Escape on window. Capture phase
+    // alone is not enough: a listener registered on window still fires
+    // AT_TARGET for anything dispatched directly at window, where phase no
+    // longer orders them. stopImmediatePropagation covers both cases, so
+    // Escape dismisses this prompt without closing the panel behind it.
+    const onKey = (ev) => {
+      if (ev.key !== "Escape" && ev.key !== "Enter") return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      done(ev.key === "Enter");
+    };
+    window.addEventListener("keydown", onKey, true);
+
+    el.addEventListener("click", (ev) => { if (ev.target === el) done(false); });
+    el.querySelector("[data-no]").addEventListener("click", () => done(false));
+    el.querySelector("[data-yes]").addEventListener("click", () => done(true));
+    el.querySelector("[data-yes]").focus();
+  });
+}
+
+export function closeConfirm() { document.getElementById(CONFIRM_ID)?.remove(); }
 
 let _ctx = null;
 
@@ -681,22 +778,21 @@ async function confirmPurchase({ n, total, fromBuyer, fromStash, buyerName }) {
     <div class="gh-hako">
       <img class="gh-hako-img" src="${HAKO_SRC}" alt="Hako">
       <div class="gh-bubble">
-        Ahh — that's more than you're carrying, friend.
-        Hako will take the rest from the <b>party's</b> purse, yes?
-        Everyone shares in the fortune. Everyone shares in the cost.
+        Ahh ― looks like that's more than you can afford, Hako will take the
+        rest from the <b>party's</b> purse, yes? Everyone shares in the fortune!
       </div>
     </div>` : "";
 
-  return Dialog.confirm({
+  return confirmModal({
     title: "Confirm Purchase",
-    content: `
+    yes: "Purchase",
+    body: `
       <div class="gh-confirm">
         <div class="gh-head">Buy <b>${n}</b> Hako Coupon${n === 1 ? "" : "s"}
           for ${COIN_ICON}<b>${total.toLocaleString()}</b>?</div>
         ${lines}
         ${hako}
       </div>`,
-    defaultYes: false,
   });
 }
 
@@ -838,10 +934,13 @@ async function exchange(ctx) {
     // ── Ticket redemption ────────────────────────────────────────────────
     if (S.mode === "redeem") {
       if (!S.dstUuid) return;
-      const ok = await Dialog.confirm({
-        title: "Redeem ticket?",
-        content: `<p>Spend one <b>${esc(TICKET_NAME)}</b> on <b>${esc(S.dst)}</b>?</p>`,
-        defaultYes: false,
+      const ok = await confirmModal({
+        title: "Redeem Ticket",
+        yes: "Redeem",
+        body: `<div class="gh-confirm">
+                 <div class="gh-head">Spend one <b>${esc(TICKET_NAME)}</b>
+                   on <b>${esc(S.dst)}</b>?</div>
+               </div>`,
       });
       if (!ok) return;
 
@@ -868,15 +967,19 @@ async function exchange(ctx) {
     if (!src?.owned || !dst) return;
 
     const extra = src.owned.warnings?.length
-      ? `<p style="color:#8a4b16">${src.owned.warnings.map(esc).join("<br>")}</p>` : "";
+      ? `<div class="gh-line is-stash">${src.owned.warnings.map(esc).join("<br>")}</div>` : "";
 
-    const ok = await Dialog.confirm({
+    const ok = await confirmModal({
       title: "Confirm Exchange",
-      content: `
-        <p>Trade <b>${esc(src.name)}</b> for <b>${esc(dst.name)}</b>?</p>
-        ${extra}
-        <p><b>"${esc(src.name)}" will be destroyed permanently.</b> This cannot be undone.</p>`,
-      defaultYes: false,
+      yes: "Exchange",
+      body: `
+        <div class="gh-confirm">
+          <div class="gh-head">Trade <b>${esc(src.name)}</b> for <b>${esc(dst.name)}</b>?</div>
+          ${extra}
+          <div class="gh-line is-stash">
+            “${esc(src.name)}” will be <b>destroyed permanently</b>. This cannot be undone.
+          </div>
+        </div>`,
     });
     if (!ok) return;
 
