@@ -680,7 +680,6 @@ function paintRedeemBoard(host, set, S, ticket, tickets, onPick) {
              data-tip-sub="${esc(live ? "costs one ticket" : "none held")}">
           <img src="${ticket.img}" alt="">
         </div>
-        <div class="cap">${live ? "1 TICKET" : "NONE"}</div>
       </div>
       <div class="gp-arrow">→</div>
       <div class="gp-swaprow-dst">
