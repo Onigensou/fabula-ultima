@@ -156,7 +156,7 @@ export async function executeWish({ bannerId, count, requesterUserId, onDecided 
   //
   // Safe because the only thing that MUST be atomic with the roll -- spending
   // the coupons -- already happened above.
-  try { onDecided?.({ bannerId, bannerName: banner.name, results }); }
+  try { onDecided?.({ bannerId, bannerName: banner.title, results }); }
   catch (e) { warn("onDecided handler threw", e); }
 
   // 4. Grant — collapse duplicates so a x10 of the same 3-star is one write.
@@ -168,12 +168,12 @@ export async function executeWish({ bannerId, count, requesterUserId, onDecided 
   // 6. ONE chat message for the whole batch — the durable receipt. The old
   // system spent 8 document updates per pull animating in chat; the animation
   // is now a local overlay and chat is left to do the one job it is good at.
-  await postReceipt(banner.name, results, requesterUserId);
+  await postReceipt(banner.title, results, requesterUserId);
 
   const pool = readPool(actor);
-  log(`Wish x${size} on "${banner.name}" →`, results.map((r) => `${RARITY[r.rarity].label} ${r.name}`));
+  log(`Wish x${size} on "${banner.title}" →`, results.map((r) => `${RARITY[r.rarity].label} ${r.name}`));
 
-  return { ok: true, bannerId, bannerName: banner.name, results, pool, requesterUserId };
+  return { ok: true, bannerId, bannerName: banner.title, results, pool, requesterUserId };
 }
 
 async function postReceipt(bannerName, results, requesterUserId) {

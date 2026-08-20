@@ -27,7 +27,7 @@
 // ============================================================================
 
 import { GACHA, TICKET_NAME, log, warn } from "./gacha-const.js";
-import { listBanners, resolveTableItems } from "./gacha-banners.js";
+import { listBanners, resolveTableItems, imgOf } from "./gacha-banners.js";
 import { partyActor, partyMembers, spendTicket, readPool } from "./gacha-state.js";
 import { reconcileSetBonuses } from "../battle-director/set-bonus.js";
 
@@ -73,22 +73,59 @@ export function inspectDestructive(item) {
 }
 
 // ── The gacha "set universe" ────────────────────────────────────────────────
-// Built from the banner tables rather than scanning every world item, so only
-// gacha-obtainable gear is swappable.
+//
+// Two different questions, deliberately answered from two different sources:
+//
+//   WHICH SETS are in play      → the sets named by the banner tables, so only
+//                                 gacha-obtainable gear is swappable.
+//   WHICH PIECES a set contains → every world item carrying that `set_name`.
+//
+// The second used to be read from the banner tables too, which quietly made a
+// set piece invisible if it was not itself a table row. `set_name` + `isSet` is
+// the canonical membership rule — the same one the Equipment Set engine uses
+// (see getEquipmentSets in battle-director/set-bonus.js, which discovers set
+// DEFINITIONS by set_name and leaves membership to that pairing).
 
-function setUniverse() {
-  const bySet = new Map(); // set_name -> Map(itemId -> {item,name,img,uuid})
+const SLOT_PRIORITY = ["weapon", "armor", "shield", "accessory"];
+const slotRank = (item) => {
+  const i = SLOT_PRIORITY.indexOf(String(propsOf(item).item_type ?? "").trim().toLowerCase());
+  return i === -1 ? SLOT_PRIORITY.length : i;
+};
 
+/** Set names reachable through some banner. */
+function gachaSetNames() {
+  const names = new Set();
   for (const banner of listBanners()) {
     for (const entry of resolveTableItems(banner.table)) {
       const p = propsOf(entry.item);
       if (p.isSet !== true) continue;
-      const setName = String(p.set_name ?? "").trim();
-      if (!setName) continue;
-
-      if (!bySet.has(setName)) bySet.set(setName, new Map());
-      bySet.get(setName).set(entry.item.id, entry);
+      const s = String(p.set_name ?? "").trim();
+      if (s) names.add(s);
     }
+  }
+  return names;
+}
+
+/** set_name -> canonical world pieces, slot-sorted. */
+function setUniverse() {
+  const wanted = gachaSetNames();
+  const bySet = new Map();
+
+  for (const it of game.items ?? []) {
+    const p = propsOf(it);
+    if (p.isSet !== true) continue;
+    const setName = String(p.set_name ?? "").trim();
+    if (!setName || !wanted.has(setName)) continue;
+
+    if (!bySet.has(setName)) bySet.set(setName, new Map());
+    // Keyed by NAME: an owned copy is a clone with a different id, so name is
+    // the only stable identity between a template and an inventory instance.
+    bySet.get(setName).set(it.name, { item: it, name: it.name, img: it.img, uuid: it.uuid });
+  }
+
+  for (const [k, m] of bySet) {
+    bySet.set(k, new Map([...m.entries()].sort((a, b) =>
+      slotRank(a[1].item) - slotRank(b[1].item) || a[0].localeCompare(b[0]))));
   }
 
   return bySet;
@@ -103,7 +140,7 @@ export function redeemCatalogue() {
     for (const entry of resolveTableItems(banner.table)) {
       if (seen.has(entry.item.id)) continue;
       seen.add(entry.item.id);
-      out.push({ ...entry, bannerName: banner.name, setName: String(propsOf(entry.item).set_name ?? "").trim() });
+      out.push({ ...entry, bannerName: banner.title, setName: String(propsOf(entry.item).set_name ?? "").trim() });
     }
   }
 
@@ -111,46 +148,57 @@ export function redeemCatalogue() {
 }
 
 /**
- * Every swappable piece the party holds, across the party stash AND each
- * member's inventory, with the alternatives it could become.
+ * The whole Gift Exchange board: every gacha set, every piece in it, and which
+ * of those pieces the party actually holds.
+ *
+ * ALL sets are returned, not just ones the party has a piece of — an empty set
+ * tab doubles as a "what could we work toward" view.
+ *
+ * @returns {Promise<Array<{setName, pieces, ownedCount}>>}
+ *   pieces: [{ name, img, uuid, owned: null | {ownerActorUuid, ownerName,
+ *              itemId, warnings, blocking} }]
  */
-export async function listSwappable() {
+export async function listSetBoard() {
   const party = await partyActor();
   if (!party) return [];
 
   const universe = setUniverse();
   const holders = [party, ...partyMembers(party)];
-  const out = [];
 
+  // name -> first held instance. First wins: two copies of one piece are still
+  // one trade, and the swap only ever consumes a single document.
+  const held = new Map();
   for (const holder of holders) {
     for (const item of holder.items ?? []) {
       const p = propsOf(item);
-      if (p.isSet !== true) continue;
-
-      const setName = String(p.set_name ?? "").trim();
-      const set = universe.get(setName);
-      if (!set) continue;
-
-      const alternatives = [...set.values()]
-        .filter((e) => e.item.name !== item.name)
-        .map((e) => ({ name: e.name, img: e.img, uuid: e.uuid }));
-
-      if (!alternatives.length) continue;
-
-      out.push({
-        ownerActorUuid: holder.uuid,
-        ownerName: holder.name,
-        itemId: item.id,
-        name: item.name,
-        img: item.img,
-        setName,
-        alternatives,
-        ...inspectDestructive(item),
-      });
+      if (p.isSet !== true || held.has(item.name)) continue;
+      held.set(item.name, { holder, item });
     }
   }
 
-  return out;
+  const board = [];
+  for (const [setName, members] of universe) {
+    const pieces = [...members.values()].map((e) => {
+      const hit = held.get(e.name);
+      return {
+        name: e.name,
+        img: imgOf(e),
+        uuid: e.uuid,
+        owned: hit
+          ? {
+              ownerActorUuid: hit.holder.uuid,
+              ownerName: hit.holder.name,
+              itemId: hit.item.id,
+              ...inspectDestructive(hit.item),
+            }
+          : null,
+      };
+    });
+
+    board.push({ setName, pieces, ownedCount: pieces.filter((p) => p.owned).length });
+  }
+
+  return board.sort((a, b) => b.ownedCount - a.ownedCount || a.setName.localeCompare(b.setName));
 }
 
 // ── Gift Exchange ───────────────────────────────────────────────────────────
