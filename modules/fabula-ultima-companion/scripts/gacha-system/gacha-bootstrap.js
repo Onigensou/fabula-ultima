@@ -12,7 +12,7 @@
 import { GACHA, log } from "./gacha-const.js";
 import * as Net from "./gacha-net.js";
 import * as UI from "./gacha-ui.js";
-import { playReveal, stop as stopFx } from "./gacha-fx.js";
+import { playReveal, beginReveal, stop as stopFx } from "./gacha-fx.js";
 import { closePanel } from "./gacha-panels.js";
 
 function isGachaScene(scene) {
@@ -33,20 +33,45 @@ function sync(scene) {
   else leave();
 }
 
-Hooks.once("ready", () => {
+let _installed = false;
+
+function install() {
+  if (_installed) return;
+  _installed = true;
+
   Net.setup({
+    // Another client pressed Wish — launch our streak with theirs. Spectators
+    // included: watching is the point of a gacha screen.
+    onStart:  (payload) => { if (UI.isOpen()) beginReveal(payload?.count ?? 1); },
     onReveal: (payload) => playReveal(payload),
     onPool:   (payload) => UI.refreshPool(payload?.pool),
   });
+
+  // Small diagnostic surface — the reveal handler living behind a hook that may
+  // already have fired is exactly the kind of failure that looks like "the
+  // animation is broken" from the outside.
+  const api = (globalThis.FUCompanion ??= {}).api ??= {};
+  api.gacha = { installed: true, isOpen: UI.isOpen, replay: playReveal };
 
   // A reload while already standing on the scene still has to open the screen —
   // canvasReady has usually fired before this point.
   if (isGachaScene(canvas?.scene)) enter();
 
   log("Ready.");
-});
+}
+
+// `Hooks.once("ready")` never fires for a module evaluated after ready has
+// already gone by, which silently left the reveal handler uninstalled while the
+// overlay itself still opened from canvasReady — the screen worked, the
+// animation simply never played. Check the flag first and only wait if we must.
+if (globalThis.game?.ready) install();
+else Hooks.once("ready", install);
 
 Hooks.on("canvasReady", () => sync(canvas?.scene));
+
+// Keep the overlay inside Foundry's chrome when that chrome moves.
+Hooks.on("collapseSidebar", () => { if (UI.isOpen()) setTimeout(() => UI.relayout(), 260); });
+window.addEventListener("resize", () => { if (UI.isOpen()) UI.relayout(); });
 
 Hooks.on("canvasTearDown", () => leave());
 

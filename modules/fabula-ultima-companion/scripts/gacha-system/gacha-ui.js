@@ -20,15 +20,23 @@
 import { GACHA, RARITY, PITY_FIVE, log } from "./gacha-const.js";
 import { listBanners } from "./gacha-banners.js";
 import { partyActor, readPool, readPity, isPartyMemberClient, couponCost } from "./gacha-state.js";
-import { request } from "./gacha-net.js";
+import { request, announceStart } from "./gacha-net.js";
+import { beginReveal, stop as stopFx } from "./gacha-fx.js";
 import { renderPanel } from "./gacha-panels.js";
 
 const ROOT_ID  = "gacha-ui";
 const STYLE_ID = "gacha-ui-style";
 
 const CSS = `
+/* The overlay lives INSIDE Foundry's chrome, not on top of it. The insets are
+   measured from the real #ui-* elements at render time (see applyInsets), so
+   the screen reflows when the sidebar collapses or the hotbar is hidden
+   instead of hiding its own buttons under them. */
 #${ROOT_ID} {
-  position: fixed; inset: 0; z-index: 60;
+  position: fixed;
+  top: var(--gu-top, 0px); right: var(--gu-right, 0px);
+  bottom: var(--gu-bottom, 0px); left: var(--gu-left, 0px);
+  z-index: 60;
   pointer-events: none;
   font-family: 'Lucida Console', 'Courier New', monospace;
   color: #e9edf7; user-select: none;
@@ -154,6 +162,22 @@ const CSS = `
 }
 @keyframes gu-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
 
+/* A banner whose art is missing still has to be playable — show a card with
+   its name rather than a broken image. The tab keeps its label regardless. */
+.gu-art-missing {
+  width: 268px; height: 467px; border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; padding: 20px; text-align: center;
+  background: linear-gradient(180deg, rgba(34,40,62,.95), rgba(16,19,32,.95));
+  border: 1px dashed rgba(150,165,200,.45);
+  animation: gu-in .32s ease-out both;
+}
+.gu-art-missing-name { font-size: 16px; letter-spacing: 2px; color: #f2d98a; }
+.gu-art-missing-note {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(200,210,232,.5);
+}
+
 .gu-toast {
   position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%);
   padding: 9px 18px; border-radius: 6px; font-size: 12px; letter-spacing: 1px;
@@ -169,6 +193,55 @@ function ensureStyle() {
   s.id = STYLE_ID;
   s.textContent = CSS;
   document.head.appendChild(s);
+}
+
+/**
+ * Measure Foundry's chrome and keep the overlay inside it.
+ *
+ * Without this the wish buttons sit under the right toolbar, the nav buttons
+ * under the hotbar and players list, and the banner tabs under the scene
+ * navigation — all of which the first live boot showed happening.
+ *
+ * Measured rather than hard-coded: the sidebar collapses, the hotbar can be
+ * hidden, and a GM's chrome is not a player's.
+ */
+function applyInsets() {
+  if (!S.el) return;
+
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const pad = 12;
+
+  const rect = (sel) => {
+    const n = document.querySelector(sel);
+    if (!n) return null;
+    const r = n.getBoundingClientRect();
+    return (r.width > 0 && r.height > 0 && getComputedStyle(n).visibility !== "hidden") ? r : null;
+  };
+
+  const top    = rect("#ui-top");
+  const left   = rect("#ui-left");
+  const right  = rect("#sidebar") ?? rect("#ui-right");
+  const bottom = rect("#ui-bottom");
+
+  // The module parks its own floating round buttons (clock, EXP, combat,
+  // custom resources, ...) in a column against the right edge. They are not
+  // part of Foundry's #ui-* chrome, so measure them by convention -- every one
+  // is id="oni-*" -- rather than naming each and going stale the next time one
+  // is added.
+  let rightEdge = right ? right.left : vw;
+  for (const n of document.querySelectorAll('[id^="oni-"]')) {
+    if (n.closest(`#${ROOT_ID}`)) continue;
+    const r = n.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) continue;
+    if (r.left < vw * 0.7) continue;      // right-edge furniture only
+    rightEdge = Math.min(rightEdge, r.left);
+  }
+
+  S.el.style.setProperty("--gu-top",    `${Math.max(pad, (top?.bottom ?? 0) + pad)}px`);
+  S.el.style.setProperty("--gu-left",   `${Math.max(pad, (left?.right ?? 0) + pad)}px`);
+  S.el.style.setProperty("--gu-right",  `${Math.max(pad, vw - rightEdge + pad)}px`);
+  S.el.style.setProperty("--gu-bottom", `${Math.max(pad, bottom ? vh - bottom.top + pad : pad)}px`);
 }
 
 // ── State ───────────────────────────────────────────────────────────────────
@@ -266,7 +339,11 @@ function render() {
     </div>
 
     <div class="gu-stage">
-      <img class="gu-art" src="${banner.art}" alt="${esc(banner.name)}">
+      <img class="gu-art" src="${banner.art}" alt="${esc(banner.name)}" data-art>
+      <div class="gu-art-missing" hidden>
+        <div class="gu-art-missing-name">${esc(banner.name)}</div>
+        <div class="gu-art-missing-note">banner art not found</div>
+      </div>
     </div>
 
     <div class="gu-nav gu-on">
@@ -282,8 +359,12 @@ function render() {
       </div>` : ""}
   `;
 
+  applyInsets();
   bind(banner);
 }
+
+/** Re-measure without rebuilding the DOM (sidebar collapse, window resize). */
+export function relayout() { applyInsets(); }
 
 function wishBtn(n, couponImg) {
   const off = S.pool.coupons < n || S.busy;
@@ -296,6 +377,15 @@ function wishBtn(n, couponImg) {
 
 function bind(banner) {
   const el = S.el;
+
+  const art = el.querySelector("[data-art]");
+  if (art) {
+    art.addEventListener("error", () => {
+      art.hidden = true;
+      const ph = el.querySelector(".gu-art-missing");
+      if (ph) ph.hidden = false;
+    }, { once: true });
+  }
 
   el.querySelectorAll(".gu-tab").forEach((t) =>
     t.addEventListener("click", () => {
@@ -320,6 +410,13 @@ async function wish(count) {
   S.busy = true;
   render();
 
+  // Launch the streak on the click, not on the answer. The engine takes ~2s of
+  // document writes on this world, and waiting for it put dead air on the one
+  // interaction that has to feel immediate. The stars fly grey until the
+  // outcome lands and colours them.
+  beginReveal(count);
+  announceStart(count);
+
   const res = await request(GACHA.MSG.WISH_REQ, {
     bannerId: S.bannerId,
     count,
@@ -329,6 +426,7 @@ async function wish(count) {
   S.busy = false;
 
   if (!res?.ok) {
+    stopFx();                       // never strand the overlay on a failure
     toast(failureText(res), true);
   } else if (res.pool) {
     S.pool = res.pool;

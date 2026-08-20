@@ -43,21 +43,24 @@ const RESULT_TYPES = new Set([
 
 let _onReveal = null;
 let _onPool = null;
+let _onStart = null;
 
 /**
  * @param {object} handlers
  * @param {(payload:object)=>void} handlers.onReveal  play the animation
  * @param {(payload:object)=>void} handlers.onPool    refresh the currency UI
  */
-export function setup({ onReveal, onPool } = {}) {
+export function setup({ onReveal, onPool, onStart } = {}) {
   _onReveal = onReveal ?? null;
   _onPool = onPool ?? null;
+  _onStart = onStart ?? null;
 
   game.socket.on(GACHA.CHANNEL, async (payload) => {
     if (!payload || typeof payload !== "object") return;
     const { type } = payload;
 
     // ── Broadcasts: every client, spectators included ────────────────────
+    if (type === GACHA.MSG.WISH_START) { _onStart?.(payload); return; }
     if (type === GACHA.MSG.REVEAL) { _onReveal?.(payload); return; }
     if (type === GACHA.MSG.POOL_UPDATE) { _onPool?.(payload); return; }
 
@@ -86,7 +89,7 @@ export function setup({ onReveal, onPool } = {}) {
 async function handleRequest(route, payload) {
   let result;
   try {
-    result = await route.run(payload.data ?? {});
+    result = await route.run({ ...(payload.data ?? {}), onDecided: publishReveal });
   } catch (e) {
     warn("Handler threw:", e);
     result = { ok: false, reason: "error", message: String(e?.message ?? e) };
@@ -101,18 +104,6 @@ async function handleRequest(route, payload) {
 
   if (!result?.ok) return;
 
-  // A wish is the only thing that animates; everything else just moves numbers.
-  if (route.result === GACHA.MSG.WISH_RESULT) {
-    emit({
-      type: GACHA.MSG.REVEAL,
-      bannerId: result.bannerId,
-      bannerName: result.bannerName,
-      results: result.results,
-      byUserId: payload.data?.requesterUserId ?? payload.fromUserId,
-    });
-    _onReveal?.({ ...result, byUserId: payload.fromUserId }); // GM sees it too
-  }
-
   if (result.pool) {
     emit({ type: GACHA.MSG.POOL_UPDATE, pool: result.pool });
     _onPool?.({ pool: result.pool });
@@ -122,6 +113,27 @@ async function handleRequest(route, payload) {
 function emit(msg) {
   try { game.socket.emit(GACHA.CHANNEL, msg); }
   catch (e) { warn("emit failed", e); }
+}
+
+/**
+ * Tell every other client a wish just started, so their streak launches with
+ * the roller's rather than after the GM round-trip. Fire-and-forget: this is
+ * presentation only and carries no outcome.
+ */
+export function announceStart(count) {
+  emit({ type: GACHA.MSG.WISH_START, count, byUserId: game.user.id });
+}
+
+/**
+ * Publish a decided outcome to every client, including this one.
+ *
+ * Called by the engine the moment the roll resolves — deliberately BEFORE the
+ * grants and pity writes finish, so the reveal is not held hostage to several
+ * seconds of document I/O.
+ */
+function publishReveal({ bannerId, bannerName, results }) {
+  emit({ type: GACHA.MSG.REVEAL, bannerId, bannerName, results, byUserId: game.user.id });
+  _onReveal?.({ bannerId, bannerName, results, byUserId: game.user.id });
 }
 
 /**
@@ -136,18 +148,20 @@ export async function request(reqType, data) {
   if (!route) return { ok: false, reason: "unknown_request" };
 
   if (isPrimaryGM()) {
-    const result = await route.run(data);
+    const result = await route.run({ ...data, onDecided: publishReveal });
 
-    if (result?.ok && route.result === GACHA.MSG.WISH_RESULT) {
-      emit({
-        type: GACHA.MSG.REVEAL,
-        bannerId: result.bannerId,
-        bannerName: result.bannerName,
-        results: result.results,
-        byUserId: game.user.id,
-      });
-      _onReveal?.({ ...result, byUserId: game.user.id });
-    }
+    // Diagnostic breadcrumb. This path threads a request through the engine,
+    // a socket broadcast and a local handler; when the reveal does not appear
+    // this says which of the three was missing.
+    globalThis.__gachaLastRequest = {
+      reqType, direct: true, ok: result?.ok ?? false,
+      reason: result?.reason ?? null,
+      hadOnReveal: !!_onReveal,
+      resultCount: Array.isArray(result?.results) ? result.results.length : null,
+      at: new Date().toISOString(),
+    };
+
+    // The reveal already went out from the engine's onDecided hook.
     if (result?.pool) {
       emit({ type: GACHA.MSG.POOL_UPDATE, pool: result.pool });
       _onPool?.({ pool: result.pool });

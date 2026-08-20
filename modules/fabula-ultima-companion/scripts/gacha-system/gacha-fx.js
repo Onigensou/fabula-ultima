@@ -62,6 +62,10 @@ const CSS = `
 /* ── streak ─────────────────────────────────────────────────────────────── */
 .gfx-sky { position: absolute; inset: 0; pointer-events: none; }
 
+/* The star flies GREY and stays grey. The warm is a separate animation added
+   by class once the outcome is known -- that split is what lets the streak
+   start the instant the button is clicked, while the engine is still writing
+   documents, exactly as the v2.7 macro showed a grey star before it knew. */
 .gfx-star {
   position: absolute; top: 0; left: 0;
   width: 6px; height: 6px; border-radius: 50%;
@@ -69,12 +73,14 @@ const CSS = `
   box-shadow: 0 0 12px 4px rgba(207,214,230,0.85);
   opacity: 0;
   transform: translate3d(var(--x0), var(--y0), 0);
+  animation: gfx-fly ${FX.STREAK}ms cubic-bezier(.22,.61,.36,1) forwards;
+  animation-delay: calc(var(--i) * ${FX.STAR_STAGGER}ms);
+}
+.gfx-star.is-warm {
   animation:
     gfx-fly ${FX.STREAK}ms cubic-bezier(.22,.61,.36,1) forwards,
     gfx-warm ${FX.WARM}ms ease-in-out forwards;
-  animation-delay:
-    calc(var(--i) * ${FX.STAR_STAGGER}ms),
-    calc(${FX.STREAK}ms + var(--i) * ${FX.STAR_STAGGER}ms);
+  animation-delay: calc(var(--i) * ${FX.STAR_STAGGER}ms), calc(var(--i) * ${FX.STAR_STAGGER}ms);
 }
 .gfx-star::after {
   content: ""; position: absolute; right: 3px; top: 50%;
@@ -112,6 +118,15 @@ const CSS = `
   align-items: center; justify-content: center;
   max-width: min(1100px, 88vw);
   z-index: 2;
+}
+/* A ten-pull reads as a deliberate 5+5 block, not whatever the wrap happens to
+   produce. Falls back to flex wrapping below the width two rows need. */
+.gfx-results.is-grid {
+  display: grid; grid-template-columns: repeat(5, 118px);
+  justify-content: center;
+}
+@media (max-width: 780px) {
+  .gfx-results.is-grid { grid-template-columns: repeat(3, 118px); }
 }
 .gfx-card {
   width: 118px; padding: 12px 8px 10px;
@@ -204,39 +219,40 @@ const rgba = (hex, a) => {
 // ── Public ──────────────────────────────────────────────────────────────────
 
 /**
- * Play a reveal. Safe to call on any client; spectators see the same thing.
- * @param {{bannerName:string, results:Array<{rarity,name,img,uuid}>}} payload
+ * Start the sequence BEFORE the outcome is known.
+ *
+ * The engine needs a couple of seconds on this world — spend coupons, grant
+ * items, write pity, post the receipt, each an awaited document write on a
+ * system whose prepareData is expensive. Waiting for all that before showing
+ * anything put two seconds of dead air on the most important click in the
+ * system. So the streak launches immediately in grey and the outcome is folded
+ * in when it lands, which is also exactly how the v2.7 macro read.
+ *
+ * @param {number} count how many stars to launch
  */
-export async function playReveal({ bannerName, results } = {}) {
-  if (!Array.isArray(results) || !results.length) return;
-
-  // A hidden or inactive tab renders nothing — the chat receipt still lands,
-  // so the player misses the show, not the outcome.
+export function beginReveal(count) {
+  const n = Math.max(1, Math.floor(Number(count) || 1));
   if (globalThis.FUCompanion?.api?.vfxSuppressed?.()) return;
 
   stop(); // never stack two sequences
-
   ensureStyle();
 
-  const best  = bestRarity(results.map((r) => r.rarity));
-  const color = RARITY[best].color;
   const state = { skip: false, done: false, timers: [], pending: [] };
+  let resolveResult;
+  const resultPromise = new Promise((r) => { resolveResult = r; });
 
   const el = document.createElement("div");
   el.id = ROOT_ID;
-  el.style.setProperty("--rc", color);
-  el.style.setProperty("--rcGlow", rgba(color, 0.55));
 
   const sky = document.createElement("div");
   sky.className = "gfx-sky";
-  sky.innerHTML = results.map((_, i) => starHTML(i, results.length)).join("");
+  sky.innerHTML = Array.from({ length: n }, (_, i) => starHTML(i, n)).join("");
 
   const burst = document.createElement("div");
   burst.className = "gfx-burst";
 
   const label = document.createElement("div");
   label.className = "gfx-banner-label";
-  label.textContent = bannerName ?? "";
 
   const skip = document.createElement("div");
   skip.className = "gfx-skip";
@@ -245,23 +261,85 @@ export async function playReveal({ bannerName, results } = {}) {
   el.append(sky, burst, label, skip);
   document.body.appendChild(el);
 
-  const onSkip = () => { state.skip = true; flush(state); finish(el, state, results, true); };
-  const onKey = (ev) => { if (ev.key === "Escape") onSkip(); };
-  state.onSkip = onSkip;
-  el.addEventListener("click", onSkip);
+  const onKey = (ev) => { if (ev.key === "Escape") state.onSkip?.(); };
   window.addEventListener("keydown", onKey);
 
-  _active = { state, el, cleanup: () => window.removeEventListener("keydown", onKey) };
+  _active = {
+    state, el, resolveResult,
+    cleanup: () => window.removeEventListener("keydown", onKey),
+  };
 
-  // ── sequence ──
+  run(el, sky, burst, label, state, resultPromise, n);
+  return _active;
+}
+
+/** Feed the outcome into a running sequence, or run the whole thing standalone. */
+export function playReveal(payload = {}) {
+  const { results } = payload;
+  if (!Array.isArray(results) || !results.length) return;
+  if (globalThis.FUCompanion?.api?.vfxSuppressed?.()) return;
+
+  // A sequence already in flight (this client clicked, or a WISH_START
+  // broadcast started one) just needs the answer.
+  if (_active && !_active.state.done && _active.resolveResult) {
+    const resolve = _active.resolveResult;
+    _active.resolveResult = null;
+    resolve(payload);
+    return;
+  }
+
+  // No sequence pending — run begin+resolve back to back.
+  const handle = beginReveal(results.length);
+  if (!handle) return;
+  const resolve = handle.resolveResult;
+  handle.resolveResult = null;
+  resolve?.(payload);
+}
+
+/** The sequence proper. Waits for the outcome between the streak and the warm. */
+async function run(el, sky, burst, label, state, resultPromise, count) {
+  const onSkip = () => {
+    state.skip = true;
+    flush(state);
+    finish(el, state, state.results ?? [], true);
+  };
+  state.onSkip = onSkip;
+  el.addEventListener("click", onSkip);
+
   sfx("start");
-  requestAnimationFrame(() => el.classList.add("is-dark")); // one frame, to let the transition take
+  requestAnimationFrame(() => el.classList.add("is-dark"));
+
   await phase(FX.DARKEN, state);
   if (state.skip) return;
 
-  const flight = FX.STREAK + (results.length - 1) * FX.STAR_STAGGER;
+  // Stars fly grey — no outcome needed yet.
+  const flight = FX.STREAK + (count - 1) * FX.STAR_STAGGER;
   await phase(flight, state);
   if (state.skip) return;
+
+  // Hold in grey until the engine answers. Bounded, so a lost reply cannot
+  // leave the screen wedged behind a black overlay.
+  const payload = await Promise.race([
+    resultPromise,
+    new Promise((r) => { const t = setTimeout(() => r(null), FX.RESULT_TIMEOUT); state.timers.push(t); }),
+  ]);
+  if (state.skip) return;
+
+  if (!payload) { stop(); return; }   // no answer — get out of the way
+
+  const results = payload.results;
+  state.results = results;
+  label.textContent = payload.bannerName ?? "";
+
+  const best  = bestRarity(results.map((r) => r.rarity));
+  const color = RARITY[best].color;
+  el.style.setProperty("--rc", color);
+  el.style.setProperty("--rcGlow", rgba(color, 0.55));
+
+  // Warm the stars that actually landed; retire any spare (a x10 that returned
+  // fewer rows than it launched, e.g. a broken table row was dropped).
+  const stars = [...sky.querySelectorAll(".gfx-star")];
+  stars.forEach((s, i) => (i < results.length ? s.classList.add("is-warm") : s.remove()));
 
   await phase(FX.WARM, state);
   if (state.skip) return;
@@ -271,8 +349,8 @@ export async function playReveal({ bannerName, results } = {}) {
 
   sfx(best === "five" ? "rare" : "normal");
   burst.classList.add("is-on");
-  sky.style.opacity = "0";
   sky.style.transition = "opacity 160ms linear";
+  sky.style.opacity = "0";
   await phase(FX.BURST, state);
   if (state.skip) return;
 
@@ -301,7 +379,7 @@ function finish(el, state, results, skipped) {
 
   const solo = results.length === 1;
   const grid = document.createElement("div");
-  grid.className = "gfx-results";
+  grid.className = `gfx-results${results.length > 5 ? " is-grid" : ""}`;
   grid.innerHTML = results
     .map((r, i) => {
       const c = RARITY[r.rarity];

@@ -35,6 +35,9 @@ export const GACHA = {
     BUY_RESULT:    "FU_GACHA_BUY_RESULT_V1",
     SWAP_RESULT:   "FU_GACHA_SWAP_RESULT_V1",
     REDEEM_RESULT: "FU_GACHA_REDEEM_RESULT_V1",
+    // requester → everyone, the instant the button is pressed, so the whole
+    // table's streak launches together instead of after the GM's round-trip
+    WISH_START:    "FU_GACHA_WISH_START_V1",
     // GM → everyone (spectators included)
     REVEAL:        "FU_GACHA_REVEAL_V1",
     POOL_UPDATE:   "FU_GACHA_POOL_UPDATE_V1",
@@ -115,6 +118,10 @@ export const FX = {
   // Hard ceiling for any animationend wait. A hidden tab never fires the event,
   // so every phase races the listener against this timer.
   PHASE_FALLBACK: 4000,
+  // How long the grey streak will hold waiting for the engine's answer before
+  // giving up and clearing the screen. Generous: a x10 on this world does ten
+  // grants plus pity and a chat receipt, and measured ~2s for a single pull.
+  RESULT_TIMEOUT: 20000,
 };
 
 export const log  = (...a) => console.log(GACHA.TAG, ...a);

@@ -102,7 +102,7 @@ export function rollRarities(count, rates, pity) {
  * Execute a wish batch. Primary GM only.
  * @returns {Promise<{ok:boolean, reason?:string, results?:Array, pool?:object}>}
  */
-export async function executeWish({ bannerId, count, requesterUserId }) {
+export async function executeWish({ bannerId, count, requesterUserId, onDecided }) {
   if (!isPrimaryGM()) return { ok: false, reason: "not_primary_gm" };
 
   const size = Number(count);
@@ -145,6 +145,19 @@ export async function executeWish({ bannerId, count, requesterUserId }) {
     }
     results.push({ rarity, ...serialise(pick) });
   }
+
+  // 3b. The outcome is now DECIDED. Publish it before persisting it.
+  //
+  // Rolling is instant; writing is not — a x10 measured ~8.4s of grants, pity
+  // and receipt on this world, and every one of those seconds was spent
+  // showing the player grey stars. Everything below this line is durability,
+  // not decision, so the reveal goes out first and the writes land behind the
+  // ~2.3s of warm/hold/burst the animation is playing anyway.
+  //
+  // Safe because the only thing that MUST be atomic with the roll -- spending
+  // the coupons -- already happened above.
+  try { onDecided?.({ bannerId, bannerName: banner.name, results }); }
+  catch (e) { warn("onDecided handler threw", e); }
 
   // 4. Grant — collapse duplicates so a x10 of the same 3-star is one write.
   await grantAll(actor, results);
