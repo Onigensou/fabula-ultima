@@ -19,6 +19,7 @@ import { getPoolTable, resolveTableItems, groupBySet, imgOf, FALLBACK_IMG } from
 import { listSetBoard } from "./gacha-exchange.js";
 import { request } from "./gacha-net.js";
 import { ensureTheme } from "./gacha-theme.js";
+import { sfx } from "./gacha-sfx.js";
 
 const PANEL_ID   = "gacha-panel";
 const TIP_ID     = "gacha-tip";
@@ -393,6 +394,10 @@ const CSS = `
 .gh-line.is-stash { color: #8a4b16; }
 .gh-confirm .gp-coin { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; }
 .gh-confirm .gp-coin.is-stash { width: 22px; height: 22px; }
+.gh-confirm .gh-coupon {
+  width: 30px; height: 24px; object-fit: contain; vertical-align: middle;
+  border: 0 !important; background: transparent;
+}
 
 .gh-hako {
   display: flex; align-items: flex-start; gap: 10px; margin-top: 14px;
@@ -462,7 +467,7 @@ const esc = (s) => foundry.utils.escapeHTML?.(String(s ?? "")) ?? String(s ?? ""
  *
  * @returns {Promise<boolean>}
  */
-function confirmModal({ title, body, yes = "Confirm", no = "Cancel" }) {
+export function confirmModal({ title, body, yes = "Confirm", no = "Cancel" }) {
   ensureStyle();
   document.getElementById(CONFIRM_ID)?.remove();
 
@@ -480,6 +485,7 @@ function confirmModal({ title, body, yes = "Confirm", no = "Cancel" }) {
       </div>`;
 
     document.body.appendChild(el);
+    sfx.tab();   // lighter than the window-open cue: this is a step, not a page
 
     let settled = false;
     const done = (v) => {
@@ -487,6 +493,9 @@ function confirmModal({ title, body, yes = "Confirm", no = "Cancel" }) {
       settled = true;
       window.removeEventListener("keydown", onKey, true);
       el.remove();
+      // Declining is a dismissal; accepting stays silent so the action's own
+      // cue (commit) lands on its own rather than under a second sound.
+      if (!v) sfx.close();
       resolve(v);
     };
 
@@ -550,16 +559,24 @@ const hideTip = () => document.getElementById(TIP_ID)?.classList.remove("is-on")
 
 // ── Frame ───────────────────────────────────────────────────────────────────
 
-export function closePanel() {
+/**
+ * @param {{silent?: boolean}} [opts] silent skips the dismissal cue — used when
+ *   a panel is being torn down only to be immediately rebuilt, where the pair
+ *   of close+open sounds reads as a stutter rather than as feedback.
+ */
+export function closePanel({ silent = false } = {}) {
+  const had = !!document.getElementById(PANEL_ID);
   document.getElementById(PANEL_ID)?.remove();
   hideTip();
   if (_ctx?.onKey) window.removeEventListener("keydown", _ctx.onKey);
   _ctx = null;
+  if (had && !silent) sfx.close();
 }
 
 function frame(title, bodyHTML, { width = 900, foot = "", topTabs = "" } = {}) {
-  closePanel();
+  closePanel({ silent: true });
   ensureStyle();
+  sfx.open();
 
   const el = document.createElement("div");
   el.id = PANEL_ID;
@@ -650,6 +667,7 @@ function details({ banner }) {
 
   body.querySelectorAll("[data-uuid]").forEach((n) =>
     n.addEventListener("click", async () => {
+      sfx.select();
       const doc = await fromUuid(n.dataset.uuid).catch(() => null);
       doc?.sheet?.render(true);
     })
@@ -726,7 +744,7 @@ async function shop({ state, refresh }) {
     b.addEventListener("click", () => {
       qty.value = amount() + Number(b.dataset.step);
       sync();
-      window.FUCompanion?.shopSound?.playItemSelect?.();
+      sfx.select();
     })
   );
   sync();
@@ -751,7 +769,7 @@ async function shop({ state, refresh }) {
     confirm.textContent = label;
 
     if (res?.ok) {
-      window.FUCompanion?.shopSound?.playPurchase();
+      sfx.commit();
 
       const p0 = purse, s0 = stash;
       purse = Math.max(0, purse - (res.fromBuyer ?? 0));
@@ -878,6 +896,7 @@ async function exchange(ctx) {
   stack.querySelectorAll("[data-mode]").forEach((t) =>
     t.addEventListener("click", () => {
       if (S.mode === t.dataset.mode) return;
+      sfx.tab();
       S.mode = t.dataset.mode;
       clearPick();
       paint();
@@ -892,7 +911,7 @@ async function exchange(ctx) {
         }</span>
       </button>`).join("");
     marks.querySelectorAll("[data-view]").forEach((n) =>
-      n.addEventListener("click", () => { S.set = n.dataset.view; clearPick(); paint(); })
+      n.addEventListener("click", () => { sfx.tab(); S.set = n.dataset.view; clearPick(); paint(); })
     );
   };
 
@@ -967,9 +986,10 @@ async function exchange(ctx) {
       });
 
       if (res?.ok) {
+        sfx.commit();
         ui.notifications?.info(`Redeemed → ${res.itemName}.`);
         ctx?.refresh?.(res.pool);
-        closePanel();
+        closePanel({ silent: true });
         renderPanel("exchange", ctx);
       } else {
         ui.notifications?.warn(`Redemption failed: ${res?.reason ?? "unknown"}`);
@@ -1010,8 +1030,9 @@ async function exchange(ctx) {
     });
 
     if (res?.ok) {
+      sfx.commit();
       ui.notifications?.info(`Traded ${res.from} → ${res.to}.`);
-      closePanel();
+      closePanel({ silent: true });
       renderPanel("exchange", ctx);      // reopen on fresh state
     } else {
       ui.notifications?.warn(`Trade failed: ${res?.reason ?? "unknown"}`);
@@ -1062,6 +1083,7 @@ function paintRedeemBoard(host, set, S, ticket, tickets, onPick) {
 
   host.querySelectorAll("[data-redeem]").forEach((n) =>
     n.addEventListener("click", () => {
+      sfx.select();
       const same = S.dst === n.dataset.redeem;
       host.querySelectorAll(".gp-chip").forEach((c) => c.classList.remove("is-picked"));
       if (same) { S.dst = null; S.dstUuid = null; }
@@ -1084,6 +1106,7 @@ function paintSwapBoard(host, set, S, onPick) {
 
   host.querySelectorAll("[data-pick-src]").forEach((n) =>
     n.addEventListener("click", () => {
+      sfx.select();
       const same = S.src === n.dataset.pickSrc && S.dst === n.dataset.pickDst;
       host.querySelectorAll(".gp-chip").forEach((c) => c.classList.remove("is-picked"));
 

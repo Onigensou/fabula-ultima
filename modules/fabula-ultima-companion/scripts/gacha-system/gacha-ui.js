@@ -23,14 +23,13 @@ import { listBanners, imgOf, FALLBACK_IMG } from "./gacha-banners.js";
 import { partyActor, readPool, isPartyMemberClient, couponCost } from "./gacha-state.js";
 import { request, announceStart } from "./gacha-net.js";
 import { beginReveal, stop as stopFx } from "./gacha-fx.js";
-import { renderPanel } from "./gacha-panels.js";
+import { renderPanel, confirmModal } from "./gacha-panels.js";
 import { ensureTheme } from "./gacha-theme.js";
+import { sfx } from "./gacha-sfx.js";
 
 const ROOT_ID  = "gacha-ui";
 const STYLE_ID = "gacha-ui-style";
 
-const SFX_SCROLL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_3.wav";
-const sfx = (src) => { try { AudioHelper?.play({ src, volume: 0.5, loop: false }, false); } catch {} };
 
 const THUMB_W = 96;    // thumbnail + gap, used to centre the rail strip
 const THUMB_GAP = 10;
@@ -581,7 +580,7 @@ function step(dir) {
 
 function select(i, dir) {
   S.index = i;
-  sfx(SFX_SCROLL);
+  sfx.scroll();
 
   S.el.querySelectorAll(".gu-thumb").forEach((n) =>
     n.classList.toggle("is-active", Number(n.dataset.i) === i)
@@ -765,6 +764,29 @@ function paintActions() {
 
 async function wish(count) {
   if (S.busy || S.pool.coupons < count) return;
+
+  // Coupons are scarce and a wish is irreversible, so a misclick must not cost
+  // the party ten of them. Gate BEFORE anything is spent or animated.
+  const b = current();
+  const left = S.pool.coupons - count;
+  const ok = await confirmModal({
+    title: `Wish ×${count}`,
+    yes: `Wish ×${count}`,
+    body: `
+      <div class="gh-confirm">
+        <div class="gh-head">Wish <b>×${count}</b> on <b>${esc(b?.title ?? "")}</b>?</div>
+        <div class="gh-line">
+          Spends <img class="gh-coupon" src="${couponImgSrc()}" alt=""><b>${count}</b>
+          — <b>${left}</b> coupon${left === 1 ? "" : "s"} left afterwards.
+        </div>
+      </div>`,
+  });
+  if (!ok) return;
+
+  // Re-check: the pool can move while the prompt is open, from another
+  // player's wish or a GM edit.
+  if (S.busy || S.pool.coupons < count) { toast("Not enough coupons any more.", true); return; }
+
   S.busy = true;
   paintActions();
 
