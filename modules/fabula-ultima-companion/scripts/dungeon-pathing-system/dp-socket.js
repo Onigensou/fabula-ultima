@@ -15,6 +15,7 @@
     MUTATE_TILE:            "dungeonPathing.mutateTile",
     RESET_DUNGEON:          "dungeonPathing.resetDungeon",
     TRIGGER_TREASURE:       "dungeonPathing.triggerTreasure",
+    RANDOM_BATTLE:          "dungeonPathing.randomBattle",
     MARK_VISITED:           "dungeonPathing.markVisited",
     UNMARK_VISITED:         "dungeonPathing.unmarkVisited",
     FAST_TRAVEL_TELEPORT:   "dungeonPathing.fastTravelTeleport",
@@ -150,6 +151,21 @@
           return { ok: true };
         } catch (e) {
           console.error(TAG, "triggerTreasure socket handler failed", e);
+          return { ok: false, error: e?.message };
+        }
+      });
+
+      // Resolve + launch a random battle. executeAsGM routes to exactly ONE GM,
+      // so no primary-GM gate is needed (unlike the raw channel above, which
+      // broadcasts to every GM). The reply tells the requesting client whether a
+      // battle actually launched so it can skip its closing graph rebuild.
+      socket.register(HANDLERS.RANDOM_BATTLE, async ({ sceneId, tileId, tokenId }) => {
+        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
+        if (!DP.RandomBattle?.run) return { ok: false, error: "RandomBattle not loaded" };
+        try {
+          return await DP.RandomBattle.run({ sceneId, tileId, tokenId });
+        } catch (e) {
+          console.error(TAG, "randomBattle socket handler failed", e);
           return { ok: false, error: e?.message };
         }
       });
@@ -310,6 +326,20 @@
       const socket = this._socket ?? window.FUCompanionSocket;
       if (!socket) { console.warn(TAG, "Socket not ready for triggerTreasure"); return { ok: false, error: "Socket not ready" }; }
       return socket.executeAsGM(HANDLERS.TRIGGER_TREASURE, { sceneId: scene.id, tileId, tokenId, tileType });
+    },
+
+    /**
+     * Ask the GM to resolve a Random Battle tile landing.
+     * Resolves { ok, appear?, launched?, error? } — see DP.RandomBattle.run().
+     */
+    async requestRandomBattle(scene, tileId, tokenId) {
+      if (game.user?.isGM) {
+        if (!DP.RandomBattle?.run) { console.warn(TAG, "RandomBattle not loaded"); return { ok: false, error: "RandomBattle not loaded" }; }
+        return DP.RandomBattle.run({ sceneId: scene.id, tileId, tokenId });
+      }
+      const socket = this._socket ?? window.FUCompanionSocket;
+      if (!socket) { console.warn(TAG, "Socket not ready for randomBattle"); return { ok: false, error: "Socket not ready" }; }
+      return socket.executeAsGM(HANDLERS.RANDOM_BATTLE, { sceneId: scene.id, tileId, tokenId });
     }
   };
 

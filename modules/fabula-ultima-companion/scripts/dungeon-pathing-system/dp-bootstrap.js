@@ -54,6 +54,11 @@
     hookIds:      [],
     _arrivalDepth: 0,   // recursion guard for processArrivalAt chains
 
+    // Set by the random-battle tile handler when a battle has actually launched.
+    // The canvas is about to tear down, so the turn loop skips its closing
+    // rebuild rather than racing the scene switch. Cleared on activate().
+    battleLaunching: false,
+
     isMainController: false, // cached: may THIS client drive dungeon movement?
     _mcUnsubs:        [],    // Movement Control socket unsubscribe fns
     _spectateNoticeAt: 0,    // throttle timestamp for the spectator notice
@@ -625,16 +630,26 @@
       ui.notifications?.error?.("Dungeon Pathing: unexpected error. See console.");
     } finally {
       DP.ConfirmDialog.forceClose?.();
-      const tRebuild = performance.now();
-      await rebuild();
-      perf(`turn | final rebuild: ${(performance.now()-tRebuild).toFixed(1)}ms | TURN TOTAL: ${(performance.now()-tTurnStart).toFixed(1)}ms`);
+      if (state.battleLaunching) {
+        // A random battle is starting: canvasTearDown → deactivate() handles the
+        // teardown, and rebuilding now would only warn about a party token that
+        // is on its way to another scene.
+        console.debug(TAG, "battle launching — skipping the closing rebuild");
+        perf(`turn | rebuild SKIPPED (battle launching) | TURN TOTAL: ${(performance.now()-tTurnStart).toFixed(1)}ms`);
+      } else {
+        const tRebuild = performance.now();
+        await rebuild();
+        perf(`turn | final rebuild: ${(performance.now()-tRebuild).toFixed(1)}ms | TURN TOTAL: ${(performance.now()-tTurnStart).toFixed(1)}ms`);
+      }
       // Keep busy=true through the full rebuild so no concurrent turn can start.
       state.busy = false;
 
       // Deferred markVisited — fires 300 ms after rebuild completes so the
       // server socket queue is clear before the next turn's doc update.
+      // Capture the scene the turn happened on, not canvas.scene: a launching
+      // battle may already have swapped the canvas out from under us.
       if (_deferredVisitTileId) {
-        const _sceneRef = canvas.scene;
+        const _sceneRef = scene ?? canvas.scene;
         const _tid      = _deferredVisitTileId;
         setTimeout(() => {
           DP.Socket.markVisited(_sceneRef, _tid)
@@ -670,6 +685,7 @@
   async function activate() {
     if (state.active) return;
     state.active = true;
+    state.battleLaunching = false;   // fresh scene — any pending launch is done
     DP.Sound.preloadAll();
     await refreshControllerAuthority();
     installClickListener();
