@@ -125,7 +125,12 @@ const CSS = `
   font-size: 15px; letter-spacing: 4px; text-transform: uppercase;
   color: var(--gc-title); font-weight: 700;
 }
-.gp-x {
+/* Id-scoped on purpose. Foundry ships a bare button rule setting width to 100%,
+   which the theme neutralises with an id-scoped "#gacha-panel button" rule —
+   and that id-level rule also outranks any plain class rule, so a class alone
+   cannot set a button's width here. Any <button> in this system that wants an
+   explicit width has to be scoped this way; a div does not (see .gu-arrow). */
+#${PANEL_ID} .gp-x {
   cursor: pointer; width: 32px; height: 30px; font-size: 16px; line-height: 1;
   border-radius: var(--gc-radius); border: 1px solid var(--gc-line-3);
   background: var(--gc-parch); color: var(--gc-ink);
@@ -198,24 +203,29 @@ const CSS = `
   background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel));
   border: 1px solid var(--gc-line-2);
 }
+/* Sizes below are tuned against the live screen (devtool: Gacha UI Tuner), so
+   several are deliberately NOT square — the source art is not square either,
+   and matching the artwork's own proportions is what stops the icons looking
+   squashed. Do not "tidy" them into single values. */
 .gp-coupon-icon {
-  width: 46px; height: 46px; object-fit: contain; flex: 0 0 auto;
+  width: 59px; height: 47px; object-fit: contain; flex: 0 0 auto;
   border: none !important; box-shadow: none !important; background: transparent;
 }
 .gp-stepper { display: flex; align-items: center; gap: 8px; }
-.gp-step {
-  width: 30px; height: 30px; cursor: pointer; line-height: 1; font-size: 12px;
+/* Id-scoped for the same reason as .gp-x above. */
+#${PANEL_ID} .gp-step {
+  width: 30px; height: 25px; cursor: pointer; line-height: 1; font-size: 12px;
   border-radius: 50%; border: 1px solid var(--gc-line-3);
   background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel));
   color: var(--gc-ink-2);
 }
 .gp-step:hover { background: #fffaec; border-color: var(--gc-gold); }
 
-/* Balances + action, one line.
-   The buyer's own purse is what they spend from first, so it is the loud one;
-   the stash is a fallback and reads as secondary until it is actually needed. */
+/* Balances + action, one line. Both figures read at full strength; the two are
+   told apart by their icons rather than by dimming one of them. The stash still
+   takes the title colour when the current quantity would actually reach it. */
 .gp-balances {
-  display: flex; align-items: baseline; gap: 20px;
+  display: flex; align-items: center; gap: 53px;
   padding: 14px 18px 2px;
 }
 .gp-bal {
@@ -224,14 +234,12 @@ const CSS = `
   font-variant-numeric: tabular-nums;
   transition: color .2s, opacity .2s;
 }
-/* Primary — the character's purse. */
-.gp-bal[data-purse-box] { font-size: 28px; }
-.gp-bal[data-purse-box] .gp-coin { width: 32px; height: 32px; }
+.gp-bal[data-purse-box] { font-size: 15px; }
+.gp-bal[data-purse-box] .gp-coin { width: 23px; height: 27px; }
 
-/* Secondary — the party stash. */
-.gp-bal[data-stash-box] { font-size: 17px; opacity: .45; }
-.gp-bal[data-stash-box] .gp-coin.is-stash { width: 22px; height: 22px; }
-.gp-bal[data-stash-box].is-tapped { opacity: 1; color: var(--gc-title); }
+.gp-bal[data-stash-box] { font-size: 14px; opacity: 1; }
+.gp-bal[data-stash-box] .gp-coin.is-stash { width: 34px; height: 29px; }
+.gp-bal[data-stash-box].is-tapped { color: var(--gc-title); }
 
 .gp-bal.is-spending { color: #a8412f; }
 .gp-balances .gc-btn { margin-left: auto; align-self: center; }

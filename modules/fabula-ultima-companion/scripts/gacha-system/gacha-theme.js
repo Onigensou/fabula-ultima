@@ -72,9 +72,14 @@ export const THEME_CSS = `
 
 /* Foundry styles bare <button> and <input> globally, and these overlays are
    appended to document.body rather than living inside a Foundry window — so
-   those globals apply and win. Chief offender: a full-width rule that turned
-   every tab and action button into a full-width bar. Neutralise it once, here,
-   for everything the gacha system renders. */
+   those globals apply and win. Chief offender: a bare button rule setting width
+   to 100%, which turned every tab and action button into a full-width bar.
+   Neutralise it once, here, for everything the gacha system renders.
+
+   TRAP: this is an ID-level rule, so it also outranks plain class rules. A
+   <button> that wants an explicit width must be declared id-scoped too
+   ("#gacha-panel .gp-step { width: ... }"), or it silently falls back to
+   content width. Divs are unaffected. */
 #gacha-ui button, #gacha-panel button,
 #gacha-ui input, #gacha-panel input {
   width: auto;
