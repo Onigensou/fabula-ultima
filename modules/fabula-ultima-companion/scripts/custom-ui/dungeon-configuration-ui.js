@@ -324,6 +324,11 @@
     dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.battleBGM"]`).value      = safeGet(data, "battleBGM", "");
     dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.bossBGM"]`).value        = safeGet(data, "bossBGM", "");
 
+    // Blank is meaningful here: DP.RandomBattle reads an unset value as the
+    // default bias of 1, so don't substitute a number the GM never chose.
+    const noveltyInput = dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.encounterNoveltyBias"]`);
+    if (noveltyInput) noveltyInput.value = safeGet(data, "encounterNoveltyBias", "");
+
     // Event
     dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.event.skillCheckEvent"]`).value = safeGet(data, "event.skillCheckEvent", "");
     dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.event.clockEvent"]`).value      = safeGet(data, "event.clockEvent", "");
@@ -785,6 +790,14 @@
               <input type="text" name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.enemiesTable" placeholder="RollTable UUID (individual enemies)" />
             </div>
             <p class="notes">Table of “possible enemies on this map” (individual monsters).</p>
+          </div>
+
+          <div class="form-group">
+            <label>Novelty Bias</label>
+            <div class="form-fields">
+              <input type="number" step="0.5" min="0" name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.encounterNoveltyBias" placeholder="1" />
+            </div>
+            <p class="notes">How hard random encounters lean toward monsters the party has never fought. Each unmet monster in a row multiplies its odds by this much (default 1 → a row with two new monsters is 3× as likely). 0 disables the bias.</p>
           </div>
 
           <div class="form-group">

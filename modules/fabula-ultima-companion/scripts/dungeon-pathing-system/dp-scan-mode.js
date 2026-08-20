@@ -101,6 +101,7 @@
   let _healBtn          = null;   // ❤️ out-of-combat healing DOM element
   let _ritualBtn        = null;   // 🕯️ ritual setup DOM element
   let _ritualCtrlHook   = null;   // controlToken hook id — regreys the ritual button
+  let _curateBtn        = null;   // 🎬 GM-only "curate next encounter" toggle
   let _scanning         = false;
   let _cameraSettled    = false;  // true once pivot is within 1wu of token and no pan needed
   let _tickerFn         = null;
@@ -127,6 +128,11 @@
   function cfgRitual() {
     return DP.UI?.RITUAL_BUTTON
       ?? { SIZE: 64, BOTTOM: 80, LEFT: 390, LEFT_NO_FT: 316, LEFT_EXPLORATION: 168, LEFT_SOLO: 20, FONT_SIZE: "28px" };
+  }
+  function cfgCurate() {
+    // GM-only, so it docks past the ritual button (the rightmost player button).
+    return DP.UI?.CURATE_BUTTON
+      ?? { SIZE: 64, BOTTOM: 80, LEFT: 464, LEFT_NO_FT: 390, FONT_SIZE: "26px" };
   }
 
   // The ritual button is the rightmost of the row, so its slot depends on how
@@ -501,6 +507,61 @@
     _ritualBtn = null;
   }
 
+  // ── Curate-next-encounter toggle (GM only) ─────────────────────────────────
+  // When ON, the next Random Battle tile hands the GM the Battle Prompt instead
+  // of auto-launching — the pre-emptive counterpart to the ~2.5s override toast,
+  // for when the GM already knows they want to author the next fight. The
+  // setting is one-shot: DP.RandomBattle clears it once it fires.
+  function syncCurateBtn() {
+    if (!_curateBtn) return;
+    const on = !!DP.RandomBattle?.getCurate?.();
+    _curateBtn.classList.toggle("dp-scan-active", on);
+    _curateBtn.title = on
+      ? "Curate next encounter: ON — the next random battle opens the Battle Prompt"
+      : "Curate next encounter: OFF — random battles run automatically";
+  }
+
+  function showCurateBtn() {
+    if (!game.user?.isGM) return;
+    injectStyles();
+    const c    = cfgCurate();
+    const left = isFtEnabled() ? c.LEFT : c.LEFT_NO_FT;
+
+    if (_curateBtn) {
+      _curateBtn.style.left = `${left}px`;
+      syncCurateBtn();
+      return;
+    }
+
+    _curateBtn = makeBtn(
+      "oni-dp-curate-btn",
+      "🎬",
+      "Curate next encounter",
+      { ...c, LEFT: left },
+      async () => {
+        const api = DP.RandomBattle;
+        if (!api?.setCurate) { ui.notifications?.warn("Random battle system not available."); return; }
+        const next = !api.getCurate();
+        await api.setCurate(next);
+        syncCurateBtn();
+        ui.notifications?.info?.(next
+          ? "Next random battle will open the Battle Prompt."
+          : "Random battles will run automatically.");
+      },
+    );
+    document.body.appendChild(_curateBtn);
+    syncCurateBtn();
+    requestAnimationFrame(() => _curateBtn?.classList.add("dp-scan-visible"));
+  }
+
+  function hideCurateBtn() {
+    if (!_curateBtn) return;
+    _curateBtn.classList.remove("dp-scan-visible");
+    const btn = _curateBtn;
+    setTimeout(() => btn.remove(), 280);
+    _curateBtn = null;
+  }
+
   function hide() {
     if (_scanning) {
       _scanning = false;
@@ -553,6 +614,10 @@
 
     // The ritual button docks to the right of them all, so toggling FT slides it.
     if (_ritualBtn) _ritualBtn.style.left = `${getRitualLeft("dungeon")}px`;
+    if (_curateBtn) {
+      const cc = cfgCurate();
+      _curateBtn.style.left = `${enabled ? cc.LEFT : cc.LEFT_NO_FT}px`;
+    }
   }
 
   // Show the scene travel button (called from bootstrap for dungeon + exploration modes).
@@ -624,5 +689,11 @@
     hideRitualBtn,
     /** Re-grey the ritual button after an external performer-eligibility change. */
     syncRitualBtn,
+    /** Show the GM-only "curate next encounter" toggle (dungeon mode only). */
+    showCurateBtn,
+    /** Hide the GM-only "curate next encounter" toggle. */
+    hideCurateBtn,
+    /** Re-sync the curate toggle after an external setting change. */
+    syncCurateBtn,
   };
 })();

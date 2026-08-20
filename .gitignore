@@ -67,6 +67,7 @@
 /tools/*
 !/tools/check-esm.js
 !/tools/camp-landing-phase-check.js
+!/tools/random-battle-novelty-check.js
 !/tools/safe-edit/
 !/tools/safe-edit/**
 !/tools/parse-fu-pdfs/

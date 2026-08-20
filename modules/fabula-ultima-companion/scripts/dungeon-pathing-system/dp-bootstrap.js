@@ -714,6 +714,7 @@
     DP.Overlay.clearHover?.();
     DP.ScanMode?.hide();
     DP.ScanMode?.hideTravelBtn?.();
+    DP.ScanMode?.hideCurateBtn?.();
     DP.ScanMode?.detachTicker();
     DP.ConfirmDialog?.forceClose?.();
     DP.StatusHUD?.hide();
@@ -731,7 +732,11 @@
       DP.ScanMode?.updateFtBtnVisibility?.();
       DP.ScanMode?.showHealBtn?.();
       DP.ScanMode?.showRitualBtn?.("dungeon");
+      // Random Battle tiles only exist in dungeons, so the GM's curate toggle
+      // only docks here.
+      DP.ScanMode?.showCurateBtn?.();
     } else {
+      DP.ScanMode?.hideCurateBtn?.();
       if (state.active) deactivate();
       // Exploration mode: show travel button if FT is enabled; hide otherwise
       if (mode === DP.SCENE_MODE.EXPLORATION) {
