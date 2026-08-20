@@ -211,21 +211,30 @@ const CSS = `
 }
 .gp-step:hover { background: #fffaec; border-color: var(--gc-gold); }
 
-/* Balances + action, one line. */
+/* Balances + action, one line.
+   The buyer's own purse is what they spend from first, so it is the loud one;
+   the stash is a fallback and reads as secondary until it is actually needed. */
 .gp-balances {
-  display: flex; align-items: center; gap: 18px;
+  display: flex; align-items: baseline; gap: 20px;
   padding: 14px 18px 2px;
 }
 .gp-bal {
   display: flex; align-items: center; gap: 8px;
-  font-size: 22px; font-weight: 700; color: var(--gc-ink);
+  font-weight: 700; color: var(--gc-ink);
   font-variant-numeric: tabular-nums;
   transition: color .2s, opacity .2s;
 }
-.gp-bal[data-stash-box] { opacity: .5; }
+/* Primary — the character's purse. */
+.gp-bal[data-purse-box] { font-size: 28px; }
+.gp-bal[data-purse-box] .gp-coin { width: 32px; height: 32px; }
+
+/* Secondary — the party stash. */
+.gp-bal[data-stash-box] { font-size: 17px; opacity: .45; }
+.gp-bal[data-stash-box] .gp-coin.is-stash { width: 22px; height: 22px; }
 .gp-bal[data-stash-box].is-tapped { opacity: 1; color: var(--gc-title); }
+
 .gp-bal.is-spending { color: #a8412f; }
-.gp-balances .gc-btn { margin-left: auto; }
+.gp-balances .gc-btn { margin-left: auto; align-self: center; }
 /* Explicit and scoped: this panel is appended to document.body, so Foundry's
    global input rules apply and will otherwise take the field to 100%. */
 #${PANEL_ID} input.gp-qty {
