@@ -563,7 +563,19 @@
    *
    * @returns {Promise<{ok:boolean, appear?:boolean, launched?:boolean, error?:string}>}
    */
-  async function run({ sceneId, tileId } = {}) {
+  async function run(args = {}) {
+    try {
+      return await resolveLanding(args);
+    } catch (e) {
+      // The GM-direct path in DP.Socket calls straight into here, so this is the
+      // only thing standing between an unexpected throw and the player's turn.
+      console.error(TAG, "run() threw", e);
+      ui.notifications?.error?.(`Random Battle | Unexpected error: ${e?.message ?? e}`);
+      return { ok: false, launched: false, error: String(e?.message ?? e) };
+    }
+  }
+
+  async function resolveLanding({ sceneId, tileId } = {}) {
     if (!game.user?.isGM) return { ok: false, error: "Not GM" };
 
     const scene = game.scenes?.get?.(sceneId);
