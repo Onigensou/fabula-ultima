@@ -128,8 +128,9 @@ const CSS = `
 .gu-pity b { color: var(--gc-title); font-weight: 700; }
 
 /* ── banner card ────────────────────────────────────────────────────────── */
-/* Bottom inset clears the action buttons — the card must not sit under them. */
-.gu-stage { position: absolute; inset: 104px 0 124px 0; display: flex; }
+/* Top inset leaves clear air under the rail — the two must not run tangent.
+   Bottom inset clears the action row. */
+.gu-stage { position: absolute; inset: 128px 0 118px 0; display: flex; }
 .gu-card {
   flex: 1 1 auto; display: flex; overflow: hidden;
   border-radius: var(--gc-radius-lg);
@@ -147,9 +148,10 @@ const CSS = `
 /* The text column sits on flat parchment, NOT over artwork, so it takes plain
    high-contrast ink. The gc-over stroke is for labels floating on top of an
    item icon; used here it just eats the glyphs and washes the text out. */
+/* Title block sits TOP-left; the column no longer centres its content. */
 .gu-card-text {
-  flex: 0 0 40%; padding: 40px 38px; display: flex; flex-direction: column;
-  justify-content: center; gap: 14px; min-width: 0; z-index: 2;
+  flex: 0 0 42%; padding: 34px 34px; display: flex; flex-direction: column;
+  justify-content: flex-start; gap: 12px; min-width: 0; z-index: 2;
   border-right: 1px solid var(--gc-line);
 }
 .gu-epithet {
@@ -157,14 +159,27 @@ const CSS = `
   color: var(--gc-gold); font-weight: 700;
 }
 .gu-title {
-  font-size: 48px; line-height: 1.04; font-weight: 800; font-style: italic;
+  font-size: 44px; line-height: 1.04; font-weight: 800; font-style: italic;
   color: var(--gc-title); word-break: break-word;
   text-shadow: 0 1px 0 rgba(255,255,255,.5);
 }
-.gu-stars { font-size: 24px; color: var(--gc-r5); letter-spacing: 4px;
-  text-shadow: 0 1px 2px rgba(90,60,20,.35); }
+/* The parody of Genshin's "Probability increased!" callout. */
+.gu-promo {
+  margin-top: 6px; padding: 12px 14px; border-radius: var(--gc-radius);
+  background: linear-gradient(180deg, var(--gc-panel), var(--gc-sunk));
+  border-left: 4px solid var(--gc-gold);
+  font-size: 13px; line-height: 1.6; color: var(--gc-ink-2);
+}
+.gu-promo b { color: var(--gc-title); }
+.gu-promo .lede {
+  display: block; font-weight: 700; color: var(--gc-title);
+  letter-spacing: 1px; margin-bottom: 5px;
+}
 .gu-setline { font-size: 13px; color: var(--gc-ink-3); line-height: 1.8; }
 .gu-setline b { color: var(--gc-ink); }
+.gu-hint {
+  margin-top: auto; font-size: 12px; font-style: italic; color: var(--gc-ink-soft);
+}
 
 .gu-card-art {
   flex: 1 1 auto; min-width: 0; padding: 26px 30px;
@@ -178,8 +193,14 @@ const CSS = `
    background art rather than transparent PNGs, and a bare <img> renders as a
    white rectangle floating on parchment. Framing it makes that read as a
    deliberate card instead of a mistake. */
+/* The plate drives the size, not the image.
+   Item icons range from ~130px to full illustrations, and width:auto renders
+   them at intrinsic size — which scales DOWN but never UP, so a small icon sat
+   as a postage stamp in the middle of the card. Fix the plate and let the image
+   contain itself into it. */
 .gu-lead-plate {
-  flex: 0 1 auto; min-height: 0;
+  flex: 0 0 auto; position: relative;
+  width: min(38vh, 340px); height: min(38vh, 340px);
   display: flex; align-items: center; justify-content: center;
   padding: 10px; border-radius: var(--gc-radius-lg);
   border: 2px solid var(--gc-line-2);
@@ -188,14 +209,39 @@ const CSS = `
   animation: gu-float 6s ease-in-out infinite;
 }
 .gu-lead {
-  max-height: 42vh; max-width: 100%; width: auto; height: auto;
-  object-fit: contain; border-radius: 6px;
+  width: 100%; height: 100%; object-fit: contain;
+  border-radius: 6px; transition: opacity .16s;
 }
+/* Item art is a mix of small pixel sprites and large painted illustrations.
+   Bilinear upscaling turns the sprites to mush, so anything under 256px native
+   is snapped to nearest-neighbour instead. */
+.gu-lead.is-pixel { image-rendering: pixelated; }
 @keyframes gu-float { 0%,100% { transform: translateY(-5px); } 50% { transform: translateY(5px); } }
 
+/* Name rides the bottom of the plate, over the art — this IS the case the
+   Level-Up stroke treatment exists for. */
+/* Rides the bottom of the plate, over the art.
+   Outlined with layered text-shadows rather than -webkit-text-stroke: a stroke
+   is drawn centred on the glyph outline and eats inward, which on a thin
+   italic face at this size consumed the fill entirely and left ghost text.
+   Shadows sit strictly OUTSIDE the glyph, so the dark fill stays solid over
+   both pale and busy artwork. */
 .gu-lead-name {
-  font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--gc-ink-2);
+  position: absolute; left: -14px; right: -14px; bottom: -18px; text-align: center;
+  font-family: "Trebuchet MS", "Segoe UI", Verdana, sans-serif;
+  font-size: 34px; font-weight: 800; font-style: italic; letter-spacing: .5px;
+  color: var(--gc-ink); pointer-events: none; z-index: 3;
+  -webkit-text-stroke: 0;
+  text-shadow:
+    -2px -2px 0 #fffdf6,  2px -2px 0 #fffdf6,
+    -2px  2px 0 #fffdf6,  2px  2px 0 #fffdf6,
+     0   -2px 0 #fffdf6,  0    2px 0 #fffdf6,
+    -2px  0   0 #fffdf6,  2px  0   0 #fffdf6,
+     0    4px 8px rgba(60,40,14,.45);
+}
+.gu-lead-stars {
+  margin-top: 16px; font-size: 22px; letter-spacing: 4px; color: var(--gc-r5);
+  text-shadow: 0 1px 2px rgba(90,60,20,.4);
 }
 
 .gu-support {
@@ -203,19 +249,26 @@ const CSS = `
   max-width: 100%;
 }
 .gu-support img {
-  width: 50px; height: 50px; object-fit: contain; padding: 4px;
-  border-radius: var(--gc-radius); border: 1px solid var(--gc-line);
+  width: 52px; height: 52px; object-fit: contain; padding: 4px; cursor: pointer;
+  border-radius: var(--gc-radius); border: 2px solid var(--gc-line);
   background: rgba(255,253,246,.9);
+  transition: transform .13s, border-color .13s, box-shadow .13s;
 }
-.gu-support img.is-filler { width: 40px; height: 40px; opacity: .8; }
+.gu-support img:hover {
+  transform: translateY(-3px); border-color: var(--gc-gold);
+  box-shadow: 0 6px 14px -6px rgba(60,40,14,.7);
+}
+.gu-support img.is-showing { border-color: var(--gc-gold); box-shadow: 0 0 0 2px var(--gc-gold-soft); }
+.gu-support img.is-filler { width: 42px; height: 42px; opacity: .82; }
 
 /* ── actions ────────────────────────────────────────────────────────────── */
+/* Side by side, not stacked. */
 .gu-actions {
   position: absolute; right: 0; bottom: 0;
-  display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
+  display: flex; flex-direction: row; gap: 14px; align-items: center;
 }
 .gu-wish {
-  min-width: 290px; padding: 15px 30px; cursor: pointer;
+  min-width: 250px; padding: 15px 28px; cursor: pointer;
   border-radius: 999px; border: 2px solid var(--gc-line-3);
   background: linear-gradient(180deg, var(--gc-deep), var(--gc-deep-2));
   color: var(--gc-deep-ink); font-family: inherit; font-size: 17px;
@@ -502,43 +555,130 @@ function paintStage(dir) {
   const anim = dir > 0 ? "in-right" : dir < 0 ? "in-left" : "";
   const mainCount = b.mainSet?.entries?.length ?? 0;
   const fillerNames = b.fillerSets.map((g) => g.setName).join(", ");
+  const pity = readPity(S.actor, b.id);
+  const remaining = Math.max(0, PITY_FIVE - pity.five);
+
+  // Every piece the card can feature, lead first. Index 0 is the resting state.
+  const showable = [b.lead, ...(b.mainSet?.entries ?? []).slice(1),
+                    ...b.fillerSets.flatMap((g) => g.entries)].filter(Boolean);
 
   stage.innerHTML = `
     <div class="gu-card ${anim}">
       <div class="gu-card-text">
         ${b.epithet ? `<div class="gu-epithet">${esc(b.epithet)}</div>` : ""}
         <div class="gu-title">${esc(b.title)}</div>
-        <div class="gu-stars">${"★".repeat(RARITY.five.stars)}</div>
+        <div class="gu-promo">
+          <span class="lede">Probability increased!</span>
+          Every 10 wishes is guaranteed to include at least one
+          <b>${RARITY.four.label} or higher</b> item.<br>
+          A <b>${RARITY.five.label}</b> is guaranteed within <b>${remaining}</b> more.
+        </div>
         <div class="gu-setline">
           Featured set — <b>${esc(b.mainSet?.setName ?? b.title)}</b> (${mainCount} pieces)
           ${fillerNames ? `<br>Also featuring — <b>${esc(fillerNames)}</b>` : ""}
         </div>
+        <div class="gu-hint">View Details for more…</div>
       </div>
       <div class="gu-card-art">
         <div class="gu-lead-plate">
-          <img class="gu-lead" src="${imgOf(b.lead)}" alt="${esc(b.lead?.name ?? "")}" data-fallback>
+          <img class="gu-lead" src="${imgOf(b.lead)}" alt="" data-fallback>
+          <div class="gu-lead-name gc-over">${esc(b.lead?.name ?? "")}</div>
         </div>
-        ${b.lead ? `<div class="gu-lead-name">${esc(b.lead.name)}</div>` : ""}
+        <div class="gu-lead-stars">${"★".repeat(RARITY.five.stars)}</div>
         <div class="gu-support">
-          ${(b.mainSet?.entries ?? []).slice(1).map((e) =>
-            `<img src="${imgOf(e)}" title="${esc(e.name)}" alt="" data-fallback>`).join("")}
-          ${b.fillerSets.flatMap((g) => g.entries).map((e) =>
-            `<img class="is-filler" src="${imgOf(e)}" title="${esc(e.name)}" alt="" data-fallback>`).join("")}
+          ${showable.slice(1).map((e, i) => {
+            const filler = i >= mainCount - 1;
+            return `<img class="${filler ? "is-filler" : ""}" data-show="${i + 1}"
+                         src="${imgOf(e)}" alt="" data-fallback>`;
+          }).join("")}
         </div>
       </div>
     </div>`;
 
   bindFallbacks(stage);
+  markPixel(stage.querySelector(".gu-lead"));
+  bindFeaturePreview(stage, showable);
+  cardIntro(stage);
+}
+
+/** Snap small sprites to nearest-neighbour once their natural size is known. */
+function markPixel(img) {
+  if (!img) return;
+  const apply = () => img.classList.toggle("is-pixel", img.naturalWidth > 0 && img.naturalWidth < 256);
+  if (img.complete) apply();
+  else img.addEventListener("load", apply, { once: true });
+}
+
+/**
+ * Hovering a set piece promotes it into the big plate; leaving the row restores
+ * the lead. Preview only — nothing is selected and nothing is committed.
+ */
+function bindFeaturePreview(stage, showable) {
+  const img  = stage.querySelector(".gu-lead");
+  const name = stage.querySelector(".gu-lead-name");
+  const row  = stage.querySelector(".gu-support");
+  if (!img || !row) return;
+
+  const show = (i) => {
+    const e = showable[i];
+    if (!e) return;
+    img.src = imgOf(e);
+    markPixel(img);
+    if (name) name.textContent = e.name;
+    row.querySelectorAll("[data-show]").forEach((n) =>
+      n.classList.toggle("is-showing", Number(n.dataset.show) === i)
+    );
+  };
+
+  row.querySelectorAll("[data-show]").forEach((n) =>
+    n.addEventListener("mouseenter", () => show(Number(n.dataset.show)))
+  );
+  // Restore on leaving the whole row, not each chip — per-chip restore flickers
+  // as the cursor crosses the gaps.
+  row.addEventListener("mouseleave", () => show(0));
+}
+
+/**
+ * Entrance: the art lands first, then the text assembles in reading order.
+ *
+ * Same two-beat shape as the Level-Up class page (previewIntro in
+ * levelup-fx.js), including its rapid-scroll guard — without it, spinning the
+ * rail restarts the sequence every time and the text, which waits on the art,
+ * never gets to appear at all.
+ */
+let _lastIntro = 0;
+function cardIntro(stage) {
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+
+  const now = performance.now();
+  const rapid = now - _lastIntro < 320;
+  _lastIntro = now;
+  if (rapid) return;
+
+  const ART_MS = 520;
+  const art = stage.querySelector(".gu-card-art");
+  art?.animate(
+    [{ opacity: 0, transform: "translateX(38px)" }, { opacity: 1, transform: "none" }],
+    { duration: ART_MS, easing: "cubic-bezier(.16,.84,.3,1)", fill: "both" }
+  );
+
+  const blocks = Array.from(stage.querySelector(".gu-card-text")?.children ?? []);
+  const start = ART_MS - 260;   // overlaps the art's last moments
+  blocks.forEach((el, i) => {
+    el.animate(
+      [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }],
+      { duration: 280, delay: start + i * 75, easing: "cubic-bezier(.2,.8,.3,1)", fill: "both" }
+    );
+  });
 }
 
 // ── Console + actions ───────────────────────────────────────────────────────
 
 function paintConsole() {
   const box = S.el.querySelector(".gu-console");
-  const b = current();
-  const pity = b ? readPity(S.actor, b.id) : { five: 0, four: 0 };
-  const remaining = Math.max(0, PITY_FIVE - pity.five);
 
+  // Currency only. The pity readout moved into the banner card's promo block,
+  // where it reads as part of the offer rather than as a stray HUD number.
   box.innerHTML = `
     <div class="gu-wallet">
       <div class="gu-coin">
@@ -546,9 +686,6 @@ function paintConsole() {
         ${S.canPlay ? `<div class="gu-buy" data-act="buy" title="Buy Hako Coupons">+</div>` : ""}
       </div>
       ${S.pool.tickets > 0 ? `<div class="gu-coin is-ticket">★ ${S.pool.tickets}</div>` : ""}
-    </div>
-    <div class="gu-pity">
-      ${RARITY.five.label} within <b>${remaining}</b> · ${RARITY.four.label} floor every 10
     </div>`;
 
   box.querySelector('[data-act="buy"]')?.addEventListener("click", () =>
@@ -606,6 +743,7 @@ async function wish(count) {
 
   paintActions();
   paintConsole();
+  paintStage(0);   // the promo block carries the pity countdown, which just moved
 }
 
 function failureText(res) {

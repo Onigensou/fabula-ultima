@@ -120,18 +120,53 @@ const CSS = `
 .gp-total { font-size: 16px; font-weight: 700; color: var(--gc-title); min-width: 96px; }
 
 /* ── exchange board ────────────────────────────────────────────────────── */
-.gp-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-.gp-tab {
-  padding: 9px 16px; cursor: pointer; border-radius: var(--gc-radius);
-  font-family: inherit; font-size: 12px; letter-spacing: 1px;
-  border: 1px solid var(--gc-line-2); background: var(--gc-parch); color: var(--gc-ink-3);
+/* Bookmark rail down the left edge; the active tab merges into the board so it
+   reads as a page tab rather than a button. */
+.gp-exchange { display: flex; gap: 0; align-items: stretch; min-height: 460px; }
+.gp-marks {
+  flex: 0 0 200px; display: flex; flex-direction: column; gap: 5px;
+  padding-right: 0; margin-right: -1px; z-index: 2;
 }
-.gp-tab:hover { background: #fffaec; border-color: var(--gc-gold); }
-.gp-tab.is-active {
-  background: linear-gradient(180deg, var(--gc-deep), var(--gc-deep-2));
-  color: var(--gc-deep-ink); border-color: var(--gc-deep-2);
+.gp-mark {
+  text-align: left; padding: 10px 12px; cursor: pointer;
+  font-family: inherit; font-size: 11.5px; letter-spacing: .5px;
+  color: var(--gc-ink-3);
+  background: var(--gc-panel-2);
+  border: 1px solid var(--gc-line-2);
+  border-right-color: var(--gc-line-2);
+  border-radius: var(--gc-radius) 0 0 var(--gc-radius);
+  transition: background .12s, color .12s, transform .12s;
 }
-.gp-tab .n { opacity: .65; margin-left: 6px; }
+.gp-mark:hover { background: #fffaec; color: var(--gc-ink); transform: translateX(-3px); }
+.gp-mark.is-active {
+  background: var(--gc-parch); color: var(--gc-title); font-weight: 700;
+  border-right-color: var(--gc-parch);
+  transform: translateX(-5px);
+}
+.gp-mark .n { float: right; opacity: .6; font-weight: 400; }
+.gp-mark.is-sep { margin-top: 10px; }
+
+.gp-board {
+  flex: 1 1 auto; min-width: 0; padding: 16px;
+  border: 1px solid var(--gc-line-2); border-radius: 0 var(--gc-radius) var(--gc-radius) var(--gc-radius);
+  background: var(--gc-parch);
+}
+.gp-board-title {
+  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gc-title); margin-bottom: 12px; padding-bottom: 7px;
+  border-bottom: 1px solid var(--gc-line);
+}
+.gp-chip.is-picked {
+  border-color: var(--gc-title);
+  box-shadow: 0 0 0 3px rgba(92,31,46,.22);
+  transform: translateY(-2px);
+}
+.gp-pick {
+  font-size: 12px; color: var(--gc-ink-2);
+  display: flex; align-items: center; gap: 8px; justify-content: center;
+}
+.gp-pick b { color: var(--gc-title); }
+.gp-pick .none { color: var(--gc-ink-soft); font-style: italic; }
 
 .gp-swaprow {
   display: flex; align-items: center; gap: 14px; padding: 10px 12px;
@@ -287,7 +322,7 @@ function details({ banner }) {
     const entries = t ? resolveTableItems(t) : [];
     if (!entries.length) return "";
     return `
-      <details class="gp-fold">
+      <details class="gp-fold" open>
         <summary>${label} pool — ${entries.length} items</summary>
         <div class="gp-grid" style="margin-top:10px">
           ${entries.sort((a, b) => a.name.localeCompare(b.name)).map((e) => cellHTML(e, key)).join("")}
@@ -385,74 +420,146 @@ async function shop({ state, refresh }) {
 
 // ── Exchange ────────────────────────────────────────────────────────────────
 
+/**
+ * The Exchange window.
+ *
+ * Navigation is a bookmark rail down the left: one mark per gacha set, then
+ * Ticket Redemption at the bottom. The body shows one thing at a time.
+ *
+ * Trading is deliberately two-step — pick a target, then press Exchange, then
+ * confirm. The previous build committed the moment you clicked an icon, which
+ * is far too easy a way to destroy a refined piece by accident.
+ */
 async function exchange(ctx) {
+  const board = await listSetBoard();
+
   const body = frame("Exchange", `
-    <div class="gp-tabs" data-mode>
-      <button class="gp-tab is-active" data-mode-tab="swap">Gift Exchange</button>
-      <button class="gp-tab" data-mode-tab="redeem">Ticket Redemption</button>
-    </div>
-    <div data-panel><div class="gp-empty">Loading…</div></div>
-  `, { width: 1000 });
+    <div class="gp-exchange">
+      <div class="gp-marks"></div>
+      <div class="gp-board"><div class="gp-empty">Loading…</div></div>
+    </div>`, {
+      width: 1020,
+      foot: `<div class="gp-pick" data-pick></div>
+             <button class="gc-btn is-primary" data-exchange disabled>Exchange</button>`,
+    });
 
-  const panel = body.querySelector("[data-panel]");
-  const tabs  = body.querySelectorAll("[data-mode-tab]");
+  const root  = body.closest(".gp-frame");
+  const marks = body.querySelector(".gp-marks");
+  const board_ = body.querySelector(".gp-board");
+  const pickEl = root.querySelector("[data-pick]");
+  const goBtn  = root.querySelector("[data-exchange]");
 
-  const show = async (which) => {
-    tabs.forEach((t) => t.classList.toggle("is-active", t.dataset.modeTab === which));
-    panel.innerHTML = `<div class="gp-empty">Loading…</div>`;
-    if (which === "swap") await swapView(panel, ctx);
-    else await redeemView(panel, ctx);
+  const S = { view: board[0]?.setName ?? "__redeem", src: null, dst: null };
+
+  const paintMarks = () => {
+    marks.innerHTML = `
+      ${board.map((s) => `
+        <button class="gp-mark${S.view === s.setName ? " is-active" : ""}" data-view="${esc(s.setName)}">
+          ${esc(s.setName)}<span class="n">${s.ownedCount}/${s.pieces.length}</span>
+        </button>`).join("")}
+      <button class="gp-mark is-sep${S.view === "__redeem" ? " is-active" : ""}" data-view="__redeem">
+        ★ Ticket Redemption
+      </button>`;
+    marks.querySelectorAll("[data-view]").forEach((n) =>
+      n.addEventListener("click", () => { S.view = n.dataset.view; S.src = S.dst = null; paint(); })
+    );
   };
 
-  tabs.forEach((t) => t.addEventListener("click", () => show(t.dataset.modeTab)));
-  await show("swap");
-}
+  const paintFoot = () => {
+    const swapping = S.view !== "__redeem";
+    goBtn.style.display = swapping ? "" : "none";
+    pickEl.style.display = swapping ? "" : "none";
+    if (!swapping) return;
 
-async function swapView(panel, ctx) {
-  const board = await listSetBoard();
-  if (!board.length) {
-    panel.innerHTML = `<div class="gp-empty">No gacha sets found.</div>`;
-    return;
-  }
-
-  const state = { set: board[0].setName };
+    goBtn.disabled = !(S.src && S.dst);
+    pickEl.innerHTML = S.src && S.dst
+      ? `Trade <b>${esc(S.src)}</b> → <b>${esc(S.dst)}</b>`
+      : `<span class="none">Select the piece you want to receive.</span>`;
+  };
 
   const paint = () => {
-    const set = board.find((s) => s.setName === state.set) ?? board[0];
-
-    panel.innerHTML = `
-      <div class="gp-tabs">
-        ${board.map((s) => `
-          <button class="gp-tab${s.setName === set.setName ? " is-active" : ""}" data-set="${esc(s.setName)}">
-            ${esc(s.setName)}<span class="n">${s.ownedCount}/${s.pieces.length}</span>
-          </button>`).join("")}
-      </div>
-      ${set.pieces.map((p) => rowHTML(set, p)).join("")}
-      <div class="gp-note">
-        A trade is free and one-for-one, <b>within the same set only</b>.
-        The piece you trade in is <b>destroyed</b> — refinement and installed orbment augments go with it.
-      </div>`;
-
-    panel.querySelectorAll("[data-set]").forEach((t) =>
-      t.addEventListener("click", () => { state.set = t.dataset.set; paint(); })
-    );
-
-    panel.querySelectorAll("[data-swap]").forEach((n) =>
-      n.addEventListener("click", () => doSwap(n.dataset.swap, n.dataset.target, set, panel, ctx, paint))
-    );
-
-    bindTips(panel);
-    bindFallbacks(panel);
+    paintMarks();
+    if (S.view === "__redeem") {
+      redeemView(board_, ctx);
+    } else {
+      const set = board.find((s) => s.setName === S.view);
+      paintSwapBoard(board_, set, S, () => { paintFoot(); });
+    }
+    paintFoot();
   };
 
+  goBtn.addEventListener("click", async () => {
+    const set = board.find((s) => s.setName === S.view);
+    const src = set?.pieces.find((p) => p.name === S.src);
+    const dst = set?.pieces.find((p) => p.name === S.dst);
+    if (!src?.owned || !dst) return;
+
+    const extra = src.owned.warnings?.length
+      ? `<p style="color:#8a4b16">${src.owned.warnings.map(esc).join("<br>")}</p>` : "";
+
+    const ok = await Dialog.confirm({
+      title: "Confirm Exchange",
+      content: `
+        <p>Trade <b>${esc(src.name)}</b> for <b>${esc(dst.name)}</b>?</p>
+        ${extra}
+        <p><b>“${esc(src.name)}” will be destroyed permanently.</b> This cannot be undone.</p>`,
+      defaultYes: false,
+    });
+    if (!ok) return;
+
+    goBtn.disabled = true;
+    const res = await request(GACHA.MSG.SWAP_REQ, {
+      ownerActorUuid: src.owned.ownerActorUuid,
+      itemId: src.owned.itemId,
+      targetItemUuid: dst.uuid,
+      confirmed: true,
+      requesterUserId: game.user.id,
+    });
+
+    if (res?.ok) {
+      ui.notifications?.info(`Traded ${res.from} → ${res.to}.`);
+      closePanel();
+      renderPanel("exchange", ctx);      // reopen on fresh state
+    } else {
+      ui.notifications?.warn(`Trade failed: ${res?.reason ?? "unknown"}`);
+      goBtn.disabled = false;
+    }
+  });
+
+  if (!board.length) { board_.innerHTML = `<div class="gp-empty">No gacha sets found.</div>`; return; }
   paint();
 }
 
-function rowHTML(set, piece) {
+function paintSwapBoard(host, set, S, onPick) {
+  if (!set) { host.innerHTML = `<div class="gp-empty">Set not found.</div>`; return; }
+
+  host.innerHTML = `
+    <div class="gp-board-title">${esc(set.setName)} — ${set.ownedCount} of ${set.pieces.length} held</div>
+    ${set.pieces.map((p) => rowHTML(set, p, S)).join("")}
+    <div class="gp-note">
+      A trade is free and one-for-one, <b>within this set only</b>.
+      The piece you trade in is <b>destroyed</b> — refinement and installed orbment augments go with it.
+    </div>`;
+
+  host.querySelectorAll("[data-pick-src]").forEach((n) =>
+    n.addEventListener("click", () => {
+      S.src = n.dataset.pickSrc;
+      S.dst = n.dataset.pickDst;
+      host.querySelectorAll(".gp-chip").forEach((c) => c.classList.remove("is-picked"));
+      n.classList.add("is-picked");
+      onPick?.();
+    })
+  );
+
+  bindTips(host);
+  bindFallbacks(host);
+}
+
+function rowHTML(set, piece, S) {
   const owned = piece.owned;
   const blocked = owned?.blocking?.length ? owned.blocking[0] : "";
   const warned  = owned?.warnings?.length ? owned.warnings.join(" ") : "";
-
+  const live = owned && !blocked;
   const targets = set.pieces.filter((t) => t.name !== piece.name);
 
   return `
@@ -467,48 +574,20 @@ function rowHTML(set, piece) {
       </div>
       <div class="gp-arrow">→</div>
       <div class="gp-swaprow-dst">
-        ${targets.map((t) => `
-          <div class="gp-chip${owned && !blocked ? "" : " is-dim"}"
-               ${owned && !blocked ? `data-swap="${esc(piece.name)}" data-target="${esc(t.name)}"` : ""}
+        ${targets.map((t) => {
+          const picked = S?.src === piece.name && S?.dst === t.name;
+          return `
+          <div class="gp-chip${live ? "" : " is-dim"}${picked ? " is-picked" : ""}"
+               ${live ? `data-pick-src="${esc(piece.name)}" data-pick-dst="${esc(t.name)}"` : ""}
                data-tip="${esc(t.name)}"
-               data-tip-sub="${esc(owned && !blocked ? `trade ${piece.name} for this` : "unavailable")}">
+               data-tip-sub="${esc(live ? `receive this for ${piece.name}` : "unavailable")}">
             <img src="${t.img}" alt="">
-          </div>`).join("")}
+          </div>`;
+        }).join("")}
         ${blocked ? `<div class="gp-warn is-block">⛔ ${esc(blocked)}</div>`
                   : warned ? `<div class="gp-warn">⚠ ${esc(warned)}</div>` : ""}
       </div>
     </div>`;
-}
-
-async function doSwap(srcName, dstName, set, panel, ctx, repaint) {
-  const src = set.pieces.find((p) => p.name === srcName);
-  const dst = set.pieces.find((p) => p.name === dstName);
-  if (!src?.owned || !dst) return;
-
-  if (src.owned.warnings?.length) {
-    const ok = await Dialog.confirm({
-      title: "Destroy this piece?",
-      content: `<p>${src.owned.warnings.map(esc).join("<br>")}</p>
-                <p><b>“${esc(src.name)}” will be destroyed permanently.</b> Continue?</p>`,
-      defaultYes: false,
-    });
-    if (!ok) return;
-  }
-
-  const res = await request(GACHA.MSG.SWAP_REQ, {
-    ownerActorUuid: src.owned.ownerActorUuid,
-    itemId: src.owned.itemId,
-    targetItemUuid: dst.uuid,
-    confirmed: true,
-    requesterUserId: game.user.id,
-  });
-
-  if (res?.ok) {
-    ui.notifications?.info(`Traded ${res.from} → ${res.to}.`);
-    await swapView(panel, ctx);      // rebuild from fresh state
-  } else {
-    ui.notifications?.warn(`Trade failed: ${res?.reason ?? "unknown"}`);
-  }
 }
 
 async function redeemView(panel, { state, refresh }) {
