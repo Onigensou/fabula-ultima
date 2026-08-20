@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-08-19T19:05:29.161Z",
- "count": 2123,
+ "capturedAt": "2026-08-20T17:20:38.087Z",
+ "count": 2115,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -40151,92 +40151,6 @@
    "reactions": [],
    "aes": []
   },
-  "Hellhound (Reanimated) / Bite #SZc2mY": {
-   "props": {
-    "check_bonus": "6",
-    "class": "NPC",
-    "damage_bonus": "40",
-    "defense_target_type": "def",
-    "duration": "Instantaneous",
-    "isCheck": "true",
-    "isReaction": "true",
-    "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG",
-    "skill_range": "Melee",
-    "skill_target": "One Creature",
-    "skill_type": "Attack",
-    "type_damage": "Physical"
-   },
-   "effects": [
-    "damage_amount=round((HR + 40) * 0.5) damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=bite_grappled_bonus"
-   ],
-   "reactions": [
-    "condition_formula=TRIGGER_IS_SELF == 1 && TARGET_GRAPPLED_BY_SELF == 1 reaction_effect_ref=bite_grappled_bonus reaction_passive_mode=on reaction_source=self reaction_source_skill=Bite reaction_trigger=creature_will_deal_damage"
-   ],
-   "aes": []
-  },
-  "Hellhound (Reanimated) / Flame Breath #u6YRNg": {
-   "props": {
-    "active_effect_config_table": "#sha1:f439763f70c8cae6 (288 chars)",
-    "check_bonus": "5",
-    "class": "NPC",
-    "cost": "30 MP",
-    "damage_bonus": "45",
-    "defense_target_type": "mdef",
-    "duration": "Instantaneous",
-    "isCheck": "true",
-    "isOffensiveSpell": "true",
-    "isReaction": "true",
-    "rolled_atr1": "INS",
-    "rolled_atr2": "WLP",
-    "skill_range": "Range",
-    "skill_target": "Up to three creature",
-    "skill_type": "Spell",
-    "type_damage": "Fire"
-   },
-   "effects": [
-    "ae_duplicate_mode=add_charges ae_template_ref=Burn effect_kind=apply_ae effect_label=apply_burn target_ref=hit_action_targets"
-   ],
-   "reactions": [
-    "condition_formula=TRIGGER_IS_SELF == 1 && chance(50) reaction_effect_ref=apply_burn reaction_passive_mode=on reaction_source=self reaction_source_skill=Flame Breath reaction_trigger=creature_deals_damage"
-   ],
-   "aes": []
-  },
-  "Hellhound (Reanimated) / On the Hunt #9N0IWd": {
-   "props": {
-    "class": "NPC",
-    "defense_target_type": "def",
-    "isReaction": "true",
-    "skill_type": "Passive"
-   },
-   "effects": [
-    "allowed_types=Attack effect_kind=open_action_menu effect_label=hunt_free_attack free_hr_as_zero=true free_mode=true"
-   ],
-   "reactions": [
-    "reaction_effect_ref=hunt_free_attack reaction_passive_mode=on reaction_source=enemy reaction_status_filter=Crisis reaction_trigger=creature_status_applied"
-   ],
-   "aes": []
-  },
-  "Hellhound (Reanimated) / Pounce #0v5EYW": {
-   "props": {
-    "class": "NPC",
-    "cost": "10 MP",
-    "defense_target_type": "def",
-    "isCheck": "true",
-    "on_activate_effect_ref": "pounce_chain",
-    "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG",
-    "skill_target": "One Creature",
-    "skill_type": "Active"
-   },
-   "effects": [
-    "chain_steps=pounce_damage,pounce_grapple effect_kind=chain effect_label=pounce_chain",
-    "attacker_name=Pounce damage_amount=HR + 20 damage_element=physical effect_kind=deal_damage effect_label=pounce_damage target_ref=hit_action_targets",
-    "ae_duplicate_mode=skip ae_template_ref=Grappled effect_kind=apply_ae effect_label=pounce_grapple target_ref=hit_action_targets"
-   ],
-   "reactions": [],
-   "aes": []
-  },
   "Hellhound / Bite": {
    "props": {
     "check_bonus": "6",
@@ -46863,96 +46777,6 @@
    "reactions": [],
    "aes": []
   },
-  "Kirin (Reanimated) / Hooves": {
-   "props": {
-    "check_bonus": "9",
-    "class": "NPC",
-    "damage_bonus": "45",
-    "defense_target_type": "def",
-    "duration": "Instantaneous",
-    "isCheck": "true",
-    "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG",
-    "skill_range": "Melee",
-    "skill_target": "One Creature",
-    "skill_type": "Attack",
-    "type_damage": "Physical"
-   },
-   "effects": [
-    "ae_duplicate_mode=add_charges ae_template_ref=Slow effect_kind=apply_ae effect_label=hooves_slow target_ref=hit_action_targets"
-   ],
-   "reactions": [
-    "condition_formula=TRIGGER_IS_SELF == 1 reaction_effect_ref=hooves_slow reaction_max_scope=round reaction_passive_mode=on reaction_source=self reaction_source_skill=Hooves reaction_trigger=creature_deals_damage"
-   ],
-   "aes": []
-  },
-  "Kirin (Reanimated) / Horn Rush": {
-   "props": {
-    "action_keywords": "execute",
-    "check_bonus": "9",
-    "class": "NPC",
-    "damage_bonus": "62",
-    "defense_target_type": "def",
-    "duration": "Instantaneous",
-    "isCheck": "true",
-    "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG",
-    "skill_range": "Melee",
-    "skill_target": "One Creature",
-    "skill_type": "Attack",
-    "type_damage": "Bolt"
-   },
-   "effects": [
-    "damage_amount=2 damage_operation=multiply damage_stage=outgoing effect_kind=adjust_damage effect_label=horn_execute"
-   ],
-   "reactions": [
-    "condition_formula=TARGET_AE_COUNT_CRISIS > 0 reaction_effect_ref=horn_execute reaction_max_scope=round reaction_passive_mode=force reaction_source=self reaction_source_skill=Horn Rush reaction_trigger=creature_will_deal_damage"
-   ],
-   "aes": []
-  },
-  "Kirin (Reanimated) / Lightning Charge": {
-   "props": {
-    "class": "NPC",
-    "isReaction": "true",
-    "skill_type": "Passive"
-   },
-   "effects": [
-    "effect_kind=grant effect_label=charge_mp grant_amount=20 grant_resource=mp target_ref=self",
-    "effect_kind=grant effect_label=charge_overflow grant_amount=max(0, CUR_MP + 20 - MAX_MP) grant_resource=shield target_ref=self",
-    "chain_steps=charge_overflow, charge_mp effect_kind=chain effect_label=charge_horn"
-   ],
-   "reactions": [
-    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_effect_ref=charge_horn reaction_passive_mode=on reaction_source=self reaction_trigger=creature_lose_resource"
-   ],
-   "aes": []
-  },
-  "Kirin (Reanimated) / Rail Stream": {
-   "props": {
-    "action_keywords": "pierce, overflow",
-    "check_bonus": "9",
-    "class": "NPC",
-    "cost": "50 MP",
-    "damage_bonus": "45",
-    "defense_target_type": "mdef",
-    "duration": "Instantaneous",
-    "isCheck": "true",
-    "isOffensiveSpell": "true",
-    "isReaction": "true",
-    "rolled_atr1": "INS",
-    "rolled_atr2": "WLP",
-    "skill_range": "Range",
-    "skill_target": "All Enemies",
-    "skill_type": "Spell",
-    "type_damage": "Bolt"
-   },
-   "effects": [
-    "ae_chance_percent=50 ae_duplicate_mode=replace ae_template_ref=Paralyzed effect_kind=apply_ae effect_label=apply_paralyzed target_ref=hit_action_targets"
-   ],
-   "reactions": [
-    "reaction_effect_ref=apply_paralyzed reaction_passive_mode=on reaction_source=self reaction_source_skill=Rail Stream reaction_trigger=creature_deals_damage"
-   ],
-   "aes": []
-  },
   "Kirin / Hooves": {
    "props": {
     "check_bonus": "9",
@@ -47389,71 +47213,6 @@
    },
    "effects": [],
    "reactions": [],
-   "aes": []
-  },
-  "Mana Ray (Reanimated) / Flying #nEeldo": {
-   "props": {
-    "class": "NPC",
-    "isReaction": "true",
-    "skill_type": "Passive"
-   },
-   "effects": [
-    "ae_duplicate_mode=skip ae_template_ref=Flying effect_kind=apply_ae effect_label=fly_apply target_ref=self"
-   ],
-   "reactions": [
-    "reaction_effect_ref=fly_apply reaction_passive_mode=force reaction_trigger=conflict_start"
-   ],
-   "aes": []
-  },
-  "Mana Ray (Reanimated) / Mana Stinger #lK1xNx": {
-   "props": {
-    "check_bonus": "8",
-    "class": "NPC",
-    "damage_bonus": "24",
-    "defense_target_type": "def",
-    "duration": "Instantaneous",
-    "isCheck": "true",
-    "isReaction": "true",
-    "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG",
-    "skill_range": "Melee",
-    "skill_target": "One Creature",
-    "skill_type": "Attack",
-    "type_damage": "Dark"
-   },
-   "effects": [
-    "damage_amount=min(ceil(TARGET_MAX_MP * 0.2), TARGET_CURRENT_MP) damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=stinger_bonus",
-    "damage_amount=min(ceil(TARGET_MAX_MP * 0.2), TARGET_CURRENT_MP) damage_resource=mp damage_verbosity=full effect_kind=deal_damage effect_label=stinger_burn target_ref=trigger_subject"
-   ],
-   "reactions": [
-    "reaction_effect_ref=stinger_bonus reaction_passive_mode=force reaction_source=self reaction_source_skill=Mana Stinger reaction_trigger=creature_will_deal_damage",
-    "reaction_effect_ref=stinger_burn reaction_passive_mode=force reaction_source=self reaction_source_skill=Mana Stinger reaction_trigger=creature_deals_damage"
-   ],
-   "aes": []
-  },
-  "Mana Ray (Reanimated) / Volt Stinger #qQ1Usy": {
-   "props": {
-    "check_bonus": "8",
-    "class": "NPC",
-    "cost": "10 MP",
-    "damage_bonus": "40",
-    "defense_target_type": "def",
-    "duration": "Instantaneous",
-    "isCheck": "true",
-    "isReaction": "true",
-    "rolled_atr1": "DEX",
-    "rolled_atr2": "MIG",
-    "skill_range": "Melee",
-    "skill_target": "One Creature",
-    "skill_type": "Active",
-    "type_damage": "Bolt"
-   },
-   "effects": [
-    "ae_duplicate_mode=skip ae_template_ref=Paralyzed effect_kind=apply_ae effect_label=vs_paralyze target_ref=hit_action_targets"
-   ],
-   "reactions": [
-    "reaction_effect_ref=vs_paralyze reaction_passive_mode=force reaction_source=self reaction_source_skill=Volt Stinger reaction_trigger=creature_deals_damage"
-   ],
    "aes": []
   },
   "Mana Ray / Flying": {
@@ -50776,16 +50535,83 @@
     "action_ref=Thunder Strike effect_kind=free_action effect_label=chain_strike"
    ],
    "reactions": [
-    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_cause_filter=damage reaction_effect_ref=chain_strike reaction_passive_mode=on reaction_trigger=creature_lose_resource",
-    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_cause_filter=damage reaction_effect_ref=chain_strike reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_gain_resource"
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_effect_ref=chain_strike reaction_passive_mode=on reaction_trigger=creature_lose_resource",
+    "condition_formula=SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 reaction_effect_ref=chain_strike reaction_passive_mode=on reaction_resource_filter=hp reaction_trigger=creature_gain_resource"
    ],
    "aes": []
+  },
+  "Skizzik / Overload Riposte": {
+   "props": {
+    "class": "NPC",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "candidate_source=trigger_attacker count=1 effect_kind=targeting effect_label=riposte_target mode=exact",
+    "action_ref=Thunder Strike (Riposte) effect_kind=free_action effect_label=riposte_strike target_ref=riposte_target"
+   ],
+   "reactions": [
+    "condition_formula=SUBJECT_IS_SELF == 1 && INCOMING_DAMAGE > 0 && ATTACK_CHECK_RESULT > 0 && ATTACK_CHECK_RESULT % 2 == 0 && TRIGGER_DAMAGE_IS_BOLT == 0 reaction_effect_ref=riposte_strike reaction_passive_mode=on reaction_source=self reaction_trigger=creature_targeted_by_action"
+   ],
+   "aes": []
+  },
+  "Skizzik / Static Buildup": {
+   "props": {
+    "class": "NPC",
+    "isReaction": "true",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=static_blast, static_clear effect_kind=chain effect_label=static_discharge",
+    "candidate_source=trigger_subject count=1 effect_kind=targeting effect_label=static_victim mode=exact",
+    "damage_amount=30 damage_element=bolt damage_verbosity=full effect_kind=deal_damage effect_label=static_blast target_ref=static_victim",
+    "ae_template_ref=Static count=all effect_kind=remove_ae effect_label=static_clear include_persistent=true target_ref=self",
+    "ae_duplicate_mode=add_charges ae_initial_charges=1 ae_template_ref=Static effect_kind=apply_ae effect_label=static_build target_ref=self"
+   ],
+   "reactions": [
+    "condition_formula=AE_CHARGES_STATIC >= 2 reaction_effect_ref=static_discharge reaction_passive_mode=on reaction_source=self reaction_trigger=creature_deals_damage",
+    "condition_formula=AE_CHARGES_STATIC < 2 reaction_effect_ref=static_build reaction_passive_mode=on reaction_source=self reaction_trigger=creature_deals_damage"
+   ],
+   "aes": [
+    {
+     "name": "Static",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [],
+     "tags": [
+      "static"
+     ],
+     "family": null,
+     "lifetime": "persistent_counter",
+     "charges": 3,
+     "changes": []
+    }
+   ]
   },
   "Skizzik / Thunder Strike": {
    "props": {
     "check_bonus": "10",
     "class": "NPC",
-    "damage_bonus": "48",
+    "damage_bonus": "30",
+    "defense_target_type": "def",
+    "duration": "Instantaneous",
+    "isCheck": "true",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "MIG",
+    "skill_range": "Melee",
+    "skill_target": "One Creature",
+    "skill_type": "Attack",
+    "type_damage": "Bolt"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": []
+  },
+  "Skizzik / Thunder Strike (Riposte)": {
+   "props": {
+    "check_bonus": "10",
+    "class": "NPC",
+    "damage_bonus": "12",
     "defense_target_type": "def",
     "duration": "Instantaneous",
     "isCheck": "true",
